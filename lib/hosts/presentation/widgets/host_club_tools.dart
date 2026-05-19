@@ -9,24 +9,36 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:flutter/material.dart';
 
-class HostClubToolsPanel extends StatelessWidget {
-  const HostClubToolsPanel({
+class HostClubManagementPanel extends StatelessWidget {
+  const HostClubManagementPanel({
     super.key,
     required this.club,
+    required this.events,
     required this.onEditClub,
     required this.onCreateEvent,
   });
 
   final Club club;
+  final List<Event> events;
   final VoidCallback onEditClub;
   final VoidCallback onCreateEvent;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final palette = HostToolPalette.defaultPanel(context);
+    final totalBooked = events.fold(0, (sum, r) => sum + r.signedUpCount);
+    final totalWaitlist = events.fold(0, (sum, r) => sum + r.waitlistCount);
+    final baseRevenueEstimate = events.fold(
+      0,
+      (sum, r) => sum + r.signedUpCount * r.priceInPaise,
+    );
+    final usesDemandPricing = events.any(
+      (event) => event.effectiveEventPolicy.usesDemandPricing,
+    );
 
     return CatchSurface(
       padding: EdgeInsets.zero,
@@ -77,12 +89,51 @@ class HostClubToolsPanel extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  'Manage this club and publish upcoming events.',
-                  style: CatchTextStyles.bodyS(
-                    context,
-                    color: CatchTokens.of(context).ink2,
-                  ),
+                  'Manage this club, publish events, and track upcoming demand.',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
+                gapH12,
+                Row(
+                  children: [
+                    Expanded(
+                      child: HostStatChip(
+                        label: 'Booked',
+                        value: '$totalBooked',
+                        icon: Icons.check_circle_outline_rounded,
+                      ),
+                    ),
+                    gapW8,
+                    Expanded(
+                      child: HostStatChip(
+                        label: 'Waitlist',
+                        value: '$totalWaitlist',
+                        icon: Icons.access_time_rounded,
+                      ),
+                    ),
+                    gapW8,
+                    Expanded(
+                      child: HostStatChip(
+                        label: usesDemandPricing ? 'Base est.' : 'Revenue',
+                        value: baseRevenueEstimate > 0
+                            ? EventFormatters.priceInPaise(
+                                baseRevenueEstimate,
+                                currencyCode: events.isEmpty
+                                    ? defaultCurrencyCode
+                                    : events.first.currency,
+                              )
+                            : '-',
+                        icon: Icons.payments_rounded,
+                      ),
+                    ),
+                  ],
+                ),
+                if (usesDemandPricing) ...[
+                  gapH8,
+                  Text(
+                    'Base estimate uses starting prices; demand-priced bookings may settle higher.',
+                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  ),
+                ],
                 gapH12,
                 CatchButton(
                   label: 'Add event',
@@ -101,92 +152,6 @@ class HostClubToolsPanel extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostStatsStrip extends StatelessWidget {
-  const HostStatsStrip({super.key, required this.events});
-
-  final List<Event> events;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final palette = HostToolPalette.defaultPanel(context);
-
-    final totalBooked = events.fold(0, (sum, r) => sum + r.signedUpCount);
-    final totalWaitlist = events.fold(0, (sum, r) => sum + r.waitlistCount);
-    final baseRevenueEstimate = events.fold(
-      0,
-      (sum, r) => sum + r.signedUpCount * r.priceInPaise,
-    );
-    final usesDemandPricing = events.any(
-      (event) => event.effectiveEventPolicy.usesDemandPricing,
-    );
-
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      backgroundColor: palette.background,
-      borderColor: palette.border,
-      radius: CatchRadius.lg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.bar_chart_rounded, size: 16, color: t.primary),
-              gapW6,
-              Text(
-                'Your upcoming events',
-                style: CatchTextStyles.labelL(context, color: t.primary),
-              ),
-            ],
-          ),
-          gapH12,
-          Row(
-            children: [
-              Expanded(
-                child: HostStatChip(
-                  label: 'Booked',
-                  value: '$totalBooked',
-                  icon: Icons.check_circle_outline_rounded,
-                ),
-              ),
-              gapW8,
-              Expanded(
-                child: HostStatChip(
-                  label: 'Waitlist',
-                  value: '$totalWaitlist',
-                  icon: Icons.access_time_rounded,
-                ),
-              ),
-              gapW8,
-              Expanded(
-                child: HostStatChip(
-                  label: usesDemandPricing ? 'Base est.' : 'Revenue',
-                  value: baseRevenueEstimate > 0
-                      ? EventFormatters.priceInPaise(
-                          baseRevenueEstimate,
-                          currencyCode: events.isEmpty
-                              ? defaultCurrencyCode
-                              : events.first.currency,
-                        )
-                      : '-',
-                  icon: Icons.payments_rounded,
-                ),
-              ),
-            ],
-          ),
-          if (usesDemandPricing) ...[
-            gapH8,
-            Text(
-              'Base estimate uses starting prices; demand-priced bookings may settle higher.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
-            ),
-          ],
         ],
       ),
     );

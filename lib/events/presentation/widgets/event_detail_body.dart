@@ -68,6 +68,7 @@ class EventDetailBody extends ConsumerWidget {
     final share = ref.watch(externalShareControllerProvider);
     final calendar = ref.watch(eventCalendarControllerProvider);
     final now = this.now ?? DateTime.now();
+    final Widget? bottomNavigationBar;
 
     if (isAuthenticated) {
       ref.listen(EventBookingController.bookMutation, (prev, next) {
@@ -84,6 +85,25 @@ class EventDetailBody extends ConsumerWidget {
           ).showSnackBar(const SnackBar(content: Text('Booking cancelled.')));
         }
       });
+    }
+
+    if (!isAuthenticated) {
+      bottomNavigationBar = _GuestBookCta(
+        clubId: clubId,
+        eventId: event.id,
+        inviteCode: inviteCode,
+      );
+    } else if (userProfile != null && !isHost) {
+      bottomNavigationBar = EventDetailCta(
+        event: event,
+        userProfile: userProfile,
+        clubId: clubId,
+        participation: participation,
+        inviteCode: inviteCode,
+        now: now,
+      );
+    } else {
+      bottomNavigationBar = null;
     }
 
     return Scaffold(
@@ -161,21 +181,7 @@ class EventDetailBody extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: isAuthenticated && userProfile != null
-          ? EventDetailCta(
-              event: event,
-              userProfile: userProfile,
-              clubId: clubId,
-              isHost: isHost,
-              participation: participation,
-              inviteCode: inviteCode,
-              now: now,
-            )
-          : _GuestBookCta(
-              clubId: clubId,
-              eventId: event.id,
-              inviteCode: inviteCode,
-            ),
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }

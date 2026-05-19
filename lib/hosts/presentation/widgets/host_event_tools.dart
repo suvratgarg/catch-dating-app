@@ -6,9 +6,8 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:flutter/material.dart';
-
-enum HostEventAttendanceState { open, opensLater, closed }
 
 class HostEventToolItem {
   const HostEventToolItem({required this.event, required this.attendanceState});
@@ -85,42 +84,61 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
             final cardWidth = constraints.hasBoundedWidth
                 ? constraints.maxWidth
                 : MediaQuery.sizeOf(context).width;
+            final canAdvance = _selectedIndex < widget.tools.length - 1;
+            final canRetreat = _selectedIndex > 0;
 
             return SizedBox(
               width: cardWidth,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onHorizontalDragStart: widget.tools.length > 1
-                    ? (_) => _dragDistance = 0
+              child: Semantics(
+                label: 'Host event tools carousel',
+                value:
+                    'Hosted event ${_selectedIndex + 1} of ${widget.tools.length}',
+                increasedValue: canAdvance
+                    ? 'Hosted event ${_selectedIndex + 2} of ${widget.tools.length}'
                     : null,
-                onHorizontalDragUpdate: widget.tools.length > 1
-                    ? (details) => _dragDistance += details.primaryDelta ?? 0
+                decreasedValue: canRetreat
+                    ? 'Hosted event $_selectedIndex of ${widget.tools.length}'
                     : null,
-                onHorizontalDragEnd: widget.tools.length > 1
-                    ? (details) => _handleHorizontalDragEnd(
-                        details: details,
-                        itemCount: widget.tools.length,
-                      )
+                onIncrease: widget.tools.length > 1 && canAdvance
+                    ? () => setState(() => _selectedIndex += 1)
                     : null,
-                onHorizontalDragCancel: widget.tools.length > 1
-                    ? () => _dragDistance = 0
+                onDecrease: widget.tools.length > 1 && canRetreat
+                    ? () => setState(() => _selectedIndex -= 1)
                     : null,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: HostEventToolCard(
-                    key: ValueKey(
-                      'host-event-tool-${selectedTool.event.id}-'
-                      '${selectedTool.attendanceState.name}',
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onHorizontalDragStart: widget.tools.length > 1
+                      ? (_) => _dragDistance = 0
+                      : null,
+                  onHorizontalDragUpdate: widget.tools.length > 1
+                      ? (details) => _dragDistance += details.primaryDelta ?? 0
+                      : null,
+                  onHorizontalDragEnd: widget.tools.length > 1
+                      ? (details) => _handleHorizontalDragEnd(
+                          details: details,
+                          itemCount: widget.tools.length,
+                        )
+                      : null,
+                  onHorizontalDragCancel: widget.tools.length > 1
+                      ? () => _dragDistance = 0
+                      : null,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: HostEventToolCard(
+                      key: ValueKey(
+                        'host-event-tool-${selectedTool.event.id}-'
+                        '${selectedTool.attendanceState.name}',
+                      ),
+                      item: selectedTool,
+                      cardIndex: _selectedIndex,
+                      cardCount: widget.tools.length,
+                      onManageEvent: widget.onManageEvent,
+                      onTakeAttendance: widget.onTakeAttendance,
                     ),
-                    item: selectedTool,
-                    cardIndex: _selectedIndex,
-                    cardCount: widget.tools.length,
-                    onManageEvent: widget.onManageEvent,
-                    onTakeAttendance: widget.onTakeAttendance,
                   ),
                 ),
               ),
@@ -311,74 +329,6 @@ class HostEventToolCard extends StatelessWidget {
                       '${event.waitlistCount} waitlist',
                 ),
                 gapH16,
-                _HostEventToolActions(
-                  item: item,
-                  onManageEvent: onManageEvent,
-                  onTakeAttendance: onTakeAttendance,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HostEventBottomActions extends StatelessWidget {
-  const HostEventBottomActions({
-    super.key,
-    required this.item,
-    required this.onManageEvent,
-    required this.onTakeAttendance,
-  });
-
-  final HostEventToolItem item;
-  final ValueChanged<Event> onManageEvent;
-  final ValueChanged<Event> onTakeAttendance;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
-    return Container(
-      color: t.surface,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(color: t.line, height: 1, thickness: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s3 + bottomPadding,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s1,
-                  children: [
-                    const CatchBadge(
-                      label: 'Host tools',
-                      tone: CatchBadgeTone.brand,
-                      uppercase: true,
-                    ),
-                    CatchBadge(
-                      label: item.attendanceState.badgeLabel,
-                      tone: item.attendanceState.badgeTone,
-                      uppercase: true,
-                      icon: item.canTakeAttendance
-                          ? Icons.checklist_rounded
-                          : null,
-                    ),
-                  ],
-                ),
-                gapH10,
                 _HostEventToolActions(
                   item: item,
                   onManageEvent: onManageEvent,

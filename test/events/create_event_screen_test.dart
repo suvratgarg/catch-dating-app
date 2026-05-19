@@ -7,19 +7,22 @@ import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
-import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -372,7 +375,7 @@ void main() {
       expect(find.text('WAITLIST'), findsOneWidget);
     });
 
-    testWidgets('host manage exposes the live event success entry', (
+    testWidgets('host manage exposes event success as a workspace section', (
       tester,
     ) async {
       final participationRepository = FakeEventParticipationRepository();
@@ -393,11 +396,8 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      await tester.scrollUntilVisible(find.text('Event success'), 300);
-      await _pumpHostActionFrame(tester);
-
       expect(find.text('Event success'), findsOneWidget);
-      expect(find.text('Open event success'), findsOneWidget);
+      expect(find.text('Open event success'), findsNothing);
     });
 
     testWidgets('host manage labels demand pricing revenue as base estimate', (
@@ -516,8 +516,10 @@ void main() {
       await _pumpHostActionFrame(tester);
 
       final cancelButton = find.widgetWithText(CatchButton, 'Cancel event');
-      await tester.ensureVisible(cancelButton);
-      await tester.tap(cancelButton);
+      await tester.scrollUntilVisible(cancelButton, 300);
+      await tester.drag(find.byType(ListView), const Offset(0, -120));
+      await _pumpHostActionFrame(tester);
+      await tester.tap(cancelButton.hitTestable());
       await _pumpHostActionFrame(tester);
 
       expect(find.text('Cancel this event?'), findsOneWidget);
@@ -554,7 +556,9 @@ void main() {
       await _pumpHostActionFrame(tester);
 
       final deleteButton = find.widgetWithText(CatchButton, 'Delete event');
-      await tester.ensureVisible(deleteButton);
+      await tester.scrollUntilVisible(deleteButton, 300);
+      await tester.drag(find.byType(ListView), const Offset(0, -80));
+      await _pumpHostActionFrame(tester);
       await tester.tap(deleteButton);
       await _pumpHostActionFrame(tester);
 
@@ -673,13 +677,51 @@ Future<void> _pumpCreateEventFlow(
   bool alwaysUse24HourFormat = false,
   DateTime Function()? now,
 }) async {
+  final club = buildClub();
+  final router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => Scaffold(
+          body: Center(
+            child: ElevatedButton(
+              onPressed: () => context.push('/create-event-test'),
+              child: const Text('Open'),
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/create-event-test',
+        builder: (context, state) => CreateEventScreen(
+          club: club,
+          loadMapTiles: false,
+          now: now ?? DateTime.now,
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostEventManageScreen.path,
+        name: Routes.hostEventManageScreen.name,
+        builder: (context, state) => HostEventManageScreen(
+          club: club,
+          event: switch (state.extra) {
+            final Event event => event,
+            _ => buildEvent(clubId: club.id),
+          },
+          onBackToSuccess: () => context.pop(),
+        ),
+      ),
+    ],
+  );
+
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
         ...overrides,
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         theme: AppTheme.light,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(
@@ -687,26 +729,7 @@ Future<void> _pumpCreateEventFlow(
           ).copyWith(alwaysUse24HourFormat: alwaysUse24HourFormat),
           child: child!,
         ),
-        home: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => CreateEventScreen(
-                        club: buildClub(),
-                        loadMapTiles: false,
-                        now: now ?? DateTime.now,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('Open'),
-              ),
-            ),
-          ),
-        ),
+        routerConfig: router,
       ),
     ),
   );

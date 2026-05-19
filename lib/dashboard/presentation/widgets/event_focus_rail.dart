@@ -97,44 +97,62 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
             final cardWidth = constraints.hasBoundedWidth
                 ? constraints.maxWidth
                 : MediaQuery.sizeOf(context).width;
+            final canAdvance = _selectedIndex < items.length - 1;
+            final canRetreat = _selectedIndex > 0;
 
             return SizedBox(
               width: cardWidth,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onHorizontalDragStart: items.length > 1
-                    ? (_) => _dragDistance = 0
+              child: Semantics(
+                label: 'Event focus carousel',
+                value: 'Event ${_selectedIndex + 1} of ${items.length}',
+                increasedValue: canAdvance
+                    ? 'Event ${_selectedIndex + 2} of ${items.length}'
                     : null,
-                onHorizontalDragUpdate: items.length > 1
-                    ? (details) => _dragDistance += details.primaryDelta ?? 0
+                decreasedValue: canRetreat
+                    ? 'Event $_selectedIndex of ${items.length}'
                     : null,
-                onHorizontalDragEnd: items.length > 1
-                    ? (details) => _handleHorizontalDragEnd(
-                        details: details,
-                        itemCount: items.length,
-                      )
+                onIncrease: items.length > 1 && canAdvance
+                    ? () => setState(() => _selectedIndex += 1)
                     : null,
-                onHorizontalDragCancel: items.length > 1
-                    ? () => _dragDistance = 0
+                onDecrease: items.length > 1 && canRetreat
+                    ? () => setState(() => _selectedIndex -= 1)
                     : null,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: _EventFocusCard(
-                    key: ValueKey(
-                      'event-focus-${selectedItem.kind.name}-'
-                      '${selectedItem.event.id}-'
-                      '${selectedItem.canSwipe}-${selectedItem.needsReview}',
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onHorizontalDragStart: items.length > 1
+                      ? (_) => _dragDistance = 0
+                      : null,
+                  onHorizontalDragUpdate: items.length > 1
+                      ? (details) => _dragDistance += details.primaryDelta ?? 0
+                      : null,
+                  onHorizontalDragEnd: items.length > 1
+                      ? (details) => _handleHorizontalDragEnd(
+                          details: details,
+                          itemCount: items.length,
+                        )
+                      : null,
+                  onHorizontalDragCancel: items.length > 1
+                      ? () => _dragDistance = 0
+                      : null,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: _EventFocusCard(
+                      key: ValueKey(
+                        'event-focus-${selectedItem.kind.name}-'
+                        '${selectedItem.event.id}-'
+                        '${selectedItem.canSwipe}-${selectedItem.needsReview}',
+                      ),
+                      item: selectedItem,
+                      cardIndex: _selectedIndex,
+                      cardCount: items.length,
+                      checkInMutation: checkInMutation,
+                      onActionPressed: (action) =>
+                          _handleAction(context, ref, selectedItem, action),
                     ),
-                    item: selectedItem,
-                    cardIndex: _selectedIndex,
-                    cardCount: items.length,
-                    checkInMutation: checkInMutation,
-                    onActionPressed: (action) =>
-                        _handleAction(context, ref, selectedItem, action),
                   ),
                 ),
               ),

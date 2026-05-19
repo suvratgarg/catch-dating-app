@@ -13,7 +13,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_membership_contr
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
@@ -33,6 +32,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -453,14 +453,15 @@ void main() {
       expect(fakeRepository.leftClubId, 'club-leave');
     });
 
-    testWidgets('HostStatsBar and StatsStrip show computed values', (
+    testWidgets('HostClubManagementPanel and StatsStrip show computed values', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
         Column(
           children: [
-            HostStatsBar(
+            HostClubManagementPanel(
+              club: buildClub(name: 'Host Club'),
               events: [
                 buildEvent(
                   priceInPaise: 1500,
@@ -469,6 +470,8 @@ void main() {
                 ),
                 buildEvent(priceInPaise: 0, bookedCount: 1),
               ],
+              onEditClub: () {},
+              onCreateEvent: () {},
             ),
             StatsStrip(
               club: buildClub(memberCount: 24, rating: 4.7),
@@ -731,6 +734,68 @@ void main() {
       await _pumpClubUi(tester);
 
       expect(find.text('Create club-host'), findsOneWidget);
+    });
+
+    testWidgets('ClubDetailBody shows host identity and opens host profile', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-host-profile',
+        area: 'Bandra',
+        hostUserId: 'host-42',
+        hostName: 'Asha Shah',
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => Scaffold(
+              body: ClubDetailBody(
+                club: club,
+                upcoming: const [],
+                reviews: const [],
+                userProfile: buildUser(uid: 'runner-1'),
+                uid: 'runner-1',
+                isHost: false,
+                isMember: false,
+                isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
+                isAuthenticated: true,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/profiles/:uid',
+            name: Routes.publicProfileScreen.name,
+            builder: (_, state) => Text(
+              'Profile ${state.pathParameters['uid']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.text('HOST'), findsOneWidget);
+      expect(find.text('Asha Shah'), findsOneWidget);
+      expect(find.text('Club host'), findsOneWidget);
+      expect(find.text('Hosts events in Bandra'), findsOneWidget);
+
+      await tester.tap(find.text('Asha Shah'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Profile host-42'), findsOneWidget);
     });
 
     testWidgets(

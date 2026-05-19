@@ -12,7 +12,6 @@ import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -27,7 +26,6 @@ class EventDetailCta extends ConsumerWidget {
     required this.event,
     required this.userProfile,
     required this.clubId,
-    required this.isHost,
     required this.participation,
     this.inviteCode,
     this.now,
@@ -36,7 +34,6 @@ class EventDetailCta extends ConsumerWidget {
   final Event event;
   final UserProfile userProfile;
   final String clubId;
-  final bool isHost;
   final EventParticipation? participation;
   final String? inviteCode;
   final DateTime? now;
@@ -44,26 +41,6 @@ class EventDetailCta extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final referenceNow = now ?? DateTime.now();
-
-    if (isHost) {
-      return HostEventBottomActions(
-        item: HostEventToolItem(
-          event: event,
-          attendanceState: _hostAttendanceStateForEvent(
-            event: event,
-            now: referenceNow,
-          ),
-        ),
-        onManageEvent: (event) => context.pushNamed(
-          Routes.hostEventManageScreen.name,
-          pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-        ),
-        onTakeAttendance: (event) => context.pushNamed(
-          Routes.attendanceSheet.name,
-          pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-        ),
-      );
-    }
 
     final eligibility = _eligibilityForParticipation(
       event: event,
@@ -240,19 +217,6 @@ class EventDetailCta extends ConsumerWidget {
       ],
     );
   }
-}
-
-HostEventAttendanceState _hostAttendanceStateForEvent({
-  required Event event,
-  required DateTime now,
-}) {
-  if (isHostAttendanceOpen(event: event, now: now)) {
-    return HostEventAttendanceState.open;
-  }
-  if (now.isBefore(hostAttendanceWindowStartsAt(event))) {
-    return HostEventAttendanceState.opensLater;
-  }
-  return HostEventAttendanceState.closed;
 }
 
 EventEligibility _eligibilityForParticipation({

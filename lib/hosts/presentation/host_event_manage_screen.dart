@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -27,7 +29,8 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -35,24 +38,33 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+enum HostEventManageSection { overview, attendance, eventSuccess }
+
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
     super.key,
     required this.clubId,
     required this.eventId,
+    this.initialEvent,
+    this.initialSection = HostEventManageSection.overview,
   });
 
   final String clubId;
   final String eventId;
+  final Event? initialEvent;
+  final HostEventManageSection initialSection;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     final clubAsync = ref.watch(fetchClubProvider(clubId));
     final eventAsync = ref.watch(watchEventProvider(eventId));
+    final event = eventAsync.asData?.value ?? initialEvent;
 
     final loading =
-        uidAsync.isLoading || clubAsync.isLoading || eventAsync.isLoading;
+        uidAsync.isLoading ||
+        clubAsync.isLoading ||
+        (eventAsync.isLoading && event == null);
     if (loading) {
       return Scaffold(
         backgroundColor: CatchTokens.of(context).bg,
@@ -74,7 +86,6 @@ class HostEventManageRouteScreen extends ConsumerWidget {
 
     final uid = uidAsync.asData?.value;
     final club = clubAsync.asData?.value;
-    final event = eventAsync.asData?.value;
     if (club == null || event == null) {
       return const CatchErrorScaffold(
         title: 'Event not found',
@@ -94,25 +105,47 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       club: club,
       event: event,
       onBackToSuccess: () => Navigator.of(context).maybePop(),
+      initialSection: initialSection,
     );
   }
 }
 
-class HostEventManageScreen extends ConsumerWidget {
+class HostEventManageScreen extends ConsumerStatefulWidget {
   const HostEventManageScreen({
     super.key,
     required this.club,
     required this.event,
     required this.onBackToSuccess,
+    this.initialSection = HostEventManageSection.overview,
   });
 
   final Club club;
   final Event event;
   final VoidCallback onBackToSuccess;
+  final HostEventManageSection initialSection;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HostEventManageScreen> createState() =>
+      _HostEventManageScreenState();
+}
+
+class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
+  late HostEventManageSection _selectedSection = widget.initialSection;
+
+  @override
+  void didUpdateWidget(covariant HostEventManageScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialSection != widget.initialSection) {
+      _selectedSection = widget.initialSection;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final club = widget.club;
+    final event = widget.event;
+    final onBackToSuccess = widget.onBackToSuccess;
     final rosterAsync = ref.watch(
       watchEventParticipationRosterProvider(event.id),
     );
@@ -126,7 +159,7 @@ class HostEventManageScreen extends ConsumerWidget {
       roster?.waitlistedCount ?? 0,
       event.waitlistCount,
     );
-    final baseRevenueEstimate = bookedCount * event.priceInPaise;
+    final baseRevenueEstimate = bookedCount * widget.event.priceInPaise;
     final usesDemandPricing = event.effectiveEventPolicy.usesDemandPricing;
     final hasKnownActivity =
         bookedCount > 0 || checkedInCount > 0 || waitlistCount > 0;
@@ -231,53 +264,132 @@ class HostEventManageScreen extends ConsumerWidget {
               ),
             ],
             gapH20,
-            _HostEventSummaryCard(club: club, event: event),
-            if (event.effectiveEventPolicy.usesInviteOnly) ...[
-              gapH20,
-              _HostPrivateAccessCard(club: club, event: event),
-            ],
+            _HostManageSectionPicker(
+              selectedSection: _selectedSection,
+              onChanged: (section) =>
+                  setState(() => _selectedSection = section),
+            ),
             gapH20,
-            _HostEventActionsCard(
+            ..._selectedSectionChildren(
+              club: club,
               event: event,
+              rosterAsync: rosterAsync,
+              bookedCount: bookedCount,
+              waitlistCount: waitlistCount,
               hasKnownActivity: hasKnownActivity,
               onDeleted: onBackToSuccess,
-            ),
-            gapH20,
-            _HostEventSuccessCard(club: club, event: event),
-            gapH20,
-            _HostRosterHeader(
-              icon: Icons.groups_2_outlined,
-              title: 'Roster',
-              count: bookedCount,
-            ),
-            gapH10,
-            _HostEventRosterSection(
-              rosterAsync: rosterAsync,
-              eventId: event.id,
-              selector: (roster) => roster.bookedIds,
-              emptyText: 'No bookings yet.',
-              loadingText: 'Loading bookings...',
-              trailingLabel: event.isFree ? 'FREE' : 'PAID',
-            ),
-            gapH20,
-            _HostRosterHeader(
-              icon: Icons.pending_actions_outlined,
-              title: 'Waitlist',
-              count: waitlistCount,
-            ),
-            gapH10,
-            _HostEventRosterSection(
-              rosterAsync: rosterAsync,
-              eventId: event.id,
-              selector: (roster) => roster.waitlistedIds,
-              emptyText: 'No one is waiting.',
-              loadingText: 'Loading waitlist...',
-              trailingLabel: 'WAITLIST',
             ),
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _selectedSectionChildren({
+    required Club club,
+    required Event event,
+    required AsyncValue<EventParticipationRoster> rosterAsync,
+    required int bookedCount,
+    required int waitlistCount,
+    required bool hasKnownActivity,
+    required VoidCallback onDeleted,
+  }) {
+    return switch (_selectedSection) {
+      HostEventManageSection.overview => [
+        _HostEventSummaryCard(club: club, event: event),
+        if (event.effectiveEventPolicy.usesInviteOnly) ...[
+          gapH20,
+          _HostPrivateAccessCard(club: club, event: event),
+        ],
+        gapH20,
+        _HostEventActionsCard(
+          event: event,
+          hasKnownActivity: hasKnownActivity,
+          onDeleted: onDeleted,
+        ),
+        gapH20,
+        _HostRosterHeader(
+          icon: Icons.groups_2_outlined,
+          title: 'Roster',
+          count: bookedCount,
+        ),
+        gapH10,
+        _HostEventRosterSection(
+          rosterAsync: rosterAsync,
+          eventId: event.id,
+          selector: (roster) => roster.bookedIds,
+          emptyText: 'No bookings yet.',
+          loadingText: 'Loading bookings...',
+          trailingLabel: event.isFree ? 'FREE' : 'PAID',
+        ),
+        gapH20,
+        _HostRosterHeader(
+          icon: Icons.pending_actions_outlined,
+          title: 'Waitlist',
+          count: waitlistCount,
+        ),
+        gapH10,
+        _HostEventRosterSection(
+          rosterAsync: rosterAsync,
+          eventId: event.id,
+          selector: (roster) => roster.waitlistedIds,
+          emptyText: 'No one is waiting.',
+          loadingText: 'Loading waitlist...',
+          trailingLabel: 'WAITLIST',
+        ),
+      ],
+      HostEventManageSection.attendance => [
+        HostEventAttendancePanel(eventId: event.id),
+      ],
+      HostEventManageSection.eventSuccess => [
+        EventSuccessHostSection(event: event),
+      ],
+    };
+  }
+}
+
+class _HostManageSectionPicker extends StatelessWidget {
+  const _HostManageSectionPicker({
+    required this.selectedSection,
+    required this.onChanged,
+  });
+
+  final HostEventManageSection selectedSection;
+  final ValueChanged<HostEventManageSection> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        for (final section in HostEventManageSection.values)
+          CatchChip(
+            label: section.label,
+            active: selectedSection == section,
+            icon: Icon(section.icon),
+            onTap: () => onChanged(section),
+          ),
+      ],
+    );
+  }
+}
+
+extension on HostEventManageSection {
+  String get label {
+    return switch (this) {
+      HostEventManageSection.overview => 'Overview',
+      HostEventManageSection.attendance => 'Attendance',
+      HostEventManageSection.eventSuccess => 'Event success',
+    };
+  }
+
+  IconData get icon {
+    return switch (this) {
+      HostEventManageSection.overview => Icons.dashboard_customize_outlined,
+      HostEventManageSection.attendance => Icons.checklist_rounded,
+      HostEventManageSection.eventSuccess => Icons.auto_graph_rounded,
+    };
   }
 }
 
@@ -289,18 +401,22 @@ class _HostPrivateAccessCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
     final accessAsync = ref.watch(watchEventPrivateAccessProvider(event.id));
     return accessAsync.when(
-      loading: () => const _PrivateAccessShell(
+      loading: () => _PrivateAccessShell(
         child: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CatchLoadingIndicator(strokeWidth: 2),
             ),
             gapW12,
-            Text('Loading invite access...'),
+            Text(
+              'Loading invite access...',
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
           ],
         ),
       ),
@@ -444,65 +560,6 @@ class _PrivateAccessBody extends ConsumerWidget {
   }
 }
 
-class _HostEventSuccessCard extends StatelessWidget {
-  const _HostEventSuccessCard({required this.club, required this.event});
-
-  final Club club;
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      borderColor: t.line,
-      radius: CatchRadius.lg,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.auto_graph_rounded, color: t.primary),
-              gapW10,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Event success',
-                      style: CatchTextStyles.titleM(context),
-                    ),
-                    gapH4,
-                    Text(
-                      'Set up the live host flow, attendee companion, private follow-up, and post-event report.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
-                    ),
-                  ],
-                ),
-              ),
-              const CatchBadge(label: 'Live', tone: CatchBadgeTone.success),
-            ],
-          ),
-          gapH14,
-          CatchButton(
-            label: 'Open event success',
-            onPressed: () => context.pushNamed(
-              Routes.eventSuccessHostScreen.name,
-              pathParameters: {'clubId': club.id, 'eventId': event.id},
-              extra: event,
-            ),
-            variant: CatchButtonVariant.secondary,
-            icon: const Icon(Icons.visibility_outlined),
-            fullWidth: true,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _HostEventActionsCard extends ConsumerWidget {
   const _HostEventActionsCard({
     required this.event,
@@ -553,7 +610,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                     Text(
                       event.isCancelled
                           ? 'This event has already been cancelled.'
-                          : 'Cancel events that have activity. Delete only unused drafts or accidental events.',
+                          : 'Edit operational details here. Cancel events that have activity; delete only unused drafts or accidental events.',
                       style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
@@ -574,6 +631,24 @@ class _HostEventActionsCard extends ConsumerWidget {
             ),
           ],
           gapH14,
+          if (!event.isCancelled)
+            CatchButton(
+              label: 'Edit event details',
+              onPressed: isMutating
+                  ? null
+                  : () => context.pushNamed(
+                      Routes.editHostedEventScreen.name,
+                      pathParameters: {
+                        'clubId': event.clubId,
+                        'eventId': event.id,
+                      },
+                      extra: event,
+                    ),
+              variant: CatchButtonVariant.secondary,
+              icon: const Icon(Icons.edit_outlined),
+              fullWidth: true,
+            ),
+          if (!event.isCancelled) gapH10,
           if (!event.isCancelled)
             CatchButton(
               label: 'Cancel event',

@@ -72,7 +72,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             ],
           ),
           const SizedBox(height: CatchSpacing.s4),
-          _PlanSummary(draft: _draft),
+          _PlaybookSummaryCard(draft: _draft),
           const SizedBox(height: CatchSpacing.s4),
           Text('Modules', style: CatchTextStyles.titleS(context)),
           const SizedBox(height: CatchSpacing.s2),
@@ -227,7 +227,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          _PromptCard(prompt: resolvedState.prompt),
+          EventSuccessPromptCard(prompt: resolvedState.prompt),
           const SizedBox(height: CatchSpacing.s4),
           Text('Private follow-up', style: CatchTextStyles.titleS(context)),
           const SizedBox(height: CatchSpacing.s2),
@@ -271,19 +271,19 @@ class EventSuccessPostEventReport extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Check-in',
                 value: resolvedBrief.scorecard.checkInRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Intro coverage',
                 value: resolvedBrief.scorecard.introCoverageRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Private crush',
                 value: resolvedBrief.scorecard.privateCrushRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Chat start',
                 value: resolvedBrief.scorecard.chatStartRate,
               ),
@@ -291,7 +291,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s4),
           for (final recommendation in resolvedBrief.recommendations.take(4))
-            _RecommendationBlock(recommendation: recommendation),
+            EventSuccessRecommendationTile(recommendation: recommendation),
         ],
       ),
     );
@@ -337,8 +337,8 @@ class _BlockHeader extends StatelessWidget {
   }
 }
 
-class _PlanSummary extends StatelessWidget {
-  const _PlanSummary({required this.draft});
+class _PlaybookSummaryCard extends StatelessWidget {
+  const _PlaybookSummaryCard({required this.draft});
 
   final EventSuccessHostDraft draft;
 
@@ -572,10 +572,15 @@ class _LiveStepRow extends StatelessWidget {
   }
 }
 
-class _PromptCard extends StatelessWidget {
-  const _PromptCard({required this.prompt});
+class EventSuccessPromptCard extends StatelessWidget {
+  const EventSuccessPromptCard({
+    super.key,
+    required this.prompt,
+    this.title = 'Social mission',
+  });
 
   final String prompt;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -594,7 +599,7 @@ class _PromptCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Social mission', style: CatchTextStyles.titleS(context)),
+                Text(title, style: CatchTextStyles.titleS(context)),
                 const SizedBox(height: CatchSpacing.s1),
                 Text(prompt, style: CatchTextStyles.bodyS(context)),
               ],
@@ -649,10 +654,15 @@ class _CrushCandidateRow extends StatelessWidget {
   }
 }
 
-class _RecommendationBlock extends StatelessWidget {
-  const _RecommendationBlock({required this.recommendation});
+class EventSuccessRecommendationTile extends StatelessWidget {
+  const EventSuccessRecommendationTile({
+    super.key,
+    required this.recommendation,
+    this.icon = Icons.tips_and_updates_outlined,
+  });
 
   final EventSuccessRecommendation recommendation;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -667,7 +677,7 @@ class _RecommendationBlock extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.tips_and_updates_outlined, color: t.primary),
+            Icon(icon, color: t.primary),
             const SizedBox(width: CatchSpacing.s3),
             Expanded(
               child: Column(
@@ -692,8 +702,12 @@ class _RecommendationBlock extends StatelessWidget {
   }
 }
 
-class _MetricPill extends StatelessWidget {
-  const _MetricPill({required this.label, required this.value});
+class EventSuccessMetricPill extends StatelessWidget {
+  const EventSuccessMetricPill({
+    super.key,
+    required this.label,
+    required this.value,
+  });
 
   final String label;
   final double value;
@@ -712,6 +726,39 @@ class _MetricPill extends StatelessWidget {
       child: Text(
         '$label ${(value * 100).round()}%',
         style: CatchTextStyles.labelL(context),
+      ),
+    );
+  }
+}
+
+class EventSuccessDarkPill extends StatelessWidget {
+  const EventSuccessDarkPill({
+    super.key,
+    required this.label,
+    this.foregroundColor,
+  });
+
+  final String label;
+  final Color? foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = foregroundColor ?? Colors.white;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.s2,
+        ),
+        child: Text(
+          label,
+          style: CatchTextStyles.labelL(context, color: color),
+        ),
       ),
     );
   }

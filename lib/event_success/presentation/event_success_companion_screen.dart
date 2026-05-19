@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -222,7 +223,10 @@ class _EventSuccessCompanionScreenState
             checkInOpen: checkInOpen,
           ),
           gapH16,
-          _PromptCard(prompt: plan.attendeePromptFor(event)),
+          EventSuccessPromptCard(
+            title: 'Social prompt',
+            prompt: plan.attendeePromptFor(event),
+          ),
           if (checkInOpen) ...[gapH16, _SelfCheckInCard(event: event)],
           if (attended && eventEnded && plan.privateCrushEnabled) ...[
             gapH16,
@@ -290,41 +294,6 @@ class _CompanionHero extends StatelessWidget {
             style: CatchTextStyles.bodyS(
               context,
               color: t.surface.withValues(alpha: 0.72),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PromptCard extends StatelessWidget {
-  const _PromptCard({required this.prompt});
-
-  final String prompt;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.chat_bubble_outline_rounded, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Social prompt', style: CatchTextStyles.titleM(context)),
-                gapH4,
-                Text(
-                  prompt,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-              ],
             ),
           ),
         ],

@@ -8,11 +8,13 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.d
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -67,8 +69,9 @@ class ClubDetailBody extends StatelessWidget {
           sliver: SliverList.list(
             children: [
               if (isHost) ...[
-                HostClubToolsPanel(
+                HostClubManagementPanel(
                   club: club,
+                  events: upcoming,
                   onEditClub: () => context.pushNamed(
                     Routes.editClubScreen.name,
                     pathParameters: {'clubId': club.id},
@@ -84,6 +87,10 @@ class ClubDetailBody extends StatelessWidget {
               ],
               StatsStrip(club: club, upcomingCount: upcoming.length),
               const SizedBox(height: 16),
+              if (!isHost) ...[
+                _ClubHostSection(club: club, canViewProfile: isAuthenticated),
+                const SizedBox(height: 16),
+              ],
               Text(
                 club.description,
                 style: CatchTextStyles.bodyM(context, color: t.ink2),
@@ -93,10 +100,6 @@ class ClubDetailBody extends StatelessWidget {
                   club.phoneNumber != null ||
                   club.email != null) ...[
                 _ClubContactSection(club: club),
-                const SizedBox(height: 20),
-              ],
-              if (isHost) ...[
-                HostStatsStrip(events: upcoming),
                 const SizedBox(height: 20),
               ],
               if (showMembershipControls)
@@ -142,6 +145,91 @@ class ClubDetailBody extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _ClubHostSection extends StatelessWidget {
+  const _ClubHostSection({required this.club, required this.canViewProfile});
+
+  final Club club;
+  final bool canViewProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    void openProfile() {
+      context.pushNamed(
+        Routes.publicProfileScreen.name,
+        pathParameters: {'uid': club.hostUserId},
+      );
+    }
+
+    return Semantics(
+      button: canViewProfile,
+      label: canViewProfile ? 'View ${club.hostName} profile' : null,
+      child: CatchSurface(
+        borderColor: t.line,
+        padding: const EdgeInsets.all(14),
+        onTap: canViewProfile ? openProfile : null,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SectionHeader(title: 'HOST', heavy: true),
+            Row(
+              children: [
+                PersonAvatar(
+                  size: 54,
+                  name: club.hostName,
+                  imageUrl: club.hostAvatarUrl,
+                  borderWidth: 2,
+                  borderColor: t.primarySoft,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        club.hostName,
+                        style: CatchTextStyles.titleM(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          CatchBadge(
+                            label: 'Club host',
+                            tone: CatchBadgeTone.brand,
+                            icon: Icons.groups_outlined,
+                          ),
+                          Text(
+                            'Hosts events in ${club.area}',
+                            style: CatchTextStyles.bodyS(
+                              context,
+                              color: t.ink2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                if (canViewProfile) ...[
+                  const SizedBox(width: 8),
+                  Icon(Icons.chevron_right_rounded, size: 24, color: t.ink3),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

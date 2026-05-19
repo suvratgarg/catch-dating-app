@@ -197,10 +197,22 @@ class _EventPreviewHero extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              _DarkPill(label: '${event.capacityLimit} target'),
-              _DarkPill(label: '${preview.livePlan.bookedCount} booked'),
-              _DarkPill(label: '${preview.livePlan.checkedInCount} checked in'),
-              _DarkPill(label: event.pace.label),
+              EventSuccessDarkPill(
+                label: '${event.capacityLimit} target',
+                foregroundColor: t.accentInk,
+              ),
+              EventSuccessDarkPill(
+                label: '${preview.livePlan.bookedCount} booked',
+                foregroundColor: t.accentInk,
+              ),
+              EventSuccessDarkPill(
+                label: '${preview.livePlan.checkedInCount} checked in',
+                foregroundColor: t.accentInk,
+              ),
+              EventSuccessDarkPill(
+                label: event.pace.label,
+                foregroundColor: t.accentInk,
+              ),
             ],
           ),
         ],
@@ -254,34 +266,6 @@ class _IntegrationNotesCard extends StatelessWidget {
             if (note != notes.last) gapH8,
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _DarkPill extends StatelessWidget {
-  const _DarkPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s2,
-        ),
-        child: Text(
-          label,
-          style: CatchTextStyles.labelM(context, color: t.accentInk),
-        ),
       ),
     );
   }
