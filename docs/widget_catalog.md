@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.78
-updated: 2026-05-18
+version: 2.5.82
+updated: 2026-05-19
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,53 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.82
+
+- Host Manage moved fully into the `hosts` feature at
+  `lib/hosts/presentation/host_event_manage_screen.dart`; the canonical route is
+  now `/clubs/:clubId/events/:eventId/manage`, with the old dashboard-shaped
+  path kept as an alias.
+- Added `EditHostedEventScreen` at `/clubs/:clubId/events/:eventId/edit` for
+  backend-supported operational edits. Schedule edits lock once an event has
+  started or has booking, waitlist, or attendance activity.
+- Removed the standalone `AttendanceSheetScreen`, `EventSuccessHostScreen`,
+  `HostClubToolsPanel`, and `HostStatsStrip` wrappers. Screens now import the
+  host widgets they use directly.
+- Host attendance-window state now lives in
+  `lib/hosts/domain/host_attendance_window.dart`, and Dashboard host tools split
+  active and past hosted events into a segmented Host operations rail.
+
+### 2.5.81
+
+- `HostEventManageScreen` is now the canonical per-event host workspace with
+  Overview, Attendance, and Event success sections. The old event-success and
+  attendance route paths remain as aliases that open Host Manage with the
+  relevant section selected.
+- Club detail now renders a single `HostClubManagementPanel` that combines
+  Add event, Edit club, and upcoming booked/waitlist/revenue stats. The old
+  `HostStatsBar` compatibility wrapper was removed.
+- `CreateEventScreen` no longer embeds Host Manage after the celebration; its
+  Manage event action routes to the canonical Host Manage route.
+- Event-success lab/preview/companion surfaces share reusable prompt, dark-pill,
+  metric-pill, and recommendation-tile widgets from
+  `event_success_feature_blocks.dart`.
+
+### 2.5.80
+
+- Event detail no longer renders a host-only sticky bottom footer. Host
+  operations stay on Dashboard and Host Manage so the detail page does not have
+  two competing host-tool sections.
+- Dashboard host tools now retain non-cancelled past hosted events after
+  attendance closes, with open attendance first, upcoming events next, and
+  recently closed past events last.
+
+### 2.5.79
+
+- Shared host tooling now lives under the feature-owned
+  `lib/hosts/presentation/widgets` folder instead of the standalone
+  `lib/host_tools/presentation` utility module. Existing host surfaces import
+  the widgets directly from that feature folder.
 
 ### 2.5.78
 
@@ -94,15 +141,11 @@ feature section here only when auditing that feature's widget surface.
 
 ### 2.5.71
 
-- Host tooling now has shared primitives under `lib/host_tools/presentation`:
-  `HostEventToolsCarousel`, `HostEventToolCard`, `HostEventBottomActions`,
-  `HostClubToolsPanel`, `HostStatsStrip`, `HostStatChip`, and
-  `HostToolPalette`.
+- Host tooling now has shared primitives under `lib/hosts/presentation/widgets`:
+  `HostEventToolsCarousel`, `HostEventToolCard`, `HostClubManagementPanel`,
+  `HostEventAttendancePanel`, `HostStatChip`, and `HostToolPalette`.
 - Dashboard host tools use full-width snapping cards with stacked Manage /
   Attendance actions instead of a clipped horizontal partial-card rail.
-- Event detail now renders host-only bottom actions for hosted events. Hosts see
-  Manage and attendance availability instead of an empty footer or participant
-  booking CTA.
 - Club host tools and attendance headers share the host palette, and hosted
   club schedule rows use the `HOSTED` event-tile state.
 
@@ -191,9 +234,9 @@ feature section here only when auditing that feature's widget surface.
 
 ### 2.5.61
 
-- Hosts can reopen `HostEventManageScreen` from the Dashboard through a
-  horizontally scrollable `HostEventsManageRail` that lists all future hosted events
-  instead of relying on the post-create success screen.
+- Hosts can reopen `HostEventManageScreen` from the Dashboard through
+  `HostToolsRail`; active and past hosted events remain reachable instead of
+  relying on the post-create success screen.
 - Host manage summary rows reserve a right-aligned value lane, and roster /
   waitlist empty states use compact title/icon styling instead of oversized
   display empty states.
@@ -653,9 +696,9 @@ feature section here only when auditing that feature's widget surface.
 
 ### 2.5.18
 
-- Host attendance now uses `AttendanceSheetViewModel` to combine the run stream
-  with `runParticipations` and derive roster/check-in state from participation
-  statuses instead of `runs.signedUpUserIds` or `runs.attendedUserIds`.
+- Host attendance now uses `AttendanceSheetViewModel` to combine the event
+  stream with `eventParticipations` and derive roster/check-in state from
+  participation statuses instead of legacy event participant arrays.
 
 ### 2.5.17
 
@@ -864,7 +907,7 @@ feature section here only when auditing that feature's widget surface.
 - Home/Dashboard now owns run-arrival actions. Participant `Check in` and host
   `Take Attendance` render as the first dashboard content card when their time
   windows are active.
-- Run detail bottom CTAs keep booking lifecycle actions only; arrival actions
+- Event detail bottom CTAs keep booking lifecycle actions only; arrival actions
   have moved to Home.
 
 ### 2.3.0
@@ -1244,7 +1287,7 @@ Generated 2026-05-06.
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:21` | Home tab. Watches the user's profile, active club memberships, signed-up events, and Home unread notification count only while Home is active. Renders one `CustomScrollView` with a scroll-away greeting/empty header, top-right Notifications bell, red unread badge, and dashboard sliver body; it no longer owns a route-local tab controller or Dashboard/Activity tab row. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
 | `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:80` | Sliver body for the populated Home dashboard: consolidated attendee `EventFocusRail`, consolidated host tools carousel, `StrideCard`, `QuickActions`, and recommended events. It joins club names for committed events through `clubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
-| `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:170` | Dashboard adapter for shared `HostEventToolsCarousel`. Converts `DashboardHostEventTool` availability into host-tool items and owns only route navigation for Manage and Attendance. |
+| `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:173` | Dashboard adapter for shared `HostEventToolsCarousel`. Splits hosted events into Active and Past operation buckets, converts `DashboardHostEventTool` availability into host-tool items, and owns only route navigation for Manage and Attendance. |
 | `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:28` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping event cards for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:18` | Route-level Notifications screen opened from the Home header bell. Uses `CatchTopBar(title: 'Notifications')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and automatically delegates unread notification docs to `ActivityController.markAllRead` when the screen opens. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:43` | Reusable timeline-style activity feed for backend-owned match, message, club-update, event-signup, waitlist-promotion, event-update, event-cancellation, and event-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
@@ -1284,18 +1327,22 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostEventToolsCarousel` | `lib/host_tools/presentation/host_event_tools.dart:23` | Shared full-width host-event carousel for unbounded hosted events. Uses swipe snapping, a bounded page indicator, and stacked actions so long labels such as "Attendance opens later" do not clip. |
+| `HostEventToolsCarousel` | `lib/hosts/presentation/widgets/host_event_tools.dart:23` | Shared full-width host-event carousel for unbounded hosted events, including closed past hosted events retained for host operations. Uses swipe snapping, a bounded page indicator, and stacked actions so long labels such as "Attendance opens later" do not clip. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostEventToolCard` | `lib/host_tools/presentation/host_event_tools.dart:208` | Shared operational card for one hosted event. Shows host/attendance badges, date/time, meet point, booked/waitlist counts, and Manage/Attendance actions using the host palette. |
-| `HostEventBottomActions` | `lib/host_tools/presentation/host_event_tools.dart:328` | Sticky host action footer used by event detail. Shows host/attendance badges and the same Manage/Attendance action stack as host-event cards. |
-| `HostToolPalette` | `lib/host_tools/presentation/host_event_tools.dart:508` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
-| `HostClubToolsPanel` | `lib/host_tools/presentation/host_club_tools.dart:13` | Club-level host panel for Edit club and Add event. Used from club detail and kept separate from per-event operational cards. |
-| `HostStatsStrip` | `lib/host_tools/presentation/host_club_tools.dart:108` | Shared booked/waitlist/base-revenue stats strip for host surfaces that aggregate upcoming hosted events. |
-| `HostStatChip` | `lib/host_tools/presentation/host_club_tools.dart:189` | Single reusable host stat chip used by host aggregate strips and host event management stats. |
+| `HostEventToolCard` | `lib/hosts/presentation/widgets/host_event_tools.dart:208` | Shared operational card for one hosted event. Shows host/attendance badges, date/time, meet point, booked/waitlist counts, and Manage/Attendance actions using the host palette. |
+| `HostToolPalette` | `lib/hosts/presentation/widgets/host_event_tools.dart:440` | Token-backed host-tool color helper for default host panels and attendance states. Use this instead of local orange-tinted containers for host chrome. |
+| `HostClubManagementPanel` | `lib/hosts/presentation/widgets/host_club_tools.dart:15` | Club-detail host management panel that combines Add event, Edit club, and upcoming booked/waitlist/base-revenue stats into one host section. |
+| `HostStatChip` | `lib/hosts/presentation/widgets/host_club_tools.dart:161` | Single reusable host stat chip used by the consolidated club host management panel and host event management stats. |
+
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `HostEventAttendancePanel` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:19` | Shared host attendance panel. Watches `AttendanceSheetViewModel`, renders loading/error/empty states, profile-backed attendee rows, and attendance toggle mutations for Host Manage and the attendance route alias. |
 
 ---
 
@@ -1570,7 +1617,6 @@ Generated 2026-05-06.
 | `ClubScheduleSection` | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart:9` | Sliver-native agenda section for a club's upcoming events. Reuses `EventAgendaSliverList`, shows empty state when no upcoming events exist, routes selected events to detail, and marks host-owned schedules with the `HOSTED` event-tile status. |
 | `_ClubContactSection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:148` | Contact info section: Instagram, website, WhatsApp, email rows. |
 | `_ContactRow` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:201` | Single contact row: icon, label, and value. |
-| `HostStatsBar` | `lib/clubs/presentation/detail/widgets/host_stats_bar.dart:5` | Compatibility wrapper around shared `HostStatsStrip` for upcoming club-event booked, waitlist, and base revenue totals. Prefer `HostStatsStrip` for new host surfaces. |
 | `StatsStrip` | `lib/clubs/presentation/detail/widgets/stats_strip.dart:6` | Horizontal strip of stats: events hosted, members, location, shown on club cards. |
 | `ClubCoverFallback` | `lib/clubs/presentation/shared/club_cover_fallback.dart:7` | Gradient + chip fallback shown when a club has no cover photo. |
 | `_CoverChip` | `lib/clubs/presentation/shared/club_cover_fallback.dart:98` | Small distance/location chip overlaid on the cover fallback. |
@@ -1588,20 +1634,22 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateEventScreen` | `lib/events/presentation/create_event_screen.dart:34` | Multi-step event creation flow for details, location, schedule, and event policy. Manages draft save/restore, local form controllers, activity-type defaults, event-policy configuration, and the create-event mutation. On success transitions to `CreateEventSuccessScreen` or `HostEventManageScreen`. |
+| `CreateEventScreen` | `lib/events/presentation/create_event_screen.dart:34` | Multi-step event creation flow for details, location, schedule, and event policy. Manages draft save/restore, local form controllers, activity-type defaults, event-policy configuration, and the create-event mutation. On success renders `CreateEventSuccessScreen`; Manage event routes to canonical Host Manage rather than embedding management in the create flow. |
+| `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, and description. Schedule edits lock once the event has started or has booking, waitlist, or attendance activity. |
 | `EventMapScreen` | `lib/events/presentation/event_map_screen.dart:18` | Chromeless map route wrapper. Watches `EventMapViewModel`, centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes full-screen `EventPinsMap`, floating `MapOverlayControls`, and `EventMapSheet`. |
+| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:113` | Canonical per-event host workspace. Shows shared host stat chips and switches between Overview, Attendance, and Event success sections so roster/waitlist/actions, attendance correction, limited event editing, and setup/live/report tools have one source of truth. |
 | `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostEventManageRouteScreen` | `lib/events/presentation/host_event_manage_screen.dart:38` | Route-facing host manage entry used from Dashboard. Loads the event and club by id, gates access to the club host, and delegates the loaded state to `HostEventManageScreen`. |
+| `EditHostedEventRouteScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:44` | Route-facing edit entry. Loads the host-owned club and event, rejects non-host viewers, and delegates to `EditHostedEventScreen` with optional route-provided event data. |
+| `HostEventManageRouteScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:43` | Route-facing host manage entry used from the canonical `/clubs/:clubId/events/:eventId/manage` route plus dashboard, attendance, and event-success aliases. Loads the event and club by id, gates access to the club host, and delegates the loaded state plus optional initial section to `HostEventManageScreen`. |
 | `EventDetailScreen` | `lib/events/presentation/event_detail_screen.dart:17` | Route-facing event detail entry. Fetches `EventDetailViewModel`, renders scaffolded loading/error/not-found states, and delegates the loaded screen to `EventDetailBody` without nesting scaffolds. |
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:20` | Route-facing single-event map entry. Reuses `EventDetailViewModel` by `eventId`, renders chromeless load/error/not-found states with floating back controls, and delegates mapped events to `EventLocationMapScreen`. |
-| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:31` | Scrollable event detail body. Composes the hero app bar, overview, saved/share/calendar actions, optional saved-plan companion entry, social section, and bottom CTA. Passes the viewer's `EventParticipation` edge to detail sections so current-viewer state is not inferred from aggregate counts. |
-| `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:24` | Bottom CTA bar for event detail. For hosts it renders shared host bottom actions; for attendees it owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff states from the current viewer's `EventParticipation` edge. |
-| `AttendanceSheetScreen` | `lib/events/presentation/attendance_sheet_screen.dart:23` | Host-facing attendance sheet. Watches `AttendanceSheetViewModel`, renders route-level loading/error/not-found states, and delegates attendance body composition with host-tool visual treatment. |
+| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:31` | Scrollable event detail body. Composes the hero app bar, overview, saved/share/calendar actions, optional saved-plan companion entry, social section, and a non-host bottom CTA. Passes the viewer's `EventParticipation` edge to detail sections so current-viewer state is not inferred from aggregate counts. |
+| `EventDetailCta` | `lib/events/presentation/widgets/event_detail_cta.dart:22` | Bottom CTA bar for non-host event detail viewers. Owns booking, cancellation, waitlist, eligibility, attended/past, free-booking celebration, and paid booking handoff states from the current viewer's `EventParticipation` edge. |
 | `AttendanceSheetViewModel` | `lib/events/presentation/attendance_sheet_view_model.dart:10` | Attendance data seam. Combines the event stream with `eventParticipations` and derives attendee IDs plus checked-in state from participation statuses. |
 | `WhoIsGoing` | `lib/events/presentation/widgets/who_is_going.dart:36` | Event detail social roster. Watches `EventParticipationRoster` for booked counts and renders shared blurred `EventHypeAvatarStack` thumbnails using `PublicProfile.primaryPhotoThumbnailUrl`. |
 | `EventPinsMap` | `lib/events/presentation/widgets/event_pins_map.dart:10` | Shared Flutter map canvas for event pins. Used by both `EventMapScreen` and `EventLocationMapScreen`; renders only events with exact coordinates and keeps map centering outside the pin widget. |
@@ -1615,7 +1663,6 @@ Generated 2026-05-06.
 | `EventCheckInCelebrationScreen` | `lib/events/presentation/event_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains an operational flow. |
 | `EventCheckInLocationService` | `lib/events/presentation/event_check_in_location_service.dart:16` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
 | `EventLocationMapScreen` | `lib/events/presentation/event_location_map_screen.dart:63` | Chromeless full-screen single-event map with one pinned exact starting point, floating back controls, and a bottom location summary. Reuses `EventPinsMap`; use only when `Event.hasExactStartingPoint` is true. |
-| `HostEventManageScreen` | `lib/events/presentation/host_event_manage_screen.dart:101` | Host event management screen. Shows shared host stat chips, base-estimate revenue copy for demand pricing, summary, private-access material, cancel/delete actions, event-success entry, profile-backed roster, and waitlist. |
 | `CreateEventStepHeader` | `lib/events/presentation/widgets/create_event_step_header.dart:4` | Header for the create-event wizard: back action, step title, club name, step count, and progress bar. |
 | `CreateEventFormKeys` | `lib/events/presentation/create_event_form_keys.dart:3` | Stable semantic keys for create-event form fields so widget tests target fields by purpose rather than layout order. |
 | `SavedEventsScreen` | `lib/events/presentation/saved_events_screen.dart:15` | Saved-events route. Streams the current user's saved event details, orders future saved events before past saved events, joins club names, and opens saved-event detail routes from shared agenda tiles. |
@@ -1631,6 +1678,32 @@ Generated 2026-05-06.
 | `EventMapSheet` | `lib/events/presentation/widgets/event_map_sheet.dart:12` | Overlay sheet for map events. Uses `CatchSurface`, renders horizontal `EventMapTile` items from relationship-aware `EventMapItem` data, and routes the highlighted event to detail from the top-level map surface. |
 | `EventPolicyStep` | `lib/events/presentation/widgets/event_policy_step.dart:44` | Create-event policy step for capacity, base price, admission preset, invite code, dynamic pricing, cancellation policy, and eligibility bounds. |
 | `StepperFooter` | `lib/events/presentation/widgets/stepper_footer.dart:5` | Create-event bottom action footer. Blends into the page background, renders draft as a ghost action, and gives the primary action a full-width lane so long labels scale within available width. |
+
+---
+
+## Event Success
+
+### StatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:97` | Reusable host event-success panel with Setup, Live, and Report sections. Host Manage embeds it directly without an inner scaffold or standalone host-screen wrapper. |
+| `_SetupTab` | `lib/event_success/presentation/event_success_host_screen.dart:247` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, module toggles, and setup save/ensure mutations. Freezes setup after event start. |
+
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:28` | Host Manage section loader for event-success plan, roster, and feedback data. Synthesizes a default plan for hosts until setup is saved, preserving attendee companion gating. |
+
+### StatelessWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `EventSuccessPromptCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:575` | Shared prompt card used by event-success preview and attendee companion surfaces. |
+| `EventSuccessMetricPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:702` | Shared percentage pill for event-success reports and lab/preview metrics. |
+| `EventSuccessRecommendationTile` | `lib/event_success/presentation/event_success_feature_blocks.dart:652` | Shared recommendation tile for post-event reports and the event-success lab coach sample. |
+| `EventSuccessDarkPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:729` | Shared dark hero pill for event-success lab and contextual preview heroes. |
 
 ---
 

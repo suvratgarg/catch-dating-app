@@ -50,7 +50,7 @@
     "docs/host_tooling_consolidation_tracker.md": {
       "purpose": "Temporary active tracker for remaining host-tooling product decisions after shared host surfaces were consolidated.",
       "read_when": [
-        "Planning Edit run UX",
+        "Planning Edit event UX",
         "Planning host-visible club archive or delete UX",
         "Auditing host manage, attendance, hosted schedule, or host palette behavior"
       ],

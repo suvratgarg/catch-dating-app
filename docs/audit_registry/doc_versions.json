@@ -113,8 +113,8 @@
   },
   "project_context": {
     "path": "PROJECT_CONTEXT.md",
-    "version": "2.1.3",
-    "updated": "2026-05-17",
+    "version": "2.1.4",
+    "updated": "2026-05-19",
     "status": "active",
     "read_policy": "Use as the high-level repo map; prefer audit registry and focused docs for pass-specific rules."
   },
@@ -141,17 +141,17 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.78",
-    "updated": "2026-05-18",
+    "version": "2.5.81",
+    "updated": "2026-05-19",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "host_tooling_consolidation_tracker": {
     "path": "docs/host_tooling_consolidation_tracker.md",
-    "version": "1.0.1",
-    "updated": "2026-05-17",
+    "version": "1.0.4",
+    "updated": "2026-05-19",
     "status": "active",
-    "read_policy": "Use while consolidating host tools, host palette, run management, attendance, and backend-ready host action exposure."
+    "read_policy": "Use while consolidating host tools, host palette, event management, attendance, and backend-ready host action exposure."
   },
   "public_profile_overhaul_tracker": {
     "path": "docs/public_profile_overhaul_tracker.md",
