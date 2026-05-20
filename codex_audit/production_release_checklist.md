@@ -144,8 +144,12 @@ Current evidence:
 - Apple Developer App IDs now exist for `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app`, with Push Notifications and App Attest enabled.
 - Xcode-managed development/Profile provisioning profiles now exist for all three iOS bundle IDs.
 - Final Play app-signing fingerprints remain pending until Play Console enrollment.
-- iOS App Store IPA export now passes for prod; TestFlight upload/install
-  validation is still pending.
+- iOS App Store IPA export now passes for prod locally and through GitHub
+  Actions. The latest proof run is `iOS TestFlight Release` run `26191839683`
+  on commit `228060a4`, with `upload_to_testflight=false`.
+- TestFlight upload/install/launch and iOS Maps behavior are verified through
+  the automatic nightly App Store Connect/Xcode Cloud build process as of
+  2026-05-21.
 
 Teaching notes:
 
@@ -203,7 +207,7 @@ Catch-specific tasks:
 - Attach environment, release version, build number, and platform. Done through Crashlytics custom keys when reporting is enabled.
 - Attach signed-in user id where privacy-safe. Not done yet; defer until analytics/privacy consent posture is decided.
 - Capture Flutter framework errors, platform dispatcher errors, provider async errors, and explicitly caught important domain failures. Framework/platform/provider unexpected errors are wired; expected `AppException`s are intentionally not reported.
-- Configure symbol/debug-file upload for Android and iOS release builds. Android Crashlytics Gradle plugin is configured; iOS dSYM/upload verification is still needed on an archive/TestFlight-style build.
+- Configure symbol/debug-file upload for Android and iOS release builds. Android Crashlytics Gradle plugin is configured; iOS has the Firebase Crashlytics upload-symbols build phase configured. Dashboard/symbolication proof is still needed from an archive/TestFlight-style smoke.
 - Add a non-production test crash path guarded from production users. Not done yet.
 
 Current evidence:
@@ -228,7 +232,7 @@ Verification:
 - `flutter build apk --dart-define=APP_ENV=dev` passed after Crashlytics package, Gradle plugin, and native collection metadata changes.
 - Trigger test exceptions in dev/staging. Not done yet.
 - Confirm issue appears in the selected dashboard with environment and app version. Not done yet.
-- Confirm Android and iOS release stack traces are symbolicated. Android Gradle plugin is present; dashboard verification is still needed. iOS simulator build now passes, but iOS archive/dSYM verification is still pending.
+- Confirm Android and iOS release stack traces are symbolicated. Android Gradle plugin and the iOS Crashlytics upload-symbols build phase are present; dashboard verification is still needed.
 
 ### 4. Analytics
 
@@ -529,7 +533,10 @@ Current evidence:
   `com.catchdates.app`, production APNs, production App Attest, and
   `get-task-allow=false`.
 - Physical-device profile runtime has been verified on the available iPhone in
-  this setup pass; broader TestFlight install validation is still pending.
+  this setup pass.
+- TestFlight install/launch is verified through the automatic nightly
+  App Store Connect/Xcode Cloud build process. iOS Maps behavior works on that
+  TestFlight build.
 
 Teaching notes:
 
@@ -539,7 +546,9 @@ Verification:
 
 - `flutter build ios --release --dart-define=APP_ENV=prod`
 - Xcode archive or CLI upload to App Store Connect.
-- TestFlight install on a clean device.
+- TestFlight install on a clean device. Done through nightly App Store
+  Connect/Xcode Cloud distribution; repeat when release signing, Maps secret
+  injection, or store distribution settings change.
 
 ### 12. Android Play Store Release
 
@@ -581,7 +590,7 @@ Verification:
 
 ### 13. Release Automation
 
-Status: `todo`
+Status: `in_progress`
 
 Why it matters: manual releases are slow and easy to misconfigure once signing, symbols, tests, and upload steps matter.
 
@@ -593,12 +602,12 @@ Decision to make:
 
 Catch-specific tasks:
 
-- Add CI workflow for format/analyze/tests.
-- Add build workflow for Android app bundle.
-- Add iOS build/archive workflow once signing credentials are settled.
-- Add crash symbol upload step if Sentry/Crashlytics requires it.
-- Store secrets outside the repo.
-- Document release commands and rollback steps.
+- Add CI workflow for format/analyze/tests. Done through the Flutter, Functions, Firestore rules, app-build-matrix, demo-ops, and release-readiness workflows.
+- Add build workflow for Android app bundle. Done through the app-build-matrix workflow.
+- Add iOS build/archive workflow once signing credentials are settled. Done through `iOS TestFlight Release`; run `26191839683` proved prod archive/export with TestFlight upload intentionally skipped.
+- Add crash symbol upload step if Sentry/Crashlytics requires it. Android Gradle plugin and iOS Crashlytics upload-symbols build phase are configured; dashboard proof remains pending.
+- Store secrets outside the repo. Done through GitHub environment secrets and Xcode Cloud environment secrets.
+- Document release commands and rollback steps. Mostly done in `docs/release_operations.md`; keep it current as store operations settle.
 
 Teaching notes:
 
@@ -606,8 +615,8 @@ Teaching notes:
 
 Verification:
 
-- Green CI on pull request.
-- Green manual release workflow on a protected branch or tag.
+- Green CI on pull request. Done for the release workflow-runtime updates.
+- Green manual release workflow on a protected branch or tag. Archive/export proof passed on `main` run `26191839683`; TestFlight upload/install proof is covered by the nightly App Store Connect/Xcode Cloud build.
 - Artifact generated and retained.
 
 ### 14. Code Push With Shorebird

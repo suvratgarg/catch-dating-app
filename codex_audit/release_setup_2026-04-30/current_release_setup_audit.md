@@ -200,7 +200,10 @@ Important cleanup / console work:
 - Recheck Android runtime on a real Android device before Play release. The emulator produced Google Play services `DEVELOPER_ERROR` / `Unknown calling package name 'com.google.android.gms'` noise and a Firestore offline timeout, while basic emulator DNS/IP connectivity was valid and the original rules denial was gone.
 - If macOS remains a supported runtime target, guard or replace phone auth there. Firebase Auth `verifyPhoneNumber()` is not available on macOS.
 - Play app-signing certificate fingerprints still need to be registered in Firebase after Play Console enrollment. The local upload-key SHA-1/SHA-256 are already registered for the currently verified upload AAB/APK.
-- TestFlight upload/install, Play internal testing, Crashlytics/Analytics dashboard proof, store privacy/legal forms, screenshots, and app-review metadata remain product/release-management work.
+- TestFlight upload/install and iOS Maps behavior are verified through the
+  automatic nightly App Store Connect/Xcode Cloud build process. Play internal
+  testing, Crashlytics/Analytics dashboard proof, store privacy/legal forms,
+  screenshots, and app-review metadata remain product/release-management work.
 
 Non-blocking warning noise:
 - Web build: Flutter wasm dry-run suggestion and Flutter web build-size hints.

@@ -78,10 +78,12 @@ these screen groups are not fully represented:
 
 1. Run live backend smoke tests for booking/payment/block/report/delete and
    run-club create/join/leave flows in dev/staging.
-2. Finish store-channel validation work: TestFlight upload/install, Play
-   Console enrollment/internal testing, and Play app-signing fingerprints in
-   Firebase. Local iOS export, Android upload AAB signing, and direct macOS
-   Developer ID distribution are setup-ready in the active release tracker.
+2. Finish remaining store-channel validation work: Play Console
+   enrollment/internal testing and Play app-signing fingerprints in Firebase.
+   TestFlight upload/install and iOS Maps behavior are verified through the
+   automatic nightly App Store Connect/Xcode Cloud build process. Local iOS
+   export, Android upload AAB signing, and direct macOS Developer ID
+   distribution are setup-ready in the active release tracker.
 3. Validate real phone OTP, photo upload, FCM token delivery, and push
    notification delivery on signed devices.
 4. Add a moderation/admin review workflow for `reports`.

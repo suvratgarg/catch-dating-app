@@ -1,6 +1,6 @@
 # Firebase Environment Current State
 
-Last verified: 2026-05-20
+Last verified: 2026-05-21
 
 This is the canonical handoff note for the current Firebase/App Check/Functions
 setup. Older audit files may describe earlier gaps that have since been closed.
@@ -54,9 +54,8 @@ so disabling `cloudbilling.googleapis.com` breaks GitHub OIDC deploy jobs even
 when the service account authentication itself succeeds.
 
 The latest automatic `Firebase Dev Deploy` run on `main`
-(`26166036085`, commit `436c353`) failed before deploying because the Cloud
-Billing API was disabled in dev. The required main checks for that commit
-passed. The billing API is now enabled, and the local wrapper now expands the
+(`26191578234`, commit `228060a4`) passed. The earlier Cloud Billing API
+blocker is resolved in dev/staging/prod, and the local wrapper expands the
 logical `functions` target to explicit `functions:<name>` targets so CI does
 not prompt to delete legacy live Functions.
 
@@ -132,17 +131,22 @@ Firebase Console. `./tool/flutter_with_env.sh` also forwards a local
 `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable as a Dart define so a
 registered token can be reused without committing it.
 
-The current branch's Functions, Firestore indexes, Firestore rules, and Storage
-rules were deployed to `dev` on 2026-05-20 after `./tool/check_data_contract.sh`
-passed. Staging and prod were not promoted in this pass; deploy them only from
-an approved release candidate.
+The release candidate commit `d61fb162` was promoted to staging and prod on
+2026-05-20 through GitHub Actions after release-readiness checks passed:
+
+- Staging deploy run `26183750439` deployed Functions, Firestore indexes,
+  Firestore rules, and Storage rules.
+- Prod deploy run `26184087586` deployed the same targets after the prod
+  environment approval gate.
+
+Later commits through `228060a4` were GitHub Actions workflow/runtime updates
+only. No additional Firebase staging/prod deploy is required for those commits.
 
 ## Functions
 
 Functions were checked through Cloud Functions on 2026-05-20. The current
-`functions/src/index.ts` export set was deployed explicitly to dev, including
-the co-host management and demo-ops callables. Staging and prod still need the
-same explicit Functions deploy when this branch is promoted.
+release-candidate `functions/src/index.ts` export set was deployed explicitly to
+dev, staging, and prod, including the co-host management and demo-ops callables.
 
 The legacy prod run/run-club functions remain deployed for backward
 compatibility. Do not delete them until old clients no longer need them and a
