@@ -48,6 +48,23 @@ three projects:
 - `roles/secretmanager.viewer`
 - `roles/serviceusage.serviceUsageViewer`
 
+Cloud Billing API is enabled in `dev`, `staging`, and `prod` as of
+2026-05-20. Firebase CLI deploys query billing status during Functions deploys,
+so disabling `cloudbilling.googleapis.com` breaks GitHub OIDC deploy jobs even
+when the service account authentication itself succeeds.
+
+The latest automatic `Firebase Dev Deploy` run on `main`
+(`26166036085`, commit `436c353`) failed before deploying because the Cloud
+Billing API was disabled in dev. The required main checks for that commit
+passed. The billing API is now enabled, and the local wrapper now expands the
+logical `functions` target to explicit `functions:<name>` targets so CI does
+not prompt to delete legacy live Functions.
+
+GitHub branch protection for `main` currently requires strict status checks for
+Flutter analysis/tests, Functions lint/tests, Firestore rules tests, web build,
+Android debug APK, and iOS simulator build. GitHub environments `dev`,
+`staging`, and `prod` exist; `prod` requires reviewer approval.
+
 ## App Registrations
 
 Each Firebase project should have exactly one current app registration per
@@ -115,19 +132,17 @@ Firebase Console. `./tool/flutter_with_env.sh` also forwards a local
 `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable as a Dart define so a
 registered token can be reused without committing it.
 
-Firestore rules are deployed and aligned across all three projects as of
-2026-05-01. The live dev and staging rules were stale before this pass and did
-not allow the public `config/app_config` force-update read; both now include the
-checked-in `document == 'app_config'` read rule. Prod already had that rule.
+The current branch's Functions, Firestore indexes, Firestore rules, and Storage
+rules were deployed to `dev` on 2026-05-20 after `./tool/check_data_contract.sh`
+passed. Staging and prod were not promoted in this pass; deploy them only from
+an approved release candidate.
 
 ## Functions
 
-Functions were checked through Cloud Functions on 2026-05-20.
-
-- `dev`: 64 app-owned functions plus 24 BigQuery extension functions.
-- `staging`: 64 app-owned functions plus 24 BigQuery extension functions.
-- `prod`: current event/club functions are deployed alongside legacy run and
-  run-club functions, so the current Flutter app can call the prod backend.
+Functions were checked through Cloud Functions on 2026-05-20. The current
+`functions/src/index.ts` export set was deployed explicitly to dev, including
+the co-host management and demo-ops callables. Staging and prod still need the
+same explicit Functions deploy when this branch is promoted.
 
 The legacy prod run/run-club functions remain deployed for backward
 compatibility. Do not delete them until old clients no longer need them and a
@@ -171,6 +186,11 @@ disabled/missing analytics service metadata even though the Firebase Management
 API reports Android/iOS stream mappings. Treat DebugView evidence as pending
 until a real release-like app build is observed in Firebase Analytics.
 
+App code enables Analytics collection only for production release builds without
+emulators. Auth UID sync now updates both Crashlytics and Analytics user IDs in
+the app shell; DebugView proof is still required before treating Analytics as
+operationally complete.
+
 GA4 BigQuery export is separate from the Firestore BigQuery export extensions.
 The current Google OAuth token can verify Firebase Analytics linkage, but it
 does not have Analytics Admin scopes for listing or creating GA4 BigQuery links.
@@ -197,28 +217,42 @@ than treating this as a simple config edit.
 
 ## Force Update Config
 
-All three projects have Firestore document `config/app_config` seeded for the
-current `1.0.0+1` app build:
+The app reads the force-update gate from Firebase Remote Config during startup.
+All three projects have the checked-in `firebase/remote_config.template.json`
+baseline published as of 2026-05-20:
 
-- `minVersion`: `1.0.0`
-- `minBuildAndroid`: `1`
-- `minBuildIos`: `1`
-- `minBuildWeb`: `1`
-- `minBuildMacos`: `1`
-- `storeUrlAndroid`: empty until the Play listing URL exists
-- `storeUrlIos`: empty until the App Store listing URL exists
+- `min_version`: `0.0.0`
+- `min_build_android`: `0`
+- `min_build_ios`: `0`
+- `min_build_web`: `0`
+- `min_build_macos`: `0`
+- `store_url_android`: empty until the Play listing URL exists
+- `store_url_ios`: empty until the App Store listing URL exists
 
 The app uses the platform-specific minimum build first, then falls back to
 `minVersion` only when the platform minimum build is unset. Loading and error
-states are surfaced by the app shell; a failed config read now shows a blocking
-retry screen instead of silently allowing startup.
+states are surfaced by the app shell. The checked-in template is deliberately
+non-blocking; raise `min_build_*` only after a compatible binary is available
+through the relevant store/distribution channel.
 
-Runtime check completed on 2026-05-01 for local dev web:
+Production release builds throttle Remote Config fetches to a one-hour minimum
+interval. Debug, emulator, dev, and staging builds keep a zero interval for QA.
 
-- Raising dev `minBuildWeb`/`minVersion` above the current build showed the
-  blocking update-required screen.
-- Resetting dev to `minBuildWeb: 1` and `minVersion: 1.0.0` restored normal
-  onboarding startup.
+## App Store Connect And TestFlight
+
+The GitHub `prod` environment has the required App Store Connect secret names:
+
+- `APP_STORE_CONNECT_API_KEY_ID`
+- `APP_STORE_CONNECT_API_ISSUER_ID`
+- `APP_STORE_CONNECT_API_KEY_BASE64`
+
+The repository can verify workflow wiring and secret presence, but it cannot
+verify App Store Connect account settings, TestFlight groups, export-compliance
+answers, privacy forms, or review metadata without direct App Store Connect
+access. The latest listed `iOS TestFlight Release` workflow runs from
+2026-05-17 failed on push-triggered runs, and GitHub no longer returned logs for
+the latest failed run during this pass. No successful manual
+`Release Readiness` or `Observability Evidence` run is currently recorded.
 
 ## Local Config Rules
 

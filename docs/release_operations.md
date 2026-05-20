@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.5.3
+version: 1.5.4
 updated: 2026-05-20
 owner: recursive_audit_loop
 status: active
@@ -126,6 +126,14 @@ If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
 workflow for intentional redeploys or environment-specific recovery.
 
+Current note from the 2026-05-20 environment pass: the latest automatic dev
+deploy on `main` failed because Firebase CLI could not query Cloud Billing API
+for `catchdates-dev`. `cloudbilling.googleapis.com` is now enabled in dev,
+staging, and prod. The next deploy candidate must include the current
+`tool/deploy_firebase_targets.sh` wrapper fix so the logical `functions` target
+expands to explicit callable names and does not prompt to delete legacy live
+run/run-club functions in non-interactive CI.
+
 ## App Version And Force-Update Gate
 
 Every store release candidate that may be enforced through Remote Config must
@@ -175,6 +183,15 @@ at release time. A client can start offline, fetch can fail, and store rollout
 timing can lag. Keep legacy-compatible reads/writes until the explicit parity
 and force-update cutover step is complete.
 
+The checked-in baseline template is `firebase/remote_config.template.json`.
+Its default values are deliberately non-blocking. Use it to seed a project or
+recover missing parameters, then raise `min_build_*` only as a deliberate
+release action after the compatible binary is available.
+
+Production release builds throttle Remote Config fetches to a one-hour minimum
+interval. Debug builds, emulator builds, and non-production environments keep a
+zero interval so config changes are easy to validate during QA.
+
 ## Pre-Deploy Checklist
 
 - Review `git diff --stat` and confirm the dirty tree is the intended release
@@ -222,12 +239,27 @@ Deploy Functions before tightening rules when a release moves writes behind new
 callables. Do not use Remote Config as a schema migration tool; use it only to
 block older app builds after the compatible build is available.
 
+`./tool/deploy_firebase_targets.sh` deploys the logical `functions` target by
+expanding the current exports from `functions/src/index.ts` into explicit
+`functions:<name>` targets. This keeps legacy live Functions, such as old
+run/run-club callables, deployed until a deliberate cleanup plan removes them.
+Do not use a broad `firebase deploy --only functions --force` unless deleting
+legacy Functions is the intended release action.
+
 Typical commands:
 
 ```bash
 ./tool/deploy_firebase_targets.sh dev functions,firestore:indexes,firestore:rules,storage
 ./tool/deploy_firebase_targets.sh staging functions,firestore:indexes,firestore:rules,storage
 ./tool/deploy_firebase_targets.sh prod functions,firestore:indexes,firestore:rules,storage
+```
+
+Remote Config is intentionally separate from the standard backend deploy:
+
+```bash
+./tool/deploy_firebase_targets.sh dev remoteconfig
+./tool/deploy_firebase_targets.sh staging remoteconfig
+./tool/deploy_firebase_targets.sh prod remoteconfig
 ```
 
 After production Functions deploys, sync callable invokers if needed:
@@ -352,6 +384,12 @@ build if the key is missing or malformed. Without the key the archived
 
 Keep Xcode Cloud and the GitHub Actions release workflow consistent: both must
 inject and verify the environment-specific Maps key.
+
+The repository can verify that the GitHub `prod` environment has the required
+App Store Connect secret names and that the local/Xcode Cloud scripts fail
+loudly when required release secrets are missing. It cannot prove App Store
+Connect account settings, TestFlight group membership, export-compliance,
+privacy, or review metadata state without direct App Store Connect access.
 
 ## Human Release Evidence
 

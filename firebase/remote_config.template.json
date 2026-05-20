@@ -1,0 +1,46 @@
+{
+  "parameters": {
+    "min_version": {
+      "defaultValue": {
+        "value": "0.0.0"
+      },
+      "description": "Oldest marketing version allowed to continue when platform-specific build gates are unset."
+    },
+    "min_build_android": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest Android versionCode allowed to continue. Raise only after a compatible Android build is available."
+    },
+    "min_build_ios": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest iOS CFBundleVersion allowed to continue. Raise only after a compatible iOS build is available."
+    },
+    "min_build_web": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest web build allowed to continue. Raise only after a compatible web build is deployed."
+    },
+    "min_build_macos": {
+      "defaultValue": {
+        "value": "0"
+      },
+      "description": "Oldest macOS CFBundleVersion allowed to continue. Raise only after a compatible macOS build is available."
+    },
+    "store_url_android": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "Play Store URL used by the force-update screen once the listing is public."
+    },
+    "store_url_ios": {
+      "defaultValue": {
+        "value": ""
+      },
+      "description": "App Store URL used by the force-update screen once the listing is public."
+    }
+  }
+}
