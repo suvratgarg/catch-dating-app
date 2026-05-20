@@ -93,4 +93,44 @@ void main() {
       );
     });
   });
+
+  group('Remote Config fetch interval', () {
+    test('keeps frequent fetches for debug, emulator, and non-prod builds', () {
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: true,
+          useFirebaseEmulators: false,
+        ),
+        Duration.zero,
+      );
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: false,
+          useFirebaseEmulators: true,
+        ),
+        Duration.zero,
+      );
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.staging,
+          debugMode: false,
+          useFirebaseEmulators: false,
+        ),
+        Duration.zero,
+      );
+    });
+
+    test('throttles fetches for production release builds', () {
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: false,
+          useFirebaseEmulators: false,
+        ),
+        const Duration(hours: 1),
+      );
+    });
+  });
 }

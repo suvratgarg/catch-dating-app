@@ -58,6 +58,25 @@ class AppConfig {
 
   static String get appTitle => environment.appTitle;
 
+  @visibleForTesting
+  static Duration remoteConfigMinimumFetchIntervalFor({
+    required AppEnvironment environment,
+    required bool debugMode,
+    required bool useFirebaseEmulators,
+  }) {
+    if (debugMode || useFirebaseEmulators || !environment.isProduction) {
+      return Duration.zero;
+    }
+    return const Duration(hours: 1);
+  }
+
+  static Duration get remoteConfigMinimumFetchInterval =>
+      remoteConfigMinimumFetchIntervalFor(
+        environment: environment,
+        debugMode: kDebugMode,
+        useFirebaseEmulators: useFirebaseEmulators,
+      );
+
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel => environment.bannerLabel;

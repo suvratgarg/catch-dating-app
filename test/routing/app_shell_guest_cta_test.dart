@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -47,6 +48,12 @@ void main() {
           appConnectivityProvider.overrideWith(
             (ref) => Stream.value(const [ConnectivityResult.wifi]),
           ),
+          appAnalyticsProvider.overrideWithValue(
+            AppAnalytics(
+              reporter: _NoOpAnalyticsReporter(),
+              shouldCollect: false,
+            ),
+          ),
         ],
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),
@@ -77,4 +84,21 @@ StatefulShellBranch _branch(String path, String label) {
       ),
     ],
   );
+}
+
+final class _NoOpAnalyticsReporter implements AnalyticsReporter {
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
 }

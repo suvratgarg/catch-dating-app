@@ -106,7 +106,7 @@ Future<void> _initializeRemoteConfig() async {
   await remoteConfig.setConfigSettings(
     RemoteConfigSettings(
       fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: Duration.zero,
+      minimumFetchInterval: AppConfig.remoteConfigMinimumFetchInterval,
     ),
   );
   await remoteConfig.setDefaults(kAppVersionConfigDefaults);
