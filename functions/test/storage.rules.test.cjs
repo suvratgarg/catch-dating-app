@@ -190,7 +190,7 @@ describe("storage.rules", () => {
   });
 
   describe("event photos", () => {
-    it("allows only the club host to upload event photos", async () => {
+    it("allows legacy club hosts to upload event photos", async () => {
       await seedFirestore(["clubs", "club-1"], club());
 
       await assertSucceeds(
@@ -217,6 +217,55 @@ describe("storage.rules", () => {
           "clubs/club-1/events/event-1/photo.txt",
           {contentType: "text/plain"},
         ),
+      );
+    });
+
+    it("allows club owners and co-hosts to upload event photos", async () => {
+      await seedFirestore(
+        ["clubs", "club-1"],
+        club({
+          ownerUserId: "owner-1",
+          hostUserIds: ["owner-1", "cohost-1"],
+        }),
+      );
+
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("owner-1"),
+          "clubs/club-1/events/event-1/owner-photo.jpg",
+        ),
+      );
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("cohost-1"),
+          "clubs/club-1/events/event-1/cohost-photo.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("runner-1"),
+          "clubs/club-1/events/event-1/runner-photo.jpg",
+        ),
+      );
+    });
+
+    it("allows club owners and co-hosts to upload club profile images", async () => {
+      await seedFirestore(
+        ["clubs", "club-1"],
+        club({
+          ownerUserId: "owner-1",
+          hostUserIds: ["owner-1", "cohost-1"],
+        }),
+      );
+
+      await assertSucceeds(
+        uploadImage(authedStorage("owner-1"), "clubs/club-1/profile.jpg"),
+      );
+      await assertSucceeds(
+        uploadImage(authedStorage("cohost-1"), "clubs/club-1/profile-2.jpg"),
+      );
+      await assertFails(
+        uploadImage(authedStorage("runner-1"), "clubs/club-1/profile-3.jpg"),
       );
     });
   });

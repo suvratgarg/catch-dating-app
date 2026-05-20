@@ -156,7 +156,32 @@
     },
     "clubMembershipRole": {
       "type": "string",
-      "enum": ["host", "member"]
+      "enum": ["owner", "host", "member"]
+    },
+    "clubHostRole": {
+      "type": "string",
+      "enum": ["owner", "host"]
+    },
+    "clubHostProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uid", "displayName", "avatarUrl", "role"],
+      "properties": {
+        "uid": {
+          "$ref": "#/definitions/documentId"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "avatarUrl": {
+          "$ref": "#/definitions/urlOrNull"
+        },
+        "role": {
+          "$ref": "#/definitions/clubHostRole"
+        }
+      }
     },
     "clubMembershipStatus": {
       "type": "string",

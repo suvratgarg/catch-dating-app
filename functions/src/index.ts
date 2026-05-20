@@ -27,6 +27,7 @@ export {
   placesAutocomplete,
 } from "./places/placeAutocomplete";
 export {createClub} from "./clubs/createClub";
+export {addClubHost, removeClubHost} from "./clubs/manageClubHosts";
 export {syncClubMemberStats} from "./clubs/syncClubMemberStats";
 export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
 export {
@@ -62,3 +63,7 @@ export {requestAccountDeletion} from "./safety/accountDeletion";
 export {reportUser} from "./safety/reporting";
 export {moderatePhotoOnUpload} from "./moderation/moderatePhoto";
 export {moderateChatMessage} from "./moderation/moderateMessage";
+export {
+  listSuvbotDemoActions,
+  requestSuvbotDemoOperation,
+} from "./demoOps/suvbot";

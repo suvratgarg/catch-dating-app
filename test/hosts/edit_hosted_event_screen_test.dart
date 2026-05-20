@@ -36,6 +36,15 @@ void main() {
       overrides: [eventRepositoryProvider.overrideWith((ref) => repository)],
     );
 
+    expect(find.text('Published event'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'capacity, pricing, admission policy, and invite setup until the first booking',
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
+
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
     await _enterText(tester, CreateEventFormKeys.distance, '7.5');
     await _enterText(
@@ -79,6 +88,13 @@ void main() {
     );
 
     expect(find.text('Schedule locked'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'You can still update location and descriptive details',
+        findRichText: true,
+      ),
+      findsOneWidget,
+    );
     expect(find.byKey(CreateEventFormKeys.datePicker), findsNothing);
     expect(find.text(event.timeRangeLabel), findsOneWidget);
     expect(find.byKey(CreateEventFormKeys.meetingPoint), findsOneWidget);

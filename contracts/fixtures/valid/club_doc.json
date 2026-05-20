@@ -6,11 +6,22 @@
   "hostUserId": "host-1",
   "hostName": "Subrath",
   "hostAvatarUrl": "https://example.test/host.jpg",
+  "ownerUserId": "host-1",
+  "hostUserIds": ["host-1"],
+  "hostProfiles": [
+    {
+      "uid": "host-1",
+      "displayName": "Subrath",
+      "avatarUrl": "https://example.test/host.jpg",
+      "role": "owner"
+    }
+  ],
   "createdAt": {
     "_seconds": 1778803200,
     "_nanoseconds": 0
   },
   "imageUrl": "https://example.test/club.jpg",
+  "profileImageUrl": "https://example.test/club-profile.jpg",
   "tags": ["social", "beginner-friendly", "indore"],
   "memberCount": 12,
   "rating": 4.7,

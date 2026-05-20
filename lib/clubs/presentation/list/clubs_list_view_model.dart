@@ -198,7 +198,7 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
   final hostedClubIds = uid == null
       ? <String>{}
       : clubs
-            .where((club) => club.hostUserId == uid)
+            .where((club) => club.isHostedBy(uid))
             .map((club) => club.id)
             .toSet();
   final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
@@ -235,8 +235,8 @@ AsyncValue<bool> canCreateClub(Ref ref) {
     return const AsyncData(false);
   }
 
-  final hostedAsync = ref.watch(watchClubsHostedByProvider(uid));
-  return hostedAsync.whenData((clubs) => clubs.isEmpty);
+  final ownedAsync = ref.watch(watchClubsOwnedByProvider(uid));
+  return ownedAsync.whenData((clubs) => clubs.isEmpty);
 }
 
 bool matchesClubSearchQuery(Club club, String normalizedQuery) {

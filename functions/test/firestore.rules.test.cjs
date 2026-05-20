@@ -130,6 +130,7 @@ function userProfile(overrides = {}) {
     preferredDistances: [],
     runningReasons: [],
     preferredRunTimes: [],
+    runPreferencesVersion: 1,
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,

@@ -13,6 +13,22 @@ export interface ClubDocument {
   hostUserId: string;
   hostName: string;
   hostAvatarUrl: string | null;
+  ownerUserId: string;
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  hostUserIds: string[];
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  hostProfiles: {
+    uid: string;
+    displayName: string;
+    avatarUrl: string | null;
+    role: "owner" | "host";
+  }[];
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
@@ -21,6 +37,7 @@ export interface ClubDocument {
     _nanoseconds: number;
   };
   imageUrl: string | null;
+  profileImageUrl: string | null;
   /**
    * @maxItems 20
    */

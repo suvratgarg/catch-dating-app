@@ -95,7 +95,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
       );
     }
 
-    if (uid == null || club.hostUserId != uid) {
+    if (uid == null || !club.isHostedBy(uid)) {
       return const CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can edit only events that you host.',
@@ -293,6 +293,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               _EditScopeNotice(
                 isCancelled: widget.event.isCancelled,
                 scheduleLocked: _scheduleLocked,
+                policyLocked: _policyLocked,
               ),
               if (mutation.hasError) ...[
                 gapH12,
@@ -679,10 +680,12 @@ class _EditScopeNotice extends StatelessWidget {
   const _EditScopeNotice({
     required this.isCancelled,
     required this.scheduleLocked,
+    required this.policyLocked,
   });
 
   final bool isCancelled;
   final bool scheduleLocked;
+  final bool policyLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -696,7 +699,9 @@ class _EditScopeNotice extends StatelessWidget {
         ? 'Cancelled events cannot be edited. Create a new event if you need to host this again.'
         : scheduleLocked
         ? 'You can still update location and descriptive details. Date, time, and duration stay locked after the event starts or once people have joined.'
-        : 'Only operational details are editable here. Capacity, pricing, admission policy, and invite setup stay owned by the original event configuration.';
+        : policyLocked
+        ? 'You can edit the schedule, location, distance, and description. Capacity, pricing, admission policy, and invite setup are locked by existing event activity.'
+        : 'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.';
 
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),

@@ -8,7 +8,7 @@
 export interface ClubMembershipDocument {
   clubId: string;
   uid: string;
-  role: "host" | "member";
+  role: "owner" | "host" | "member";
   status: "active" | "left" | "deleted";
   pushNotificationsEnabled: boolean;
   /**

@@ -6,6 +6,7 @@ import {
   syncHostedClubHostProfile,
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
+import {defaultProfilePromptIds} from "../shared/generated/schemaRegistry";
 
 type FakeData = Record<string, unknown>;
 
@@ -62,14 +63,18 @@ class FakeFirestore {
 function queryRef(
   firestore: FakeFirestore,
   collectionPath: string,
-  filters: Array<{field: string; value: unknown}>
+  filters: Array<{field: string; operator: string; value: unknown}>
 ) {
   return {
     doc: (docId: string) =>
       new FakeDocRef(firestore, `${collectionPath}/${docId}`),
     where: (field: string, operator: string, value: unknown) => {
-      assert.equal(operator, "==");
-      return queryRef(firestore, collectionPath, [...filters, {field, value}]);
+      assert.ok(["==", "array-contains"].includes(operator));
+      return queryRef(
+        firestore,
+        collectionPath,
+        [...filters, {field, operator, value}]
+      );
     },
     get: async () => {
       const docs = Object.entries((firestore as never as {
@@ -78,7 +83,12 @@ function queryRef(
         .filter(([path]) => path.startsWith(`${collectionPath}/`))
         .filter(([, data]) => data !== undefined)
         .filter(([, data]) =>
-          filters.every((filter) => data?.[filter.field] === filter.value)
+          filters.every((filter) => {
+            const fieldValue = data?.[filter.field];
+            if (filter.operator === "==") return fieldValue === filter.value;
+            return Array.isArray(fieldValue) &&
+              fieldValue.includes(filter.value);
+          })
         )
         .map(([path, data]) => ({
           ref: new FakeDocRef(firestore, path),
@@ -100,15 +110,24 @@ function completeUser(overrides: FakeData = {}): FakeData {
     firstName: "Asha",
     displayName: "Asha Host",
     dateOfBirth: timestamp(new Date("1996-01-01T00:00:00.000Z")),
-    profilePrompts: [{
-      promptId: "perfectRun",
-      prompt: "A perfect event with me looks like...",
-      answer: "Morning runner",
-    }],
+    phoneNumber: "+919900000001",
+    countryCode: "+91",
+    profilePrompts: defaultProfilePromptIds.map((promptId) => ({
+      promptId,
+      prompt: `Prompt ${promptId}`,
+      answer: `Answer ${promptId}`,
+    })),
     photoPrompts: [],
     gender: "woman",
-    photoUrls: ["https://example.test/full.jpg"],
-    photoThumbnailUrls: ["https://example.test/thumb.jpg"],
+    interestedInGenders: ["man"],
+    photoUrls: [
+      "https://example.test/full-1.jpg",
+      "https://example.test/full-2.jpg",
+    ],
+    photoThumbnailUrls: [
+      "https://example.test/thumb-1.jpg",
+      "https://example.test/thumb-2.jpg",
+    ],
     paceMinSecsPerKm: 300,
     paceMaxSecsPerKm: 420,
     preferredDistances: [],
@@ -160,6 +179,12 @@ test("syncUserProfileProjectionsHandler syncs public profile and clubs",
       hostUserId: "host-1",
       hostName: "Asha Updated",
       hostAvatarUrl: "https://example.test/new-thumb.jpg",
+      hostProfiles: [{
+        uid: "host-1",
+        displayName: "Asha Updated",
+        avatarUrl: "https://example.test/new-thumb.jpg",
+        role: "owner",
+      }],
       memberCount: 3,
     });
     assert.equal(
@@ -174,6 +199,26 @@ test("syncUserProfileProjectionsHandler syncs public profile and clubs",
       firestore.get("reviews/event-1~other-host")?.reviewerName,
       "Other Reviewer"
     );
+  }
+);
+
+test("syncUserProfileProjectionsHandler deletes profiles below social-ready",
+  async () => {
+    const firestore = new FakeFirestore({
+      "publicProfiles/host-1": {name: "Old Public"},
+    });
+
+    await syncUserProfileProjectionsHandler(
+      "host-1",
+      completeUser({
+        profileComplete: false,
+        photoUrls: ["https://example.test/full-1.jpg"],
+        photoThumbnailUrls: ["https://example.test/thumb-1.jpg"],
+      }) as never,
+      {firestore: () => firestore as never}
+    );
+
+    assert.equal(firestore.get("publicProfiles/host-1"), undefined);
   }
 );
 

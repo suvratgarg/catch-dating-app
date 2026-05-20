@@ -11,11 +11,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_club_controller.g.dart';
 
-class PickedClubCover {
-  const PickedClubCover({required this.image, required this.bytes});
+class PickedClubImage {
+  const PickedClubImage({required this.image, required this.bytes});
 
   final XFile image;
   final Uint8List bytes;
+}
+
+class PickedClubCover extends PickedClubImage {
+  const PickedClubCover({required super.image, required super.bytes});
+}
+
+class PickedClubProfileImage extends PickedClubImage {
+  const PickedClubProfileImage({required super.image, required super.bytes});
 }
 
 /// **Pattern A: Action controller + static Mutations**
@@ -44,6 +52,25 @@ class CreateClubController extends _$CreateClubController {
     return PickedClubCover(image: image, bytes: await image.readAsBytes());
   }
 
+  Future<PickedClubProfileImage?> pickProfileImage({
+    int imageQuality = 85,
+  }) async {
+    final image = await ref
+        .read(imageUploadRepositoryProvider)
+        .pickImage(
+          purpose: ImageUploadPurpose.clubProfileImage,
+          imageQuality: imageQuality,
+        );
+    if (image == null) {
+      return null;
+    }
+
+    return PickedClubProfileImage(
+      image: image,
+      bytes: await image.readAsBytes(),
+    );
+  }
+
   Future<void> submit({
     required String name,
     required String location,
@@ -55,19 +82,29 @@ class CreateClubController extends _$CreateClubController {
     String? phoneNumber,
     String? email,
     ClubHostDefaults hostDefaults = const ClubHostDefaults(),
+    XFile? profileImage,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
 
     if (existingClub != null) {
-      if (existingClub.hostUserId != uid) {
-        throw StateError('Only the host can edit this club.');
+      if (!existingClub.isOwnedBy(uid)) {
+        throw StateError('Only the club owner can edit this club.');
       }
 
       var imageUrl = existingClub.imageUrl;
+      var profileImageUrl = existingClub.profileImageUrl;
       if (coverImage != null) {
         imageUrl = await ref
             .read(imageUploadRepositoryProvider)
             .uploadClubCover(clubId: existingClub.id, image: coverImage);
+      }
+      if (profileImage != null) {
+        profileImageUrl = await ref
+            .read(imageUploadRepositoryProvider)
+            .uploadClubProfileImage(
+              clubId: existingClub.id,
+              image: profileImage,
+            );
       }
 
       final clubsRepo = ref.read(clubsRepositoryProvider);
@@ -77,6 +114,7 @@ class CreateClubController extends _$CreateClubController {
         'location': location,
         'area': area,
         'imageUrl': imageUrl,
+        'profileImageUrl': profileImageUrl,
         'hostDefaults': hostDefaults.toJson(),
       };
       if (instagramHandle != null) fields['instagramHandle'] = instagramHandle;
@@ -89,12 +127,20 @@ class CreateClubController extends _$CreateClubController {
     final clubsRepo = ref.read(clubsRepositoryProvider);
     String? clubId;
     String? imageUrl;
+    String? profileImageUrl;
 
-    if (coverImage != null) {
+    if (coverImage != null || profileImage != null) {
       clubId = clubsRepo.generateId();
+    }
+    if (coverImage != null) {
       imageUrl = await ref
           .read(imageUploadRepositoryProvider)
-          .uploadClubCover(clubId: clubId, image: coverImage);
+          .uploadClubCover(clubId: clubId!, image: coverImage);
+    }
+    if (profileImage != null) {
+      profileImageUrl = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadClubProfileImage(clubId: clubId!, image: profileImage);
     }
 
     await clubsRepo.createClub(
@@ -104,6 +150,7 @@ class CreateClubController extends _$CreateClubController {
       location: location,
       area: area,
       imageUrl: imageUrl,
+      profileImageUrl: profileImageUrl,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,

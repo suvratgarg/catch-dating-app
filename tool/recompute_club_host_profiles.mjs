@@ -63,41 +63,63 @@ export async function buildClubHostProfileRepairPlan(
 
   for (const clubDoc of clubsSnap.docs) {
     const club = clubDoc.data();
-    if (typeof club.hostUserId !== "string" || club.hostUserId.length === 0) {
-      warnings.push(`${clubDoc.ref.path} has no hostUserId.`);
+    const ownerUserId = resolveOwnerUserId(club);
+    if (!ownerUserId) {
+      warnings.push(`${clubDoc.ref.path} has no ownerUserId or hostUserId.`);
       continue;
     }
 
-    const user = users.get(club.hostUserId);
-    if (!user) {
+    const hostUserIds = resolveHostUserIds(club, ownerUserId);
+    const missingHostUserId = hostUserIds.find((uid) => !users.has(uid));
+    if (missingHostUserId) {
       warnings.push(
-        `${clubDoc.ref.path} references missing users/${club.hostUserId}.`
+        `${clubDoc.ref.path} references missing users/${missingHostUserId}.`
       );
       continue;
     }
-    if (user.deleted === true) {
+    const deletedHostUserId = hostUserIds.find((uid) =>
+      users.get(uid)?.deleted === true
+    );
+    if (deletedHostUserId) {
       warnings.push(
-        `${clubDoc.ref.path} is hosted by deleted users/${club.hostUserId}.`
+        `${clubDoc.ref.path} is hosted by deleted users/${deletedHostUserId}.`
       );
       continue;
     }
 
+    const hostProfiles = hostUserIds.map((uid) => {
+      const user = users.get(uid);
+      return {
+        uid,
+        displayName: profileProjection.publicDisplayName(user),
+        avatarUrl: profileProjection.publicAvatarUrl(user),
+        role: uid === ownerUserId ? "owner" : "host",
+      };
+    });
+    const primaryHostProfile = hostProfiles[0];
     const expected = {
-      hostName: profileProjection.publicDisplayName(user),
-      hostAvatarUrl: profileProjection.publicAvatarUrl(user),
+      hostName: primaryHostProfile.displayName,
+      hostAvatarUrl: primaryHostProfile.avatarUrl,
+      ownerUserId,
+      hostUserIds,
+      hostProfiles,
+      profileImageUrl: club.profileImageUrl ?? null,
     };
     const current = {
       hostName: club.hostName,
       hostAvatarUrl: club.hostAvatarUrl ?? null,
+      ownerUserId: club.ownerUserId ?? null,
+      hostUserIds: Array.isArray(club.hostUserIds) ? club.hostUserIds : [],
+      hostProfiles: Array.isArray(club.hostProfiles) ? club.hostProfiles : [],
+      profileImageUrl: club.profileImageUrl ?? null,
     };
     if (
-      current.hostName !== expected.hostName ||
-      current.hostAvatarUrl !== expected.hostAvatarUrl
+      JSON.stringify(current) !== JSON.stringify(expected)
     ) {
       repairs.push({
         path: clubDoc.ref.path,
         clubId: clubDoc.id,
-        hostUserId: club.hostUserId,
+        hostUserId: ownerUserId,
         current,
         expected,
       });
@@ -196,8 +218,9 @@ function resolveProjectId(parsed) {
 function printHelp() {
   console.log(`Usage: node tool/recompute_club_host_profiles.mjs [options]
 
-Recomputes clubs/{clubId}.hostName and hostAvatarUrl from the host
-users/{uid} profile document.
+Recomputes club host projection fields from users/{uid} profile documents.
+Backfills ownerUserId, hostUserIds, hostProfiles, and profileImageUrl for
+legacy clubs while preserving the old hostName/hostAvatarUrl projection.
 
 Options:
   --apply                 Write repairs. Default is dry-run.
@@ -208,6 +231,29 @@ Options:
   --emulator-host <host>  Use a custom Firestore emulator host.
   -h, --help              Show this help.
 `);
+}
+
+function resolveOwnerUserId(club) {
+  if (typeof club.ownerUserId === "string" && club.ownerUserId.length > 0) {
+    return club.ownerUserId;
+  }
+  if (typeof club.hostUserId === "string" && club.hostUserId.length > 0) {
+    return club.hostUserId;
+  }
+  return null;
+}
+
+function resolveHostUserIds(club, ownerUserId) {
+  return [
+    ownerUserId,
+    typeof club.hostUserId === "string" ? club.hostUserId : null,
+    ...(Array.isArray(club.hostUserIds) ? club.hostUserIds : []),
+    ...(Array.isArray(club.hostProfiles)
+      ? club.hostProfiles.map((host) => host?.uid)
+      : []),
+  ]
+    .filter((uid) => typeof uid === "string" && uid.length > 0)
+    .filter((uid, index, all) => all.indexOf(uid) === index);
 }
 
 function printSummary(summary) {

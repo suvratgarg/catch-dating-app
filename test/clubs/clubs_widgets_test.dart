@@ -276,7 +276,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            watchClubsHostedByProvider(
+            watchClubsOwnedByProvider(
               'host-1',
             ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
@@ -787,7 +787,7 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('HOST'), findsOneWidget);
+      expect(find.text('Host'), findsOneWidget);
       expect(find.text('Asha Shah'), findsOneWidget);
       expect(find.text('Club host'), findsOneWidget);
       expect(find.text('Hosts events in Bandra'), findsOneWidget);

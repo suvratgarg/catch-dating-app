@@ -60,6 +60,7 @@ import {
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
+import {isClubHost} from "../shared/clubHosts";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -947,7 +948,7 @@ function assertCanMutateClub(
     throw new HttpsError("not-found", "Club not found.");
   }
   const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
-  if (club.hostUserId !== hostUserId) {
+  if (!isClubHost(club, hostUserId)) {
     throw new HttpsError(
       "permission-denied",
       "Only the club host can manage events."

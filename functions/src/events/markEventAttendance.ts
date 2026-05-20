@@ -18,11 +18,12 @@ import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {isClubHost} from "../shared/clubHosts";
 
 /**
  * Callable function that toggles a single user's attendance for an event.
  *
- * Must be called by the host of the event (the club's hostUserId).
+ * Must be called by one of the event club's hosts.
  * Check-in window opens 10 minutes before the event's start time.
  *
  * If the user is already attended they are moved back to signed up; otherwise
@@ -63,8 +64,8 @@ export const markEventAttendance = onCall(appCheckCallableOptions, async (
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = clubSnap.data() as {hostUserId: string};
-  if (club.hostUserId !== uid) {
+  const club = clubSnap.data() as Parameters<typeof isClubHost>[0];
+  if (!isClubHost(club, uid)) {
     throw new HttpsError(
       "permission-denied",
       "Only the club host can mark attendance."

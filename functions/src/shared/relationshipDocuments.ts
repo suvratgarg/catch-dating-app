@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 
-export type ClubMembershipRole = "host" | "member";
+export type ClubMembershipRole = "owner" | "host" | "member";
 export type ClubMembershipStatus = "active" | "left" | "deleted";
 export type EventParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";

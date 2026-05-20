@@ -15,10 +15,22 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   hostUserId: json['hostUserId'] as String,
   hostName: json['hostName'] as String,
   hostAvatarUrl: json['hostAvatarUrl'] as String?,
+  ownerUserId: json['ownerUserId'] as String?,
+  hostUserIds:
+      (json['hostUserIds'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  hostProfiles:
+      (json['hostProfiles'] as List<dynamic>?)
+          ?.map((e) => ClubHostProfile.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   createdAt: const TimestampConverter().fromJson(
     json['createdAt'] as Timestamp,
   ),
   imageUrl: json['imageUrl'] as String?,
+  profileImageUrl: json['profileImageUrl'] as String?,
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -55,8 +67,12 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'hostUserId': instance.hostUserId,
   'hostName': instance.hostName,
   'hostAvatarUrl': instance.hostAvatarUrl,
+  'ownerUserId': instance.ownerUserId,
+  'hostUserIds': instance.hostUserIds,
+  'hostProfiles': instance.hostProfiles.map((e) => e.toJson()).toList(),
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'imageUrl': instance.imageUrl,
+  'profileImageUrl': instance.profileImageUrl,
   'tags': instance.tags,
   'memberCount': instance.memberCount,
   'rating': instance.rating,
@@ -93,3 +109,26 @@ Json? _$JsonConverterToJson<Json, Value>(
   Value? value,
   Json? Function(Value value) toJson,
 ) => value == null ? null : toJson(value);
+
+_ClubHostProfile _$ClubHostProfileFromJson(Map<String, dynamic> json) =>
+    _ClubHostProfile(
+      uid: json['uid'] as String,
+      displayName: json['displayName'] as String,
+      avatarUrl: json['avatarUrl'] as String?,
+      role:
+          $enumDecodeNullable(_$ClubHostRoleEnumMap, json['role']) ??
+          ClubHostRole.host,
+    );
+
+Map<String, dynamic> _$ClubHostProfileToJson(_ClubHostProfile instance) =>
+    <String, dynamic>{
+      'uid': instance.uid,
+      'displayName': instance.displayName,
+      'avatarUrl': instance.avatarUrl,
+      'role': _$ClubHostRoleEnumMap[instance.role]!,
+    };
+
+const _$ClubHostRoleEnumMap = {
+  ClubHostRole.owner: 'owner',
+  ClubHostRole.host: 'host',
+};

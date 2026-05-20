@@ -136,14 +136,26 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
     }
 
+    function isClubHostData(clubData) {
+      return clubData.hostUserId == request.auth.uid
+        || (
+          clubData.keys().hasAny(['ownerUserId'])
+          && clubData.ownerUserId == request.auth.uid
+        )
+        || (
+          clubData.keys().hasAny(['hostUserIds'])
+          && request.auth.uid in clubData.hostUserIds
+        );
+    }
+
     function isClubHostForEvent(eventId) {
       return exists(/databases/$(database)/documents/events/$(eventId))
         && exists(/databases/$(database)/documents/clubs/$(
           get(/databases/$(database)/documents/events/$(eventId)).data.clubId
         ))
-        && get(/databases/$(database)/documents/clubs/$(
+        && isClubHostData(get(/databases/$(database)/documents/clubs/$(
           get(/databases/$(database)/documents/events/$(eventId)).data.clubId
-        )).data.hostUserId == request.auth.uid;
+        )).data);
     }
 
     function hasEventParticipationStatus(eventId, uid, statuses) {
@@ -195,6 +207,7 @@ service cloud.firestore {
           // Running
           'paceMinSecsPerKm', 'paceMaxSecsPerKm',
           'preferredDistances', 'runningReasons', 'preferredRunTimes',
+          'runPreferencesVersion',
           // Notification / discovery preferences
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
@@ -214,6 +227,7 @@ service cloud.firestore {
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
           'preferredDistances', 'runningReasons', 'preferredRunTimes',
+          'runPreferencesVersion',
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap'
@@ -303,6 +317,8 @@ service cloud.firestore {
         && data.runningReasons.size() <= 12
         && data.preferredRunTimes is list
         && data.preferredRunTimes.size() <= 8
+        && data.runPreferencesVersion is number
+        && data.runPreferencesVersion >= 0
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool
@@ -431,6 +447,24 @@ service cloud.firestore {
 
     // Written exclusively by demo-data tooling to track synthetic-data cleanup.
     match /seedEvents/{manifestId} {
+      allow read, write: if false;
+    }
+
+    // Backend-owned allowlist for seeded beta users who can ask Suvbot for
+    // self-scoped demo refreshes.
+    match /demoSelfServiceAccess/{uid} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Backend-owned request audit trail for Suvbot demo operations.
+    match /demoOpsRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    // Backend-owned temporary confirmation tokens for destructive Suvbot
+    // operations.
+    match /demoOpsConfirmations/{confirmationId} {
       allow read, write: if false;
     }
 

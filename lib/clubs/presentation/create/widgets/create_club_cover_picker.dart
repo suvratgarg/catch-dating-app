@@ -97,3 +97,107 @@ class CreateClubCoverPicker extends StatelessWidget {
     );
   }
 }
+
+class CreateClubProfileImagePicker extends StatelessWidget {
+  const CreateClubProfileImagePicker({
+    super.key,
+    required this.imageBytes,
+    this.existingImageUrl,
+    required this.onTap,
+  });
+
+  final Uint8List? imageBytes;
+  final String? existingImageUrl;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final hasImage = imageBytes != null || existingImageUrl != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const CatchFormFieldLabel(
+          label: 'Club profile image',
+          isOptional: true,
+        ),
+        gapH8,
+        Semantics(
+          button: true,
+          label: hasImage
+              ? 'Change club profile image'
+              : 'Add club profile image',
+          child: GestureDetector(
+            onTap: onTap,
+            child: SizedBox(
+              width: 112,
+              height: 112,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(CatchRadius.md),
+                child: hasImage
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if (imageBytes != null)
+                            Image.memory(imageBytes!, fit: BoxFit.cover)
+                          else
+                            Image.network(
+                              existingImageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) =>
+                                  Container(color: t.raised),
+                            ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: t.surface.withValues(alpha: 0.85),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.edit_outlined,
+                                size: 16,
+                                color: t.ink,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(
+                        color: t.raised,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              size: 30,
+                              color: t.ink2,
+                            ),
+                            gapH8,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                              child: Text(
+                                'Add image',
+                                style: CatchTextStyles.bodyS(
+                                  context,
+                                  color: t.ink2,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

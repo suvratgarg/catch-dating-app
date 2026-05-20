@@ -130,7 +130,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       ? participationAsync.asData?.value
       : null;
   final isHost =
-      isAuthenticated && currentUid != null && club?.hostUserId == currentUid;
+      isAuthenticated && currentUid != null && club?.isHostedBy(currentUid) == true;
   final isSaved = isAuthenticated && savedEventAsync.asData?.value != null;
 
   return AsyncData(

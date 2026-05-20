@@ -110,7 +110,7 @@ class EventDetailScreen extends ConsumerWidget {
       clubId: clubId,
       reviews: reviews,
       isAuthenticated: isAuthenticated,
-      isHost: currentUid != null && club?.hostUserId == currentUid,
+      isHost: currentUid != null && club?.isHostedBy(currentUid) == true,
       isSaved: savedEvent != null,
       participation: participation,
       inviteCode: inviteCode,

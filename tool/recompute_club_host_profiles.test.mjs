@@ -36,6 +36,15 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
           hostUserId: "host-2",
           hostName: "Second",
           hostAvatarUrl: "https://example.com/second.jpg",
+          ownerUserId: "host-2",
+          hostUserIds: ["host-2"],
+          hostProfiles: [{
+            uid: "host-2",
+            displayName: "Second",
+            avatarUrl: "https://example.com/second.jpg",
+            role: "owner",
+          }],
+          profileImageUrl: null,
         },
         "club-3": {
           hostUserId: "missing",
@@ -57,15 +66,108 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
         current: {
           hostName: "Old Host",
           hostAvatarUrl: "https://example.com/old.jpg",
+          ownerUserId: null,
+          hostUserIds: [],
+          hostProfiles: [],
+          profileImageUrl: null,
         },
         expected: {
           hostName: "New Host",
           hostAvatarUrl: "https://example.com/new-thumb.jpg",
+          ownerUserId: "host-1",
+          hostUserIds: ["host-1"],
+          hostProfiles: [{
+            uid: "host-1",
+            displayName: "New Host",
+            avatarUrl: "https://example.com/new-thumb.jpg",
+            role: "owner",
+          }],
+          profileImageUrl: null,
         },
       },
     ]);
     assert.deepEqual(plan.summary.warnings, [
       "clubs/club-3 references missing users/missing.",
+    ]);
+  }
+);
+
+test("buildClubHostProfileRepairPlan refreshes multi-host projections",
+  async () => {
+    const firestore = fakeFirestore({
+      users: {
+        "owner-1": {
+          displayName: "Owner One",
+          photoThumbnailUrls: ["https://example.com/owner.jpg"],
+        },
+        "cohost-1": {
+          displayName: "Co Host",
+          photoThumbnailUrls: ["https://example.com/cohost.jpg"],
+        },
+      },
+      clubs: {
+        "club-1": {
+          hostUserId: "owner-1",
+          ownerUserId: "owner-1",
+          hostUserIds: ["owner-1", "cohost-1"],
+          hostProfiles: [{
+            uid: "owner-1",
+            displayName: "Stale Owner",
+            avatarUrl: null,
+            role: "owner",
+          }],
+          hostName: "Stale Owner",
+          hostAvatarUrl: null,
+          profileImageUrl: "https://example.com/club-profile.jpg",
+        },
+      },
+    });
+
+    const plan = await buildClubHostProfileRepairPlan(
+      firestore,
+      projection
+    );
+
+    assert.deepEqual(plan.summary.repairs, [
+      {
+        path: "clubs/club-1",
+        clubId: "club-1",
+        hostUserId: "owner-1",
+        current: {
+          hostName: "Stale Owner",
+          hostAvatarUrl: null,
+          ownerUserId: "owner-1",
+          hostUserIds: ["owner-1", "cohost-1"],
+          hostProfiles: [{
+            uid: "owner-1",
+            displayName: "Stale Owner",
+            avatarUrl: null,
+            role: "owner",
+          }],
+          profileImageUrl: "https://example.com/club-profile.jpg",
+        },
+        expected: {
+          hostName: "Owner One",
+          hostAvatarUrl: "https://example.com/owner.jpg",
+          ownerUserId: "owner-1",
+          hostUserIds: ["owner-1", "cohost-1"],
+          hostProfiles: [
+            {
+              uid: "owner-1",
+              displayName: "Owner One",
+              avatarUrl: "https://example.com/owner.jpg",
+              role: "owner",
+            },
+            {
+              uid: "cohost-1",
+              displayName: "Co Host",
+              avatarUrl: "https://example.com/cohost.jpg",
+              role: "host",
+            },
+          ],
+          profileImageUrl: "https://example.com/club-profile.jpg",
+        },
+      },
     ]);
   }
 );

@@ -224,6 +224,7 @@ function payload(overrides: FakeData = {}): FakeData {
     location: "mumbai",
     area: "Bandra",
     imageUrl: "https://example.com/cover.jpg",
+    profileImageUrl: "https://example.com/profile.jpg",
     instagramHandle: "@morningmiles",
     phoneNumber: "+91 99999 99999",
     email: "hello@example.com",
@@ -254,8 +255,17 @@ test("createClubHandler creates a club and host membership edge",
       hostUserId: "host-1",
       hostName: "Asha Host",
       hostAvatarUrl: "https://example.com/avatar-thumb.jpg",
+      ownerUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [{
+        uid: "host-1",
+        displayName: "Asha Host",
+        avatarUrl: "https://example.com/avatar-thumb.jpg",
+        role: "owner",
+      }],
       createdAt: {kind: "serverTimestamp"},
       imageUrl: "https://example.com/cover.jpg",
+      profileImageUrl: "https://example.com/profile.jpg",
       tags: [],
       memberCount: 1,
       rating: 0,
@@ -302,7 +312,7 @@ test("createClubHandler creates a club and host membership edge",
       {
         clubId: "club-1",
         uid: "host-1",
-        role: "host",
+        role: "owner",
         status: "active",
       }
     );
@@ -320,7 +330,11 @@ test("createClubHandler can generate the club id server-side", async () => {
   });
 
   const result = await createClubHandler(
-    request("host-1", payload({clubId: undefined, imageUrl: undefined})),
+    request("host-1", payload({
+      clubId: undefined,
+      imageUrl: undefined,
+      profileImageUrl: undefined,
+    })),
     h.deps
   );
 
@@ -330,6 +344,10 @@ test("createClubHandler can generate the club id server-side", async () => {
     null
   );
   assert.equal(h.firestore.get("clubs/generated-club-id")?.imageUrl, null);
+  assert.equal(
+    h.firestore.get("clubs/generated-club-id")?.profileImageUrl,
+    null
+  );
   assert.equal(
     h.firestore.get("clubMemberships/generated-club-id_host-1")?.status,
     "active"

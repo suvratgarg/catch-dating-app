@@ -284,7 +284,7 @@ final class ClubsListViewModelProvider
 }
 
 String _$clubsListViewModelHash() =>
-    r'db364b8920a427c54438af68cd086c6a5c3ca433';
+    r'81f10ce3fb5bb1e72264a9335c96c65391a15864';
 
 /// **Pattern D: View-model provider**
 ///
@@ -347,4 +347,4 @@ final class CanCreateClubProvider
   }
 }
 
-String _$canCreateClubHash() => r'8913afb9416ab35c8b78c4242077324a823a61ac';
+String _$canCreateClubHash() => r'2ee88d3f7f0ed39d0ac07f94f95e1b9742d86e9c';

@@ -40,6 +40,17 @@
 
   "extraInterfaces": [
     {
+      "name": "ClubHostProfile",
+      "collectionPath": "embedded club host profile",
+      "comment": "Stored inside clubs/{clubId}.hostProfiles for public multi-host display.",
+      "fields": [
+        { "name": "uid", "tsType": "string" },
+        { "name": "displayName", "tsType": "string" },
+        { "name": "avatarUrl", "tsType": "string | null", "optional": true },
+        { "name": "role", "tsType": "\"owner\" | \"host\"" }
+      ]
+    },
+    {
       "name": "ProfilePromptAnswer",
       "collectionPath": "embedded profile prompt answer",
       "comment": "Stored inside users/{uid}.profilePrompts and publicProfiles/{uid}.profilePrompts.",

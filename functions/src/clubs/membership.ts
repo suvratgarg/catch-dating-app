@@ -20,6 +20,7 @@ import {
   clubMembershipId,
 } from "../shared/relationshipDocuments";
 import {normalizeClubIdPayload} from "./clubPayloadNormalization";
+import {clubOwnerUserId, isClubHost, isClubOwner} from "../shared/clubHosts";
 
 interface ClubMembershipDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -85,7 +86,9 @@ export async function joinClubHandler(
       tx.set(membershipRef, activeClubMembershipPatch({
         clubId,
         uid: userId,
-        role: club.hostUserId === userId ? "host" : "member",
+        role: isClubOwner(club, userId) ?
+          "owner" :
+          isClubHost(club, userId) ? "host" : "member",
       }), {merge: true});
     }
   });
@@ -131,10 +134,16 @@ export async function leaveClubHandler(
     assertCanMutateMembership(clubSnap, userSnap, deletedUserSnap);
 
     const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
-    if (club.hostUserId === userId) {
+    if (clubOwnerUserId(club) === userId) {
       throw new HttpsError(
         "failed-precondition",
-        "Hosts cannot leave clubs they own."
+        "Owners cannot leave clubs they own."
+      );
+    }
+    if (isClubHost(club, userId)) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Hosts must be removed from the host team before leaving."
       );
     }
 

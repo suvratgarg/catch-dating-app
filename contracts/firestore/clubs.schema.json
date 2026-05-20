@@ -25,8 +25,12 @@
     "hostUserId",
     "hostName",
     "hostAvatarUrl",
+    "ownerUserId",
+    "hostUserIds",
+    "hostProfiles",
     "createdAt",
     "imageUrl",
+    "profileImageUrl",
     "tags",
     "memberCount",
     "rating",
@@ -71,10 +75,33 @@
     "hostAvatarUrl": {
       "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
     },
+    "ownerUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "hostUserIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      }
+    },
+    "hostProfiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/clubHostProfile"
+      }
+    },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     },
     "imageUrl": {
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+    },
+    "profileImageUrl": {
       "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
     },
     "tags": {

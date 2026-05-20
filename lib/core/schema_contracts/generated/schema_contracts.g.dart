@@ -552,6 +552,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     'preferredDistances',
     'runningReasons',
     'preferredRunTimes',
+    'runPreferencesVersion',
     'prefsNewCatches',
     'prefsMessages',
     'prefsEventReminders',
@@ -1225,6 +1226,10 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         ],
       },
     },
+    'runPreferencesVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
     'prefsNewCatches': <String, Object?>{
       'type': 'boolean',
     },
@@ -1321,6 +1326,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     'preferredDistances',
     'runningReasons',
     'preferredRunTimes',
+    'runPreferencesVersion',
   ],
   'properties': <String, Object?>{
     'name': <String, Object?>{
@@ -1880,6 +1886,10 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         ],
       },
     },
+    'runPreferencesVersion': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
   },
   'x-internal-demo-fields': <Object?>[
     'synthetic',
@@ -1930,8 +1940,12 @@ const schemaClubDocumentSchema = <String, Object?>{
     'hostUserId',
     'hostName',
     'hostAvatarUrl',
+    'ownerUserId',
+    'hostUserIds',
+    'hostProfiles',
     'createdAt',
     'imageUrl',
+    'profileImageUrl',
     'tags',
     'memberCount',
     'rating',
@@ -1993,6 +2007,68 @@ const schemaClubDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'ownerUserId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'hostUserIds': <String, Object?>{
+      'type': 'array',
+      'minItems': 1,
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'hostProfiles': <String, Object?>{
+      'type': 'array',
+      'minItems': 1,
+      'maxItems': 20,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'uid',
+          'displayName',
+          'avatarUrl',
+          'role',
+        ],
+        'properties': <String, Object?>{
+          'uid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'displayName': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'avatarUrl': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'role': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'owner',
+              'host',
+            ],
+          },
+        },
+      },
+    },
     'createdAt': <String, Object?>{
       'type': 'object',
       'description': 'Serialized Firestore Timestamp fixture shape.',
@@ -2014,6 +2090,18 @@ const schemaClubDocumentSchema = <String, Object?>{
       },
     },
     'imageUrl': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'format': 'uri',
+          'maxLength': 2048,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'profileImageUrl': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'type': 'string',
@@ -2337,6 +2425,7 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
     'role': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
+        'owner',
         'host',
         'member',
       ],
@@ -6151,6 +6240,10 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
             ],
           },
         },
+        'runPreferencesVersion': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'prefsNewCatches': <String, Object?>{
           'type': 'boolean',
         },
@@ -6236,6 +6329,13 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
       'maxLength': 120,
     },
     'imageUrl': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 320,
+    },
+    'profileImageUrl': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
@@ -6462,6 +6562,13 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
           ],
           'maxLength': 320,
         },
+        'profileImageUrl': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 320,
+        },
         'tags': <String, Object?>{
           'type': 'array',
           'items': <String, Object?>{
@@ -6606,6 +6713,56 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
           },
         },
       },
+    },
+  },
+};
+
+const schemaAddClubHostCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/add_club_host_payload.schema.json',
+  'title': 'AddClubHostCallablePayload',
+  'description': 'Callable payload accepted by addClubHost.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'clubId',
+    'uid',
+  ],
+  'properties': <String, Object?>{
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+  },
+};
+
+const schemaRemoveClubHostCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/remove_club_host_payload.schema.json',
+  'title': 'RemoveClubHostCallablePayload',
+  'description': 'Callable payload accepted by removeClubHost.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'clubId',
+    'uid',
+  ],
+  'properties': <String, Object?>{
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };
@@ -8855,6 +9012,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaUpdateClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'AddClubHostCallablePayload',
+    source: 'callables/add_club_host_payload.schema.json',
+    schema: schemaAddClubHostCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'RemoveClubHostCallablePayload',
+    source: 'callables/remove_club_host_payload.schema.json',
+    schema: schemaRemoveClubHostCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ArchiveClubCallablePayload',
     source: 'callables/archive_club_payload.schema.json',
     schema: schemaArchiveClubCallablePayloadSchema,
@@ -9042,6 +9209,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'CreateClubCallablePayload': schemaCreateClubCallablePayloadSchema,
   'CreateClubCallableResponse': schemaCreateClubCallableResponseSchema,
   'UpdateClubCallablePayload': schemaUpdateClubCallablePayloadSchema,
+  'AddClubHostCallablePayload': schemaAddClubHostCallablePayloadSchema,
+  'RemoveClubHostCallablePayload': schemaRemoveClubHostCallablePayloadSchema,
   'ArchiveClubCallablePayload': schemaArchiveClubCallablePayloadSchema,
   'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
   'ClubMembershipCallablePayload': schemaClubMembershipCallablePayloadSchema,
@@ -9110,6 +9279,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/create_club_payload.schema.json': schemaCreateClubCallablePayloadSchema,
   'callable_responses/create_club_response.schema.json': schemaCreateClubCallableResponseSchema,
   'callables/update_club_payload.schema.json': schemaUpdateClubCallablePayloadSchema,
+  'callables/add_club_host_payload.schema.json': schemaAddClubHostCallablePayloadSchema,
+  'callables/remove_club_host_payload.schema.json': schemaRemoveClubHostCallablePayloadSchema,
   'callables/archive_club_payload.schema.json': schemaArchiveClubCallablePayloadSchema,
   'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
   'callables/club_membership_payload.schema.json': schemaClubMembershipCallablePayloadSchema,

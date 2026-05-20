@@ -89,7 +89,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       );
     }
 
-    if (uid == null || club.hostUserId != uid) {
+    if (uid == null || !club.isHostedBy(uid)) {
       return const CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can manage only events that you host.',

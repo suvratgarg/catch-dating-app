@@ -6,6 +6,8 @@ import {
   publicAvatarUrl,
   publicProfileFromUserProfileDoc,
 } from "../shared/profileProjection";
+import {isSocialReadyUserProfile} from "../shared/profileReadiness";
+import {clubHostProfiles} from "../shared/clubHosts";
 
 interface SyncPublicProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -53,8 +55,13 @@ export async function syncUserProfileProjectionsHandler(
     return;
   }
 
-  // Only sync once the profile is marked complete
-  if (!user.profileComplete) return;
+  if (!isSocialReadyUserProfile(user)) {
+    logger.info("Deleting public profile for incomplete social profile", {
+      userId,
+    });
+    await publicProfileRef.delete();
+    return;
+  }
 
   const publicProfile = publicProfileFromUserProfileDoc(user);
 
@@ -96,14 +103,36 @@ export async function syncHostedClubHostProfile(
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
-  const clubsSnap = await db
-    .collection("clubs")
-    .where("hostUserId", "==", userId)
-    .get();
-  if (clubsSnap.empty) return;
+  const [legacyHostedSnap, hostedByProjectionSnap] = await Promise.all([
+    db.collection("clubs").where("hostUserId", "==", userId).get(),
+    db.collection("clubs").where("hostUserIds", "array-contains", userId).get(),
+  ]);
+  const docsByPath = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+  for (const doc of legacyHostedSnap.docs) docsByPath.set(doc.ref.path, doc);
+  for (const doc of hostedByProjectionSnap.docs) {
+    docsByPath.set(doc.ref.path, doc);
+  }
+  if (docsByPath.size === 0) return;
 
   const batch = db.batch();
-  clubsSnap.docs.forEach((doc) => batch.set(doc.ref, patch, {merge: true}));
+  docsByPath.forEach((doc) => {
+    const club = doc.data() as Parameters<typeof clubHostProfiles>[0];
+    const fields: Record<string, unknown> = {};
+    if (club.hostUserId === userId) {
+      fields.hostName = patch.hostName;
+      fields.hostAvatarUrl = patch.hostAvatarUrl;
+    }
+    fields.hostProfiles = clubHostProfiles(club).map((host) =>
+      host.uid === userId ?
+        {
+          ...host,
+          displayName: patch.hostName,
+          avatarUrl: patch.hostAvatarUrl,
+        } :
+        host
+    );
+    batch.set(doc.ref, fields, {merge: true});
+  });
   await batch.commit();
 }
 

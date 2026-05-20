@@ -18,6 +18,7 @@ import {
 import {UpdateClubCallablePayload} from
   "../shared/generated/updateClubCallablePayload";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {isClubOwner} from "../shared/clubHosts";
 import {
   normalizeArchiveClubPayload,
   normalizeClubIdPayload,
@@ -152,7 +153,8 @@ export async function deleteClubHandler(
     const memberships = membershipsSnap.docs.map((doc) => doc.data());
     const onlyHostMembership = memberships.length <= 1 &&
       memberships.every((membership) =>
-        membership.uid === hostUserId && membership.role === "host"
+        membership.uid === hostUserId &&
+        (membership.role === "owner" || membership.role === "host")
       );
     if (
       !eventsSnap.empty ||
@@ -189,10 +191,10 @@ function assertCanMutateClub(
     throw new HttpsError("not-found", "Club not found.");
   }
   const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
-  if (club.hostUserId !== hostUserId) {
+  if (!isClubOwner(club, hostUserId)) {
     throw new HttpsError(
       "permission-denied",
-      "Only the club host can manage this club."
+      "Only the club owner can manage this club."
     );
   }
 }

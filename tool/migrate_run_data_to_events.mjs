@@ -95,16 +95,28 @@ export async function buildMigrationPlan(db) {
   const clubWrites = [];
   for (const doc of runClubs) {
     const data = doc.data;
+    const hostUserId = stringOr(data.hostUserId, "");
+    const hostName = stringOr(data.hostName, "Host");
+    const hostAvatarUrl = nullableString(data.hostAvatarUrl);
     const club = {
       name: stringOr(data.name, "Untitled club"),
       description: stringOr(data.description, ""),
       location: stringOr(data.location, ""),
       area: stringOr(data.area, ""),
-      hostUserId: stringOr(data.hostUserId, ""),
-      hostName: stringOr(data.hostName, "Host"),
-      hostAvatarUrl: nullableString(data.hostAvatarUrl),
+      hostUserId,
+      hostName,
+      hostAvatarUrl,
+      ownerUserId: hostUserId,
+      hostUserIds: hostUserId ? [hostUserId] : [],
+      hostProfiles: hostUserId ? [{
+        uid: hostUserId,
+        displayName: hostName,
+        avatarUrl: hostAvatarUrl,
+        role: "owner",
+      }] : [],
       createdAt: data.createdAt ?? admin.firestore.FieldValue.serverTimestamp(),
       imageUrl: nullableString(data.imageUrl),
+      profileImageUrl: nullableString(data.profileImageUrl),
       tags: stringArray(data.tags),
       memberCount: 0,
       rating: numberOr(data.rating, 0),
@@ -146,7 +158,7 @@ export async function buildMigrationPlan(db) {
     membershipWrites.push(setWrite(`clubMemberships/${id}`, {
       clubId: data.clubId,
       uid: data.uid,
-      role: data.role === "host" ? "host" : "member",
+      role: data.role === "host" ? "owner" : "member",
       status,
       pushNotificationsEnabled: data.pushNotificationsEnabled === true,
       joinedAt: data.joinedAt ?? admin.firestore.FieldValue.serverTimestamp(),

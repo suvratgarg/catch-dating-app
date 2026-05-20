@@ -87,12 +87,34 @@ class ClubsRepository {
 
   Stream<List<Club>> watchClubsHostedBy(String uid) => withBackendErrorStream(
     () => _clubsRef
-        .where('hostUserId', isEqualTo: uid)
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('hostUserIds', arrayContains: uid),
+          ),
+        )
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch hosted clubs',
+      resource: _collectionPath,
+    ),
+  );
+
+  Stream<List<Club>> watchClubsOwnedBy(String uid) => withBackendErrorStream(
+    () => _clubsRef
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('ownerUserId', isEqualTo: uid),
+          ),
+        )
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch owned clubs',
       resource: _collectionPath,
     ),
   );
@@ -108,6 +130,7 @@ class ClubsRepository {
     required String location,
     required String area,
     String? imageUrl,
+    String? profileImageUrl,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
@@ -124,6 +147,7 @@ class ClubsRepository {
               location: location,
               area: area,
               imageUrl: imageUrl,
+              profileImageUrl: profileImageUrl,
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
@@ -206,6 +230,34 @@ class ClubsRepository {
       resource: _collectionPath,
     ),
   );
+
+  Future<void> addClubHost({
+    required String clubId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('addClubHost')
+        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'add club host',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<void> removeClubHost({
+    required String clubId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('removeClubHost')
+        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'remove club host',
+      resource: _collectionPath,
+    ),
+  );
 }
 
 @Riverpod(keepAlive: true)
@@ -239,6 +291,12 @@ Stream<List<Club>> watchClubsByLocationSortedByRating(
 Stream<List<Club>> watchClubsHostedBy(Ref ref, String uid) {
   final repository = ref.watch(clubsRepositoryProvider);
   return repository.watchClubsHostedBy(uid);
+}
+
+@riverpod
+Stream<List<Club>> watchClubsOwnedBy(Ref ref, String uid) {
+  final repository = ref.watch(clubsRepositoryProvider);
+  return repository.watchClubsOwnedBy(uid);
 }
 
 @riverpod

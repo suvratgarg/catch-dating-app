@@ -44,9 +44,11 @@ export type ChildrenStatus =
   | "wantSomeday"
   | "dontWant";
 
+export type ClubHostRole = "owner" | "host";
+
 export type ClubLifecycleStatus = "active" | "archived";
 
-export type ClubMembershipRole = "host" | "member";
+export type ClubMembershipRole = "owner" | "host" | "member";
 
 export type ClubMembershipStatus = "active" | "left" | "deleted";
 
@@ -205,6 +207,7 @@ export interface UserProfileDoc {
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
+  runPreferencesVersion: number;
   prefsNewCatches: boolean;
   prefsMessages: boolean;
   prefsEventReminders: boolean;
@@ -254,6 +257,7 @@ export interface PublicProfileDoc {
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
+  runPreferencesVersion: number;
   languages?: Language[];
   /**
    * Migration field; legacy projections may still only have parallel photo
@@ -276,9 +280,13 @@ export interface ClubDoc {
   hostName: string;
   /** nullable in Firestore */
   hostAvatarUrl?: string | null;
+  ownerUserId?: string | null;
+  hostUserIds: string[];
+  hostProfiles: ClubHostProfile[];
   createdAt: FirebaseFirestore.Timestamp;
   /** nullable in Firestore */
   imageUrl?: string | null;
+  profileImageUrl?: string | null;
   tags: string[];
   memberCount: number;
   rating: number;
@@ -521,6 +529,17 @@ export interface ReviewDoc {
 }
 
 // ── Extra interfaces (no top-level Dart model) ────────────────────────────
+
+/**
+ * embedded club host profile
+ * Stored inside clubs/{clubId}.hostProfiles for public multi-host display.
+ */
+export interface ClubHostProfile {
+  uid: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  role: "owner" | "host";
+}
 
 /**
  * embedded profile prompt answer

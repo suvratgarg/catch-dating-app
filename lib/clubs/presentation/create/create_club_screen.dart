@@ -44,6 +44,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   int _currentStep = 0;
   String? _selectedCity;
   PickedClubCover? _coverImage;
+  PickedClubProfileImage? _profileImage;
   bool _checkedDraft = false;
   bool _restoredDraft = false;
   ClubHostDefaults _hostDefaults = const ClubHostDefaults();
@@ -143,6 +144,18 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     });
   }
 
+  Future<void> _pickProfileImage() async {
+    final image = await ref
+        .read(createClubControllerProvider.notifier)
+        .pickProfileImage();
+    if (!mounted || image == null) {
+      return;
+    }
+    setState(() {
+      _profileImage = image;
+    });
+  }
+
   void _back() {
     if (_currentStep > 0) {
       _goToStep(_currentStep - 1);
@@ -215,6 +228,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             description: _descriptionController.text.trim(),
             existingClub: widget.initialClub,
             coverImage: _coverImage?.image,
+            profileImage: _profileImage?.image,
             instagramHandle: _trimmedTextOrNull(_instagramController),
             phoneNumber: _trimmedTextOrNull(_phoneController),
             email: _trimmedTextOrNull(_emailController),
@@ -287,9 +301,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     areaController: _areaController,
                     coverImageBytes: _coverImage?.bytes,
                     existingImageUrl: widget.initialClub?.imageUrl,
+                    profileImageBytes: _profileImage?.bytes,
+                    existingProfileImageUrl: widget.initialClub?.profileImageUrl,
                     onPickCover: submitMutation.isPending
                         ? null
                         : _pickCoverImage,
+                    onPickProfileImage: submitMutation.isPending
+                        ? null
+                        : _pickProfileImage,
                   ),
                   ClubDetailsStep(
                     formKey: _detailsFormKey,

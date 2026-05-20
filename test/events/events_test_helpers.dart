@@ -124,6 +124,7 @@ UserProfile buildUser({
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
   List<String> photoUrls = const [],
+  int runPreferencesVersion = currentRunPreferencesVersion,
 }) {
   final nameParts = name.trim().split(RegExp(r'\s+'));
   return UserProfile(
@@ -143,6 +144,7 @@ UserProfile buildUser({
     profileComplete: true,
     interestedInGenders: interestedInGenders,
     photoUrls: photoUrls,
+    runPreferencesVersion: runPreferencesVersion,
   );
 }
 
@@ -199,6 +201,7 @@ PublicProfile buildPublicProfile({
   List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
   List<String> photoUrls = const [],
+  int runPreferencesVersion = currentRunPreferencesVersion,
 }) {
   return PublicProfile(
     uid: uid,
@@ -209,6 +212,7 @@ PublicProfile buildPublicProfile({
         normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
     photoUrls: photoUrls,
+    runPreferencesVersion: runPreferencesVersion,
   );
 }
 

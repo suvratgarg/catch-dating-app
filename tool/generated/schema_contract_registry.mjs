@@ -539,6 +539,7 @@ export const userProfileDocumentSchema = {
     "preferredDistances",
     "runningReasons",
     "preferredRunTimes",
+    "runPreferencesVersion",
     "prefsNewCatches",
     "prefsMessages",
     "prefsEventReminders",
@@ -1212,6 +1213,10 @@ export const userProfileDocumentSchema = {
         ]
       }
     },
+    "runPreferencesVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
     "prefsNewCatches": {
       "type": "boolean"
     },
@@ -1307,7 +1312,8 @@ export const publicProfileDocumentSchema = {
     "paceMaxSecsPerKm",
     "preferredDistances",
     "runningReasons",
-    "preferredRunTimes"
+    "preferredRunTimes",
+    "runPreferencesVersion"
   ],
   "properties": {
     "name": {
@@ -1866,6 +1872,10 @@ export const publicProfileDocumentSchema = {
           "night"
         ]
       }
+    },
+    "runPreferencesVersion": {
+      "type": "integer",
+      "minimum": 0
     }
   },
   "x-internal-demo-fields": [
@@ -1917,8 +1927,12 @@ export const clubDocumentSchema = {
     "hostUserId",
     "hostName",
     "hostAvatarUrl",
+    "ownerUserId",
+    "hostUserIds",
+    "hostProfiles",
     "createdAt",
     "imageUrl",
+    "profileImageUrl",
     "tags",
     "memberCount",
     "rating",
@@ -1980,6 +1994,68 @@ export const clubDocumentSchema = {
         }
       ]
     },
+    "ownerUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hostUserIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "hostProfiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "avatarUrl",
+          "role"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "avatarUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "host"
+            ]
+          }
+        }
+      }
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -2001,6 +2077,18 @@ export const clubDocumentSchema = {
       }
     },
     "imageUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profileImageUrl": {
       "anyOf": [
         {
           "type": "string",
@@ -2324,6 +2412,7 @@ export const clubMembershipDocumentSchema = {
     "role": {
       "type": "string",
       "enum": [
+        "owner",
         "host",
         "member"
       ]
@@ -6138,6 +6227,10 @@ export const updateUserProfileCallablePayloadSchema = {
             ]
           }
         },
+        "runPreferencesVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "prefsNewCatches": {
           "type": "boolean"
         },
@@ -6223,6 +6316,13 @@ export const createClubCallablePayloadSchema = {
       "maxLength": 120
     },
     "imageUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "profileImageUrl": {
       "type": [
         "string",
         "null"
@@ -6449,6 +6549,13 @@ export const updateClubCallablePayloadSchema = {
           ],
           "maxLength": 320
         },
+        "profileImageUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -6593,6 +6700,56 @@ export const updateClubCallablePayloadSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const addClubHostCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
+  "title": "AddClubHostCallablePayload",
+  "description": "Callable payload accepted by addClubHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "uid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const removeClubHostCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/remove_club_host_payload.schema.json",
+  "title": "RemoveClubHostCallablePayload",
+  "description": "Callable payload accepted by removeClubHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "uid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
