@@ -35,7 +35,7 @@ jobs:
           ref: ${{ env.HEAD_SHA }}
 
       - name: Wait for required main checks
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const owner = context.repo.owner;
