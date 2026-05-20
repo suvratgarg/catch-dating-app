@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,6 +54,7 @@ class CreateClubController extends _$CreateClubController {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    ClubHostDefaults hostDefaults = const ClubHostDefaults(),
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
 
@@ -75,6 +77,7 @@ class CreateClubController extends _$CreateClubController {
         'location': location,
         'area': area,
         'imageUrl': imageUrl,
+        'hostDefaults': hostDefaults.toJson(),
       };
       if (instagramHandle != null) fields['instagramHandle'] = instagramHandle;
       if (phoneNumber != null) fields['phoneNumber'] = phoneNumber;
@@ -104,6 +107,7 @@ class CreateClubController extends _$CreateClubController {
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,
+      hostDefaults: hostDefaults,
     );
   }
 }

@@ -265,6 +265,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? hostCancelReason;
   String? deletedEventId;
   Event? updatedEvent;
+  bool? updatedEventIncludePolicy;
+  String? updatedEventInviteCode;
   String? joinedWaitlistEventId;
   String? joinedWaitlistInviteCode;
   String? createdEventInviteCode;
@@ -348,11 +350,17 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<void> updateEventDetails({required Event event}) async {
+  Future<void> updateEventDetails({
+    required Event event,
+    bool includePolicy = false,
+    String? inviteCode,
+  }) async {
     if (updateEventError != null) {
       throw updateEventError!;
     }
     updatedEvent = event;
+    updatedEventIncludePolicy = includePolicy;
+    updatedEventInviteCode = inviteCode;
   }
 
   @override

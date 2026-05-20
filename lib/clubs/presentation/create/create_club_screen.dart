@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_basics_step.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_details_step.dart';
+import 'package:catch_dating_app/clubs/presentation/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -25,11 +27,12 @@ class CreateClubScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
-  static const _totalSteps = 2;
+  static const _totalSteps = 3;
 
   final _pageController = PageController();
   final _basicsFormKey = GlobalKey<FormState>();
   final _detailsFormKey = GlobalKey<FormState>();
+  final _defaultsFormKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
   final _areaController = TextEditingController();
@@ -43,11 +46,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   PickedClubCover? _coverImage;
   bool _checkedDraft = false;
   bool _restoredDraft = false;
+  ClubHostDefaults _hostDefaults = const ClubHostDefaults();
 
   bool get _isEditing => widget.initialClub != null;
 
-  GlobalKey<FormState> get _currentFormKey =>
-      _currentStep == 0 ? _basicsFormKey : _detailsFormKey;
+  GlobalKey<FormState> get _currentFormKey => switch (_currentStep) {
+    0 => _basicsFormKey,
+    1 => _detailsFormKey,
+    _ => _defaultsFormKey,
+  };
 
   @override
   void initState() {
@@ -61,6 +68,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _instagramController.text = club.instagramHandle ?? '';
       _phoneController.text = club.phoneNumber ?? '';
       _emailController.text = club.email ?? '';
+      _hostDefaults = club.hostDefaults;
       return;
     }
 
@@ -120,6 +128,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     }
     if (draft.phoneNumber != null) _phoneController.text = draft.phoneNumber!;
     if (draft.email != null) _emailController.text = draft.email!;
+    _hostDefaults = draft.hostDefaults;
   }
 
   Future<void> _pickCoverImage() async {
@@ -176,6 +185,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       instagramHandle: _trimmedTextOrNull(_instagramController),
       phoneNumber: _trimmedTextOrNull(_phoneController),
       email: _trimmedTextOrNull(_emailController),
+      hostDefaults: _hostDefaults,
     );
 
     final savedDraft = await CreateClubDraftController.saveDraftMutation.run(
@@ -208,6 +218,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             instagramHandle: _trimmedTextOrNull(_instagramController),
             phoneNumber: _trimmedTextOrNull(_phoneController),
             email: _trimmedTextOrNull(_emailController),
+            hostDefaults: _hostDefaults,
           );
 
       if (!_isEditing) {
@@ -223,7 +234,11 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     return text.isEmpty ? null : text;
   }
 
-  String get _title => _currentStep == 0 ? 'Club basics' : 'Club details';
+  String get _title => switch (_currentStep) {
+    0 => 'Club basics',
+    1 => 'Club details',
+    _ => 'Host defaults',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -282,6 +297,12 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     instagramController: _instagramController,
                     phoneController: _phoneController,
                     emailController: _emailController,
+                  ),
+                  ClubHostDefaultsStep(
+                    formKey: _defaultsFormKey,
+                    defaults: _hostDefaults,
+                    onChanged: (defaults) =>
+                        setState(() => _hostDefaults = defaults),
                   ),
                 ],
               ),

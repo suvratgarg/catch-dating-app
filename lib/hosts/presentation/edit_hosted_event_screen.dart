@@ -21,6 +21,8 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -28,6 +30,7 @@ import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/picker_tile.dart';
@@ -131,18 +134,40 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   final _locationDetailsController = TextEditingController();
   final _distanceController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _capacityController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _minAgeController = TextEditingController();
+  final _maxAgeController = TextEditingController();
+  final _maxMenController = TextEditingController();
+  final _maxWomenController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
+  final _dynamicPricingStepController = TextEditingController();
+  final _dynamicPricingMaxController = TextEditingController();
 
   late DateTime _selectedDate;
   late TimeOfDay _selectedStartTime;
   late int _durationMinutes;
   late LocationCoordinate? _startingPoint;
   late PaceLevel _selectedPace;
+  late EventAdmissionPreset _selectedAdmissionPreset;
+  late bool _dynamicPricingEnabled;
+  late EventCancellationPolicyId _selectedCancellationPolicyId;
+  bool _loadedPrivateAccess = false;
   String? _scheduleErrorText;
 
   DateTime get _now => widget.now?.call() ?? DateTime.now();
   bool get _canEdit => !widget.event.isCancelled;
 
   bool get _scheduleLocked {
+    final event = widget.event;
+    return !_canEdit ||
+        event.startTime.isBefore(_now) ||
+        event.signedUpCount > 0 ||
+        event.waitlistCount > 0 ||
+        event.attendedCount > 0;
+  }
+
+  bool get _policyLocked {
     final event = widget.event;
     return !_canEdit ||
         event.startTime.isBefore(_now) ||
@@ -183,6 +208,28 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       includeUnit: false,
     );
     _descriptionController.text = event.description;
+    _capacityController.text = event.capacityLimit.toString();
+    _priceController.text = _minorUnitsText(event.priceInPaise);
+    _minAgeController.text = event.constraints.minAge == 0
+        ? ''
+        : event.constraints.minAge.toString();
+    _maxAgeController.text = event.constraints.maxAge == 99
+        ? ''
+        : event.constraints.maxAge.toString();
+    _maxMenController.text = event.constraints.maxMen?.toString() ?? '';
+    _maxWomenController.text = event.constraints.maxWomen?.toString() ?? '';
+    final policy = event.effectiveEventPolicy;
+    _selectedAdmissionPreset = _admissionPresetFor(policy);
+    _dynamicPricingEnabled = policy.usesDemandPricing;
+    final demandRules = policy.pricingPolicy.demandPricingRules;
+    final demandRule = demandRules.isEmpty ? null : demandRules.first;
+    _dynamicPricingStepController.text = _minorUnitsText(
+      demandRule?.stepAdjustment.inPaise,
+    );
+    _dynamicPricingMaxController.text = _minorUnitsText(
+      demandRule?.maxAdjustment.inPaise,
+    );
+    _selectedCancellationPolicyId = policy.cancellationPolicy.id;
   }
 
   @override
@@ -193,6 +240,15 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _locationDetailsController.dispose();
     _distanceController.dispose();
     _descriptionController.dispose();
+    _capacityController.dispose();
+    _priceController.dispose();
+    _minAgeController.dispose();
+    _maxAgeController.dispose();
+    _maxMenController.dispose();
+    _maxWomenController.dispose();
+    _inviteCodeController.dispose();
+    _dynamicPricingStepController.dispose();
+    _dynamicPricingMaxController.dispose();
     super.dispose();
   }
 
@@ -202,6 +258,22 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final mutation = ref.watch(
       EventBookingController.updateHostedEventMutation,
     );
+    final privateAccessAsync =
+        _selectedAdmissionPreset == EventAdmissionPreset.inviteOnly
+        ? ref.watch(watchEventPrivateAccessProvider(widget.event.id))
+        : const AsyncData(null);
+    privateAccessAsync.whenData((access) {
+      if (_loadedPrivateAccess) return;
+      _loadedPrivateAccess = true;
+      final inviteCode = access?.inviteCode.trim();
+      if (inviteCode != null && inviteCode.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _inviteCodeController.text.isEmpty) {
+            _inviteCodeController.text = inviteCode;
+          }
+        });
+      }
+    });
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -366,6 +438,48 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.newline,
               ),
+              gapH24,
+              const FieldLabel('Event policy'),
+              gapH8,
+              if (_policyLocked)
+                _ReadOnlyPolicyCard(event: widget.event)
+              else
+                _EditablePolicyCard(
+                  currencyCode: widget.event.currency,
+                  capacityController: _capacityController,
+                  priceController: _priceController,
+                  minAgeController: _minAgeController,
+                  maxAgeController: _maxAgeController,
+                  maxMenController: _maxMenController,
+                  maxWomenController: _maxWomenController,
+                  inviteCodeController: _inviteCodeController,
+                  dynamicPricingStepController: _dynamicPricingStepController,
+                  dynamicPricingMaxController: _dynamicPricingMaxController,
+                  admissionPreset: _selectedAdmissionPreset,
+                  onAdmissionPresetChanged: (preset) => setState(() {
+                    _selectedAdmissionPreset = preset;
+                    if (preset != EventAdmissionPreset.inviteOnly) {
+                      _loadedPrivateAccess = false;
+                    }
+                    if (preset != EventAdmissionPreset.balancedSingles) {
+                      _dynamicPricingEnabled = false;
+                    }
+                  }),
+                  dynamicPricingEnabled: _dynamicPricingEnabled,
+                  onDynamicPricingChanged: (value) => setState(() {
+                    _dynamicPricingEnabled = value;
+                    if (value && _dynamicPricingStepController.text.isEmpty) {
+                      _dynamicPricingStepController.text = '250';
+                    }
+                    if (value && _dynamicPricingMaxController.text.isEmpty) {
+                      _dynamicPricingMaxController.text = '1500';
+                    }
+                  }),
+                  cancellationPolicyId: _selectedCancellationPolicyId,
+                  onCancellationPolicyChanged: (policyId) =>
+                      setState(() => _selectedCancellationPolicyId = policyId),
+                  privateAccessAsync: privateAccessAsync,
+                ),
             ],
           ),
         ),
@@ -481,6 +595,17 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final endTime = _scheduleLocked
         ? widget.event.endTime
         : startTime.add(Duration(minutes: _durationMinutes));
+    final includePolicy = !_policyLocked;
+    final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
+    final eventPolicy = includePolicy
+        ? eventPolicyDefaults!.toEventPolicyBundle(
+            capacityLimit: int.parse(_capacityController.text.trim()),
+            basePriceInPaise: _currencyControllerValueInMinorUnits(
+              _priceController,
+            )!,
+            inviteCodeHint: _inviteCodeHint,
+          )
+        : widget.event.eventPolicy;
 
     final nextEvent = widget.event.copyWith(
       startTime: startTime,
@@ -494,6 +619,16 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           ? _selectedPace
           : widget.event.pace,
       description: _descriptionController.text.trim(),
+      capacityLimit: includePolicy
+          ? int.parse(_capacityController.text.trim())
+          : widget.event.capacityLimit,
+      priceInPaise: includePolicy
+          ? _currencyControllerValueInMinorUnits(_priceController)!
+          : widget.event.priceInPaise,
+      constraints: includePolicy
+          ? eventPolicyDefaults!.toConstraints()
+          : widget.event.constraints,
+      eventPolicy: eventPolicy,
     );
 
     final messenger = ScaffoldMessenger.of(context);
@@ -501,7 +636,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       EventBookingController.updateHostedEventMutation.run(ref, (tx) async {
         await tx
             .get(eventBookingControllerProvider.notifier)
-            .updateHostedEvent(event: nextEvent);
+            .updateHostedEvent(
+              event: nextEvent,
+              includePolicy: includePolicy,
+              inviteCode: _trimToNull(_inviteCodeController.text),
+            );
         ref.invalidate(watchEventProvider(widget.event.id));
         ref.invalidate(watchEventParticipationRosterProvider(widget.event.id));
         if (!mounted) return;
@@ -509,6 +648,30 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         await Navigator.of(context).maybePop();
       }),
     );
+  }
+
+  EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
+    admissionPreset: _admissionDefaultPresetFromSelected(
+      _selectedAdmissionPreset,
+    ),
+    minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
+    maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
+    maxMen: int.tryParse(_maxMenController.text.trim()),
+    maxWomen: int.tryParse(_maxWomenController.text.trim()),
+    dynamicPricingEnabled: _dynamicPricingEnabled,
+    dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
+      _dynamicPricingStepController,
+    ),
+    dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
+      _dynamicPricingMaxController,
+    ),
+    cancellationPolicyId: _selectedCancellationPolicyId,
+  );
+
+  String? get _inviteCodeHint {
+    final code = _inviteCodeController.text.trim();
+    if (code.length <= 4) return code.isEmpty ? null : code;
+    return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
   }
 }
 
@@ -576,6 +739,360 @@ class _EditScopeNotice extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _EditablePolicyCard extends StatelessWidget {
+  const _EditablePolicyCard({
+    required this.currencyCode,
+    required this.capacityController,
+    required this.priceController,
+    required this.minAgeController,
+    required this.maxAgeController,
+    required this.maxMenController,
+    required this.maxWomenController,
+    required this.inviteCodeController,
+    required this.dynamicPricingStepController,
+    required this.dynamicPricingMaxController,
+    required this.admissionPreset,
+    required this.onAdmissionPresetChanged,
+    required this.dynamicPricingEnabled,
+    required this.onDynamicPricingChanged,
+    required this.cancellationPolicyId,
+    required this.onCancellationPolicyChanged,
+    required this.privateAccessAsync,
+  });
+
+  final String currencyCode;
+  final TextEditingController capacityController;
+  final TextEditingController priceController;
+  final TextEditingController minAgeController;
+  final TextEditingController maxAgeController;
+  final TextEditingController maxMenController;
+  final TextEditingController maxWomenController;
+  final TextEditingController inviteCodeController;
+  final TextEditingController dynamicPricingStepController;
+  final TextEditingController dynamicPricingMaxController;
+  final EventAdmissionPreset admissionPreset;
+  final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
+  final bool dynamicPricingEnabled;
+  final ValueChanged<bool> onDynamicPricingChanged;
+  final EventCancellationPolicyId cancellationPolicyId;
+  final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
+  final AsyncValue<Object?> privateAccessAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Editable until the first booking or waitlist join.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          gapH16,
+          Row(
+            children: [
+              Expanded(
+                child: CatchTextField(
+                  label: 'Max attendees',
+                  controller: capacityController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: _positiveRequiredValidator,
+                ),
+              ),
+              gapW12,
+              Expanded(
+                child: CatchTextField(
+                  label: 'Base price ($currencyCode)',
+                  controller: priceController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                  validator: _moneyRequiredValidator,
+                ),
+              ),
+            ],
+          ),
+          gapH18,
+          const FieldLabel('Admission format'),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final preset in EventAdmissionPreset.values)
+                Semantics(
+                  button: true,
+                  selected: admissionPreset == preset,
+                  label: preset.title,
+                  child: GestureDetector(
+                    onTap: () => onAdmissionPresetChanged(preset),
+                    child: VibeTag(
+                      label: preset.label,
+                      active: admissionPreset == preset,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          gapH8,
+          Text(
+            admissionPreset.description,
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
+            gapH16,
+            if (privateAccessAsync.isLoading)
+              Text(
+                'Loading current invite code...',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            gapH8,
+            CatchTextField(
+              label: 'Invite code',
+              controller: inviteCodeController,
+              hintText: 'CATCH-DELHI',
+              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
+              ],
+              validator: admissionPreset == EventAdmissionPreset.inviteOnly
+                  ? _inviteCodeValidator
+                  : null,
+            ),
+          ],
+          if (admissionPreset == EventAdmissionPreset.fixedCohortCaps) ...[
+            gapH16,
+            Row(
+              children: [
+                Expanded(
+                  child: CatchTextField(
+                    label: 'Max straight men',
+                    isOptional: true,
+                    controller: maxMenController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: _positiveOptionalValidator,
+                  ),
+                ),
+                gapW12,
+                Expanded(
+                  child: CatchTextField(
+                    label: 'Max straight women',
+                    isOptional: true,
+                    controller: maxWomenController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: _positiveOptionalValidator,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
+            gapH12,
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: dynamicPricingEnabled,
+              onChanged: onDynamicPricingChanged,
+              title: Text(
+                'Demand pricing',
+                style: CatchTextStyles.labelL(context),
+              ),
+              subtitle: Text(
+                'Increase price for the over-demand cohort while preserving the event balance.',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ),
+            if (dynamicPricingEnabled) ...[
+              gapH12,
+              Row(
+                children: [
+                  Expanded(
+                    child: CatchTextField(
+                      label: 'Step ($currencyCode)',
+                      controller: dynamicPricingStepController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: _positiveRequiredValidator,
+                    ),
+                  ),
+                  gapW12,
+                  Expanded(
+                    child: CatchTextField(
+                      label: 'Max ($currencyCode)',
+                      controller: dynamicPricingMaxController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: _positiveRequiredValidator,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+          gapH18,
+          const FieldLabel('Age range'),
+          gapH8,
+          Row(
+            children: [
+              Expanded(
+                child: CatchTextField(
+                  label: 'Min age',
+                  isOptional: true,
+                  controller: minAgeController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) => _validateAge(
+                    value,
+                    siblingController: maxAgeController,
+                    isMinimum: true,
+                  ),
+                ),
+              ),
+              gapW12,
+              Expanded(
+                child: CatchTextField(
+                  label: 'Max age',
+                  isOptional: true,
+                  controller: maxAgeController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (value) => _validateAge(
+                    value,
+                    siblingController: minAgeController,
+                    isMinimum: false,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          gapH18,
+          const FieldLabel('Cancellation policy'),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final policyId in EventCancellationPolicyId.values)
+                Semantics(
+                  button: true,
+                  selected: cancellationPolicyId == policyId,
+                  label: _policyFor(policyId).title,
+                  child: GestureDetector(
+                    onTap: () => onCancellationPolicyChanged(policyId),
+                    child: VibeTag(
+                      label: _policyFor(policyId).title.toUpperCase(),
+                      active: cancellationPolicyId == policyId,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          gapH8,
+          Text(
+            _policyFor(cancellationPolicyId).attendeeSummary,
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadOnlyPolicyCard extends StatelessWidget {
+  const _ReadOnlyPolicyCard({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final policy = event.effectiveEventPolicy;
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Policy locked', style: CatchTextStyles.titleM(context)),
+          gapH4,
+          Text(
+            'Capacity, pricing, admission, and cancellation policy lock once the event starts or someone books or joins the waitlist.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          gapH12,
+          _ReadOnlyPolicyRow(
+            label: 'Capacity',
+            value: '${event.capacityLimit}',
+          ),
+          _ReadOnlyPolicyRow(
+            label: 'Price',
+            value: event.isFree
+                ? 'Free'
+                : EventFormatters.priceInPaise(
+                    event.priceInPaise,
+                    currencyCode: event.currency,
+                  ),
+          ),
+          _ReadOnlyPolicyRow(
+            label: 'Admission',
+            value: _admissionPresetFor(policy).title,
+          ),
+          _ReadOnlyPolicyRow(
+            label: 'Cancellation',
+            value: policy.cancellationPolicy.title,
+            showDivider: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadOnlyPolicyRow extends StatelessWidget {
+  const _ReadOnlyPolicyRow({
+    required this.label,
+    required this.value,
+    this.showDivider = true,
+  });
+
+  final String label;
+  final String value;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      children: [
+        Row(
+          children: [
+            Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+            gapW16,
+            Expanded(
+              child: Text(
+                value,
+                style: CatchTextStyles.labelL(context),
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ],
+        ),
+        if (showDivider) ...[gapH10, Divider(color: t.line, height: 1), gapH10],
+      ],
     );
   }
 }
@@ -681,4 +1198,97 @@ String _formatDate(DateTime date) {
 String? _trimToNull(String value) {
   final normalized = value.trim();
   return normalized.isEmpty ? null : normalized;
+}
+
+EventAdmissionPreset _admissionPresetFor(EventPolicyBundle policy) {
+  if (policy.usesInviteOnly) return EventAdmissionPreset.inviteOnly;
+  if (policy.usesBalancedRatio) return EventAdmissionPreset.balancedSingles;
+  if (policy.usesFixedCohortCaps) return EventAdmissionPreset.fixedCohortCaps;
+  return EventAdmissionPreset.openCapacity;
+}
+
+EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
+  EventAdmissionPreset preset,
+) {
+  return switch (preset) {
+    EventAdmissionPreset.openCapacity =>
+      EventAdmissionDefaultPreset.openCapacity,
+    EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
+    EventAdmissionPreset.balancedSingles =>
+      EventAdmissionDefaultPreset.balancedSingles,
+    EventAdmissionPreset.fixedCohortCaps =>
+      EventAdmissionDefaultPreset.fixedCohortCaps,
+  };
+}
+
+String _minorUnitsText(int? value) {
+  if (value == null) return '';
+  if (value % 100 == 0) return (value ~/ 100).toString();
+  return (value / 100).toStringAsFixed(2);
+}
+
+int? _currencyControllerValueInMinorUnits(TextEditingController controller) {
+  final amount = double.tryParse(controller.text.trim());
+  if (amount == null) return null;
+  return (amount * 100).round();
+}
+
+String? _positiveOptionalValidator(String? value) {
+  if (value == null || value.trim().isEmpty) return null;
+  final n = int.tryParse(value.trim());
+  if (n == null || n < 1) return 'Min 1';
+  return null;
+}
+
+String? _positiveRequiredValidator(String? value) {
+  if (value == null || value.trim().isEmpty) return 'Required';
+  final n = int.tryParse(value.trim());
+  if (n == null || n < 1) return 'Min 1';
+  return null;
+}
+
+String? _moneyRequiredValidator(String? value) {
+  if (value == null || value.trim().isEmpty) return 'Required';
+  final amount = double.tryParse(value.trim());
+  if (amount == null) return 'Invalid';
+  if (amount < 0) return 'Min 0';
+  return null;
+}
+
+String? _inviteCodeValidator(String? value) {
+  final code = value?.trim() ?? '';
+  if (code.isEmpty) return 'Required';
+  if (code.length < 4) return 'Min 4 chars';
+  if (code.length > 64) return 'Max 64 chars';
+  return null;
+}
+
+String? _validateAge(
+  String? value, {
+  required TextEditingController siblingController,
+  required bool isMinimum,
+}) {
+  if (value == null || value.trim().isEmpty) return null;
+
+  final parsedValue = int.tryParse(value.trim());
+  if (parsedValue == null || parsedValue < 18 || parsedValue > 99) {
+    return '18-99';
+  }
+
+  final siblingValue = int.tryParse(siblingController.text.trim());
+  if (siblingValue == null) return null;
+
+  if (isMinimum && parsedValue > siblingValue) return '<= max';
+  if (!isMinimum && parsedValue < siblingValue) return '>= min';
+  return null;
+}
+
+EventCancellationPolicy _policyFor(EventCancellationPolicyId id) {
+  return switch (id) {
+    EventCancellationPolicyId.flexible =>
+      const EventCancellationPolicy.flexible(),
+    EventCancellationPolicyId.standard =>
+      const EventCancellationPolicy.standard(),
+    EventCancellationPolicyId.strict => const EventCancellationPolicy.strict(),
+  };
 }

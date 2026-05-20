@@ -529,10 +529,10 @@ void _writeEnumTypes(
   for (final name in names) {
     if (allEnums.containsKey(name)) {
       final values = allEnums[name]!;
-      if (values.length <= 4) {
-        buf.writeln(
-          'export type $name = ${values.map((v) => '"$v"').join(' | ')};',
-        );
+      final oneLine =
+          'export type $name = ${values.map((v) => '"$v"').join(' | ')};';
+      if (values.length <= 4 && oneLine.length <= _tsMaxLineLength) {
+        buf.writeln(oneLine);
       } else {
         buf.writeln('export type $name =');
         for (var i = 0; i < values.length; i++) {
@@ -544,10 +544,10 @@ void _writeEnumTypes(
       // Extra enum from overlay — write its values directly.
       final extra = extraEnums.firstWhere((e) => e['name'] == name);
       final values = (extra['values'] as List<dynamic>).cast<String>();
-      if (values.length <= 4) {
-        buf.writeln(
-          'export type $name = ${values.map((v) => '"$v"').join(' | ')};',
-        );
+      final oneLine =
+          'export type $name = ${values.map((v) => '"$v"').join(' | ')};';
+      if (values.length <= 4 && oneLine.length <= _tsMaxLineLength) {
+        buf.writeln(oneLine);
       } else {
         buf.writeln('export type $name =');
         for (var i = 0; i < values.length; i++) {

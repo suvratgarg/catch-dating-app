@@ -12,17 +12,23 @@ class AttendanceSheetViewModel {
     required this.event,
     required this.attendeeIds,
     required this.attendedIds,
+    required this.waitlistedIds,
+    required this.profileIds,
   });
 
   final Event event;
   final List<String> attendeeIds;
   final Set<String> attendedIds;
+  final List<String> waitlistedIds;
+  final List<String> profileIds;
 
   int get checkedInCount => attendeeIds.where(attendedIds.contains).length;
 
   int get totalCount => attendeeIds.length;
 
-  bool get isEmpty => attendeeIds.isEmpty;
+  int get waitlistCount => waitlistedIds.length;
+
+  bool get isEmpty => attendeeIds.isEmpty && waitlistedIds.isEmpty;
 
   bool isAttended(String uid) => attendedIds.contains(uid);
 }
@@ -73,6 +79,19 @@ AsyncValue<AttendanceSheetViewModel?> buildAttendanceSheetViewModel({
       event: event,
       attendeeIds: roster.bookedIds,
       attendedIds: Set.unmodifiable(roster.checkedInIds),
+      waitlistedIds: roster.waitlistedIds,
+      profileIds: _uniqueOrderedIds([
+        ...roster.bookedIds,
+        ...roster.waitlistedIds,
+      ]),
     ),
   );
+}
+
+List<String> _uniqueOrderedIds(List<String> ids) {
+  final seen = <String>{};
+  return [
+    for (final id in ids)
+      if (seen.add(id)) id,
+  ];
 }

@@ -42,6 +42,9 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
     const TimestampConverter().fromJson,
   ),
   archiveReason: json['archiveReason'] as String?,
+  hostDefaults: json['hostDefaults'] == null
+      ? const ClubHostDefaults()
+      : ClubHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
@@ -73,6 +76,7 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
     const TimestampConverter().toJson,
   ),
   'archiveReason': instance.archiveReason,
+  'hostDefaults': instance.hostDefaults.toJson(),
 };
 
 Value? _$JsonConverterFromJson<Json, Value>(

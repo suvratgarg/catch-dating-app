@@ -9,6 +9,7 @@ final class CreateClubCallableRequest {
     this.instagramHandle,
     this.phoneNumber,
     this.email,
+    this.hostDefaults,
   });
 
   final String? clubId;
@@ -20,6 +21,7 @@ final class CreateClubCallableRequest {
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
+  final Map<String, Object?>? hostDefaults;
 
   Map<String, Object?> toJson() => {
     if (clubId != null) 'clubId': clubId,
@@ -31,6 +33,7 @@ final class CreateClubCallableRequest {
     'instagramHandle': instagramHandle,
     'phoneNumber': phoneNumber,
     'email': email,
+    'hostDefaults': ?hostDefaults,
   };
 }
 

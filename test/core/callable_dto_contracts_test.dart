@@ -57,7 +57,7 @@ void main() {
         'UpdateEventCallablePayload',
         UpdateEventCallableRequest(
           eventId: 'event-1',
-          fields: details,
+          fields: details.toJson(),
         ).toJson(),
       );
       _expectValid(

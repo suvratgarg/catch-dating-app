@@ -250,6 +250,9 @@ export async function updateEventHandler(
   await deps.checkRateLimit?.(db, hostUserId, "updateEvent");
 
   const eventRef = db.collection("events").doc(data.eventId);
+  const privateAccessRef = db
+    .collection("eventPrivateAccess")
+    .doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let updatedEvent: EventDoc | null = null;
   let affectedClubId: string | null = null;
@@ -273,24 +276,34 @@ export async function updateEventHandler(
       );
     }
     const clubRef = db.collection("clubs").doc(event.clubId);
-    const [clubSnap, activeParticipations] = await Promise.all([
-      tx.get(clubRef),
-      eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
-        "signedUp",
-        "waitlisted",
-        "attended",
-      ]),
-    ]);
+    const [clubSnap, activeParticipations, privateAccessSnap] =
+      await Promise.all([
+        tx.get(clubRef),
+        eventParticipationsByStatusInTransaction(tx, db, data.eventId, [
+          "signedUp",
+          "waitlisted",
+          "attended",
+        ]),
+        tx.get(privateAccessRef),
+      ]);
     assertCanMutateClub(clubSnap, deletedUserSnap, hostUserId);
     assertValidMergedRunUpdate(event, data.fields);
+    assertValidEventConstraints(data.fields.constraints);
     if (hasScheduleTimeChange(data.fields) && activeParticipations.length > 0) {
       throw new HttpsError(
         "failed-precondition",
         "Events with participants or waitlisted users cannot be rescheduled."
       );
     }
+    if (hasPolicyChange(data.fields) && activeParticipations.length > 0) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Events with participants or waitlisted users cannot change policy."
+      );
+    }
 
     const patch = buildUpdateEventPatch(data.fields, deps);
+    const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
     if (hasScheduleTimeChange(data.fields)) {
       await replaceClubScheduleInTransaction(tx, db, {
         clubId: event.clubId,
@@ -302,6 +315,18 @@ export async function updateEventHandler(
       });
     }
     tx.update(eventRef, patch);
+    if (hasPolicyChange(data.fields) && nextPolicy) {
+      syncPrivateAccessForPolicyUpdate({
+        tx,
+        privateAccessRef,
+        privateAccessSnap,
+        eventId: data.eventId,
+        clubId: event.clubId,
+        fields: data.fields,
+        eventPolicy: nextPolicy,
+        serverTimestamp: deps.serverTimestamp,
+      });
+    }
     updatedEvent = {...event, ...patch};
     affectedClubId = event.clubId;
     shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
@@ -733,6 +758,22 @@ function buildUpdateEventPatch(
   if (fields.distanceKm !== undefined) patch.distanceKm = fields.distanceKm;
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;
+  if (fields.constraints !== undefined) {
+    patch.constraints = normalizeConstraints(fields.constraints);
+  }
+  if (fields.eventPolicy !== undefined) {
+    const eventPolicy = normalizePolicy(fields.eventPolicy);
+    patch.eventPolicy = eventPolicy;
+    patch.capacityLimit = eventPolicy.admission.capacityLimit;
+    patch.priceInPaise = eventPolicy.pricing.basePriceInPaise;
+  } else {
+    if (fields.capacityLimit !== undefined) {
+      patch.capacityLimit = fields.capacityLimit;
+    }
+    if (fields.priceInPaise !== undefined) {
+      patch.priceInPaise = fields.priceInPaise;
+    }
+  }
   return patch;
 }
 
@@ -762,6 +803,63 @@ function hasScheduleTimeChange(
 ): boolean {
   return fields.startTimeMillis !== undefined ||
     fields.endTimeMillis !== undefined;
+}
+
+/**
+ * Returns true when an update touches booking policy or private invite state.
+ * @param {object} fields Host update fields.
+ * @return {boolean} Whether participant-free policy guards should run.
+ */
+function hasPolicyChange(fields: EventHostUpdateFields): boolean {
+  return fields.capacityLimit !== undefined ||
+    fields.priceInPaise !== undefined ||
+    fields.constraints !== undefined ||
+    fields.eventPolicy !== undefined ||
+    fields.privateAccess !== undefined;
+}
+
+/**
+ * Syncs the host-private invite code document after a policy update.
+ * @param {object} params Sync dependencies and normalized policy fields.
+ */
+function syncPrivateAccessForPolicyUpdate(params: {
+  tx: FirebaseFirestore.Transaction;
+  privateAccessRef: FirebaseFirestore.DocumentReference;
+  privateAccessSnap: FirebaseFirestore.DocumentSnapshot;
+  eventId: string;
+  clubId: string;
+  fields: EventHostUpdateFields;
+  eventPolicy: EventPolicyBundleDoc;
+  serverTimestamp?: () => FirebaseFirestore.FieldValue;
+}) {
+  if (!params.eventPolicy.admission.inviteRequired) {
+    if (params.privateAccessSnap.exists) {
+      params.tx.delete(params.privateAccessRef);
+    }
+    return;
+  }
+
+  const existingCode = params.privateAccessSnap.exists ?
+    normalizeInviteCode(params.privateAccessSnap.data()?.inviteCode) :
+    null;
+  const nextCode =
+    normalizeInviteCode(params.fields.privateAccess?.inviteCode) ??
+    existingCode;
+  if (!nextCode || nextCode.length < 4 || nextCode.length > 64) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Invite-only events need an invite code between 4 and 64 characters."
+    );
+  }
+
+  params.tx.set(params.privateAccessRef, {
+    eventId: params.eventId,
+    clubId: params.clubId,
+    inviteCode: nextCode,
+    createdAt: params.privateAccessSnap.data()?.createdAt ??
+      params.serverTimestamp?.() ??
+      admin.firestore.FieldValue.serverTimestamp(),
+  }, {merge: true});
 }
 
 /**

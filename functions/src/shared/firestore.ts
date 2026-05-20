@@ -68,6 +68,14 @@ export type EducationLevel =
   | "tradeSchool"
   | "other";
 
+export type EventAdmissionDefaultPreset =
+  | "openCapacity"
+  | "inviteOnly"
+  | "balancedSingles"
+  | "fixedCohortCaps";
+
+export type EventCancellationPolicyId = "flexible" | "standard" | "strict";
+
 export type EventLifecycleStatus = "active" | "cancelled";
 
 export type EventParticipationStatus =
@@ -289,6 +297,7 @@ export interface ClubDoc {
   archived: boolean;
   archivedAt?: FirebaseFirestore.Timestamp | null;
   archiveReason?: string | null;
+  hostDefaults: ClubHostDefaults;
 }
 
 /**
@@ -571,6 +580,45 @@ export interface EventFormatSnapshot {
   defaultPlaybookId?: string;
   defaultModuleIds?: string[];
   activityDetails?: Record<string, unknown>;
+}
+
+/**
+ * embedded club host defaults
+ * Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.
+ */
+export interface ClubHostDefaults {
+  eventPolicy: EventPolicyDefaults;
+  eventSuccess: EventSuccessDefaults;
+}
+
+/**
+ * embedded event policy defaults
+ * Stored inside clubs/{clubId}.hostDefaults.eventPolicy.
+ */
+export interface EventPolicyDefaults {
+  admissionPreset: EventAdmissionDefaultPreset;
+  minAge: number;
+  maxAge: number;
+  maxMen?: number | null;
+  maxWomen?: number | null;
+  dynamicPricingEnabled: boolean;
+  dynamicPricingStepInPaise?: number | null;
+  dynamicPricingMaxInPaise?: number | null;
+  cancellationPolicyId: EventCancellationPolicyId;
+}
+
+/**
+ * embedded event success defaults
+ * Stored inside clubs/{clubId}.hostDefaults.eventSuccess.
+ */
+export interface EventSuccessDefaults {
+  enabled: boolean;
+  playbookId: string;
+  selectedModuleIds: string[];
+  hostGoal: string;
+  privateCrushEnabled: boolean;
+  contextualOpenersEnabled: boolean;
+  attendeePrompt?: string | null;
 }
 
 /**

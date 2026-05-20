@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,6 +34,7 @@ abstract class Club with _$Club {
     @Default(false) bool archived,
     @TimestampConverter() DateTime? archivedAt,
     String? archiveReason,
+    @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _Club;
 
   factory Club.fromJson(Map<String, dynamic> json) => _$ClubFromJson(json);

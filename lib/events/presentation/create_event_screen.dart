@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -10,6 +11,8 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
@@ -62,6 +65,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   // Draft support
   String? _activeDraftId;
   Object? _lastSavedDraftSignature;
+  late Object _initialDraftContentSignature;
   bool _checkedDrafts = false;
 
   final _eventDetailsFormKey = GlobalKey<FormState>();
@@ -106,6 +110,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   bool _dynamicPricingEnabled = false;
   EventCancellationPolicyId _selectedCancellationPolicyId =
       EventCancellationPolicyId.standard;
+  EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
 
   GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
     0 => _eventDetailsFormKey,
@@ -122,78 +127,39 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   EventConstraints get _constraints => EventConstraints(
+    minAge: _eventPolicyDefaults.minAge,
+    maxAge: _eventPolicyDefaults.maxAge,
+    maxMen: _eventPolicyDefaults.toConstraints().maxMen,
+    maxWomen: _eventPolicyDefaults.toConstraints().maxWomen,
+  );
+
+  EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
+    admissionPreset: _admissionDefaultPresetFromSelected(
+      _selectedAdmissionPreset,
+    ),
     minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
     maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-    maxMen: _selectedAdmissionPreset == EventAdmissionPreset.fixedCohortCaps
-        ? int.tryParse(_maxMenController.text.trim())
-        : null,
-    maxWomen: _selectedAdmissionPreset == EventAdmissionPreset.fixedCohortCaps
-        ? int.tryParse(_maxWomenController.text.trim())
-        : null,
+    maxMen: int.tryParse(_maxMenController.text.trim()),
+    maxWomen: int.tryParse(_maxWomenController.text.trim()),
+    dynamicPricingEnabled: _dynamicPricingEnabled,
+    dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
+      _dynamicPricingStepController,
+    ),
+    dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
+      _dynamicPricingMaxController,
+    ),
+    cancellationPolicyId: _selectedCancellationPolicyId,
   );
 
   EventPolicyBundle get _eventPolicy {
     final capacityLimit = int.parse(_capacityController.text.trim());
     final basePriceInPaise = (double.parse(_priceController.text.trim()) * 100)
         .round();
-    final cancellationPolicy = _selectedCancellationPolicy;
-
-    return switch (_selectedAdmissionPreset) {
-      EventAdmissionPreset.openCapacity => EventPolicyBundle.openEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: basePriceInPaise,
-        cancellationPolicy: cancellationPolicy,
-      ),
-      EventAdmissionPreset.inviteOnly => EventPolicyBundle.inviteOnlyEvent(
-        capacityLimit: capacityLimit,
-        basePriceInPaise: basePriceInPaise,
-        inviteCodeHint: _inviteCodeHint,
-        cancellationPolicy: cancellationPolicy,
-      ),
-      EventAdmissionPreset.balancedSingles =>
-        _dynamicPricingEnabled
-            ? EventPolicyBundle.demandPricedBalancedSinglesEvent(
-                capacityLimit: capacityLimit,
-                basePriceInPaise: basePriceInPaise,
-                stepAdjustmentInPaise:
-                    _currencyControllerValueInMinorUnits(
-                      _dynamicPricingStepController,
-                    ) ??
-                    0,
-                maxAdjustmentInPaise:
-                    _currencyControllerValueInMinorUnits(
-                      _dynamicPricingMaxController,
-                    ) ??
-                    0,
-                cancellationPolicy: cancellationPolicy,
-              )
-            : EventPolicyBundle.balancedSinglesEvent(
-                capacityLimit: capacityLimit,
-                basePriceInPaise: basePriceInPaise,
-                cancellationPolicy: cancellationPolicy,
-              ),
-      EventAdmissionPreset.fixedCohortCaps =>
-        EventPolicyBundle.fixedCohortCapsEvent(
-          capacityLimit: capacityLimit,
-          basePriceInPaise: basePriceInPaise,
-          maxMenInterestedInWomen: int.tryParse(_maxMenController.text.trim()),
-          maxWomenInterestedInMen: int.tryParse(
-            _maxWomenController.text.trim(),
-          ),
-          cancellationPolicy: cancellationPolicy,
-        ),
-    };
-  }
-
-  EventCancellationPolicy get _selectedCancellationPolicy {
-    return switch (_selectedCancellationPolicyId) {
-      EventCancellationPolicyId.flexible =>
-        const EventCancellationPolicy.flexible(),
-      EventCancellationPolicyId.standard =>
-        const EventCancellationPolicy.standard(),
-      EventCancellationPolicyId.strict =>
-        const EventCancellationPolicy.strict(),
-    };
+    return _eventPolicyDefaults.toEventPolicyBundle(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      inviteCodeHint: _inviteCodeHint,
+    );
   }
 
   VoidCallback? get _decreaseDurationCallback =>
@@ -213,6 +179,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   void initState() {
     super.initState();
+    _applyClubDefaults(widget.club.hostDefaults);
+    _initialDraftContentSignature = _currentDraftContentSignature;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_checkedDrafts) {
         _checkedDrafts = true;
@@ -404,6 +372,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             eventPolicy: _eventPolicy,
             inviteCode: _trimmedTextOrNull(_inviteCodeController),
             photoImage: _eventPhoto?.image,
+            eventSuccessDefaults: _eventSuccessDefaults,
           );
       if (mounted) {
         setState(() => _createdEvent = createdEvent);
@@ -421,7 +390,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       }
 
       return createdEvent;
-    });
+    }).ignore();
   }
 
   bool get _hasUnsavedChanges {
@@ -429,7 +398,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (_activeDraftId != null) {
       return currentSignature != _lastSavedDraftSignature;
     }
-    return currentSignature != _emptyDraftContentSignature;
+    return currentSignature != _initialDraftContentSignature;
   }
 
   Object get _currentDraftContentSignature => (
@@ -457,33 +426,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
     dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
     cancellationPolicy: _selectedCancellationPolicyId.name,
-  );
-
-  static const Object _emptyDraftContentSignature = (
-    distance: null,
-    capacity: null,
-    price: null,
-    description: null,
-    activityKind: 'socialRun',
-    paceName: null,
-    meetingPoint: null,
-    locationDetails: null,
-    startingPointLat: null,
-    startingPointLng: null,
-    selectedDateMillis: null,
-    selectedStartHour: null,
-    selectedStartMinute: null,
-    durationMinutes: CatchBusinessRules.eventDefaultDurationMinutes,
-    minAge: null,
-    maxAge: null,
-    maxMen: null,
-    maxWomen: null,
-    admissionPreset: 'openCapacity',
-    inviteCode: null,
-    dynamicPricingEnabled: false,
-    dynamicPricingStep: null,
-    dynamicPricingMax: null,
-    cancellationPolicy: 'standard',
+    eventSuccessDefaults: _eventSuccessDefaults,
   );
 
   Future<void> _checkForDrafts() async {
@@ -592,6 +535,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _selectedCancellationPolicyId = _cancellationPolicyFromName(
         draft.cancellationPolicy,
       );
+      _eventSuccessDefaults = draft.eventSuccessDefaults;
     });
     _lastSavedDraftSignature = _currentDraftContentSignature;
   }
@@ -634,6 +578,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
       dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
       cancellationPolicy: _selectedCancellationPolicyId.name,
+      eventSuccessDefaults: _eventSuccessDefaults,
     );
 
     final wasUpdate = _activeDraftId != null;
@@ -709,6 +654,28 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
+  void _applyClubDefaults(ClubHostDefaults defaults) {
+    final policy = defaults.eventPolicy;
+    _selectedAdmissionPreset = _admissionPresetFromDefault(
+      policy.admissionPreset,
+    );
+    _minAgeController.text = policy.minAge == 0 ? '' : policy.minAge.toString();
+    _maxAgeController.text = policy.maxAge == 99
+        ? ''
+        : policy.maxAge.toString();
+    _maxMenController.text = policy.maxMen?.toString() ?? '';
+    _maxWomenController.text = policy.maxWomen?.toString() ?? '';
+    _dynamicPricingEnabled = policy.dynamicPricingEnabled;
+    _dynamicPricingStepController.text = _minorUnitsText(
+      policy.dynamicPricingStepInPaise,
+    );
+    _dynamicPricingMaxController.text = _minorUnitsText(
+      policy.dynamicPricingMaxInPaise,
+    );
+    _selectedCancellationPolicyId = policy.cancellationPolicyId;
+    _eventSuccessDefaults = defaults.eventSuccess;
+  }
+
   String? get _inviteCodeHint {
     final code = _inviteCodeController.text.trim();
     if (code.length <= 4) return code.isEmpty ? null : code;
@@ -734,6 +701,40 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       (activityKind) => activityKind.name == name,
       orElse: () => ActivityKind.socialRun,
     );
+  }
+
+  static EventAdmissionPreset _admissionPresetFromDefault(
+    EventAdmissionDefaultPreset preset,
+  ) {
+    return switch (preset) {
+      EventAdmissionDefaultPreset.openCapacity =>
+        EventAdmissionPreset.openCapacity,
+      EventAdmissionDefaultPreset.inviteOnly => EventAdmissionPreset.inviteOnly,
+      EventAdmissionDefaultPreset.balancedSingles =>
+        EventAdmissionPreset.balancedSingles,
+      EventAdmissionDefaultPreset.fixedCohortCaps =>
+        EventAdmissionPreset.fixedCohortCaps,
+    };
+  }
+
+  static EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
+    EventAdmissionPreset preset,
+  ) {
+    return switch (preset) {
+      EventAdmissionPreset.openCapacity =>
+        EventAdmissionDefaultPreset.openCapacity,
+      EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
+      EventAdmissionPreset.balancedSingles =>
+        EventAdmissionDefaultPreset.balancedSingles,
+      EventAdmissionPreset.fixedCohortCaps =>
+        EventAdmissionDefaultPreset.fixedCohortCaps,
+    };
+  }
+
+  static String _minorUnitsText(int? value) {
+    if (value == null) return '';
+    if (value % 100 == 0) return (value ~/ 100).toString();
+    return (value / 100).toStringAsFixed(2);
   }
 
   @override
@@ -838,6 +839,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     onCancellationPolicyChanged: (policyId) => setState(
                       () => _selectedCancellationPolicyId = policyId,
                     ),
+                    eventSuccessDefaults: _eventSuccessDefaults,
+                    onEventSuccessDefaultsChanged: (defaults) =>
+                        setState(() => _eventSuccessDefaults = defaults),
                   ),
                 ],
               ),

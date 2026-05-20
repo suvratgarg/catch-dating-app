@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -62,6 +64,7 @@ class CreateEventController extends _$CreateEventController {
     required EventPolicyBundle eventPolicy,
     String? inviteCode,
     XFile? photoImage,
+    EventSuccessDefaults eventSuccessDefaults = const EventSuccessDefaults(),
   }) async {
     final normalizedClubId = _requireNonBlank(
       clubId,
@@ -159,6 +162,11 @@ class CreateEventController extends _$CreateEventController {
       eventPolicy: eventPolicy,
     );
     await eventRepo.createEvent(event: event, inviteCode: normalizedInviteCode);
+    if (eventSuccessDefaults.enabled) {
+      await ref
+          .read(eventSuccessRepositoryProvider)
+          .savePlan(eventSuccessDefaults.toPlanForEvent(event));
+    }
     return event;
   }
 }

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ClubDraft {
 
- DateTime get savedAt; String? get name; String? get area; String? get description; String? get location; String? get instagramHandle; String? get phoneNumber; String? get email;
+ DateTime get savedAt; String? get name; String? get area; String? get description; String? get location; String? get instagramHandle; String? get phoneNumber; String? get email; ClubHostDefaults get hostDefaults;
 /// Create a copy of ClubDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ClubDraftCopyWith<ClubDraft> get copyWith => _$ClubDraftCopyWithImpl<ClubDraft>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email);
+int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,hostDefaults);
 
 @override
 String toString() {
-  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email)';
+  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, hostDefaults: $hostDefaults)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $ClubDraftCopyWith<$Res>  {
   factory $ClubDraftCopyWith(ClubDraft value, $Res Function(ClubDraft) _then) = _$ClubDraftCopyWithImpl;
 @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, ClubHostDefaults hostDefaults
 });
 
 
-
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults;
 
 }
 /// @nodoc
@@ -65,7 +65,7 @@ class _$ClubDraftCopyWithImpl<$Res>
 
 /// Create a copy of ClubDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? hostDefaults = null,}) {
   return _then(_self.copyWith(
 savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -75,10 +75,20 @@ as String?,location: freezed == location ? _self.location : location // ignore: 
 as String?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
 as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
+as ClubHostDefaults,
   ));
 }
+/// Create a copy of ClubDraft
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults {
 
+  return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
+    return _then(_self.copyWith(hostDefaults: value));
+  });
+}
 }
 
 
@@ -160,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubHostDefaults hostDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClubDraft() when $default != null:
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.hostDefaults);case _:
   return orElse();
 
 }
@@ -181,10 +191,10 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubHostDefaults hostDefaults)  $default,) {final _that = this;
 switch (_that) {
 case _ClubDraft():
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.hostDefaults);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +211,10 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubHostDefaults hostDefaults)?  $default,) {final _that = this;
 switch (_that) {
 case _ClubDraft() when $default != null:
-return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
+return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email,_that.hostDefaults);case _:
   return null;
 
 }
@@ -216,7 +226,7 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 @JsonSerializable()
 
 class _ClubDraft implements ClubDraft {
-  const _ClubDraft({required this.savedAt, this.name, this.area, this.description, this.location, this.instagramHandle, this.phoneNumber, this.email});
+  const _ClubDraft({required this.savedAt, this.name, this.area, this.description, this.location, this.instagramHandle, this.phoneNumber, this.email, this.hostDefaults = const ClubHostDefaults()});
   factory _ClubDraft.fromJson(Map<String, dynamic> json) => _$ClubDraftFromJson(json);
 
 @override final  DateTime savedAt;
@@ -227,6 +237,7 @@ class _ClubDraft implements ClubDraft {
 @override final  String? instagramHandle;
 @override final  String? phoneNumber;
 @override final  String? email;
+@override@JsonKey() final  ClubHostDefaults hostDefaults;
 
 /// Create a copy of ClubDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +252,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubDraft&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.name, name) || other.name == name)&&(identical(other.area, area) || other.area == area)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email);
+int get hashCode => Object.hash(runtimeType,savedAt,name,area,description,location,instagramHandle,phoneNumber,email,hostDefaults);
 
 @override
 String toString() {
-  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email)';
+  return 'ClubDraft(savedAt: $savedAt, name: $name, area: $area, description: $description, location: $location, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, hostDefaults: $hostDefaults)';
 }
 
 
@@ -261,11 +272,11 @@ abstract mixin class _$ClubDraftCopyWith<$Res> implements $ClubDraftCopyWith<$Re
   factory _$ClubDraftCopyWith(_ClubDraft value, $Res Function(_ClubDraft) _then) = __$ClubDraftCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email, ClubHostDefaults hostDefaults
 });
 
 
-
+@override $ClubHostDefaultsCopyWith<$Res> get hostDefaults;
 
 }
 /// @nodoc
@@ -278,7 +289,7 @@ class __$ClubDraftCopyWithImpl<$Res>
 
 /// Create a copy of ClubDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? savedAt = null,Object? name = freezed,Object? area = freezed,Object? description = freezed,Object? location = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? hostDefaults = null,}) {
   return _then(_ClubDraft(
 savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -288,11 +299,21 @@ as String?,location: freezed == location ? _self.location : location // ignore: 
 as String?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
 as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
+as ClubHostDefaults,
   ));
 }
 
+/// Create a copy of ClubDraft
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults {
 
+  return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
+    return _then(_self.copyWith(hostDefaults: value));
+  });
+}
 }
 
 // dart format on

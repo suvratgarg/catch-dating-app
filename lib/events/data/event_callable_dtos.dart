@@ -62,19 +62,30 @@ final class UpdateEventCallableRequest {
     required this.fields,
   });
 
-  factory UpdateEventCallableRequest.fromEvent(Event event) =>
-      UpdateEventCallableRequest(
-        eventId: event.id,
-        fields: EventDetailsCallableDto.fromEvent(event),
-      );
+  factory UpdateEventCallableRequest.fromEvent(
+    Event event, {
+    bool includePolicy = false,
+    String? inviteCode,
+  }) {
+    final fields = EventDetailsCallableDto.fromEvent(event).toJson();
+    if (includePolicy) {
+      fields.addAll({
+        'capacityLimit': event.capacityLimit,
+        'priceInPaise': event.priceInPaise,
+        'constraints': EventConstraintsCallableDto.fromDomain(
+          event.constraints,
+        ).toJson(),
+        'eventPolicy': event.eventPolicy?.toJson(),
+        'privateAccess': ?_privateAccessJson(inviteCode),
+      });
+    }
+    return UpdateEventCallableRequest(eventId: event.id, fields: fields);
+  }
 
   final String eventId;
-  final EventDetailsCallableDto fields;
+  final Map<String, Object?> fields;
 
-  Map<String, Object?> toJson() => {
-    'eventId': eventId,
-    'fields': fields.toJson(),
-  };
+  Map<String, Object?> toJson() => {'eventId': eventId, 'fields': fields};
 }
 
 final class EventDetailsCallableDto {

@@ -30,20 +30,26 @@ class EventSuccessHostSection extends ConsumerWidget {
     super.key,
     required this.event,
     this.initialTab = EventSuccessHostTab.setup,
+    this.showTabs = true,
   });
 
   final Event event;
   final EventSuccessHostTab initialTab;
+  final bool showTabs;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
-    final rosterAsync = ref.watch(
-      watchEventParticipationRosterProvider(event.id),
-    );
-    final feedbackAsync = ref.watch(
-      watchEventSuccessFeedbackProvider(event.id),
-    );
+    final shouldLoadRoster = showTabs || initialTab == EventSuccessHostTab.live;
+    final shouldLoadFeedback =
+        showTabs || initialTab == EventSuccessHostTab.report;
+    final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
+        ? ref.watch(watchEventParticipationRosterProvider(event.id))
+        : AsyncData(EventParticipationRoster.empty());
+    final AsyncValue<List<EventSuccessFeedback>> feedbackAsync =
+        shouldLoadFeedback
+        ? ref.watch(watchEventSuccessFeedbackProvider(event.id))
+        : const AsyncData(<EventSuccessFeedback>[]);
 
     if (planAsync.isLoading || rosterAsync.isLoading) {
       return const Padding(
@@ -89,6 +95,7 @@ class EventSuccessHostSection extends ConsumerWidget {
       roster: roster,
       feedback: feedback,
       initialTab: initialTab,
+      showTabs: showTabs,
       embedded: true,
     );
   }
@@ -103,6 +110,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.roster,
     required this.feedback,
     this.initialTab = EventSuccessHostTab.setup,
+    this.showTabs = true,
     this.embedded = true,
   });
 
@@ -112,6 +120,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventParticipationRoster roster;
   final List<EventSuccessFeedback> feedback;
   final EventSuccessHostTab initialTab;
+  final bool showTabs;
   final bool embedded;
 
   @override
@@ -132,6 +141,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
   @override
   Widget build(BuildContext context) {
     final body = _selectedBody();
+    if (!widget.showTabs) return body;
+
     final tabs = _EventSuccessTabPicker(
       selectedTab: _selectedTab,
       onChanged: (tab) => setState(() => _selectedTab = tab),
@@ -182,6 +193,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       EventSuccessHostTab.live => _LiveTab(
         event: widget.event,
         plan: widget.plan,
+        planIsPersisted: widget.planIsPersisted,
         roster: widget.roster,
         shrinkWrap: shrinkWrap,
         physics: physics,
@@ -190,6 +202,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       EventSuccessHostTab.report => _ReportTab(
         event: widget.event,
         plan: widget.plan,
+        planIsPersisted: widget.planIsPersisted,
         feedback: widget.feedback,
         shrinkWrap: shrinkWrap,
         physics: physics,
@@ -295,7 +308,13 @@ class _SetupTabState extends State<_SetupTab> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final setupFrozen = !widget.event.startTime.isAfter(DateTime.now());
+    final hasParticipantActivity =
+        widget.event.signedUpCount > 0 ||
+        widget.event.waitlistCount > 0 ||
+        widget.event.attendedCount > 0;
+    final setupFrozen =
+        hasParticipantActivity ||
+        !widget.event.startTime.isAfter(DateTime.now());
 
     return Consumer(
       builder: (context, ref, _) {
@@ -328,8 +347,9 @@ class _SetupTabState extends State<_SetupTab> {
               _NoticeCard(
                 icon: Icons.lock_clock_rounded,
                 title: 'Setup is frozen',
-                body:
-                    'Event-success setup can be changed before the event starts. Live step controls and the report remain available.',
+                body: hasParticipantActivity
+                    ? 'Event-success setup can be changed until someone books or joins the waitlist. Live step controls and the report remain available.'
+                    : 'Event-success setup can be changed before the event starts. Live step controls and the report remain available.',
               ),
               gapH16,
             ],
@@ -504,6 +524,7 @@ class _LiveTab extends ConsumerWidget {
   const _LiveTab({
     required this.event,
     required this.plan,
+    required this.planIsPersisted,
     required this.roster,
     required this.shrinkWrap,
     required this.physics,
@@ -512,6 +533,7 @@ class _LiveTab extends ConsumerWidget {
 
   final Event event;
   final EventSuccessPlan plan;
+  final bool planIsPersisted;
   final EventParticipationRoster roster;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -523,6 +545,29 @@ class _LiveTab extends ConsumerWidget {
     final completeMutation = ref.watch(
       EventSuccessController.completePlanMutation,
     );
+    if (!planIsPersisted) {
+      final isPreEvent = event.startTime.isAfter(DateTime.now());
+      return ListView(
+        shrinkWrap: shrinkWrap,
+        primary: shrinkWrap ? false : null,
+        physics: physics,
+        padding: padding,
+        children: [
+          _NoticeCard(
+            icon: isPreEvent
+                ? Icons.cloud_upload_outlined
+                : Icons.lock_clock_rounded,
+            title: isPreEvent
+                ? 'Live mode needs saved setup'
+                : 'Live mode was not configured',
+            body: isPreEvent
+                ? 'Save event-success setup before the event to enable run-of-show controls. Attendance and check-in stay available from this Live tab.'
+                : 'This event did not have event-success setup saved before it went live. Attendance and check-in remain available; event-success live controls stay unavailable for this event.',
+          ),
+        ],
+      );
+    }
+
     final livePlan = plan.livePlan(
       bookedCount: roster.bookedCount == 0
           ? event.signedUpCount
@@ -548,6 +593,10 @@ class _LiveTab extends ConsumerWidget {
       children: [
         if (mutation.hasError) ...[
           _ErrorText(error: (mutation as MutationError).error),
+          gapH16,
+        ],
+        if (completeMutation.hasError) ...[
+          _ErrorText(error: (completeMutation as MutationError).error),
           gapH16,
         ],
         EventSuccessLiveHostMode(plan: livePlan),
@@ -609,6 +658,7 @@ class _ReportTab extends StatelessWidget {
   const _ReportTab({
     required this.event,
     required this.plan,
+    required this.planIsPersisted,
     required this.feedback,
     required this.shrinkWrap,
     required this.physics,
@@ -617,6 +667,7 @@ class _ReportTab extends StatelessWidget {
 
   final Event event;
   final EventSuccessPlan plan;
+  final bool planIsPersisted;
   final List<EventSuccessFeedback> feedback;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -624,6 +675,23 @@ class _ReportTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!planIsPersisted) {
+      return ListView(
+        shrinkWrap: shrinkWrap,
+        primary: shrinkWrap ? false : null,
+        physics: physics,
+        padding: padding,
+        children: const [
+          _NoticeCard(
+            icon: Icons.insights_outlined,
+            title: 'No event-success report',
+            body:
+                'Event-success setup was not saved for this event, so there is no run-of-show report to review. Attendance reporting remains available on this screen.',
+          ),
+        ],
+      );
+    }
+
     final brief = plan.buildBrief(event: event, feedback: feedback);
 
     return ListView(

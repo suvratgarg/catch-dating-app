@@ -15,6 +15,9 @@
     "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "instagramHandle": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "phoneNumber": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
-    "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"}
+    "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "hostDefaults": {
+      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults"
+    }
   }
 }

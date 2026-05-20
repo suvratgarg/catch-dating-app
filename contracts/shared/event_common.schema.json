@@ -363,6 +363,69 @@
           }
         }
       }
+    },
+    "eventPolicyDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "admissionPreset": {
+          "type": "string",
+          "enum": [
+            "openCapacity",
+            "inviteOnly",
+            "balancedSingles",
+            "fixedCohortCaps"
+          ]
+        },
+        "minAge": {"type": "integer", "minimum": 0, "maximum": 120},
+        "maxAge": {"type": "integer", "minimum": 0, "maximum": 120},
+        "maxMen": {"type": ["integer", "null"], "minimum": 0},
+        "maxWomen": {"type": ["integer", "null"], "minimum": 0},
+        "dynamicPricingEnabled": {"type": "boolean"},
+        "dynamicPricingStepInPaise": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "dynamicPricingMaxInPaise": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "cancellationPolicyId": {
+          "type": "string",
+          "enum": ["flexible", "standard", "strict"]
+        }
+      }
+    },
+    "eventSuccessDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "playbookId": {"type": "string", "minLength": 1, "maxLength": 120},
+        "selectedModuleIds": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {"type": "string", "minLength": 1, "maxLength": 120}
+        },
+        "hostGoal": {"type": "string", "maxLength": 300},
+        "privateCrushEnabled": {"type": "boolean"},
+        "contextualOpenersEnabled": {"type": "boolean"},
+        "attendeePrompt": {"type": ["string", "null"], "maxLength": 300}
+      }
+    },
+    "clubHostDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventPolicy": {
+          "$ref": "#/definitions/eventPolicyDefaults"
+        },
+        "eventSuccess": {
+          "$ref": "#/definitions/eventSuccessDefaults"
+        }
+      }
     }
   }
 }

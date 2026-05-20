@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club_draft.freezed.dart';
@@ -16,6 +17,7 @@ abstract class ClubDraft with _$ClubDraft {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _ClubDraft;
 
   factory ClubDraft.fromJson(Map<String, dynamic> json) =>
@@ -35,5 +37,6 @@ extension ClubDraftX on ClubDraft {
       location == null &&
       instagramHandle == null &&
       phoneNumber == null &&
-      email == null;
+      email == null &&
+      hostDefaults == const ClubHostDefaults();
 }

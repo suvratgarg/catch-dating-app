@@ -75,6 +75,45 @@
       ]
     },
     {
+      "name": "ClubHostDefaults",
+      "collectionPath": "embedded club host defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.",
+      "fields": [
+        { "name": "eventPolicy", "tsType": "EventPolicyDefaults" },
+        { "name": "eventSuccess", "tsType": "EventSuccessDefaults" }
+      ]
+    },
+    {
+      "name": "EventPolicyDefaults",
+      "collectionPath": "embedded event policy defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults.eventPolicy.",
+      "fields": [
+        { "name": "admissionPreset", "tsType": "EventAdmissionDefaultPreset" },
+        { "name": "minAge", "tsType": "number" },
+        { "name": "maxAge", "tsType": "number" },
+        { "name": "maxMen", "tsType": "number | null", "optional": true },
+        { "name": "maxWomen", "tsType": "number | null", "optional": true },
+        { "name": "dynamicPricingEnabled", "tsType": "boolean" },
+        { "name": "dynamicPricingStepInPaise", "tsType": "number | null", "optional": true },
+        { "name": "dynamicPricingMaxInPaise", "tsType": "number | null", "optional": true },
+        { "name": "cancellationPolicyId", "tsType": "EventCancellationPolicyId" }
+      ]
+    },
+    {
+      "name": "EventSuccessDefaults",
+      "collectionPath": "embedded event success defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults.eventSuccess.",
+      "fields": [
+        { "name": "enabled", "tsType": "boolean" },
+        { "name": "playbookId", "tsType": "string" },
+        { "name": "selectedModuleIds", "tsType": "string[]" },
+        { "name": "hostGoal", "tsType": "string" },
+        { "name": "privateCrushEnabled", "tsType": "boolean" },
+        { "name": "contextualOpenersEnabled", "tsType": "boolean" },
+        { "name": "attendeePrompt", "tsType": "string | null", "optional": true }
+      ]
+    },
+    {
       "name": "ProfilePhotoModeration",
       "collectionPath": "embedded profile photo moderation",
       "comment": "Stored inside users/{uid}.profilePhotos and publicProfiles/{uid}.profilePhotos.",
@@ -239,7 +278,21 @@
     }
   ],
 
-  "extraEnumTypes": [],
+  "extraEnumTypes": [
+    {
+      "name": "EventAdmissionDefaultPreset",
+      "values": [
+        "openCapacity",
+        "inviteOnly",
+        "balancedSingles",
+        "fixedCohortCaps"
+      ]
+    },
+    {
+      "name": "EventCancellationPolicyId",
+      "values": ["flexible", "standard", "strict"]
+    }
+  ],
 
   "interfaceComments": {
     "PublicProfileDoc": "Written exclusively by syncPublicProfile Cloud Function.",

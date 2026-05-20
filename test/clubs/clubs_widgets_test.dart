@@ -1344,11 +1344,17 @@ void main() {
       await tester.tap(find.text('Next'));
       await _pumpClubUi(tester);
 
-      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
       expect(
         find.widgetWithText(TextField, 'Indore morning loops.'),
         findsOneWidget,
       );
+
+      await tester.tap(find.text('Next'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Default event policy'), findsOneWidget);
     });
 
     testWidgets(
@@ -1440,7 +1446,7 @@ void main() {
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
-        await tester.tap(find.text('Create club'));
+        await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
         expect(find.text('Please add a description'), findsOneWidget);
@@ -1451,6 +1457,11 @@ void main() {
         );
         tester.testTextInput.hide();
         await tester.pump();
+
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
+
+        expect(find.text('Default event policy'), findsOneWidget);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);

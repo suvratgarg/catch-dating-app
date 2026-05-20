@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -110,6 +111,7 @@ class ClubsRepository {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    ClubHostDefaults? hostDefaults,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
@@ -125,6 +127,7 @@ class ClubsRepository {
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
+              hostDefaults: hostDefaults?.toJson(),
             ).toJson(),
           );
       return CreateClubCallableResponse.fromCallableData(result.data).clubId;

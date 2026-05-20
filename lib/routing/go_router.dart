@@ -270,7 +270,7 @@ GoRouter goRouter(Ref ref) {
             final Event event => event,
             _ => null,
           },
-          initialSection: HostEventManageSection.eventSuccess,
+          initialSection: HostEventManageSection.setup,
         ),
       ),
       GoRoute(
@@ -408,8 +408,7 @@ GoRouter goRouter(Ref ref) {
                                     final Event event => event,
                                     _ => null,
                                   },
-                                  initialSection:
-                                      HostEventManageSection.attendance,
+                                  initialSection: HostEventManageSection.live,
                                 ),
                           ),
                           GoRoute(

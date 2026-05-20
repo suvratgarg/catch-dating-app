@@ -131,6 +131,7 @@ export async function createClubHandler(
       instagramHandle: data.instagramHandle ?? null,
       phoneNumber: data.phoneNumber ?? null,
       email: data.email ?? null,
+      hostDefaults: data.hostDefaults ?? defaultHostDefaults(),
     });
     tx.set(membershipRef, activeClubMembershipPatch({
       clubId: clubRef.id,
@@ -151,3 +152,32 @@ export const createClub = onCall(
   appCheckCallableOptions,
   (request) => createClubHandler(request)
 );
+
+/**
+ * Default host-management settings for newly created clubs.
+ * @return {object} Event policy and event success defaults.
+ */
+function defaultHostDefaults() {
+  return {
+    eventPolicy: {
+      admissionPreset: "openCapacity",
+      minAge: 0,
+      maxAge: 99,
+      maxMen: null,
+      maxWomen: null,
+      dynamicPricingEnabled: false,
+      dynamicPricingStepInPaise: null,
+      dynamicPricingMaxInPaise: null,
+      cancellationPolicyId: "standard",
+    },
+    eventSuccess: {
+      enabled: false,
+      playbookId: "socialRun",
+      selectedModuleIds: [],
+      hostGoal: "Help attendees meet at least two new people.",
+      privateCrushEnabled: true,
+      contextualOpenersEnabled: true,
+      attendeePrompt: null,
+    },
+  };
+}

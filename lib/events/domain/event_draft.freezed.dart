@@ -19,7 +19,7 @@ mixin _$EventDraft {
  String? get distance; String? get capacity; String? get price; String? get description; String? get activityKind; String? get paceName;// Where step
  String? get meetingPoint; String? get locationDetails; double? get startingPointLat; double? get startingPointLng;// When step
  int? get selectedDateMillis; int? get selectedStartHour; int? get selectedStartMinute; int get durationMinutes;// Rules step
- String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen; String? get admissionPreset; String? get inviteCode; bool get dynamicPricingEnabled; String? get dynamicPricingStep; String? get dynamicPricingMax; String? get cancellationPolicy;
+ String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen; String? get admissionPreset; String? get inviteCode; bool get dynamicPricingEnabled; String? get dynamicPricingStep; String? get dynamicPricingMax; String? get cancellationPolicy; EventSuccessDefaults get eventSuccessDefaults;
 /// Create a copy of EventDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,16 +32,16 @@ $EventDraftCopyWith<EventDraft> get copyWith => _$EventDraftCopyWithImpl<EventDr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStep, dynamicPricingStep) || other.dynamicPricingStep == dynamicPricingStep)&&(identical(other.dynamicPricingMax, dynamicPricingMax) || other.dynamicPricingMax == dynamicPricingMax)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStep, dynamicPricingStep) || other.dynamicPricingStep == dynamicPricingStep)&&(identical(other.dynamicPricingMax, dynamicPricingMax) || other.dynamicPricingMax == dynamicPricingMax)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy)&&(identical(other.eventSuccessDefaults, eventSuccessDefaults) || other.eventSuccessDefaults == eventSuccessDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,clubId,savedAt,distance,capacity,price,description,activityKind,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,inviteCode,dynamicPricingEnabled,dynamicPricingStep,dynamicPricingMax,cancellationPolicy]);
+int get hashCode => Object.hashAll([runtimeType,id,clubId,savedAt,distance,capacity,price,description,activityKind,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,inviteCode,dynamicPricingEnabled,dynamicPricingStep,dynamicPricingMax,cancellationPolicy,eventSuccessDefaults]);
 
 @override
 String toString() {
-  return 'EventDraft(id: $id, clubId: $clubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, activityKind: $activityKind, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, inviteCode: $inviteCode, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStep: $dynamicPricingStep, dynamicPricingMax: $dynamicPricingMax, cancellationPolicy: $cancellationPolicy)';
+  return 'EventDraft(id: $id, clubId: $clubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, activityKind: $activityKind, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, inviteCode: $inviteCode, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStep: $dynamicPricingStep, dynamicPricingMax: $dynamicPricingMax, cancellationPolicy: $cancellationPolicy, eventSuccessDefaults: $eventSuccessDefaults)';
 }
 
 
@@ -52,11 +52,11 @@ abstract mixin class $EventDraftCopyWith<$Res>  {
   factory $EventDraftCopyWith(EventDraft value, $Res Function(EventDraft) _then) = _$EventDraftCopyWithImpl;
 @useResult
 $Res call({
- String id, String clubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? activityKind, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? inviteCode, bool dynamicPricingEnabled, String? dynamicPricingStep, String? dynamicPricingMax, String? cancellationPolicy
+ String id, String clubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? activityKind, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? inviteCode, bool dynamicPricingEnabled, String? dynamicPricingStep, String? dynamicPricingMax, String? cancellationPolicy, EventSuccessDefaults eventSuccessDefaults
 });
 
 
-
+$EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults;
 
 }
 /// @nodoc
@@ -69,7 +69,7 @@ class _$EventDraftCopyWithImpl<$Res>
 
 /// Create a copy of EventDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? activityKind = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? inviteCode = freezed,Object? dynamicPricingEnabled = null,Object? dynamicPricingStep = freezed,Object? dynamicPricingMax = freezed,Object? cancellationPolicy = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? activityKind = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? inviteCode = freezed,Object? dynamicPricingEnabled = null,Object? dynamicPricingStep = freezed,Object? dynamicPricingMax = freezed,Object? cancellationPolicy = freezed,Object? eventSuccessDefaults = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
@@ -98,10 +98,20 @@ as String?,dynamicPricingEnabled: null == dynamicPricingEnabled ? _self.dynamicP
 as bool,dynamicPricingStep: freezed == dynamicPricingStep ? _self.dynamicPricingStep : dynamicPricingStep // ignore: cast_nullable_to_non_nullable
 as String?,dynamicPricingMax: freezed == dynamicPricingMax ? _self.dynamicPricingMax : dynamicPricingMax // ignore: cast_nullable_to_non_nullable
 as String?,cancellationPolicy: freezed == cancellationPolicy ? _self.cancellationPolicy : cancellationPolicy // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,eventSuccessDefaults: null == eventSuccessDefaults ? _self.eventSuccessDefaults : eventSuccessDefaults // ignore: cast_nullable_to_non_nullable
+as EventSuccessDefaults,
   ));
 }
+/// Create a copy of EventDraft
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults {
 
+  return $EventSuccessDefaultsCopyWith<$Res>(_self.eventSuccessDefaults, (value) {
+    return _then(_self.copyWith(eventSuccessDefaults: value));
+  });
+}
 }
 
 
@@ -183,10 +193,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy,  EventSuccessDefaults eventSuccessDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventDraft() when $default != null:
-return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy);case _:
+return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy,_that.eventSuccessDefaults);case _:
   return orElse();
 
 }
@@ -204,10 +214,10 @@ return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacit
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy,  EventSuccessDefaults eventSuccessDefaults)  $default,) {final _that = this;
 switch (_that) {
 case _EventDraft():
-return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy);case _:
+return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy,_that.eventSuccessDefaults);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +234,10 @@ return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacit
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String clubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? activityKind,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? inviteCode,  bool dynamicPricingEnabled,  String? dynamicPricingStep,  String? dynamicPricingMax,  String? cancellationPolicy,  EventSuccessDefaults eventSuccessDefaults)?  $default,) {final _that = this;
 switch (_that) {
 case _EventDraft() when $default != null:
-return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy);case _:
+return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.activityKind,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.inviteCode,_that.dynamicPricingEnabled,_that.dynamicPricingStep,_that.dynamicPricingMax,_that.cancellationPolicy,_that.eventSuccessDefaults);case _:
   return null;
 
 }
@@ -239,7 +249,7 @@ return $default(_that.id,_that.clubId,_that.savedAt,_that.distance,_that.capacit
 @JsonSerializable()
 
 class _EventDraft implements EventDraft {
-  const _EventDraft({required this.id, required this.clubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.activityKind, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes, this.minAge, this.maxAge, this.maxMen, this.maxWomen, this.admissionPreset, this.inviteCode, this.dynamicPricingEnabled = false, this.dynamicPricingStep, this.dynamicPricingMax, this.cancellationPolicy});
+  const _EventDraft({required this.id, required this.clubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.activityKind, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = CatchBusinessRules.eventDefaultDurationMinutes, this.minAge, this.maxAge, this.maxMen, this.maxWomen, this.admissionPreset, this.inviteCode, this.dynamicPricingEnabled = false, this.dynamicPricingStep, this.dynamicPricingMax, this.cancellationPolicy, this.eventSuccessDefaults = const EventSuccessDefaults()});
   factory _EventDraft.fromJson(Map<String, dynamic> json) => _$EventDraftFromJson(json);
 
 @override final  String id;
@@ -273,6 +283,7 @@ class _EventDraft implements EventDraft {
 @override final  String? dynamicPricingStep;
 @override final  String? dynamicPricingMax;
 @override final  String? cancellationPolicy;
+@override@JsonKey() final  EventSuccessDefaults eventSuccessDefaults;
 
 /// Create a copy of EventDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -287,16 +298,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStep, dynamicPricingStep) || other.dynamicPricingStep == dynamicPricingStep)&&(identical(other.dynamicPricingMax, dynamicPricingMax) || other.dynamicPricingMax == dynamicPricingMax)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.activityKind, activityKind) || other.activityKind == activityKind)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.inviteCode, inviteCode) || other.inviteCode == inviteCode)&&(identical(other.dynamicPricingEnabled, dynamicPricingEnabled) || other.dynamicPricingEnabled == dynamicPricingEnabled)&&(identical(other.dynamicPricingStep, dynamicPricingStep) || other.dynamicPricingStep == dynamicPricingStep)&&(identical(other.dynamicPricingMax, dynamicPricingMax) || other.dynamicPricingMax == dynamicPricingMax)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy)&&(identical(other.eventSuccessDefaults, eventSuccessDefaults) || other.eventSuccessDefaults == eventSuccessDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,clubId,savedAt,distance,capacity,price,description,activityKind,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,inviteCode,dynamicPricingEnabled,dynamicPricingStep,dynamicPricingMax,cancellationPolicy]);
+int get hashCode => Object.hashAll([runtimeType,id,clubId,savedAt,distance,capacity,price,description,activityKind,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,inviteCode,dynamicPricingEnabled,dynamicPricingStep,dynamicPricingMax,cancellationPolicy,eventSuccessDefaults]);
 
 @override
 String toString() {
-  return 'EventDraft(id: $id, clubId: $clubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, activityKind: $activityKind, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, inviteCode: $inviteCode, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStep: $dynamicPricingStep, dynamicPricingMax: $dynamicPricingMax, cancellationPolicy: $cancellationPolicy)';
+  return 'EventDraft(id: $id, clubId: $clubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, activityKind: $activityKind, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, inviteCode: $inviteCode, dynamicPricingEnabled: $dynamicPricingEnabled, dynamicPricingStep: $dynamicPricingStep, dynamicPricingMax: $dynamicPricingMax, cancellationPolicy: $cancellationPolicy, eventSuccessDefaults: $eventSuccessDefaults)';
 }
 
 
@@ -307,11 +318,11 @@ abstract mixin class _$EventDraftCopyWith<$Res> implements $EventDraftCopyWith<$
   factory _$EventDraftCopyWith(_EventDraft value, $Res Function(_EventDraft) _then) = __$EventDraftCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String clubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? activityKind, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? inviteCode, bool dynamicPricingEnabled, String? dynamicPricingStep, String? dynamicPricingMax, String? cancellationPolicy
+ String id, String clubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? activityKind, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? inviteCode, bool dynamicPricingEnabled, String? dynamicPricingStep, String? dynamicPricingMax, String? cancellationPolicy, EventSuccessDefaults eventSuccessDefaults
 });
 
 
-
+@override $EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults;
 
 }
 /// @nodoc
@@ -324,7 +335,7 @@ class __$EventDraftCopyWithImpl<$Res>
 
 /// Create a copy of EventDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? activityKind = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? inviteCode = freezed,Object? dynamicPricingEnabled = null,Object? dynamicPricingStep = freezed,Object? dynamicPricingMax = freezed,Object? cancellationPolicy = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? activityKind = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? inviteCode = freezed,Object? dynamicPricingEnabled = null,Object? dynamicPricingStep = freezed,Object? dynamicPricingMax = freezed,Object? cancellationPolicy = freezed,Object? eventSuccessDefaults = null,}) {
   return _then(_EventDraft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
@@ -353,11 +364,21 @@ as String?,dynamicPricingEnabled: null == dynamicPricingEnabled ? _self.dynamicP
 as bool,dynamicPricingStep: freezed == dynamicPricingStep ? _self.dynamicPricingStep : dynamicPricingStep // ignore: cast_nullable_to_non_nullable
 as String?,dynamicPricingMax: freezed == dynamicPricingMax ? _self.dynamicPricingMax : dynamicPricingMax // ignore: cast_nullable_to_non_nullable
 as String?,cancellationPolicy: freezed == cancellationPolicy ? _self.cancellationPolicy : cancellationPolicy // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,eventSuccessDefaults: null == eventSuccessDefaults ? _self.eventSuccessDefaults : eventSuccessDefaults // ignore: cast_nullable_to_non_nullable
+as EventSuccessDefaults,
   ));
 }
 
+/// Create a copy of EventDraft
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$EventSuccessDefaultsCopyWith<$Res> get eventSuccessDefaults {
 
+  return $EventSuccessDefaultsCopyWith<$Res>(_self.eventSuccessDefaults, (value) {
+    return _then(_self.copyWith(eventSuccessDefaults: value));
+  });
+}
 }
 
 // dart format on

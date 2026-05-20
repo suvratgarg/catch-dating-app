@@ -127,6 +127,9 @@
       "type": ["string", "null"],
       "maxLength": 500
     },
+    "hostDefaults": {
+      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

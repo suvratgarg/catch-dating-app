@@ -269,6 +269,28 @@ test("createClubHandler creates a club and host membership edge",
       instagramHandle: "@morningmiles",
       phoneNumber: "+91 99999 99999",
       email: "hello@example.com",
+      hostDefaults: {
+        eventPolicy: {
+          admissionPreset: "openCapacity",
+          minAge: 0,
+          maxAge: 99,
+          maxMen: null,
+          maxWomen: null,
+          dynamicPricingEnabled: false,
+          dynamicPricingStepInPaise: null,
+          dynamicPricingMaxInPaise: null,
+          cancellationPolicyId: "standard",
+        },
+        eventSuccess: {
+          enabled: false,
+          playbookId: "socialRun",
+          selectedModuleIds: [],
+          hostGoal: "Help attendees meet at least two new people.",
+          privateCrushEnabled: true,
+          contextualOpenersEnabled: true,
+          attendeePrompt: null,
+        },
+      },
     });
     assert.deepEqual(
       {

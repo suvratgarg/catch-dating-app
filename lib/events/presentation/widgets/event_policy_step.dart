@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +65,8 @@ class EventPolicyStep extends StatelessWidget {
     required this.onDynamicPricingChanged,
     required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
+    required this.eventSuccessDefaults,
+    required this.onEventSuccessDefaultsChanged,
   });
 
   final GlobalKey<FormState> formKey;
@@ -82,6 +86,8 @@ class EventPolicyStep extends StatelessWidget {
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
+  final EventSuccessDefaults eventSuccessDefaults;
+  final ValueChanged<EventSuccessDefaults> onEventSuccessDefaultsChanged;
 
   String? _validateAge(
     String? value, {
@@ -438,6 +444,14 @@ class EventPolicyStep extends StatelessWidget {
               'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.',
               style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
+          ),
+          const SizedBox(height: 20),
+          EventSuccessDefaultsPanel(
+            defaults: eventSuccessDefaults,
+            onChanged: onEventSuccessDefaultsChanged,
+            title: 'Event success setup',
+            subtitle:
+                'Save a run-of-show setup with this event so Live mode is available when it starts.',
           ),
         ],
       ),

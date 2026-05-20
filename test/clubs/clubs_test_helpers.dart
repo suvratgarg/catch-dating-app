@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -165,6 +166,7 @@ class FakeClubsRepository implements ClubsRepository {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    ClubHostDefaults? hostDefaults,
   }) async {
     if (createError != null) {
       throw createError!;
@@ -180,6 +182,7 @@ class FakeClubsRepository implements ClubsRepository {
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,
+      hostDefaults: hostDefaults ?? const ClubHostDefaults(),
     );
     return resolvedClubId;
   }
@@ -252,6 +255,7 @@ class CreateClubCall {
     this.instagramHandle,
     this.phoneNumber,
     this.email,
+    this.hostDefaults = const ClubHostDefaults(),
   });
 
   final String clubId;
@@ -263,6 +267,7 @@ class CreateClubCall {
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
+  final ClubHostDefaults hostDefaults;
 }
 
 class FakeImageUploadRepository implements ImageUploadRepository {
