@@ -137,11 +137,6 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   Future<void> _send() async {
     final uid = ref.read(uidProvider).value;
     final text = _textController.text.trim();
-    if (isSuvbotConversation(matchId: widget.matchId)) {
-      await _sendSuvbotMessage(text);
-      return;
-    }
-
     final sendMutation = ref.read(ChatController.sendMessageMutation);
     if (text.isEmpty || sendMutation.isPending || uid == null) return;
 
@@ -170,43 +165,34 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     }
   }
 
-  Future<void> _sendSuvbotMessage(String text) async {
-    if (text.isEmpty || ref.read(SuvbotController.requestMutation).isPending) {
-      return;
-    }
+  Future<void> _runSuvbotAction(SuvbotActionItem action) async {
+    if (ref.read(SuvbotController.requestMutation).isPending) return;
 
     try {
       await SuvbotController.requestMutation.run(ref, (tx) async {
         await tx
             .get(suvbotControllerProvider.notifier)
-            .requestAction(actionId: 'message', text: text);
+            .requestAction(actionId: action.id);
       });
     } catch (_) {
       return;
-    }
-
-    if (mounted && _textController.text.trim() == text) {
-      _textController.clear();
     }
   }
 
-  Future<void> _runSuvbotAction(SuvbotActionItem action) async {
+  Future<void> _runSuvbotTextAction(
+    SuvbotActionItem action,
+    String text,
+  ) async {
     if (ref.read(SuvbotController.requestMutation).isPending) return;
-    final text = _textController.text.trim();
-    final actionText = action.requiresText && text.isNotEmpty ? text : null;
 
     try {
       await SuvbotController.requestMutation.run(ref, (tx) async {
         await tx
             .get(suvbotControllerProvider.notifier)
-            .requestAction(actionId: action.id, text: actionText);
+            .requestAction(actionId: action.id, text: text);
       });
     } catch (_) {
       return;
-    }
-
-    if (mounted && actionText != null && _textController.text.trim() == text) {
-      _textController.clear();
     }
   }
 
@@ -379,23 +365,22 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
                 actions: suvbotActionsAsync,
                 pending: suvbotPending,
                 onAction: _runSuvbotAction,
+                onTextAction: _runSuvbotTextAction,
                 onRetry: () => ref.invalidate(suvbotActionsProvider),
               ),
-            ChatInputBar(
-              controller: _textController,
-              sending: isSuvbot
-                  ? suvbotPending
-                  : ref.watch(ChatController.sendMessageMutation).isPending,
-              onSend: composerDisabledReason == null ? _send : null,
-              onSendImage: isSuvbot || composerDisabledReason != null
-                  ? null
-                  : _sendImage,
-              disabledReason: composerDisabledReason,
-              sendingImage: ref
-                  .watch(ChatController.sendImageMutation)
-                  .isPending,
-              showImageButton: !isSuvbot,
-            ),
+            if (!isSuvbot)
+              ChatInputBar(
+                controller: _textController,
+                sending: ref
+                    .watch(ChatController.sendMessageMutation)
+                    .isPending,
+                onSend: composerDisabledReason == null ? _send : null,
+                onSendImage: composerDisabledReason == null ? _sendImage : null,
+                disabledReason: composerDisabledReason,
+                sendingImage: ref
+                    .watch(ChatController.sendImageMutation)
+                    .isPending,
+              ),
           ],
         ),
       ),

@@ -105,6 +105,65 @@ class FakeSuvbotRepository implements SuvbotRepository {
       description: 'Explain Suvbot controls.',
       icon: 'help',
     ),
+    SuvbotActionItem(
+      id: 'warmSignupState',
+      label: 'Warm signups',
+      description: 'Create signup state.',
+      icon: 'event',
+    ),
+    SuvbotActionItem(
+      id: 'warmPostEventState',
+      label: 'Warm post-event',
+      description: 'Create post-event state.',
+      icon: 'flag',
+    ),
+    SuvbotActionItem(
+      id: 'warmChatState',
+      label: 'Warm chats',
+      description: 'Create chat state.',
+      icon: 'chat',
+    ),
+    SuvbotActionItem(
+      id: 'warmPaymentState',
+      label: 'Warm payments',
+      description: 'Create payment state.',
+      icon: 'payment',
+    ),
+    SuvbotActionItem(
+      id: 'matchTesterByPhone',
+      label: 'Match tester',
+      description: 'Create a tester match.',
+      icon: 'personAdd',
+      requiresText: true,
+    ),
+    SuvbotActionItem(
+      id: 'resetChats',
+      label: 'Reset chats',
+      description: 'Delete demo chat state.',
+      icon: 'chatReset',
+      destructive: true,
+    ),
+    SuvbotActionItem(
+      id: 'resetBookings',
+      label: 'Reset bookings',
+      description: 'Delete demo bookings.',
+      icon: 'eventReset',
+      destructive: true,
+    ),
+    SuvbotActionItem(
+      id: 'resetNotifications',
+      label: 'Reset alerts',
+      description: 'Delete demo alerts.',
+      icon: 'notifications',
+      destructive: true,
+    ),
+    SuvbotActionItem(
+      id: 'clearDemoState',
+      label: 'Fresh start',
+      description: 'Delete demo state.',
+      icon: 'clean',
+      destructive: true,
+    ),
   ];
 
   @override
@@ -412,9 +471,7 @@ void main() {
       expect(find.text('Unable to load messages.'), findsOneWidget);
     });
 
-    testWidgets('shows Suvbot actions and routes typed text to callable', (
-      tester,
-    ) async {
+    testWidgets('shows Suvbot controls without chat composer', (tester) async {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(
           id: 'suvbot_runner-1',
@@ -448,22 +505,43 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.text('Suvbot'), findsOneWidget);
-      expect(find.text('Refresh demo state'), findsOneWidget);
+      expect(find.text('Suvbot controls'), findsOneWidget);
+      expect(find.text('No typing needed'), findsOneWidget);
+      expect(find.text('Refresh all'), findsOneWidget);
       expect(find.text('Check setup'), findsOneWidget);
+      expect(find.text('Create a test state'), findsOneWidget);
+      expect(find.text('Signups'), findsOneWidget);
+      expect(find.text('Post-event'), findsOneWidget);
+      expect(find.text('Chats'), findsOneWidget);
+      expect(find.text('Payments'), findsOneWidget);
+      expect(find.text('Reset...'), findsOneWidget);
       expect(find.text('YOU BOTH RAN'), findsNothing);
+      expect(find.byType(TextField), findsNothing);
       expect(find.byIcon(Icons.image_outlined), findsNothing);
+      expect(find.byIcon(Icons.send_rounded), findsNothing);
 
       await tester.tap(find.text('Check setup'));
       await pumpFeatureUi(tester);
 
       expect(suvbotRepository.calls.single.actionId, 'checkDemoState');
 
-      await tester.enterText(find.byType(TextField), 'reset me');
-      await tester.tap(find.byIcon(Icons.send_rounded));
+      await tester.tap(find.text('Reset...'));
+      await pumpFeatureUi(tester);
+      expect(find.text('Reset demo state'), findsOneWidget);
+      await tester.tap(find.text('Reset chats'));
       await pumpFeatureUi(tester);
 
-      expect(suvbotRepository.calls.last.actionId, 'message');
-      expect(suvbotRepository.calls.last.text, 'reset me');
+      expect(suvbotRepository.calls.last.actionId, 'resetChats');
+
+      await tester.tap(find.text('Match tester'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(TextField), findsOneWidget);
+      await tester.enterText(find.byType(TextField), '+919999999999');
+      await tester.tap(find.text('Create match'));
+      await pumpFeatureUi(tester);
+
+      expect(suvbotRepository.calls.last.actionId, 'matchTesterByPhone');
+      expect(suvbotRepository.calls.last.text, '+919999999999');
     });
   });
 }
