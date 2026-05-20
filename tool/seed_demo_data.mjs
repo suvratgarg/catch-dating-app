@@ -584,7 +584,7 @@ function buildSeed({
         ...rotate(syntheticCityUsers, clubIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
       ]);
       for (const member of clubMembers) {
-        memberships.push(buildMembership({seedMarker, clubId: club.id, uid: member.uid, role: member.uid === host.uid ? "host" : "member", now}));
+        memberships.push(buildMembership({seedMarker, clubId: club.id, uid: member.uid, role: member.uid === host.uid ? "owner" : "member", now}));
       }
 
       for (let runIndex = 0; runIndex < scenario.eventsPerClub; runIndex += 1) {
@@ -636,6 +636,7 @@ function buildSeed({
   updateClubAggregates({clubs, memberships, reviews, events});
   notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, now}));
   payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, events, now}));
+  const suvbotDocs = buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now});
   assertScheduleCompliance({events, participations});
   assertRunCoordinateQuality({events});
   const scheduleLocks = includeScheduleLocks ?
@@ -662,6 +663,7 @@ function buildSeed({
       path: `notifications/${notification.uid}/items/${notification.id}`,
       data: notification.doc,
     })),
+    ...suvbotDocs,
   ];
   const uniqueDocs = uniqueDocsByPath(docs);
   const manifestId = seedId.replace(/[^A-Za-z0-9_-]/g, "_");
@@ -755,6 +757,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         preferredDistances: [["fiveK", "tenK"], ["tenK"], ["halfMarathon"], ["fiveK", "halfMarathon"]][index % 4],
         runningReasons: [["fitness", "social"], ["community", "mindfulness"], ["challenge", "raceTraining"]][index % 3],
         preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
+        runPreferencesVersion: 1,
         prefsNewCatches: true,
         prefsMessages: true,
         prefsEventReminders: true,
@@ -838,6 +841,7 @@ export function publicProfileFromUserDoc(userDoc) {
     preferredDistances: userDoc.preferredDistances,
     runningReasons: userDoc.runningReasons,
     preferredRunTimes: userDoc.preferredRunTimes,
+    runPreferencesVersion: userDoc.runPreferencesVersion ?? 0,
   };
 }
 
@@ -954,6 +958,8 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
   const cityMeta = cityData[city];
   const area = cityMeta.areas[clubIndex % cityMeta.areas.length];
   const id = `${seedPrefix}_club_${city}_${String(clubIndex + 1).padStart(2, "0")}`;
+  const hostName = host.displayName || host.firstName;
+  const hostAvatarUrl = host.photoThumbnailUrls?.[0] ?? host.photoUrls?.[0] ?? null;
   return {
     id,
     city,
@@ -964,10 +970,19 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
       location: city,
       area,
       hostUserId: host.uid,
-      hostName: host.displayName || host.firstName,
-      hostAvatarUrl: host.photoUrls?.[0] ?? null,
+      hostName,
+      hostAvatarUrl,
+      ownerUserId: host.uid,
+      hostUserIds: [host.uid],
+      hostProfiles: [{
+        uid: host.uid,
+        displayName: hostName,
+        avatarUrl: hostAvatarUrl,
+        role: "owner",
+      }],
       createdAt: admin.firestore.Timestamp.fromDate(daysFromNow(-35 - clubIndex)),
       imageUrl: clubImages[clubIndex % clubImages.length],
+      profileImageUrl: null,
       tags: ["social", clubIndex % 2 === 0 ? "beginner-friendly" : "tempo", cityMeta.label.toLowerCase()],
       memberCount: 0,
       rating: 0,
@@ -1340,6 +1355,76 @@ function buildMessages({seedPrefix, seedMarker, match, anchor, target, now}) {
       },
     };
   });
+}
+
+function buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now}) {
+  const docs = [{
+    path: "publicProfiles/suvbot",
+    data: {
+      ...seedMarker,
+      name: "Suvbot",
+      age: 99,
+      gender: "other",
+      profilePrompts: [],
+      photoUrls: [],
+      photoThumbnailUrls: [],
+      photoPrompts: [],
+      profilePhotos: [],
+      city: "mumbai",
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: [],
+      runningReasons: ["community"],
+      preferredRunTimes: [],
+      runPreferencesVersion: 1,
+    },
+  }];
+  const text = "I can refresh your seeded demo state or check what is ready to test.";
+  for (const anchor of anchorProfiles) {
+    const matchId = `suvbot_${anchor.uid}`;
+    docs.push({
+      path: `demoSelfServiceAccess/${anchor.uid}`,
+      data: {
+        ...seedMarker,
+        uid: anchor.uid,
+        enabled: true,
+        source: "seed_demo_data",
+        createdAt: admin.firestore.Timestamp.fromDate(now),
+        updatedAt: admin.firestore.Timestamp.fromDate(now),
+      },
+    });
+    docs.push({
+      path: `matches/${matchId}`,
+      data: {
+        ...seedMarker,
+        demoOpsCommand: "suvbot-thread",
+        user1Id: "suvbot",
+        user2Id: anchor.uid,
+        eventIds: ["suvbot"],
+        createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {minutes: -45})),
+        lastMessageAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {minutes: -44})),
+        lastMessagePreview: text,
+        lastMessageSenderId: "suvbot",
+        unreadCounts: {suvbot: 0, [anchor.uid]: 1},
+        status: "active",
+        blockedBy: null,
+        blockedAt: null,
+        participantIds: ["suvbot", anchor.uid],
+      },
+    });
+    docs.push({
+      path: `matches/${matchId}/messages/suvbot_welcome`,
+      data: {
+        ...seedMarker,
+        demoOpsCommand: "suvbot-thread",
+        senderId: "suvbot",
+        text,
+        imageUrl: null,
+        sentAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {minutes: -44})),
+      },
+    });
+  }
+  return docs;
 }
 
 function buildReviews({seedPrefix, seedMarker, club, event, roster, now}) {
@@ -1980,6 +2065,9 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   if (doc.path.startsWith("savedEvents/")) {
     return newAnchorSet.has(doc.data.uid);
   }
+  if (doc.path.startsWith("demoSelfServiceAccess/")) {
+    return newAnchorSet.has(doc.data.uid);
+  }
   if (doc.path.startsWith("payments/")) {
     return newAnchorSet.has(doc.data.userId);
   }
@@ -2058,6 +2146,10 @@ async function existingDocumentIds(firestore, collection, ids) {
 }
 
 function docTargetsExist(doc, {existingEventIds, existingClubIds}) {
+  if (doc.path.startsWith("matches/suvbot_") ||
+      doc.path.startsWith("demoSelfServiceAccess/")) {
+    return true;
+  }
   if (!stringTargetExists(doc.data.eventId, existingEventIds)) return false;
   if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
   if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;

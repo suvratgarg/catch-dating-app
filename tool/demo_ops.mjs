@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
@@ -28,6 +29,7 @@ import {
   loadGoldenAccounts,
   loadScenarioConfig,
   loadFirebaseAdmin,
+  resolveUserByPhone,
   resolveProjectId,
   splitCsv,
   writeManifest,
@@ -43,6 +45,9 @@ import {
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const admin = loadFirebaseAdmin();
+const requireFromFunctions = createRequire(
+  path.join(toolDir, "../functions/package.json")
+);
 
 if (isMain()) {
   await main();
@@ -70,6 +75,10 @@ export async function main(argv = process.argv.slice(2)) {
     runSeedCommand(command, args);
     return;
   }
+  if (command === "suvbot-actions") {
+    await printSuvbotActions(args);
+    return;
+  }
 
   if (args.emulatorHost) {
     process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
@@ -81,6 +90,8 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (command === "match-phones") {
     await runMatchPhones({db, args, projectId});
+  } else if (command === "suvbot") {
+    await runSuvbot({db, args, projectId});
   } else if (command === "warm-user") {
     await runWarmUser({db, args, projectId});
   } else if (command === "warm-group") {
@@ -429,6 +440,121 @@ async function repairAggregates(db) {
   };
 }
 
+async function runSuvbot({db, args, projectId}) {
+  const suvbot = loadSuvbotFunctionsModule(args);
+  const action = requireArg(args, "action", "--action");
+  if (!suvbot.isSuvbotAction(action)) {
+    throw new Error(`Unsupported Suvbot action: ${action}`);
+  }
+  const resolvedUser = await resolveSuvbotUser({db, args});
+  const descriptor = suvbot
+    .suvbotActionCatalog()
+    .find((item) => item.id === action) ?? {id: action};
+
+  if (!args.apply) {
+    printPlan({
+      args,
+      projectId,
+      title: "Suvbot operation",
+      plan: {
+        command: "suvbot",
+        uid: resolvedUser.uid,
+        phone: resolvedUser.phoneNumber ?? null,
+        action,
+        targetPhone: args.targetPhone,
+        text: args.text,
+        descriptor,
+        backendSource: "functions/src/demoOps/suvbot.ts",
+      },
+      manifest: null,
+      appliedSummary: null,
+    });
+    return;
+  }
+
+  const result = await suvbot.runSuvbotDemoOperationForUser({
+    uid: resolvedUser.uid,
+    action,
+    text: args.text,
+    targetPhone: args.targetPhone,
+    deps: suvbotDeps(db),
+    options: {
+      skipConfirmation: true,
+      requireAccess: !args.bypassSuvbotAccess,
+    },
+  });
+
+  printPlan({
+    args,
+    projectId,
+    title: "Suvbot operation",
+    plan: {
+      command: "suvbot",
+      uid: resolvedUser.uid,
+      phone: resolvedUser.phoneNumber ?? null,
+      action,
+      targetPhone: args.targetPhone,
+      matchId: result.matchId,
+      reply: result.reply,
+    },
+    manifest: null,
+    appliedSummary: {
+      ok: result.ok,
+      source: "functions/src/demoOps/suvbot.ts",
+    },
+  });
+}
+
+async function printSuvbotActions(args) {
+  const suvbot = loadSuvbotFunctionsModule(args);
+  const actions = suvbot.suvbotActionCatalog();
+  if (args.json) {
+    console.log(JSON.stringify({actions}, null, 2));
+    return;
+  }
+  console.log("Suvbot actions:");
+  for (const action of actions) {
+    const markers = [
+      action.destructive ? "destructive" : null,
+      action.requiresText ? "requires text" : null,
+    ].filter(Boolean);
+    const suffix = markers.length > 0 ? ` (${markers.join(", ")})` : "";
+    console.log(`- ${action.id}: ${action.label}${suffix}`);
+    console.log(`  ${action.description}`);
+  }
+}
+
+function loadSuvbotFunctionsModule(args) {
+  if (!args.skipFunctionsBuild) buildFunctions();
+  return requireFromFunctions("./lib/demoOps/suvbot.js");
+}
+
+function buildFunctions() {
+  const result = spawnSync("npm", ["--prefix", "functions", "run", "build"], {
+    cwd: path.resolve(toolDir, ".."),
+    stdio: "inherit",
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error("functions build failed; Suvbot module was not loaded.");
+  }
+}
+
+async function resolveSuvbotUser({db, args}) {
+  if (args.uid) return {uid: args.uid, phoneNumber: args.phone ?? null};
+  if (!args.phone) throw new Error("suvbot requires --phone or --uid.");
+  return resolveUserByPhone(db, args.phone);
+}
+
+function suvbotDeps(db) {
+  return {
+    firestore: () => db,
+    serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+    timestampFromDate: (date) => admin.firestore.Timestamp.fromDate(date),
+    now: () => new Date(),
+  };
+}
+
 function runSeedCommand(command, args) {
   const seedArgs = [];
   if (command === "append-user" &&
@@ -482,6 +608,8 @@ function parseArgs(argv) {
     fromPhone: null,
     toPhone: null,
     uid: null,
+    action: null,
+    targetPhone: null,
     eventId: null,
     lat: null,
     lng: null,
@@ -500,6 +628,8 @@ function parseArgs(argv) {
     viaSwipesOnly: false,
     withMessages: false,
     emulatorHost: null,
+    skipFunctionsBuild: false,
+    bypassSuvbotAccess: false,
     json: false,
     help: false,
   };
@@ -513,6 +643,8 @@ function parseArgs(argv) {
     else if (arg === "--reset-synthetic") args.resetSynthetic = true;
     else if (arg === "--via-swipes") args.viaSwipes = true;
     else if (arg === "--with-messages") args.withMessages = true;
+    else if (arg === "--skip-functions-build") args.skipFunctionsBuild = true;
+    else if (arg === "--bypass-suvbot-access") args.bypassSuvbotAccess = true;
     else if (arg === "--via-swipes-only") {
       args.viaSwipes = true;
       args.viaSwipesOnly = true;
@@ -537,6 +669,8 @@ function parseArgs(argv) {
     else if (arg === "--from-phone") args.fromPhone = requireValue(argv, ++i, arg);
     else if (arg === "--to-phone") args.toPhone = requireValue(argv, ++i, arg);
     else if (arg === "--uid") args.uid = requireValue(argv, ++i, arg);
+    else if (arg === "--action") args.action = requireValue(argv, ++i, arg);
+    else if (arg === "--target-phone") args.targetPhone = requireValue(argv, ++i, arg);
     else if (arg === "--event-id") args.eventId = requireValue(argv, ++i, arg);
     else if (arg === "--lat") args.lat = requireValue(argv, ++i, arg);
     else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
@@ -629,6 +763,8 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   if (plan.command) console.log(`Command: ${plan.command}`);
   if (plan.operationId) console.log(`Operation: ${plan.operationId}`);
   if (plan.uid) console.log(`User: ${plan.uid}`);
+  if (plan.phone) console.log(`Phone: ${plan.phone}`);
+  if (plan.action) console.log(`Action: ${plan.action}`);
   if (plan.matchId) console.log(`Match: ${plan.matchId}`);
   if (plan.eventId) console.log(`Event: ${plan.eventId}`);
   if (plan.docs) console.log(`Docs to write: ${plan.docs.length}`);
@@ -637,6 +773,7 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   if (manifest?.operationId) {
     console.log(`Manifest: ${manifest.operationId}`);
   }
+  if (plan.reply) console.log(`Reply: ${plan.reply}`);
   if (appliedSummary) {
     console.log("\nApplied:");
     for (const [key, value] of Object.entries(appliedSummary)) {
@@ -657,7 +794,7 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
       }
     }
   } else {
-    console.log("\nDry run only. Re-event with --apply to write changes.");
+    console.log("\nDry run only. Re-run with --apply to write changes.");
   }
 }
 
@@ -665,6 +802,8 @@ function printCommands() {
   console.log(`Demo ops commands:
 - seed-world
 - append-user
+- suvbot-actions
+- suvbot
 - match-phones
 - warm-user
 - warm-group
@@ -690,6 +829,8 @@ function printHelp() {
 Usage:
   node tool/demo_ops.mjs seed-world --env prod --anchor-file tool/demo_seed/beta_anchors.txt --apply --reset-synthetic --allow-prod
   node tool/demo_ops.mjs append-user --env prod --anchor-phones +919999999999 --apply --allow-prod
+  node tool/demo_ops.mjs suvbot-actions
+  node tool/demo_ops.mjs suvbot --env prod --phone +91... --action warmChatState --apply --allow-prod
   node tool/demo_ops.mjs match-phones --env prod --phone-a +91... --phone-b +91... --apply --allow-prod
   node tool/demo_ops.mjs warm-user --env prod --phone +91... --apply --allow-prod
   node tool/demo_ops.mjs warm-group --env prod --phones +91...,+91...,+91... --apply --allow-prod
@@ -708,13 +849,17 @@ Common options:
   --allow-prod                   Required for prod writes.
   --json                         Machine-readable output.
   --emulator / --emulator-host   Use Firestore emulator.
+  --skip-functions-build         Use existing functions/lib Suvbot code.
+  --bypass-suvbot-access         Admin-only: run Suvbot without allowlist doc.
 
 Command options:
   --phone <phone>                One E.164 phone number.
   --phones <phone,...>           Comma-separated phone numbers.
   --phone-a / --phone-b          Pair for match-phones.
   --from-phone / --to-phone      Sender and recipient for unread-message.
-  --event-id <eventId>               Force match/shared event context.
+  --action <actionId>            Suvbot action id from suvbot-actions.
+  --target-phone <phone>         Tester phone for Suvbot matchTesterByPhone.
+  --event-id <eventId>           Force match/shared event context.
   --lat / --lng                  Manual coordinates for create-check-in-event.
   --meeting-point <label>        Meeting label for create-check-in-event.
   --text <message>               Demo chat message text.

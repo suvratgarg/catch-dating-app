@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
+import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -82,6 +83,39 @@ class FakeConversationRepository implements ConversationRepository {
   }
 }
 
+class FakeSuvbotRepository implements SuvbotRepository {
+  final calls = <({String actionId, String? text})>[];
+  final actions = const [
+    SuvbotActionItem(
+      id: 'refreshDemoState',
+      label: 'Refresh demo state',
+      description: 'Clear demo state and warm it again.',
+      icon: 'refresh',
+      destructive: true,
+    ),
+    SuvbotActionItem(
+      id: 'checkDemoState',
+      label: 'Check setup',
+      description: 'Show seeded state.',
+      icon: 'check',
+    ),
+    SuvbotActionItem(
+      id: 'help',
+      label: 'Help',
+      description: 'Explain Suvbot controls.',
+      icon: 'help',
+    ),
+  ];
+
+  @override
+  Future<List<SuvbotActionItem>> fetchActions() async => actions;
+
+  @override
+  Future<void> requestAction({required String actionId, String? text}) async {
+    calls.add((actionId: actionId, text: text));
+  }
+}
+
 Match buildMatch({
   String id = 'match-1',
   String user1Id = 'runner-1',
@@ -90,13 +124,14 @@ Match buildMatch({
   DateTime? lastMessageAt,
   String? lastMessagePreview,
   String? lastMessageSenderId,
+  List<String> eventIds = const ['event-1'],
   Map<String, int> unreadCounts = const {},
 }) {
   return Match(
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    eventIds: const ['event-1'],
+    eventIds: eventIds,
     createdAt: createdAt ?? DateTime(2026, 4, 23, 9),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
@@ -375,6 +410,60 @@ void main() {
       await tester.pump();
 
       expect(find.text('Unable to load messages.'), findsOneWidget);
+    });
+
+    testWidgets('shows Suvbot actions and routes typed text to callable', (
+      tester,
+    ) async {
+      final matchRepository = FakeMatchRepository(
+        match: buildMatch(
+          id: 'suvbot_runner-1',
+          user1Id: suvbotUid,
+          user2Id: 'runner-1',
+          eventIds: const ['suvbot'],
+          lastMessagePreview: 'I can refresh your seeded demo state.',
+          lastMessageSenderId: suvbotUid,
+        ),
+      );
+      final conversationRepository = FakeConversationRepository();
+      final suvbotRepository = FakeSuvbotRepository();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            matchRepositoryProvider.overrideWithValue(matchRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
+            suvbotRepositoryProvider.overrideWithValue(suvbotRepository),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ChatScreen(matchId: 'suvbot_runner-1'),
+          ),
+        ),
+      );
+
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Suvbot'), findsOneWidget);
+      expect(find.text('Refresh demo state'), findsOneWidget);
+      expect(find.text('Check setup'), findsOneWidget);
+      expect(find.text('YOU BOTH RAN'), findsNothing);
+      expect(find.byIcon(Icons.image_outlined), findsNothing);
+
+      await tester.tap(find.text('Check setup'));
+      await pumpFeatureUi(tester);
+
+      expect(suvbotRepository.calls.single.actionId, 'checkDemoState');
+
+      await tester.enterText(find.byType(TextField), 'reset me');
+      await tester.tap(find.byIcon(Icons.send_rounded));
+      await pumpFeatureUi(tester);
+
+      expect(suvbotRepository.calls.last.actionId, 'message');
+      expect(suvbotRepository.calls.last.text, 'reset me');
     });
   });
 }

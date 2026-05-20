@@ -18,6 +18,8 @@ const requireFromFunctions = createRequire(
 export const DEFAULT_DEMO_OPS_PREFIX = "demo_ops_2026";
 export const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 export const DEMO_MANIFEST_COLLECTION = "demoOpsEvents";
+export const SUVBOT_UID = "suvbot";
+export const SUVBOT_ACCESS_COLLECTION = "demoSelfServiceAccess";
 export const DEFAULT_MAX_BATCH_WRITES = 450;
 export const DEFAULT_GOLDEN_ACCOUNTS_FILE =
   "tool/demo_seed/golden_accounts.example.json";
@@ -629,6 +631,12 @@ export async function buildWarmUserPlan({
     });
     docs.push(...matchPlan.docs);
   }
+  docs.push(...buildSuvbotDocs({
+    admin,
+    marker,
+    uid: user.uid,
+    now,
+  }));
 
   return {
     command: "warm-user",
@@ -744,6 +752,75 @@ export function buildWarmNotifications({admin, marker, uid, events, now}) {
     });
   }
   return docs;
+}
+
+export function buildSuvbotDocs({admin, marker, uid, now}) {
+  const text = "I can refresh your seeded demo state or check what is ready to test.";
+  const matchId = `${SUVBOT_UID}_${uid}`;
+  return [
+    {
+      path: `publicProfiles/${SUVBOT_UID}`,
+      data: {
+        ...marker,
+        demoOpsCommand: "suvbot-thread",
+        name: "Suvbot",
+        age: 99,
+        gender: "other",
+        profilePrompts: [],
+        photoUrls: [],
+        photoThumbnailUrls: [],
+        photoPrompts: [],
+        profilePhotos: [],
+        city: "mumbai",
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: [],
+        runningReasons: ["community"],
+        preferredRunTimes: [],
+      },
+    },
+    {
+      path: `${SUVBOT_ACCESS_COLLECTION}/${uid}`,
+      data: {
+        ...marker,
+        uid,
+        enabled: true,
+        source: "demo_ops",
+        createdAt: timestampFromDate(admin, now),
+        updatedAt: timestampFromDate(admin, now),
+      },
+    },
+    {
+      path: `matches/${matchId}`,
+      data: {
+        ...marker,
+        demoOpsCommand: "suvbot-thread",
+        user1Id: SUVBOT_UID,
+        user2Id: uid,
+        eventIds: ["suvbot"],
+        createdAt: timestampFromDate(admin, offsetDate(now, {minutes: -45})),
+        lastMessageAt: timestampFromDate(admin, offsetDate(now, {minutes: -44})),
+        lastMessagePreview: text,
+        lastMessageSenderId: SUVBOT_UID,
+        unreadCounts: {[SUVBOT_UID]: 0, [uid]: 1},
+        status: "active",
+        blockedBy: null,
+        blockedAt: null,
+        participantIds: [SUVBOT_UID, uid],
+      },
+    },
+    {
+      path: `matches/${matchId}/messages/suvbot_welcome`,
+      data: {
+        ...marker,
+        demoOpsCommand: "suvbot-thread",
+        senderId: SUVBOT_UID,
+        text,
+        imageUrl: null,
+        sentAt: timestampFromDate(admin, offsetDate(now, {minutes: -44})),
+      },
+    },
+  ];
 }
 
 async function buildDirectSyntheticMatchPlan({
@@ -1105,6 +1182,8 @@ export async function buildHostAccountPlan({
   const clubId = `${seedPrefix}_host_club_${user.uid}`;
   const eventId = `${seedPrefix}_host_run_${user.uid}_01`;
   const city = user.data.city ?? "mumbai";
+  const hostName = publicName(profile.data, user.data);
+  const hostAvatarUrl = firstPhoto(profile.data);
   const docs = [
     {
       path: `clubHostClaims/${user.uid}`,
@@ -1119,15 +1198,24 @@ export async function buildHostAccountPlan({
       path: `clubs/${clubId}`,
       data: {
         ...marker,
-        name: `${publicName(profile.data, user.data)} Club`,
+        name: `${hostName} Club`,
         description: "Demo host-owned club for investor and beta walkthroughs.",
         location: city,
         area: cityLabel(city),
         hostUserId: user.uid,
-        hostName: publicName(profile.data, user.data),
-        hostAvatarUrl: firstPhoto(profile.data),
+        hostName,
+        hostAvatarUrl,
+        ownerUserId: user.uid,
+        hostUserIds: [user.uid],
+        hostProfiles: [{
+          uid: user.uid,
+          displayName: hostName,
+          avatarUrl: hostAvatarUrl,
+          role: "owner",
+        }],
         createdAt: timestampFromDate(admin, now),
         imageUrl: null,
+        profileImageUrl: null,
         tags: ["Demo", "Host tools"],
         memberCount: 1,
         rating: 0,
@@ -1149,7 +1237,7 @@ export async function buildHostAccountPlan({
         ...marker,
         clubId,
         uid: user.uid,
-        role: "host",
+        role: "owner",
         status: "active",
         pushNotificationsEnabled: true,
         joinedAt: timestampFromDate(admin, now),
@@ -1238,6 +1326,7 @@ export async function buildCheckInEventPlan({
   });
   const city = user.data.city ?? "mumbai";
   const name = publicName(profile.data, user.data);
+  const hostAvatarUrl = firstPhoto(profile.data);
   const clubId = `${seedPrefix}_checkin_club_${user.uid}`;
   const eventId = `${seedPrefix}_checkin_run_${user.uid}`;
   const startTime = offsetDate(now, {minutes: 5});
@@ -1293,9 +1382,18 @@ export async function buildCheckInEventPlan({
         area: cityLabel(city),
         hostUserId: user.uid,
         hostName: name,
-        hostAvatarUrl: firstPhoto(profile.data),
+        hostAvatarUrl,
+        ownerUserId: user.uid,
+        hostUserIds: [user.uid],
+        hostProfiles: [{
+          uid: user.uid,
+          displayName: name,
+          avatarUrl: hostAvatarUrl,
+          role: "owner",
+        }],
         createdAt: timestampFromDate(admin, now),
         imageUrl: null,
+        profileImageUrl: null,
         tags: ["Demo", "Check-in"],
         memberCount: 1,
         rating: 0,
@@ -1317,7 +1415,7 @@ export async function buildCheckInEventPlan({
         ...marker,
         clubId,
         uid: user.uid,
-        role: "host",
+        role: "owner",
         status: "active",
         pushNotificationsEnabled: true,
         joinedAt: timestampFromDate(admin, now),
@@ -1396,8 +1494,10 @@ async function collectManifestPaths(db, docs, uid) {
     .get();
   for (const doc of snap.docs) {
     const data = doc.data();
-    if (Array.isArray(data.paths)) docs.push(...data.paths);
-    docs.push(doc.ref.path);
+    if (Array.isArray(data.paths)) {
+      docs.push(...data.paths.filter((docPath) => !isSuvbotPath(docPath, uid)));
+    }
+    if (!isSuvbotPath(doc.ref.path, uid)) docs.push(doc.ref.path);
   }
 }
 
@@ -1413,6 +1513,7 @@ async function collectMatchPaths(db, docs, demoMatchIds, uid) {
     .where("participantIds", "array-contains", uid)
     .get();
   for (const doc of snap.docs) {
+    if (doc.id === `${SUVBOT_UID}_${uid}`) continue;
     if (!isDemoOwned(doc.data())) continue;
     demoMatchIds.add(doc.id);
     const messages = await doc.ref.collection("messages").get();
@@ -1454,6 +1555,13 @@ export function isDemoOwned(data) {
   return data?.demoOps === true ||
     data?.synthetic === true ||
     typeof data?.seedPrefix === "string";
+}
+
+function isSuvbotPath(docPath, uid) {
+  return docPath === `matches/${SUVBOT_UID}_${uid}` ||
+    docPath.startsWith(`matches/${SUVBOT_UID}_${uid}/`) ||
+    docPath === `publicProfiles/${SUVBOT_UID}` ||
+    docPath === `${SUVBOT_ACCESS_COLLECTION}/${uid}`;
 }
 
 export async function buildValidateDemoStateReport({db, phone, uid, now = new Date()}) {
