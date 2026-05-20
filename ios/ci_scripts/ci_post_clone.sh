@@ -81,6 +81,12 @@ fi
 echo "Preparing Flutter iOS config for prod $build_name ($build_number)"
 ./tool/use_firebase_environment.sh prod >/dev/null
 
+# ios/Flutter/GoogleMapsKeys.xcconfig is gitignored, so it is absent from a
+# fresh CI clone. Without it the GoogleMapsApiKey Info.plist value is empty,
+# GMSServices.provideAPIKey is skipped, and every map screen crashes at runtime.
+echo "Writing prod iOS Google Maps key"
+./tool/write_ios_maps_key_xcconfig.sh prod
+
 ensure_cocoapods
 run_with_retry 3 20 flutter pub get
 run_with_retry 3 30 flutter build ios \

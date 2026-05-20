@@ -12,8 +12,7 @@ Current source-of-truth docs:
 - [`functions/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/README.md) for Cloud Functions security defaults, function inventory, and secrets.
 - [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md) for the current test-suite inventory.
 - [`codex_audit/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/README.md) for audit/history organization.
-- [`docs/deploy_runbook_2026_05_04.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/deploy_runbook_2026_05_04.md) for multi-surface deploy ordering, smoke tests, and rollback.
-- [`docs/pre_launch_audit_2026_05_04.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/pre_launch_audit_2026_05_04.md) for the full pre-launch audit with implementation status.
+- [`docs/release_operations.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/release_operations.md) for CI gates, Firebase deploy ordering, TestFlight/Xcode Cloud release, smoke tests, and release-readiness evidence.
 
 Before changing code, read `PROJECT_CONTEXT.md` first, then the feature folder
 and any relevant runbook above. Treat archived trackers as historical evidence,

@@ -80,15 +80,7 @@ jobs:
       - name: Write dev iOS Maps key
         env:
           GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
-        run: |
-          key="${GOOGLE_MAPS_IOS_API_KEY_DEV:-}"
-          if [[ -z "$key" ]]; then
-            echo "Missing GOOGLE_MAPS_IOS_API_KEY_DEV secret."
-            exit 1
-          fi
-          {
-            echo "GOOGLE_MAPS_IOS_API_KEY_DEV=$key"
-          } > ios/Flutter/GoogleMapsKeys.xcconfig
+        run: ./tool/write_ios_maps_key_xcconfig.sh dev
 
       - name: Build dev iOS simulator artifact
         run: ./tool/flutter_with_env.sh dev build ios --simulator --no-codesign

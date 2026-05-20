@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.5.1
+version: 1.5.3
 updated: 2026-05-20
 owner: recursive_audit_loop
 status: active
@@ -321,6 +321,37 @@ The workflow uses App Store Connect API key authentication for
 Maps key, verifies the exported profile contains HealthKit, checks the signed
 app contains HealthKit and Associated Domains, and stores the IPA as a
 short-lived GitHub Actions artifact.
+
+GitHub Actions iOS jobs and Xcode Cloud must all write
+`ios/Flutter/GoogleMapsKeys.xcconfig` through
+`tool/write_ios_maps_key_xcconfig.sh <env>`. The simulator build matrix uses
+`dev`; TestFlight/Xcode Cloud release builds use `prod`. Keep Maps-key
+validation in that shared helper instead of duplicating secret preflight logic
+in each CI surface.
+
+## Xcode Cloud iOS Builds
+
+Xcode Cloud is a second iOS build path, separate from the GitHub Actions
+`iOS TestFlight Release` workflow. It builds the `prod` flavor with
+`Release-prod` and can distribute to TestFlight directly from App Store Connect.
+
+Two CI scripts drive it:
+
+- `ios/ci_scripts/ci_post_clone.sh` installs Flutter, applies the prod Firebase
+  environment, writes the prod iOS Google Maps key, and runs `pod install`.
+- `ios/ci_scripts/ci_post_xcodebuild.sh` verifies the archived app's
+  `GoogleMapsApiKey` is a real key before the build can reach TestFlight.
+
+`ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never present in a
+fresh clone. The Xcode Cloud workflow must define `GOOGLE_MAPS_IOS_API_KEY_PROD`
+as a secret environment variable; `ci_post_clone.sh` calls
+`tool/write_ios_maps_key_xcconfig.sh prod` to write the xcconfig and fail the
+build if the key is missing or malformed. Without the key the archived
+`GoogleMapsApiKey` is empty, `GMSServices.provideAPIKey` is skipped in
+`AppDelegate`, and every map screen crashes at runtime.
+
+Keep Xcode Cloud and the GitHub Actions release workflow consistent: both must
+inject and verify the environment-specific Maps key.
 
 ## Human Release Evidence
 
