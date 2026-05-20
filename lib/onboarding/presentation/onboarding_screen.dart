@@ -14,7 +14,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({
+    super.key,
+    this.profileCompletionOnly = false,
+    this.runPreferencesOnly = false,
+  });
+
+  final bool profileCompletionOnly;
+  final bool runPreferencesOnly;
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -28,14 +35,48 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       if (!mounted) {
         return;
       }
-      unawaited(ref.read(onboardingControllerProvider.notifier).initStep());
+      unawaited(
+        ref
+            .read(onboardingControllerProvider.notifier)
+            .initStep(
+              profileCompletionOnly: widget.profileCompletionOnly,
+              runPreferencesOnly: widget.runPreferencesOnly,
+            ),
+      );
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant OnboardingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.profileCompletionOnly == widget.profileCompletionOnly &&
+        oldWidget.runPreferencesOnly == widget.runPreferencesOnly) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      unawaited(
+        ref
+            .read(onboardingControllerProvider.notifier)
+            .initStep(
+              profileCompletionOnly: widget.profileCompletionOnly,
+              runPreferencesOnly: widget.runPreferencesOnly,
+            ),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
-    final minStep = data.step.minimumBackStep;
+    final minStep = widget.runPreferencesOnly
+        ? OnboardingStep.runningPrefs
+        : widget.profileCompletionOnly &&
+              data.step.index >= OnboardingStep.photos.index
+        ? OnboardingStep.photos
+        : data.step.minimumBackStep;
     final previousStep = data.step.previousWithin(minStep);
     final currentStep = KeyedSubtree(
       key: ValueKey(data.step),
@@ -60,6 +101,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     if (data.step.showsProgress) ...[
                       _OnboardingTopBar(
                         step: data.step,
+                        profileCompletionOnly: widget.profileCompletionOnly,
+                        runPreferencesOnly: widget.runPreferencesOnly,
                         onBack: previousStep == null
                             ? null
                             : () => ref
@@ -82,23 +125,49 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       OnboardingStep.nameDob => const NameDobPage(),
       OnboardingStep.genderInterest => const GenderInterestPage(),
       OnboardingStep.instagram => const InstagramPage(),
-      OnboardingStep.photos => const PhotosPage(),
-      OnboardingStep.prompts => const ProfilePromptsPage(),
-      OnboardingStep.runningPrefs => const RunningPrefsPage(),
+      OnboardingStep.photos => PhotosPage(
+        profileCompletionOnly: widget.profileCompletionOnly,
+      ),
+      OnboardingStep.prompts => ProfilePromptsPage(
+        profileCompletionOnly: widget.profileCompletionOnly,
+      ),
+      OnboardingStep.runningPrefs => RunningPrefsPage(
+        profileCompletionOnly: widget.profileCompletionOnly,
+        runPreferencesOnly: widget.runPreferencesOnly,
+      ),
     };
   }
 }
 
 class _OnboardingTopBar extends StatelessWidget {
-  const _OnboardingTopBar({required this.step, required this.onBack});
+  const _OnboardingTopBar({
+    required this.step,
+    required this.profileCompletionOnly,
+    required this.runPreferencesOnly,
+    required this.onBack,
+  });
 
   final OnboardingStep step;
+  final bool profileCompletionOnly;
+  final bool runPreferencesOnly;
   final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
-    final progressStep = step.index - 1;
-    final progressTotal = OnboardingStep.values.length - 1;
+    final socialOnly =
+        profileCompletionOnly && step.index >= OnboardingStep.photos.index;
+    final progressStep = runPreferencesOnly
+        ? 0
+        : socialOnly
+        ? step.index - OnboardingStep.photos.index
+        : step == OnboardingStep.genderInterest
+        ? 1
+        : 0;
+    final progressTotal = runPreferencesOnly
+        ? 1
+        : socialOnly
+        ? 2
+        : 2;
 
     return CatchStepFlowHeader(
       title: step.appBarTitle,

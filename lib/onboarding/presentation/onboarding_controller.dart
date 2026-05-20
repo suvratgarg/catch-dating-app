@@ -12,6 +12,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draf
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
@@ -70,14 +71,49 @@ class OnboardingController extends _$OnboardingController {
   @override
   OnboardingData build() => const OnboardingData();
 
-  Future<void> initStep() => syncEntryStep();
+  Future<void> initStep({
+    bool profileCompletionOnly = false,
+    bool runPreferencesOnly = false,
+  }) => syncEntryStep(
+    profileCompletionOnly: profileCompletionOnly,
+    runPreferencesOnly: runPreferencesOnly,
+  );
 
-  Future<void> syncEntryStep() async {
+  Future<void> syncEntryStep({
+    bool profileCompletionOnly = false,
+    bool runPreferencesOnly = false,
+  }) async {
     final uid = ref.read(uidProvider).asData?.value;
     final userProfile = ref.read(watchUserProfileProvider).asData?.value;
 
     if (uid == null) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
+      return;
+    }
+
+    if (runPreferencesOnly &&
+        userProfile != null &&
+        userProfile.hasBookingReadyIdentity) {
+      _setStateIfChanged(
+        state.copyWith(
+          step: OnboardingStep.runningPrefs,
+          phoneVerified: true,
+          profileDraft: _profileDraftFromUserProfile(userProfile),
+        ),
+      );
+      return;
+    }
+
+    if (profileCompletionOnly &&
+        userProfile != null &&
+        userProfile.hasBookingReadyIdentity) {
+      _setStateIfChanged(
+        state.copyWith(
+          step: _firstMissingSocialProfileStep(userProfile),
+          phoneVerified: true,
+          profileDraft: _profileDraftFromUserProfile(userProfile),
+        ),
+      );
       return;
     }
 
@@ -97,10 +133,15 @@ class OnboardingController extends _$OnboardingController {
       );
       final draftStep = OnboardingStep.fromIndex(migratedStepIndex);
       if (draftStep != null) {
+        final entryStep = runPreferencesOnly
+            ? OnboardingStep.runningPrefs
+            : profileCompletionOnly
+            ? draftStep
+            : _bookingIdentityStepForDraft(draftStep);
         _setStateIfChanged(
           state.copyWith(
-            step: draftStep,
-            phoneVerified: draftStep.index >= OnboardingStep.nameDob.index,
+            step: entryStep,
+            phoneVerified: entryStep.index >= OnboardingStep.nameDob.index,
             profileDraft: state.profileDraft.copyWith(
               firstName: draft.firstName,
               lastName: draft.lastName,
@@ -146,8 +187,14 @@ class OnboardingController extends _$OnboardingController {
       return;
     }
 
-    if (!userProfile.profileComplete) {
-      _setStateIfChanged(state.copyWith(step: OnboardingStep.photos));
+    if (!userProfile.hasBookingReadyIdentity) {
+      _setStateIfChanged(
+        state.copyWith(
+          step: _firstMissingBookingIdentityStep(userProfile),
+          phoneVerified: _authPhoneNumber.isNotEmpty,
+          profileDraft: _profileDraftFromUserProfile(userProfile),
+        ),
+      );
     }
   }
 
@@ -261,11 +308,31 @@ class OnboardingController extends _$OnboardingController {
           ),
         );
 
-    state = state.copyWith(step: OnboardingStep.instagram);
-    _saveDraft();
+    await _deleteDraftNow();
   }
 
-  Future<void> complete({
+  Future<void> completeSocialProfile({
+    required List<ProfilePromptAnswer> prompts,
+  }) async {
+    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
+    if (userProfile == null) {
+      throw const DocumentNotFoundException('users/current');
+    }
+    final normalizedPrompts = normalizeProfilePromptAnswers(prompts);
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateUserProfile(
+          uid: userProfile.uid,
+          fields: {
+            'profilePrompts': profilePromptsToJson(normalizedPrompts),
+            'profileComplete': true,
+          },
+        );
+    await _deleteDraftNow();
+    ref.invalidateSelf();
+  }
+
+  Future<void> completeRunPreferences({
     required int paceMinSecsPerKm,
     required int paceMaxSecsPerKm,
     required List<PreferredDistance> preferredDistances,
@@ -288,18 +355,11 @@ class OnboardingController extends _$OnboardingController {
                 .toList(),
             'runningReasons': runningReasons.map((e) => e.name).toList(),
             'preferredRunTimes': preferredRunTimes.map((e) => e.name).toList(),
-            'profilePrompts': profilePromptsToJson(
-              normalizeProfilePromptAnswers(
-                state.profilePrompts.isNotEmpty
-                    ? state.profilePrompts
-                    : userProfile.profilePrompts,
-              ),
-            ),
-            'profileComplete': true,
+            'runPreferencesVersion': currentRunPreferencesVersion,
           },
         );
-    _deleteDraft();
-    // Onboarding is complete — the router will redirect away shortly.
+    await _deleteDraftNow();
+    // The router will redirect away shortly.
     // Invalidate self so the keepAlive provider is disposed and its
     // state (including OnboardingData) is freed.
     ref.invalidateSelf();
@@ -383,6 +443,54 @@ class OnboardingController extends _$OnboardingController {
     return storedStep - 2;
   }
 
+  OnboardingStep _bookingIdentityStepForDraft(OnboardingStep draftStep) {
+    if (draftStep.index > OnboardingStep.genderInterest.index) {
+      return OnboardingStep.genderInterest;
+    }
+    return draftStep;
+  }
+
+  OnboardingStep _firstMissingBookingIdentityStep(UserProfile userProfile) {
+    if (!userProfile.hasBookingReadyName ||
+        validateRequiredDateOfBirth(userProfile.dateOfBirth) != null ||
+        validateRequiredPhoneNumber(userProfile.phoneNumber) != null) {
+      return OnboardingStep.nameDob;
+    }
+    return OnboardingStep.genderInterest;
+  }
+
+  OnboardingStep _firstMissingSocialProfileStep(UserProfile userProfile) {
+    if (!userProfile.hasMinimumSocialPhotos) return OnboardingStep.photos;
+    return OnboardingStep.prompts;
+  }
+
+  OnboardingProfileDraft _profileDraftFromUserProfile(UserProfile userProfile) {
+    final phoneNumber = _authPhoneNumber.trim().isNotEmpty
+        ? _authPhoneNumber.trim()
+        : userProfile.phoneNumber.trim();
+    final countryCode = _dialCodeFromPhoneNumber(phoneNumber);
+    final nameParts = userProfile.name.trim().split(RegExp(r'\s+'));
+    final firstName = userProfile.firstName.trim().isNotEmpty
+        ? userProfile.firstName.trim()
+        : nameParts.firstOrNull ?? '';
+    final lastName = userProfile.lastName.trim().isNotEmpty
+        ? userProfile.lastName.trim()
+        : nameParts.length > 1
+        ? nameParts.skip(1).join(' ')
+        : '';
+    return OnboardingProfileDraft(
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: userProfile.dateOfBirth,
+      phoneNumber: _stripCountryCode(phoneNumber, countryCode),
+      countryCode: countryCode,
+      gender: userProfile.gender,
+      interestedInGenders: userProfile.interestedInGenders,
+      instagramHandle: userProfile.instagramHandle,
+      profilePrompts: userProfile.profilePrompts,
+    );
+  }
+
   String _stripCountryCode(String phoneNumber, String countryCode) {
     if (phoneNumber.startsWith(countryCode)) {
       return phoneNumber.substring(countryCode.length);
@@ -444,29 +552,26 @@ class OnboardingController extends _$OnboardingController {
     );
   }
 
-  void _deleteDraft() {
+  Future<void> _deleteDraftNow() async {
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return;
 
-    unawaited(
+    try {
+      await ref.read(onboardingDraftRepositoryProvider).deleteDraft(uid: uid);
+    } catch (error, stack) {
       ref
-          .read(onboardingDraftRepositoryProvider)
-          .deleteDraft(uid: uid)
-          .catchError((Object error, StackTrace stack) {
-            ref
-                .read(errorLoggerProvider)
-                .logAppException(
-                  normalizeBackendError(
-                    error,
-                    stackTrace: stack,
-                    context: const BackendErrorContext(
-                      service: BackendService.local,
-                      action: 'delete onboarding draft',
-                      resource: 'onboarding_controller',
-                    ),
-                  ),
-                );
-          }),
-    );
+          .read(errorLoggerProvider)
+          .logAppException(
+            normalizeBackendError(
+              error,
+              stackTrace: stack,
+              context: const BackendErrorContext(
+                service: BackendService.local,
+                action: 'delete onboarding draft',
+                resource: 'onboarding_controller',
+              ),
+            ),
+          );
+    }
   }
 }

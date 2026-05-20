@@ -158,6 +158,7 @@ function validPublicProfile({name, age}) {
     preferredDistances: ["fiveK"],
     runningReasons: ["fitness"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
   };
 }
 

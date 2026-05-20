@@ -716,6 +716,22 @@ void main() {
     expect(find.textContaining('18 – 60+'), findsNothing);
   });
 
+  testWidgets(
+    'ProfileTab hides running details until run preferences are set',
+    (tester) async {
+      final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0)
+          .copyWith(
+            preferredDistances: const [],
+            runningReasons: const [],
+            preferredRunTimes: const [],
+          );
+      await _pumpProfileTab(tester, user);
+
+      expect(find.text('Running details'), findsNothing);
+      expect(_profileInfoTile('Pace range'), findsNothing);
+    },
+  );
+
   testWidgets('Pace range expands inline with shared RangeSlider', (
     tester,
   ) async {

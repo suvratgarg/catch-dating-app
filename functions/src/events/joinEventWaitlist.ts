@@ -29,6 +29,9 @@ import {
   decrementCount,
   normalizeInviteCode,
 } from "./eventPolicy";
+import {assertBookingReadyUserProfile} from "../shared/profileReadiness";
+import {assertRunPreferencesReadyForEvent} from
+  "../shared/runPreferencesReadiness";
 
 /**
  * Adds a user to an event waitlist after applying the same block boundary as
@@ -97,6 +100,9 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
         "You are already booked for this event."
       );
     }
+
+    assertBookingReadyUserProfile(user);
+    assertRunPreferencesReadyForEvent(user, event);
 
     if (existingParticipation?.status === "waitlisted") {
       return;

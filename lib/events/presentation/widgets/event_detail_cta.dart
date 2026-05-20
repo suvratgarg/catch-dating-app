@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
@@ -14,6 +15,7 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -55,6 +57,8 @@ class EventDetailCta extends ConsumerWidget {
         .supportsPaidBookings;
     final quotedPriceInPaise = event.priceInPaiseFor(userProfile);
     final isFreeForViewer = quotedPriceInPaise == 0;
+    final needsRunPreferences =
+        event.requiresRunPreferences && !userProfile.hasCurrentRunPreferences;
 
     final bookMutation = ref.watch(EventBookingController.bookMutation);
     final cancelMutation = ref.watch(EventBookingController.cancelMutation);
@@ -84,14 +88,18 @@ class EventDetailCta extends ConsumerWidget {
           ),
         switch (status) {
           EventSignUpStatus.eligible => BottomCTA(
-            label: isFreeForViewer
+            label: !isFreeForViewer && !supportsPaid
+                ? 'Unavailable on this platform'
+                : needsRunPreferences
+                ? 'Set run preferences'
+                : isFreeForViewer
                 ? 'Join event — ${event.spotsRemaining} spots left'
-                : supportsPaid
-                ? 'Book event'
-                : 'Unavailable on this platform',
+                : 'Book event',
             onPressed:
                 bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
                 ? null
+                : needsRunPreferences
+                ? () => _openRunPreferencesGate(context)
                 : () {
                     final router = GoRouter.maybeOf(context);
                     final navigator = Navigator.of(
@@ -171,9 +179,13 @@ class EventDetailCta extends ConsumerWidget {
             );
           })(),
           EventSignUpStatus.full => BottomCTA(
-            label: 'Join waitlist',
+            label: needsRunPreferences
+                ? 'Set run preferences'
+                : 'Join waitlist',
             onPressed: joinWMutation.isPending
                 ? null
+                : needsRunPreferences
+                ? () => _openRunPreferencesGate(context)
                 : () => EventBookingController.joinWaitlistMutation.run(
                     ref,
                     (tx) async => tx
@@ -246,6 +258,16 @@ bool _hasInviteCode(String? inviteCode) =>
 
 bool _hasEventStarted(Event event, DateTime now) =>
     !event.startTime.isAfter(now);
+
+void _openRunPreferencesGate(BuildContext context) {
+  final router = GoRouter.maybeOf(context);
+  if (router == null) return;
+  router.push(
+    runPreferencesCompletionLocation(
+      from: GoRouterState.of(context).uri.toString(),
+    ),
+  );
+}
 
 EventSignUpStatus _statusForEligibility(EventEligibility eligibility) {
   return switch (eligibility) {

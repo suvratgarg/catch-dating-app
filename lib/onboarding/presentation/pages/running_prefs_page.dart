@@ -14,7 +14,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RunningPrefsPage extends ConsumerStatefulWidget {
-  const RunningPrefsPage({super.key});
+  const RunningPrefsPage({
+    super.key,
+    this.profileCompletionOnly = false,
+    this.runPreferencesOnly = false,
+  });
+
+  final bool profileCompletionOnly;
+  final bool runPreferencesOnly;
 
   @override
   ConsumerState<RunningPrefsPage> createState() => _RunningPrefsPageState();
@@ -31,7 +38,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
     OnboardingController.completeMutation.run(ref, (tx) async {
       await tx
           .get(onboardingControllerProvider.notifier)
-          .complete(
+          .completeRunPreferences(
             paceMinSecsPerKm: _paceRange.start.round(),
             paceMaxSecsPerKm: _paceRange.end.round(),
             preferredDistances: _distances.toList(),
@@ -70,9 +77,17 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          const OnboardingStepHeader(
-            title: 'Your running style',
-            subtitle: 'Help us find compatible running partners.',
+          OnboardingStepHeader(
+            title: widget.profileCompletionOnly
+                ? 'Finish your swipe profile'
+                : widget.runPreferencesOnly
+                ? 'Set your run preferences'
+                : 'Your running style',
+            subtitle: widget.profileCompletionOnly
+                ? 'These are optional, but they help us rank compatible people in Catches.'
+                : widget.runPreferencesOnly
+                ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
+                : 'Help us find compatible running partners.',
           ),
           const SizedBox(height: 32),
 
@@ -133,7 +148,9 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
           // ── Event reasons ───────────────────────────────────────────────────
           ChipField<RunReason>(
-            label: 'Why do you event?',
+            label: widget.runPreferencesOnly
+                ? 'Why do you run?'
+                : 'Why do you event?',
             isOptional: true,
             values: RunReason.values,
             selected: _reasons,
@@ -151,7 +168,9 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
           // ── Time of day ───────────────────────────────────────────────────
           ChipField<PreferredRunTime>(
-            label: 'Favorite event times',
+            label: widget.runPreferencesOnly
+                ? 'Favorite run times'
+                : 'Favorite event times',
             isOptional: true,
             values: PreferredRunTime.values,
             selected: _runTimes,
@@ -172,7 +191,9 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           ],
           const SizedBox(height: 40),
           CatchButton(
-            label: 'Start catching',
+            label: widget.runPreferencesOnly
+                ? 'Continue booking'
+                : 'Save run preferences',
             onPressed: _submit,
             isLoading: mutation.isPending,
             fullWidth: true,

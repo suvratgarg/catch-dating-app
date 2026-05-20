@@ -42,6 +42,7 @@ import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,9 @@ final _chatsShellKey = GlobalKey<NavigatorState>();
 final _profileShellKey = GlobalKey<NavigatorState>();
 
 const _fromQueryParam = 'from';
+const _onboardingIntentQueryParam = 'intent';
+const _completeProfileIntent = 'complete-profile';
+const _completeRunPreferencesIntent = 'complete-run-preferences';
 
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
@@ -157,7 +161,14 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.onboardingScreen.path,
         name: Routes.onboardingScreen.name,
-        builder: (context, state) => const OnboardingScreen(),
+        builder: (context, state) => OnboardingScreen(
+          profileCompletionOnly:
+              state.uri.queryParameters[_onboardingIntentQueryParam] ==
+              _completeProfileIntent,
+          runPreferencesOnly:
+              state.uri.queryParameters[_onboardingIntentQueryParam] ==
+              _completeRunPreferencesIntent,
+        ),
       ),
       GoRoute(
         path: Routes.calendarScreen.path,
@@ -602,10 +613,36 @@ String? appRedirect({
     );
   }
 
-  if (userProfile == null || !userProfile.profileComplete) {
+  final onProfileCompletionOnboarding =
+      onOnboarding &&
+      uri.queryParameters[_onboardingIntentQueryParam] ==
+          _completeProfileIntent;
+  final onRunPreferencesOnboarding =
+      onOnboarding &&
+      uri.queryParameters[_onboardingIntentQueryParam] ==
+          _completeRunPreferencesIntent;
+
+  if (userProfile == null || !userProfile.hasBookingReadyIdentity) {
     if (onOnboarding) return null;
     return _locationWithFrom(
       Routes.onboardingScreen.path,
+      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+    );
+  }
+
+  if (onProfileCompletionOnboarding) {
+    if (!userProfile.hasSocialReadyProfile) return null;
+    return _resumeDestination(uri);
+  }
+
+  if (onRunPreferencesOnboarding) {
+    if (!userProfile.hasCurrentRunPreferences) return null;
+    return _resumeDestination(uri);
+  }
+
+  if (_requiresSocialProfile(matchedLocation) &&
+      !userProfile.hasSocialReadyProfile) {
+    return _profileCompletionLocation(
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
   }
@@ -615,6 +652,12 @@ String? appRedirect({
   }
 
   return null;
+}
+
+bool _requiresSocialProfile(String matchedLocation) {
+  return matchedLocation == Routes.filtersScreen.path ||
+      matchedLocation == Routes.swipeHubScreen.path ||
+      matchedLocation.startsWith('/catches/');
 }
 
 String? _pendingDestination({
@@ -646,6 +689,32 @@ String _locationWithFrom(String path, {String? from}) {
   return Uri(
     path: path,
     queryParameters: {_fromQueryParam: safeFrom},
+  ).toString();
+}
+
+String _profileCompletionLocation({String? from}) {
+  final safeFrom = _sanitizeFrom(from);
+  return Uri(
+    path: Routes.onboardingScreen.path,
+    queryParameters: {
+      _onboardingIntentQueryParam: _completeProfileIntent,
+      if (safeFrom != null &&
+          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
+        _fromQueryParam: safeFrom,
+    },
+  ).toString();
+}
+
+String runPreferencesCompletionLocation({String? from}) {
+  final safeFrom = _sanitizeFrom(from);
+  return Uri(
+    path: Routes.onboardingScreen.path,
+    queryParameters: {
+      _onboardingIntentQueryParam: _completeRunPreferencesIntent,
+      if (safeFrom != null &&
+          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
+        _fromQueryParam: safeFrom,
+    },
   ).toString();
 }
 

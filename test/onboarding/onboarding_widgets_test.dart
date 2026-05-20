@@ -8,6 +8,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -59,7 +60,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('Gender'), findsOneWidget);
-        expect(find.text('2/6'), findsOneWidget);
+        expect(find.text('2/2'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -68,7 +69,7 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text('Your name'), findsOneWidget);
-        expect(find.text('1/6'), findsOneWidget);
+        expect(find.text('1/2'), findsOneWidget);
       },
     );
   });
@@ -251,9 +252,84 @@ void main() {
         );
       },
     );
+
+    testWidgets('explains the swipe gate in profile-completion mode', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(1080, 2200);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final container = createOnboardingTestContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(
+              buildUser(uid: 'runner-1').copyWith(photoUrls: const []),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const PhotosPage(profileCompletionOnly: true),
+      );
+
+      expect(find.text('Complete your profile to swipe'), findsOneWidget);
+      expect(
+        find.text('This only gates swiping. Event booking stays available.'),
+        findsOneWidget,
+      );
+    });
+  });
+
+  group('ProfilePromptsPage', () {
+    testWidgets('explains prompts as part of swipe completion', (tester) async {
+      final container = createOnboardingTestContainer();
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const ProfilePromptsPage(profileCompletionOnly: true),
+      );
+
+      expect(find.text('Add prompts to start swiping'), findsOneWidget);
+      expect(
+        find.text(
+          'Prompts give people something real to respond to before you match.',
+        ),
+        findsOneWidget,
+      );
+    });
   });
 
   group('RunningPrefsPage', () {
+    testWidgets('explains run preferences as event-specific booking data', (
+      tester,
+    ) async {
+      final container = createOnboardingTestContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const RunningPrefsPage(runPreferencesOnly: true),
+      );
+
+      expect(find.text('Set your run preferences'), findsOneWidget);
+      expect(find.text('Why do you run?'), findsOneWidget);
+      expect(find.text('Continue booking'), findsOneWidget);
+    });
+
     testWidgets('shows favorite event-time preferences', (tester) async {
       final container = createOnboardingTestContainer(
         overrides: [

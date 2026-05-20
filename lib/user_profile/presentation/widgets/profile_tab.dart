@@ -15,6 +15,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
@@ -126,6 +127,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final completedPromptCount = user.profilePrompts
         .where((prompt) => prompt.answer.trim().isNotEmpty)
         .length;
+    final showRunningDetails = user.hasCurrentRunPreferences;
     final basics = [
       _textEntry(
         context: context,
@@ -454,13 +456,15 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         entries: lifestyle,
         grouped: true,
       ),
-      gapH14,
-      ProfileInfoSection(
-        title: 'Running details',
-        subtitle: 'Your pace, distances, and running rhythm',
-        entries: running,
-        grouped: true,
-      ),
+      if (showRunningDetails) ...[
+        gapH14,
+        ProfileInfoSection(
+          title: 'Running details',
+          subtitle: 'Your pace, distances, and running rhythm',
+          entries: running,
+          grouped: true,
+        ),
+      ],
       gapH32,
     ]);
   }

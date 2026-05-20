@@ -3,6 +3,9 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {UserProfileDoc, EventDoc} from "../shared/firestore";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
+import {assertBookingReadyUserProfile} from "../shared/profileReadiness";
+import {assertRunPreferencesReadyForEvent} from
+  "../shared/runPreferencesReadiness";
 import {requireDoc} from "../shared/validation";
 import {
   participantUids,
@@ -93,6 +96,8 @@ export async function signUpUserForEvent(
       );
     }
     const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    assertBookingReadyUserProfile(user);
+    assertRunPreferencesReadyForEvent(user, event);
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;

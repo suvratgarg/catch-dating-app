@@ -69,6 +69,7 @@ function validUserProfileDoc() {
     preferredDistances: ["fiveK", "tenK"],
     runningReasons: ["fitness", "social"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,

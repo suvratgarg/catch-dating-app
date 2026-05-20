@@ -40,5 +40,6 @@
   "paceMaxSecsPerKm": 420,
   "preferredDistances": ["fiveK", "tenK"],
   "runningReasons": ["fitness", "social"],
-  "preferredRunTimes": ["morning", "evening"]
+  "preferredRunTimes": ["morning", "evening"],
+  "runPreferencesVersion": 1
 }

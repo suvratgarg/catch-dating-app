@@ -22,6 +22,7 @@ const projection = {
     preferredDistances: user.preferredDistances,
     runningReasons: user.runningReasons,
     preferredRunTimes: user.preferredRunTimes,
+    runPreferencesVersion: user.runPreferencesVersion,
   }),
 };
 
@@ -113,6 +114,7 @@ function validUserProfile(overrides = {}) {
     preferredDistances: ["fiveK"],
     runningReasons: ["fitness"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
     ...overrides,
   };
 }

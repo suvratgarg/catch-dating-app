@@ -143,4 +143,5 @@ export interface PublicProfileDocument {
     | "evening"
     | "night"
   )[];
+  runPreferencesVersion: number;
 }

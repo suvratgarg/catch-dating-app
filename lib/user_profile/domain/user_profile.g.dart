@@ -74,8 +74,10 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   workout: $enumDecodeNullable(_$WorkoutFrequencyEnumMap, json['workout']),
   diet: $enumDecodeNullable(_$DietaryPreferenceEnumMap, json['diet']),
   children: $enumDecodeNullable(_$ChildrenStatusEnumMap, json['children']),
-  paceMinSecsPerKm: (json['paceMinSecsPerKm'] as num?)?.toInt() ?? 300,
-  paceMaxSecsPerKm: (json['paceMaxSecsPerKm'] as num?)?.toInt() ?? 420,
+  paceMinSecsPerKm:
+      (json['paceMinSecsPerKm'] as num?)?.toInt() ?? defaultPaceMinSecsPerKm,
+  paceMaxSecsPerKm:
+      (json['paceMaxSecsPerKm'] as num?)?.toInt() ?? defaultPaceMaxSecsPerKm,
   preferredDistances:
       (json['preferredDistances'] as List<dynamic>?)
           ?.map((e) => $enumDecode(_$PreferredDistanceEnumMap, e))
@@ -91,6 +93,7 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           ?.map((e) => $enumDecode(_$PreferredRunTimeEnumMap, e))
           .toList() ??
       const [],
+  runPreferencesVersion: (json['runPreferencesVersion'] as num?)?.toInt() ?? 0,
   prefsNewCatches: json['prefsNewCatches'] as bool? ?? true,
   prefsMessages: json['prefsMessages'] as bool? ?? true,
   prefsEventReminders: json['prefsEventReminders'] as bool? ?? true,
@@ -150,6 +153,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'preferredRunTimes': instance.preferredRunTimes
       .map((e) => _$PreferredRunTimeEnumMap[e]!)
       .toList(),
+  'runPreferencesVersion': instance.runPreferencesVersion,
   'prefsNewCatches': instance.prefsNewCatches,
   'prefsMessages': instance.prefsMessages,
   'prefsEventReminders': instance.prefsEventReminders,

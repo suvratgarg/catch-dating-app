@@ -133,17 +133,18 @@ class ScrollableProfile extends ConsumerWidget {
                   ),
                   onReact: onReact,
                 ),
-              _RunningIdentityCard(
-                profile: profile,
-                tags: content.insights.emotionalRunTags,
-                reactionTarget: _reactionTarget(
-                  id: 'running',
-                  type: SwipeReactionTargetType.running,
-                  label: 'Running rhythm',
-                  preview: _runningReactionPreview(profile),
+              if (profile.hasCurrentRunPreferences)
+                _RunningIdentityCard(
+                  profile: profile,
+                  tags: content.insights.emotionalRunTags,
+                  reactionTarget: _reactionTarget(
+                    id: 'running',
+                    type: SwipeReactionTargetType.running,
+                    label: 'Running rhythm',
+                    preview: _runningReactionPreview(profile),
+                  ),
+                  onReact: onReact,
                 ),
-                onReact: onReact,
-              ),
               if (additionalPhotos.isNotEmpty)
                 _InsetProfilePhoto(
                   photo: additionalPhotos.first,
