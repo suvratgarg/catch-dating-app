@@ -7,6 +7,7 @@ import {fileURLToPath, pathToFileURL} from "node:url";
 import {
   DEFAULT_DEMO_OPS_PREFIX,
   DEFAULT_SEED_PREFIX,
+  SUVBOT_ACCESS_COLLECTION,
   applyDeletePlan,
   applyDocPlan,
   buildCheckInEventPlan,
@@ -24,14 +25,17 @@ import {
   buildValidateDemoStateReport,
   buildWarmGroupPlans,
   buildWarmUserPlan,
+  demoOperationId,
   isProductionTarget,
   listScenarioConfigs,
   loadGoldenAccounts,
   loadScenarioConfig,
   loadFirebaseAdmin,
+  normalizePhone,
   resolveUserByPhone,
   resolveProjectId,
   splitCsv,
+  timestampFromDate,
   writeManifest,
 } from "./demo_ops_core.mjs";
 import {
@@ -92,6 +96,8 @@ export async function main(argv = process.argv.slice(2)) {
     await runMatchPhones({db, args, projectId});
   } else if (command === "suvbot") {
     await runSuvbot({db, args, projectId});
+  } else if (command === "suvbot-enable") {
+    await runSuvbotEnable({db, args, projectId});
   } else if (command === "warm-user") {
     await runWarmUser({db, args, projectId});
   } else if (command === "warm-group") {
@@ -440,6 +446,107 @@ async function repairAggregates(db) {
   };
 }
 
+async function runSuvbotEnable({db, args, projectId}) {
+  const suvbot = loadSuvbotFunctionsModule(args);
+  const targets = await resolveSuvbotEnableTargets({db, args});
+  if (targets.length === 0) {
+    throw new Error("suvbot-enable requires --phone, --phones, --phone-file, or --uid.");
+  }
+
+  const now = new Date();
+  const operationId = demoOperationId({
+    command: "suvbot-enable",
+    seedPrefix: args.seedPrefix,
+    subject: String(now.getTime()),
+  });
+  const accessCollection =
+    suvbot.SUVBOT_ACCESS_COLLECTION ?? SUVBOT_ACCESS_COLLECTION;
+  const accessDocs = [];
+  const threadPaths = new Set([`publicProfiles/${suvbot.SUVBOT_UID ?? "suvbot"}`]);
+  const timestamp = timestampFromDate(admin, now);
+
+  for (const target of targets) {
+    const accessPath = `${accessCollection}/${target.uid}`;
+    const accessSnap = await db.doc(accessPath).get();
+    const accessData = accessSnap.data();
+    const matchId = suvbot.suvbotMatchId(target.uid);
+    target.matchId = matchId;
+    target.accessPreviouslyEnabled = accessData?.enabled === true;
+    threadPaths.add(`matches/${matchId}`);
+    threadPaths.add(`matches/${matchId}/messages/suvbot_welcome`);
+
+    accessDocs.push({
+      path: accessPath,
+      data: {
+        demoOps: true,
+        demoOpsCommand: "suvbot-enable",
+        demoOpsId: operationId,
+        seedPrefix: args.seedPrefix,
+        synthetic: true,
+        uid: target.uid,
+        enabled: true,
+        source: "demo_ops",
+        updatedAt: timestamp,
+        ...(!accessSnap.exists || !accessData?.createdAt ? {createdAt: timestamp} : {}),
+      },
+    });
+  }
+
+  let appliedSummary = null;
+  if (args.apply) {
+    const accessSummary = await applyDocPlan({db, docs: accessDocs});
+    const threadResults = [];
+    for (const target of targets) {
+      const thread = await suvbot.ensureSuvbotThread(
+        db,
+        target.uid,
+        suvbotDeps(db)
+      );
+      threadResults.push({uid: target.uid, ...thread});
+    }
+    const verification = await verifySuvbotEnablement({
+      db,
+      targets,
+      accessCollection,
+    });
+    appliedSummary = {
+      accessDocsWritten: accessSummary.written,
+      threadsCreated: threadResults.filter((item) => item.created).length,
+      threadsVerified: verification.filter((item) =>
+        item.accessEnabled &&
+        item.matchExists &&
+        item.welcomeMessageExists
+      ).length,
+      verification,
+    };
+  }
+
+  const plan = {
+    command: "suvbot-enable",
+    operationId,
+    phones: targets.map((target) => target.phoneNumber).filter(Boolean),
+    users: targets.map((target) => target.uid),
+    targets: targets.map((target) => ({
+      uid: target.uid,
+      phone: target.phoneNumber ?? null,
+      matchId: target.matchId,
+      accessPreviouslyEnabled: target.accessPreviouslyEnabled,
+    })),
+    docs: accessDocs,
+    threadPaths: [...threadPaths].sort(),
+    backendSource: "functions/src/demoOps/suvbot.ts",
+  };
+  const manifest = await writeManifest({db, admin, plan, apply: args.apply});
+  printPlan({
+    args,
+    projectId,
+    title: "Suvbot enablement",
+    plan,
+    manifest,
+    appliedSummary,
+  });
+}
+
 async function runSuvbot({db, args, projectId}) {
   const suvbot = loadSuvbotFunctionsModule(args);
   const action = requireArg(args, "action", "--action");
@@ -546,6 +653,38 @@ async function resolveSuvbotUser({db, args}) {
   return resolveUserByPhone(db, args.phone);
 }
 
+async function resolveSuvbotEnableTargets({db, args}) {
+  const targets = [];
+  const phones = [];
+  if (args.phone) phones.push(args.phone);
+  phones.push(...phonesFromArgs(args));
+
+  const seenPhones = new Set();
+  for (const phone of phones) {
+    const normalizedPhone = normalizePhone(phone);
+    if (seenPhones.has(normalizedPhone)) continue;
+    seenPhones.add(normalizedPhone);
+    targets.push(await resolveUserByPhone(db, normalizedPhone));
+  }
+
+  if (args.uid) {
+    targets.push({uid: args.uid, phoneNumber: args.phone ?? null, data: null});
+  }
+
+  const byUid = new Map();
+  for (const target of targets) {
+    const existing = byUid.get(target.uid);
+    if (!existing) {
+      byUid.set(target.uid, target);
+      continue;
+    }
+    if (!existing.phoneNumber && target.phoneNumber) {
+      existing.phoneNumber = target.phoneNumber;
+    }
+  }
+  return [...byUid.values()];
+}
+
 function suvbotDeps(db) {
   return {
     firestore: () => db,
@@ -553,6 +692,28 @@ function suvbotDeps(db) {
     timestampFromDate: (date) => admin.firestore.Timestamp.fromDate(date),
     now: () => new Date(),
   };
+}
+
+async function verifySuvbotEnablement({db, targets, accessCollection}) {
+  const verification = [];
+  for (const target of targets) {
+    const [accessSnap, matchSnap, profileSnap, welcomeSnap] = await Promise.all([
+      db.doc(`${accessCollection}/${target.uid}`).get(),
+      db.doc(`matches/${target.matchId}`).get(),
+      db.doc("publicProfiles/suvbot").get(),
+      db.doc(`matches/${target.matchId}/messages/suvbot_welcome`).get(),
+    ]);
+    verification.push({
+      uid: target.uid,
+      phone: target.phoneNumber ?? null,
+      matchId: target.matchId,
+      accessEnabled: accessSnap.data()?.enabled === true,
+      profileExists: profileSnap.exists,
+      matchExists: matchSnap.exists,
+      welcomeMessageExists: welcomeSnap.exists,
+    });
+  }
+  return verification;
 }
 
 function runSeedCommand(command, args) {
@@ -767,6 +928,8 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   if (plan.action) console.log(`Action: ${plan.action}`);
   if (plan.matchId) console.log(`Match: ${plan.matchId}`);
   if (plan.eventId) console.log(`Event: ${plan.eventId}`);
+  if (plan.users) console.log(`Users: ${plan.users.length}`);
+  if (plan.threadPaths) console.log(`Suvbot paths: ${plan.threadPaths.length}`);
   if (plan.docs) console.log(`Docs to write: ${plan.docs.length}`);
   if (plan.paths) console.log(`Docs to delete: ${plan.paths.length}`);
   if (plan.pairCount) console.log(`Pairs: ${plan.pairCount}`);
@@ -803,6 +966,7 @@ function printCommands() {
 - seed-world
 - append-user
 - suvbot-actions
+- suvbot-enable
 - suvbot
 - match-phones
 - warm-user
@@ -830,6 +994,7 @@ Usage:
   node tool/demo_ops.mjs seed-world --env prod --anchor-file tool/demo_seed/beta_anchors.txt --apply --reset-synthetic --allow-prod
   node tool/demo_ops.mjs append-user --env prod --anchor-phones +919999999999 --apply --allow-prod
   node tool/demo_ops.mjs suvbot-actions
+  node tool/demo_ops.mjs suvbot-enable --env prod --phones +91...,+91... --apply --allow-prod
   node tool/demo_ops.mjs suvbot --env prod --phone +91... --action warmChatState --apply --allow-prod
   node tool/demo_ops.mjs match-phones --env prod --phone-a +91... --phone-b +91... --apply --allow-prod
   node tool/demo_ops.mjs warm-user --env prod --phone +91... --apply --allow-prod
