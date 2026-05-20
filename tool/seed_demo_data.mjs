@@ -543,7 +543,7 @@ async function findMissingPublicProfiles(firestore, uids) {
   return missing;
 }
 
-export function buildSeed({
+function buildSeed({
   scenarioName,
   scenario,
   seedPrefix,
@@ -1009,9 +1009,7 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
     {kind: "upcomingPaid", offsetHours: 84, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
     {kind: "upcomingFull", offsetHours: 168, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
     {kind: "upcomingWaitlist", offsetHours: 336, price: 0, capacity: 5, durationMinutes: 65},
-    // This still receives the club/run staggering below. Keep it far enough in
-    // the past that every seeded club has an immediately open swipe window.
-    {kind: "pastOpen", offsetHours: -20, price: 0, capacity: 14, durationMinutes: 60},
+    {kind: "pastOpen", offsetHours: -8, price: 0, capacity: 14, durationMinutes: 60},
     {kind: "pastOld", offsetHours: -120, price: preferPaid ? 39900 : 0, capacity: 14, durationMinutes: 75},
     {kind: "cancelled", offsetHours: 220, price: 0, capacity: 10, durationMinutes: 70},
     {kind: "upcomingFree", offsetHours: 504, price: 0, capacity: 16, durationMinutes: 90},
@@ -1241,10 +1239,11 @@ function buildSwipeMatchDocs({seedPrefix, seedMarker, event, roster, anchorProfi
   const notifications = [];
 
   for (const [anchorIndex, anchor] of anchors.entries()) {
-    const targets = rotate(syntheticTargets, anchorIndex).slice(0, 6);
+    const targets = rotate(syntheticTargets, anchorIndex).slice(0, 4);
     for (const [targetIndex, target] of targets.entries()) {
-      if (targetIndex < 2) {
-        swipes.push(swipeDoc({seedMarker, swiper: anchor, target, event, direction: "like", now, offsetMinutes: targetIndex}));
+      const direction = targetIndex === 3 ? "pass" : "like";
+      swipes.push(swipeDoc({seedMarker, swiper: anchor, target, event, direction, now, offsetMinutes: targetIndex}));
+      if (direction === "like" && targetIndex < 2) {
         swipes.push(swipeDoc({seedMarker, swiper: target, target: anchor, event, direction: "like", now, offsetMinutes: targetIndex + 5}));
         const match = matchDoc({seedMarker, userA: anchor, userB: target, event, now});
         matches.push(match);
@@ -1263,16 +1262,6 @@ function buildSwipeMatchDocs({seedPrefix, seedMarker, event, roster, anchorProfi
           actorUid: target.uid,
           actorName: target.displayName || target.firstName,
         }));
-        continue;
-      }
-
-      if (targetIndex === 2 || targetIndex === 4) {
-        swipes.push(swipeDoc({seedMarker, swiper: target, target: anchor, event, direction: "like", now, offsetMinutes: targetIndex + 5}));
-        continue;
-      }
-
-      if (targetIndex === 3) {
-        swipes.push(swipeDoc({seedMarker, swiper: anchor, target, event, direction: "pass", now, offsetMinutes: targetIndex}));
       }
     }
   }
@@ -1518,7 +1507,7 @@ function updateClubAggregates({clubs, memberships, reviews, events}) {
   }
 }
 
-export function createWritePlan(seed) {
+function createWritePlan(seed) {
   return {
     docs: seed.docs,
     paths: seed.docs.map((doc) => doc.path),

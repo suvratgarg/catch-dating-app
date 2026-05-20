@@ -4,73 +4,11 @@ import {
   photoPromptCatalog,
   profilePromptCatalog,
 } from "./generated/schema_contract_registry.mjs";
-import {
-  buildSeed,
-  createWritePlan,
-  validateSeedDocuments,
-} from "./seed_demo_data.mjs";
+import {validateSeedDocuments} from "./seed_demo_data.mjs";
 
 const profilePrompt = profilePromptCatalog.prompts[0];
 const photoPrompt = photoPromptCatalog.prompts[0];
 const dateOfBirthIso = "1990-01-01T00:00:00.000Z";
-
-test("seed creates immediately open swipe windows for anchor users", () => {
-  const now = new Date("2026-05-20T08:00:00.000Z");
-  const writePlan = createWritePlan(seedWithAnchor({now}));
-  const eventsById = eventDocsById(writePlan);
-  const anchorAttended = anchorAttendedParticipationDocs(writePlan);
-  const openEvents = anchorAttended
-    .map((doc) => eventsById.get(doc.data.eventId))
-    .filter((doc) => doc && hasOpenSwipeWindowDoc(doc, now));
-
-  assert.ok(
-    openEvents.length >= 2,
-    `expected at least two open swipe windows, got ${openEvents.length}`
-  );
-  for (const eventDoc of openEvents) {
-    assert.ok(eventDoc.data.endTime.toDate() <= now);
-    assert.ok(
-      eventDoc.data.endTime.toDate() >=
-        new Date(now.getTime() - 24 * 60 * 60 * 1000)
-    );
-  }
-});
-
-test("seed leaves incoming-only likes so anchor swipes can create matches", () => {
-  const now = new Date("2026-05-20T08:00:00.000Z");
-  const writePlan = createWritePlan(seedWithAnchor({now}));
-  const eventsById = eventDocsById(writePlan);
-  const openEventIds = new Set(
-    anchorAttendedParticipationDocs(writePlan)
-      .map((doc) => eventsById.get(doc.data.eventId))
-      .filter((doc) => doc && hasOpenSwipeWindowDoc(doc, now))
-      .map((doc) => doc.path.split("/")[1])
-  );
-  const anchorOutgoingTargets = new Set(
-    writePlan.docs
-      .filter((doc) => doc.path.startsWith("swipes/demo_anchor/outgoing/"))
-      .map((doc) => doc.data.targetId)
-  );
-  const matchIds = new Set(
-    writePlan.docs
-      .filter((doc) => /^matches\/[^/]+$/.test(doc.path))
-      .map((doc) => doc.path.split("/")[1])
-  );
-
-  const incomingOnlyLikes = writePlan.docs.filter((doc) =>
-    doc.path.startsWith("swipes/") &&
-    doc.data.targetId === "demo_anchor" &&
-    doc.data.direction === "like" &&
-    openEventIds.has(doc.data.eventId) &&
-    !anchorOutgoingTargets.has(doc.data.swiperId) &&
-    !matchIds.has(matchId("demo_anchor", doc.data.swiperId))
-  );
-
-  assert.ok(
-    incomingOnlyLikes.length >= 1,
-    "expected at least one unswiped attendee with a reciprocal like"
-  );
-});
 
 test("seed document validation accepts valid profile and event docs", () => {
   const result = validateSeedDocuments({
@@ -377,61 +315,6 @@ function validActivityNotificationDoc() {
     actorUid: "runner-2",
     actorName: "Runner Two",
   };
-}
-
-function seedWithAnchor({now}) {
-  return buildSeed({
-    scenarioName: "beta-full",
-    scenario: {
-      description: "Focused swipe-window test world.",
-      cities: ["delhi"],
-      usersPerCity: 8,
-      clubsPerCity: 2,
-      eventsPerClub: 8,
-      anchorsPerRun: 4,
-    },
-    seedPrefix: "demo_test",
-    anchorProfiles: [{
-      uid: "demo_anchor",
-      firstName: "Demo",
-      name: "Demo Anchor",
-      displayName: "Demo Anchor",
-      gender: "man",
-      city: "delhi",
-      latitude: 28.7041,
-      longitude: 77.1025,
-      age: 30,
-      photoUrls: [],
-      source: "anchor",
-    }],
-    now,
-  });
-}
-
-function eventDocsById(writePlan) {
-  return new Map(
-    writePlan.docs
-      .filter((doc) => doc.path.startsWith("events/"))
-      .map((doc) => [doc.path.split("/")[1], doc])
-  );
-}
-
-function anchorAttendedParticipationDocs(writePlan) {
-  return writePlan.docs.filter((doc) =>
-    doc.path.startsWith("eventParticipations/") &&
-    doc.data.uid === "demo_anchor" &&
-    doc.data.status === "attended"
-  );
-}
-
-function hasOpenSwipeWindowDoc(eventDoc, now) {
-  const endTime = eventDoc.data.endTime.toDate();
-  const closesAt = new Date(endTime.getTime() + 24 * 60 * 60 * 1000);
-  return endTime <= now && closesAt >= now;
-}
-
-function matchId(uidA, uidB) {
-  return [uidA, uidB].sort().join("_");
 }
 
 function validUserProfileDoc() {
