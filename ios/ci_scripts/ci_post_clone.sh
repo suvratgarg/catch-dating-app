@@ -85,17 +85,7 @@ echo "Preparing Flutter iOS config for prod $build_name ($build_number)"
 # fresh CI clone. Without it the GoogleMapsApiKey Info.plist value is empty,
 # GMSServices.provideAPIKey is skipped, and every map screen crashes at runtime.
 echo "Writing prod iOS Google Maps key"
-maps_key="${GOOGLE_MAPS_IOS_API_KEY_PROD:-}"
-if [[ -z "$maps_key" ]]; then
-  echo "Missing GOOGLE_MAPS_IOS_API_KEY_PROD environment variable."
-  echo "Add it as a secret environment variable on the Xcode Cloud workflow."
-  exit 1
-fi
-if [[ ! "$maps_key" =~ ^AIza[0-9A-Za-z_-]{20,}$ ]]; then
-  echo "GOOGLE_MAPS_IOS_API_KEY_PROD is set but is not a valid Google API key."
-  exit 1
-fi
-printf 'GOOGLE_MAPS_IOS_API_KEY_PROD=%s\n' "$maps_key" > ios/Flutter/GoogleMapsKeys.xcconfig
+./tool/write_ios_maps_key_xcconfig.sh prod
 
 ensure_cocoapods
 run_with_retry 3 20 flutter pub get

@@ -169,7 +169,7 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "updated": "2026-05-20",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, or release evidence."
