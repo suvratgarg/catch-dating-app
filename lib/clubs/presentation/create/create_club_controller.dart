@@ -116,10 +116,10 @@ class CreateClubController extends _$CreateClubController {
         'imageUrl': imageUrl,
         'profileImageUrl': profileImageUrl,
         'hostDefaults': hostDefaults.toJson(),
+        'instagramHandle': instagramHandle,
+        'phoneNumber': phoneNumber,
+        'email': email,
       };
-      if (instagramHandle != null) fields['instagramHandle'] = instagramHandle;
-      if (phoneNumber != null) fields['phoneNumber'] = phoneNumber;
-      if (email != null) fields['email'] = email;
       await clubsRepo.updateClub(clubId: existingClub.id, fields: fields);
       return;
     }
