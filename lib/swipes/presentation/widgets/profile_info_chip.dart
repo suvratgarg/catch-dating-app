@@ -21,13 +21,13 @@ class ProfileInfoChip extends StatelessWidget {
         border: Border.all(color: palette.chipBorder),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 260),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: palette.textSecondary, size: 14),
+              Icon(icon, color: palette.textSecondary, size: 13),
               gapW6,
               Flexible(
                 child: Text(

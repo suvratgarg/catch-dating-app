@@ -38,6 +38,7 @@ Map<String, dynamic> _$ClubMembershipToJson(
 };
 
 const _$ClubMembershipRoleEnumMap = {
+  ClubMembershipRole.owner: 'owner',
   ClubMembershipRole.host: 'host',
   ClubMembershipRole.member: 'member',
 };

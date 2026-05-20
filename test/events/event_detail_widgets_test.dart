@@ -184,6 +184,35 @@ void main() {
       expect(fakePaymentRepository.bookedFreeEventId, 'event-1');
     });
 
+    testWidgets('gates run-event booking behind run preferences', (
+      tester,
+    ) async {
+      final fakePaymentRepository = FakePaymentRepository();
+
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: EventDetailCta(
+            event: buildEvent(bookedCount: 2),
+            clubId: 'club1',
+            userProfile: buildUser(runPreferencesVersion: 0),
+            participation: null,
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+        ],
+      );
+
+      expect(find.text('Set run preferences'), findsOneWidget);
+      expect(find.text('Join event — 18 spots left'), findsNothing);
+      await tester.tap(find.text('Set run preferences'));
+      await tester.pump();
+
+      expect(fakePaymentRepository.bookFreeEventCalled, isFalse);
+    });
+
     testWidgets('passes invite query codes into booking actions', (
       tester,
     ) async {

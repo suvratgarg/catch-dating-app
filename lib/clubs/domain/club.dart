@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -9,6 +10,8 @@ enum ClubLifecycleStatus { active, archived }
 
 @freezed
 abstract class Club with _$Club {
+  const Club._();
+
   const factory Club({
     @JsonKey(includeToJson: false) required String id,
     required String name,
@@ -18,8 +21,12 @@ abstract class Club with _$Club {
     required String hostUserId,
     required String hostName,
     String? hostAvatarUrl,
+    String? ownerUserId,
+    @Default([]) List<String> hostUserIds,
+    @Default([]) List<ClubHostProfile> hostProfiles,
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
+    String? profileImageUrl,
     @Default([]) List<String> tags,
     @Default(0) int memberCount,
     @Default(0.0) double rating,
@@ -33,7 +40,48 @@ abstract class Club with _$Club {
     @Default(false) bool archived,
     @TimestampConverter() DateTime? archivedAt,
     String? archiveReason,
+    @Default(ClubHostDefaults()) ClubHostDefaults hostDefaults,
   }) = _Club;
 
   factory Club.fromJson(Map<String, dynamic> json) => _$ClubFromJson(json);
+
+  String get ownerOrPrimaryHostUserId => ownerUserId ?? hostUserId;
+
+  bool isOwnedBy(String? uid) =>
+      uid != null && uid == ownerOrPrimaryHostUserId;
+
+  bool isHostedBy(String? uid) {
+    if (uid == null) return false;
+    return uid == hostUserId ||
+        uid == ownerUserId ||
+        hostUserIds.contains(uid) ||
+        hostProfiles.any((host) => host.uid == uid);
+  }
+
+  List<ClubHostProfile> get displayHostProfiles {
+    if (hostProfiles.isNotEmpty) return hostProfiles;
+    return [
+      ClubHostProfile(
+        uid: hostUserId,
+        displayName: hostName,
+        avatarUrl: hostAvatarUrl,
+        role: ClubHostRole.owner,
+      ),
+    ];
+  }
+}
+
+enum ClubHostRole { owner, host }
+
+@freezed
+abstract class ClubHostProfile with _$ClubHostProfile {
+  const factory ClubHostProfile({
+    required String uid,
+    required String displayName,
+    String? avatarUrl,
+    @Default(ClubHostRole.host) ClubHostRole role,
+  }) = _ClubHostProfile;
+
+  factory ClubHostProfile.fromJson(Map<String, dynamic> json) =>
+      _$ClubHostProfileFromJson(json);
 }

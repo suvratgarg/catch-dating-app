@@ -28,14 +28,16 @@ class _AvatarChip extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: t.line2, width: 1.5),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(CatchRadius.sm),
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: t.line2, width: 1.5),
+                      ),
+                      child: _ClubImage(club: club, preferProfileImage: true),
                     ),
-                    child: ClipOval(child: _ClubImage(club: club)),
                   ),
                   if (showLiveBadge)
                     Positioned(

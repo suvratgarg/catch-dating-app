@@ -173,14 +173,39 @@ void main() {
 
     test('watchClubsHostedBy filters by host user id', () async {
       final hosted = buildClub(id: 'hosted', hostUserId: 'host-1');
+      final coHosted = buildClub(
+        id: 'co-hosted',
+        hostUserId: 'host-2',
+        hostUserIds: const ['host-2', 'host-1'],
+      );
       final other = buildClub(id: 'other', hostUserId: 'host-2');
       await _seedClub(firestore, hosted);
+      await _seedClub(firestore, coHosted);
       await _seedClub(firestore, other);
 
       await expectLater(
         repository.watchClubsHostedBy('host-1'),
-        emits([hosted]),
+        emits(unorderedEquals([hosted, coHosted])),
       );
+    });
+
+    test('watchClubsOwnedBy filters out co-hosted clubs', () async {
+      final owned = buildClub(
+        id: 'owned',
+        hostUserId: 'host-1',
+        ownerUserId: 'host-1',
+        hostUserIds: const ['host-1'],
+      );
+      final coHosted = buildClub(
+        id: 'co-hosted',
+        hostUserId: 'host-2',
+        ownerUserId: 'host-2',
+        hostUserIds: const ['host-2', 'host-1'],
+      );
+      await _seedClub(firestore, owned);
+      await _seedClub(firestore, coHosted);
+
+      await expectLater(repository.watchClubsOwnedBy('host-1'), emits([owned]));
     });
 
     test('createClub delegates creation to the callable', () async {
@@ -206,6 +231,7 @@ void main() {
           'location': 'mumbai',
           'area': 'Bandra',
           'imageUrl': 'https://example.com/cover.jpg',
+          'profileImageUrl': null,
           'instagramHandle': null,
           'phoneNumber': null,
           'email': null,

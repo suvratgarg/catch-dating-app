@@ -203,6 +203,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/updateClubCallablePayload.ts",
   },
   {
+    name: "AddClubHostCallablePayload",
+    source: "callables/add_club_host_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/addClubHostCallablePayload.ts",
+  },
+  {
+    name: "RemoveClubHostCallablePayload",
+    source: "callables/remove_club_host_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/removeClubHostCallablePayload.ts",
+  },
+  {
     name: "ArchiveClubCallablePayload",
     source: "callables/archive_club_payload.schema.json",
     typeOutput:

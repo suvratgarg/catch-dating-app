@@ -41,11 +41,12 @@ abstract class PublicProfile with _$PublicProfile {
     @JsonKey(unknownEnumValue: null) ChildrenStatus? children,
 
     // Running identity
-    @Default(300) int paceMinSecsPerKm,
-    @Default(420) int paceMaxSecsPerKm,
+    @Default(defaultPaceMinSecsPerKm) int paceMinSecsPerKm,
+    @Default(defaultPaceMaxSecsPerKm) int paceMaxSecsPerKm,
     @Default([]) List<PreferredDistance> preferredDistances,
     @Default([]) List<RunReason> runningReasons,
     @Default([]) List<PreferredRunTime> preferredRunTimes,
+    @Default(0) int runPreferencesVersion,
   }) = _PublicProfile;
 
   factory PublicProfile.fromJson(Map<String, dynamic> json) =>
@@ -85,6 +86,7 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   preferredDistances: user.preferredDistances,
   runningReasons: user.runningReasons,
   preferredRunTimes: user.preferredRunTimes,
+  runPreferencesVersion: user.runPreferencesVersion,
 );
 
 Map<String, dynamic> _migratePromptJson(Map<String, dynamic> json) {
@@ -127,5 +129,16 @@ extension PublicProfilePhotos on PublicProfile {
       photoThumbnailUrls: photoThumbnailUrls,
       photoPrompts: photoPrompts,
     );
+  }
+}
+
+extension PublicProfileRunPreferences on PublicProfile {
+  bool get hasCurrentRunPreferences {
+    return runPreferencesVersion >= currentRunPreferencesVersion ||
+        preferredDistances.isNotEmpty ||
+        runningReasons.isNotEmpty ||
+        preferredRunTimes.isNotEmpty ||
+        paceMinSecsPerKm != defaultPaceMinSecsPerKm ||
+        paceMaxSecsPerKm != defaultPaceMaxSecsPerKm;
   }
 }

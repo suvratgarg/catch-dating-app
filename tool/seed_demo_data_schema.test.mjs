@@ -359,6 +359,7 @@ function validUserProfileDoc() {
     preferredDistances: ["fiveK", "tenK"],
     runningReasons: ["fitness", "social"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,
@@ -400,6 +401,7 @@ function validPublicProfileDoc() {
     preferredDistances: ["fiveK", "tenK"],
     runningReasons: ["fitness", "social"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
   };
 }
 
@@ -415,8 +417,17 @@ function validClubDoc() {
     hostUserId: "runner-1",
     hostName: "Runner One",
     hostAvatarUrl: "https://example.test/runner-one.jpg",
+    ownerUserId: "runner-1",
+    hostUserIds: ["runner-1"],
+    hostProfiles: [{
+      uid: "runner-1",
+      displayName: "Runner One",
+      avatarUrl: "https://example.test/runner-one.jpg",
+      role: "owner",
+    }],
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
     imageUrl: "https://example.test/club.jpg",
+    profileImageUrl: null,
     tags: ["social", "indore"],
     memberCount: 1,
     rating: 0,

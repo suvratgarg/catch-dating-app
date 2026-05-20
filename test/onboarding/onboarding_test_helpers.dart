@@ -145,6 +145,17 @@ class FakeOnboardingUserProfileRepository extends Fake
         profileComplete: updated['profileComplete'] as bool,
       );
     }
+    if (updated.containsKey('profilePrompts')) {
+      currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
+        profilePrompts: (updated['profilePrompts'] as List)
+            .map(
+              (e) => ProfilePromptAnswer.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
+            .toList(),
+      );
+    }
     if (updated.containsKey('paceMinSecsPerKm')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
         paceMinSecsPerKm: updated['paceMinSecsPerKm'] as int,
@@ -158,14 +169,7 @@ class FakeOnboardingUserProfileRepository extends Fake
         preferredRunTimes: (updated['preferredRunTimes'] as List)
             .map((e) => PreferredRunTime.values.firstWhere((t) => t.name == e))
             .toList(),
-        profilePrompts: (updated['profilePrompts'] as List)
-            .map(
-              (e) => ProfilePromptAnswer.fromJson(
-                Map<String, dynamic>.from(e as Map),
-              ),
-            )
-            .toList(),
-        profileComplete: updated['profileComplete'] as bool,
+        runPreferencesVersion: updated['runPreferencesVersion'] as int,
       );
     }
     lastSavedUser = currentUser;

@@ -141,15 +141,15 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.81",
-    "updated": "2026-05-19",
+    "version": "2.5.85",
+    "updated": "2026-05-20",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "host_tooling_consolidation_tracker": {
     "path": "docs/host_tooling_consolidation_tracker.md",
-    "version": "1.0.4",
-    "updated": "2026-05-19",
+    "version": "1.0.8",
+    "updated": "2026-05-20",
     "status": "active",
     "read_policy": "Use while consolidating host tools, host palette, event management, attendance, and backend-ready host action exposure."
   },

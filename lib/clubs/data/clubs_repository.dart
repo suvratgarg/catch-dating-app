@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -86,12 +87,34 @@ class ClubsRepository {
 
   Stream<List<Club>> watchClubsHostedBy(String uid) => withBackendErrorStream(
     () => _clubsRef
-        .where('hostUserId', isEqualTo: uid)
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('hostUserIds', arrayContains: uid),
+          ),
+        )
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch hosted clubs',
+      resource: _collectionPath,
+    ),
+  );
+
+  Stream<List<Club>> watchClubsOwnedBy(String uid) => withBackendErrorStream(
+    () => _clubsRef
+        .where(
+          Filter.or(
+            Filter('hostUserId', isEqualTo: uid),
+            Filter('ownerUserId', isEqualTo: uid),
+          ),
+        )
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch owned clubs',
       resource: _collectionPath,
     ),
   );
@@ -107,9 +130,11 @@ class ClubsRepository {
     required String location,
     required String area,
     String? imageUrl,
+    String? profileImageUrl,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    ClubHostDefaults? hostDefaults,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
@@ -122,9 +147,11 @@ class ClubsRepository {
               location: location,
               area: area,
               imageUrl: imageUrl,
+              profileImageUrl: profileImageUrl,
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
+              hostDefaults: hostDefaults?.toJson(),
             ).toJson(),
           );
       return CreateClubCallableResponse.fromCallableData(result.data).clubId;
@@ -203,6 +230,34 @@ class ClubsRepository {
       resource: _collectionPath,
     ),
   );
+
+  Future<void> addClubHost({
+    required String clubId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('addClubHost')
+        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'add club host',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<void> removeClubHost({
+    required String clubId,
+    required String uid,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('removeClubHost')
+        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'remove club host',
+      resource: _collectionPath,
+    ),
+  );
 }
 
 @Riverpod(keepAlive: true)
@@ -236,6 +291,12 @@ Stream<List<Club>> watchClubsByLocationSortedByRating(
 Stream<List<Club>> watchClubsHostedBy(Ref ref, String uid) {
   final repository = ref.watch(clubsRepositoryProvider);
   return repository.watchClubsHostedBy(uid);
+}
+
+@riverpod
+Stream<List<Club>> watchClubsOwnedBy(Ref ref, String uid) {
+  final repository = ref.watch(clubsRepositoryProvider);
+  return repository.watchClubsOwnedBy(uid);
 }
 
 @riverpod

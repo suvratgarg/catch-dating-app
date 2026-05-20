@@ -907,6 +907,10 @@ const schemaUpdateUserProfileCallablePayloadSchema =
             ],
           },
         },
+        'runPreferencesVersion': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
         'prefsNewCatches': <String, Object?>{
           'type': 'boolean',
         },

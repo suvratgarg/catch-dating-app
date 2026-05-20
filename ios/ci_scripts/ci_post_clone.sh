@@ -4,6 +4,46 @@ trap 'status=$?; echo "ci_post_clone.sh failed at line $LINENO: $BASH_COMMAND"; 
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+run_with_retry() {
+  local attempts="$1"
+  local delay_seconds="$2"
+  shift 2
+
+  local attempt=1
+  while true; do
+    if "$@"; then
+      return 0
+    fi
+
+    if (( attempt >= attempts )); then
+      echo "Command failed after $attempt attempts: $*"
+      return 1
+    fi
+
+    echo "Command failed on attempt $attempt/$attempts: $*"
+    echo "Retrying in ${delay_seconds}s..."
+    sleep "$delay_seconds"
+    attempt=$((attempt + 1))
+  done
+}
+
+ensure_cocoapods() {
+  if command -v pod >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "Installing CocoaPods"
+  if command -v brew >/dev/null 2>&1; then
+    brew install cocoapods
+  elif command -v gem >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1; then
+    gem install --user-install cocoapods
+    export PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+  else
+    echo "Neither CocoaPods, Homebrew, nor RubyGems is available on this runner."
+    exit 127
+  fi
+}
+
 if [[ -n "${CI_PRIMARY_REPOSITORY_PATH:-}" ]]; then
   repo_root="$CI_PRIMARY_REPOSITORY_PATH"
 elif [[ -f "$script_dir/../pubspec.yaml" ]]; then
@@ -41,8 +81,9 @@ fi
 echo "Preparing Flutter iOS config for prod $build_name ($build_number)"
 ./tool/use_firebase_environment.sh prod >/dev/null
 
-flutter pub get
-flutter build ios \
+ensure_cocoapods
+run_with_retry 3 20 flutter pub get
+run_with_retry 3 30 flutter build ios \
   --config-only \
   --release \
   --flavor prod \
@@ -50,18 +91,5 @@ flutter build ios \
   --build-number="$build_number" \
   --dart-define-from-file="$repo_root/tool/dart_defines/prod.json"
 
-if ! command -v pod >/dev/null 2>&1; then
-  echo "Installing CocoaPods"
-  if command -v brew >/dev/null 2>&1; then
-    brew install cocoapods
-  elif command -v gem >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1; then
-    gem install --user-install cocoapods
-    export PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
-  else
-    echo "Neither CocoaPods, Homebrew, nor RubyGems is available on this runner."
-    exit 127
-  fi
-fi
-
 cd ios
-pod install
+run_with_retry 3 30 pod install

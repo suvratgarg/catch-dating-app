@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
+  "title": "AddClubHostCallablePayload",
+  "description": "Callable payload accepted by addClubHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clubId", "uid"],
+  "properties": {
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

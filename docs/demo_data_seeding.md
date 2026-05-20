@@ -100,6 +100,8 @@ The supported commands are:
 |---|---|
 | `seed-world` | Wrapper around `tool/seed_demo_data.mjs` for full scenario seeds. |
 | `append-user` | Wrapper around append mode for adding new testers without resetting existing testers. |
+| `suvbot-actions` | Print the backend-owned Suvbot action catalog from `functions/src/demoOps/suvbot.ts`. |
+| `suvbot` | Run one Suvbot action for a user from the CLI through the compiled Functions implementation. |
 | `match-phones` | Resolve two real phone numbers and create a deterministic match without starter messages by default. |
 | `warm-user` | Prepare one real account with saved events, event edges, notifications, payments, synthetic matches, and starter messages. |
 | `warm-group` | Pairwise-match a small real tester group so they can dogfood chat together. |
@@ -120,6 +122,57 @@ The supported commands are:
 
 All write/delete commands are dry-run-first. Add `--apply` to mutate data.
 Production writes also require `--allow-prod`.
+
+### Suvbot Self-Service Chat
+
+Seeded anchor users also get a deterministic `Suvbot` thread in Chats. The
+seeder writes `demoSelfServiceAccess/{uid}`, `publicProfiles/suvbot`, and
+`matches/suvbot_{uid}` with a welcome message, so the app can show button-driven
+demo actions inside the normal chat surface.
+
+The deployed callables are `listSuvbotDemoActions` and
+`requestSuvbotDemoOperation`. Both are self-scoped to the signed-in user and
+require `demoSelfServiceAccess/{uid}.enabled == true`. The app renders chips
+from `listSuvbotDemoActions`, so new actions can be shipped by deploying
+Functions instead of requiring another app update.
+
+Current backend-owned actions are:
+
+| Action | Purpose |
+|---|---|
+| `refreshDemoState` | Destructive two-tap action that deletes the caller's demo-owned state, preserves their real profile and Suvbot thread, then warms all demo surfaces again. |
+| `clearDemoState` | Destructive two-tap action that deletes the caller's demo-owned state without writing fresh state. |
+| `warmSignupState` | Create saved events plus signed-up/waitlisted event state. |
+| `warmPostEventState` | Create attended-event state for recap and swipe-window testing. |
+| `warmChatState` | Create seeded match threads for chat testing. |
+| `warmPaymentState` | Create demo payment-history state for a paid seeded event. |
+| `resetChats` | Destructive two-tap action that deletes demo-owned matches, swipe edges, and chat alerts. |
+| `resetBookings` | Destructive two-tap action that deletes demo-owned saved events, bookings, schedule locks, and payments. |
+| `resetNotifications` | Destructive two-tap action that deletes demo-owned notifications only. |
+| `matchTesterByPhone` | Create a seeded match with another allowlisted tester by typed phone number. |
+| `checkDemoState` | Report saved demo events, active/attended demo event states, seeded match threads, and demo payments. |
+| `help` | Explain the available Suvbot actions. |
+| `message` | Record typed text and route supported shortcuts, such as `match +919999999999`. |
+
+Suvbot intentionally does not expose global world reseeding, another user's
+unallowlisted phone number, or arbitrary admin commands to beta users.
+
+Use the same backend code from local tooling:
+
+```bash
+node tool/demo_ops.mjs suvbot-actions
+node tool/demo_ops.mjs suvbot \
+  --env prod \
+  --phone +919999999999 \
+  --action warmChatState \
+  --apply \
+  --allow-prod
+```
+
+The `suvbot` command builds `functions/` and imports
+`functions/lib/demoOps/suvbot.js` before running. Add
+`--skip-functions-build` only when you already built Functions and want to
+reuse the existing compiled output.
 
 ### Match Two Real Testers
 

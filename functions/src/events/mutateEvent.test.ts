@@ -773,6 +773,16 @@ test("updateEventHandler rejects schedule changes once participants exist",
       ),
       (error) => assertHttpsCode(error, "failed-precondition")
     );
+    await assert.rejects(
+      () => updateEventHandler(
+        request("host-1", {
+          eventId: "event-1",
+          fields: {capacityLimit: 99},
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
   }
 );
 
@@ -923,7 +933,7 @@ test("updateEventHandler rejects non-host and server-owned field edits",
     await assert.rejects(
       () => updateEventHandler(request("host-1", {
         eventId: "event-1",
-        fields: {capacityLimit: 99},
+        fields: {bookedCount: 99},
       }), h.deps),
       (error) => assertHttpsCode(error, "invalid-argument")
     );

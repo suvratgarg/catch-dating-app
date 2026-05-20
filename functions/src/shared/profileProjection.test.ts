@@ -49,6 +49,7 @@ function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
     preferredDistances: ["fiveK"],
     runningReasons: ["fitness"],
     preferredRunTimes: ["morning"],
+    runPreferencesVersion: 1,
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,
@@ -147,6 +148,7 @@ test(
     assert.equal(profile.company, "Stride Labs");
     assert.equal(profile.relationshipGoal, "relationship");
     assert.deepEqual(profile.preferredRunTimes, ["morning"]);
+    assert.equal(profile.runPreferencesVersion, 1);
   }
 );
 

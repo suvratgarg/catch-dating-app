@@ -108,16 +108,28 @@ export async function createClubHandler(
       );
     }
 
+    const hostName = publicDisplayName(user);
+    const hostAvatarUrl = publicAvatarUrl(user);
+
     tx.create(clubRef, {
       name: data.name,
       description: data.description,
       location: data.location,
       area: data.area,
       hostUserId,
-      hostName: publicDisplayName(user),
-      hostAvatarUrl: publicAvatarUrl(user),
+      hostName,
+      hostAvatarUrl,
+      ownerUserId: hostUserId,
+      hostUserIds: [hostUserId],
+      hostProfiles: [{
+        uid: hostUserId,
+        displayName: hostName,
+        avatarUrl: hostAvatarUrl,
+        role: "owner",
+      }],
       createdAt: deps.serverTimestamp(),
       imageUrl: data.imageUrl ?? null,
+      profileImageUrl: data.profileImageUrl ?? null,
       tags: [],
       memberCount: 1,
       rating: 0,
@@ -131,11 +143,12 @@ export async function createClubHandler(
       instagramHandle: data.instagramHandle ?? null,
       phoneNumber: data.phoneNumber ?? null,
       email: data.email ?? null,
+      hostDefaults: data.hostDefaults ?? defaultHostDefaults(),
     });
     tx.set(membershipRef, activeClubMembershipPatch({
       clubId: clubRef.id,
       uid: hostUserId,
-      role: "host",
+      role: "owner",
     }), {merge: true});
     tx.create(hostClaimRef, {
       uid: hostUserId,
@@ -151,3 +164,32 @@ export const createClub = onCall(
   appCheckCallableOptions,
   (request) => createClubHandler(request)
 );
+
+/**
+ * Default host-management settings for newly created clubs.
+ * @return {object} Event policy and event success defaults.
+ */
+function defaultHostDefaults() {
+  return {
+    eventPolicy: {
+      admissionPreset: "openCapacity",
+      minAge: 0,
+      maxAge: 99,
+      maxMen: null,
+      maxWomen: null,
+      dynamicPricingEnabled: false,
+      dynamicPricingStepInPaise: null,
+      dynamicPricingMaxInPaise: null,
+      cancellationPolicyId: "standard",
+    },
+    eventSuccess: {
+      enabled: false,
+      playbookId: "socialRun",
+      selectedModuleIds: [],
+      hostGoal: "Help attendees meet at least two new people.",
+      privateCrushEnabled: true,
+      contextualOpenersEnabled: true,
+      attendeePrompt: null,
+    },
+  };
+}

@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'club_membership.freezed.dart';
 part 'club_membership.g.dart';
 
-enum ClubMembershipRole { host, member }
+enum ClubMembershipRole { owner, host, member }
 
 enum ClubMembershipStatus { active, left, deleted }
 

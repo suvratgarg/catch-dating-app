@@ -166,6 +166,7 @@ export interface UserProfileDocument {
     | "evening"
     | "night"
   )[];
+  runPreferencesVersion: number;
   prefsNewCatches: boolean;
   prefsMessages: boolean;
   prefsEventReminders: boolean;

@@ -13,6 +13,22 @@ export interface ClubDocument {
   hostUserId: string;
   hostName: string;
   hostAvatarUrl: string | null;
+  ownerUserId: string;
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  hostUserIds: string[];
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  hostProfiles: {
+    uid: string;
+    displayName: string;
+    avatarUrl: string | null;
+    role: "owner" | "host";
+  }[];
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
@@ -21,6 +37,7 @@ export interface ClubDocument {
     _nanoseconds: number;
   };
   imageUrl: string | null;
+  profileImageUrl: string | null;
   /**
    * @maxItems 20
    */
@@ -43,6 +60,35 @@ export interface ClubDocument {
     _nanoseconds: number;
   } | null;
   archiveReason: string | null;
+  hostDefaults?: {
+    eventPolicy?: {
+      admissionPreset?:
+        | "openCapacity"
+        | "inviteOnly"
+        | "balancedSingles"
+        | "fixedCohortCaps";
+      minAge?: number;
+      maxAge?: number;
+      maxMen?: number | null;
+      maxWomen?: number | null;
+      dynamicPricingEnabled?: boolean;
+      dynamicPricingStepInPaise?: number | null;
+      dynamicPricingMaxInPaise?: number | null;
+      cancellationPolicyId?: "flexible" | "standard" | "strict";
+    };
+    eventSuccess?: {
+      enabled?: boolean;
+      playbookId?: string;
+      /**
+       * @maxItems 24
+       */
+      selectedModuleIds?: string[];
+      hostGoal?: string;
+      privateCrushEnabled?: boolean;
+      contextualOpenersEnabled?: boolean;
+      attendeePrompt?: string | null;
+    };
+  };
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

@@ -86,7 +86,7 @@ class ClubDetailScreen extends ConsumerWidget {
             reviews: const [],
             userProfile: currentUserProfile,
             uid: currentUid,
-            isHost: placeholderAuth && currentUid == initialClub!.hostUserId,
+            isHost: placeholderAuth && initialClub!.isHostedBy(currentUid),
             isMember:
                 placeholderAuth &&
                 currentMembership?.status == ClubMembershipStatus.active,

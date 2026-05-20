@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -20,8 +21,12 @@ Club buildClub({
   String hostUserId = 'host-1',
   String hostName = 'Host',
   String? hostAvatarUrl,
+  String? ownerUserId,
+  List<String>? hostUserIds,
+  List<ClubHostProfile>? hostProfiles,
   DateTime? createdAt,
   String? imageUrl,
+  String? profileImageUrl,
   List<String> tags = const ['social'],
   int memberCount = 1,
   double rating = 0,
@@ -41,8 +46,12 @@ Club buildClub({
     hostUserId: hostUserId,
     hostName: hostName,
     hostAvatarUrl: hostAvatarUrl,
+    ownerUserId: ownerUserId,
+    hostUserIds: hostUserIds ?? const [],
+    hostProfiles: hostProfiles ?? const [],
     createdAt: createdAt ?? DateTime(2025, 1, 1),
     imageUrl: imageUrl,
+    profileImageUrl: profileImageUrl,
     tags: tags,
     memberCount: memberCount,
     rating: rating,
@@ -71,6 +80,7 @@ UserProfile buildUser({
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
     photoUrls: photoUrls,
+    runPreferencesVersion: currentRunPreferencesVersion,
   );
 }
 
@@ -140,6 +150,10 @@ class FakeClubsRepository implements ClubsRepository {
   String? joinedClubId;
   String? leftClubId;
   String? notificationsClubId;
+  String? addedHostClubId;
+  String? addedHostUid;
+  String? removedHostClubId;
+  String? removedHostUid;
   bool? notificationsEnabled;
   Object? createError;
   Object? joinError;
@@ -162,9 +176,11 @@ class FakeClubsRepository implements ClubsRepository {
     required String location,
     required String area,
     String? imageUrl,
+    String? profileImageUrl,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    ClubHostDefaults? hostDefaults,
   }) async {
     if (createError != null) {
       throw createError!;
@@ -177,9 +193,11 @@ class FakeClubsRepository implements ClubsRepository {
       location: location,
       area: area,
       imageUrl: imageUrl,
+      profileImageUrl: profileImageUrl,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,
+      hostDefaults: hostDefaults ?? const ClubHostDefaults(),
     );
     return resolvedClubId;
   }
@@ -237,8 +255,31 @@ class FakeClubsRepository implements ClubsRepository {
 
   @override
   Stream<List<Club>> watchClubsHostedBy(String uid) => Stream.value(
-    clubsById.values.where((club) => club.hostUserId == uid).toList(),
+    clubsById.values.where((club) => club.isHostedBy(uid)).toList(),
   );
+
+  @override
+  Stream<List<Club>> watchClubsOwnedBy(String uid) => Stream.value(
+    clubsById.values.where((club) => club.isOwnedBy(uid)).toList(),
+  );
+
+  @override
+  Future<void> addClubHost({
+    required String clubId,
+    required String uid,
+  }) async {
+    addedHostClubId = clubId;
+    addedHostUid = uid;
+  }
+
+  @override
+  Future<void> removeClubHost({
+    required String clubId,
+    required String uid,
+  }) async {
+    removedHostClubId = clubId;
+    removedHostUid = uid;
+  }
 }
 
 class CreateClubCall {
@@ -249,9 +290,11 @@ class CreateClubCall {
     required this.location,
     required this.area,
     this.imageUrl,
+    this.profileImageUrl,
     this.instagramHandle,
     this.phoneNumber,
     this.email,
+    this.hostDefaults = const ClubHostDefaults(),
   });
 
   final String clubId;
@@ -260,9 +303,11 @@ class CreateClubCall {
   final String location;
   final String area;
   final String? imageUrl;
+  final String? profileImageUrl;
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
+  final ClubHostDefaults hostDefaults;
 }
 
 class FakeImageUploadRepository implements ImageUploadRepository {
@@ -316,6 +361,19 @@ class FakeImageUploadRepository implements ImageUploadRepository {
 
   @override
   Future<String> uploadClubCover({
+    required String clubId,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadClubId = clubId;
+    lastUploadedImage = image;
+    return uploadResult;
+  }
+
+  @override
+  Future<String> uploadClubProfileImage({
     required String clubId,
     required XFile image,
   }) async {

@@ -76,6 +76,48 @@ void main() {
     expect(find.text('Post-event host report'), findsOneWidget);
   });
 
+  testWidgets('host live mode is unavailable until setup is saved', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final event = buildEvent();
+    final plan = EventSuccessPlan.defaultForEvent(event);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: false,
+                  roster: EventParticipationRoster.empty(),
+                  feedback: const [],
+                  initialTab: EventSuccessHostTab.live,
+                  showTabs: false,
+                  embedded: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Live mode needs saved setup'), findsOneWidget);
+    expect(find.text('Live host mode'), findsNothing);
+    expect(find.text('Next'), findsNothing);
+    expect(find.text('Mark event-success plan complete'), findsNothing);
+  });
+
   testWidgets(
     'companion screen shows private follow-up and feedback after attendance',
     (tester) async {

@@ -540,6 +540,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     "preferredDistances",
     "runningReasons",
     "preferredRunTimes",
+    "runPreferencesVersion",
     "prefsNewCatches",
     "prefsMessages",
     "prefsEventReminders",
@@ -1213,6 +1214,10 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         ]
       }
     },
+    "runPreferencesVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
     "prefsNewCatches": {
       "type": "boolean"
     },
@@ -1308,7 +1313,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
     "paceMaxSecsPerKm",
     "preferredDistances",
     "runningReasons",
-    "preferredRunTimes"
+    "preferredRunTimes",
+    "runPreferencesVersion"
   ],
   "properties": {
     "name": {
@@ -1867,6 +1873,10 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           "night"
         ]
       }
+    },
+    "runPreferencesVersion": {
+      "type": "integer",
+      "minimum": 0
     }
   },
   "x-internal-demo-fields": [
@@ -1918,8 +1928,12 @@ export const clubDocumentSchema: Record<string, unknown> = {
     "hostUserId",
     "hostName",
     "hostAvatarUrl",
+    "ownerUserId",
+    "hostUserIds",
+    "hostProfiles",
     "createdAt",
     "imageUrl",
+    "profileImageUrl",
     "tags",
     "memberCount",
     "rating",
@@ -1981,6 +1995,68 @@ export const clubDocumentSchema: Record<string, unknown> = {
         }
       ]
     },
+    "ownerUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hostUserIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "hostProfiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "avatarUrl",
+          "role"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "avatarUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "host"
+            ]
+          }
+        }
+      }
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
@@ -2002,6 +2078,18 @@ export const clubDocumentSchema: Record<string, unknown> = {
       }
     },
     "imageUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "profileImageUrl": {
       "anyOf": [
         {
           "type": "string",
@@ -2135,6 +2223,118 @@ export const clubDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 500
     },
+    "hostDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "admissionPreset": {
+              "type": "string",
+              "enum": [
+                "openCapacity",
+                "inviteOnly",
+                "balancedSingles",
+                "fixedCohortCaps"
+              ]
+            },
+            "minAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxMen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWomen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "dynamicPricingEnabled": {
+              "type": "boolean"
+            },
+            "dynamicPricingStepInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "dynamicPricingMaxInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cancellationPolicyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "eventSuccess": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "playbookId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "selectedModuleIds": {
+              "type": "array",
+              "maxItems": 24,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            },
+            "hostGoal": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "privateCrushEnabled": {
+              "type": "boolean"
+            },
+            "contextualOpenersEnabled": {
+              "type": "boolean"
+            },
+            "attendeePrompt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 300
+            }
+          }
+        }
+      }
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -2213,6 +2413,7 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
     "role": {
       "type": "string",
       "enum": [
+        "owner",
         "host",
         "member"
       ]
@@ -6027,6 +6228,10 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
             ]
           }
         },
+        "runPreferencesVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "prefsNewCatches": {
           "type": "boolean"
         },
@@ -6118,6 +6323,13 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
       ],
       "maxLength": 320
     },
+    "profileImageUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
     "instagramHandle": {
       "type": [
         "string",
@@ -6138,6 +6350,118 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 320
+    },
+    "hostDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "admissionPreset": {
+              "type": "string",
+              "enum": [
+                "openCapacity",
+                "inviteOnly",
+                "balancedSingles",
+                "fixedCohortCaps"
+              ]
+            },
+            "minAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxMen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWomen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "dynamicPricingEnabled": {
+              "type": "boolean"
+            },
+            "dynamicPricingStepInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "dynamicPricingMaxInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cancellationPolicyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "eventSuccess": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "playbookId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "selectedModuleIds": {
+              "type": "array",
+              "maxItems": 24,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              }
+            },
+            "hostGoal": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "privateCrushEnabled": {
+              "type": "boolean"
+            },
+            "contextualOpenersEnabled": {
+              "type": "boolean"
+            },
+            "attendeePrompt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 300
+            }
+          }
+        }
+      }
     }
   }
 } as const;
@@ -6226,6 +6550,13 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
           ],
           "maxLength": 320
         },
+        "profileImageUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -6256,8 +6587,170 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
             "null"
           ],
           "maxLength": 320
+        },
+        "hostDefaults": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "admissionPreset": {
+                  "type": "string",
+                  "enum": [
+                    "openCapacity",
+                    "inviteOnly",
+                    "balancedSingles",
+                    "fixedCohortCaps"
+                  ]
+                },
+                "minAge": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 120
+                },
+                "maxAge": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 120
+                },
+                "maxMen": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "maxWomen": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "dynamicPricingEnabled": {
+                  "type": "boolean"
+                },
+                "dynamicPricingStepInPaise": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "dynamicPricingMaxInPaise": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "cancellationPolicyId": {
+                  "type": "string",
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
+            },
+            "eventSuccess": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "playbookId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "selectedModuleIds": {
+                  "type": "array",
+                  "maxItems": 24,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                },
+                "hostGoal": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "privateCrushEnabled": {
+                  "type": "boolean"
+                },
+                "contextualOpenersEnabled": {
+                  "type": "boolean"
+                },
+                "attendeePrompt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 300
+                }
+              }
+            }
+          }
         }
       }
+    }
+  }
+} as const;
+
+export const addClubHostCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/add_club_host_payload.schema.json",
+  "title": "AddClubHostCallablePayload",
+  "description": "Callable payload accepted by addClubHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "uid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const removeClubHostCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/remove_club_host_payload.schema.json",
+  "title": "RemoveClubHostCallablePayload",
+  "description": "Callable payload accepted by removeClubHost.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "uid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;
@@ -6935,6 +7428,328 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
         "description": {
           "type": "string",
           "maxLength": 2000
+        },
+        "capacityLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "priceInPaise": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxAge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 120
+            },
+            "maxMen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            },
+            "maxWomen": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0
+            }
+          }
+        },
+        "eventPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "admission",
+            "pricing",
+            "cancellation",
+            "settlement"
+          ],
+          "properties": {
+            "version": {
+              "type": "integer",
+              "const": 1
+            },
+            "admission": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "format",
+                "capacityLimit",
+                "waitlistPolicy",
+                "inviteRequired",
+                "membershipRequired",
+                "manualApprovalRequired",
+                "privateAccessPolicy",
+                "cohortCapacityLimits",
+                "balancedRatioPolicy"
+              ],
+              "properties": {
+                "format": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "inviteOnly",
+                    "manualApproval",
+                    "fixedCohortCaps",
+                    "balancedRatio",
+                    "membersOnly"
+                  ]
+                },
+                "capacityLimit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "waitlistPolicy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "offerWindowMinutes"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "disabled",
+                        "rankedOffer",
+                        "broadcastFirstComeFirstServed",
+                        "manualReview"
+                      ]
+                    },
+                    "offerWindowMinutes": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10080
+                    }
+                  }
+                },
+                "inviteRequired": {
+                  "type": "boolean"
+                },
+                "membershipRequired": {
+                  "type": "boolean"
+                },
+                "manualApprovalRequired": {
+                  "type": "boolean"
+                },
+                "privateAccessPolicy": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "inviteCodeHint",
+                    "privateLinkEnabled"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "inviteCode"
+                      ]
+                    },
+                    "inviteCodeHint": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 64
+                    },
+                    "privateLinkEnabled": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "cohortCapacityLimits": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "balancedRatioPolicy": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": false,
+                  "required": [
+                    "leftCohortId",
+                    "rightCohortId",
+                    "maxSkew",
+                    "openingBufferPerCohort",
+                    "outOfRatioCohortPolicy"
+                  ],
+                  "properties": {
+                    "leftCohortId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "rightCohortId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "maxSkew": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1000
+                    },
+                    "openingBufferPerCohort": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 1000
+                    },
+                    "outOfRatioCohortPolicy": {
+                      "type": "string",
+                      "enum": [
+                        "admitWithinGeneralCapacity",
+                        "waitlist",
+                        "manualReview",
+                        "reject"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "pricing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "basePriceInPaise",
+                "cohortAdjustmentsInPaise",
+                "demandPricingRules"
+              ],
+              "properties": {
+                "basePriceInPaise": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100000000
+                },
+                "cohortAdjustmentsInPaise": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "minimum": -100000000,
+                    "maximum": 100000000
+                  }
+                },
+                "demandPricingRules": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "pricedCohortId",
+                      "balancingCohortId",
+                      "stepAdjustmentInPaise",
+                      "maxAdjustmentInPaise",
+                      "freeSkew",
+                      "demandStep"
+                    ],
+                    "properties": {
+                      "pricedCohortId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "balancingCohortId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "stepAdjustmentInPaise": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000
+                      },
+                      "maxAdjustmentInPaise": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000000
+                      },
+                      "freeSkew": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000
+                      },
+                      "demandStep": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cancellation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "policyId"
+              ],
+              "properties": {
+                "policyId": {
+                  "type": "string",
+                  "enum": [
+                    "flexible",
+                    "standard",
+                    "strict"
+                  ]
+                }
+              }
+            },
+            "settlement": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostPayoutTiming"
+              ],
+              "properties": {
+                "hostPayoutTiming": {
+                  "type": "string",
+                  "enum": [
+                    "afterEventCompletion"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "privateAccess": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "inviteCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 4,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
         }
       }
     }

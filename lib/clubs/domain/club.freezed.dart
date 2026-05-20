@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Club {
 
-@JsonKey(includeToJson: false) String get id; String get name; String get description; String get location; String get area; String get hostUserId; String get hostName; String? get hostAvatarUrl;@TimestampConverter() DateTime get createdAt; String? get imageUrl; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextEventAt; String? get nextEventLabel; String? get instagramHandle; String? get phoneNumber; String? get email; ClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason;
+@JsonKey(includeToJson: false) String get id; String get name; String get description; String get location; String get area; String get hostUserId; String get hostName; String? get hostAvatarUrl; String? get ownerUserId; List<String> get hostUserIds; List<ClubHostProfile> get hostProfiles;@TimestampConverter() DateTime get createdAt; String? get imageUrl; String? get profileImageUrl; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextEventAt; String? get nextEventLabel; String? get instagramHandle; String? get phoneNumber; String? get email; ClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason; ClubHostDefaults get hostDefaults;
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ClubCopyWith<Club> get copyWith => _$ClubCopyWithImpl<Club>(this as Club, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Club&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.nextEventAt, nextEventAt) || other.nextEventAt == nextEventAt)&&(identical(other.nextEventLabel, nextEventLabel) || other.nextEventLabel == nextEventLabel)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.archivedAt, archivedAt) || other.archivedAt == archivedAt)&&(identical(other.archiveReason, archiveReason) || other.archiveReason == archiveReason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Club&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.ownerUserId, ownerUserId) || other.ownerUserId == ownerUserId)&&const DeepCollectionEquality().equals(other.hostUserIds, hostUserIds)&&const DeepCollectionEquality().equals(other.hostProfiles, hostProfiles)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.profileImageUrl, profileImageUrl) || other.profileImageUrl == profileImageUrl)&&const DeepCollectionEquality().equals(other.tags, tags)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.nextEventAt, nextEventAt) || other.nextEventAt == nextEventAt)&&(identical(other.nextEventLabel, nextEventLabel) || other.nextEventLabel == nextEventLabel)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.archivedAt, archivedAt) || other.archivedAt == archivedAt)&&(identical(other.archiveReason, archiveReason) || other.archiveReason == archiveReason)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,description,location,area,hostUserId,hostName,hostAvatarUrl,createdAt,imageUrl,const DeepCollectionEquality().hash(tags),memberCount,rating,reviewCount,nextEventAt,nextEventLabel,instagramHandle,phoneNumber,email,status,archived,archivedAt,archiveReason]);
+int get hashCode => Object.hashAll([runtimeType,id,name,description,location,area,hostUserId,hostName,hostAvatarUrl,ownerUserId,const DeepCollectionEquality().hash(hostUserIds),const DeepCollectionEquality().hash(hostProfiles),createdAt,imageUrl,profileImageUrl,const DeepCollectionEquality().hash(tags),memberCount,rating,reviewCount,nextEventAt,nextEventLabel,instagramHandle,phoneNumber,email,status,archived,archivedAt,archiveReason,hostDefaults]);
 
 @override
 String toString() {
-  return 'Club(id: $id, name: $name, description: $description, location: $location, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, createdAt: $createdAt, imageUrl: $imageUrl, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason)';
+  return 'Club(id: $id, name: $name, description: $description, location: $location, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, hostDefaults: $hostDefaults)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $ClubCopyWith<$Res>  {
   factory $ClubCopyWith(Club value, $Res Function(Club) _then) = _$ClubCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
 });
 
 
-
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults;
 
 }
 /// @nodoc
@@ -65,7 +65,7 @@ class _$ClubCopyWithImpl<$Res>
 
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? createdAt = null,Object? imageUrl = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -75,8 +75,12 @@ as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non
 as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
 as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
 as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,ownerUserId: freezed == ownerUserId ? _self.ownerUserId : ownerUserId // ignore: cast_nullable_to_non_nullable
+as String?,hostUserIds: null == hostUserIds ? _self.hostUserIds : hostUserIds // ignore: cast_nullable_to_non_nullable
+as List<String>,hostProfiles: null == hostProfiles ? _self.hostProfiles : hostProfiles // ignore: cast_nullable_to_non_nullable
+as List<ClubHostProfile>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,memberCount: null == memberCount ? _self.memberCount : memberCount // ignore: cast_nullable_to_non_nullable
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
@@ -90,10 +94,20 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as ClubLifecycleStatus,archived: null == archived ? _self.archived : archived // ignore: cast_nullable_to_non_nullable
 as bool,archivedAt: freezed == archivedAt ? _self.archivedAt : archivedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,archiveReason: freezed == archiveReason ? _self.archiveReason : archiveReason // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
+as ClubHostDefaults,
   ));
 }
+/// Create a copy of Club
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults {
 
+  return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
+    return _then(_self.copyWith(hostDefaults: value));
+  });
+}
 }
 
 
@@ -175,10 +189,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Club() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
+return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
   return orElse();
 
 }
@@ -196,10 +210,10 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)  $default,) {final _that = this;
 switch (_that) {
 case _Club():
-return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
+return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +230,10 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl,  String? ownerUserId,  List<String> hostUserIds,  List<ClubHostProfile> hostProfiles, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  String? profileImageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextEventAt,  String? nextEventLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  ClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason,  ClubHostDefaults hostDefaults)?  $default,) {final _that = this;
 switch (_that) {
 case _Club() when $default != null:
-return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
+return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.ownerUserId,_that.hostUserIds,_that.hostProfiles,_that.createdAt,_that.imageUrl,_that.profileImageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextEventAt,_that.nextEventLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason,_that.hostDefaults);case _:
   return null;
 
 }
@@ -230,8 +244,8 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// @nodoc
 @JsonSerializable()
 
-class _Club implements Club {
-  const _Club({@JsonKey(includeToJson: false) required this.id, required this.name, required this.description, required this.location, required this.area, required this.hostUserId, required this.hostName, this.hostAvatarUrl, @TimestampConverter() required this.createdAt, this.imageUrl, final  List<String> tags = const [], this.memberCount = 0, this.rating = 0.0, this.reviewCount = 0, @TimestampConverter() this.nextEventAt, this.nextEventLabel, this.instagramHandle, this.phoneNumber, this.email, this.status = ClubLifecycleStatus.active, this.archived = false, @TimestampConverter() this.archivedAt, this.archiveReason}): _tags = tags;
+class _Club extends Club {
+  const _Club({@JsonKey(includeToJson: false) required this.id, required this.name, required this.description, required this.location, required this.area, required this.hostUserId, required this.hostName, this.hostAvatarUrl, this.ownerUserId, final  List<String> hostUserIds = const [], final  List<ClubHostProfile> hostProfiles = const [], @TimestampConverter() required this.createdAt, this.imageUrl, this.profileImageUrl, final  List<String> tags = const [], this.memberCount = 0, this.rating = 0.0, this.reviewCount = 0, @TimestampConverter() this.nextEventAt, this.nextEventLabel, this.instagramHandle, this.phoneNumber, this.email, this.status = ClubLifecycleStatus.active, this.archived = false, @TimestampConverter() this.archivedAt, this.archiveReason, this.hostDefaults = const ClubHostDefaults()}): _hostUserIds = hostUserIds,_hostProfiles = hostProfiles,_tags = tags,super._();
   factory _Club.fromJson(Map<String, dynamic> json) => _$ClubFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -242,8 +256,24 @@ class _Club implements Club {
 @override final  String hostUserId;
 @override final  String hostName;
 @override final  String? hostAvatarUrl;
+@override final  String? ownerUserId;
+ final  List<String> _hostUserIds;
+@override@JsonKey() List<String> get hostUserIds {
+  if (_hostUserIds is EqualUnmodifiableListView) return _hostUserIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_hostUserIds);
+}
+
+ final  List<ClubHostProfile> _hostProfiles;
+@override@JsonKey() List<ClubHostProfile> get hostProfiles {
+  if (_hostProfiles is EqualUnmodifiableListView) return _hostProfiles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_hostProfiles);
+}
+
 @override@TimestampConverter() final  DateTime createdAt;
 @override final  String? imageUrl;
+@override final  String? profileImageUrl;
  final  List<String> _tags;
 @override@JsonKey() List<String> get tags {
   if (_tags is EqualUnmodifiableListView) return _tags;
@@ -263,6 +293,7 @@ class _Club implements Club {
 @override@JsonKey() final  bool archived;
 @override@TimestampConverter() final  DateTime? archivedAt;
 @override final  String? archiveReason;
+@override@JsonKey() final  ClubHostDefaults hostDefaults;
 
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
@@ -277,16 +308,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Club&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.nextEventAt, nextEventAt) || other.nextEventAt == nextEventAt)&&(identical(other.nextEventLabel, nextEventLabel) || other.nextEventLabel == nextEventLabel)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.archivedAt, archivedAt) || other.archivedAt == archivedAt)&&(identical(other.archiveReason, archiveReason) || other.archiveReason == archiveReason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Club&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.location, location) || other.location == location)&&(identical(other.area, area) || other.area == area)&&(identical(other.hostUserId, hostUserId) || other.hostUserId == hostUserId)&&(identical(other.hostName, hostName) || other.hostName == hostName)&&(identical(other.hostAvatarUrl, hostAvatarUrl) || other.hostAvatarUrl == hostAvatarUrl)&&(identical(other.ownerUserId, ownerUserId) || other.ownerUserId == ownerUserId)&&const DeepCollectionEquality().equals(other._hostUserIds, _hostUserIds)&&const DeepCollectionEquality().equals(other._hostProfiles, _hostProfiles)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.profileImageUrl, profileImageUrl) || other.profileImageUrl == profileImageUrl)&&const DeepCollectionEquality().equals(other._tags, _tags)&&(identical(other.memberCount, memberCount) || other.memberCount == memberCount)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.reviewCount, reviewCount) || other.reviewCount == reviewCount)&&(identical(other.nextEventAt, nextEventAt) || other.nextEventAt == nextEventAt)&&(identical(other.nextEventLabel, nextEventLabel) || other.nextEventLabel == nextEventLabel)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status)&&(identical(other.archived, archived) || other.archived == archived)&&(identical(other.archivedAt, archivedAt) || other.archivedAt == archivedAt)&&(identical(other.archiveReason, archiveReason) || other.archiveReason == archiveReason)&&(identical(other.hostDefaults, hostDefaults) || other.hostDefaults == hostDefaults));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,name,description,location,area,hostUserId,hostName,hostAvatarUrl,createdAt,imageUrl,const DeepCollectionEquality().hash(_tags),memberCount,rating,reviewCount,nextEventAt,nextEventLabel,instagramHandle,phoneNumber,email,status,archived,archivedAt,archiveReason]);
+int get hashCode => Object.hashAll([runtimeType,id,name,description,location,area,hostUserId,hostName,hostAvatarUrl,ownerUserId,const DeepCollectionEquality().hash(_hostUserIds),const DeepCollectionEquality().hash(_hostProfiles),createdAt,imageUrl,profileImageUrl,const DeepCollectionEquality().hash(_tags),memberCount,rating,reviewCount,nextEventAt,nextEventLabel,instagramHandle,phoneNumber,email,status,archived,archivedAt,archiveReason,hostDefaults]);
 
 @override
 String toString() {
-  return 'Club(id: $id, name: $name, description: $description, location: $location, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, createdAt: $createdAt, imageUrl: $imageUrl, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason)';
+  return 'Club(id: $id, name: $name, description: $description, location: $location, area: $area, hostUserId: $hostUserId, hostName: $hostName, hostAvatarUrl: $hostAvatarUrl, ownerUserId: $ownerUserId, hostUserIds: $hostUserIds, hostProfiles: $hostProfiles, createdAt: $createdAt, imageUrl: $imageUrl, profileImageUrl: $profileImageUrl, tags: $tags, memberCount: $memberCount, rating: $rating, reviewCount: $reviewCount, nextEventAt: $nextEventAt, nextEventLabel: $nextEventLabel, instagramHandle: $instagramHandle, phoneNumber: $phoneNumber, email: $email, status: $status, archived: $archived, archivedAt: $archivedAt, archiveReason: $archiveReason, hostDefaults: $hostDefaults)';
 }
 
 
@@ -297,11 +328,11 @@ abstract mixin class _$ClubCopyWith<$Res> implements $ClubCopyWith<$Res> {
   factory _$ClubCopyWith(_Club value, $Res Function(_Club) _then) = __$ClubCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl, String? ownerUserId, List<String> hostUserIds, List<ClubHostProfile> hostProfiles,@TimestampConverter() DateTime createdAt, String? imageUrl, String? profileImageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextEventAt, String? nextEventLabel, String? instagramHandle, String? phoneNumber, String? email, ClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason, ClubHostDefaults hostDefaults
 });
 
 
-
+@override $ClubHostDefaultsCopyWith<$Res> get hostDefaults;
 
 }
 /// @nodoc
@@ -314,7 +345,7 @@ class __$ClubCopyWithImpl<$Res>
 
 /// Create a copy of Club
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? createdAt = null,Object? imageUrl = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? location = null,Object? area = null,Object? hostUserId = null,Object? hostName = null,Object? hostAvatarUrl = freezed,Object? ownerUserId = freezed,Object? hostUserIds = null,Object? hostProfiles = null,Object? createdAt = null,Object? imageUrl = freezed,Object? profileImageUrl = freezed,Object? tags = null,Object? memberCount = null,Object? rating = null,Object? reviewCount = null,Object? nextEventAt = freezed,Object? nextEventLabel = freezed,Object? instagramHandle = freezed,Object? phoneNumber = freezed,Object? email = freezed,Object? status = null,Object? archived = null,Object? archivedAt = freezed,Object? archiveReason = freezed,Object? hostDefaults = null,}) {
   return _then(_Club(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -324,8 +355,12 @@ as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non
 as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
 as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
 as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String?,ownerUserId: freezed == ownerUserId ? _self.ownerUserId : ownerUserId // ignore: cast_nullable_to_non_nullable
+as String?,hostUserIds: null == hostUserIds ? _self._hostUserIds : hostUserIds // ignore: cast_nullable_to_non_nullable
+as List<String>,hostProfiles: null == hostProfiles ? _self._hostProfiles : hostProfiles // ignore: cast_nullable_to_non_nullable
+as List<ClubHostProfile>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,memberCount: null == memberCount ? _self.memberCount : memberCount // ignore: cast_nullable_to_non_nullable
 as int,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
@@ -339,7 +374,289 @@ as String?,status: null == status ? _self.status : status // ignore: cast_nullab
 as ClubLifecycleStatus,archived: null == archived ? _self.archived : archived // ignore: cast_nullable_to_non_nullable
 as bool,archivedAt: freezed == archivedAt ? _self.archivedAt : archivedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,archiveReason: freezed == archiveReason ? _self.archiveReason : archiveReason // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,hostDefaults: null == hostDefaults ? _self.hostDefaults : hostDefaults // ignore: cast_nullable_to_non_nullable
+as ClubHostDefaults,
+  ));
+}
+
+/// Create a copy of Club
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClubHostDefaultsCopyWith<$Res> get hostDefaults {
+
+  return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
+    return _then(_self.copyWith(hostDefaults: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$ClubHostProfile {
+
+ String get uid; String get displayName; String? get avatarUrl; ClubHostRole get role;
+/// Create a copy of ClubHostProfile
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ClubHostProfileCopyWith<ClubHostProfile> get copyWith => _$ClubHostProfileCopyWithImpl<ClubHostProfile>(this as ClubHostProfile, _$identity);
+
+  /// Serializes this ClubHostProfile to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubHostProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,uid,displayName,avatarUrl,role);
+
+@override
+String toString() {
+  return 'ClubHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ClubHostProfileCopyWith<$Res>  {
+  factory $ClubHostProfileCopyWith(ClubHostProfile value, $Res Function(ClubHostProfile) _then) = _$ClubHostProfileCopyWithImpl;
+@useResult
+$Res call({
+ String uid, String displayName, String? avatarUrl, ClubHostRole role
+});
+
+
+
+
+}
+/// @nodoc
+class _$ClubHostProfileCopyWithImpl<$Res>
+    implements $ClubHostProfileCopyWith<$Res> {
+  _$ClubHostProfileCopyWithImpl(this._self, this._then);
+
+  final ClubHostProfile _self;
+  final $Res Function(ClubHostProfile) _then;
+
+/// Create a copy of ClubHostProfile
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? displayName = null,Object? avatarUrl = freezed,Object? role = null,}) {
+  return _then(_self.copyWith(
+uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
+as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as ClubHostRole,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ClubHostProfile].
+extension ClubHostProfilePatterns on ClubHostProfile {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ClubHostProfile value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ClubHostProfile() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ClubHostProfile value)  $default,){
+final _that = this;
+switch (_that) {
+case _ClubHostProfile():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ClubHostProfile value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ClubHostProfile() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String displayName,  String? avatarUrl,  ClubHostRole role)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ClubHostProfile() when $default != null:
+return $default(_that.uid,_that.displayName,_that.avatarUrl,_that.role);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String displayName,  String? avatarUrl,  ClubHostRole role)  $default,) {final _that = this;
+switch (_that) {
+case _ClubHostProfile():
+return $default(_that.uid,_that.displayName,_that.avatarUrl,_that.role);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String displayName,  String? avatarUrl,  ClubHostRole role)?  $default,) {final _that = this;
+switch (_that) {
+case _ClubHostProfile() when $default != null:
+return $default(_that.uid,_that.displayName,_that.avatarUrl,_that.role);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ClubHostProfile implements ClubHostProfile {
+  const _ClubHostProfile({required this.uid, required this.displayName, this.avatarUrl, this.role = ClubHostRole.host});
+  factory _ClubHostProfile.fromJson(Map<String, dynamic> json) => _$ClubHostProfileFromJson(json);
+
+@override final  String uid;
+@override final  String displayName;
+@override final  String? avatarUrl;
+@override@JsonKey() final  ClubHostRole role;
+
+/// Create a copy of ClubHostProfile
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ClubHostProfileCopyWith<_ClubHostProfile> get copyWith => __$ClubHostProfileCopyWithImpl<_ClubHostProfile>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ClubHostProfileToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubHostProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,uid,displayName,avatarUrl,role);
+
+@override
+String toString() {
+  return 'ClubHostProfile(uid: $uid, displayName: $displayName, avatarUrl: $avatarUrl, role: $role)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ClubHostProfileCopyWith<$Res> implements $ClubHostProfileCopyWith<$Res> {
+  factory _$ClubHostProfileCopyWith(_ClubHostProfile value, $Res Function(_ClubHostProfile) _then) = __$ClubHostProfileCopyWithImpl;
+@override @useResult
+$Res call({
+ String uid, String displayName, String? avatarUrl, ClubHostRole role
+});
+
+
+
+
+}
+/// @nodoc
+class __$ClubHostProfileCopyWithImpl<$Res>
+    implements _$ClubHostProfileCopyWith<$Res> {
+  __$ClubHostProfileCopyWithImpl(this._self, this._then);
+
+  final _ClubHostProfile _self;
+  final $Res Function(_ClubHostProfile) _then;
+
+/// Create a copy of ClubHostProfile
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? displayName = null,Object? avatarUrl = freezed,Object? role = null,}) {
+  return _then(_ClubHostProfile(
+uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
+as String,displayName: null == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
+as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
+as ClubHostRole,
   ));
 }
 

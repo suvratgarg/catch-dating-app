@@ -446,6 +446,9 @@ void main() {
         description: 'Old description',
         area: 'Bandra',
         imageUrl: 'https://example.com/old.jpg',
+        instagramHandle: '@oldclub',
+        phoneNumber: '+91 99999 99999',
+        email: 'old@example.com',
         memberCount: 2,
         rating: 4.5,
         reviewCount: 8,
@@ -491,6 +494,9 @@ void main() {
       expect(fields['description'], 'Updated description');
       // When no new cover is uploaded, imageUrl stays as the existing one.
       expect(fields['imageUrl'], existingClub.imageUrl);
+      expect(fields['instagramHandle'], isNull);
+      expect(fields['phoneNumber'], isNull);
+      expect(fields['email'], isNull);
       expect(fakeImageUploadRepository.lastUploadClubId, isNull);
     });
 

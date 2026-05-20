@@ -42,10 +42,10 @@ class ProfileInfoTile extends StatelessWidget {
         : Text(
             isAddAffordance ? '+ $value' : value,
             key: ValueKey('profile-info-$label-$value-$isAddAffordance'),
-            style: CatchTextStyles.bodyL(
+            style: CatchTextStyles.bodyM(
               context,
-              color: isAddAffordance ? t.ink3 : null,
-            ),
+              color: isAddAffordance ? t.primary : t.ink,
+            ).copyWith(fontWeight: FontWeight.w500),
           );
     final valueSlot = valueContent ?? defaultValueContent;
     final valueArea = animateValueContent
@@ -61,13 +61,16 @@ class ProfileInfoTile extends StatelessWidget {
     final row = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: t.ink2),
-        gapW16,
+        Padding(
+          padding: const EdgeInsets.only(top: 1),
+          child: Icon(icon, size: 20, color: t.ink2),
+        ),
+        gapW12,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: CatchTextStyles.bodyS(context)),
+              Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
               gapH4,
               valueArea,
             ],

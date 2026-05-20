@@ -32,7 +32,34 @@
         "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
         "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
         "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
-        "description": {"type": "string", "maxLength": 2000}
+        "description": {"type": "string", "maxLength": 2000},
+        "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
+        "priceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minAge": {"type": "integer", "minimum": 0, "maximum": 120},
+            "maxAge": {"type": "integer", "minimum": 0, "maximum": 120},
+            "maxMen": {"type": ["integer", "null"], "minimum": 0},
+            "maxWomen": {"type": ["integer", "null"], "minimum": 0}
+          }
+        },
+        "eventPolicy": {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventPolicyBundle"
+        },
+        "privateAccess": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "inviteCode": {
+              "type": ["string", "null"],
+              "minLength": 4,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        }
       }
     }
   }

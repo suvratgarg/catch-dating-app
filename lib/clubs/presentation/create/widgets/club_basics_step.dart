@@ -18,7 +18,10 @@ class ClubBasicsStep extends StatelessWidget {
     required this.areaController,
     required this.coverImageBytes,
     required this.existingImageUrl,
+    required this.profileImageBytes,
+    required this.existingProfileImageUrl,
     required this.onPickCover,
+    required this.onPickProfileImage,
   });
 
   final GlobalKey<FormState> formKey;
@@ -28,7 +31,10 @@ class ClubBasicsStep extends StatelessWidget {
   final TextEditingController areaController;
   final Uint8List? coverImageBytes;
   final String? existingImageUrl;
+  final Uint8List? profileImageBytes;
+  final String? existingProfileImageUrl;
   final VoidCallback? onPickCover;
+  final VoidCallback? onPickProfileImage;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +49,12 @@ class ClubBasicsStep extends StatelessWidget {
         ),
         child: Column(
           children: [
+            CreateClubProfileImagePicker(
+              imageBytes: profileImageBytes,
+              existingImageUrl: existingProfileImageUrl,
+              onTap: onPickProfileImage,
+            ),
+            gapH16,
             CreateClubCoverPicker(
               coverImageBytes: coverImageBytes,
               existingImageUrl: existingImageUrl,

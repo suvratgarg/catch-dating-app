@@ -21,7 +21,7 @@ class ProfileLifestyleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileSectionCard(
-      title: 'LIFESTYLE',
+      title: 'Lifestyle',
       reactionTarget: reactionTarget,
       onReact: onReact,
       child: Wrap(

@@ -40,6 +40,17 @@
 
   "extraInterfaces": [
     {
+      "name": "ClubHostProfile",
+      "collectionPath": "embedded club host profile",
+      "comment": "Stored inside clubs/{clubId}.hostProfiles for public multi-host display.",
+      "fields": [
+        { "name": "uid", "tsType": "string" },
+        { "name": "displayName", "tsType": "string" },
+        { "name": "avatarUrl", "tsType": "string | null", "optional": true },
+        { "name": "role", "tsType": "\"owner\" | \"host\"" }
+      ]
+    },
+    {
       "name": "ProfilePromptAnswer",
       "collectionPath": "embedded profile prompt answer",
       "comment": "Stored inside users/{uid}.profilePrompts and publicProfiles/{uid}.profilePrompts.",
@@ -72,6 +83,45 @@
         { "name": "defaultPlaybookId", "tsType": "string", "optional": true },
         { "name": "defaultModuleIds", "tsType": "string[]", "optional": true },
         { "name": "activityDetails", "tsType": "Record<string, unknown>", "optional": true }
+      ]
+    },
+    {
+      "name": "ClubHostDefaults",
+      "collectionPath": "embedded club host defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.",
+      "fields": [
+        { "name": "eventPolicy", "tsType": "EventPolicyDefaults" },
+        { "name": "eventSuccess", "tsType": "EventSuccessDefaults" }
+      ]
+    },
+    {
+      "name": "EventPolicyDefaults",
+      "collectionPath": "embedded event policy defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults.eventPolicy.",
+      "fields": [
+        { "name": "admissionPreset", "tsType": "EventAdmissionDefaultPreset" },
+        { "name": "minAge", "tsType": "number" },
+        { "name": "maxAge", "tsType": "number" },
+        { "name": "maxMen", "tsType": "number | null", "optional": true },
+        { "name": "maxWomen", "tsType": "number | null", "optional": true },
+        { "name": "dynamicPricingEnabled", "tsType": "boolean" },
+        { "name": "dynamicPricingStepInPaise", "tsType": "number | null", "optional": true },
+        { "name": "dynamicPricingMaxInPaise", "tsType": "number | null", "optional": true },
+        { "name": "cancellationPolicyId", "tsType": "EventCancellationPolicyId" }
+      ]
+    },
+    {
+      "name": "EventSuccessDefaults",
+      "collectionPath": "embedded event success defaults",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults.eventSuccess.",
+      "fields": [
+        { "name": "enabled", "tsType": "boolean" },
+        { "name": "playbookId", "tsType": "string" },
+        { "name": "selectedModuleIds", "tsType": "string[]" },
+        { "name": "hostGoal", "tsType": "string" },
+        { "name": "privateCrushEnabled", "tsType": "boolean" },
+        { "name": "contextualOpenersEnabled", "tsType": "boolean" },
+        { "name": "attendeePrompt", "tsType": "string | null", "optional": true }
       ]
     },
     {
@@ -239,7 +289,21 @@
     }
   ],
 
-  "extraEnumTypes": [],
+  "extraEnumTypes": [
+    {
+      "name": "EventAdmissionDefaultPreset",
+      "values": [
+        "openCapacity",
+        "inviteOnly",
+        "balancedSingles",
+        "fixedCohortCaps"
+      ]
+    },
+    {
+      "name": "EventCancellationPolicyId",
+      "values": ["flexible", "standard", "strict"]
+    }
+  ],
 
   "interfaceComments": {
     "PublicProfileDoc": "Written exclusively by syncPublicProfile Cloud Function.",

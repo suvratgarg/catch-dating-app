@@ -75,13 +75,14 @@ class NameOverlay extends StatelessWidget {
                 icon: Icons.favorite_border_rounded,
                 label: goal.label,
               ),
-            _HeroSignalChip(
-              icon: Icons.speed_rounded,
-              label: formatPaceRange(
-                profile.paceMinSecsPerKm,
-                profile.paceMaxSecsPerKm,
+            if (profile.hasCurrentRunPreferences)
+              _HeroSignalChip(
+                icon: Icons.speed_rounded,
+                label: formatPaceRange(
+                  profile.paceMinSecsPerKm,
+                  profile.paceMaxSecsPerKm,
+                ),
               ),
-            ),
           ],
         ),
       ],

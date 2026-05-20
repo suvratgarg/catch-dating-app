@@ -284,17 +284,26 @@ class EventRepository {
         ),
       );
 
-  Future<void> updateEventDetails({required Event event}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('updateEvent')
-            .call(UpdateEventCallableRequest.fromEvent(event).toJson()),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'update event',
-          resource: _collectionPath,
+  Future<void> updateEventDetails({
+    required Event event,
+    bool includePolicy = false,
+    String? inviteCode,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('updateEvent')
+        .call(
+          UpdateEventCallableRequest.fromEvent(
+            event,
+            includePolicy: includePolicy,
+            inviteCode: inviteCode,
+          ).toJson(),
         ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update event',
+      resource: _collectionPath,
+    ),
+  );
 
   /// Cancels a hosted event via the [cancelEvent] Cloud Function.
   ///

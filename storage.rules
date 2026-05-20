@@ -43,6 +43,22 @@ service firebase.storage {
         );
     }
 
+    function canWriteClubImage(clubId) {
+      let clubData = firestore.get(
+        /databases/(default)/documents/clubs/$(clubId)
+      ).data;
+      return clubData.hostUserId == request.auth.uid
+        || (
+          clubData.keys().hasAny(['ownerUserId'])
+          && clubData.ownerUserId == request.auth.uid
+        )
+        || (
+          clubData.keys().hasAny(['hostUserIds'])
+          && clubData.hostUserIds is list
+          && clubData.hostUserIds.hasAny([request.auth.uid])
+        );
+    }
+
     match /users/{uid}/photos/{fileName} {
       allow read: if isSignedIn();
       allow write: if isSignedIn()
@@ -66,18 +82,14 @@ service firebase.storage {
       allow read: if true;
       allow write: if isSignedIn()
         && isImage()
-        && firestore.get(
-          /databases/(default)/documents/clubs/$(clubId)
-        ).data.hostUserId == request.auth.uid;
+        && canWriteClubImage(clubId);
     }
 
     match /clubs/{clubId}/events/{eventId}/{fileName} {
       allow read: if true;
       allow write: if isSignedIn()
         && isImage()
-        && firestore.get(
-          /databases/(default)/documents/clubs/$(clubId)
-        ).data.hostUserId == request.auth.uid;
+        && canWriteClubImage(clubId);
     }
 
     match /{allPaths=**} {

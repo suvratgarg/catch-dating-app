@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_draft.freezed.dart';
@@ -42,6 +43,7 @@ abstract class EventDraft with _$EventDraft {
     String? dynamicPricingStep,
     String? dynamicPricingMax,
     String? cancellationPolicy,
+    @Default(EventSuccessDefaults()) EventSuccessDefaults eventSuccessDefaults,
   }) = _EventDraft;
 
   factory EventDraft.fromJson(Map<String, dynamic> json) =>
@@ -81,7 +83,8 @@ extension EventDraftX on EventDraft {
       dynamicPricingEnabled == false &&
       dynamicPricingStep == null &&
       dynamicPricingMax == null &&
-      cancellationPolicy == null;
+      cancellationPolicy == null &&
+      eventSuccessDefaults == const EventSuccessDefaults();
 
   String get summary {
     final parts = <String>[];

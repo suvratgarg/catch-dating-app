@@ -12,23 +12,19 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -38,7 +34,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-enum HostEventManageSection { overview, attendance, eventSuccess }
+enum HostEventManageSection { setup, live, report }
 
 class HostEventManageRouteScreen extends ConsumerWidget {
   const HostEventManageRouteScreen({
@@ -46,7 +42,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     required this.clubId,
     required this.eventId,
     this.initialEvent,
-    this.initialSection = HostEventManageSection.overview,
+    this.initialSection = HostEventManageSection.setup,
   });
 
   final String clubId;
@@ -93,7 +89,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       );
     }
 
-    if (uid == null || club.hostUserId != uid) {
+    if (uid == null || !club.isHostedBy(uid)) {
       return const CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can manage only events that you host.',
@@ -116,7 +112,7 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     required this.club,
     required this.event,
     required this.onBackToSuccess,
-    this.initialSection = HostEventManageSection.overview,
+    this.initialSection = HostEventManageSection.setup,
   });
 
   final Club club;
@@ -168,6 +164,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       backgroundColor: t.bg,
       body: SafeArea(
         child: ListView(
+          key: const Key('host_event_manage_scroll_view'),
           padding: const EdgeInsets.fromLTRB(
             CatchSpacing.s5,
             12,
@@ -273,9 +270,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             ..._selectedSectionChildren(
               club: club,
               event: event,
-              rosterAsync: rosterAsync,
-              bookedCount: bookedCount,
-              waitlistCount: waitlistCount,
               hasKnownActivity: hasKnownActivity,
               onDeleted: onBackToSuccess,
             ),
@@ -288,14 +282,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   List<Widget> _selectedSectionChildren({
     required Club club,
     required Event event,
-    required AsyncValue<EventParticipationRoster> rosterAsync,
-    required int bookedCount,
-    required int waitlistCount,
     required bool hasKnownActivity,
     required VoidCallback onDeleted,
   }) {
     return switch (_selectedSection) {
-      HostEventManageSection.overview => [
+      HostEventManageSection.setup => [
         _HostEventSummaryCard(club: club, event: event),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
@@ -308,41 +299,40 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           onDeleted: onDeleted,
         ),
         gapH20,
-        _HostRosterHeader(
-          icon: Icons.groups_2_outlined,
-          title: 'Roster',
-          count: bookedCount,
-        ),
-        gapH10,
-        _HostEventRosterSection(
-          rosterAsync: rosterAsync,
-          eventId: event.id,
-          selector: (roster) => roster.bookedIds,
-          emptyText: 'No bookings yet.',
-          loadingText: 'Loading bookings...',
-          trailingLabel: event.isFree ? 'FREE' : 'PAID',
+        EventSuccessHostSection(
+          event: event,
+          initialTab: EventSuccessHostTab.setup,
+          showTabs: false,
         ),
         gapH20,
-        _HostRosterHeader(
-          icon: Icons.pending_actions_outlined,
-          title: 'Waitlist',
-          count: waitlistCount,
-        ),
-        gapH10,
-        _HostEventRosterSection(
-          rosterAsync: rosterAsync,
+        HostEventParticipantsPanel(
           eventId: event.id,
-          selector: (roster) => roster.waitlistedIds,
-          emptyText: 'No one is waiting.',
-          loadingText: 'Loading waitlist...',
-          trailingLabel: 'WAITLIST',
+          mode: HostEventParticipantsMode.setup,
         ),
       ],
-      HostEventManageSection.attendance => [
-        HostEventAttendancePanel(eventId: event.id),
+      HostEventManageSection.live => [
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.live,
+        ),
+        gapH20,
+        EventSuccessHostSection(
+          event: event,
+          initialTab: EventSuccessHostTab.live,
+          showTabs: false,
+        ),
       ],
-      HostEventManageSection.eventSuccess => [
-        EventSuccessHostSection(event: event),
+      HostEventManageSection.report => [
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.report,
+        ),
+        gapH20,
+        EventSuccessHostSection(
+          event: event,
+          initialTab: EventSuccessHostTab.report,
+          showTabs: false,
+        ),
       ],
     };
   }
@@ -359,16 +349,17 @@ class _HostManageSectionPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
+    return CatchSegmentedControl<HostEventManageSection>(
+      selected: selectedSection,
+      onChanged: onChanged,
+      expanded: true,
+      style: CatchSegmentedControlStyle.surface,
+      segments: [
         for (final section in HostEventManageSection.values)
-          CatchChip(
+          CatchSegment(
+            value: section,
             label: section.label,
-            active: selectedSection == section,
-            icon: Icon(section.icon),
-            onTap: () => onChanged(section),
+            icon: section.icon,
           ),
       ],
     );
@@ -378,17 +369,17 @@ class _HostManageSectionPicker extends StatelessWidget {
 extension on HostEventManageSection {
   String get label {
     return switch (this) {
-      HostEventManageSection.overview => 'Overview',
-      HostEventManageSection.attendance => 'Attendance',
-      HostEventManageSection.eventSuccess => 'Event success',
+      HostEventManageSection.setup => 'Setup',
+      HostEventManageSection.live => 'Live',
+      HostEventManageSection.report => 'Report',
     };
   }
 
   IconData get icon {
     return switch (this) {
-      HostEventManageSection.overview => Icons.dashboard_customize_outlined,
-      HostEventManageSection.attendance => Icons.checklist_rounded,
-      HostEventManageSection.eventSuccess => Icons.auto_graph_rounded,
+      HostEventManageSection.setup => Icons.tune_rounded,
+      HostEventManageSection.live => Icons.play_circle_outline_rounded,
+      HostEventManageSection.report => Icons.insights_outlined,
     };
   }
 }
@@ -840,171 +831,6 @@ class _HostEventSummaryRow extends StatelessWidget {
         ),
         if (showDivider) ...[gapH12, Divider(color: t.line, height: 1), gapH12],
       ],
-    );
-  }
-}
-
-class _HostRosterHeader extends StatelessWidget {
-  const _HostRosterHeader({
-    required this.icon,
-    required this.title,
-    required this.count,
-  });
-
-  final IconData icon;
-  final String title;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: t.ink2),
-        gapW8,
-        Text(title, style: CatchTextStyles.titleM(context)),
-        const Spacer(),
-        CatchBadge(
-          label: '$count',
-          tone: count == 0 ? CatchBadgeTone.neutral : CatchBadgeTone.brand,
-        ),
-      ],
-    );
-  }
-}
-
-class _HostEventRosterSection extends ConsumerWidget {
-  const _HostEventRosterSection({
-    required this.rosterAsync,
-    required this.eventId,
-    required this.selector,
-    required this.emptyText,
-    required this.loadingText,
-    required this.trailingLabel,
-  });
-
-  final AsyncValue<EventParticipationRoster> rosterAsync;
-  final String eventId;
-  final List<String> Function(EventParticipationRoster roster) selector;
-  final String emptyText;
-  final String loadingText;
-  final String trailingLabel;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return rosterAsync.when(
-      loading: () => _HostEventRosterLoading(text: loadingText),
-      error: (e, _) => CatchInlineErrorState.fromError(
-        e,
-        context: AppErrorContext.event,
-        compact: true,
-        onRetry: () =>
-            ref.invalidate(watchEventParticipationRosterProvider(eventId)),
-      ),
-      data: (roster) => _HostEventUserList(
-        userIds: selector(roster),
-        emptyText: emptyText,
-        trailingLabel: trailingLabel,
-      ),
-    );
-  }
-}
-
-class _HostEventRosterLoading extends StatelessWidget {
-  const _HostEventRosterLoading({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      borderColor: t.line,
-      radius: CatchRadius.lg,
-      child: Row(
-        children: [
-          SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2, color: t.primary),
-          ),
-          gapW12,
-          Text(text, style: CatchTextStyles.bodyS(context, color: t.ink2)),
-        ],
-      ),
-    );
-  }
-}
-
-class _HostEventUserList extends ConsumerWidget {
-  const _HostEventUserList({
-    required this.userIds,
-    required this.emptyText,
-    required this.trailingLabel,
-  });
-
-  final List<String> userIds;
-  final String emptyText;
-  final String trailingLabel;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final profilesAsync = ref.watch(attendeeProfilesProvider(userIds));
-    final profiles = profilesAsync.asData?.value ?? {};
-
-    return CatchSurface(
-      borderColor: t.line,
-      radius: CatchRadius.lg,
-      clipBehavior: Clip.antiAlias,
-      child: userIds.isEmpty
-          ? CatchEmptyState(
-              icon: Icons.group_outlined,
-              title: emptyText,
-              message: 'New sign-ups will appear here.',
-              surface: false,
-              iconStyle: CatchEmptyStateIconStyle.plain,
-              iconSize: 36,
-              padding: const EdgeInsets.symmetric(
-                horizontal: CatchSpacing.s4,
-                vertical: CatchSpacing.s6,
-              ),
-              titleStyle: CatchTextStyles.titleM(context),
-              messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
-            )
-          : Column(
-              children: [
-                for (var i = 0; i < userIds.length; i++) ...[
-                  PersonRow(
-                    data: PersonRowData(
-                      name: profiles[userIds[i]]?.$1 ?? 'Runner',
-                      imageUrl: profiles[userIds[i]]?.$2,
-                      seed: userIds[i],
-                      metaLine: profilesAsync.isLoading
-                          ? 'Loading profile...'
-                          : profiles[userIds[i]] == null
-                          ? 'Profile unavailable'
-                          : null,
-                    ),
-                    trailing: CatchBadge(
-                      label: trailingLabel,
-                      tone: trailingLabel == 'WAITLIST'
-                          ? CatchBadgeTone.neutral
-                          : CatchBadgeTone.brand,
-                      uppercase: true,
-                    ),
-                  ),
-                  if (i < userIds.length - 1)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 72),
-                      child: Divider(color: t.line, height: 1),
-                    ),
-                ],
-              ],
-            ),
     );
   }
 }

@@ -276,7 +276,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            watchClubsHostedByProvider(
+            watchClubsOwnedByProvider(
               'host-1',
             ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
@@ -787,7 +787,7 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('HOST'), findsOneWidget);
+      expect(find.text('Host'), findsOneWidget);
       expect(find.text('Asha Shah'), findsOneWidget);
       expect(find.text('Club host'), findsOneWidget);
       expect(find.text('Hosts events in Bandra'), findsOneWidget);
@@ -1344,12 +1344,75 @@ void main() {
       await tester.tap(find.text('Next'));
       await _pumpClubUi(tester);
 
-      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
       expect(
         find.widgetWithText(TextField, 'Indore morning loops.'),
         findsOneWidget,
       );
+
+      await tester.tap(find.text('Next'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Default event policy'), findsOneWidget);
     });
+
+    testWidgets(
+      'CreateClubScreen clears optional contact fields in edit mode',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        final fakeRepository = FakeClubsRepository();
+        final club = buildClub(
+          hostUserId: 'host-1',
+          ownerUserId: 'host-1',
+          instagramHandle: '@morningmiles',
+          phoneNumber: '9876543210',
+          email: 'hello@morningmiles.test',
+        );
+        final container = ProviderContainer(
+          overrides: [
+            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: CreateClubScreen(initialClub: club),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
+
+        await _enterCreateClubText(tester, 'Instagram handle', '');
+        await _enterCreateClubText(tester, 'Phone number', '');
+        await _enterCreateClubText(tester, 'Email', '');
+
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
+        await tester.tap(find.text('Save changes'));
+        await _pumpClubUi(tester);
+
+        expect(fakeRepository.lastUpdatedClubId, club.id);
+        expect(fakeRepository.lastUpdatedFields!['instagramHandle'], isNull);
+        expect(fakeRepository.lastUpdatedFields!['phoneNumber'], isNull);
+        expect(fakeRepository.lastUpdatedFields!['email'], isNull);
+      },
+    );
 
     testWidgets(
       'CreateClubScreen validates and pops after a successful submit',
@@ -1440,7 +1503,7 @@ void main() {
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
-        await tester.tap(find.text('Create club'));
+        await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
 
         expect(find.text('Please add a description'), findsOneWidget);
@@ -1451,6 +1514,11 @@ void main() {
         );
         tester.testTextInput.hide();
         await tester.pump();
+
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
+
+        expect(find.text('Default event policy'), findsOneWidget);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);
@@ -1467,4 +1535,16 @@ Finder _catchButtonWithLabel(String label) {
   return find.byWidgetPredicate(
     (widget) => widget is CatchButton && widget.label == label,
   );
+}
+
+Future<void> _enterCreateClubText(
+  WidgetTester tester,
+  String label,
+  String value,
+) async {
+  final field = find.widgetWithText(CatchTextField, label);
+  await tester.ensureVisible(field);
+  await tester.pump();
+  await tester.enterText(field, value);
+  await tester.pump();
 }

@@ -2,6 +2,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -12,7 +14,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProfilePromptsPage extends ConsumerStatefulWidget {
-  const ProfilePromptsPage({super.key});
+  const ProfilePromptsPage({super.key, this.profileCompletionOnly = false});
+
+  final bool profileCompletionOnly;
 
   @override
   ConsumerState<ProfilePromptsPage> createState() => _ProfilePromptsPageState();
@@ -73,9 +77,11 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
 
   void _continue() {
     final answers = _answers();
-    ref
-        .read(onboardingControllerProvider.notifier)
-        .advanceToRunningPrefs(prompts: answers);
+    OnboardingController.completeMutation.run(ref, (tx) async {
+      await tx
+          .get(onboardingControllerProvider.notifier)
+          .completeSocialProfile(prompts: answers);
+    });
   }
 
   @override
@@ -86,6 +92,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
     final answers = _answers();
     final canContinue = answers.length == defaultProfilePromptIds.length;
     final answeredCount = answers.length;
+    final mutation = ref.watch(OnboardingController.completeMutation);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -93,10 +100,13 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          const OnboardingStepHeader(
-            title: 'Add your profile prompts',
-            subtitle:
-                'Give people specific things to like, comment on, and ask about.',
+          OnboardingStepHeader(
+            title: widget.profileCompletionOnly
+                ? 'Add prompts to start swiping'
+                : 'Add your profile prompts',
+            subtitle: widget.profileCompletionOnly
+                ? 'Prompts give people something real to respond to before you match.'
+                : 'Give people specific things to like, comment on, and ask about.',
           ),
           gapH24,
           for (final promptId in defaultProfilePromptIds) ...[
@@ -113,10 +123,15 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
             ),
             textAlign: TextAlign.center,
           ),
+          if (mutation.hasError) ...[
+            gapH16,
+            ErrorBanner(message: mutationErrorMessage(mutation)),
+          ],
           gapH16,
           CatchButton(
             label: 'Continue',
-            onPressed: canContinue ? _continue : null,
+            onPressed: canContinue && !mutation.isPending ? _continue : null,
+            isLoading: mutation.isPending,
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),

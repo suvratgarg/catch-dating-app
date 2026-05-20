@@ -158,78 +158,114 @@ class _ClubHostSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final hosts = club.displayHostProfiles;
+    final title = hosts.length == 1 ? 'Host' : 'Hosts';
 
-    void openProfile() {
+    void openProfile(String uid) {
       context.pushNamed(
         Routes.publicProfileScreen.name,
-        pathParameters: {'uid': club.hostUserId},
+        pathParameters: {'uid': uid},
       );
     }
 
-    return Semantics(
-      button: canViewProfile,
-      label: canViewProfile ? 'View ${club.hostName} profile' : null,
-      child: CatchSurface(
-        borderColor: t.line,
-        padding: const EdgeInsets.all(14),
-        onTap: canViewProfile ? openProfile : null,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SectionHeader(title: 'HOST', heavy: true),
-            Row(
-              children: [
-                PersonAvatar(
-                  size: 54,
-                  name: club.hostName,
-                  imageUrl: club.hostAvatarUrl,
-                  borderWidth: 2,
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(title: title, heavy: true),
+          for (final host in hosts) ...[
+            Semantics(
+              button: canViewProfile,
+              label: canViewProfile
+                  ? 'View ${host.displayName} profile'
+                  : null,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: canViewProfile ? () => openProfile(host.uid) : null,
+                child: _ClubHostRow(
+                  host: host,
+                  area: club.area,
                   borderColor: t.primarySoft,
+                  showChevron: canViewProfile,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        club.hostName,
-                        style: CatchTextStyles.titleM(context),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 6,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          CatchBadge(
-                            label: 'Club host',
-                            tone: CatchBadgeTone.brand,
-                            icon: Icons.groups_outlined,
-                          ),
-                          Text(
-                            'Hosts events in ${club.area}',
-                            style: CatchTextStyles.bodyS(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                if (canViewProfile) ...[
-                  const SizedBox(width: 8),
-                  Icon(Icons.chevron_right_rounded, size: 24, color: t.ink3),
-                ],
-              ],
+              ),
             ),
+            if (host != hosts.last) const SizedBox(height: 12),
           ],
-        ),
+        ],
       ),
+    );
+  }
+}
+
+class _ClubHostRow extends StatelessWidget {
+  const _ClubHostRow({
+    required this.host,
+    required this.area,
+    required this.borderColor,
+    required this.showChevron,
+  });
+
+  final ClubHostProfile host;
+  final String area;
+  final Color borderColor;
+  final bool showChevron;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final badgeLabel = host.role == ClubHostRole.owner
+        ? 'Club host'
+        : 'Co-host';
+
+    return Row(
+      children: [
+        PersonAvatar(
+          size: 54,
+          name: host.displayName,
+          imageUrl: host.avatarUrl,
+          borderWidth: 2,
+          borderColor: borderColor,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                host.displayName,
+                style: CatchTextStyles.titleM(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CatchBadge(
+                    label: badgeLabel,
+                    tone: CatchBadgeTone.brand,
+                    icon: Icons.groups_outlined,
+                  ),
+                  Text(
+                    'Hosts events in $area',
+                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        if (showChevron) ...[
+          const SizedBox(width: 8),
+          Icon(Icons.chevron_right_rounded, size: 24, color: t.ink3),
+        ],
+      ],
     );
   }
 }
@@ -250,7 +286,7 @@ class _ClubContactSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: 'CONTACT', heavy: true),
+          SectionHeader(title: 'Contact', heavy: true),
           const SizedBox(height: 12),
           if (club.instagramHandle != null)
             _ContactRow(

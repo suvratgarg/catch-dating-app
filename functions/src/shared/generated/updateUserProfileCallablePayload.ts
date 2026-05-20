@@ -151,6 +151,7 @@ export interface UpdateUserProfileCallablePayload {
       | "evening"
       | "night"
     )[];
+    runPreferencesVersion?: number;
     prefsNewCatches?: boolean;
     prefsMessages?: boolean;
     prefsEventReminders?: boolean;

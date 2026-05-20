@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -95,7 +93,6 @@ void main() {
         expect(find.text('Event policy'), findsOneWidget);
         await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
         await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
-        await _tapAdmissionPreset(tester, 'fixedCohortCaps');
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '40');
         await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '30');
         await _pumpTestAnimation(tester);
@@ -107,8 +104,6 @@ void main() {
 
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
         await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
-        await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
-        await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
         await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Schedule event');
         await _pumpTestAnimation(tester);
@@ -139,8 +134,8 @@ void main() {
         expect(fakeEventRepository.createdEvent!.pace.name, 'moderate');
         expect(fakeEventRepository.createdEvent!.constraints.minAge, 21);
         expect(fakeEventRepository.createdEvent!.constraints.maxAge, 35);
-        expect(fakeEventRepository.createdEvent!.constraints.maxMen, 9);
-        expect(fakeEventRepository.createdEvent!.constraints.maxWomen, 9);
+        expect(fakeEventRepository.createdEvent!.constraints.maxMen, isNull);
+        expect(fakeEventRepository.createdEvent!.constraints.maxWomen, isNull);
         expect(fakeEventRepository.createdEvent!.eventPolicy, isNotNull);
         expect(
           fakeEventRepository
@@ -148,7 +143,7 @@ void main() {
               .eventPolicy!
               .admissionPolicy
               .cohortCapacityLimits,
-          {'menInterestedInWomen': 9, 'womenInterestedInMen': 9},
+          isEmpty,
         );
         expect(
           fakeEventRepository.createdEvent!.eventPolicy!.cancellationPolicy.id,
@@ -161,9 +156,7 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(find.text('HOST MANAGE'), findsOneWidget);
-        await tester.drag(find.byType(ListView), const Offset(0, -500));
-        await _pumpTestAnimation(tester);
-        expect(find.text('Roster'), findsOneWidget);
+        expect(find.text('Setup'), findsWidgets);
       },
     );
 
@@ -300,7 +293,6 @@ void main() {
     ) async {
       final fakeEventRepository = FakeEventRepository()
         ..createError = StateError('create failed');
-      Object? uncaughtError;
       await _pumpCreateEventFlow(
         tester,
         overrides: [
@@ -309,17 +301,7 @@ void main() {
       );
       await _openCreateEventFlow(tester);
 
-      await runZonedGuarded(
-        () async {
-          await _submitValidEvent(tester);
-        },
-        (error, stackTrace) {
-          uncaughtError = error;
-        },
-      );
-
-      expect(uncaughtError, isA<StateError>());
-      await tester.pump();
+      await _submitValidEvent(tester);
 
       expect(find.text('create failed'), findsOneWidget);
       expect(find.text('Schedule event'), findsOneWidget);
@@ -328,6 +310,11 @@ void main() {
     testWidgets('host manage roster renders public profile rows', (
       tester,
     ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 3000);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
       final publicProfiles = FakePublicProfileRepository()
         ..profiles = [
           buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -356,6 +343,9 @@ void main() {
           onBackToSuccess: () {},
         ),
         overrides: [
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
           publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),
           eventParticipationRepositoryProvider.overrideWith(
             (ref) => participationRepository,
@@ -364,18 +354,25 @@ void main() {
       );
       await _pumpTestAnimation(tester);
 
-      await tester.drag(find.byType(ListView), const Offset(0, -500));
+      await tester.scrollUntilVisible(
+        find.text('Taylor'),
+        300,
+        scrollable: find.descendant(
+          of: find.byKey(const Key('host_event_manage_scroll_view')),
+          matching: find.byType(Scrollable),
+        ),
+      );
       await _pumpTestAnimation(tester);
 
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('Avery'), findsOneWidget);
       expect(find.text('runner-2'), findsNothing);
       expect(find.text('runner-3'), findsNothing);
-      expect(find.text('PAID'), findsOneWidget);
+      expect(find.text('BOOKED'), findsOneWidget);
       expect(find.text('WAITLIST'), findsOneWidget);
     });
 
-    testWidgets('host manage exposes event success as a workspace section', (
+    testWidgets('host manage exposes lifecycle workspace sections', (
       tester,
     ) async {
       final participationRepository = FakeEventParticipationRepository();
@@ -396,7 +393,10 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Event success'), findsOneWidget);
+      expect(find.text('Setup'), findsWidgets);
+      expect(find.text('Live'), findsOneWidget);
+      expect(find.text('Report'), findsOneWidget);
+      expect(find.text('Event success'), findsNothing);
       expect(find.text('Open event success'), findsNothing);
     });
 
@@ -517,7 +517,6 @@ void main() {
 
       final cancelButton = find.widgetWithText(CatchButton, 'Cancel event');
       await tester.scrollUntilVisible(cancelButton, 300);
-      await tester.drag(find.byType(ListView), const Offset(0, -120));
       await _pumpHostActionFrame(tester);
       await tester.tap(cancelButton.hitTestable());
       await _pumpHostActionFrame(tester);
@@ -557,7 +556,6 @@ void main() {
 
       final deleteButton = find.widgetWithText(CatchButton, 'Delete event');
       await tester.scrollUntilVisible(deleteButton, 300);
-      await tester.drag(find.byType(ListView), const Offset(0, -80));
       await _pumpHostActionFrame(tester);
       await tester.tap(deleteButton);
       await _pumpHostActionFrame(tester);
@@ -769,10 +767,10 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
   await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
   await _tapAdmissionPreset(tester, 'fixedCohortCaps');
-  await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
-  await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
+  await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
+  await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule event');
   await _pumpTestAnimation(tester);
@@ -811,7 +809,7 @@ Future<void> _enterCreateEventText(
   String text,
 ) async {
   final field = find.descendant(
-    of: find.byKey(fieldKey),
+    of: find.byKey(fieldKey, skipOffstage: false),
     matching: find.byType(TextField),
   );
   await tester.ensureVisible(field);
@@ -820,7 +818,10 @@ Future<void> _enterCreateEventText(
 }
 
 Future<void> _tapAdmissionPreset(WidgetTester tester, String presetName) async {
-  final finder = find.byKey(CreateEventFormKeys.admissionPreset(presetName));
+  final finder = find.byKey(
+    CreateEventFormKeys.admissionPreset(presetName),
+    skipOffstage: false,
+  );
   await tester.ensureVisible(finder);
   await tester.tap(finder);
   await _pumpTestAnimation(tester);

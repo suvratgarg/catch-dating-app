@@ -442,7 +442,8 @@ void main() {
 
     // Email row is visible with add affordance (shows "+ Email")
     expect(find.textContaining('Email'), findsAtLeastNWidgets(1));
-    expect(find.textContaining('Engineer'), findsAtLeastNWidgets(1));
+    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
+    expect(find.text('Engineer'), findsOneWidget);
     await _dragProfileTabUntilVisible(tester, find.text('+919876543210'));
     expect(find.text('+919876543210'), findsOneWidget);
   });
@@ -475,6 +476,9 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
     expect(find.text('Profile strength'), findsOneWidget);
+    expect(find.text('Photos'), findsOneWidget);
+    expect(find.text('Profile prompts'), findsOneWidget);
+    expect(find.text('PROFILE PROMPTS'), findsNothing);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
   });
 
@@ -711,6 +715,22 @@ void main() {
     expect(find.text('Age range'), findsNothing);
     expect(find.textContaining('18 – 60+'), findsNothing);
   });
+
+  testWidgets(
+    'ProfileTab hides running details until run preferences are set',
+    (tester) async {
+      final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0)
+          .copyWith(
+            preferredDistances: const [],
+            runningReasons: const [],
+            preferredRunTimes: const [],
+          );
+      await _pumpProfileTab(tester, user);
+
+      expect(find.text('Running details'), findsNothing);
+      expect(_profileInfoTile('Pace range'), findsNothing);
+    },
+  );
 
   testWidgets('Pace range expands inline with shared RangeSlider', (
     tester,

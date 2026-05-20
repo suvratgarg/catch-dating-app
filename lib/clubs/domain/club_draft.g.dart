@@ -15,6 +15,9 @@ _ClubDraft _$ClubDraftFromJson(Map<String, dynamic> json) => _ClubDraft(
   instagramHandle: json['instagramHandle'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
   email: json['email'] as String?,
+  hostDefaults: json['hostDefaults'] == null
+      ? const ClubHostDefaults()
+      : ClubHostDefaults.fromJson(json['hostDefaults'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ClubDraftToJson(_ClubDraft instance) =>
@@ -27,4 +30,5 @@ Map<String, dynamic> _$ClubDraftToJson(_ClubDraft instance) =>
       'instagramHandle': instance.instagramHandle,
       'phoneNumber': instance.phoneNumber,
       'email': instance.email,
+      'hostDefaults': instance.hostDefaults.toJson(),
     };

@@ -183,10 +183,18 @@ function event(overrides: FakeData = {}): FakeData {
 
 function user(overrides: FakeData = {}): FakeData {
   return {
+    name: "Runner One",
+    firstName: "Runner",
+    displayName: "Runner",
     dateOfBirth: admin.firestore.Timestamp.fromMillis(
       Date.parse("1996-01-01T00:00:00.000Z")
     ),
     gender: "man",
+    phoneNumber: "+919900000001",
+    countryCode: "+91",
+    profileComplete: false,
+    interestedInGenders: ["woman"],
+    runPreferencesVersion: 1,
     ...overrides,
   };
 }
@@ -272,6 +280,59 @@ test("signUpUserForEvent rejects cancelled events", async () => {
       error.code === "failed-precondition"
   );
 });
+
+test("signUpUserForEvent rejects booking-incomplete profiles", async () => {
+  const db = firestore({
+    "events/event-1": event(),
+    "users/runner-1": user({interestedInGenders: []}),
+  });
+
+  await assert.rejects(
+    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    (error) =>
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "failed-precondition"
+  );
+});
+
+test("signUpUserForEvent requires run preferences for run events", async () => {
+  const db = firestore({
+    "events/event-1": event(),
+    "users/runner-1": user({runPreferencesVersion: 0}),
+  });
+
+  await assert.rejects(
+    () => signUpUserForEvent(db, "event-1", "runner-1"),
+    (error) =>
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "failed-precondition"
+  );
+});
+
+test("signUpUserForEvent does not require run preferences for dinner events",
+  async () => {
+    const db = firestore({
+      "events/event-1": event({
+        eventFormat: {
+          version: 1,
+          activityKind: "dinner",
+          interactionModel: "seatedTable",
+        },
+      }),
+      "users/runner-1": user({runPreferencesVersion: 0}),
+    });
+
+    await signUpUserForEvent(db, "event-1", "runner-1");
+
+    const fake = db as unknown as FakeFirestore;
+    assert.equal(
+      fake.get("eventParticipations/event-1_runner-1")?.status,
+      "signedUp"
+    );
+  }
+);
 
 test("signUpUserForEvent rejects overlapping user bookings", async () => {
   const db = firestore({

@@ -6,9 +6,11 @@ final class CreateClubCallableRequest {
     required this.area,
     this.clubId,
     this.imageUrl,
+    this.profileImageUrl,
     this.instagramHandle,
     this.phoneNumber,
     this.email,
+    this.hostDefaults,
   });
 
   final String? clubId;
@@ -17,9 +19,11 @@ final class CreateClubCallableRequest {
   final String location;
   final String area;
   final String? imageUrl;
+  final String? profileImageUrl;
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
+  final Map<String, Object?>? hostDefaults;
 
   Map<String, Object?> toJson() => {
     if (clubId != null) 'clubId': clubId,
@@ -28,9 +32,11 @@ final class CreateClubCallableRequest {
     'location': location,
     'area': area,
     'imageUrl': imageUrl,
+    'profileImageUrl': profileImageUrl,
     'instagramHandle': instagramHandle,
     'phoneNumber': phoneNumber,
     'email': email,
+    'hostDefaults': ?hostDefaults,
   };
 }
 
@@ -78,4 +84,13 @@ final class SetClubNotificationPreferenceCallableRequest {
   final bool enabled;
 
   Map<String, Object?> toJson() => {'clubId': clubId, 'enabled': enabled};
+}
+
+final class ClubHostCallableRequest {
+  const ClubHostCallableRequest({required this.clubId, required this.uid});
+
+  final String clubId;
+  final String uid;
+
+  Map<String, Object?> toJson() => {'clubId': clubId, 'uid': uid};
 }

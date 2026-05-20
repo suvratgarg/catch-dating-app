@@ -109,9 +109,19 @@ class EventBookingController extends _$EventBookingController {
   ///
   /// The backend enforces host ownership, rejects cancelled events, and blocks
   /// schedule changes once participants or waitlisted users exist.
-  Future<void> updateHostedEvent({required Event event}) async {
+  Future<void> updateHostedEvent({
+    required Event event,
+    bool includePolicy = false,
+    String? inviteCode,
+  }) async {
     _requireSignedIn(action: 'edit a hosted event');
-    await ref.read(eventRepositoryProvider).updateEventDetails(event: event);
+    await ref
+        .read(eventRepositoryProvider)
+        .updateEventDetails(
+          event: event,
+          includePolicy: includePolicy,
+          inviteCode: inviteCode,
+        );
   }
 
   /// Adds the user to the waitlist for a full event.

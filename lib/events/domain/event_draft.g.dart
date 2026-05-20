@@ -36,6 +36,11 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   dynamicPricingStep: json['dynamicPricingStep'] as String?,
   dynamicPricingMax: json['dynamicPricingMax'] as String?,
   cancellationPolicy: json['cancellationPolicy'] as String?,
+  eventSuccessDefaults: json['eventSuccessDefaults'] == null
+      ? const EventSuccessDefaults()
+      : EventSuccessDefaults.fromJson(
+          json['eventSuccessDefaults'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
@@ -67,4 +72,5 @@ Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
       'dynamicPricingStep': instance.dynamicPricingStep,
       'dynamicPricingMax': instance.dynamicPricingMax,
       'cancellationPolicy': instance.cancellationPolicy,
+      'eventSuccessDefaults': instance.eventSuccessDefaults.toJson(),
     };

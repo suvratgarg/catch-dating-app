@@ -12,6 +12,8 @@ import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
+import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -357,6 +359,56 @@ void main() {
     expect(removed, isTrue);
   });
 
+  testWidgets('CatchSegmentedControl supports expanded icon and label tabs', (
+    tester,
+  ) async {
+    var selected = 'setup';
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => SizedBox(
+            width: 360,
+            child: CatchSegmentedControl<String>(
+              selected: selected,
+              expanded: true,
+              style: CatchSegmentedControlStyle.surface,
+              onChanged: (value) => setState(() => selected = value),
+              segments: const [
+                CatchSegment(
+                  value: 'setup',
+                  label: 'Setup',
+                  icon: Icons.tune_rounded,
+                ),
+                CatchSegment(
+                  value: 'live',
+                  label: 'Live',
+                  icon: Icons.play_circle_outline_rounded,
+                ),
+                CatchSegment(
+                  value: 'report',
+                  label: 'Report',
+                  icon: Icons.insights_outlined,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(CatchSegmentedControl<String>)).width,
+      360,
+    );
+    expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
+    expect(find.text('Setup'), findsOneWidget);
+
+    await tester.tap(find.text('Live'));
+    await tester.pump();
+    expect(selected, 'live');
+  });
+
   testWidgets('ChipField single select keeps a selected chip selected', (
     tester,
   ) async {
@@ -542,6 +594,27 @@ void main() {
     await tester.tap(find.text('Surface content'));
     await tester.pump();
     expect(tapped, isTrue);
+  });
+
+  testWidgets('CatchSectionCard renders sentence-case title and trailing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchSectionCard(
+          title: 'Profile strength',
+          subtitle: '3 of 7 profile basics complete',
+          trailing: Text('28%'),
+          child: Text('Section body'),
+        ),
+      ),
+    );
+
+    expect(find.text('Profile strength'), findsOneWidget);
+    expect(find.text('3 of 7 profile basics complete'), findsOneWidget);
+    expect(find.text('28%'), findsOneWidget);
+    expect(find.text('Section body'), findsOneWidget);
+    expect(find.text('PROFILE STRENGTH'), findsNothing);
   });
 
   testWidgets('CatchFrameworkErrorView renders branded recovery UI', (

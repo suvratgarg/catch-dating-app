@@ -303,7 +303,6 @@ class ProfileInlineTextValue extends StatelessWidget {
                             controller: controller,
                             focusNode: focusNode,
                             readOnly: !enabled,
-                            autofocus: true,
                             maxLines: maxLines,
                             minLines: minLines,
                             keyboardType: keyboardType,
@@ -471,15 +470,22 @@ class _ProfileInlineTextEntryEditorState
     _controller = TextEditingController(text: widget.currentValue);
     _focusNode = FocusNode();
     _controller.addListener(_clearValidationError);
+    if (widget.isExpanded) {
+      _requestFocusAfterExpansionFrame();
+    }
   }
 
   @override
   void didUpdateWidget(covariant ProfileInlineTextEntryEditor oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!widget.isExpanded) return;
-    if (oldWidget.fieldName != widget.fieldName ||
-        oldWidget.currentValue != widget.currentValue) {
-      _controller.text = widget.currentValue;
+    if (widget.isExpanded) {
+      if (oldWidget.fieldName != widget.fieldName ||
+          oldWidget.currentValue != widget.currentValue) {
+        _controller.text = widget.currentValue;
+      }
+      if (!oldWidget.isExpanded) {
+        _requestFocusAfterExpansionFrame();
+      }
     }
   }
 
@@ -494,6 +500,15 @@ class _ProfileInlineTextEntryEditorState
   void _clearValidationError() {
     if (_validationError == null) return;
     setState(() => _validationError = null);
+  }
+
+  void _requestFocusAfterExpansionFrame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !widget.isExpanded || isSaving || _focusNode.hasFocus) {
+        return;
+      }
+      _focusNode.requestFocus();
+    });
   }
 
   void _cancel() {

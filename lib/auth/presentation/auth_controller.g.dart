@@ -50,7 +50,7 @@ final class AuthInitialCountryDialCodeProvider
 }
 
 String _$authInitialCountryDialCodeHash() =>
-    r'ac9ba6845c77b393de6c665705648bc511c8f818';
+    r'3404b4ac2f9a2d06f03b72e0da0c0ed84566ba01';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///

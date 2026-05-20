@@ -44,9 +44,11 @@ export type ChildrenStatus =
   | "wantSomeday"
   | "dontWant";
 
+export type ClubHostRole = "owner" | "host";
+
 export type ClubLifecycleStatus = "active" | "archived";
 
-export type ClubMembershipRole = "host" | "member";
+export type ClubMembershipRole = "owner" | "host" | "member";
 
 export type ClubMembershipStatus = "active" | "left" | "deleted";
 
@@ -67,6 +69,14 @@ export type EducationLevel =
   | "phd"
   | "tradeSchool"
   | "other";
+
+export type EventAdmissionDefaultPreset =
+  | "openCapacity"
+  | "inviteOnly"
+  | "balancedSingles"
+  | "fixedCohortCaps";
+
+export type EventCancellationPolicyId = "flexible" | "standard" | "strict";
 
 export type EventLifecycleStatus = "active" | "cancelled";
 
@@ -197,6 +207,7 @@ export interface UserProfileDoc {
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
+  runPreferencesVersion: number;
   prefsNewCatches: boolean;
   prefsMessages: boolean;
   prefsEventReminders: boolean;
@@ -246,6 +257,7 @@ export interface PublicProfileDoc {
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
+  runPreferencesVersion: number;
   languages?: Language[];
   /**
    * Migration field; legacy projections may still only have parallel photo
@@ -268,9 +280,13 @@ export interface ClubDoc {
   hostName: string;
   /** nullable in Firestore */
   hostAvatarUrl?: string | null;
+  ownerUserId?: string | null;
+  hostUserIds: string[];
+  hostProfiles: ClubHostProfile[];
   createdAt: FirebaseFirestore.Timestamp;
   /** nullable in Firestore */
   imageUrl?: string | null;
+  profileImageUrl?: string | null;
   tags: string[];
   memberCount: number;
   rating: number;
@@ -289,6 +305,7 @@ export interface ClubDoc {
   archived: boolean;
   archivedAt?: FirebaseFirestore.Timestamp | null;
   archiveReason?: string | null;
+  hostDefaults: ClubHostDefaults;
 }
 
 /**
@@ -514,6 +531,17 @@ export interface ReviewDoc {
 // ── Extra interfaces (no top-level Dart model) ────────────────────────────
 
 /**
+ * embedded club host profile
+ * Stored inside clubs/{clubId}.hostProfiles for public multi-host display.
+ */
+export interface ClubHostProfile {
+  uid: string;
+  displayName: string;
+  avatarUrl?: string | null;
+  role: "owner" | "host";
+}
+
+/**
  * embedded profile prompt answer
  * Stored inside users/{uid}.profilePrompts and
  * publicProfiles/{uid}.profilePrompts.
@@ -571,6 +599,45 @@ export interface EventFormatSnapshot {
   defaultPlaybookId?: string;
   defaultModuleIds?: string[];
   activityDetails?: Record<string, unknown>;
+}
+
+/**
+ * embedded club host defaults
+ * Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.
+ */
+export interface ClubHostDefaults {
+  eventPolicy: EventPolicyDefaults;
+  eventSuccess: EventSuccessDefaults;
+}
+
+/**
+ * embedded event policy defaults
+ * Stored inside clubs/{clubId}.hostDefaults.eventPolicy.
+ */
+export interface EventPolicyDefaults {
+  admissionPreset: EventAdmissionDefaultPreset;
+  minAge: number;
+  maxAge: number;
+  maxMen?: number | null;
+  maxWomen?: number | null;
+  dynamicPricingEnabled: boolean;
+  dynamicPricingStepInPaise?: number | null;
+  dynamicPricingMaxInPaise?: number | null;
+  cancellationPolicyId: EventCancellationPolicyId;
+}
+
+/**
+ * embedded event success defaults
+ * Stored inside clubs/{clubId}.hostDefaults.eventSuccess.
+ */
+export interface EventSuccessDefaults {
+  enabled: boolean;
+  playbookId: string;
+  selectedModuleIds: string[];
+  hostGoal: string;
+  privateCrushEnabled: boolean;
+  contextualOpenersEnabled: boolean;
+  attendeePrompt?: string | null;
 }
 
 /**

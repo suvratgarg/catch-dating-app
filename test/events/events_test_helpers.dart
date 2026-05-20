@@ -124,6 +124,7 @@ UserProfile buildUser({
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
   List<String> photoUrls = const [],
+  int runPreferencesVersion = currentRunPreferencesVersion,
 }) {
   final nameParts = name.trim().split(RegExp(r'\s+'));
   return UserProfile(
@@ -143,6 +144,7 @@ UserProfile buildUser({
     profileComplete: true,
     interestedInGenders: interestedInGenders,
     photoUrls: photoUrls,
+    runPreferencesVersion: runPreferencesVersion,
   );
 }
 
@@ -199,6 +201,7 @@ PublicProfile buildPublicProfile({
   List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
   List<String> photoUrls = const [],
+  int runPreferencesVersion = currentRunPreferencesVersion,
 }) {
   return PublicProfile(
     uid: uid,
@@ -209,6 +212,7 @@ PublicProfile buildPublicProfile({
         normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
     photoUrls: photoUrls,
+    runPreferencesVersion: runPreferencesVersion,
   );
 }
 
@@ -265,6 +269,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? hostCancelReason;
   String? deletedEventId;
   Event? updatedEvent;
+  bool? updatedEventIncludePolicy;
+  String? updatedEventInviteCode;
   String? joinedWaitlistEventId;
   String? joinedWaitlistInviteCode;
   String? createdEventInviteCode;
@@ -348,11 +354,17 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<void> updateEventDetails({required Event event}) async {
+  Future<void> updateEventDetails({
+    required Event event,
+    bool includePolicy = false,
+    String? inviteCode,
+  }) async {
     if (updateEventError != null) {
       throw updateEventError!;
     }
     updatedEvent = event;
+    updatedEventIncludePolicy = includePolicy;
+    updatedEventInviteCode = inviteCode;
   }
 
   @override

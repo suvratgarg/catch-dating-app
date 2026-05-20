@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
+import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
+import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -162,7 +165,40 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     }
   }
 
+  Future<void> _runSuvbotAction(SuvbotActionItem action) async {
+    if (ref.read(SuvbotController.requestMutation).isPending) return;
+
+    try {
+      await SuvbotController.requestMutation.run(ref, (tx) async {
+        await tx
+            .get(suvbotControllerProvider.notifier)
+            .requestAction(actionId: action.id);
+      });
+    } catch (_) {
+      return;
+    }
+  }
+
+  Future<void> _runSuvbotTextAction(
+    SuvbotActionItem action,
+    String text,
+  ) async {
+    if (ref.read(SuvbotController.requestMutation).isPending) return;
+
+    try {
+      await SuvbotController.requestMutation.run(ref, (tx) async {
+        await tx
+            .get(suvbotControllerProvider.notifier)
+            .requestAction(actionId: action.id, text: text);
+      });
+    } catch (_) {
+      return;
+    }
+  }
+
   Future<void> _sendImage() async {
+    if (isSuvbotConversation(matchId: widget.matchId)) return;
+
     final uid = ref.read(uidProvider).value;
     final imageMutation = ref.read(ChatController.sendImageMutation);
     if (imageMutation.isPending || uid == null) return;
@@ -251,17 +287,25 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     );
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
-    final latestEventId = match?.latestEventId;
+    final otherUid = uid == null ? null : match?.otherId(uid);
+    final isSuvbot = isSuvbotConversation(
+      matchId: widget.matchId,
+      otherUid: otherUid,
+    );
+    final latestEventId = isSuvbot ? null : match?.latestEventId;
     final eventAsync = latestEventId == null
         ? const AsyncData<Event?>(null)
         : ref.watch(watchEventProvider(latestEventId));
-    final otherUid = uid == null ? null : match?.otherId(uid);
-    final otherProfileAsync = otherUid == null
+    final otherProfileAsync = otherUid == null || isSuvbot
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(watchPublicProfileProvider(otherUid));
     final profile = otherProfileAsync.asData?.value ?? widget.initialProfile;
-    final name = profile?.name ?? 'Chat';
-    final photoUrl = profile?.primaryPhotoThumbnailUrl;
+    final name = isSuvbot ? 'Suvbot' : profile?.name ?? 'Chat';
+    final photoUrl = isSuvbot ? null : profile?.primaryPhotoThumbnailUrl;
+    final suvbotPending = ref.watch(SuvbotController.requestMutation).isPending;
+    final suvbotActionsAsync = isSuvbot
+        ? ref.watch(suvbotActionsProvider)
+        : const AsyncData(<SuvbotActionItem>[]);
     final String? composerDisabledReason;
     if (matchAsync.hasError) {
       composerDisabledReason = 'Chat unavailable.';
@@ -286,15 +330,15 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         appBar: ChatTopBar(
           name: name,
           photoUrl: photoUrl,
-          otherUid: otherUid,
-          profile: profile,
-          onReport: otherUid == null
+          otherUid: isSuvbot ? null : otherUid,
+          profile: isSuvbot ? null : profile,
+          onReport: otherUid == null || isSuvbot
               ? () {}
               : () => _reportUser(
                   targetUserId: otherUid,
                   targetName: profile?.name ?? 'this person',
                 ),
-          onBlock: otherUid == null
+          onBlock: otherUid == null || isSuvbot
               ? () {}
               : () => _confirmBlock(
                   targetUserId: otherUid,
@@ -303,28 +347,40 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         ),
         body: Column(
           children: [
-            ChatEventContextHeader(event: eventAsync.asData?.value),
+            if (!isSuvbot)
+              ChatEventContextHeader(event: eventAsync.asData?.value),
             Expanded(
               child: ChatMessageList(
                 messagesAsync: messagesAsync,
                 currentUid: uid,
-                otherName: profile?.name ?? 'your match',
+                otherName: isSuvbot ? 'Suvbot' : profile?.name ?? 'your match',
                 scrollController: _scrollController,
                 onRetry: () => ref.invalidate(
                   watchConversationMessagesProvider(widget.matchId),
                 ),
               ),
             ),
-            ChatInputBar(
-              controller: _textController,
-              sending: ref.watch(ChatController.sendMessageMutation).isPending,
-              onSend: composerDisabledReason == null ? _send : null,
-              onSendImage: composerDisabledReason == null ? _sendImage : null,
-              disabledReason: composerDisabledReason,
-              sendingImage: ref
-                  .watch(ChatController.sendImageMutation)
-                  .isPending,
-            ),
+            if (isSuvbot)
+              SuvbotActionBar(
+                actions: suvbotActionsAsync,
+                pending: suvbotPending,
+                onAction: _runSuvbotAction,
+                onTextAction: _runSuvbotTextAction,
+                onRetry: () => ref.invalidate(suvbotActionsProvider),
+              ),
+            if (!isSuvbot)
+              ChatInputBar(
+                controller: _textController,
+                sending: ref
+                    .watch(ChatController.sendMessageMutation)
+                    .isPending,
+                onSend: composerDisabledReason == null ? _send : null,
+                onSendImage: composerDisabledReason == null ? _sendImage : null,
+                disabledReason: composerDisabledReason,
+                sendingImage: ref
+                    .watch(ChatController.sendImageMutation)
+                    .isPending,
+              ),
           ],
         ),
       ),
@@ -347,7 +403,10 @@ class _ChatMutationListeners extends StatelessWidget {
           mutation: ChatController.reportUserMutation,
           child: MutationErrorSnackbarListener(
             mutation: ChatController.blockUserMutation,
-            child: child,
+            child: MutationErrorSnackbarListener(
+              mutation: SuvbotController.requestMutation,
+              child: child,
+            ),
           ),
         ),
       ),

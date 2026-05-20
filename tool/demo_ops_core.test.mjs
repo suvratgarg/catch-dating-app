@@ -162,7 +162,12 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
     demoOpsEvents: {
       op_1: {
         users: ["uid_a"],
-        paths: ["savedEvents/from_manifest"],
+        paths: [
+          "savedEvents/from_manifest",
+          "matches/suvbot_uid_a",
+          "matches/suvbot_uid_a/messages/suvbot_welcome",
+          "demoSelfServiceAccess/uid_a",
+        ],
       },
     },
     payments: {
@@ -178,6 +183,13 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
         },
       },
       match_2: {participantIds: ["uid_a", "uid_c"]},
+      suvbot_uid_a: {
+        participantIds: ["suvbot", "uid_a"],
+        demoOps: true,
+        messages: {
+          suvbot_welcome: {demoOps: true},
+        },
+      },
     },
     swipes: {
       uid_a: {

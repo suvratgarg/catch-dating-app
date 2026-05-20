@@ -15,7 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PhotosPage extends ConsumerWidget {
-  const PhotosPage({super.key});
+  const PhotosPage({super.key, this.profileCompletionOnly = false});
+
+  final bool profileCompletionOnly;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,9 +56,13 @@ class PhotosPage extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          const OnboardingStepHeader(
-            title: 'Show yourself',
-            subtitle: 'Add at least 2 photos so others can find you.',
+          OnboardingStepHeader(
+            title: profileCompletionOnly
+                ? 'Complete your profile to swipe'
+                : 'Show yourself',
+            subtitle: profileCompletionOnly
+                ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
+                : 'Add at least 2 photos so others can find you.',
           ),
           gapH8,
           Row(
@@ -65,7 +71,9 @@ class PhotosPage extends ConsumerWidget {
               gapW8,
               Expanded(
                 child: Text(
-                  'Running photos boost catches by 2.3×',
+                  profileCompletionOnly
+                      ? 'This only gates swiping. Event booking stays available.'
+                      : 'Running photos boost catches by 2.3×',
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: t.accent),

@@ -67,6 +67,7 @@
         "preferredDistances",
         "runningReasons",
         "preferredRunTimes",
+        "runPreferencesVersion",
         "prefsNewCatches",
         "prefsMessages",
         "prefsEventReminders",
@@ -139,6 +140,7 @@
             "preferredDistances",
             "runningReasons",
             "preferredRunTimes",
+            "runPreferencesVersion",
             "prefsNewCatches",
             "prefsMessages",
             "prefsEventReminders",
@@ -309,6 +311,7 @@
         "preferredDistances",
         "runningReasons",
         "preferredRunTimes",
+        "runPreferencesVersion",
         "languages"
       ],
       "internalDemoFields": [

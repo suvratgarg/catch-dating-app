@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 enum ProfileConfidenceSignalKind { completeProfile, sharedRun, easyOpeners }
@@ -135,6 +136,7 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
     nestedPhotoPrompts.isNotEmpty ? nestedPhotoPrompts : profile.photoPrompts,
   ).length;
   final runningDetailsComplete =
+      profile.hasCurrentRunPreferences &&
       profile.preferredDistances.isNotEmpty &&
       profile.runningReasons.isNotEmpty &&
       profile.preferredRunTimes.isNotEmpty;
@@ -236,6 +238,8 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
 }
 
 List<EmotionalRunTag> emotionalRunTagsForProfile(PublicProfile profile) {
+  if (!profile.hasCurrentRunPreferences) return const [];
+
   final tags = <EmotionalRunTag>[];
 
   void add(
@@ -368,46 +372,50 @@ List<CompatibilityReason> compatibilityReasonsForProfile({
     );
   }
 
-  final sharedReasons = _sharedValues(
-    viewer.runningReasons,
-    targetProfile.runningReasons,
-  );
-  if (sharedReasons.isNotEmpty) {
-    add(
-      CompatibilityReasonKind.runningReason,
-      _runningReasonCompatibilityLabel(sharedReasons),
+  final canCompareRunPreferences =
+      viewer.hasCurrentRunPreferences && targetProfile.hasCurrentRunPreferences;
+  if (canCompareRunPreferences) {
+    final sharedReasons = _sharedValues(
+      viewer.runningReasons,
+      targetProfile.runningReasons,
     );
-  }
+    if (sharedReasons.isNotEmpty) {
+      add(
+        CompatibilityReasonKind.runningReason,
+        _runningReasonCompatibilityLabel(sharedReasons),
+      );
+    }
 
-  final sharedRunTimes = _sharedRunTimeBuckets(
-    viewer.preferredRunTimes,
-    targetProfile.preferredRunTimes,
-  );
-  if (sharedRunTimes.isNotEmpty) {
-    add(
-      CompatibilityReasonKind.runTime,
-      'You both like ${_joinLabels(sharedRunTimes)} events',
+    final sharedRunTimes = _sharedRunTimeBuckets(
+      viewer.preferredRunTimes,
+      targetProfile.preferredRunTimes,
     );
-  }
+    if (sharedRunTimes.isNotEmpty) {
+      add(
+        CompatibilityReasonKind.runTime,
+        'You both like ${_joinLabels(sharedRunTimes)} events',
+      );
+    }
 
-  final sharedDistances = _sharedValues(
-    viewer.preferredDistances,
-    targetProfile.preferredDistances,
-  );
-  if (sharedDistances.isNotEmpty) {
-    add(
-      CompatibilityReasonKind.distance,
-      'You both like ${_joinLabels(sharedDistances.map((distance) => distance.label))}',
+    final sharedDistances = _sharedValues(
+      viewer.preferredDistances,
+      targetProfile.preferredDistances,
     );
-  }
+    if (sharedDistances.isNotEmpty) {
+      add(
+        CompatibilityReasonKind.distance,
+        'You both like ${_joinLabels(sharedDistances.map((distance) => distance.label))}',
+      );
+    }
 
-  if (_paceRangesOverlap(
-    viewer.paceMinSecsPerKm,
-    viewer.paceMaxSecsPerKm,
-    targetProfile.paceMinSecsPerKm,
-    targetProfile.paceMaxSecsPerKm,
-  )) {
-    add(CompatibilityReasonKind.pace, 'Your pace ranges overlap');
+    if (_paceRangesOverlap(
+      viewer.paceMinSecsPerKm,
+      viewer.paceMaxSecsPerKm,
+      targetProfile.paceMinSecsPerKm,
+      targetProfile.paceMaxSecsPerKm,
+    )) {
+      add(CompatibilityReasonKind.pace, 'Your pace ranges overlap');
+    }
   }
 
   final sharedLanguages = _sharedValues(

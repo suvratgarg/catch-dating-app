@@ -65,12 +65,12 @@ void main() {
 
       expect(find.text('Photo coming soon'), findsOneWidget);
       expect(
-        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
+        find.text('A perfect event with me looks like...'),
         findsOneWidget,
       );
       expect(find.text('Something casual'), findsOneWidget);
       expect(find.text('5:00-7:00/km'), findsWidgets);
-      expect(find.text('RUNNING RHYTHM'), findsOneWidget);
+      expect(find.text('Running rhythm'), findsOneWidget);
       expect(
         tester.getSemantics(find.byType(ProfileSurface)).hint,
         'Preview how your profile appears to other runners. Scroll to read the full profile.',
@@ -88,7 +88,7 @@ void main() {
 
     expect(find.text('Photo coming soon'), findsOneWidget);
     expect(find.text('Manan'), findsOneWidget);
-    expect(find.text('RUNNING RHYTHM'), findsOneWidget);
+    expect(find.text('Running rhythm'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -117,8 +117,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsNothing);
-    expect(find.text('RUNNING RHYTHM'), findsOneWidget);
+    expect(find.text('A perfect event with me looks like...'), findsNothing);
+    expect(find.text('Running rhythm'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -198,10 +198,10 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
+        find.text('A perfect event with me looks like...'),
         findsOneWidget,
       );
-      expect(find.text('DETAILS'), findsOneWidget);
+      expect(find.text('Details'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -240,7 +240,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
+      expect(find.text('Why you might click'), findsOneWidget);
       expect(find.text('You met at Thursday Morning Event'), findsOneWidget);
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);

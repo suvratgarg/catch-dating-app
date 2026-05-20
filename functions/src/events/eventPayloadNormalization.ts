@@ -34,12 +34,19 @@ export function normalizeUpdateEventPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
   const payload = normalizeFields(data, {stringFields: ["eventId"]});
   if (!isRecord(payload.fields)) return payload;
+  const normalizedFields = normalizeFields(payload.fields, {
+    stringFields: ["meetingPoint", "description"],
+    nullableStringFields: ["locationDetails", "photoUrl"],
+  });
+  if (isRecord(normalizedFields.privateAccess)) {
+    normalizedFields.privateAccess = normalizeFields(
+      normalizedFields.privateAccess,
+      {nullableStringFields: ["inviteCode"]}
+    );
+  }
   return {
     ...payload,
-    fields: normalizeFields(payload.fields, {
-      stringFields: ["meetingPoint", "description"],
-      nullableStringFields: ["locationDetails", "photoUrl"],
-    }),
+    fields: normalizedFields,
   };
 }
 

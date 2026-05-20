@@ -146,6 +146,10 @@ enum ChildrenStatus implements Labelled {
 
 // ── Running preferences ───────────────────────────────────────────────────────
 
+const currentRunPreferencesVersion = 1;
+const defaultPaceMinSecsPerKm = 300;
+const defaultPaceMaxSecsPerKm = 420;
+
 enum PreferredDistance implements Labelled {
   fiveK('5 km'),
   tenK('10 km'),
@@ -244,12 +248,13 @@ abstract class UserProfile with _$UserProfile {
     @JsonKey(unknownEnumValue: null) DietaryPreference? diet,
     @JsonKey(unknownEnumValue: null) ChildrenStatus? children,
 
-    // Running preferences (set during onboarding)
-    @Default(300) int paceMinSecsPerKm,
-    @Default(420) int paceMaxSecsPerKm,
+    // Running preferences (collected only when a run event needs them)
+    @Default(defaultPaceMinSecsPerKm) int paceMinSecsPerKm,
+    @Default(defaultPaceMaxSecsPerKm) int paceMaxSecsPerKm,
     @Default([]) List<PreferredDistance> preferredDistances,
     @Default([]) List<RunReason> runningReasons,
     @Default([]) List<PreferredRunTime> preferredRunTimes,
+    @Default(0) int runPreferencesVersion,
 
     // Notification / discovery preferences
     @Default(true) bool prefsNewCatches,

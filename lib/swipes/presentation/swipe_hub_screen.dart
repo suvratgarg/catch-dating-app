@@ -133,7 +133,7 @@ class _CatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionHeader(title: 'CATCHES', heavy: true),
+              SectionHeader(title: 'Catches', heavy: true),
               gapH2,
               Text('After the event', style: CatchTextStyles.displayL(context)),
             ],

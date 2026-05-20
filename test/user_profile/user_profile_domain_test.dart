@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,71 @@ void main() {
       final dob = DateTime(now.year - 25, now.month, now.day);
       final user = buildUser(dateOfBirth: dob);
       expect(user.age, 25);
+    });
+  });
+
+  group('readiness gates', () {
+    List<ProfilePromptAnswer> completePrompts() => [
+      for (final promptId in defaultProfilePromptIds)
+        ProfilePromptAnswer(
+          promptId: promptId,
+          prompt: profilePromptTitle(promptId),
+          answer: 'A real answer for $promptId.',
+        ),
+    ];
+
+    test('booking-ready identity does not require photos or prompts', () {
+      final user = buildUser(
+        dateOfBirth: DateTime(1995, 6, 15),
+      ).copyWith(profileComplete: false);
+
+      expect(user.hasBookingReadyIdentity, isTrue);
+      expect(user.hasSocialReadyProfile, isFalse);
+    });
+
+    test('booking-ready identity requires interested-in genders', () {
+      final user = buildUser(
+        dateOfBirth: DateTime(1995, 6, 15),
+      ).copyWith(interestedInGenders: const []);
+
+      expect(user.hasBookingReadyIdentity, isFalse);
+      expect(user.hasSocialReadyProfile, isFalse);
+    });
+
+    test('social-ready profile requires completion, photos, and prompts', () {
+      final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
+        profilePrompts: completePrompts(),
+        photoUrls: const [
+          'https://example.test/one.jpg',
+          'https://example.test/two.jpg',
+        ],
+      );
+      final withoutPrompt = user.copyWith(
+        profilePrompts: completePrompts().take(2).toList(),
+      );
+
+      expect(user.hasSocialReadyProfile, isTrue);
+      expect(withoutPrompt.hasSocialReadyProfile, isFalse);
+    });
+
+    test('run preferences are separate from social readiness', () {
+      final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
+        profilePrompts: completePrompts(),
+        photoUrls: const [
+          'https://example.test/one.jpg',
+          'https://example.test/two.jpg',
+        ],
+        runPreferencesVersion: 0,
+      );
+
+      expect(user.hasSocialReadyProfile, isTrue);
+      expect(user.hasCurrentRunPreferences, isFalse);
+      expect(
+        user
+            .copyWith(runPreferencesVersion: currentRunPreferencesVersion)
+            .hasCurrentRunPreferences,
+        isTrue,
+      );
     });
   });
 

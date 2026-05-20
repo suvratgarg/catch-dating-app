@@ -114,7 +114,7 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
   return AsyncData(
     ClubDetailViewModel(
       club: club,
-      isHost: isAuthenticated && uid == club.hostUserId,
+      isHost: isAuthenticated && club.isHostedBy(uid),
       isMember: isAuthenticated && isActiveMember,
       upcomingEvents: upcomingEvents,
       reviews: reviews,

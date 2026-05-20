@@ -32,6 +32,7 @@
     "preferredDistances",
     "runningReasons",
     "preferredRunTimes",
+    "runPreferencesVersion",
     "prefsNewCatches",
     "prefsMessages",
     "prefsEventReminders",
@@ -258,6 +259,10 @@
       "items": {
         "$ref": "../shared/profile_common.schema.json#/definitions/preferredRunTime"
       }
+    },
+    "runPreferencesVersion": {
+      "type": "integer",
+      "minimum": 0
     },
     "prefsNewCatches": {
       "type": "boolean"

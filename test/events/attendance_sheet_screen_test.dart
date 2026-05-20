@@ -43,6 +43,7 @@ void main() {
       ..profiles = [
         buildPublicProfile(uid: 'runner-1', name: 'Asha'),
         buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
+        buildPublicProfile(uid: 'runner-3', name: 'Meera'),
       ];
 
     await pumpEventsTestApp(
@@ -83,18 +84,74 @@ void main() {
     expect(fakePublicProfileRepository.lastRequestedUids, [
       'runner-1',
       'runner-2',
+      'runner-3',
     ]);
     expect(find.text('1 / 2 checked in'), findsOneWidget);
     expect(find.text('Asha'), findsOneWidget);
     expect(find.text('Kabir'), findsOneWidget);
-    expect(find.text('ABSENT'), findsOneWidget);
+    expect(find.text('Meera'), findsOneWidget);
+    expect(find.text('NOT CHECKED IN'), findsOneWidget);
     expect(find.text('CHECKED IN'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
 
     await tester.tap(find.text('Asha'));
     await tester.pump();
 
     expect(fakeEventRepository.markedAttendanceEventId, 'attendance-event');
     expect(fakeEventRepository.markedAttendanceUserId, 'runner-1');
+  });
+
+  testWidgets('participants setup mode shows booked and waitlisted read-only', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'participants-event');
+    final fakeEventRepository = FakeEventRepository();
+    final fakePublicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [
+        buildPublicProfile(uid: 'runner-1', name: 'Asha'),
+        buildPublicProfile(uid: 'runner-2', name: 'Meera'),
+      ];
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(event.id).overrideWith(
+          (ref) => Stream.value([
+            buildEventParticipation(event: event, uid: 'runner-1'),
+            buildEventParticipation(
+              event: event,
+              uid: 'runner-2',
+              status: EventParticipationStatus.waitlisted,
+            ),
+          ]),
+        ),
+        eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        publicProfileRepositoryProvider.overrideWith(
+          (ref) => fakePublicProfileRepository,
+        ),
+      ],
+      signedInUid: 'host-1',
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.text('Participants'), findsOneWidget);
+    expect(find.text('Asha'), findsOneWidget);
+    expect(find.text('Meera'), findsOneWidget);
+    expect(find.text('BOOKED'), findsOneWidget);
+    expect(find.text('WAITLIST'), findsOneWidget);
+
+    await tester.tap(find.text('Asha'));
+    await tester.pump();
+
+    expect(fakeEventRepository.markedAttendanceEventId, isNull);
+    expect(fakeEventRepository.markedAttendanceUserId, isNull);
   });
 }
 

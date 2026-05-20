@@ -6,6 +6,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -73,9 +74,44 @@ void main() {
       },
     );
 
-    test('jumps to the photos step for incomplete profiles', () async {
+    test(
+      'starts social completion at photos for booking-ready profiles',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(uid: 'runner-1');
+        final draftRepository = FakeOnboardingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith(
+              (ref) => Stream.value(
+                buildUser(uid: 'runner-1').copyWith(profileComplete: false),
+              ),
+            ),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        await container
+            .read(onboardingControllerProvider.notifier)
+            .initStep(profileCompletionOnly: true);
+
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.photos,
+        );
+      },
+    );
+
+    test('starts run preference completion at the running step', () async {
       final repository = FakeAuthRepository()
-        ..currentUserValue = TestUser(uid: 'runner-1');
+        ..currentUserValue = TestUser(uid: 'runner-1', phoneNumber: '+91');
       final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
@@ -83,7 +119,11 @@ void main() {
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
-              buildUser(uid: 'runner-1').copyWith(profileComplete: false),
+              buildUser(uid: 'runner-1', runPreferencesVersion: 0).copyWith(
+                preferredDistances: const [],
+                runningReasons: const [],
+                preferredRunTimes: const [],
+              ),
             ),
           ),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
@@ -93,11 +133,13 @@ void main() {
       addTearDown(container.dispose);
       await primeOnboardingAsyncProviders(container);
 
-      await container.read(onboardingControllerProvider.notifier).initStep();
+      await container
+          .read(onboardingControllerProvider.notifier)
+          .initStep(runPreferencesOnly: true);
 
       expect(
         container.read(onboardingControllerProvider).step,
-        OnboardingStep.photos,
+        OnboardingStep.runningPrefs,
       );
     });
 
@@ -166,6 +208,49 @@ void main() {
         );
       },
     );
+
+    test(
+      'clamps old social-step drafts to the booking identity flow',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(
+            uid: 'runner-1',
+            phoneNumber: '+919876543210',
+          );
+        final draftRepository = FakeOnboardingDraftRepository()
+          ..draft = OnboardingDraft(
+            step: OnboardingStep.photos.index,
+            draftVersion: 2,
+            firstName: 'Asha',
+            lastName: 'Runner',
+            dateOfBirth: DateTime(1997, 4, 15),
+            phoneNumber: '9876543210',
+            gender: Gender.woman,
+            interestedInGenders: const [Gender.man],
+          );
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        await container.read(onboardingControllerProvider.notifier).initStep();
+
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.genderInterest,
+        );
+        expect(container.read(onboardingControllerProvider).firstName, 'Asha');
+      },
+    );
   });
 
   group('OnboardingController.saveProfile', () {
@@ -206,57 +291,67 @@ void main() {
       expect(userProfileRepository.lastSavedUser, isNull);
     });
 
-    test('persists the draft profile and advances to photos', () async {
-      final repository = FakeAuthRepository()
-        ..currentUserValue = TestUser(
-          uid: 'runner-1',
-          phoneNumber: '+919876543210',
+    test(
+      'persists booking-ready identity without advancing to social steps',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(
+            uid: 'runner-1',
+            phoneNumber: '+919876543210',
+          );
+        final userProfileRepository = FakeOnboardingUserProfileRepository();
+        final draftRepository = FakeOnboardingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            userProfileRepositoryProvider.overrideWith(
+              (ref) => userProfileRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
         );
-      final userProfileRepository = FakeOnboardingUserProfileRepository();
-      final draftRepository = FakeOnboardingDraftRepository();
-      final container = createOnboardingTestContainer(
-        overrides: [
-          authRepositoryProvider.overrideWithValue(repository),
-          userProfileRepositoryProvider.overrideWith(
-            (ref) => userProfileRepository,
-          ),
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
-        ],
-      );
-      addTearDown(repository.dispose);
-      addTearDown(container.dispose);
-      await primeOnboardingAsyncProviders(container);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
 
-      final notifier = container.read(onboardingControllerProvider.notifier);
-      await notifier.initStep();
-      notifier.setNameDob(
-        firstName: 'Asha',
-        lastName: 'Runner',
-        dateOfBirth: DateTime(1997, 4, 15),
-        phoneNumber: '9876543210',
-        countryCode: '+91',
-      );
-      notifier.setGenderInterest(
-        gender: Gender.woman,
-        interestedInGenders: const [Gender.man],
-      );
+        final notifier = container.read(onboardingControllerProvider.notifier);
+        await notifier.initStep();
+        notifier.setNameDob(
+          firstName: 'Asha',
+          lastName: 'Runner',
+          dateOfBirth: DateTime(1997, 4, 15),
+          phoneNumber: '9876543210',
+          countryCode: '+91',
+        );
+        notifier.setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [Gender.man],
+        );
+        notifier.goToStep(OnboardingStep.genderInterest);
 
-      await notifier.saveProfile();
+        await notifier.saveProfile();
 
-      expect(userProfileRepository.lastSavedUser, isNotNull);
-      expect(userProfileRepository.lastSavedUser!.uid, 'runner-1');
-      expect(userProfileRepository.lastSavedUser!.email, isEmpty);
-      expect(userProfileRepository.lastSavedUser!.name, 'Asha Runner');
-      expect(userProfileRepository.lastSavedUser!.displayName, 'Asha');
-      expect(userProfileRepository.lastSavedUser!.phoneNumber, '+919876543210');
-      expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
-      expect(
-        container.read(onboardingControllerProvider).step,
-        OnboardingStep.instagram,
-      );
-    });
+        expect(userProfileRepository.lastSavedUser, isNotNull);
+        expect(userProfileRepository.lastSavedUser!.uid, 'runner-1');
+        expect(userProfileRepository.lastSavedUser!.email, isEmpty);
+        expect(userProfileRepository.lastSavedUser!.name, 'Asha Runner');
+        expect(userProfileRepository.lastSavedUser!.displayName, 'Asha');
+        expect(
+          userProfileRepository.lastSavedUser!.phoneNumber,
+          '+919876543210',
+        );
+        expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.genderInterest,
+        );
+        expect(draftRepository.draft, isNull);
+      },
+    );
 
     test('rejects saving a profile without interested-in genders', () async {
       final repository = FakeAuthRepository()
@@ -355,7 +450,7 @@ void main() {
     );
   });
 
-  group('OnboardingController.complete', () {
+  group('OnboardingController.completeRunPreferences', () {
     test('throws when the latest profile is unavailable', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository();
@@ -378,7 +473,7 @@ void main() {
       await expectLater(
         container
             .read(onboardingControllerProvider.notifier)
-            .complete(
+            .completeRunPreferences(
               paceMinSecsPerKm: 300,
               paceMaxSecsPerKm: 360,
               preferredDistances: const [PreferredDistance.tenK],
@@ -389,7 +484,75 @@ void main() {
       );
     });
 
-    test('saves running preferences and marks the profile complete', () async {
+    test(
+      'saves running preferences without changing social completion',
+      () async {
+        final repository = FakeAuthRepository();
+        final userProfileRepository = FakeOnboardingUserProfileRepository(
+          currentUser: buildUser(
+            uid: 'runner-1',
+          ).copyWith(profileComplete: false),
+        );
+        final draftRepository = FakeOnboardingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            userProfileRepositoryProvider.overrideWith(
+              (ref) => userProfileRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith(
+              (ref) => Stream.value(
+                buildUser(uid: 'runner-1').copyWith(profileComplete: false),
+              ),
+            ),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        await container
+            .read(onboardingControllerProvider.notifier)
+            .completeRunPreferences(
+              paceMinSecsPerKm: 305,
+              paceMaxSecsPerKm: 355,
+              preferredDistances: const [PreferredDistance.tenK],
+              runningReasons: const [RunReason.community, RunReason.social],
+              preferredRunTimes: const [
+                PreferredRunTime.morning,
+                PreferredRunTime.evening,
+              ],
+            );
+
+        expect(userProfileRepository.lastSavedUser, isNotNull);
+        expect(userProfileRepository.lastSavedUser!.paceMinSecsPerKm, 305);
+        expect(userProfileRepository.lastSavedUser!.paceMaxSecsPerKm, 355);
+        expect(userProfileRepository.lastSavedUser!.preferredDistances, const [
+          PreferredDistance.tenK,
+        ]);
+        expect(userProfileRepository.lastSavedUser!.runningReasons, const [
+          RunReason.community,
+          RunReason.social,
+        ]);
+        expect(userProfileRepository.lastSavedUser!.preferredRunTimes, const [
+          PreferredRunTime.morning,
+          PreferredRunTime.evening,
+        ]);
+        expect(
+          userProfileRepository.lastSavedUser!.runPreferencesVersion,
+          currentRunPreferencesVersion,
+        );
+        expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
+      },
+    );
+  });
+
+  group('OnboardingController.completeSocialProfile', () {
+    test('saves prompts and marks the social profile complete', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository(
         currentUser: buildUser(
@@ -416,34 +579,22 @@ void main() {
       addTearDown(container.dispose);
       await primeOnboardingAsyncProviders(container);
 
+      final prompts = [
+        for (final promptId in defaultProfilePromptIds)
+          ProfilePromptAnswer(
+            promptId: promptId,
+            prompt: profilePromptTitle(promptId),
+            answer: 'Answer for $promptId.',
+          ),
+      ];
+
       await container
           .read(onboardingControllerProvider.notifier)
-          .complete(
-            paceMinSecsPerKm: 305,
-            paceMaxSecsPerKm: 355,
-            preferredDistances: const [PreferredDistance.tenK],
-            runningReasons: const [RunReason.community, RunReason.social],
-            preferredRunTimes: const [
-              PreferredRunTime.morning,
-              PreferredRunTime.evening,
-            ],
-          );
+          .completeSocialProfile(prompts: prompts);
 
       expect(userProfileRepository.lastSavedUser, isNotNull);
-      expect(userProfileRepository.lastSavedUser!.paceMinSecsPerKm, 305);
-      expect(userProfileRepository.lastSavedUser!.paceMaxSecsPerKm, 355);
-      expect(userProfileRepository.lastSavedUser!.preferredDistances, const [
-        PreferredDistance.tenK,
-      ]);
-      expect(userProfileRepository.lastSavedUser!.runningReasons, const [
-        RunReason.community,
-        RunReason.social,
-      ]);
-      expect(userProfileRepository.lastSavedUser!.preferredRunTimes, const [
-        PreferredRunTime.morning,
-        PreferredRunTime.evening,
-      ]);
       expect(userProfileRepository.lastSavedUser!.profileComplete, isTrue);
+      expect(userProfileRepository.lastSavedUser!.profilePrompts, prompts);
     });
   });
 }

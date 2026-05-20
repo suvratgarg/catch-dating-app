@@ -11,6 +11,7 @@ const topLevelStringFields = [
 
 const nullableContactFields = [
   "imageUrl",
+  "profileImageUrl",
   "instagramHandle",
   "phoneNumber",
   "email",
@@ -78,6 +79,16 @@ export function normalizeArchiveClubPayload(data: unknown): unknown {
 export function normalizeClubIdPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
   return normalizeFields(data, {stringFields: ["clubId"]});
+}
+
+/**
+ * Trims club-host management payload fields before validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+export function normalizeClubHostPayload(data: unknown): unknown {
+  if (!isRecord(data)) return data;
+  return normalizeFields(data, {stringFields: ["clubId", "uid"]});
 }
 
 /**

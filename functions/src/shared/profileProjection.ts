@@ -122,6 +122,7 @@ export function publicProfileFromUserProfileDoc(
     preferredDistances: user.preferredDistances ?? [],
     runningReasons: user.runningReasons ?? [],
     preferredRunTimes: user.preferredRunTimes ?? [],
+    runPreferencesVersion: user.runPreferencesVersion ?? 0,
   };
 }
 

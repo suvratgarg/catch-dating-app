@@ -133,17 +133,18 @@ class ScrollableProfile extends ConsumerWidget {
                   ),
                   onReact: onReact,
                 ),
-              _RunningIdentityCard(
-                profile: profile,
-                tags: content.insights.emotionalRunTags,
-                reactionTarget: _reactionTarget(
-                  id: 'running',
-                  type: SwipeReactionTargetType.running,
-                  label: 'Running rhythm',
-                  preview: _runningReactionPreview(profile),
+              if (profile.hasCurrentRunPreferences)
+                _RunningIdentityCard(
+                  profile: profile,
+                  tags: content.insights.emotionalRunTags,
+                  reactionTarget: _reactionTarget(
+                    id: 'running',
+                    type: SwipeReactionTargetType.running,
+                    label: 'Running rhythm',
+                    preview: _runningReactionPreview(profile),
+                  ),
+                  onReact: onReact,
                 ),
-                onReact: onReact,
-              ),
               if (additionalPhotos.isNotEmpty)
                 _InsetProfilePhoto(
                   photo: additionalPhotos.first,
@@ -290,7 +291,7 @@ class _PhotoPromptOverlay extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          prompt.displayPrompt.toUpperCase(),
+          prompt.displayPrompt,
           style: CatchTextStyles.labelL(context, color: Colors.white70),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -325,7 +326,7 @@ class _RunningIdentityCard extends StatelessWidget {
     final palette = ProfileCardPalette.of(context);
 
     return ProfileSectionCard(
-      title: 'RUNNING RHYTHM',
+      title: 'Running rhythm',
       reactionTarget: reactionTarget,
       onReact: onReact,
       child: Column(
@@ -333,7 +334,7 @@ class _RunningIdentityCard extends StatelessWidget {
         children: [
           Text(
             '${_firstName(profile.name)} likes ${_formatRunMood(profile)}',
-            style: CatchTextStyles.titleL(context, color: palette.textPrimary),
+            style: CatchTextStyles.titleM(context, color: palette.textPrimary),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
