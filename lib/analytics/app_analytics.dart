@@ -67,9 +67,7 @@ class AppAnalytics {
   Map<String, Object> _baseParameters = const {};
 
   static bool get _defaultShouldCollect {
-    return kReleaseMode &&
-        AppConfig.environment.isProduction &&
-        !AppConfig.useFirebaseEmulators;
+    return AppConfig.shouldCollectObservability;
   }
 
   Future<void> initialize() async {
@@ -203,6 +201,7 @@ abstract final class AnalyticsEvents {
   static const chatMessageSent = 'chat_message_sent';
   static const profileEdited = 'profile_edited';
   static const backendOperationFailed = 'backend_operation_failed';
+  static const observabilitySmoke = 'observability_smoke';
 }
 
 abstract final class AnalyticsParameters {

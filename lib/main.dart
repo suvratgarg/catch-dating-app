@@ -33,6 +33,7 @@ Future<void> main() async {
   await errorLogger.initialize();
   final analytics = AppAnalytics();
   await analytics.initialize();
+  _emitObservabilitySmokeIfRequested(errorLogger, analytics);
 
   _registerErrorHandlers(errorLogger);
 
@@ -64,6 +65,20 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+void _emitObservabilitySmokeIfRequested(
+  ErrorLogger errorLogger,
+  AppAnalytics analytics,
+) {
+  if (!AppConfig.emitObservabilitySmokeEvent) return;
+
+  errorLogger.logError(
+    StateError('observability_smoke_event'),
+    StackTrace.current,
+    reason: 'Observability smoke event',
+  );
+  analytics.logEvent(AnalyticsEvents.observabilitySmoke);
 }
 
 Future<void> _lockDeviceOrientation() {
@@ -106,7 +121,7 @@ Future<void> _initializeRemoteConfig() async {
   await remoteConfig.setConfigSettings(
     RemoteConfigSettings(
       fetchTimeout: const Duration(seconds: 10),
-      minimumFetchInterval: Duration.zero,
+      minimumFetchInterval: AppConfig.remoteConfigMinimumFetchInterval,
     ),
   );
   await remoteConfig.setDefaults(kAppVersionConfigDefaults);

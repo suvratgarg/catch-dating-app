@@ -93,4 +93,97 @@ void main() {
       );
     });
   });
+
+  group('Remote Config fetch interval', () {
+    test('keeps frequent fetches for debug, emulator, and non-prod builds', () {
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: true,
+          useFirebaseEmulators: false,
+        ),
+        Duration.zero,
+      );
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: false,
+          useFirebaseEmulators: true,
+        ),
+        Duration.zero,
+      );
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.staging,
+          debugMode: false,
+          useFirebaseEmulators: false,
+        ),
+        Duration.zero,
+      );
+    });
+
+    test('throttles fetches for production release builds', () {
+      expect(
+        AppConfig.remoteConfigMinimumFetchIntervalFor(
+          environment: AppEnvironment.prod,
+          debugMode: false,
+          useFirebaseEmulators: false,
+        ),
+        const Duration(hours: 1),
+      );
+    });
+  });
+
+  group('observability collection', () {
+    test('collects automatically only for production release builds', () {
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.prod,
+          releaseMode: true,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: false,
+        ),
+        isTrue,
+      );
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.prod,
+          releaseMode: false,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.prod,
+          releaseMode: true,
+          useFirebaseEmulators: true,
+          forceNonProductionCollection: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('allows explicit collection in non-production release builds', () {
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.staging,
+          releaseMode: true,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: false,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.staging,
+          releaseMode: true,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: true,
+        ),
+        isTrue,
+      );
+    });
+  });
 }

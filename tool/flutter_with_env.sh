@@ -225,6 +225,16 @@ if [[ -n "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" ]]; then
     "--dart-define=USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER}"
   )
 fi
+if [[ -n "${ENABLE_OBSERVABILITY_COLLECTION:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=ENABLE_OBSERVABILITY_COLLECTION=${ENABLE_OBSERVABILITY_COLLECTION}"
+  )
+fi
+if [[ -n "${EMIT_OBSERVABILITY_SMOKE_EVENT:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=EMIT_OBSERVABILITY_SMOKE_EVENT=${EMIT_OBSERVABILITY_SMOKE_EVENT}"
+  )
+fi
 
 if [[ $supports_dart_defines -eq 0 ]]; then
   exec flutter "${flutter_args[@]}"

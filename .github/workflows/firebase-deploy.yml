@@ -13,7 +13,7 @@ on:
           - staging
           - prod
       targets:
-        description: Comma-separated Firebase deploy targets. Known targets deploy in the safe order functions, indexes, rules, storage, hosting.
+        description: Comma-separated Firebase deploy targets. Known targets deploy in safe order; use remoteconfig deliberately.
         required: true
         default: functions,firestore:indexes,firestore:rules,storage
         type: string

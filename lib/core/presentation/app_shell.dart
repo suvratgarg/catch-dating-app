@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -54,6 +55,7 @@ class AppShell extends ConsumerWidget {
         connectivityResults != null &&
         connectivityResultsAreOffline(connectivityResults);
     final errorLogger = ref.read(errorLoggerProvider);
+    final analytics = ref.read(appAnalyticsProvider);
 
     if (isAuthenticated) {
       ref.watch(appShellFcmInitializationProvider(uid));
@@ -70,12 +72,20 @@ class AppShell extends ConsumerWidget {
       });
     }
 
-    // Keep Crashlytics user ID in sync with auth state. Also invalidate
-    // the user profile stream on sign-out so the next user starts fresh.
-    errorLogger.setUserId(uid.isEmpty ? null : uid);
+    // Keep observability user IDs in sync with auth state. Also invalidate the
+    // user profile stream on sign-out so the next user starts fresh.
+    _syncObservabilityUserId(
+      uid.isEmpty ? null : uid,
+      errorLogger: errorLogger,
+      analytics: analytics,
+    );
     ref.listen(uidProvider, (prev, next) {
       final uid = next.asData?.value;
-      errorLogger.setUserId(uid);
+      _syncObservabilityUserId(
+        uid,
+        errorLogger: errorLogger,
+        analytics: analytics,
+      );
       if (uid == null && prev?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());
         ref.invalidate(watchUserProfileProvider);
@@ -98,6 +108,16 @@ class AppShell extends ConsumerWidget {
           : const _GuestAuthCtaBar(),
     );
   }
+}
+
+void _syncObservabilityUserId(
+  String? uid, {
+  required ErrorLogger errorLogger,
+  required AppAnalytics analytics,
+}) {
+  final normalizedUid = uid == null || uid.isEmpty ? null : uid;
+  errorLogger.setUserId(normalizedUid);
+  analytics.setUserId(normalizedUid);
 }
 
 class _GuestAuthCtaBar extends StatelessWidget {
