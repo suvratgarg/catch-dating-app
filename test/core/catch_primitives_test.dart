@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
@@ -593,6 +594,27 @@ void main() {
     await tester.tap(find.text('Surface content'));
     await tester.pump();
     expect(tapped, isTrue);
+  });
+
+  testWidgets('CatchSectionCard renders sentence-case title and trailing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchSectionCard(
+          title: 'Profile strength',
+          subtitle: '3 of 7 profile basics complete',
+          trailing: Text('28%'),
+          child: Text('Section body'),
+        ),
+      ),
+    );
+
+    expect(find.text('Profile strength'), findsOneWidget);
+    expect(find.text('3 of 7 profile basics complete'), findsOneWidget);
+    expect(find.text('28%'), findsOneWidget);
+    expect(find.text('Section body'), findsOneWidget);
+    expect(find.text('PROFILE STRENGTH'), findsNothing);
   });
 
   testWidgets('CatchFrameworkErrorView renders branded recovery UI', (

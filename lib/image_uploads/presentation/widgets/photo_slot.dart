@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
@@ -29,7 +30,7 @@ class PhotoSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(CatchRadius.md);
+    final borderRadius = BorderRadius.circular(CatchRadius.lg);
 
     final hasPhoto = url != null;
     final promptLabel = prompt?.caption.trim();
@@ -132,8 +133,10 @@ class PhotoSlot extends StatelessWidget {
                             ),
                             child: Text(
                               prompt!.displayPrompt,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(color: Colors.white),
+                              style: CatchTextStyles.labelS(
+                                context,
+                                color: Colors.white,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

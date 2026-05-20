@@ -6,13 +6,13 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -123,6 +123,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final profileQuality = profileQualitySummary(
       publicProfileFromUserProfile(user),
     );
+    final completedPromptCount = user.profilePrompts
+        .where((prompt) => prompt.answer.trim().isNotEmpty)
+        .length;
     final basics = [
       _textEntry(
         context: context,
@@ -383,64 +386,81 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     return widget.builder(context, [
       _ProfileQualityGuidanceCard(summary: profileQuality),
       gapH14,
-      PhotoGrid(
+      _ProfilePhotosSection(
         profilePhotos: profilePhotos,
-        loadingIndices: uploadState.loadingIndices,
-        onSlotTapped: (index) {
-          unawaited(
-            openProfilePhotoEditor(
-              context: context,
-              ref: ref,
-              index: index,
-              photo: index < profilePhotos.length ? profilePhotos[index] : null,
-            ),
-          );
-        },
-        canDeletePhotos: profilePhotos.length > minimumProfilePhotoCount,
-        onDeletePhoto: profilePhotos.length > minimumProfilePhotoCount
-            ? (index) {
-                unawaited(
-                  PhotoUploadController.uploadPhotoMutation.run(ref, (
-                    tx,
-                  ) async {
-                    await tx
-                        .get(photoUploadControllerProvider.notifier)
-                        .deletePhoto(index);
-                  }),
-                );
-              }
-            : null,
-        onReorderPhoto: (fromIndex, toIndex) {
-          unawaited(
-            PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-              await tx
-                  .get(photoUploadControllerProvider.notifier)
-                  .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
-            }),
-          );
-        },
+        uploadState: uploadState,
+        onSlotTapped: (index) => unawaited(
+          openProfilePhotoEditor(
+            context: context,
+            ref: ref,
+            index: index,
+            photo: index < profilePhotos.length ? profilePhotos[index] : null,
+          ),
+        ),
+        onDeletePhoto: (index) => unawaited(
+          PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+            await tx
+                .get(photoUploadControllerProvider.notifier)
+                .deletePhoto(index);
+          }),
+        ),
+        onReorderPhoto: (fromIndex, toIndex) => unawaited(
+          PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+            await tx
+                .get(photoUploadControllerProvider.notifier)
+                .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
+          }),
+        ),
       ),
       gapH14,
-      SectionHeader(title: 'Profile prompts'),
-      ProfileInfoSection(entries: prompts, grouped: true),
-      gapH20,
-      SectionHeader(title: 'About'),
-      ProfileInfoSection(entries: basics, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Location'),
-      ProfileInfoSection(entries: location, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Background'),
-      ProfileInfoSection(entries: background, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Intentions'),
-      ProfileInfoSection(entries: intentions, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Lifestyle'),
-      ProfileInfoSection(entries: lifestyle, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Running Details'),
-      ProfileInfoSection(entries: running, grouped: true),
+      ProfileInfoSection(
+        title: 'Profile prompts',
+        subtitle: '$completedPromptCount of ${prompts.length} answered',
+        entries: prompts,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'About',
+        subtitle: 'Private basics and visible profile details',
+        entries: basics,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'Location',
+        subtitle: 'Used for local runs and discovery',
+        entries: location,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'Background',
+        subtitle: 'Work, education, and community context',
+        entries: background,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'Intentions',
+        subtitle: 'What you want people to know upfront',
+        entries: intentions,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'Lifestyle',
+        subtitle: 'Everyday habits that shape compatibility',
+        entries: lifestyle,
+        grouped: true,
+      ),
+      gapH14,
+      ProfileInfoSection(
+        title: 'Running details',
+        subtitle: 'Your pace, distances, and running rhythm',
+        entries: running,
+        grouped: true,
+      ),
       gapH32,
     ]);
   }
@@ -609,6 +629,42 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
   }
 }
 
+class _ProfilePhotosSection extends StatelessWidget {
+  const _ProfilePhotosSection({
+    required this.profilePhotos,
+    required this.uploadState,
+    required this.onSlotTapped,
+    required this.onDeletePhoto,
+    required this.onReorderPhoto,
+  });
+
+  final List<ProfilePhoto> profilePhotos;
+  final PhotoUploadState uploadState;
+  final void Function(int index) onSlotTapped;
+  final void Function(int index) onDeletePhoto;
+  final void Function(int fromIndex, int toIndex) onReorderPhoto;
+
+  @override
+  Widget build(BuildContext context) {
+    final completedCount = profilePhotos.length;
+    final canDeletePhotos = completedCount > minimumProfilePhotoCount;
+
+    return CatchSectionCard(
+      title: 'Photos',
+      subtitle: '$completedCount of $maximumProfilePhotoCount added',
+      headerBodyGap: CatchSpacing.s3,
+      child: PhotoGrid(
+        profilePhotos: profilePhotos,
+        loadingIndices: uploadState.loadingIndices,
+        onSlotTapped: onSlotTapped,
+        canDeletePhotos: canDeletePhotos,
+        onDeletePhoto: canDeletePhotos ? onDeletePhoto : null,
+        onReorderPhoto: onReorderPhoto,
+      ),
+    );
+  }
+}
+
 class _ProfileQualityGuidanceCard extends StatelessWidget {
   const _ProfileQualityGuidanceCard({required this.summary});
 
@@ -620,27 +676,16 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
     final progress = summary.score / 100;
     final suggestions = summary.suggestions.take(2).toList(growable: false);
 
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+    return CatchSectionCard(
+      title: 'Profile strength',
+      trailing: Text(
+        summary.isStrong ? 'Strong' : '${summary.score}%',
+        style: CatchTextStyles.titleS(context, color: t.ink),
+      ),
+      headerBodyGap: CatchSpacing.s3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Profile strength',
-                  style: CatchTextStyles.labelL(context, color: t.ink2),
-                ),
-              ),
-              Text(
-                summary.isStrong ? 'Strong' : '${summary.score}%',
-                style: CatchTextStyles.titleS(context, color: t.ink),
-              ),
-            ],
-          ),
-          gapH10,
           ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
             child: LinearProgressIndicator(

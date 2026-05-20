@@ -12,7 +12,7 @@ class ProfileSectionCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
-    this.margin = const EdgeInsets.fromLTRB(16, 14, 16, 2),
+    this.margin = const EdgeInsets.fromLTRB(16, 12, 16, 2),
     this.reactionTarget,
     this.onReact,
   });
@@ -29,7 +29,7 @@ class ProfileSectionCard extends StatelessWidget {
 
     return CatchSurface(
       margin: margin,
-      padding: const EdgeInsets.all(Sizes.p18),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       backgroundColor: palette.surface,
       borderColor: palette.border,
       radius: CatchRadius.lg,
@@ -38,12 +38,12 @@ class ProfileSectionCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: CatchTextStyles.labelS(
+            style: CatchTextStyles.labelL(
               context,
-              color: palette.textMuted,
-            ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0.8),
+              color: palette.textSecondary,
+            ),
           ),
-          gapH12,
+          gapH10,
           child,
           if (reactionTarget != null && onReact != null) ...[
             gapH14,

@@ -24,15 +24,15 @@ class ProfilePromptSection extends StatelessWidget {
     final palette = ProfileCardPalette.of(context);
 
     return ProfileSectionCard(
-      title: prompt.toUpperCase(),
+      title: prompt,
       reactionTarget: reactionTarget,
       onReact: onReact,
       child: Text(
         answer,
-        style: CatchTextStyles.displayS(
+        style: CatchTextStyles.titleM(
           context,
           color: palette.textPrimary,
-        ).copyWith(height: 1.32),
+        ).copyWith(height: 1.38),
       ),
     );
   }

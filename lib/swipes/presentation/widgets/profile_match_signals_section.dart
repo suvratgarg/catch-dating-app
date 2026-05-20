@@ -29,10 +29,9 @@ class ProfileMatchSignalsSection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final palette = ProfileCardPalette.of(context);
     final title = compatibilityReasons.isEmpty
-        ? 'PROFILE SIGNALS'
-        : 'WHY YOU MIGHT CLICK';
+        ? 'Profile signals'
+        : 'Why you might click';
 
     return ProfileSectionCard(
       title: title,
@@ -54,11 +53,7 @@ class ProfileMatchSignalsSection extends StatelessWidget {
           ],
           for (final reason in compatibilityReasons.indexed) ...[
             _CompatibilityReasonRow(reason: reason.$2),
-            if (reason.$1 < compatibilityReasons.length - 1)
-              Padding(
-                padding: const EdgeInsets.only(left: 34),
-                child: Divider(height: 18, color: palette.border),
-              ),
+            if (reason.$1 < compatibilityReasons.length - 1) gapH10,
           ],
         ],
       ),
@@ -126,10 +121,10 @@ class _CompatibilityReasonRow extends StatelessWidget {
             border: Border.all(color: palette.chipBorder),
           ),
           child: SizedBox.square(
-            dimension: 28,
+            dimension: 26,
             child: Icon(
               _compatibilityIcon(reason.kind),
-              size: 15,
+              size: 14,
               color: palette.textSecondary,
             ),
           ),
@@ -141,7 +136,7 @@ class _CompatibilityReasonRow extends StatelessWidget {
             style: CatchTextStyles.bodyM(
               context,
               color: palette.textPrimary,
-            ).copyWith(height: 1.22),
+            ).copyWith(height: 1.34),
           ),
         ),
       ],

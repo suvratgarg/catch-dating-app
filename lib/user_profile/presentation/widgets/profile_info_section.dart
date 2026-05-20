@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_card.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
@@ -32,11 +33,13 @@ class ProfileInfoSection extends StatelessWidget {
     super.key,
     required this.entries,
     this.title,
+    this.subtitle,
     this.grouped = false,
   });
 
   final List<ProfileInfoEntry> entries;
   final String? title;
+  final String? subtitle;
   final bool grouped;
 
   @override
@@ -74,18 +77,32 @@ class ProfileInfoSection extends StatelessWidget {
       }
       if (grouped && i < entries.length - 1) {
         tiles.add(
-          Divider(height: 1, indent: 52, color: CatchTokens.of(context).line),
+          Divider(
+            height: 1,
+            indent: 36,
+            color: CatchTokens.of(context).line.withValues(alpha: 0.62),
+          ),
         );
       }
+    }
+
+    final tileList = Column(children: tiles);
+    if (grouped && title != null) {
+      return CatchSectionCard(
+        title: title,
+        subtitle: subtitle,
+        headerBodyGap: CatchSpacing.s1,
+        child: tileList,
+      );
     }
 
     final body = grouped
         ? CatchSurface(
             borderColor: CatchTokens.of(context).line,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
-            child: Column(children: tiles),
+            child: tileList,
           )
-        : Column(children: tiles);
+        : tileList;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,10 +114,7 @@ class ProfileInfoSection extends StatelessWidget {
               left: grouped ? CatchSpacing.s1 : 0,
               bottom: Sizes.p2,
             ),
-            child: Text(
-              title!.toUpperCase(),
-              style: CatchTextStyles.labelM(context),
-            ),
+            child: Text(title!, style: CatchTextStyles.labelL(context)),
           ),
           gapH8,
         ],

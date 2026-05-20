@@ -442,7 +442,8 @@ void main() {
 
     // Email row is visible with add affordance (shows "+ Email")
     expect(find.textContaining('Email'), findsAtLeastNWidgets(1));
-    expect(find.textContaining('Engineer'), findsAtLeastNWidgets(1));
+    await _dragProfileTabUntilVisible(tester, find.text('Engineer'));
+    expect(find.text('Engineer'), findsOneWidget);
     await _dragProfileTabUntilVisible(tester, find.text('+919876543210'));
     expect(find.text('+919876543210'), findsOneWidget);
   });
@@ -475,6 +476,9 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
     expect(find.text('Profile strength'), findsOneWidget);
+    expect(find.text('Photos'), findsOneWidget);
+    expect(find.text('Profile prompts'), findsOneWidget);
+    expect(find.text('PROFILE PROMPTS'), findsNothing);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
   });
 
