@@ -30,6 +30,12 @@ final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
         .trimmingCharacters(in: .whitespacesAndNewlines)
       if !mapsApiKey.isEmpty, !mapsApiKey.hasPrefix("$(") {
         GMSServices.provideAPIKey(mapsApiKey)
+      } else {
+        NSLog(
+          "[Catch] GoogleMapsApiKey is empty or unsubstituted; "
+            + "GMSServices.provideAPIKey was skipped. Map screens will crash. "
+            + "Check ios/Flutter/GoogleMapsKeys.xcconfig and the build pipeline."
+        )
       }
     }
 
