@@ -81,9 +81,7 @@ class ErrorLogger {
   }
 
   static bool get _defaultShouldReportErrors {
-    return kReleaseMode &&
-        AppConfig.environment.isProduction &&
-        !AppConfig.useFirebaseEmulators;
+    return AppConfig.shouldCollectObservability;
   }
 
   bool get _canReport => _shouldReportErrors && _crashReporter != null;

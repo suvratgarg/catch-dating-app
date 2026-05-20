@@ -339,6 +339,22 @@ Do not make these live-service tests block every PR until they have stable
 fixtures, reset/cleanup steps, and documented credentials. Prefer a separate
 manual or scheduled workflow that records release evidence.
 
+For observability smoke proof, use a release-like non-production build with
+collection explicitly enabled:
+
+```bash
+ENABLE_OBSERVABILITY_COLLECTION=true \
+EMIT_OBSERVABILITY_SMOKE_EVENT=true \
+./tool/flutter_with_env.sh staging run --release -d <device-id>
+```
+
+The smoke define emits one nonfatal Crashlytics event with reason
+`Observability smoke event` and one Analytics event named
+`observability_smoke`. Use it only for dev/staging evidence or a deliberate
+prod release smoke. After the dashboard rows appear, run the manual
+`Observability Evidence` workflow and record the app build, Crashlytics proof,
+Analytics proof, and GA4 BigQuery export status.
+
 ## iOS TestFlight Release
 
 Run `Release Readiness` first. Then run `iOS TestFlight Release` from GitHub

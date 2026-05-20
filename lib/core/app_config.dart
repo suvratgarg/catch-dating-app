@@ -77,6 +77,35 @@ class AppConfig {
         useFirebaseEmulators: useFirebaseEmulators,
       );
 
+  @visibleForTesting
+  static bool shouldCollectObservabilityFor({
+    required AppEnvironment environment,
+    required bool releaseMode,
+    required bool useFirebaseEmulators,
+    required bool forceNonProductionCollection,
+  }) {
+    if (!releaseMode || useFirebaseEmulators) return false;
+    if (environment.isProduction) return true;
+    return forceNonProductionCollection;
+  }
+
+  static bool get shouldCollectObservability => shouldCollectObservabilityFor(
+    environment: environment,
+    releaseMode: kReleaseMode,
+    useFirebaseEmulators: useFirebaseEmulators,
+    forceNonProductionCollection: enableObservabilityCollection,
+  );
+
+  static const bool enableObservabilityCollection = bool.fromEnvironment(
+    'ENABLE_OBSERVABILITY_COLLECTION',
+    defaultValue: false,
+  );
+
+  static const bool emitObservabilitySmokeEvent = bool.fromEnvironment(
+    'EMIT_OBSERVABILITY_SMOKE_EVENT',
+    defaultValue: false,
+  );
+
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel => environment.bannerLabel;

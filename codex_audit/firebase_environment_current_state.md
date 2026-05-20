@@ -186,18 +186,25 @@ disabled/missing analytics service metadata even though the Firebase Management
 API reports Android/iOS stream mappings. Treat DebugView evidence as pending
 until a real release-like app build is observed in Firebase Analytics.
 
-App code enables Analytics collection only for production release builds without
-emulators. Auth UID sync now updates both Crashlytics and Analytics user IDs in
-the app shell; DebugView proof is still required before treating Analytics as
-operationally complete.
+App code enables Crashlytics and Analytics collection automatically only for
+production release builds without emulators. For dev/staging release-like
+evidence, set `ENABLE_OBSERVABILITY_COLLECTION=true`; to emit a single
+dashboard smoke event, also set `EMIT_OBSERVABILITY_SMOKE_EVENT=true`. The smoke
+path emits a nonfatal Crashlytics event with reason
+`Observability smoke event` and an Analytics event named
+`observability_smoke`. Auth UID sync updates both Crashlytics and Analytics user
+IDs in the app shell. DebugView and Crashlytics dashboard proof are still
+required before treating observability as operationally complete.
 
 GA4 BigQuery export is separate from the Firestore BigQuery export extensions.
-The current Google OAuth token can verify Firebase Analytics linkage, but it
-does not have Analytics Admin scopes for listing or creating GA4 BigQuery links.
-`bq ls` currently shows only `catch_marketplace_metrics` in dev, staging, and
-prod; there is no `analytics_*` GA4 export dataset yet. Use Firebase/Analytics
-Console or a service account granted GA4 Admin/Editor access before marking GA4
-BigQuery export complete.
+The current Google OAuth token can verify Firebase Analytics linkage, but the
+local ADC token does not have Analytics Admin scopes for listing or creating GA4
+BigQuery links. Reauthorizing local ADC with `analytics.edit` did not complete
+during this pass. `bq ls` currently shows only `catch_marketplace_metrics` in
+dev, staging, and prod; there is no `analytics_*` GA4 export dataset yet. Use
+Firebase/Analytics Console or a service account granted GA4 Admin/Editor access
+before marking GA4 BigQuery export complete. The existing
+`catch_marketplace_metrics` datasets are in `asia-south1`.
 
 ## Firestore And Storage
 

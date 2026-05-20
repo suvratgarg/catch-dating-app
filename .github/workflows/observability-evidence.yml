@@ -13,11 +13,19 @@ on:
           - staging
           - prod
       crashlytics_evidence:
-        description: Crashlytics issue URL or dashboard note.
+        description: Crashlytics issue/nonfatal URL with environment, version, build, and user/custom-key proof.
         required: true
         type: string
       analytics_evidence:
-        description: Analytics DebugView URL or dashboard note.
+        description: Analytics DebugView or Realtime URL/note proving expected events arrived.
+        required: true
+        type: string
+      ga4_bigquery_evidence:
+        description: GA4 BigQuery export dataset/link proof, or explicit approved deferral.
+        required: true
+        type: string
+      app_build:
+        description: App version/build and platform used for the smoke proof.
         required: true
         type: string
 
@@ -33,8 +41,10 @@ jobs:
             echo "## Observability evidence"
             echo
             echo "- Environment: \`${{ inputs.environment }}\`"
+            echo "- App build: ${{ inputs.app_build }}"
             echo "- Crashlytics: ${{ inputs.crashlytics_evidence }}"
             echo "- Analytics DebugView: ${{ inputs.analytics_evidence }}"
+            echo "- GA4 BigQuery: ${{ inputs.ga4_bigquery_evidence }}"
             echo
             echo "This workflow records dashboard evidence in the Actions run summary."
           } >> "$GITHUB_STEP_SUMMARY"
