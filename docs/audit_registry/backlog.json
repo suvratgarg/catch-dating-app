@@ -1,8 +1,8 @@
 {
-  "version": "2.6.3",
-  "updated": "2026-05-19",
+  "version": "2.6.5",
+  "updated": "2026-05-22",
   "owner": "recursive_audit_loop",
-  "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
+  "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
     "updated": "2026-05-19",
     "command": "bash tool/widget_cleanup_scan.sh",
@@ -132,8 +132,7 @@
         "lib/core/widgets/chip_field.dart",
         "lib/core/widgets/catch_chip.dart",
         "test/profile/profile_widgets_test.dart",
-        "docs/sliver_layout_guide.md",
-        "docs/ui_layout_spacing.md"
+        "docs/ui_architecture.md"
       ]
     },
     {
@@ -263,7 +262,7 @@
       "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is cancelled-run display/copy QA, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
       "paths": [
         "docs/backend_operation_catalog.md",
-        "docs/firestore_functions_data_contract_tracker.md",
+        "docs/data_contracts.md",
         "tool/firestore_contract.json",
         "tool/generate_firestore_types.dart",
         "firestore.rules",
@@ -334,7 +333,7 @@
       ],
       "summary": "Relationship/action documents are now the source of truth for run-club memberships, run participations, saved runs, and match-scoped messages. The retired relationship arrays have been removed from Dart models, generated Functions types, Cloud Functions writes, Firestore rules/indexes, active validation/migration tooling, and active tests. Canonical parent docs retain only aggregate projections such as `memberCount`, `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts`. Keep this item on watch for regressions: do not re-add relationship arrays to models, Functions, rules, active tooling, or tests.",
       "paths": [
-        "docs/firestore_relationship_documents_migration.md",
+        "docs/data_contracts.md",
         "lib/run_clubs/data/run_club_membership_repository.dart",
         "lib/runs/data/run_participation_repository.dart",
         "lib/runs/data/saved_run_repository.dart",
@@ -362,7 +361,7 @@
       "paths": [
         "firestore.rules",
         "functions/test/firestore.rules.test.cjs",
-        "docs/firestore_relationship_documents_migration.md",
+        "docs/data_contracts.md",
         "docs/backend_operation_catalog.md",
         "tool/firestore_contract.json",
         "lib/runs/data/run_repository.dart",
@@ -385,7 +384,7 @@
       "paths": [
         "tool/firestore_relationship_migration.mjs",
         "tool/validate_firestore_data.mjs",
-        "docs/firestore_relationship_documents_migration.md"
+        "docs/data_contracts.md"
       ]
     },
     {
@@ -401,7 +400,7 @@
       "paths": [
         "functions/src/safety/accountDeletion.ts",
         "functions/src/safety/accountDeletion.test.ts",
-        "docs/firestore_relationship_documents_migration.md",
+        "docs/data_contracts.md",
         "docs/backend_operation_catalog.md"
       ]
     },
@@ -590,7 +589,7 @@
         "docs/audit_registry/doc_summaries.json",
         "docs/audit_registry/rules.json",
         "docs/widget_catalog.md",
-        "docs/widget_cleanup_todo.md"
+        "docs/audit_registry/backlog.json"
       ]
     },
     {
@@ -639,7 +638,7 @@
         "lib/swipes/presentation/swipe_hub_screen.dart",
         "lib/image_uploads/presentation/widgets/photo_slot.dart",
         "lib/runs/presentation/location_picker_screen.dart",
-        "docs/ui_layout_spacing.md",
+        "docs/ui_architecture.md",
         "docs/widget_catalog.md"
       ]
     }
@@ -723,8 +722,5 @@
       ],
       "summary": "Migrated all canonical 4-point Sizes.p* presentation/widget candidates to CatchSpacing.s*. The scanner now reports zero canonical candidates; fine-grained p2/p6/p10/p14/p18 compatibility helpers remain watch-only."
     }
-  ],
-  "archive": {
-    "widget_cleanup_full_history": "docs/audit_registry/archive/widget_cleanup_todo_2026_05_05_full.md"
-  }
+  ]
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.93
-updated: 2026-05-21
+version: 2.5.94
+updated: 2026-05-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -12,10 +12,15 @@ status: active
 
 Use this as inventory, not as the primary process prompt. For process rules,
 start with `docs/audit_registry/README.md`,
-`docs/audit_registry/rules.json`, and `docs/widget_cleanup_todo.md`. Read a
-feature section here only when auditing that feature's widget surface.
+`docs/audit_registry/rules.json`, and `docs/audit_registry/backlog.json`. Read
+a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.94
+
+- Widget cleanup status now lives in `docs/audit_registry/backlog.json`; the
+  old short Markdown pointer was removed during docs consolidation.
 
 ### 2.5.93
 
@@ -1048,7 +1053,8 @@ primitives.
 
 The user specifically wants this work to proceed incrementally:
 
-- Keep a single source of truth for the work in `docs/widget_cleanup_todo.md`.
+- Keep a single source of truth for active cleanup status in
+  `docs/audit_registry/backlog.json`.
 - Keep appending newly discovered work, recommendations, and bug fixes to that
   tracker even when they are outside the current pass.
 - Prefer controller-owned business logic and repository writes, while allowing
@@ -1064,7 +1070,7 @@ The user specifically wants this work to proceed incrementally:
   whether the implementation should be reshaped toward better readability,
   composability, performance, and testability.
 - Treat documentation as part of the architecture. Prefer updating
-  `docs/README.md`, `docs/widget_cleanup_todo.md`, this catalog, or another
+  `docs/README.md`, `docs/audit_registry/backlog.json`, this catalog, or another
   existing source-of-truth doc over creating a new markdown file. If a temporary
   audit/report produces durable guidance, migrate that guidance into the owning
   doc and delete the stale report.
@@ -1074,7 +1080,7 @@ The user specifically wants this work to proceed incrementally:
 ### How To Proceed
 
 1. Start every pass by reading this section and
-   `docs/widget_cleanup_todo.md`.
+   `docs/audit_registry/backlog.json`.
 2. For broad cleanup passes, run `bash tool/widget_cleanup_scan.sh` before
    editing and again before wrapping up. Treat the output as a triage report,
    not a lint gate: inspect each match, fix high-signal repeated smells, and
@@ -1131,10 +1137,10 @@ The user specifically wants this work to proceed incrementally:
    `UpdateRequiredController`, `CreateClubController`, and app-shell
    provider seams.
 18. Keep status out of this catalog. Pending, completed, next-up, and scanner
-   snapshots belong in `docs/widget_cleanup_todo.md`; this file should describe
-   reusable instructions, anti-patterns, widget inventory, and durable
+   snapshots belong in `docs/audit_registry/backlog.json`; this file should
+   describe reusable instructions, anti-patterns, widget inventory, and durable
    consolidation guidance.
-19. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
+19. After each meaningful batch, update `docs/audit_registry/backlog.json` with
    completed items, newly discovered backlog items, current findings, and the
    recommended next step.
 20. After tests pass, inspect how the tests had to be written. If they required
@@ -1220,8 +1226,8 @@ patterns are discovered.
 ### Catalog Ownership
 
 This catalog is the durable widget inventory and cleanup playbook. It should
-not carry the active backlog; use `docs/widget_cleanup_todo.md` for pending,
-completed, next-up, scanner snapshots, and findings. Keep this file current
+not carry the active backlog; use `docs/audit_registry/backlog.json` for
+pending, completed, next-up, scanner snapshots, and findings. Keep this file current
 when widgets are added, deleted, moved, renamed, or when a shared primitive or
 controller seam becomes part of the standard operating model.
 
@@ -1940,7 +1946,7 @@ Generated 2026-05-06.
 
 Keep this section current and conservative. It is for durable consolidation
 ideas that still appear valid after the widget cleanup passes, not for active
-status. Move any selected item into `docs/widget_cleanup_todo.md` before
+status. Move any selected item into `docs/audit_registry/backlog.json` before
 implementing it.
 
 ### High Signal

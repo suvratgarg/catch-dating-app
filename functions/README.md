@@ -18,33 +18,53 @@ options when specific functions need higher or lower limits.
 |----------|------|---------|
 | `createRazorpayOrder` | `src/payments/` | Create Razorpay order for paid events |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
+| `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
 | `signUpForFreeEvent` | `src/events/` | Book a free event |
 | `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
-| `joinEventWaitlist` | `src/events/` | Join a full event's waitlist |
+| `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
+| `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
 | `createClub` | `src/clubs/` | Create a club and follow it as host |
-| `joinClub` / `leaveClub` | `src/clubs/` | Join/leave a club and mirror user membership |
+| `updateClub` / `archiveClub` / `deleteClub` | `src/clubs/` | Host-owned club mutation surface |
+| `addClubHost` / `removeClubHost` | `src/clubs/` | Host management surface |
+| `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
+| `generateEventSuccessPods` | `src/eventSuccess/` | Generate event-success pod suggestions |
+| `generateEventSuccessRotations` / `overrideEventSuccessRotations` | `src/eventSuccess/` | Generate or override event-success rotations |
+| `fetchEventSuccessWingmanCandidates` / `submitEventSuccessWingmanRequest` / `withdrawEventSuccessWingmanRequest` | `src/eventSuccess/` | Wingman candidate and request workflow |
+| `createEventReview` / `updateEventReview` / `deleteEventReview` | `src/reviews/` | Review mutation surface |
+| `updateUserProfile` | `src/profiles/` | Profile patch callable with generated contract validation |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
 | `reportUser` | `src/safety/` | File a safety report |
+| `listSuvbotDemoActions` / `requestSuvbotDemoOperation` | `src/demoOps/` | Demo-data operation catalogue and request surface |
 
 ### Firestore-triggered
 
 | Function | File | Trigger |
 |----------|------|---------|
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
+| `syncClubMemberStats` | `src/clubs/` | `clubMemberships/{membershipId}` onWrite — recomputes `memberCount` |
+| `syncClubNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes club next-event projection |
 | `onSwipeCreated` | `src/matching/` | `swipes/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
+| `onEventSuccessFeedbackWritten` | `src/marketplace/` | Event-success feedback write — recomputes scorecard inputs |
 | `syncClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
+
+### Scheduled
+
+| Function | File | Schedule |
+|----------|------|----------|
+| `sendEventReminders` | `src/events/` | Every 15 minutes — writes reminder activity and push notifications |
 
 ### Storage-triggered
 
 | Function | File | Trigger |
 |----------|------|---------|
+| `generateProfilePhotoThumbnail` | `src/profiles/` | Profile photo finalize — creates avatar thumbnails |
 | `moderatePhotoOnUpload` | `src/moderation/` | `onObjectFinalized` — SafeSearch analysis |
 
 ### HTTP
@@ -115,7 +135,7 @@ each handler. The shared options declare this intent, and the default `npm test`
 suite includes a guard test that fails when an exported callable does not use
 the shared App Check options.
 
-After deploying callable Functions, event `npm event sync:callable-invokers -- \
+After deploying callable Functions, run `npm run sync:callable-invokers -- \
 <project-id> [...]`. Current callable deployment manifests do not reliably
 propagate `invoker` onto the underlying Cloud Event services, and a missing
 binding shows up as a Cloud Event/GFE HTML 401/403 before Firebase callable
@@ -192,10 +212,10 @@ release evidence.
 
 ## Firestore rules
 
-`firebase.json` includes a predeploy hook that events Functions tests and the
+`firebase.json` includes a predeploy hook that runs Functions tests and the
 Firestore rules emulator suite before every
 `firebase deploy --only firestore:rules`. Broken rules fail the deploy before
-reaching Firebase. The same rules tests event in CI on every PR that touches
+reaching Firebase. The same rules tests run in CI on every PR that touches
 `firestore.rules` or the schema/contract files
 (`.github/workflows/firestore-rules-ci.yml`).
 
@@ -205,9 +225,9 @@ emulators. Add test cases for any new rule conditions, especially `diff()`
 checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
 Firestore relationship documents.
 
-Event the rules suite through the Firestore + Storage emulator wrapper unless you
+Run the rules suite through the Firestore + Storage emulator wrapper unless you
 already have Firestore on `127.0.0.1:8080` and Storage on `127.0.0.1:9199`.
-A direct `npm event test:rules` from this directory only works when those
+A direct `npm run test:rules` from this directory only works when those
 emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
 
@@ -223,5 +243,5 @@ firebase emulators:exec --only firestore,storage "npm --prefix functions run tes
 ./tool/firebase_with_env.sh dev deploy --only firestore:rules
 ./tool/firebase_with_env.sh staging deploy --only firestore:rules
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
-npm event sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
+npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```

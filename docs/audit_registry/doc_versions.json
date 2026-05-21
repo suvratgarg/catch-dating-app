@@ -8,29 +8,29 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.6.2",
-    "updated": "2026-05-17",
+    "version": "2.6.5",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up."
+    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up; historical detail lives in passes.jsonl/files.jsonl."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "3.0.9",
-    "updated": "2026-05-18",
+    "version": "4.1.0",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "3.0.9",
-    "updated": "2026-05-18",
+    "version": "4.1.0",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.4",
-    "updated": "2026-05-18",
+    "version": "2.5.6",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
@@ -48,31 +48,45 @@
     "status": "active",
     "read_policy": "Read before adding or changing user-visible actions, callables, relationship documents, mutation CTAs, list/rail surfaces, or product limits."
   },
-  "event_policy_engine_in_development": {
-    "path": "codex_audit/event_policy_engine_in_development.md",
-    "version": "0.4.0",
-    "updated": "2026-05-17",
+  "lib_code_map": {
+    "path": "lib/README.md",
+    "version": "1.0.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before deleting, moving, wiring, or auditing lib/event_policies; this marks the parallel event-policy engine, preview fixtures, cancellation/settlement policy axis, and dev-only lab as intentional in-development code."
+    "read_policy": "Read before broad lib/ feature work; use it to find feature-level README owners and cross-cutting architecture docs."
   },
-  "event_success_layer_in_development": {
-    "path": "codex_audit/event_success_layer_in_development.md",
-    "version": "0.2.0",
-    "updated": "2026-05-18",
+  "event_policies_readme": {
+    "path": "lib/event_policies/README.md",
+    "version": "1.0.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before deleting, moving, wiring, or auditing lib/event_success; this marks the live-wired but still in-development event-success layer as intentional code."
+    "read_policy": "Read before deleting, moving, wiring, or auditing lib/event_policies; this marks the event-policy bundle migration, preview fixtures, cancellation/settlement policy axis, and dev-only lab as intentional in-development code."
   },
-  "event_success_completion_tracker": {
-    "path": "codex_audit/event_success_completion_tracker.md",
-    "version": "0.1.0",
-    "updated": "2026-05-18",
+  "safety_readme": {
+    "path": "lib/safety/README.md",
+    "version": "1.0.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read when checking remaining production event-success wiring, host setup UI, attendee companion behavior, feedback/report metrics, or current pass proof."
+    "read_policy": "Read before changing blocking, reporting, account deletion, safety retention, or deletion/anonymization behavior."
+  },
+  "user_profile_readme": {
+    "path": "lib/user_profile/README.md",
+    "version": "1.0.0",
+    "updated": "2026-05-22",
+    "status": "active",
+    "read_policy": "Read before changing private profile identity fields, profile edit UI, public projection inputs, or profile schema migration."
+  },
+  "event_success": {
+    "path": "docs/event_success.md",
+    "version": "1.0.0",
+    "updated": "2026-05-22",
+    "status": "active",
+    "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, participant metrics, or manual QA surfaces."
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "3.0.4",
-    "updated": "2026-05-18",
+    "version": "4.1.0",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -83,66 +97,52 @@
     "status": "active",
     "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
-  "firestore_contract_tracker": {
-    "path": "docs/firestore_functions_data_contract_tracker.md",
-    "version": "2.3.2",
-    "updated": "2026-05-17",
+  "data_contracts": {
+    "path": "docs/data_contracts.md",
+    "version": "1.1.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, Firestore type generation, data-contract work, or Firestore rules test execution."
-  },
-  "schema_contract_unification": {
-    "path": "docs/schema_contract_unification_tracker.md",
-    "version": "0.8.6",
-    "updated": "2026-05-17",
-    "status": "active",
-    "read_policy": "Read before changing schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, prompt catalogs, Firestore contract checks, or storage-path migrations."
+    "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.2.1",
-    "updated": "2026-05-17",
+    "version": "1.2.2",
+    "updated": "2026-05-21",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
   },
-  "firestore_relationship_documents_migration": {
-    "path": "docs/firestore_relationship_documents_migration.md",
-    "version": "1.1.0",
-    "updated": "2026-05-12",
-    "status": "active",
-    "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, beta reset strategy, or deletion/anonymization cleanup."
-  },
   "project_context": {
     "path": "PROJECT_CONTEXT.md",
-    "version": "2.1.4",
-    "updated": "2026-05-19",
+    "version": "2.1.5",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use as the high-level repo map; prefer audit registry and focused docs for pass-specific rules."
   },
   "repo_readme": {
     "path": "README.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
+    "version": "2.1.0",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use for self-serve setup/runbook context; re-check scripts before giving commands."
   },
-  "sliver_layout": {
-    "path": "docs/sliver_layout_guide.md",
-    "version": "2.1.6",
-    "updated": "2026-05-16",
+  "firebase_readme": {
+    "path": "firebase/README.md",
+    "version": "1.1.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before changing sliver-native screens, NestedScrollView tabs, or scroll tests."
+    "read_policy": "Read before changing Firebase environment config, App Check, project aliases, native/web config files, or deploy prerequisites."
   },
-  "ui_layout_spacing": {
-    "path": "docs/ui_layout_spacing.md",
+  "ui_architecture": {
+    "path": "docs/ui_architecture.md",
     "version": "1.0.0",
-    "updated": "2026-05-06",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before adding or changing shared screen padding, tab body insets, sliver body gaps, or reusable card/photo spacing contracts."
+    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, or scroll-heavy widget tests."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.85",
-    "updated": "2026-05-20",
+    "version": "2.5.94",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -160,19 +160,12 @@
     "status": "active",
     "read_policy": "Use only while closing remaining cardless public-profile UX work: profile prompt picker, compatibility expansion, quality coaching, visual regression coverage, device QA, and visible swipe-language cleanup."
   },
-  "widget_cleanup": {
-    "path": "docs/widget_cleanup_todo.md",
-    "version": "3.0.0",
-    "updated": "2026-05-12",
-    "status": "active",
-    "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable widget cleanup state."
-  },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.5.4",
-    "updated": "2026-05-20",
+    "version": "1.7.0",
+    "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, or release evidence."
+    "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
   },
   "location_stack": {
     "path": "docs/location_stack_plan.md",
