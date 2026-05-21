@@ -64,9 +64,9 @@ which do not overlap the event_success feature work.
 | C8  | P3  | CI/CD             | BigQuery export extensions never deployed by pipeline             | [ ]  |
 | I2  | P2  | iOS               | App Check activated twice (native AppDelegate + Dart)             | [ ]  |
 | I3  | P3  | iOS               | No-flavor `Release.xcconfig` silently uses prod credentials       | [ ]  |
-| I4  | P3  | iOS               | `FirebaseFirestore` pod pinned to prebuilt fork — desync risk     | [ ]  |
+| I4  | P3  | iOS               | `FirebaseFirestore` pod pinned to prebuilt fork — desync risk     | [x]  |
 | I5  | P3  | iOS               | Podfile `SWIFT_SUPPRESS_WARNINGS=YES` hides all pod warnings      | [ ]  |
-| B1  | P2  | Bootstrap         | Remote Config fetch failure swallowed silently                   | [ ]  |
+| B1  | P2  | Bootstrap         | Remote Config fetch failure swallowed silently                   | [x]  |
 | B3  | P2  | Bootstrap         | Web App Check silently disabled when unconfigured                 | [ ]  |
 | D1  | P1  | Contracts         | Three parallel schema representations, mid-migration              | [ ]  |
 | D3  | P2  | Contracts         | CI verifies only `firestore.ts` freshness, not contract outputs   | [x]  |
@@ -237,20 +237,26 @@ modes:
   with required-status-check protection, and deploy on push to `main` directly.
 - Or: at minimum, make "missing workflow" fail fast instead of timing out.
 
-### B1 — Remote Config fetch failure swallowed silently [quick]
+### B1 — Remote Config fetch failure swallowed silently (DONE 2026-05-21)
 
-**Where:** `lib/main.dart` `_initializeRemoteConfig()` — `catch (_) {}`.
+**Where:** `lib/main.dart` `_initializeRemoteConfig()` — was `catch (_) {}`.
 
-**Problem:** `fetchAndActivate()` failure is silently ignored. The force-update
-gate then runs on `setDefaults` values, which is the intended graceful
-degradation — but the empty catch *also* hides genuine misconfiguration (wrong
-RC template, App Check blocking RC, project mismatch). The same silent-catch
-pattern is in `lib/app.dart` `_refreshForceUpdateGate` (`debugPrint` only).
+**Was:** `fetchAndActivate()` failure was silently ignored. The force-update
+gate then runs on `setDefaults` values (intended graceful degradation) — but the
+empty catch *also* hid genuine misconfiguration (wrong RC template, App Check
+blocking RC, project mismatch).
 
-**Fix:** keep serving defaults, but log the failure through `ErrorLogger`
-(non-fatal) so a real RC outage/misconfig is visible in Crashlytics instead of
-invisible. Small change once `ErrorLogger` is reachable at that point in
-startup (it is constructed right after).
+**Fix applied:** `_initializeRemoteConfig()` / `_initializeFirebaseServices()`
+now return `(Object, StackTrace)?`; `main()` logs the failure through
+`ErrorLogger.logError()` (non-fatal) once the logger is constructed, so a real
+RC outage/misconfig surfaces in Crashlytics. The app still boots on bundled
+defaults — behavior unchanged for users. Verified `flutter analyze lib/main.dart`
+clean.
+
+Note: the same silent-catch pattern still exists in `lib/app.dart`
+`_refreshForceUpdateGate` (`debugPrint` only) for the *foreground-refresh* path;
+left as-is since that path re-runs frequently and a transient network blip on
+resume is not noteworthy — only the startup fetch is logged.
 
 ### B3 — Web App Check silently disabled when unconfigured [quick]
 
@@ -395,15 +401,15 @@ configuration silently gets prod credentials. The canonical schemes are the
 suffixed ones — consider deleting the unused no-flavor configs, or make them
 fail loudly, so a stray plain-`Release` build can't ship prod keys by accident.
 
-### I4 — `FirebaseFirestore` pod pinned to prebuilt fork [quick doc]
+### I4 — `FirebaseFirestore` pod pinned to prebuilt fork (DONE 2026-05-21)
 
 `ios/Podfile`: `pod 'FirebaseFirestore', :git => 'invertase/firestore-ios-sdk-frameworks',
 :tag => '12.12.0'`. This prebuilt-frameworks fork speeds up builds but its tag
 must stay in lockstep with the Firebase iOS SDK version that the `cloud_firestore`
 Flutter plugin expects. A `flutter pub upgrade` of `cloud_firestore` can bump
 the expected SDK and silently desync, causing pod resolution or link errors.
-Action: add a comment in the Podfile pinning the rule "bump this tag whenever
-`cloud_firestore` is upgraded; match the version in the plugin's own podspec."
+**Fix applied:** added a comment above the `pod` line spelling out the
+bump-with-`cloud_firestore` rule. (Comment only — no behavior change.)
 
 ### I5 — Podfile suppresses all warnings for three pods [quick]
 
@@ -495,6 +501,43 @@ codegen-time guard that rejects the `YOUR_KEY_ID_HERE` placeholder.
   deploy/CI workflows. C5 fixed: pinned `flutter-version: 3.41.9` everywhere.
 - **2026-05-21** — `docs/release_operations.md` "Required PR Checks" updated to
   list `contracts-ci.yml`.
+- **2026-05-21** — B1 fixed: startup Remote Config fetch failure now logged via
+  `ErrorLogger` instead of swallowed (`lib/main.dart`); `flutter analyze` clean.
+- **2026-05-21** — I4 fixed: documented the `FirebaseFirestore` pod pin rule
+  with a Podfile comment.
+
+## Remaining items and what they need
+
+Everything still unchecked needs either a product/architecture decision, an
+external console, or iOS-project surgery — i.e. not a safe unattended fix:
+
+- **I1** — needs the exact TestFlight warning text from the user before the
+  privacy manifest can be scoped (guessing risks shipping a wrong manifest).
+- **D1** — needs a decision: finish or freeze the schema-contract unification
+  migration (`docs/schema_contract_unification_tracker.md`).
+- **C3** — workflow redesign (GitHub Deployment Environment vs the JS poll);
+  larger change, touches deploy gating.
+- **C6** — add prod/staging build legs to `app-build-matrix.yml`; needs the prod
+  Maps key secret wired into that workflow's scope.
+- **C8** — decide whether `extensions` joins a deliberate deploy path or stays
+  manual; documented as manual-for-now.
+- **I2** — App Check is configured both natively and from Dart; collapsing to
+  one path is security-sensitive (a wrong move locks users out) — needs a
+  deliberate decision, not an unattended edit.
+- **I3** — removing/neutering the no-flavor `Release/Debug/Profile.xcconfig`
+  requires editing `project.pbxproj`; do it in Xcode, not blind.
+- **I5** — narrowing `SWIFT_SUPPRESS_WARNINGS` needs the specific upstream
+  warning identifier; revisit when FlutterFire fixes it upstream.
+- **B3** — needs a decision: should a prod *web* build with no App Check site
+  key hard-crash at launch, or boot degraded? (Also: is Flutter web even a
+  shipping surface? `firebase.json` hosting serves the `website/` marketing
+  folder, not the Flutter web build.)
+- **A2 / A3** — Firebase Console verification (GA4→BigQuery link; prod
+  `GoogleService-Info.plist` analytics flag). Cannot be done from the repo.
+- **N1** — single-vs-merged `google-services.json` is an Android config
+  decision affecting the env-swap workflow.
+- **W1 / M1** — W1 is a marginal cosmetic gate; M1 is a local-machine `.env`
+  hygiene note (the file is git-ignored, nothing to change in-repo).
 
 ## Verification done during this audit
 
