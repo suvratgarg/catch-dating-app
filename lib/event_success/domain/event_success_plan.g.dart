@@ -17,13 +17,39 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
       .map((e) => e as String)
       .toList(),
   targetAttendeeCount: (json['targetAttendeeCount'] as num).toInt(),
+  structureConfig: json['structureConfig'] == null
+      ? const EventSuccessStructureConfig.legacyDefault()
+      : EventSuccessStructureConfig.fromJson(
+          json['structureConfig'] as Map<String, dynamic>,
+        ),
   hostGoal: json['hostGoal'] as String,
-  privateCrushEnabled: json['privateCrushEnabled'] as bool? ?? true,
+  wingmanRequestsEnabled: json['wingmanRequestsEnabled'] as bool? ?? true,
   contextualOpenersEnabled: json['contextualOpenersEnabled'] as bool? ?? true,
+  compatibilityAffectsRanking:
+      json['compatibilityAffectsRanking'] as bool? ?? false,
+  questionnaireConfig: json['questionnaireConfig'] == null
+      ? const EventSuccessQuestionnaireConfig.defaultTemplate()
+      : EventSuccessQuestionnaireConfig.fromJson(
+          json['questionnaireConfig'] as Map<String, dynamic>?,
+        ),
   activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
   status:
       $enumDecodeNullable(_$EventSuccessPlanStatusEnumMap, json['status']) ??
       EventSuccessPlanStatus.setup,
+  revealStatus:
+      $enumDecodeNullable(
+        _$EventSuccessRevealStatusEnumMap,
+        json['revealStatus'],
+      ) ??
+      EventSuccessRevealStatus.idle,
+  activeRevealRoundIndex:
+      (json['activeRevealRoundIndex'] as num?)?.toInt() ?? 0,
+  revealStartedAt: const NullableTimestampConverter().fromJson(
+    json['revealStartedAt'] as Timestamp?,
+  ),
+  revealEndsAt: const NullableTimestampConverter().fromJson(
+    json['revealEndsAt'] as Timestamp?,
+  ),
   attendeePrompt: json['attendeePrompt'] as String?,
   createdAt: const TimestampConverter().fromJson(
     json['createdAt'] as Timestamp,
@@ -46,11 +72,22 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
       'playbookId': instance.playbookId,
       'selectedModuleIds': instance.selectedModuleIds,
       'targetAttendeeCount': instance.targetAttendeeCount,
+      'structureConfig': instance.structureConfig.toJson(),
       'hostGoal': instance.hostGoal,
-      'privateCrushEnabled': instance.privateCrushEnabled,
+      'wingmanRequestsEnabled': instance.wingmanRequestsEnabled,
       'contextualOpenersEnabled': instance.contextualOpenersEnabled,
+      'compatibilityAffectsRanking': instance.compatibilityAffectsRanking,
+      'questionnaireConfig': instance.questionnaireConfig.toJson(),
       'activeStepIndex': instance.activeStepIndex,
       'status': _$EventSuccessPlanStatusEnumMap[instance.status]!,
+      'revealStatus': _$EventSuccessRevealStatusEnumMap[instance.revealStatus]!,
+      'activeRevealRoundIndex': instance.activeRevealRoundIndex,
+      'revealStartedAt': const NullableTimestampConverter().toJson(
+        instance.revealStartedAt,
+      ),
+      'revealEndsAt': const NullableTimestampConverter().toJson(
+        instance.revealEndsAt,
+      ),
       'attendeePrompt': instance.attendeePrompt,
       'createdAt': const TimestampConverter().toJson(instance.createdAt),
       'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
@@ -66,6 +103,12 @@ const _$EventSuccessPlanStatusEnumMap = {
   EventSuccessPlanStatus.complete: 'complete',
 };
 
+const _$EventSuccessRevealStatusEnumMap = {
+  EventSuccessRevealStatus.idle: 'idle',
+  EventSuccessRevealStatus.countingDown: 'countingDown',
+  EventSuccessRevealStatus.revealed: 'revealed',
+};
+
 _EventSuccessFeedback _$EventSuccessFeedbackFromJson(
   Map<String, dynamic> json,
 ) => _EventSuccessFeedback(
@@ -76,7 +119,6 @@ _EventSuccessFeedback _$EventSuccessFeedbackFromJson(
   welcomeRating: (json['welcomeRating'] as num).toInt(),
   structureRating: (json['structureRating'] as num).toInt(),
   metNewPeopleCount: (json['metNewPeopleCount'] as num).toInt(),
-  markedPrivateCrush: json['markedPrivateCrush'] as bool? ?? false,
   safetyConcern: json['safetyConcern'] as bool? ?? false,
   privateNote: json['privateNote'] as String?,
   createdAt: const TimestampConverter().fromJson(
@@ -96,7 +138,6 @@ Map<String, dynamic> _$EventSuccessFeedbackToJson(
   'welcomeRating': instance.welcomeRating,
   'structureRating': instance.structureRating,
   'metNewPeopleCount': instance.metNewPeopleCount,
-  'markedPrivateCrush': instance.markedPrivateCrush,
   'safetyConcern': instance.safetyConcern,
   'privateNote': instance.privateNote,
   'createdAt': const TimestampConverter().toJson(instance.createdAt),

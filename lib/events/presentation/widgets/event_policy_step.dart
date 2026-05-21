@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -65,6 +66,7 @@ class EventPolicyStep extends StatelessWidget {
     required this.onDynamicPricingChanged,
     required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
+    required this.activityKind,
     required this.eventSuccessDefaults,
     required this.onEventSuccessDefaultsChanged,
   });
@@ -86,6 +88,7 @@ class EventPolicyStep extends StatelessWidget {
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
+  final ActivityKind activityKind;
   final EventSuccessDefaults eventSuccessDefaults;
   final ValueChanged<EventSuccessDefaults> onEventSuccessDefaultsChanged;
 
@@ -448,6 +451,7 @@ class EventPolicyStep extends StatelessWidget {
           const SizedBox(height: 20),
           EventSuccessDefaultsPanel(
             defaults: eventSuccessDefaults,
+            activityKind: activityKind,
             onChanged: onEventSuccessDefaultsChanged,
             title: 'Event success setup',
             subtitle:

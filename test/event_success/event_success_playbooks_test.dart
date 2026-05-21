@@ -1,7 +1,11 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -39,7 +43,7 @@ void main() {
         );
         expect(
           event.moduleIds,
-          contains(EventSuccessModuleCatalog.privateCrush.id),
+          contains(EventSuccessModuleCatalog.wingmanRequests.id),
         );
         expect(
           event.moduleIds,
@@ -61,17 +65,204 @@ void main() {
       }
     });
 
+    test('compatibility questionnaire is a reusable opt-in module', () {
+      for (final playbook in EventSuccessPlaybookLibrary.all) {
+        expect(
+          playbook.moduleIds,
+          contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+          reason: '${playbook.id} should expose compatibility as a module',
+        );
+        final draft = EventSuccessHostDraft.fromPlaybook(playbook);
+        if (playbook.activityType == ActivityKind.singlesMixer) {
+          expect(
+            draft.selectedModuleIds,
+            contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+            reason:
+                '${playbook.id} is the dating-forward format where questionnaire is part of the recommended setup',
+          );
+        } else {
+          expect(
+            draft.selectedModuleIds,
+            isNot(
+              contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+            ),
+            reason:
+                '${playbook.id} should not treat compatibility as the event type',
+          );
+        }
+      }
+
+      final runDraft = EventSuccessHostDraft.fromPlaybook(
+        EventSuccessPlaybookLibrary.socialRun,
+      ).toggleModule(EventSuccessModuleCatalog.compatibilityQuestionnaire.id);
+
+      expect(
+        runDraft.selectedModuleIds,
+        contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+      );
+      expect(runDraft.questionnaireConfig.pack.title, 'Balanced');
+    });
+
     test('module lookup throws for unknown module ids', () {
       expect(
         EventSuccessModuleCatalog.byId(
-          EventSuccessModuleCatalog.privateCrush.id,
+          EventSuccessModuleCatalog.wingmanRequests.id,
         ),
-        EventSuccessModuleCatalog.privateCrush,
+        EventSuccessModuleCatalog.wingmanRequests,
       );
       expect(
         () => EventSuccessModuleCatalog.byId('not_a_module'),
         throwsArgumentError,
       );
+    });
+
+    test('groups legacy modules into the simplified product layers', () {
+      final socialRun = EventSuccessPlaybookLibrary.socialRun;
+      final layers = socialRun.modulesByProductLayer;
+
+      expect(
+        layers[EventSuccessProductLayer.rosterAttendance],
+        containsAll([
+          EventSuccessModuleCatalog.crowdBalance,
+          EventSuccessModuleCatalog.checkIn,
+        ]),
+      );
+      expect(
+        layers[EventSuccessProductLayer.assignments],
+        contains(EventSuccessModuleCatalog.microPods),
+      );
+      expect(
+        EventSuccessModuleCatalog.socialMissions.productLayer,
+        EventSuccessProductLayer.conversation,
+      );
+      expect(
+        EventSuccessModuleCatalog.contextualOpeners.productLayer,
+        EventSuccessProductLayer.conversation,
+      );
+      expect(
+        EventSuccessModuleCatalog.liveReveal.productLayer,
+        EventSuccessProductLayer.liveReveal,
+      );
+      expect(
+        EventSuccessPlaybookLibrary.algorithmicMixer.moduleIds,
+        contains(EventSuccessModuleCatalog.liveReveal.id),
+      );
+      expect(
+        EventSuccessModuleCatalog.safetyControls.productLayer,
+        EventSuccessProductLayer.safety,
+      );
+    });
+
+    test('sets structure defaults from the activity interaction model', () {
+      final runDraft = EventSuccessHostDraft.fromPlaybook(
+        EventSuccessPlaybookLibrary.socialRun,
+        targetAttendeeCount: 30,
+      );
+      final quizDraft = EventSuccessHostDraft.fromPlaybook(
+        EventSuccessPlaybookLibrary.pubQuiz,
+      );
+      final pickleballDraft = EventSuccessHostDraft.fromPlaybook(
+        EventSuccessPlaybookLibrary.pickleball,
+      );
+
+      expect(
+        runDraft.structureConfig.unitKind,
+        EventSuccessUnitKind.wholeGroup,
+      );
+      expect(runDraft.structureConfig.unitSize, 30);
+      expect(quizDraft.structureConfig.unitKind, EventSuccessUnitKind.teams);
+      expect(quizDraft.structureConfig.unitCount, 3);
+      expect(pickleballDraft.structureConfig.rotationIntervalMinutes, 15);
+    });
+
+    test('activity profiles keep impossible toggles out of defaults', () {
+      final racket = EventSuccessActivityProfile.forActivity(
+        ActivityKind.pickleball,
+      );
+      final quiz = EventSuccessActivityProfile.forActivity(
+        ActivityKind.pubQuiz,
+      );
+      final yoga = EventSuccessActivityProfile.forActivity(ActivityKind.yoga);
+      final mixer = EventSuccessActivityProfile.forActivity(
+        ActivityKind.singlesMixer,
+      );
+
+      expect(
+        racket.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.guidedRotations.id),
+      );
+      expect(
+        racket.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.liveReveal.id),
+      );
+      expect(
+        racket.isSelectable(EventSuccessModuleCatalog.microPods.id),
+        isFalse,
+      );
+      expect(
+        quiz.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.microPods.id),
+      );
+      expect(
+        yoga.isSelectable(EventSuccessModuleCatalog.guidedRotations.id),
+        isFalse,
+      );
+      expect(
+        mixer.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+      );
+      expect(mixer.compatibilityAffectsRankingByDefault, isTrue);
+    });
+
+    test('event defaults normalize to the selected activity', () {
+      final racketDefaults = EventSuccessDefaults(
+        enabled: true,
+        selectedModuleIds: [EventSuccessModuleCatalog.microPods.id],
+      ).normalizedForActivity(ActivityKind.pickleball);
+      final mixerDefaults = const EventSuccessDefaults(
+        enabled: true,
+      ).normalizedForActivity(ActivityKind.singlesMixer);
+
+      expect(
+        racketDefaults.playbookId,
+        EventSuccessPlaybookLibrary.pickleball.id,
+      );
+      expect(
+        racketDefaults.selectedModuleIds,
+        isNot(contains(EventSuccessModuleCatalog.microPods.id)),
+      );
+      expect(
+        racketDefaults.selectedModuleIds,
+        contains(EventSuccessModuleCatalog.guidedRotations.id),
+      );
+      expect(
+        mixerDefaults.playbookId,
+        EventSuccessPlaybookLibrary.algorithmicMixer.id,
+      );
+      expect(
+        mixerDefaults.selectedModuleIds,
+        contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+      );
+      expect(mixerDefaults.compatibilityAffectsRanking, isTrue);
+    });
+
+    test('activity normalization replaces legacy structure defaults', () {
+      final normalizedDraft =
+          EventSuccessHostDraft.fromPlaybook(
+                EventSuccessPlaybookLibrary.socialRun,
+              )
+              .copyWith(
+                structureConfig:
+                    const EventSuccessStructureConfig.legacyDefault(),
+              )
+              .normalizeForActivity(ActivityKind.pickleball);
+
+      expect(
+        normalizedDraft.structureConfig.unitKind,
+        EventSuccessUnitKind.pairs,
+      );
+      expect(normalizedDraft.structureConfig.unitSize, 2);
+      expect(normalizedDraft.structureConfig.rotationIntervalMinutes, 15);
     });
   });
 
@@ -102,10 +293,13 @@ void main() {
         containsAll([
           'tighten_check_in',
           'increase_intro_coverage',
-          'lower_follow_up_friction',
+          'refresh_assignment_coverage',
+          'reduce_assignment_pressure',
+          'use_wingman_signal_live',
           'improve_first_message',
           'improve_host_welcome',
           'right_size_structure',
+          'increase_feedback_response',
         ]),
       );
     });
@@ -118,12 +312,20 @@ void main() {
 
       expect(
         brief.strengths,
-        contains('Arrival data is reliable enough to power post-event loops.'),
+        contains('Arrival data is reliable enough for matching and reports.'),
       );
       expect(brief.strengths, contains('Most attendees met multiple people.'));
       expect(
         brief.strengths,
         contains('Mutual matches are converting into chat starts.'),
+      );
+      expect(
+        brief.strengths,
+        contains('Assignments reached most active attendees.'),
+      );
+      expect(
+        brief.strengths,
+        contains('Feedback response is strong enough to trust the report.'),
       );
     });
   });

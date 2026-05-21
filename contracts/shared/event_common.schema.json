@@ -116,6 +116,99 @@
         "openFormat"
       ]
     },
+    "eventSuccessUnitKind": {
+      "type": "string",
+      "enum": ["wholeGroup", "pods", "pairs", "teams", "tables"]
+    },
+    "eventSuccessStructureConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unitKind", "unitSize", "revealCountdownSeconds"],
+      "properties": {
+        "unitKind": {
+          "$ref": "#/definitions/eventSuccessUnitKind"
+        },
+        "unitSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "unitCount": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 200
+        },
+        "rotationIntervalMinutes": {
+          "type": ["integer", "null"],
+          "minimum": 5,
+          "maximum": 180
+        },
+        "revealCountdownSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60
+        }
+      }
+    },
+    "eventSuccessQuestionnaireConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["templateId"],
+      "properties": {
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "customTitle": {
+          "type": ["string", "null"],
+          "maxLength": 80
+        },
+        "customQuestions": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "prompt", "options"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "prompt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "options": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id", "label"],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "eventFormatSnapshot": {
       "type": "object",
       "additionalProperties": false,
@@ -434,9 +527,16 @@
           "maxItems": 24,
           "items": {"type": "string", "minLength": 1, "maxLength": 120}
         },
+        "structureConfig": {
+          "$ref": "#/definitions/eventSuccessStructureConfig"
+        },
         "hostGoal": {"type": "string", "maxLength": 300},
-        "privateCrushEnabled": {"type": "boolean"},
+        "wingmanRequestsEnabled": {"type": "boolean"},
         "contextualOpenersEnabled": {"type": "boolean"},
+        "compatibilityAffectsRanking": {"type": "boolean"},
+        "questionnaireConfig": {
+          "$ref": "#/definitions/eventSuccessQuestionnaireConfig"
+        },
         "attendeePrompt": {"type": ["string", "null"], "maxLength": 300}
       }
     },
@@ -444,11 +544,29 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "primaryActivityKind": {
+          "$ref": "#/definitions/activityKind"
+        },
+        "supportedActivityKinds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/activityKind"
+          }
+        },
         "eventPolicy": {
           "$ref": "#/definitions/eventPolicyDefaults"
         },
         "eventSuccess": {
           "$ref": "#/definitions/eventSuccessDefaults"
+        },
+        "eventSuccessByActivityKind": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": {
+            "$ref": "#/definitions/eventSuccessDefaults"
+          }
         }
       }
     }

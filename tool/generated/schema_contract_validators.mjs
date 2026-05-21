@@ -50,6 +50,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
+  overrideEventSuccessRotationsCallablePayloadSchema,
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
@@ -128,6 +129,7 @@ export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallabl
 export const validateDeleteEventCallablePayload = ajv.compile(deleteEventCallablePayloadSchema);
 export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayloadSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
+export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateMarkEventAttendanceCallableResponse = ajv.compile(markEventAttendanceCallableResponseSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
 export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);

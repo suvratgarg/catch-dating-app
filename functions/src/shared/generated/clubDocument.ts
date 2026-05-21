@@ -61,6 +61,44 @@ export interface ClubDocument {
   } | null;
   archiveReason: string | null;
   hostDefaults?: {
+    primaryActivityKind?:
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity";
+    /**
+     * @maxItems 16
+     */
+    supportedActivityKinds?: (
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity"
+    )[];
     eventPolicy?: {
       admissionPreset?:
         | "openCapacity"
@@ -83,10 +121,78 @@ export interface ClubDocument {
        * @maxItems 24
        */
       selectedModuleIds?: string[];
+      structureConfig?: {
+        unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+        unitSize: number;
+        unitCount?: number | null;
+        rotationIntervalMinutes?: number | null;
+        revealCountdownSeconds: number;
+      };
       hostGoal?: string;
-      privateCrushEnabled?: boolean;
+      wingmanRequestsEnabled?: boolean;
       contextualOpenersEnabled?: boolean;
+      compatibilityAffectsRanking?: boolean;
+      questionnaireConfig?: {
+        templateId: string;
+        customTitle?: string | null;
+        /**
+         * @maxItems 8
+         */
+        customQuestions?: {
+          id: string;
+          prompt: string;
+          /**
+           * @minItems 2
+           * @maxItems 5
+           */
+          options: {
+            id: string;
+            label: string;
+          }[];
+        }[];
+      };
       attendeePrompt?: string | null;
+    };
+    eventSuccessByActivityKind?: {
+      [k: string]: {
+        enabled?: boolean;
+        playbookId?: string;
+        /**
+         * @maxItems 24
+         */
+        selectedModuleIds?: string[];
+        structureConfig?: {
+          unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+          unitSize: number;
+          unitCount?: number | null;
+          rotationIntervalMinutes?: number | null;
+          revealCountdownSeconds: number;
+        };
+        hostGoal?: string;
+        wingmanRequestsEnabled?: boolean;
+        contextualOpenersEnabled?: boolean;
+        compatibilityAffectsRanking?: boolean;
+        questionnaireConfig?: {
+          templateId: string;
+          customTitle?: string | null;
+          /**
+           * @maxItems 8
+           */
+          customQuestions?: {
+            id: string;
+            prompt: string;
+            /**
+             * @minItems 2
+             * @maxItems 5
+             */
+            options: {
+              id: string;
+              label: string;
+            }[];
+          }[];
+        };
+        attendeePrompt?: string | null;
+      };
     };
   };
   /**

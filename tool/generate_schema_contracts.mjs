@@ -270,6 +270,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
   },
   {
+    name: "OverrideEventSuccessRotationsCallablePayload",
+    source: "callables/override_event_success_rotations_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "overrideEventSuccessRotationsCallablePayload.ts",
+  },
+  {
     name: "MarkEventAttendanceCallableResponse",
     source: "callable_responses/mark_event_attendance_response.schema.json",
     typeOutput:

@@ -2239,6 +2239,53 @@ const schemaClubDocumentSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'properties': <String, Object?>{
+        'primaryActivityKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'socialRun',
+            'running',
+            'walking',
+            'pickleball',
+            'padel',
+            'tennis',
+            'badminton',
+            'cycling',
+            'spinClass',
+            'yoga',
+            'strengthTraining',
+            'pubQuiz',
+            'barCrawl',
+            'dinner',
+            'singlesMixer',
+            'openActivity',
+          ],
+        },
+        'supportedActivityKinds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 16,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'socialRun',
+              'running',
+              'walking',
+              'pickleball',
+              'padel',
+              'tennis',
+              'badminton',
+              'cycling',
+              'spinClass',
+              'yoga',
+              'strengthTraining',
+              'pubQuiz',
+              'barCrawl',
+              'dinner',
+              'singlesMixer',
+              'openActivity',
+            ],
+          },
+        },
         'eventPolicy': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
@@ -2326,15 +2373,136 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'maxLength': 120,
               },
             },
+            'structureConfig': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'unitKind',
+                'unitSize',
+                'revealCountdownSeconds',
+              ],
+              'properties': <String, Object?>{
+                'unitKind': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'wholeGroup',
+                    'pods',
+                    'pairs',
+                    'teams',
+                    'tables',
+                  ],
+                },
+                'unitSize': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000,
+                },
+                'unitCount': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 200,
+                },
+                'rotationIntervalMinutes': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 5,
+                  'maximum': 180,
+                },
+                'revealCountdownSeconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 60,
+                },
+              },
+            },
             'hostGoal': <String, Object?>{
               'type': 'string',
               'maxLength': 300,
             },
-            'privateCrushEnabled': <String, Object?>{
+            'wingmanRequestsEnabled': <String, Object?>{
               'type': 'boolean',
             },
             'contextualOpenersEnabled': <String, Object?>{
               'type': 'boolean',
+            },
+            'compatibilityAffectsRanking': <String, Object?>{
+              'type': 'boolean',
+            },
+            'questionnaireConfig': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'templateId',
+              ],
+              'properties': <String, Object?>{
+                'templateId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'customTitle': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 80,
+                },
+                'customQuestions': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'prompt',
+                      'options',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'prompt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 140,
+                      },
+                      'options': <String, Object?>{
+                        'type': 'array',
+                        'minItems': 2,
+                        'maxItems': 5,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'id',
+                            'label',
+                          ],
+                          'properties': <String, Object?>{
+                            'id': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 120,
+                            },
+                            'label': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 80,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
             'attendeePrompt': <String, Object?>{
               'type': <Object?>[
@@ -2342,6 +2510,171 @@ const schemaClubDocumentSchema = <String, Object?>{
                 'null',
               ],
               'maxLength': 300,
+            },
+          },
+        },
+        'eventSuccessByActivityKind': <String, Object?>{
+          'type': 'object',
+          'maxProperties': 16,
+          'additionalProperties': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': <String, Object?>{
+              'enabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'playbookId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'selectedModuleIds': <String, Object?>{
+                'type': 'array',
+                'maxItems': 24,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+              },
+              'structureConfig': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'unitKind',
+                  'unitSize',
+                  'revealCountdownSeconds',
+                ],
+                'properties': <String, Object?>{
+                  'unitKind': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'wholeGroup',
+                      'pods',
+                      'pairs',
+                      'teams',
+                      'tables',
+                    ],
+                  },
+                  'unitSize': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 1000,
+                  },
+                  'unitCount': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 1,
+                    'maximum': 200,
+                  },
+                  'rotationIntervalMinutes': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 5,
+                    'maximum': 180,
+                  },
+                  'revealCountdownSeconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 60,
+                  },
+                },
+              },
+              'hostGoal': <String, Object?>{
+                'type': 'string',
+                'maxLength': 300,
+              },
+              'wingmanRequestsEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'contextualOpenersEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'compatibilityAffectsRanking': <String, Object?>{
+                'type': 'boolean',
+              },
+              'questionnaireConfig': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'templateId',
+                ],
+                'properties': <String, Object?>{
+                  'templateId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'customTitle': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 80,
+                  },
+                  'customQuestions': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 8,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'id',
+                        'prompt',
+                        'options',
+                      ],
+                      'properties': <String, Object?>{
+                        'id': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 120,
+                        },
+                        'prompt': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 140,
+                        },
+                        'options': <String, Object?>{
+                          'type': 'array',
+                          'minItems': 2,
+                          'maxItems': 5,
+                          'items': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'id',
+                              'label',
+                            ],
+                            'properties': <String, Object?>{
+                              'id': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 120,
+                              },
+                              'label': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 80,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              'attendeePrompt': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 300,
+              },
             },
           },
         },
@@ -3623,7 +3956,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
     'selectedModuleIds',
     'targetAttendeeCount',
     'hostGoal',
-    'privateCrushEnabled',
+    'wingmanRequestsEnabled',
     'contextualOpenersEnabled',
     'activeStepIndex',
     'status',
@@ -3660,15 +3993,136 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 1000,
     },
+    'structureConfig': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'unitKind',
+        'unitSize',
+        'revealCountdownSeconds',
+      ],
+      'properties': <String, Object?>{
+        'unitKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'wholeGroup',
+            'pods',
+            'pairs',
+            'teams',
+            'tables',
+          ],
+        },
+        'unitSize': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 1000,
+        },
+        'unitCount': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 1,
+          'maximum': 200,
+        },
+        'rotationIntervalMinutes': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 5,
+          'maximum': 180,
+        },
+        'revealCountdownSeconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 60,
+        },
+      },
+    },
     'hostGoal': <String, Object?>{
       'type': 'string',
       'maxLength': 300,
     },
-    'privateCrushEnabled': <String, Object?>{
+    'wingmanRequestsEnabled': <String, Object?>{
       'type': 'boolean',
     },
     'contextualOpenersEnabled': <String, Object?>{
       'type': 'boolean',
+    },
+    'compatibilityAffectsRanking': <String, Object?>{
+      'type': 'boolean',
+    },
+    'questionnaireConfig': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'templateId',
+      ],
+      'properties': <String, Object?>{
+        'templateId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'customTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 80,
+        },
+        'customQuestions': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'id',
+              'prompt',
+              'options',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'prompt': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 140,
+              },
+              'options': <String, Object?>{
+                'type': 'array',
+                'minItems': 2,
+                'maxItems': 5,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'id',
+                    'label',
+                  ],
+                  'properties': <String, Object?>{
+                    'id': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 120,
+                    },
+                    'label': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 80,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     'activeStepIndex': <String, Object?>{
       'type': 'integer',
@@ -3681,6 +4135,73 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         'setup',
         'live',
         'complete',
+      ],
+    },
+    'revealStatus': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'idle',
+        'countingDown',
+        'revealed',
+      ],
+    },
+    'activeRevealRoundIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100,
+    },
+    'revealStartedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'revealEndsAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
       ],
     },
     'attendeePrompt': <String, Object?>{
@@ -3805,7 +4326,6 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
     'welcomeRating',
     'structureRating',
     'metNewPeopleCount',
-    'markedPrivateCrush',
     'safetyConcern',
     'createdAt',
     'updatedAt',
@@ -3840,9 +4360,6 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100,
-    },
-    'markedPrivateCrush': <String, Object?>{
-      'type': 'boolean',
     },
     'safetyConcern': <String, Object?>{
       'type': 'boolean',
@@ -6367,6 +6884,53 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'properties': <String, Object?>{
+        'primaryActivityKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'socialRun',
+            'running',
+            'walking',
+            'pickleball',
+            'padel',
+            'tennis',
+            'badminton',
+            'cycling',
+            'spinClass',
+            'yoga',
+            'strengthTraining',
+            'pubQuiz',
+            'barCrawl',
+            'dinner',
+            'singlesMixer',
+            'openActivity',
+          ],
+        },
+        'supportedActivityKinds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 16,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'socialRun',
+              'running',
+              'walking',
+              'pickleball',
+              'padel',
+              'tennis',
+              'badminton',
+              'cycling',
+              'spinClass',
+              'yoga',
+              'strengthTraining',
+              'pubQuiz',
+              'barCrawl',
+              'dinner',
+              'singlesMixer',
+              'openActivity',
+            ],
+          },
+        },
         'eventPolicy': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
@@ -6454,15 +7018,136 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 'maxLength': 120,
               },
             },
+            'structureConfig': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'unitKind',
+                'unitSize',
+                'revealCountdownSeconds',
+              ],
+              'properties': <String, Object?>{
+                'unitKind': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'wholeGroup',
+                    'pods',
+                    'pairs',
+                    'teams',
+                    'tables',
+                  ],
+                },
+                'unitSize': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 1000,
+                },
+                'unitCount': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 1,
+                  'maximum': 200,
+                },
+                'rotationIntervalMinutes': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 5,
+                  'maximum': 180,
+                },
+                'revealCountdownSeconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 60,
+                },
+              },
+            },
             'hostGoal': <String, Object?>{
               'type': 'string',
               'maxLength': 300,
             },
-            'privateCrushEnabled': <String, Object?>{
+            'wingmanRequestsEnabled': <String, Object?>{
               'type': 'boolean',
             },
             'contextualOpenersEnabled': <String, Object?>{
               'type': 'boolean',
+            },
+            'compatibilityAffectsRanking': <String, Object?>{
+              'type': 'boolean',
+            },
+            'questionnaireConfig': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'templateId',
+              ],
+              'properties': <String, Object?>{
+                'templateId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'customTitle': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 80,
+                },
+                'customQuestions': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'id',
+                      'prompt',
+                      'options',
+                    ],
+                    'properties': <String, Object?>{
+                      'id': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'prompt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 140,
+                      },
+                      'options': <String, Object?>{
+                        'type': 'array',
+                        'minItems': 2,
+                        'maxItems': 5,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'id',
+                            'label',
+                          ],
+                          'properties': <String, Object?>{
+                            'id': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 120,
+                            },
+                            'label': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 80,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
             'attendeePrompt': <String, Object?>{
               'type': <Object?>[
@@ -6470,6 +7155,171 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                 'null',
               ],
               'maxLength': 300,
+            },
+          },
+        },
+        'eventSuccessByActivityKind': <String, Object?>{
+          'type': 'object',
+          'maxProperties': 16,
+          'additionalProperties': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': <String, Object?>{
+              'enabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'playbookId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'selectedModuleIds': <String, Object?>{
+                'type': 'array',
+                'maxItems': 24,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+              },
+              'structureConfig': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'unitKind',
+                  'unitSize',
+                  'revealCountdownSeconds',
+                ],
+                'properties': <String, Object?>{
+                  'unitKind': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'wholeGroup',
+                      'pods',
+                      'pairs',
+                      'teams',
+                      'tables',
+                    ],
+                  },
+                  'unitSize': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 1000,
+                  },
+                  'unitCount': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 1,
+                    'maximum': 200,
+                  },
+                  'rotationIntervalMinutes': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 5,
+                    'maximum': 180,
+                  },
+                  'revealCountdownSeconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 60,
+                  },
+                },
+              },
+              'hostGoal': <String, Object?>{
+                'type': 'string',
+                'maxLength': 300,
+              },
+              'wingmanRequestsEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'contextualOpenersEnabled': <String, Object?>{
+                'type': 'boolean',
+              },
+              'compatibilityAffectsRanking': <String, Object?>{
+                'type': 'boolean',
+              },
+              'questionnaireConfig': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'templateId',
+                ],
+                'properties': <String, Object?>{
+                  'templateId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'customTitle': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 80,
+                  },
+                  'customQuestions': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 8,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'id',
+                        'prompt',
+                        'options',
+                      ],
+                      'properties': <String, Object?>{
+                        'id': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 120,
+                        },
+                        'prompt': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 140,
+                        },
+                        'options': <String, Object?>{
+                          'type': 'array',
+                          'minItems': 2,
+                          'maxItems': 5,
+                          'items': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'id',
+                              'label',
+                            ],
+                            'properties': <String, Object?>{
+                              'id': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 120,
+                              },
+                              'label': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 80,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              'attendeePrompt': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 300,
+              },
             },
           },
         },
@@ -6604,6 +7454,53 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
           'type': 'object',
           'additionalProperties': false,
           'properties': <String, Object?>{
+            'primaryActivityKind': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'socialRun',
+                'running',
+                'walking',
+                'pickleball',
+                'padel',
+                'tennis',
+                'badminton',
+                'cycling',
+                'spinClass',
+                'yoga',
+                'strengthTraining',
+                'pubQuiz',
+                'barCrawl',
+                'dinner',
+                'singlesMixer',
+                'openActivity',
+              ],
+            },
+            'supportedActivityKinds': <String, Object?>{
+              'type': 'array',
+              'maxItems': 16,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'socialRun',
+                  'running',
+                  'walking',
+                  'pickleball',
+                  'padel',
+                  'tennis',
+                  'badminton',
+                  'cycling',
+                  'spinClass',
+                  'yoga',
+                  'strengthTraining',
+                  'pubQuiz',
+                  'barCrawl',
+                  'dinner',
+                  'singlesMixer',
+                  'openActivity',
+                ],
+              },
+            },
             'eventPolicy': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -6691,15 +7588,136 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
                     'maxLength': 120,
                   },
                 },
+                'structureConfig': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'unitKind',
+                    'unitSize',
+                    'revealCountdownSeconds',
+                  ],
+                  'properties': <String, Object?>{
+                    'unitKind': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'wholeGroup',
+                        'pods',
+                        'pairs',
+                        'teams',
+                        'tables',
+                      ],
+                    },
+                    'unitSize': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 1000,
+                    },
+                    'unitCount': <String, Object?>{
+                      'type': <Object?>[
+                        'integer',
+                        'null',
+                      ],
+                      'minimum': 1,
+                      'maximum': 200,
+                    },
+                    'rotationIntervalMinutes': <String, Object?>{
+                      'type': <Object?>[
+                        'integer',
+                        'null',
+                      ],
+                      'minimum': 5,
+                      'maximum': 180,
+                    },
+                    'revealCountdownSeconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 60,
+                    },
+                  },
+                },
                 'hostGoal': <String, Object?>{
                   'type': 'string',
                   'maxLength': 300,
                 },
-                'privateCrushEnabled': <String, Object?>{
+                'wingmanRequestsEnabled': <String, Object?>{
                   'type': 'boolean',
                 },
                 'contextualOpenersEnabled': <String, Object?>{
                   'type': 'boolean',
+                },
+                'compatibilityAffectsRanking': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'questionnaireConfig': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'templateId',
+                  ],
+                  'properties': <String, Object?>{
+                    'templateId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 120,
+                    },
+                    'customTitle': <String, Object?>{
+                      'type': <Object?>[
+                        'string',
+                        'null',
+                      ],
+                      'maxLength': 80,
+                    },
+                    'customQuestions': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 8,
+                      'items': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'id',
+                          'prompt',
+                          'options',
+                        ],
+                        'properties': <String, Object?>{
+                          'id': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 120,
+                          },
+                          'prompt': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 140,
+                          },
+                          'options': <String, Object?>{
+                            'type': 'array',
+                            'minItems': 2,
+                            'maxItems': 5,
+                            'items': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'id',
+                                'label',
+                              ],
+                              'properties': <String, Object?>{
+                                'id': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 120,
+                                },
+                                'label': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 80,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
                 },
                 'attendeePrompt': <String, Object?>{
                   'type': <Object?>[
@@ -6707,6 +7725,171 @@ const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
                     'null',
                   ],
                   'maxLength': 300,
+                },
+              },
+            },
+            'eventSuccessByActivityKind': <String, Object?>{
+              'type': 'object',
+              'maxProperties': 16,
+              'additionalProperties': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': <String, Object?>{
+                  'enabled': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'playbookId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'selectedModuleIds': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 24,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 120,
+                    },
+                  },
+                  'structureConfig': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'unitKind',
+                      'unitSize',
+                      'revealCountdownSeconds',
+                    ],
+                    'properties': <String, Object?>{
+                      'unitKind': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'wholeGroup',
+                          'pods',
+                          'pairs',
+                          'teams',
+                          'tables',
+                        ],
+                      },
+                      'unitSize': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 1,
+                        'maximum': 1000,
+                      },
+                      'unitCount': <String, Object?>{
+                        'type': <Object?>[
+                          'integer',
+                          'null',
+                        ],
+                        'minimum': 1,
+                        'maximum': 200,
+                      },
+                      'rotationIntervalMinutes': <String, Object?>{
+                        'type': <Object?>[
+                          'integer',
+                          'null',
+                        ],
+                        'minimum': 5,
+                        'maximum': 180,
+                      },
+                      'revealCountdownSeconds': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 60,
+                      },
+                    },
+                  },
+                  'hostGoal': <String, Object?>{
+                    'type': 'string',
+                    'maxLength': 300,
+                  },
+                  'wingmanRequestsEnabled': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'contextualOpenersEnabled': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'compatibilityAffectsRanking': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                  'questionnaireConfig': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'templateId',
+                    ],
+                    'properties': <String, Object?>{
+                      'templateId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'customTitle': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 80,
+                      },
+                      'customQuestions': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 8,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'id',
+                            'prompt',
+                            'options',
+                          ],
+                          'properties': <String, Object?>{
+                            'id': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 120,
+                            },
+                            'prompt': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 140,
+                            },
+                            'options': <String, Object?>{
+                              'type': 'array',
+                              'minItems': 2,
+                              'maxItems': 5,
+                              'items': <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'id',
+                                  'label',
+                                ],
+                                'properties': <String, Object?>{
+                                  'id': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 120,
+                                  },
+                                  'label': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 80,
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  'attendeePrompt': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 300,
+                  },
                 },
               },
             },
@@ -7862,6 +9045,71 @@ const schemaMarkEventAttendanceCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+  },
+};
+
+const schemaOverrideEventSuccessRotationsCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/override_event_success_rotations_payload.schema.json',
+  'title': 'OverrideEventSuccessRotationsCallablePayload',
+  'description': 'Callable payload accepted by overrideEventSuccessRotations.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+    'rounds',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'rounds': <String, Object?>{
+      'type': 'array',
+      'minItems': 1,
+      'maxItems': 32,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'roundIndex',
+          'pairings',
+        ],
+        'properties': <String, Object?>{
+          'roundIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 31,
+          },
+          'pairings': <String, Object?>{
+            'type': 'array',
+            'minItems': 0,
+            'maxItems': 100,
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'uidA',
+                'uidB',
+              ],
+              'properties': <String, Object?>{
+                'uidA': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                'uidB': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 };
@@ -9072,6 +10320,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaMarkEventAttendanceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'OverrideEventSuccessRotationsCallablePayload',
+    source: 'callables/override_event_success_rotations_payload.schema.json',
+    schema: schemaOverrideEventSuccessRotationsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'MarkEventAttendanceCallableResponse',
     source: 'callable_responses/mark_event_attendance_response.schema.json',
     schema: schemaMarkEventAttendanceCallableResponseSchema,
@@ -9221,6 +10474,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeleteEventCallablePayload': schemaDeleteEventCallablePayloadSchema,
   'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
   'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
+  'OverrideEventSuccessRotationsCallablePayload': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'MarkEventAttendanceCallableResponse': schemaMarkEventAttendanceCallableResponseSchema,
   'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
@@ -9291,6 +10545,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/delete_event_payload.schema.json': schemaDeleteEventCallablePayloadSchema,
   'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
   'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
+  'callables/override_event_success_rotations_payload.schema.json': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'callable_responses/mark_event_attendance_response.schema.json': schemaMarkEventAttendanceCallableResponseSchema,
   'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,

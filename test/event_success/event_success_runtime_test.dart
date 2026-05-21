@@ -1,0 +1,357 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_conversation_cue.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../events/events_test_helpers.dart' show buildEvent;
+
+void main() {
+  group('EventSuccessRuntime', () {
+    test('gates capabilities from selected modules and feature toggles', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.checkIn.id,
+          EventSuccessModuleCatalog.hostScript.id,
+          EventSuccessModuleCatalog.decomposedFeedback.id,
+        ],
+        wingmanRequestsEnabled: true,
+        contextualOpenersEnabled: true,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.checkInEnabled, isTrue);
+      expect(runtime.attendeePromptEnabled, isTrue);
+      expect(runtime.wingmanRequestsEnabled, isFalse);
+      expect(runtime.contextualOpenersConfigured, isFalse);
+      expect(runtime.liveRevealEnabled, isFalse);
+      expect(runtime.compatibilityQuestionnaireEnabled, isFalse);
+      expect(runtime.compatibilityCanAffectRanking, isFalse);
+      expect(runtime.hostReportEnabled, isFalse);
+      expect(runtime.canShowSelfCheckIn(checkInOpen: true), isTrue);
+      expect(runtime.canShowLiveReveal(attended: true), isFalse);
+      expect(
+        runtime.canShowWingmanRequest(attended: true, eventEnded: false),
+        isFalse,
+      );
+      expect(runtime.canShowFeedback(attended: true, eventEnded: true), isTrue);
+    });
+
+    test('gates compatibility questionnaire and ranking opt-in separately', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+        ],
+        compatibilityAffectsRanking: true,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.compatibilityQuestionnaireEnabled, isTrue);
+      expect(runtime.compatibilityCanAffectRanking, isTrue);
+      expect(
+        runtime.canUseCompatibilityQuestionnaire(
+          participationStatus: EventParticipationStatus.signedUp,
+          eventEnded: false,
+        ),
+        isTrue,
+      );
+      expect(
+        runtime.canUseCompatibilityQuestionnaire(
+          participationStatus: EventParticipationStatus.attended,
+          eventEnded: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('prioritizes unanswered questionnaire during check-in arrival', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.checkIn.id,
+          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          EventSuccessModuleCatalog.guidedRotations.id,
+          EventSuccessModuleCatalog.liveReveal.id,
+        ],
+        activeStepIndex: 0,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      final unanswered = runtime.attendeeMoment(
+        participationStatus: EventParticipationStatus.attended,
+        checkInOpen: false,
+        eventEnded: false,
+      );
+      final answered = runtime.attendeeMoment(
+        participationStatus: EventParticipationStatus.attended,
+        checkInOpen: false,
+        eventEnded: false,
+        compatibilityResponseSaved: true,
+      );
+
+      expect(
+        unanswered.kind,
+        EventSuccessAttendeeMomentKind.compatibilityQuestionnaire,
+      );
+      expect(answered.kind, EventSuccessAttendeeMomentKind.liveStepContext);
+    });
+
+    test('does not interrupt active reveal for unanswered questionnaire', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          EventSuccessModuleCatalog.guidedRotations.id,
+          EventSuccessModuleCatalog.liveReveal.id,
+        ],
+        activeStepIndex: 1,
+        revealStatus: EventSuccessRevealStatus.countingDown,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      final moment = runtime.attendeeMoment(
+        participationStatus: EventParticipationStatus.attended,
+        checkInOpen: false,
+        eventEnded: false,
+      );
+
+      expect(moment.kind, EventSuccessAttendeeMomentKind.liveReveal);
+    });
+
+    test('gates live reveal behind assignment modules', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.liveReveal.id,
+          EventSuccessModuleCatalog.guidedRotations.id,
+        ],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.liveRevealEnabled, isTrue);
+      expect(runtime.canShowLiveReveal(attended: true), isTrue);
+      expect(runtime.canShowLiveReveal(attended: false), isFalse);
+    });
+
+    test('keeps booked attendees in pre-arrival planning state', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.microPods.id,
+          EventSuccessModuleCatalog.guidedRotations.id,
+          EventSuccessModuleCatalog.socialMissions.id,
+          EventSuccessModuleCatalog.liveReveal.id,
+        ],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(
+        runtime.canShowPreCheckInPlanning(isBooked: true, eventEnded: false),
+        isTrue,
+      );
+      expect(
+        runtime.canShowAttendeePrompt(attended: false, eventEnded: false),
+        isFalse,
+      );
+      expect(runtime.canShowPodAssignment(attended: false), isFalse);
+      expect(runtime.canShowGuidedRotations(attended: false), isFalse);
+      expect(runtime.canShowLiveReveal(attended: false), isFalse);
+      expect(
+        runtime
+            .attendeeMoment(
+              participationStatus: EventParticipationStatus.signedUp,
+              checkInOpen: false,
+              eventEnded: false,
+            )
+            .kind,
+        EventSuccessAttendeeMomentKind.preArrival,
+      );
+    });
+
+    test('maps checked-in attendee content to the host active step', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+      ).copyWith(activeStepIndex: 3);
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      final moment = runtime.attendeeMoment(
+        participationStatus: EventParticipationStatus.attended,
+        checkInOpen: false,
+        eventEnded: false,
+      );
+
+      expect(moment.kind, EventSuccessAttendeeMomentKind.conversationCues);
+      expect(moment.activeStep?.title, 'Cooldown social mission');
+    });
+
+    test('keeps idle reveal steps as context until countdown starts', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        playbookId: EventSuccessPlaybookLibrary.pickleball.id,
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.guidedRotations.id,
+          EventSuccessModuleCatalog.liveReveal.id,
+        ],
+        activeStepIndex: 0,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      final idle = runtime.attendeeMoment(
+        participationStatus: EventParticipationStatus.attended,
+        checkInOpen: false,
+        eventEnded: false,
+      );
+      final countingDown =
+          EventSuccessRuntime(
+            plan: plan.copyWith(
+              revealStatus: EventSuccessRevealStatus.countingDown,
+            ),
+            event: event,
+            now: event.startTime,
+          ).attendeeMoment(
+            participationStatus: EventParticipationStatus.attended,
+            checkInOpen: false,
+            eventEnded: false,
+          );
+
+      expect(idle.kind, EventSuccessAttendeeMomentKind.liveStepContext);
+      expect(countingDown.kind, EventSuccessAttendeeMomentKind.liveReveal);
+    });
+
+    test('filters run-of-show steps to selected live modules', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.microPods.id,
+          EventSuccessModuleCatalog.safetyControls.id,
+        ],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.runOfShowSteps.map((step) => step.title), [
+        'Run in pace pods',
+      ]);
+      expect(
+        runtime.livePlan(bookedCount: 12, checkedInCount: 8)?.steps,
+        hasLength(1),
+      );
+    });
+
+    test('returns no live plan when selected modules have no live steps', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [EventSuccessModuleCatalog.hostAnalytics.id],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.runOfShowSteps, isEmpty);
+      expect(runtime.livePlan(bookedCount: 12, checkedInCount: 8), isNull);
+    });
+
+    test('gates live prompts and post-match openers separately', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.socialMissions.id,
+          EventSuccessModuleCatalog.contextualOpeners.id,
+        ],
+        contextualOpenersEnabled: true,
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(runtime.conversationCuesEnabled, isTrue);
+      expect(
+        runtime.canShowLiveConversationCues(attended: true, eventEnded: false),
+        isTrue,
+      );
+      expect(
+        runtime.canShowLiveConversationCues(attended: false, eventEnded: false),
+        isFalse,
+      );
+      expect(
+        runtime.canShowPostEventOpeners(attended: true, eventEnded: true),
+        isTrue,
+      );
+      expect(
+        EventSuccessConversationCueLibrary.liveCuesFor(
+          event: event,
+          plan: plan,
+        ).first.moment,
+        EventSuccessConversationCueMoment.live,
+      );
+      expect(
+        EventSuccessConversationCueLibrary.postEventOpenersFor(
+          event,
+        ).first.moment,
+        EventSuccessConversationCueMoment.postEvent,
+      );
+    });
+  });
+}

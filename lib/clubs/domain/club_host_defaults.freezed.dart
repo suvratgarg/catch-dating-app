@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ClubHostDefaults {
 
- EventPolicyDefaults get eventPolicy; EventSuccessDefaults get eventSuccess;
+ ActivityKind get primaryActivityKind; List<ActivityKind> get supportedActivityKinds; EventPolicyDefaults get eventPolicy; EventSuccessDefaults get eventSuccess; Map<String, EventSuccessDefaults> get eventSuccessByActivityKind;
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ClubHostDefaultsCopyWith<ClubHostDefaults> get copyWith => _$ClubHostDefaultsCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubHostDefaults&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubHostDefaults&&(identical(other.primaryActivityKind, primaryActivityKind) || other.primaryActivityKind == primaryActivityKind)&&const DeepCollectionEquality().equals(other.supportedActivityKinds, supportedActivityKinds)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess)&&const DeepCollectionEquality().equals(other.eventSuccessByActivityKind, eventSuccessByActivityKind));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,eventPolicy,eventSuccess);
+int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollectionEquality().hash(supportedActivityKinds),eventPolicy,eventSuccess,const DeepCollectionEquality().hash(eventSuccessByActivityKind));
 
 @override
 String toString() {
-  return 'ClubHostDefaults(eventPolicy: $eventPolicy, eventSuccess: $eventSuccess)';
+  return 'ClubHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ClubHostDefaultsCopyWith<$Res>  {
   factory $ClubHostDefaultsCopyWith(ClubHostDefaults value, $Res Function(ClubHostDefaults) _then) = _$ClubHostDefaultsCopyWithImpl;
 @useResult
 $Res call({
- EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess
+ ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind
 });
 
 
@@ -65,11 +65,14 @@ class _$ClubHostDefaultsCopyWithImpl<$Res>
 
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? eventPolicy = null,Object? eventSuccess = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? primaryActivityKind = null,Object? supportedActivityKinds = null,Object? eventPolicy = null,Object? eventSuccess = null,Object? eventSuccessByActivityKind = null,}) {
   return _then(_self.copyWith(
-eventPolicy: null == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
+primaryActivityKind: null == primaryActivityKind ? _self.primaryActivityKind : primaryActivityKind // ignore: cast_nullable_to_non_nullable
+as ActivityKind,supportedActivityKinds: null == supportedActivityKinds ? _self.supportedActivityKinds : supportedActivityKinds // ignore: cast_nullable_to_non_nullable
+as List<ActivityKind>,eventPolicy: null == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyDefaults,eventSuccess: null == eventSuccess ? _self.eventSuccess : eventSuccess // ignore: cast_nullable_to_non_nullable
-as EventSuccessDefaults,
+as EventSuccessDefaults,eventSuccessByActivityKind: null == eventSuccessByActivityKind ? _self.eventSuccessByActivityKind : eventSuccessByActivityKind // ignore: cast_nullable_to_non_nullable
+as Map<String, EventSuccessDefaults>,
   ));
 }
 /// Create a copy of ClubHostDefaults
@@ -172,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults() when $default != null:
-return $default(_that.eventPolicy,_that.eventSuccess);case _:
+return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind);case _:
   return orElse();
 
 }
@@ -193,10 +196,10 @@ return $default(_that.eventPolicy,_that.eventSuccess);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind)  $default,) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults():
-return $default(_that.eventPolicy,_that.eventSuccess);case _:
+return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +216,10 @@ return $default(_that.eventPolicy,_that.eventSuccess);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ActivityKind primaryActivityKind,  List<ActivityKind> supportedActivityKinds,  EventPolicyDefaults eventPolicy,  EventSuccessDefaults eventSuccess,  Map<String, EventSuccessDefaults> eventSuccessByActivityKind)?  $default,) {final _that = this;
 switch (_that) {
 case _ClubHostDefaults() when $default != null:
-return $default(_that.eventPolicy,_that.eventSuccess);case _:
+return $default(_that.primaryActivityKind,_that.supportedActivityKinds,_that.eventPolicy,_that.eventSuccess,_that.eventSuccessByActivityKind);case _:
   return null;
 
 }
@@ -227,12 +230,27 @@ return $default(_that.eventPolicy,_that.eventSuccess);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _ClubHostDefaults implements ClubHostDefaults {
-  const _ClubHostDefaults({this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults()});
+class _ClubHostDefaults extends ClubHostDefaults {
+  const _ClubHostDefaults({this.primaryActivityKind = ActivityKind.socialRun, final  List<ActivityKind> supportedActivityKinds = const <ActivityKind>[], this.eventPolicy = const EventPolicyDefaults(), this.eventSuccess = const EventSuccessDefaults(), final  Map<String, EventSuccessDefaults> eventSuccessByActivityKind = const <String, EventSuccessDefaults>{}}): _supportedActivityKinds = supportedActivityKinds,_eventSuccessByActivityKind = eventSuccessByActivityKind,super._();
   factory _ClubHostDefaults.fromJson(Map<String, dynamic> json) => _$ClubHostDefaultsFromJson(json);
+
+@override@JsonKey() final  ActivityKind primaryActivityKind;
+ final  List<ActivityKind> _supportedActivityKinds;
+@override@JsonKey() List<ActivityKind> get supportedActivityKinds {
+  if (_supportedActivityKinds is EqualUnmodifiableListView) return _supportedActivityKinds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_supportedActivityKinds);
+}
 
 @override@JsonKey() final  EventPolicyDefaults eventPolicy;
 @override@JsonKey() final  EventSuccessDefaults eventSuccess;
+ final  Map<String, EventSuccessDefaults> _eventSuccessByActivityKind;
+@override@JsonKey() Map<String, EventSuccessDefaults> get eventSuccessByActivityKind {
+  if (_eventSuccessByActivityKind is EqualUnmodifiableMapView) return _eventSuccessByActivityKind;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_eventSuccessByActivityKind);
+}
+
 
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
@@ -247,16 +265,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubHostDefaults&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubHostDefaults&&(identical(other.primaryActivityKind, primaryActivityKind) || other.primaryActivityKind == primaryActivityKind)&&const DeepCollectionEquality().equals(other._supportedActivityKinds, _supportedActivityKinds)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&(identical(other.eventSuccess, eventSuccess) || other.eventSuccess == eventSuccess)&&const DeepCollectionEquality().equals(other._eventSuccessByActivityKind, _eventSuccessByActivityKind));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,eventPolicy,eventSuccess);
+int get hashCode => Object.hash(runtimeType,primaryActivityKind,const DeepCollectionEquality().hash(_supportedActivityKinds),eventPolicy,eventSuccess,const DeepCollectionEquality().hash(_eventSuccessByActivityKind));
 
 @override
 String toString() {
-  return 'ClubHostDefaults(eventPolicy: $eventPolicy, eventSuccess: $eventSuccess)';
+  return 'ClubHostDefaults(primaryActivityKind: $primaryActivityKind, supportedActivityKinds: $supportedActivityKinds, eventPolicy: $eventPolicy, eventSuccess: $eventSuccess, eventSuccessByActivityKind: $eventSuccessByActivityKind)';
 }
 
 
@@ -267,7 +285,7 @@ abstract mixin class _$ClubHostDefaultsCopyWith<$Res> implements $ClubHostDefaul
   factory _$ClubHostDefaultsCopyWith(_ClubHostDefaults value, $Res Function(_ClubHostDefaults) _then) = __$ClubHostDefaultsCopyWithImpl;
 @override @useResult
 $Res call({
- EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess
+ ActivityKind primaryActivityKind, List<ActivityKind> supportedActivityKinds, EventPolicyDefaults eventPolicy, EventSuccessDefaults eventSuccess, Map<String, EventSuccessDefaults> eventSuccessByActivityKind
 });
 
 
@@ -284,11 +302,14 @@ class __$ClubHostDefaultsCopyWithImpl<$Res>
 
 /// Create a copy of ClubHostDefaults
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? eventPolicy = null,Object? eventSuccess = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? primaryActivityKind = null,Object? supportedActivityKinds = null,Object? eventPolicy = null,Object? eventSuccess = null,Object? eventSuccessByActivityKind = null,}) {
   return _then(_ClubHostDefaults(
-eventPolicy: null == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
+primaryActivityKind: null == primaryActivityKind ? _self.primaryActivityKind : primaryActivityKind // ignore: cast_nullable_to_non_nullable
+as ActivityKind,supportedActivityKinds: null == supportedActivityKinds ? _self._supportedActivityKinds : supportedActivityKinds // ignore: cast_nullable_to_non_nullable
+as List<ActivityKind>,eventPolicy: null == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyDefaults,eventSuccess: null == eventSuccess ? _self.eventSuccess : eventSuccess // ignore: cast_nullable_to_non_nullable
-as EventSuccessDefaults,
+as EventSuccessDefaults,eventSuccessByActivityKind: null == eventSuccessByActivityKind ? _self._eventSuccessByActivityKind : eventSuccessByActivityKind // ignore: cast_nullable_to_non_nullable
+as Map<String, EventSuccessDefaults>,
   ));
 }
 

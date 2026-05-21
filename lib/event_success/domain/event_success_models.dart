@@ -43,12 +43,57 @@ enum EventSuccessModuleType {
   microPods,
   socialMissions,
   guidedRotations,
+  liveReveal,
   compatibilityQuestionnaire,
-  privateCrush,
+  wingmanRequests,
   contextualOpeners,
   decomposedFeedback,
   hostAnalytics,
   safetyControls,
+}
+
+enum EventSuccessProductLayer {
+  eventStructure(
+    'Event structure',
+    'Defines the format, units, cadence, and live flow.',
+  ),
+  rosterAttendance(
+    'Roster and attendance',
+    'Keeps booking, arrival, eligibility, and waitlist state reliable.',
+  ),
+  assignments(
+    'Assignments',
+    'Creates pods, pairs, teams, tables, rotations, and breaks.',
+  ),
+  compatibility(
+    'Compatibility',
+    'Uses questionnaire and preference signals to explain good matches.',
+  ),
+  liveReveal(
+    'Live reveal',
+    'Creates countdowns, clues, synchronized reveals, and anticipation.',
+  ),
+  conversation(
+    'Conversation prompts',
+    'Provides live prompts and post-match openers from shared context.',
+  ),
+  hostFacilitation(
+    'Host facilitation',
+    'Lets attendees explicitly ask the host for live help without exposing private matching choices.',
+  ),
+  hostCoach(
+    'Host coach',
+    'Turns event outcomes into clear advice for the next event.',
+  ),
+  safety(
+    'Safety layer',
+    'Applies blocks, reports, visibility, and opt-outs everywhere.',
+  );
+
+  const EventSuccessProductLayer(this.label, this.description);
+
+  final String label;
+  final String description;
 }
 
 enum EventRecommendationPriority { critical, high, medium, low }
@@ -74,6 +119,7 @@ class EventSuccessModule {
     required this.id,
     required this.title,
     required this.type,
+    required this.productLayer,
     required this.stage,
     required this.attendeePromise,
     required this.hostPromise,
@@ -87,6 +133,7 @@ class EventSuccessModule {
   final String id;
   final String title;
   final EventSuccessModuleType type;
+  final EventSuccessProductLayer productLayer;
   final EventSuccessStage stage;
   final String attendeePromise;
   final String hostPromise;
@@ -177,6 +224,18 @@ class EventSuccessPlaybook {
     }
     return grouped;
   }
+
+  Map<EventSuccessProductLayer, List<EventSuccessModule>>
+  get modulesByProductLayer {
+    final grouped = <EventSuccessProductLayer, List<EventSuccessModule>>{};
+    for (final layer in EventSuccessProductLayer.values) {
+      final modulesForLayer = modules
+          .where((module) => module.productLayer == layer)
+          .toList(growable: false);
+      if (modulesForLayer.isNotEmpty) grouped[layer] = modulesForLayer;
+    }
+    return grouped;
+  }
 }
 
 class EventSuccessScorecard {
@@ -184,41 +243,48 @@ class EventSuccessScorecard {
     required this.bookedCount,
     required this.checkedInCount,
     required this.attendeesWhoMetTwoPlusPeople,
-    required this.privateCrushCount,
     required this.mutualMatchCount,
     required this.chatStartedCount,
     required this.repeatSignupCount,
     required this.averageWelcomeRating,
     required this.averageStructureRating,
     required this.safetyIncidentCount,
+    this.feedbackResponseCount = 0,
+    this.assignmentParticipantCount = 0,
+    this.assignmentOptOutCount = 0,
+    this.wingmanRequestCount = 0,
   }) : assert(bookedCount >= 0),
        assert(checkedInCount >= 0),
        assert(attendeesWhoMetTwoPlusPeople >= 0),
-       assert(privateCrushCount >= 0),
        assert(mutualMatchCount >= 0),
        assert(chatStartedCount >= 0),
        assert(repeatSignupCount >= 0),
        assert(averageWelcomeRating >= 0 && averageWelcomeRating <= 5),
        assert(averageStructureRating >= 0 && averageStructureRating <= 5),
-       assert(safetyIncidentCount >= 0);
+       assert(safetyIncidentCount >= 0),
+       assert(feedbackResponseCount >= 0),
+       assert(assignmentParticipantCount >= 0),
+       assert(assignmentOptOutCount >= 0),
+       assert(wingmanRequestCount >= 0);
 
   final int bookedCount;
   final int checkedInCount;
   final int attendeesWhoMetTwoPlusPeople;
-  final int privateCrushCount;
   final int mutualMatchCount;
   final int chatStartedCount;
   final int repeatSignupCount;
   final double averageWelcomeRating;
   final double averageStructureRating;
   final int safetyIncidentCount;
+  final int feedbackResponseCount;
+  final int assignmentParticipantCount;
+  final int assignmentOptOutCount;
+  final int wingmanRequestCount;
 
   double get checkInRate => _rate(checkedInCount, bookedCount);
 
   double get introCoverageRate =>
       _rate(attendeesWhoMetTwoPlusPeople, checkedInCount);
-
-  double get privateCrushRate => _rate(privateCrushCount, checkedInCount);
 
   double get mutualMatchRate => _rate(mutualMatchCount, checkedInCount);
 
@@ -226,19 +292,32 @@ class EventSuccessScorecard {
 
   double get repeatSignupRate => _rate(repeatSignupCount, checkedInCount);
 
+  double get feedbackResponseRate =>
+      _rate(feedbackResponseCount, checkedInCount);
+
+  double get assignmentCoverageRate =>
+      _rate(assignmentParticipantCount, _activeAttendeeDenominator);
+
+  double get assignmentOptOutRate =>
+      _rate(assignmentOptOutCount, _activeAttendeeDenominator);
+
+  double get wingmanRequestRate => _rate(wingmanRequestCount, checkedInCount);
+
   double get experienceScore {
     final safetyPenalty = safetyIncidentCount > 0 ? 0.18 : 0.0;
     final raw =
         (checkInRate * 0.16) +
-        (introCoverageRate * 0.22) +
-        (privateCrushRate * 0.18) +
-        (mutualMatchRate * 0.16) +
-        (chatStartRate * 0.12) +
-        ((averageWelcomeRating / 5) * 0.08) +
-        ((averageStructureRating / 5) * 0.08) -
+        (introCoverageRate * 0.28) +
+        (mutualMatchRate * 0.18) +
+        (chatStartRate * 0.14) +
+        ((averageWelcomeRating / 5) * 0.12) +
+        ((averageStructureRating / 5) * 0.12) -
         safetyPenalty;
     return raw.clamp(0, 1);
   }
+
+  int get _activeAttendeeDenominator =>
+      checkedInCount > 0 ? checkedInCount : bookedCount;
 
   static double _rate(int numerator, int denominator) {
     if (denominator <= 0) return 0;

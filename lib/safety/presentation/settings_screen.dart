@@ -226,6 +226,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               Routes.eventSuccessLabScreen.name,
                             ),
                           ),
+                        if (AppConfig.enableEventSuccessPreview)
+                          SettingsRow(
+                            key: SettingsKeys.eventSuccessManualQaRow,
+                            label: 'Event success manual QA',
+                            value: 'Host and attendee side by side',
+                            icon: Icons.splitscreen_rounded,
+                            onTap: () => context.pushNamed(
+                              Routes.eventSuccessManualQaScreen.name,
+                            ),
+                          ),
                       ],
                     ),
                     gapH20,

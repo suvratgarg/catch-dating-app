@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventSuccessPlan {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get playbookId; List<String> get selectedModuleIds; int get targetAttendeeCount; String get hostGoal; bool get privateCrushEnabled; bool get contextualOpenersEnabled; int get activeStepIndex; EventSuccessPlanStatus get status; String? get attendeePrompt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get frozenAt;@NullableTimestampConverter() DateTime? get completedAt;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get playbookId; List<String> get selectedModuleIds; int get targetAttendeeCount; EventSuccessStructureConfig get structureConfig; String get hostGoal; bool get wingmanRequestsEnabled; bool get contextualOpenersEnabled; bool get compatibilityAffectsRanking; EventSuccessQuestionnaireConfig get questionnaireConfig; int get activeStepIndex; EventSuccessPlanStatus get status; EventSuccessRevealStatus get revealStatus; int get activeRevealRoundIndex;@NullableTimestampConverter() DateTime? get revealStartedAt;@NullableTimestampConverter() DateTime? get revealEndsAt; String? get attendeePrompt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get frozenAt;@NullableTimestampConverter() DateTime? get completedAt;
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventSuccessPlanCopyWith<EventSuccessPlan> get copyWith => _$EventSuccessPlanCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.revealEndsAt, revealEndsAt) || other.revealEndsAt == revealEndsAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,hostGoal,privateCrushEnabled,contextualOpenersEnabled,activeStepIndex,status,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,activeStepIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,revealEndsAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, activeStepIndex: $activeStepIndex, status: $status, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, activeStepIndex: $activeStepIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, revealEndsAt: $revealEndsAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EventSuccessPlanCopyWith<$Res>  {
   factory $EventSuccessPlanCopyWith(EventSuccessPlan value, $Res Function(EventSuccessPlan) _then) = _$EventSuccessPlanCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, int activeStepIndex, EventSuccessPlanStatus status, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, int activeStepIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt,@NullableTimestampConverter() DateTime? revealEndsAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$EventSuccessPlanCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? activeStepIndex = null,Object? status = null,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? activeStepIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? revealEndsAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -73,12 +73,19 @@ as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullabl
 as String,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
 as String,selectedModuleIds: null == selectedModuleIds ? _self.selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
 as List<String>,targetAttendeeCount: null == targetAttendeeCount ? _self.targetAttendeeCount : targetAttendeeCount // ignore: cast_nullable_to_non_nullable
-as int,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
-as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as int,structureConfig: null == structureConfig ? _self.structureConfig : structureConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessStructureConfig,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,wingmanRequestsEnabled: null == wingmanRequestsEnabled ? _self.wingmanRequestsEnabled : wingmanRequestsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
-as bool,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+as bool,compatibilityAffectsRanking: null == compatibilityAffectsRanking ? _self.compatibilityAffectsRanking : compatibilityAffectsRanking // ignore: cast_nullable_to_non_nullable
+as bool,questionnaireConfig: null == questionnaireConfig ? _self.questionnaireConfig : questionnaireConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessQuestionnaireConfig,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as EventSuccessPlanStatus,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as EventSuccessPlanStatus,revealStatus: null == revealStatus ? _self.revealStatus : revealStatus // ignore: cast_nullable_to_non_nullable
+as EventSuccessRevealStatus,activeRevealRoundIndex: null == activeRevealRoundIndex ? _self.activeRevealRoundIndex : activeRevealRoundIndex // ignore: cast_nullable_to_non_nullable
+as int,revealStartedAt: freezed == revealStartedAt ? _self.revealStartedAt : revealStartedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,revealEndsAt: freezed == revealEndsAt ? _self.revealEndsAt : revealEndsAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,frozenAt: freezed == frozenAt ? _self.frozenAt : frozenAt // ignore: cast_nullable_to_non_nullable
@@ -168,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  int activeStepIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt, @NullableTimestampConverter()  DateTime? revealEndsAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.activeStepIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.revealEndsAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   return orElse();
 
 }
@@ -189,10 +196,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selec
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  int activeStepIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt, @NullableTimestampConverter()  DateTime? revealEndsAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan():
-return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.activeStepIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.revealEndsAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +216,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selec
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  int activeStepIndex,  EventSuccessPlanStatus status,  EventSuccessRevealStatus revealStatus,  int activeRevealRoundIndex, @NullableTimestampConverter()  DateTime? revealStartedAt, @NullableTimestampConverter()  DateTime? revealEndsAt,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessPlan() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.activeStepIndex,_that.status,_that.revealStatus,_that.activeRevealRoundIndex,_that.revealStartedAt,_that.revealEndsAt,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
   return null;
 
 }
@@ -224,7 +231,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selec
 @JsonSerializable()
 
 class _EventSuccessPlan extends EventSuccessPlan {
-  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, required this.hostGoal, this.privateCrushEnabled = true, this.contextualOpenersEnabled = true, this.activeStepIndex = 0, this.status = EventSuccessPlanStatus.setup, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,super._();
+  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), required this.hostGoal, this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.activeStepIndex = 0, this.status = EventSuccessPlanStatus.setup, this.revealStatus = EventSuccessRevealStatus.idle, this.activeRevealRoundIndex = 0, @NullableTimestampConverter() this.revealStartedAt, @NullableTimestampConverter() this.revealEndsAt, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,super._();
   factory _EventSuccessPlan.fromJson(Map<String, dynamic> json) => _$EventSuccessPlanFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -239,11 +246,18 @@ class _EventSuccessPlan extends EventSuccessPlan {
 }
 
 @override final  int targetAttendeeCount;
+@override@JsonKey() final  EventSuccessStructureConfig structureConfig;
 @override final  String hostGoal;
-@override@JsonKey() final  bool privateCrushEnabled;
+@override@JsonKey() final  bool wingmanRequestsEnabled;
 @override@JsonKey() final  bool contextualOpenersEnabled;
+@override@JsonKey() final  bool compatibilityAffectsRanking;
+@override@JsonKey() final  EventSuccessQuestionnaireConfig questionnaireConfig;
 @override@JsonKey() final  int activeStepIndex;
 @override@JsonKey() final  EventSuccessPlanStatus status;
+@override@JsonKey() final  EventSuccessRevealStatus revealStatus;
+@override@JsonKey() final  int activeRevealRoundIndex;
+@override@NullableTimestampConverter() final  DateTime? revealStartedAt;
+@override@NullableTimestampConverter() final  DateTime? revealEndsAt;
 @override final  String? attendeePrompt;
 @override@TimestampConverter() final  DateTime createdAt;
 @override@TimestampConverter() final  DateTime updatedAt;
@@ -263,16 +277,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.revealStatus, revealStatus) || other.revealStatus == revealStatus)&&(identical(other.activeRevealRoundIndex, activeRevealRoundIndex) || other.activeRevealRoundIndex == activeRevealRoundIndex)&&(identical(other.revealStartedAt, revealStartedAt) || other.revealStartedAt == revealStartedAt)&&(identical(other.revealEndsAt, revealEndsAt) || other.revealEndsAt == revealEndsAt)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,hostGoal,privateCrushEnabled,contextualOpenersEnabled,activeStepIndex,status,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt);
+int get hashCode => Object.hashAll([runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,activeStepIndex,status,revealStatus,activeRevealRoundIndex,revealStartedAt,revealEndsAt,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt]);
 
 @override
 String toString() {
-  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, activeStepIndex: $activeStepIndex, status: $status, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, activeStepIndex: $activeStepIndex, status: $status, revealStatus: $revealStatus, activeRevealRoundIndex: $activeRevealRoundIndex, revealStartedAt: $revealStartedAt, revealEndsAt: $revealEndsAt, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
 }
 
 
@@ -283,7 +297,7 @@ abstract mixin class _$EventSuccessPlanCopyWith<$Res> implements $EventSuccessPl
   factory _$EventSuccessPlanCopyWith(_EventSuccessPlan value, $Res Function(_EventSuccessPlan) _then) = __$EventSuccessPlanCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, int activeStepIndex, EventSuccessPlanStatus status, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, int activeStepIndex, EventSuccessPlanStatus status, EventSuccessRevealStatus revealStatus, int activeRevealRoundIndex,@NullableTimestampConverter() DateTime? revealStartedAt,@NullableTimestampConverter() DateTime? revealEndsAt, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
 });
 
 
@@ -300,7 +314,7 @@ class __$EventSuccessPlanCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessPlan
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? activeStepIndex = null,Object? status = null,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? activeStepIndex = null,Object? status = null,Object? revealStatus = null,Object? activeRevealRoundIndex = null,Object? revealStartedAt = freezed,Object? revealEndsAt = freezed,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
   return _then(_EventSuccessPlan(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -308,12 +322,19 @@ as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullabl
 as String,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
 as String,selectedModuleIds: null == selectedModuleIds ? _self._selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
 as List<String>,targetAttendeeCount: null == targetAttendeeCount ? _self.targetAttendeeCount : targetAttendeeCount // ignore: cast_nullable_to_non_nullable
-as int,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
-as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as int,structureConfig: null == structureConfig ? _self.structureConfig : structureConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessStructureConfig,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,wingmanRequestsEnabled: null == wingmanRequestsEnabled ? _self.wingmanRequestsEnabled : wingmanRequestsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
-as bool,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+as bool,compatibilityAffectsRanking: null == compatibilityAffectsRanking ? _self.compatibilityAffectsRanking : compatibilityAffectsRanking // ignore: cast_nullable_to_non_nullable
+as bool,questionnaireConfig: null == questionnaireConfig ? _self.questionnaireConfig : questionnaireConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessQuestionnaireConfig,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as EventSuccessPlanStatus,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as EventSuccessPlanStatus,revealStatus: null == revealStatus ? _self.revealStatus : revealStatus // ignore: cast_nullable_to_non_nullable
+as EventSuccessRevealStatus,activeRevealRoundIndex: null == activeRevealRoundIndex ? _self.activeRevealRoundIndex : activeRevealRoundIndex // ignore: cast_nullable_to_non_nullable
+as int,revealStartedAt: freezed == revealStartedAt ? _self.revealStartedAt : revealStartedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,revealEndsAt: freezed == revealEndsAt ? _self.revealEndsAt : revealEndsAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,frozenAt: freezed == frozenAt ? _self.frozenAt : frozenAt // ignore: cast_nullable_to_non_nullable
@@ -329,7 +350,7 @@ as DateTime?,
 /// @nodoc
 mixin _$EventSuccessFeedback {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; int get welcomeRating; int get structureRating; int get metNewPeopleCount; bool get markedPrivateCrush; bool get safetyConcern; String? get privateNote;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; int get welcomeRating; int get structureRating; int get metNewPeopleCount; bool get safetyConcern; String? get privateNote;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
 /// Create a copy of EventSuccessFeedback
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -342,16 +363,16 @@ $EventSuccessFeedbackCopyWith<EventSuccessFeedback> get copyWith => _$EventSucce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.markedPrivateCrush, markedPrivateCrush) || other.markedPrivateCrush == markedPrivateCrush)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,markedPrivateCrush,safetyConcern,privateNote,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,safetyConcern,privateNote,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, markedPrivateCrush: $markedPrivateCrush, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -362,7 +383,7 @@ abstract mixin class $EventSuccessFeedbackCopyWith<$Res>  {
   factory $EventSuccessFeedbackCopyWith(EventSuccessFeedback value, $Res Function(EventSuccessFeedback) _then) = _$EventSuccessFeedbackCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool markedPrivateCrush, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -379,7 +400,7 @@ class _$EventSuccessFeedbackCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessFeedback
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? markedPrivateCrush = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -388,8 +409,7 @@ as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nul
 as String,welcomeRating: null == welcomeRating ? _self.welcomeRating : welcomeRating // ignore: cast_nullable_to_non_nullable
 as int,structureRating: null == structureRating ? _self.structureRating : structureRating // ignore: cast_nullable_to_non_nullable
 as int,metNewPeopleCount: null == metNewPeopleCount ? _self.metNewPeopleCount : metNewPeopleCount // ignore: cast_nullable_to_non_nullable
-as int,markedPrivateCrush: null == markedPrivateCrush ? _self.markedPrivateCrush : markedPrivateCrush // ignore: cast_nullable_to_non_nullable
-as bool,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
+as int,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
 as bool,privateNote: freezed == privateNote ? _self.privateNote : privateNote // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -478,10 +498,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventSuccessFeedback() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -499,10 +519,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRatin
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessFeedback():
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -519,10 +539,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRatin
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessFeedback() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -534,7 +554,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRatin
 @JsonSerializable()
 
 class _EventSuccessFeedback implements EventSuccessFeedback {
-  const _EventSuccessFeedback({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.welcomeRating, required this.structureRating, required this.metNewPeopleCount, this.markedPrivateCrush = false, this.safetyConcern = false, this.privateNote, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt});
+  const _EventSuccessFeedback({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.welcomeRating, required this.structureRating, required this.metNewPeopleCount, this.safetyConcern = false, this.privateNote, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt});
   factory _EventSuccessFeedback.fromJson(Map<String, dynamic> json) => _$EventSuccessFeedbackFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -544,7 +564,6 @@ class _EventSuccessFeedback implements EventSuccessFeedback {
 @override final  int welcomeRating;
 @override final  int structureRating;
 @override final  int metNewPeopleCount;
-@override@JsonKey() final  bool markedPrivateCrush;
 @override@JsonKey() final  bool safetyConcern;
 @override final  String? privateNote;
 @override@TimestampConverter() final  DateTime createdAt;
@@ -563,16 +582,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.markedPrivateCrush, markedPrivateCrush) || other.markedPrivateCrush == markedPrivateCrush)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,markedPrivateCrush,safetyConcern,privateNote,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,safetyConcern,privateNote,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, markedPrivateCrush: $markedPrivateCrush, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -583,7 +602,7 @@ abstract mixin class _$EventSuccessFeedbackCopyWith<$Res> implements $EventSucce
   factory _$EventSuccessFeedbackCopyWith(_EventSuccessFeedback value, $Res Function(_EventSuccessFeedback) _then) = __$EventSuccessFeedbackCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool markedPrivateCrush, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -600,7 +619,7 @@ class __$EventSuccessFeedbackCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessFeedback
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? markedPrivateCrush = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_EventSuccessFeedback(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -609,8 +628,7 @@ as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nul
 as String,welcomeRating: null == welcomeRating ? _self.welcomeRating : welcomeRating // ignore: cast_nullable_to_non_nullable
 as int,structureRating: null == structureRating ? _self.structureRating : structureRating // ignore: cast_nullable_to_non_nullable
 as int,metNewPeopleCount: null == metNewPeopleCount ? _self.metNewPeopleCount : metNewPeopleCount // ignore: cast_nullable_to_non_nullable
-as int,markedPrivateCrush: null == markedPrivateCrush ? _self.markedPrivateCrush : markedPrivateCrush // ignore: cast_nullable_to_non_nullable
-as bool,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
+as int,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
 as bool,privateNote: freezed == privateNote ? _self.privateNote : privateNote // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable

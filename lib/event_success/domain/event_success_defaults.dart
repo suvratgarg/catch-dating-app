@@ -1,8 +1,13 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,11 +20,16 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
 
   const factory EventSuccessDefaults({
     @Default(false) bool enabled,
-    @Default('socialRun') String playbookId,
+    @Default('social_run_light') String playbookId,
     @Default(<String>[]) List<String> selectedModuleIds,
+    @Default(EventSuccessStructureConfig.legacyDefault())
+    EventSuccessStructureConfig structureConfig,
     @Default('Help attendees meet at least two new people.') String hostGoal,
-    @Default(true) bool privateCrushEnabled,
+    @Default(true) bool wingmanRequestsEnabled,
     @Default(true) bool contextualOpenersEnabled,
+    @Default(false) bool compatibilityAffectsRanking,
+    @Default(EventSuccessQuestionnaireConfig.defaultTemplate())
+    EventSuccessQuestionnaireConfig questionnaireConfig,
     String? attendeePrompt,
   }) = _EventSuccessDefaults;
 
@@ -35,10 +45,29 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       enabled: enabled,
       playbookId: draft.playbook.id,
       selectedModuleIds: draft.selectedModuleIds.toList()..sort(),
+      structureConfig: draft.structureConfig,
       hostGoal: draft.hostGoal,
-      privateCrushEnabled: draft.privateCrushEnabled,
+      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
       contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
+      questionnaireConfig: draft.questionnaireConfig,
       attendeePrompt: _trimToNull(attendeePrompt),
+    );
+  }
+
+  factory EventSuccessDefaults.recommendedForActivity(
+    ActivityKind activityKind, {
+    bool enabled = false,
+    int? targetAttendeeCount,
+    String? attendeePrompt,
+  }) {
+    return EventSuccessDefaults.fromDraft(
+      EventSuccessHostDraft.fromActivity(
+        activityKind,
+        targetAttendeeCount: targetAttendeeCount,
+      ),
+      enabled: enabled,
+      attendeePrompt: attendeePrompt,
     );
   }
 
@@ -55,22 +84,90 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       selectedModuleIds: selectedIds.isEmpty
           ? defaultDraft.selectedModuleIds
           : selectedIds,
+      structureConfig: structureConfig.isLegacyDefault
+          ? defaultDraft.structureConfig
+          : structureConfig,
       hostGoal: hostGoal.trim().isEmpty ? defaultDraft.hostGoal : hostGoal,
-      privateCrushEnabled: privateCrushEnabled,
+      wingmanRequestsEnabled: wingmanRequestsEnabled,
       contextualOpenersEnabled: contextualOpenersEnabled,
+      compatibilityAffectsRanking: compatibilityAffectsRanking,
+      questionnaireConfig: questionnaireConfig,
+    );
+  }
+
+  EventSuccessDefaults normalizedForActivity(
+    ActivityKind activityKind, {
+    int? targetAttendeeCount,
+  }) {
+    final recommended = EventSuccessDefaults.recommendedForActivity(
+      activityKind,
+      enabled: enabled,
+      targetAttendeeCount: targetAttendeeCount,
+      attendeePrompt: attendeePrompt,
+    );
+    final recommendedDraft = recommended.toDraft(
+      targetAttendeeCount: targetAttendeeCount,
+    );
+    final profile = EventSuccessActivityProfile.forActivity(
+      activityKind,
+      targetAttendeeCount: targetAttendeeCount,
+    );
+    final currentPlaybook = EventSuccessPlaybookLibrary.byIdOrDefault(
+      playbookId,
+    );
+    final currentSelectedIds = selectedModuleIds
+        .where(recommendedDraft.playbook.moduleIds.contains)
+        .where(profile.isSelectable)
+        .toSet();
+    final useCurrentSelectedIds =
+        currentSelectedIds.isNotEmpty &&
+        _playbookMatchesActivity(currentPlaybook, activityKind);
+    final selectedIds = useCurrentSelectedIds
+        ? currentSelectedIds
+        : recommendedDraft.selectedModuleIds;
+    final compatibilitySelected = selectedIds.contains(
+      EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+    );
+
+    return EventSuccessDefaults.fromDraft(
+      recommendedDraft.copyWith(
+        selectedModuleIds: selectedIds,
+        structureConfig: structureConfig.isLegacyDefault
+            ? recommendedDraft.structureConfig
+            : structureConfig,
+        hostGoal: hostGoal.trim().isEmpty
+            ? recommendedDraft.hostGoal
+            : hostGoal,
+        wingmanRequestsEnabled: wingmanRequestsEnabled,
+        contextualOpenersEnabled: contextualOpenersEnabled,
+        compatibilityAffectsRanking:
+            compatibilitySelected &&
+            (useCurrentSelectedIds
+                ? compatibilityAffectsRanking
+                : recommendedDraft.compatibilityAffectsRanking),
+        questionnaireConfig: questionnaireConfig,
+      ),
+      enabled: enabled,
+      attendeePrompt: attendeePrompt,
     );
   }
 
   EventSuccessPlan toPlanForEvent(Event event, {DateTime? now}) {
     final createdAt = now ?? DateTime.now();
+    final normalized = normalizedForActivity(
+      event.activityKind,
+      targetAttendeeCount: math.max(1, event.capacityLimit),
+    );
     return EventSuccessPlan.fromDraft(
       id: event.id,
       eventId: event.id,
       clubId: event.clubId,
-      draft: toDraft(targetAttendeeCount: math.max(1, event.capacityLimit)),
+      draft: normalized.toDraft(
+        targetAttendeeCount: math.max(1, event.capacityLimit),
+      ),
       createdAt: createdAt,
       updatedAt: createdAt,
-      attendeePrompt: _trimToNull(attendeePrompt),
+      attendeePrompt: _trimToNull(normalized.attendeePrompt),
     );
   }
 }
@@ -79,4 +176,12 @@ String? _trimToNull(String? value) {
   final normalized = value?.trim();
   if (normalized == null || normalized.isEmpty) return null;
   return normalized;
+}
+
+bool _playbookMatchesActivity(
+  EventSuccessPlaybook playbook,
+  ActivityKind activityKind,
+) {
+  if (playbook.activityType == activityKind) return true;
+  return activityKind.defaultPlaybookId == playbook.id;
 }

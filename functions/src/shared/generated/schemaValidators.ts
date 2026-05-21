@@ -51,6 +51,7 @@ import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
 import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
+import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
 import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallableResponse";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
@@ -119,6 +120,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
+  overrideEventSuccessRotationsCallablePayloadSchema,
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
@@ -332,6 +334,10 @@ export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as
       ValidateFunction<MarkEventAttendanceCallablePayload>;
+export const validateOverrideEventSuccessRotationsCallablePayload:
+  ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
+    ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
+      ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
 export const validateMarkEventAttendanceCallableResponse:
   ValidateFunction<MarkEventAttendanceCallableResponse> =
     ajv.compile(markEventAttendanceCallableResponseSchema) as

@@ -151,10 +151,18 @@ enum ActivityKind implements Labelled {
 
   String? get defaultPlaybookId => switch (this) {
     socialRun => 'social_run_light',
+    running ||
+    walking ||
+    cycling ||
+    spinClass ||
+    yoga ||
+    strengthTraining => 'host_led_social',
     pickleball || padel || tennis || badminton => 'pickleball_rotations',
     pubQuiz => 'pub_quiz_team_mixer',
+    dinner => 'dinner_table_mixer',
+    barCrawl => 'host_led_social',
     singlesMixer => 'algorithmic_mixer_reveal',
-    _ => null,
+    openActivity => 'host_led_social',
   };
 }
 

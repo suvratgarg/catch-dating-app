@@ -116,6 +116,22 @@ service cloud.firestore {
       return eventId + '_' + uid;
     }
 
+    function eventSuccessPreferenceDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
+    function eventSuccessWingmanRequestDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
+    function eventSuccessCompatibilityResponseDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
+    function eventSuccessAssignmentDocId(eventId, moduleId, uid) {
+      return eventId + '_' + moduleId + '_' + uid;
+    }
+
     function hasBlockBetween(uidA, uidB) {
       return exists(/databases/$(database)/documents/blocks/$(blockDocId(uidA, uidB)))
         || exists(/databases/$(database)/documents/blocks/$(blockDocId(uidB, uidA)));
@@ -661,14 +677,18 @@ service cloud.firestore {
     function isValidEventSuccessPlan(eventId, data) {
       return data.keys().hasOnly([
           'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
-          'targetAttendeeCount', 'hostGoal', 'privateCrushEnabled',
-          'contextualOpenersEnabled', 'activeStepIndex', 'status',
+          'targetAttendeeCount', 'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
+          'contextualOpenersEnabled', 'compatibilityAffectsRanking',
+          'questionnaireConfig',
+          'activeStepIndex', 'status',
+          'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
+          'revealEndsAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
           'completedAt'
         ])
         && data.keys().hasAll([
           'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
-          'targetAttendeeCount', 'hostGoal', 'privateCrushEnabled',
+          'targetAttendeeCount', 'hostGoal', 'wingmanRequestsEnabled',
           'contextualOpenersEnabled', 'activeStepIndex', 'status',
           'createdAt', 'updatedAt'
         ])
@@ -683,14 +703,37 @@ service cloud.firestore {
         && data.targetAttendeeCount is number
         && data.targetAttendeeCount >= 1
         && data.targetAttendeeCount <= 1000
+        && (
+          !hasField(data, 'structureConfig')
+          || isValidEventSuccessStructureConfig(data.structureConfig)
+        )
         && data.hostGoal is string
         && data.hostGoal.size() <= 300
-        && data.privateCrushEnabled is bool
+        && data.wingmanRequestsEnabled is bool
         && data.contextualOpenersEnabled is bool
+        && optionalBool(data, 'compatibilityAffectsRanking')
+        && (
+          !hasField(data, 'questionnaireConfig')
+          || isValidEventSuccessQuestionnaireConfig(data.questionnaireConfig)
+        )
         && data.activeStepIndex is number
         && data.activeStepIndex >= 0
         && data.activeStepIndex <= 100
         && data.status in ['setup', 'live', 'complete']
+        && (
+          !hasField(data, 'revealStatus')
+          || data.revealStatus in ['idle', 'countingDown', 'revealed']
+        )
+        && optionalNumber(data, 'activeRevealRoundIndex')
+        && (
+          !hasField(data, 'activeRevealRoundIndex')
+          || (
+            data.activeRevealRoundIndex >= 0
+            && data.activeRevealRoundIndex <= 100
+          )
+        )
+        && optionalTimestamp(data, 'revealStartedAt')
+        && optionalTimestamp(data, 'revealEndsAt')
         && optionalString(data, 'attendeePrompt')
         && (!hasField(data, 'attendeePrompt') || data.attendeePrompt == null || data.attendeePrompt.size() <= 300)
         && data.createdAt is timestamp
@@ -699,15 +742,75 @@ service cloud.firestore {
         && optionalTimestamp(data, 'completedAt');
     }
 
+    function isValidEventSuccessStructureConfig(data) {
+      return data is map
+        && data.keys().hasOnly([
+          'unitKind',
+          'unitSize',
+          'unitCount',
+          'rotationIntervalMinutes',
+          'revealCountdownSeconds'
+        ])
+        && data.keys().hasAll(['unitKind', 'unitSize', 'revealCountdownSeconds'])
+        && data.unitKind in ['wholeGroup', 'pods', 'pairs', 'teams', 'tables']
+        && data.unitSize is number
+        && data.unitSize >= 1
+        && data.unitSize <= 1000
+        && optionalNumber(data, 'unitCount')
+        && (
+          !hasField(data, 'unitCount')
+          || data.unitCount == null
+          || (data.unitCount >= 1 && data.unitCount <= 200)
+        )
+        && optionalNumber(data, 'rotationIntervalMinutes')
+        && (
+          !hasField(data, 'rotationIntervalMinutes')
+          || data.rotationIntervalMinutes == null
+          || (
+            data.rotationIntervalMinutes >= 5
+            && data.rotationIntervalMinutes <= 180
+          )
+        )
+        && data.revealCountdownSeconds is number
+        && data.revealCountdownSeconds >= 0
+        && data.revealCountdownSeconds <= 60;
+    }
+
+    function isValidEventSuccessQuestionnaireConfig(data) {
+      return data is map
+        && data.keys().hasOnly([
+          'templateId',
+          'customTitle',
+          'customQuestions'
+        ])
+        && data.keys().hasAll(['templateId'])
+        && data.templateId is string
+        && data.templateId.size() > 0
+        && data.templateId.size() <= 120
+        && optionalString(data, 'customTitle')
+        && (
+          !hasField(data, 'customTitle')
+          || data.customTitle == null
+          || data.customTitle.size() <= 80
+        )
+        && (
+          !hasField(data, 'customQuestions')
+          || (
+            data.customQuestions is list
+            && data.customQuestions.size() <= 8
+          )
+        );
+    }
+
     function isValidEventSuccessFeedback(feedbackId, data) {
       return data.keys().hasOnly([
           'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
-          'metNewPeopleCount', 'markedPrivateCrush', 'safetyConcern',
+          'metNewPeopleCount', 'safetyConcern',
           'privateNote', 'createdAt', 'updatedAt'
         ])
         && data.keys().hasAll([
           'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
-          'metNewPeopleCount', 'markedPrivateCrush', 'safetyConcern',
+          'metNewPeopleCount', 'safetyConcern',
           'createdAt', 'updatedAt'
         ])
         && exists(/databases/$(database)/documents/events/$(data.eventId))
@@ -725,10 +828,86 @@ service cloud.firestore {
         && data.metNewPeopleCount is number
         && data.metNewPeopleCount >= 0
         && data.metNewPeopleCount <= 100
-        && data.markedPrivateCrush is bool
         && data.safetyConcern is bool
         && optionalString(data, 'privateNote')
         && (!hasField(data, 'privateNote') || data.privateNote == null || data.privateNote.size() <= 500)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidEventSuccessPreference(preferenceId, data) {
+      return data.keys().hasOnly([
+          'eventId', 'clubId', 'uid', 'microPodsOptedOut',
+          'guidedRotationsOptedOut',
+          'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'eventId', 'clubId', 'uid', 'microPodsOptedOut',
+          'guidedRotationsOptedOut',
+          'createdAt', 'updatedAt'
+        ])
+        && exists(/databases/$(database)/documents/events/$(data.eventId))
+        && preferenceId == eventSuccessPreferenceDocId(data.eventId, data.uid)
+        && data.uid == request.auth.uid
+        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && hasEventParticipationStatus(data.eventId, data.uid, [
+          'signedUp', 'attended'
+        ])
+        && data.microPodsOptedOut is bool
+        && data.guidedRotationsOptedOut is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidEventSuccessCompatibilityResponse(responseId, data) {
+      return data.keys().hasOnly([
+          'eventId', 'clubId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'eventId', 'clubId', 'uid', 'answerIds', 'createdAt', 'updatedAt'
+        ])
+        && exists(/databases/$(database)/documents/events/$(data.eventId))
+        && responseId == eventSuccessCompatibilityResponseDocId(
+          data.eventId,
+          data.uid
+        )
+        && data.uid == request.auth.uid
+        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && hasEventParticipationStatus(data.eventId, data.uid, [
+          'signedUp', 'attended'
+        ])
+        && data.answerIds is list
+        && data.answerIds.size() >= 1
+        && data.answerIds.size() <= 8
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidEventSuccessWingmanRequest(requestId, data) {
+      return data.keys().hasOnly([
+          'eventId', 'clubId', 'requesterUid', 'targetUid', 'status',
+          'hostVisibleConsent', 'note', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'eventId', 'clubId', 'requesterUid', 'targetUid', 'status',
+          'hostVisibleConsent', 'createdAt', 'updatedAt'
+        ])
+        && exists(/databases/$(database)/documents/events/$(data.eventId))
+        && requestId == eventSuccessWingmanRequestDocId(
+          data.eventId,
+          data.requesterUid
+        )
+        && data.requesterUid == request.auth.uid
+        && data.targetUid is string
+        && data.targetUid != data.requesterUid
+        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && hasAttendedEvent(data.eventId, data.requesterUid)
+        && hasAttendedEvent(data.eventId, data.targetUid)
+        && !hasBlockBetween(data.requesterUid, data.targetUid)
+        && data.status in ['active', 'withdrawn']
+        && data.hostVisibleConsent == true
+        && optionalString(data, 'note')
+        && (!hasField(data, 'note') || data.note == null || data.note.size() <= 240)
         && data.createdAt is timestamp
         && data.updatedAt is timestamp;
     }
@@ -750,6 +929,90 @@ service cloud.firestore {
       allow create, update: if isAuthed()
         && isValidEventSuccessFeedback(feedbackId, request.resource.data);
       allow delete: if false;
+    }
+
+    match /eventSuccessPreferences/{preferenceId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.uid == request.auth.uid
+          || isClubHostForEvent(resource.data.eventId)
+        );
+      allow create, update: if isAuthed()
+        && isValidEventSuccessPreference(preferenceId, request.resource.data);
+      allow delete: if false;
+    }
+
+    match /eventSuccessCompatibilityResponses/{responseId} {
+      allow get: if isAuthed()
+        && resource.data.keys().hasAll(['eventId', 'uid'])
+        && resource.data.eventId is string
+        && resource.data.uid == request.auth.uid
+        && responseId == eventSuccessCompatibilityResponseDocId(
+          resource.data.eventId,
+          request.auth.uid
+        )
+        && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
+          'signedUp', 'attended'
+        ]);
+      allow list: if false;
+      allow create, update: if isAuthed()
+        && isValidEventSuccessCompatibilityResponse(
+          responseId,
+          request.resource.data
+        );
+      allow delete: if false;
+    }
+
+    match /eventSuccessWingmanRequests/{requestId} {
+      allow get: if isAuthed()
+        && resource.data.keys().hasAll([
+          'eventId', 'requesterUid', 'status', 'hostVisibleConsent'
+        ])
+        && resource.data.eventId is string
+        && resource.data.requesterUid is string
+        && resource.data.status is string
+        && resource.data.hostVisibleConsent is bool
+        && (
+          resource.data.requesterUid == request.auth.uid
+          || (
+            resource.data.status == 'active'
+            && resource.data.hostVisibleConsent == true
+            && isClubHostForEvent(resource.data.eventId)
+          )
+        );
+      allow list: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.status == 'active'
+        && resource.data.hostVisibleConsent == true
+        && isClubHostForEvent(resource.data.eventId);
+      allow create, update: if isAuthed()
+        && isValidEventSuccessWingmanRequest(
+          requestId,
+          request.resource.data
+        );
+      allow delete: if false;
+    }
+
+    match /eventSuccessAssignments/{assignmentId} {
+      allow read: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.moduleId is string
+        && resource.data.uid is string
+        && assignmentId == eventSuccessAssignmentDocId(
+          resource.data.eventId,
+          resource.data.moduleId,
+          resource.data.uid
+        )
+        && (
+          isClubHostForEvent(resource.data.eventId)
+          || (
+            resource.data.uid == request.auth.uid
+            && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
+              'signedUp', 'attended'
+            ])
+          )
+        );
+      allow write: if false;
     }
 
     match /eventSuccessScorecards/{eventId} {

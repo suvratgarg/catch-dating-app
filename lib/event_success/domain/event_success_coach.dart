@@ -31,7 +31,7 @@ class EventSuccessCoach {
           id: 'tighten_check_in',
           title: 'Tighten arrival and attendance capture',
           rationale:
-              'Low check-in makes matching, private crushes, reviews, and host coaching less trustworthy.',
+              'Low check-in makes assignments, reviews, and host coaching less trustworthy.',
           priority: EventRecommendationPriority.high,
           stage: EventSuccessStage.arrival,
           moduleIds: ['qr_check_in'],
@@ -39,7 +39,7 @@ class EventSuccessCoach {
       );
     } else {
       strengths.add(
-        'Arrival data is reliable enough to power post-event loops.',
+        'Arrival data is reliable enough for matching and reports.',
       );
     }
 
@@ -60,16 +60,52 @@ class EventSuccessCoach {
       strengths.add('Most attendees met multiple people.');
     }
 
-    if (scorecard.privateCrushRate < 0.2) {
+    if (scorecard.assignmentCoverageRate >= 0.8) {
+      strengths.add('Assignments reached most active attendees.');
+    } else if (scorecard.checkedInCount >= 4) {
       recommendations.add(
         const EventSuccessRecommendation(
-          id: 'lower_follow_up_friction',
-          title: 'Make post-event interest feel safer',
+          id: 'refresh_assignment_coverage',
+          title: 'Refresh assignments from the live roster',
           rationale:
-              'Low private interest usually means attendees lacked either social context or confidence that non-mutual interest stays hidden.',
+              'Low assignment coverage means attendees may be missing the structured moments that make the event feel intentional.',
+          priority: EventRecommendationPriority.high,
+          stage: EventSuccessStage.activity,
+          moduleIds: ['micro_pods', 'guided_rotations'],
+        ),
+      );
+    }
+
+    if (scorecard.assignmentOptOutRate >= 0.25) {
+      recommendations.add(
+        const EventSuccessRecommendation(
+          id: 'reduce_assignment_pressure',
+          title: 'Make structured participation feel easier to opt into',
+          rationale:
+              'A high opt-out rate usually means the assignment layer needs clearer framing, shorter rounds, or softer host facilitation.',
           priority: EventRecommendationPriority.medium,
-          stage: EventSuccessStage.after,
-          moduleIds: ['private_crush', 'contextual_openers'],
+          stage: EventSuccessStage.opening,
+          moduleIds: ['host_script', 'guided_rotations', 'micro_pods'],
+        ),
+      );
+    }
+
+    if (scorecard.wingmanRequestCount > 0) {
+      strengths.add(
+        'Some attendees trusted the host enough to ask for help live.',
+      );
+    }
+
+    if (scorecard.wingmanRequestRate >= 0.12) {
+      recommendations.add(
+        const EventSuccessRecommendation(
+          id: 'use_wingman_signal_live',
+          title: 'Use wingman requests before the final reveal',
+          rationale:
+              'Host-visible help requests are strongest while the room is still live, before attendees lose momentum.',
+          priority: EventRecommendationPriority.medium,
+          stage: EventSuccessStage.activity,
+          moduleIds: ['wingman_requests', 'guided_rotations'],
         ),
       );
     }
@@ -118,6 +154,22 @@ class EventSuccessCoach {
       );
     }
 
+    if (scorecard.feedbackResponseRate >= 0.4) {
+      strengths.add('Feedback response is strong enough to trust the report.');
+    } else if (scorecard.checkedInCount >= 5) {
+      recommendations.add(
+        const EventSuccessRecommendation(
+          id: 'increase_feedback_response',
+          title: 'Ask for feedback while the event is still fresh',
+          rationale:
+              'A thin feedback sample makes the coach less reliable. Prompting checked-in attendees sooner gives the host a clearer read.',
+          priority: EventRecommendationPriority.low,
+          stage: EventSuccessStage.after,
+          moduleIds: ['decomposed_feedback', 'host_analytics'],
+        ),
+      );
+    }
+
     if (scorecard.repeatSignupRate >= 0.35) {
       strengths.add(
         'Repeat signup is strong enough to treat this format as a keeper.',
@@ -154,39 +206,48 @@ abstract final class EventSuccessSampleScorecards {
     bookedCount: 28,
     checkedInCount: 25,
     attendeesWhoMetTwoPlusPeople: 19,
-    privateCrushCount: 8,
     mutualMatchCount: 4,
     chatStartedCount: 3,
     repeatSignupCount: 10,
     averageWelcomeRating: 4.4,
     averageStructureRating: 4.1,
     safetyIncidentCount: 0,
+    feedbackResponseCount: 12,
+    assignmentParticipantCount: 23,
+    assignmentOptOutCount: 2,
+    wingmanRequestCount: 1,
   );
 
   static const needsStructure = EventSuccessScorecard(
     bookedCount: 34,
     checkedInCount: 23,
     attendeesWhoMetTwoPlusPeople: 9,
-    privateCrushCount: 2,
     mutualMatchCount: 1,
     chatStartedCount: 0,
     repeatSignupCount: 4,
     averageWelcomeRating: 3.6,
     averageStructureRating: 3.1,
     safetyIncidentCount: 0,
+    feedbackResponseCount: 4,
+    assignmentParticipantCount: 10,
+    assignmentOptOutCount: 8,
+    wingmanRequestCount: 3,
   );
 
   static const safetyReviewRequired = EventSuccessScorecard(
     bookedCount: 30,
     checkedInCount: 27,
     attendeesWhoMetTwoPlusPeople: 20,
-    privateCrushCount: 8,
     mutualMatchCount: 4,
     chatStartedCount: 4,
     repeatSignupCount: 7,
     averageWelcomeRating: 4.0,
     averageStructureRating: 4.0,
     safetyIncidentCount: 1,
+    feedbackResponseCount: 10,
+    assignmentParticipantCount: 24,
+    assignmentOptOutCount: 1,
+    wingmanRequestCount: 0,
   );
 }
 

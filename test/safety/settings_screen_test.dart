@@ -103,6 +103,10 @@ void main() {
     expect(find.text('Riya'), findsOneWidget);
     expect(find.text('chat'), findsOneWidget);
 
+    await tester.scrollUntilVisible(
+      find.byKey(SettingsKeys.unblockButton('blocked-1')),
+      240,
+    );
     await tester.tap(find.byKey(SettingsKeys.unblockButton('blocked-1')));
     await pumpFeatureUi(tester);
 
@@ -127,6 +131,7 @@ void main() {
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventPolicyLabRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventSuccessLabRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.eventSuccessManualQaRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
 
     await tester.tap(find.byKey(SettingsKeys.signOutRow));
@@ -213,7 +218,7 @@ Future<void> _pumpSettings(
   ProviderContainer container,
 ) async {
   tester.view.devicePixelRatio = 1.0;
-  tester.view.physicalSize = const Size(390, 1200);
+  tester.view.physicalSize = const Size(390, 1400);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
 

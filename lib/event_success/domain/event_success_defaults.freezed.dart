@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventSuccessDefaults {
 
- bool get enabled; String get playbookId; List<String> get selectedModuleIds; String get hostGoal; bool get privateCrushEnabled; bool get contextualOpenersEnabled; String? get attendeePrompt;
+ bool get enabled; String get playbookId; List<String> get selectedModuleIds; EventSuccessStructureConfig get structureConfig; String get hostGoal; bool get wingmanRequestsEnabled; bool get contextualOpenersEnabled; bool get compatibilityAffectsRanking; EventSuccessQuestionnaireConfig get questionnaireConfig; String? get attendeePrompt;
 /// Create a copy of EventSuccessDefaults
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventSuccessDefaultsCopyWith<EventSuccessDefaults> get copyWith => _$EventSucce
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),hostGoal,privateCrushEnabled,contextualOpenersEnabled,attendeePrompt);
+int get hashCode => Object.hash(runtimeType,enabled,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,attendeePrompt);
 
 @override
 String toString() {
-  return 'EventSuccessDefaults(enabled: $enabled, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, attendeePrompt: $attendeePrompt)';
+  return 'EventSuccessDefaults(enabled: $enabled, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, attendeePrompt: $attendeePrompt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EventSuccessDefaultsCopyWith<$Res>  {
   factory $EventSuccessDefaultsCopyWith(EventSuccessDefaults value, $Res Function(EventSuccessDefaults) _then) = _$EventSuccessDefaultsCopyWithImpl;
 @useResult
 $Res call({
- bool enabled, String playbookId, List<String> selectedModuleIds, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, String? attendeePrompt
+ bool enabled, String playbookId, List<String> selectedModuleIds, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
 });
 
 
@@ -65,15 +65,18 @@ class _$EventSuccessDefaultsCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessDefaults
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? attendeePrompt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? attendeePrompt = freezed,}) {
   return _then(_self.copyWith(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
 as String,selectedModuleIds: null == selectedModuleIds ? _self.selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
-as List<String>,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
-as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as List<String>,structureConfig: null == structureConfig ? _self.structureConfig : structureConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessStructureConfig,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,wingmanRequestsEnabled: null == wingmanRequestsEnabled ? _self.wingmanRequestsEnabled : wingmanRequestsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
-as bool,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as bool,compatibilityAffectsRanking: null == compatibilityAffectsRanking ? _self.compatibilityAffectsRanking : compatibilityAffectsRanking // ignore: cast_nullable_to_non_nullable
+as bool,questionnaireConfig: null == questionnaireConfig ? _self.questionnaireConfig : questionnaireConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessQuestionnaireConfig,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -159,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  String? attendeePrompt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults() when $default != null:
-return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.attendeePrompt);case _:
+return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
   return orElse();
 
 }
@@ -180,10 +183,10 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hos
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  String? attendeePrompt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults():
-return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.attendeePrompt);case _:
+return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +203,10 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hos
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  String? attendeePrompt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled,  String playbookId,  List<String> selectedModuleIds,  EventSuccessStructureConfig structureConfig,  String hostGoal,  bool wingmanRequestsEnabled,  bool contextualOpenersEnabled,  bool compatibilityAffectsRanking,  EventSuccessQuestionnaireConfig questionnaireConfig,  String? attendeePrompt)?  $default,) {final _that = this;
 switch (_that) {
 case _EventSuccessDefaults() when $default != null:
-return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.attendeePrompt);case _:
+return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.structureConfig,_that.hostGoal,_that.wingmanRequestsEnabled,_that.contextualOpenersEnabled,_that.compatibilityAffectsRanking,_that.questionnaireConfig,_that.attendeePrompt);case _:
   return null;
 
 }
@@ -215,7 +218,7 @@ return $default(_that.enabled,_that.playbookId,_that.selectedModuleIds,_that.hos
 @JsonSerializable()
 
 class _EventSuccessDefaults extends EventSuccessDefaults {
-  const _EventSuccessDefaults({this.enabled = false, this.playbookId = 'socialRun', final  List<String> selectedModuleIds = const <String>[], this.hostGoal = 'Help attendees meet at least two new people.', this.privateCrushEnabled = true, this.contextualOpenersEnabled = true, this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
+  const _EventSuccessDefaults({this.enabled = false, this.playbookId = 'social_run_light', final  List<String> selectedModuleIds = const <String>[], this.structureConfig = const EventSuccessStructureConfig.legacyDefault(), this.hostGoal = 'Help attendees meet at least two new people.', this.wingmanRequestsEnabled = true, this.contextualOpenersEnabled = true, this.compatibilityAffectsRanking = false, this.questionnaireConfig = const EventSuccessQuestionnaireConfig.defaultTemplate(), this.attendeePrompt}): _selectedModuleIds = selectedModuleIds,super._();
   factory _EventSuccessDefaults.fromJson(Map<String, dynamic> json) => _$EventSuccessDefaultsFromJson(json);
 
 @override@JsonKey() final  bool enabled;
@@ -227,9 +230,12 @@ class _EventSuccessDefaults extends EventSuccessDefaults {
   return EqualUnmodifiableListView(_selectedModuleIds);
 }
 
+@override@JsonKey() final  EventSuccessStructureConfig structureConfig;
 @override@JsonKey() final  String hostGoal;
-@override@JsonKey() final  bool privateCrushEnabled;
+@override@JsonKey() final  bool wingmanRequestsEnabled;
 @override@JsonKey() final  bool contextualOpenersEnabled;
+@override@JsonKey() final  bool compatibilityAffectsRanking;
+@override@JsonKey() final  EventSuccessQuestionnaireConfig questionnaireConfig;
 @override final  String? attendeePrompt;
 
 /// Create a copy of EventSuccessDefaults
@@ -245,16 +251,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessDefaults&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.structureConfig, structureConfig) || other.structureConfig == structureConfig)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.wingmanRequestsEnabled, wingmanRequestsEnabled) || other.wingmanRequestsEnabled == wingmanRequestsEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.compatibilityAffectsRanking, compatibilityAffectsRanking) || other.compatibilityAffectsRanking == compatibilityAffectsRanking)&&(identical(other.questionnaireConfig, questionnaireConfig) || other.questionnaireConfig == questionnaireConfig)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),hostGoal,privateCrushEnabled,contextualOpenersEnabled,attendeePrompt);
+int get hashCode => Object.hash(runtimeType,enabled,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),structureConfig,hostGoal,wingmanRequestsEnabled,contextualOpenersEnabled,compatibilityAffectsRanking,questionnaireConfig,attendeePrompt);
 
 @override
 String toString() {
-  return 'EventSuccessDefaults(enabled: $enabled, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, attendeePrompt: $attendeePrompt)';
+  return 'EventSuccessDefaults(enabled: $enabled, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, structureConfig: $structureConfig, hostGoal: $hostGoal, wingmanRequestsEnabled: $wingmanRequestsEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, compatibilityAffectsRanking: $compatibilityAffectsRanking, questionnaireConfig: $questionnaireConfig, attendeePrompt: $attendeePrompt)';
 }
 
 
@@ -265,7 +271,7 @@ abstract mixin class _$EventSuccessDefaultsCopyWith<$Res> implements $EventSucce
   factory _$EventSuccessDefaultsCopyWith(_EventSuccessDefaults value, $Res Function(_EventSuccessDefaults) _then) = __$EventSuccessDefaultsCopyWithImpl;
 @override @useResult
 $Res call({
- bool enabled, String playbookId, List<String> selectedModuleIds, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, String? attendeePrompt
+ bool enabled, String playbookId, List<String> selectedModuleIds, EventSuccessStructureConfig structureConfig, String hostGoal, bool wingmanRequestsEnabled, bool contextualOpenersEnabled, bool compatibilityAffectsRanking, EventSuccessQuestionnaireConfig questionnaireConfig, String? attendeePrompt
 });
 
 
@@ -282,15 +288,18 @@ class __$EventSuccessDefaultsCopyWithImpl<$Res>
 
 /// Create a copy of EventSuccessDefaults
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enabled = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? attendeePrompt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enabled = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? structureConfig = null,Object? hostGoal = null,Object? wingmanRequestsEnabled = null,Object? contextualOpenersEnabled = null,Object? compatibilityAffectsRanking = null,Object? questionnaireConfig = null,Object? attendeePrompt = freezed,}) {
   return _then(_EventSuccessDefaults(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
 as String,selectedModuleIds: null == selectedModuleIds ? _self._selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
-as List<String>,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
-as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as List<String>,structureConfig: null == structureConfig ? _self.structureConfig : structureConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessStructureConfig,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,wingmanRequestsEnabled: null == wingmanRequestsEnabled ? _self.wingmanRequestsEnabled : wingmanRequestsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
-as bool,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as bool,compatibilityAffectsRanking: null == compatibilityAffectsRanking ? _self.compatibilityAffectsRanking : compatibilityAffectsRanking // ignore: cast_nullable_to_non_nullable
+as bool,questionnaireConfig: null == questionnaireConfig ? _self.questionnaireConfig : questionnaireConfig // ignore: cast_nullable_to_non_nullable
+as EventSuccessQuestionnaireConfig,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
