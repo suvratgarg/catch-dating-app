@@ -608,6 +608,15 @@ Catch-specific tasks:
 - Add crash symbol upload step if Sentry/Crashlytics requires it. Android Gradle plugin and iOS Crashlytics upload-symbols build phase are configured; dashboard proof remains pending.
 - Store secrets outside the repo. Done through GitHub environment secrets and Xcode Cloud environment secrets.
 - Document release commands and rollback steps. Mostly done in `docs/release_operations.md`; keep it current as store operations settle.
+- Standardize TestFlight ownership. Current decision: Xcode Cloud is canonical
+  for TestFlight upload, GitHub Actions is checks/Firebase deploys/manual
+  archive fallback. GitHub TestFlight upload is break-glass only.
+- Remove wasteful scheduled TestFlight releases. Pending App Store Connect
+  change: remove the blind 12 a.m. Xcode Cloud schedule and use
+  change-triggered start conditions filtered to app-shipping paths.
+- Future cleanup TODO: migrate TestFlight upload fully to GitHub Actions later
+  if we want one repo-owned mobile release pipeline. See
+  `docs/release_operations.md`.
 
 Teaching notes:
 
@@ -616,7 +625,7 @@ Teaching notes:
 Verification:
 
 - Green CI on pull request. Done for the release workflow-runtime updates.
-- Green manual release workflow on a protected branch or tag. Archive/export proof passed on `main` run `26191839683`; TestFlight upload/install proof is covered by the nightly App Store Connect/Xcode Cloud build.
+- Green manual release workflow on a protected branch or tag. Archive/export proof passed on `main` run `26191839683`; TestFlight upload/install proof is covered by Xcode Cloud.
 - Artifact generated and retained.
 
 ### 14. Code Push With Shorebird

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.5.4
-updated: 2026-05-20
+version: 1.6.0
+updated: 2026-05-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,7 +35,7 @@ The current workflows are:
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate, with optional TestFlight upload. |
+| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate. TestFlight upload is break-glass only while Xcode Cloud is canonical. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 
 ## Git Branch Hygiene
@@ -355,12 +355,16 @@ prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
 
-## iOS TestFlight Release
+## iOS TestFlight Ownership
 
-Run `Release Readiness` first. Then run `iOS TestFlight Release` from GitHub
-Actions. Leave `upload_to_testflight` off when you only want a signed IPA
-artifact and entitlement proof. Turn it on only when the exact commit is the
-release candidate to send to App Store Connect.
+Decision as of 2026-05-21: Xcode Cloud is the canonical TestFlight uploader.
+GitHub Actions owns PR checks, Firebase deploys, release-readiness validation,
+and a manual iOS archive/export fallback.
+
+Routine TestFlight distribution must come from Xcode Cloud. The GitHub
+`iOS TestFlight Release` workflow should normally run with
+`upload_to_testflight=false`; its TestFlight upload input is break-glass only
+and requires a reason explaining why Xcode Cloud is not being used.
 
 The workflow uses App Store Connect API key authentication for
 `xcodebuild -allowProvisioningUpdates`, exports with
@@ -369,6 +373,31 @@ The workflow uses App Store Connect API key authentication for
 Maps key, verifies the exported profile contains HealthKit, checks the signed
 app contains HealthKit and Associated Domains, and stores the IPA as a
 short-lived GitHub Actions artifact.
+
+## Xcode Cloud Start Conditions
+
+The old 12 a.m. scheduled Xcode Cloud build should be retired. Configure the
+Xcode Cloud TestFlight workflow in App Store Connect to start from changes to
+`main`, filtered to app-shipping paths, so docs-only and backend-only commits do
+not produce a new TestFlight build.
+
+Suggested included paths:
+
+- `lib/**`
+- `ios/**`
+- `assets/**`
+- `contracts/**`
+- `pubspec.yaml`
+- `pubspec.lock`
+- `firebase/prod/**`
+- `tool/dart_defines/prod.json`
+- `tool/flutter_with_env.sh`
+- `tool/use_firebase_environment.sh`
+- `tool/write_ios_maps_key_xcconfig.sh`
+- `tool/validate_google_maps_config.mjs`
+
+If a backend-only change intentionally requires a compatible app binary, start
+the Xcode Cloud workflow manually after the backend deploy is promoted.
 
 GitHub Actions iOS jobs and Xcode Cloud must all write
 `ios/Flutter/GoogleMapsKeys.xcconfig` through
@@ -398,8 +427,25 @@ build if the key is missing or malformed. Without the key the archived
 `GoogleMapsApiKey` is empty, `GMSServices.provideAPIKey` is skipped in
 `AppDelegate`, and every map screen crashes at runtime.
 
-Keep Xcode Cloud and the GitHub Actions release workflow consistent: both must
+Keep Xcode Cloud and the GitHub Actions archive workflow consistent: both must
 inject and verify the environment-specific Maps key.
+
+## Future GitHub-Only Migration
+
+TODO: migrate TestFlight upload from Xcode Cloud to GitHub Actions only if we
+want one repo-owned mobile release pipeline.
+
+Migration checklist:
+
+1. Add a change-aware GitHub release trigger, usually a protected
+   `release/ios-testflight` branch or signed release tag.
+2. Make the GitHub workflow perform the actual TestFlight upload by default for
+   that trigger, not through the break-glass input.
+3. Prove one full GitHub upload/install/launch/Maps cycle from TestFlight.
+4. Disable Xcode Cloud TestFlight distribution and remove any Xcode Cloud
+   schedule/start condition that can upload builds.
+5. Update this document and `codex_audit/production_release_checklist.md` to
+   mark GitHub Actions as canonical.
 
 The repository can verify that the GitHub `prod` environment has the required
 App Store Connect secret names and that the local/Xcode Cloud scripts fail
