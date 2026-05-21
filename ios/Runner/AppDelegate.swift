@@ -1,15 +1,7 @@
 import Flutter
-import FirebaseAppCheck
 import FirebaseAuth
-import FirebaseCore
 import GoogleMaps
 import UIKit
-
-final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
-  func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
-    AppAttestProvider(app: app)
-  }
-}
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -17,12 +9,10 @@ final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    #if DEBUG
-      AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
-    #else
-      AppCheck.setAppCheckProviderFactory(AppAttestProviderFactory())
-    #endif
-
+    // Firebase App Check is configured entirely from Dart
+    // (FirebaseAppCheck.activate in lib/main.dart). Do not also register a
+    // native provider factory here — that double-configures App Check and the
+    // two paths can disagree on debug vs App Attest provider selection.
     application.registerForRemoteNotifications()
     if let rawMapsApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsApiKey") as? String {
       let mapsApiKey = rawMapsApiKey

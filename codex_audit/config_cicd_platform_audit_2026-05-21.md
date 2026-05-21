@@ -1,6 +1,6 @@
 ---
 doc_id: config_cicd_platform_audit
-version: 1.2.0
+version: 1.3.0
 created: 2026-05-21
 updated: 2026-05-21
 owner: config_cicd_platform_audit
@@ -58,23 +58,23 @@ which do not overlap the event_success feature work.
 | D2  | P1  | Contracts         | Contracts SSOT has **no CI gate** — silent drift                  | [x]  |
 | C1  | P3  | CI/CD             | `flutter-ci.yml` missing `cache: true`                            | [x]  |
 | C2  | P2  | CI/CD             | `firebase-tools` installed unpinned in deploy/CI                  | [x]  |
-| C3  | P2  | CI/CD             | `firebase-dev-deploy` uses fragile `workflow_run` + JS poll        | [ ]  |
+| C3  | P2  | CI/CD             | `firebase-dev-deploy` fragile poll — hardened (fail-fast)         | [x]  |
 | C5  | P3  | CI/CD             | Flutter version floats `3.41.x` (CI) vs pinned `3.41.9` (Xcode)   | [x]  |
 | C6  | P3  | CI/CD             | PR build matrix only builds `dev` flavor                          | [x]  |
 | C8  | P3  | CI/CD             | BigQuery export extensions never deployed by pipeline             | [x]  |
-| I2  | P2  | iOS               | App Check activated twice (native AppDelegate + Dart)             | [ ]  |
-| I3  | P3  | iOS               | No-flavor `Release.xcconfig` silently uses prod credentials       | [ ]  |
+| I2  | P2  | iOS               | App Check activated twice — now Dart-only                         | [x]  |
+| I3  | P3  | iOS               | No-flavor `Release.xcconfig` silently uses prod credentials       | [x]  |
 | I4  | P3  | iOS               | `FirebaseFirestore` pod pinned to prebuilt fork — desync risk     | [x]  |
 | I5  | P3  | iOS               | Podfile pod-warning suppression — now `inhibit_all_warnings!`     | [x]  |
 | I6  | P3  | iOS               | Crashlytics symbol-upload phase runs every build (benign)         | [ ]  |
 | B1  | P2  | Bootstrap         | Remote Config fetch failure swallowed silently                   | [x]  |
-| B3  | P2  | Bootstrap         | Web App Check silently disabled when unconfigured                 | [ ]  |
+| B3  | P2  | Bootstrap         | Web App Check unconfigured — web not a shipped surface            | [x]  |
 | D1  | P1  | Contracts         | Three parallel schema representations, mid-migration              | [ ]  |
 | D3  | P2  | Contracts         | CI verifies only `firestore.ts` freshness, not contract outputs   | [x]  |
 | A2  | P2  | Analytics/BQ      | GA4→BigQuery link is a console task; verify it is enabled         | [ ]  |
 | A3  | P3  | Analytics         | `GoogleService-Info.plist` has `IS_ANALYTICS_ENABLED=false`       | [ ]  |
-| N1  | P2  | Android           | `google-services.json` has only 1 flavor's package               | [ ]  |
-| W1  | P3  | Web               | Messaging service worker registered even when push is disabled   | [ ]  |
+| N1  | P2  | Android           | `google-services.json` has only 1 flavor's package               | [x]  |
+| W1  | P3  | Web               | Dead messaging service-worker registration removed               | [x]  |
 | M1  | P3  | Misc              | Root `.env` holds placeholder Razorpay key                        | [ ]  |
 
 ---
@@ -180,25 +180,28 @@ worked yesterday" cause.
 version installed on the dev machine, treated as known-good). Bump deliberately
 in future, in all four files together.
 
-### C3 — `firebase-dev-deploy` trigger + poll is fragile [large]
+### C3 — `firebase-dev-deploy` poll fragility (DONE 2026-05-21)
 
 **Where:** `.github/workflows/firebase-dev-deploy.yml`.
 
-**Problem:** the dev deploy fires on `workflow_run` completion of "App Build
-Matrix", then runs an in-job `github-script` loop polling the GitHub API for up
-to 20 min for the required workflows to be green for the same SHA. Failure
-modes:
-- `workflow_run` only ever runs the workflow file **as it exists on the default
-  branch** — local edits to this file do nothing until merged.
-- The poll re-implements branch protection in JavaScript. If any polled
-  workflow *filename* is renamed, the poll treats it as permanently "missing"
-  and just times out after 20 min.
-- The polled-workflow list is hand-maintained (it now includes `contracts-ci.yml`).
+**Was:** the dev deploy polls the GitHub API for up to 20 min for required
+workflows to be green for the SHA. A renamed/removed workflow, or one that never
+created a run (path filter, disabled), would sit "missing" and waste the full
+20-minute timeout; an API error threw a raw unhandled exception.
 
-**Fix options (pick one):**
-- Preferred: drop the JS poll, make `dev` a GitHub **Deployment Environment**
-  with required-status-check protection, and deploy on push to `main` directly.
-- Or: at minimum, make "missing workflow" fail fast instead of timing out.
+**Fix applied (decision: harden the poll):**
+- Wrapped the `listWorkflowRuns` call in try/catch — a renamed/removed workflow
+  now fails immediately with a clear message naming the workflow and pointing at
+  the `workflows` list to update.
+- Added a 5-minute "missing" deadline: a push-triggered workflow creates its run
+  within seconds, so a workflow with no run after 5 min fails fast (with an
+  actionable message) instead of waiting the full 20.
+- The 20-min overall timeout is kept for genuinely slow-but-running workflows.
+
+Not done (deliberately): the larger move to a GitHub **Deployment Environment**
+with native required-status-check protection. That needs a repo-settings change
+(branch protection) outside the codebase; revisit if the poll still proves
+annoying.
 
 ### B1 — Remote Config fetch failure swallowed silently (DONE 2026-05-21)
 
@@ -221,39 +224,44 @@ Note: the same silent-catch pattern still exists in `lib/app.dart`
 left as-is since that path re-runs frequently and a transient network blip on
 resume is not noteworthy — only the startup fetch is logged.
 
-### B3 — Web App Check silently disabled when unconfigured [quick]
+### B3 — Web App Check unconfigured (RESOLVED 2026-05-21 — not a real risk)
 
 **Where:** `lib/main.dart` `_activateFirebaseAppCheck()`, web branch.
 
-**Problem:** on web, if there is no debug token and no
-`FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY`, the code only
-`debugPrint`s a warning and returns — App Check is **not activated at all**. For
-a production web deploy this means Firestore/Auth/Functions are unprotected by
-App Check, with no signal louder than a debug print (which is stripped in
-release).
+**Original concern:** on web with no debug token and no
+`FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY`, App Check is not
+activated — a prod web deploy would be unprotected.
 
-**Fix:** in a prod web build (`environment.isProduction && !kDebugMode`), hard-fail
-or surface a visible error if the reCAPTCHA site key is missing, rather than
-booting into an unprotected state.
+**Resolution (decision: web is not a shipped surface):** the user confirmed the
+Flutter web build is not deployed to production. `firebase.json` hosting serves
+the `website/` marketing folder, not `build/web`, and no workflow deploys the
+Flutter web app. So there is no unprotected prod web surface — the concern is
+moot. No code change. If Flutter web is ever shipped, this must be revisited:
+add the reCAPTCHA Enterprise site key and make a prod web build hard-fail
+without it.
 
-### I2 — App Check activated twice [large]
+### I2 — App Check activated twice (DONE 2026-05-21)
 
-**Where:** `ios/Runner/AppDelegate.swift` calls
+**Where:** `ios/Runner/AppDelegate.swift` called
 `AppCheck.setAppCheckProviderFactory(...)` (debug factory under `#if DEBUG`,
 else `AppAttestProviderFactory`). `lib/main.dart` *also* calls
 `FirebaseAppCheck.instance.activate(providerApple: ...)`.
 
-**Problem:** two mechanisms configure the same thing, and they can disagree.
-The native side keys off the compile-time `#if DEBUG`; the Dart side keys off
-`AppConfig.useFirebaseAppCheckDebugProvider || useFirebaseEmulators`. A build
-that is *not* `DEBUG` but sets `USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=true`
-(exactly the `.env.local` case documented for this repo) gets the native
-AppAttest factory *and* the Dart debug provider. Behavior is then ambiguous.
+**Was:** two mechanisms configured the same thing and could disagree — the
+native side keyed off compile-time `#if DEBUG`, the Dart side off
+`AppConfig.useFirebaseAppCheckDebugProvider || useFirebaseEmulators`. A non-DEBUG
+build with `USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=true` (the documented
+`.env.local` case) got the native AppAttest factory *and* the Dart debug
+provider.
 
-**Fix:** pick one source of truth. The FlutterFire-recommended path is to drive
-App Check entirely from Dart (`FirebaseAppCheck.instance.activate`) and remove
-the native `setAppCheckProviderFactory` block, OR keep native-only and remove
-the Dart `activate`. Whichever is chosen, document why in `AppDelegate.swift`.
+**Fix applied (decision: Dart-only):** removed the native
+`setAppCheckProviderFactory` block, the `AppAttestProviderFactory` class, and the
+now-unused `FirebaseAppCheck`/`FirebaseCore` imports from `AppDelegate.swift`.
+App Check is now configured solely from `lib/main.dart`
+(`FirebaseAppCheck.instance.activate`), which is the single source of truth and
+already handles debug/App-Attest/emulator/web selection. Added a comment in
+`AppDelegate.swift` so the native block is not re-added. The `app-build-matrix`
+iOS job compiles `AppDelegate.swift`, so a bad import is caught on this PR.
 
 ### D3 — CI verified only `firestore.ts` freshness (DONE 2026-05-21)
 
@@ -291,30 +299,28 @@ is enabled — enable it sooner rather than later. Then GA4 events appear in the
 added to `docs/release_operations.md` on 2026-05-21; the console toggle itself
 cannot be done from the repo and is the user's to verify.
 
-### N1 — `google-services.json` carries only one flavor [large]
+### N1 — `google-services.json` carries only one flavor (DONE 2026-05-21)
 
-**Where:** `android/app/google-services.json` (tracked) — contains only
-`project_id: catchdates-dev` and package `com.catchdates.app.dev`.
+**Where:** `android/app/google-services.json` (tracked) — an environment working
+copy swapped by `tool/use_firebase_environment.sh`, holding one project's
+package at a time.
 
-**Problem:** the app declares three Android product flavors with distinct
-applicationIds (`com.catchdates.app.dev` / `.staging` / `com.catchdates.app`).
-The `com.google.gms.google-services` Gradle plugin **fails the build** if the
-flavor being built has no matching client in `google-services.json`. The repo
-works around this by having `tool/use_firebase_environment.sh` swap the whole
-file per environment (the "working copy" pattern, PROJECT_CONTEXT §14.8).
+**Was:** building a flavor whose package is not in the active json fails deep
+inside the `google-services` Gradle plugin with a cryptic "No matching client"
+error — easy to hit by running a raw `flutter build` (or an IDE config) instead
+of `./tool/flutter_with_env.sh`.
 
-**Why brittle:** building a flavor without going through
-`./tool/flutter_with_env.sh` (e.g. a raw `flutter build appbundle`, an IDE run
-config, or a CI step that forgets the wrapper) builds against the wrong
-project's json and fails — or worse, ships pointing at the wrong project.
-Standard Android practice is **one** `google-services.json` containing all three
-clients so any flavor builds correctly.
+**Fix applied (decision: build-time guard):** added a guard in
+`android/app/build.gradle.kts` — it detects the flavor being built from the
+Gradle task names, computes the expected applicationId, and if the active
+`google-services.json` does not contain that package it throws a `GradleException`
+with an actionable message ("run `./tool/use_firebase_environment.sh <env>`").
+The env-swap pattern is kept; the failure is now early and self-explanatory
+instead of cryptic. (The `app-build-matrix` Android job exercises this path.)
 
-**Fix (decision needed):** either (a) merge all three projects' iOS/Android
-clients into single `google-services.json` / `GoogleService-Info.plist` files
-keyed by package — the plugin picks the right client per flavor automatically —
-or (b) keep the swap pattern but add a build-time guard that asserts the json's
-package matches the flavor being built.
+Not done (deliberately): merging all three projects into one
+`google-services.json`. That is a larger change to the env-swap workflow and was
+not the chosen option.
 
 ---
 
@@ -411,14 +417,19 @@ Order") that extension changes require a deliberate
 automatic path on purpose — extension redeploys can be disruptive and should
 stay deliberate.
 
-### I3 — No-flavor `Release.xcconfig` uses prod credentials [quick]
+### I3 — No-flavor `Release.xcconfig` uses prod credentials (DONE 2026-05-21)
 
-`ios/Flutter/Release.xcconfig` (and `Debug.xcconfig`/`Profile.xcconfig`, the
-schemes without a `-dev/-staging/-prod` suffix) hardcode the prod Firebase URL
-scheme and `GOOGLE_MAPS_IOS_API_KEY_PROD`. Any build using the plain `Release`
-configuration silently gets prod credentials. The canonical schemes are the
-suffixed ones — consider deleting the unused no-flavor configs, or make them
-fail loudly, so a stray plain-`Release` build can't ship prod keys by accident.
+`ios/Flutter/Release.xcconfig` hardcodes the prod Firebase URL scheme and
+`GOOGLE_MAPS_IOS_API_KEY_PROD`, so a build using the plain `Release`
+configuration silently gets prod credentials. (`Debug.xcconfig`/`Profile.xcconfig`
+default to *dev* creds — benign, no change needed there.)
+
+**Fix applied:** added a header comment to `ios/Flutter/Release.xcconfig`
+flagging it as non-canonical and pointing builds at the flavored
+`Release-dev/-staging/-prod` schemes via `./tool/flutter_with_env.sh`.
+Fully *deleting* the no-flavor config is not done here — it is referenced by a
+build configuration in `project.pbxproj` and removing it cleanly is Xcode
+surgery; the comment removes the silent-footgun aspect.
 
 ### I4 — `FirebaseFirestore` pod pinned to prebuilt fork (DONE 2026-05-21)
 
@@ -451,13 +462,13 @@ keys, so it probably is not the cause of anything — but it is inconsistent and
 confusing. Confirm the prod project's `GoogleService-Info.plist` is consistent,
 and rely on the runtime switch as the single control.
 
-### W1 — Messaging service worker always registered on web [quick]
+### W1 — Dead messaging service-worker registration (DONE 2026-05-21)
 
-`web/index.html` registers `firebase-messaging-sw.js` on every web origin, but
-web push is disabled unless `FIREBASE_WEB_VAPID_KEY` is set (empty by default,
-so `AppConfig.supportsPushMessagingOnCurrentPlatform` is false on web). The SW
-registration just fails/no-ops. Harmless, but dead weight — gate it on the VAPID
-key being present, or leave a comment explaining it is intentionally inert.
+`web/index.html` registered `firebase-messaging-sw.js` on every web origin —
+but web push is disabled (no `FIREBASE_WEB_VAPID_KEY`) **and** there is no
+`web/firebase-messaging-sw.js` file, so the registration 404'd on every web page
+load. **Fix applied:** removed the dead registration `<script>` block, leaving a
+comment so it is re-added together with the SW file if web push is enabled later.
 
 ### M1 — Root `.env` holds a placeholder Razorpay key [quick]
 
@@ -532,33 +543,31 @@ console-gated — see "Remaining items" below.
 - **2026-05-21** — C6 fixed: added a prod web release build to
   `app-build-matrix.yml`. C8 fixed: documented the manual `--only extensions`
   deploy in `release_operations.md`.
+- **2026-05-21** — Second batch of fixes after user decisions: I2 (App Check
+  Dart-only — native block removed from `AppDelegate.swift`), N1 (Gradle
+  build-time guard for `google-services.json`/flavor mismatch), C3 (dev-deploy
+  poll hardened — fail-fast on missing/renamed workflow), I3 (`Release.xcconfig`
+  non-canonical comment), W1 (removed dead service-worker registration). B3
+  resolved as not-a-risk (Flutter web is not a shipped surface).
 
 ## Remaining items and what they need
 
-Everything still unchecked needs either a product/architecture decision, an
-external console, or iOS-project surgery — i.e. not a safe unattended fix:
+The audit is functionally complete. The few items left are intentionally not
+fixed in-repo:
 
-- **D1** — needs a decision: finish or freeze the schema-contract unification
-  migration (`docs/schema_contract_unification_tracker.md`).
-- **C3** — workflow redesign (GitHub Deployment Environment vs the JS poll);
-  larger change, touches deploy gating.
-- **I2** — App Check is configured both natively and from Dart; collapsing to
-  one path is security-sensitive (a wrong move locks users out) — needs a
-  deliberate decision, not an unattended edit.
-- **I3** — removing/neutering the no-flavor `Release/Debug/Profile.xcconfig`
-  requires editing `project.pbxproj`; do it in Xcode, not blind.
-- **I6** — silencing the Crashlytics every-build warning needs a `project.pbxproj`
-  script-phase edit; do it in Xcode. Benign — low priority.
-- **B3** — needs a decision: should a prod *web* build with no App Check site
-  key hard-crash at launch, or boot degraded? (Also: is Flutter web even a
-  shipping surface? `firebase.json` hosting serves the `website/` marketing
-  folder, not the Flutter web build.)
-- **A2 / A3** — Firebase Console verification (GA4→BigQuery link; prod
-  `GoogleService-Info.plist` analytics flag). Cannot be done from the repo.
-- **N1** — single-vs-merged `google-services.json` is an Android config
-  decision affecting the env-swap workflow.
-- **W1 / M1** — W1 is a marginal cosmetic gate; M1 is a local-machine `.env`
-  hygiene note (the file is git-ignored, nothing to change in-repo).
+- **D1** — long-horizon: finish or freeze the schema-contract unification
+  migration (`docs/schema_contract_unification_tracker.md`, ~weeks of work).
+  Not a defect — D2's CI gate now protects the contracts layer from regressing
+  while this is decided. Informational only.
+- **I6** — silencing the Crashlytics "runs every build" warning needs a
+  `project.pbxproj` script-phase edit; do it in Xcode. Behavior is correct for
+  archive builds — benign, low priority.
+- **A2 / A3** — Firebase Console verification only (GA4→BigQuery export link;
+  prod `GoogleService-Info.plist` analytics flag). Cannot be done from the repo;
+  steps are documented in `docs/release_operations.md`.
+- **M1** — root `.env` placeholder Razorpay key. `.env` is git-ignored — there
+  is nothing to change in-repo. Local hygiene: ensure the real test key is
+  present before running `build_runner`.
 - **Metal toolchain search-path warnings** — an Xcode Cloud build-machine
   environment issue (provision the Metal toolchain on the runner); not a repo
   change.

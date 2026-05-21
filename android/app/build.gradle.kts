@@ -77,6 +77,36 @@ if (releaseBuildRequested && releaseStoreFile != null && !releaseStoreFile.exist
     )
 }
 
+// Guard: google-services.json is an environment working copy swapped by
+// ./tool/use_firebase_environment.sh. Building a flavor whose package is not in
+// the active file otherwise fails deep inside the google-services plugin with a
+// cryptic "No matching client" error. Fail early with an actionable message.
+val flavorApplicationIds = mapOf(
+    "dev" to "com.catchdates.app.dev",
+    "staging" to "com.catchdates.app.staging",
+    "prod" to "com.catchdates.app",
+)
+val requestedFlavor = flavorApplicationIds.keys.firstOrNull { flavor ->
+    gradle.startParameter.taskNames.any { task ->
+        task.contains(flavor, ignoreCase = true)
+    }
+}
+val googleServicesFile = project.file("google-services.json")
+if (requestedFlavor != null && googleServicesFile.exists()) {
+    val expectedApplicationId = flavorApplicationIds.getValue(requestedFlavor)
+    val packagePattern =
+        Regex("\"package_name\"\\s*:\\s*\"" + Regex.escape(expectedApplicationId) + "\"")
+    if (!packagePattern.containsMatchIn(googleServicesFile.readText())) {
+        throw GradleException(
+            "android/app/google-services.json does not contain the '$requestedFlavor' " +
+                "flavor package ($expectedApplicationId). The checked-in file is an " +
+                "environment working copy — run " +
+                "./tool/use_firebase_environment.sh $requestedFlavor before building " +
+                "the $requestedFlavor flavor, or use ./tool/flutter_with_env.sh."
+        )
+    }
+}
+
 android {
     namespace = "com.catchdates.app"
     compileSdk = flutter.compileSdkVersion
