@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_safety_reports.schema.json",
+  "title": "EventSafetyReportDocument",
+  "description": "Catch-private safety review item materialized from event feedback concerns.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSafetyReports",
+  "x-firestore-path": "eventSafetyReports/{reportId}",
+  "x-document-id-field": "id",
+  "x-owner": "onEventSuccessFeedbackWritten trigger",
+  "required": [
+    "eventId",
+    "clubId",
+    "reporterUserId",
+    "feedbackId",
+    "source",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "reporterUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "feedbackId": {"type": "string", "minLength": 3, "maxLength": 256},
+    "source": {"type": "string", "enum": ["event_success_feedback"]},
+    "status": {"type": "string", "enum": ["open", "reviewed", "dismissed"]},
+    "note": {"type": "string", "maxLength": 500},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

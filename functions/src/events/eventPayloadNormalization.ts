@@ -16,13 +16,17 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     ],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
-  if (!isRecord(payload.privateAccess)) return payload;
-  return {
-    ...payload,
-    privateAccess: normalizeFields(payload.privateAccess, {
+  if (isRecord(payload.privateAccess)) {
+    payload.privateAccess = normalizeFields(payload.privateAccess, {
       stringFields: ["inviteCode"],
-    }),
-  };
+    });
+  }
+  if (isRecord(payload.eventSuccessDefaults)) {
+    payload.eventSuccessDefaults = normalizeEventSuccessDefaults(
+      payload.eventSuccessDefaults
+    );
+  }
+  return payload;
 }
 
 /**
@@ -111,6 +115,33 @@ function normalizeFields(
     }
   }
   return result;
+}
+
+/**
+ * Trims the optional event-success create payload before schema validation.
+ * @param {PayloadRecord} data Event success defaults payload.
+ * @return {PayloadRecord} Normalized event success defaults.
+ */
+function normalizeEventSuccessDefaults(data: PayloadRecord): PayloadRecord {
+  const defaults = normalizeFields(data, {
+    stringFields: ["playbookId", "hostGoal"],
+    nullableStringFields: ["attendeePrompt"],
+  });
+  if (Array.isArray(defaults.selectedModuleIds)) {
+    defaults.selectedModuleIds = defaults.selectedModuleIds.map((value) =>
+      typeof value === "string" ? value.trim() : value
+    );
+  }
+  if (isRecord(defaults.questionnaireConfig)) {
+    defaults.questionnaireConfig = normalizeFields(
+      defaults.questionnaireConfig,
+      {
+        stringFields: ["templateId"],
+        nullableStringFields: ["customTitle"],
+      }
+    );
+  }
+  return defaults;
 }
 
 /**

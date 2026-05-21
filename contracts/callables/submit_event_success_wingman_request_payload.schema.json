@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_success_wingman_request_payload.schema.json",
+  "title": "SubmitEventSuccessWingmanRequestCallablePayload",
+  "description": "Callable payload accepted by submitEventSuccessWingmanRequest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "targetUid"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "note": {"type": ["string", "null"], "maxLength": 240}
+  }
+}

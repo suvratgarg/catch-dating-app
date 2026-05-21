@@ -3949,6 +3949,14 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
   'x-firestore-path': 'eventSuccessPlans/{eventId}',
   'x-document-id-field': 'id',
   'x-owner': 'club host direct write; event participants read',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
   'required': <Object?>[
     'eventId',
     'clubId',
@@ -4305,6 +4313,38 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
   },
 };
 
@@ -4312,13 +4352,21 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/event_success_feedback.schema.json',
   'title': 'EventSuccessFeedbackDocument',
-  'description': 'Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.',
+  'description': 'Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'eventSuccessFeedback',
   'x-firestore-path': 'eventSuccessFeedback/{feedbackId}',
   'x-document-id-field': 'id',
-  'x-owner': 'attendee direct write after attended event; host read',
+  'x-owner': 'attendee direct write after attended event; attendee read; backend aggregate',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
   'required': <Object?>[
     'eventId',
     'clubId',
@@ -4369,6 +4417,925 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
         'string',
         'null',
       ],
+      'maxLength': 500,
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSuccessPreferenceDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_preferences.schema.json',
+  'title': 'EventSuccessPreferenceDocument',
+  'description': 'Attendee-owned opt-out preferences for live event guidance stored at eventSuccessPreferences/{eventId_uid}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessPreferences',
+  'x-firestore-path': 'eventSuccessPreferences/{preferenceId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'attendee direct write while signed up or attended; host read for assignment generation context',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'uid',
+    'microPodsOptedOut',
+    'guidedRotationsOptedOut',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'microPodsOptedOut': <String, Object?>{
+      'type': 'boolean',
+    },
+    'guidedRotationsOptedOut': <String, Object?>{
+      'type': 'boolean',
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSuccessCompatibilityResponseDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_compatibility_responses.schema.json',
+  'title': 'EventSuccessCompatibilityResponseDocument',
+  'description': 'Attendee-owned compatibility questionnaire answers stored at eventSuccessCompatibilityResponses/{eventId_uid}. Hosts cannot read individual answers.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessCompatibilityResponses',
+  'x-firestore-path': 'eventSuccessCompatibilityResponses/{responseId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'attendee direct write while signed up or attended; backend read for opted-in assignment generation',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'uid',
+    'answerIds',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'answerIds': <String, Object?>{
+      'type': 'array',
+      'minItems': 1,
+      'maxItems': 8,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 120,
+      },
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_wingman_requests.schema.json',
+  'title': 'EventSuccessWingmanRequestDocument',
+  'description': 'Explicit attendee request for host-visible introduction help stored at eventSuccessWingmanRequests/{eventId_uid}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessWingmanRequests',
+  'x-firestore-path': 'eventSuccessWingmanRequests/{requestId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'attendee direct write after attended event; host read only while active and consented',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'requesterUid',
+    'targetUid',
+    'status',
+    'hostVisibleConsent',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'requesterUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'targetUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'status': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'active',
+        'withdrawn',
+      ],
+    },
+    'hostVisibleConsent': <String, Object?>{
+      'type': 'boolean',
+      'const': true,
+    },
+    'note': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_assignments.schema.json',
+  'title': 'EventSuccessAssignmentDocument',
+  'description': 'Server-owned live guidance assignment stored at eventSuccessAssignments/{eventId_moduleId_uid}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessAssignments',
+  'x-firestore-path': 'eventSuccessAssignments/{assignmentId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'event-success assignment callables',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'uid',
+    'moduleId',
+    'label',
+    'displayTitle',
+    'peerUids',
+    'source',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'moduleId': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'micro_pods',
+        'guided_rotations',
+      ],
+    },
+    'label': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+    },
+    'displayTitle': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'displaySubtitle': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
+    },
+    'peerUids': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 180,
+      },
+    },
+    'rotationSlots': <String, Object?>{
+      'type': 'array',
+      'maxItems': 24,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'roundIndex',
+          'label',
+          'startsAt',
+          'endsAt',
+          'peerUid',
+          'compatibility',
+        ],
+        'properties': <String, Object?>{
+          'roundIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'startsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'endsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'peerUid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'compatibility': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'mutual_interest',
+              'one_way_interest',
+              'questionnaire_match',
+              'social',
+              'host_override',
+            ],
+          },
+        },
+      },
+    },
+    'source': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'server_v1',
+        'host_override_v1',
+        'server',
+      ],
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_scorecards.schema.json',
+  'title': 'EventSuccessScorecardDocument',
+  'description': 'Server-owned aggregate event coaching metrics stored at eventSuccessScorecards/{eventId}. Raw attendee feedback remains private.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessScorecards',
+  'x-firestore-path': 'eventSuccessScorecards/{eventId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'onEventSuccessFeedbackWritten trigger',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'bookedCount',
+    'checkedInCount',
+    'feedbackCount',
+    'attendeesWhoMetTwoPlusPeople',
+    'mutualMatchCount',
+    'chatStartedCount',
+    'repeatSignupCount',
+    'averageWelcomeRating',
+    'averageStructureRating',
+    'safetyIncidentCount',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'bookedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'checkedInCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'feedbackCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'attendeesWhoMetTwoPlusPeople': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'mutualMatchCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'chatStartedCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'repeatSignupCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'averageWelcomeRating': <String, Object?>{
+      'type': 'number',
+      'minimum': 0,
+      'maximum': 5,
+    },
+    'averageStructureRating': <String, Object?>{
+      'type': 'number',
+      'minimum': 0,
+      'maximum': 5,
+    },
+    'safetyIncidentCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventSafetyReportDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_safety_reports.schema.json',
+  'title': 'EventSafetyReportDocument',
+  'description': 'Catch-private safety review item materialized from event feedback concerns.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSafetyReports',
+  'x-firestore-path': 'eventSafetyReports/{reportId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'onEventSuccessFeedbackWritten trigger',
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'reporterUserId',
+    'feedbackId',
+    'source',
+    'status',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'reporterUserId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'feedbackId': <String, Object?>{
+      'type': 'string',
+      'minLength': 3,
+      'maxLength': 256,
+    },
+    'source': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'event_success_feedback',
+      ],
+    },
+    'status': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'open',
+        'reviewed',
+        'dismissed',
+      ],
+    },
+    'note': <String, Object?>{
+      'type': 'string',
       'maxLength': 500,
     },
     'createdAt': <String, Object?>{
@@ -8491,6 +9458,167 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'eventSuccessDefaults': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'enabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'playbookId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'selectedModuleIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 24,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+        },
+        'structureConfig': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'unitKind',
+            'unitSize',
+            'revealCountdownSeconds',
+          ],
+          'properties': <String, Object?>{
+            'unitKind': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'wholeGroup',
+                'pods',
+                'pairs',
+                'teams',
+                'tables',
+              ],
+            },
+            'unitSize': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'unitCount': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 1,
+              'maximum': 200,
+            },
+            'rotationIntervalMinutes': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 5,
+              'maximum': 180,
+            },
+            'revealCountdownSeconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 60,
+            },
+          },
+        },
+        'hostGoal': <String, Object?>{
+          'type': 'string',
+          'maxLength': 300,
+        },
+        'wingmanRequestsEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'contextualOpenersEnabled': <String, Object?>{
+          'type': 'boolean',
+        },
+        'compatibilityAffectsRanking': <String, Object?>{
+          'type': 'boolean',
+        },
+        'questionnaireConfig': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'templateId',
+          ],
+          'properties': <String, Object?>{
+            'templateId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 120,
+            },
+            'customTitle': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 80,
+            },
+            'customQuestions': <String, Object?>{
+              'type': 'array',
+              'maxItems': 8,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'id',
+                  'prompt',
+                  'options',
+                ],
+                'properties': <String, Object?>{
+                  'id': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'prompt': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 140,
+                  },
+                  'options': <String, Object?>{
+                    'type': 'array',
+                    'minItems': 2,
+                    'maxItems': 5,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'id',
+                        'label',
+                      ],
+                      'properties': <String, Object?>{
+                        'id': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 120,
+                        },
+                        'label': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 80,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        'attendeePrompt': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 300,
+        },
+      },
+    },
     'constraints': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
@@ -9110,6 +10238,38 @@ const schemaOverrideEventSuccessRotationsCallablePayloadSchema = <String, Object
           },
         },
       },
+    },
+  },
+};
+
+const schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/submit_event_success_wingman_request_payload.schema.json',
+  'title': 'SubmitEventSuccessWingmanRequestCallablePayload',
+  'description': 'Callable payload accepted by submitEventSuccessWingmanRequest.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+    'targetUid',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'targetUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'note': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
     },
   },
 };
@@ -10160,6 +11320,36 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventSuccessFeedbackDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventSuccessPreferenceDocument',
+    source: 'firestore/event_success_preferences.schema.json',
+    schema: schemaEventSuccessPreferenceDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSuccessCompatibilityResponseDocument',
+    source: 'firestore/event_success_compatibility_responses.schema.json',
+    schema: schemaEventSuccessCompatibilityResponseDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSuccessWingmanRequestDocument',
+    source: 'firestore/event_success_wingman_requests.schema.json',
+    schema: schemaEventSuccessWingmanRequestDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSuccessAssignmentDocument',
+    source: 'firestore/event_success_assignments.schema.json',
+    schema: schemaEventSuccessAssignmentDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSuccessScorecardDocument',
+    source: 'firestore/event_success_scorecards.schema.json',
+    schema: schemaEventSuccessScorecardDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventSafetyReportDocument',
+    source: 'firestore/event_safety_reports.schema.json',
+    schema: schemaEventSafetyReportDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ClubScheduleLockDocument',
     source: 'firestore/club_schedule_locks.schema.json',
     schema: schemaClubScheduleLockDocumentSchema,
@@ -10325,6 +11515,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'SubmitEventSuccessWingmanRequestCallablePayload',
+    source: 'callables/submit_event_success_wingman_request_payload.schema.json',
+    schema: schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'MarkEventAttendanceCallableResponse',
     source: 'callable_responses/mark_event_attendance_response.schema.json',
     schema: schemaMarkEventAttendanceCallableResponseSchema,
@@ -10442,6 +11637,12 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventParticipationDocument': schemaEventParticipationDocumentSchema,
   'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
   'EventSuccessFeedbackDocument': schemaEventSuccessFeedbackDocumentSchema,
+  'EventSuccessPreferenceDocument': schemaEventSuccessPreferenceDocumentSchema,
+  'EventSuccessCompatibilityResponseDocument': schemaEventSuccessCompatibilityResponseDocumentSchema,
+  'EventSuccessWingmanRequestDocument': schemaEventSuccessWingmanRequestDocumentSchema,
+  'EventSuccessAssignmentDocument': schemaEventSuccessAssignmentDocumentSchema,
+  'EventSuccessScorecardDocument': schemaEventSuccessScorecardDocumentSchema,
+  'EventSafetyReportDocument': schemaEventSafetyReportDocumentSchema,
   'ClubScheduleLockDocument': schemaClubScheduleLockDocumentSchema,
   'UserEventScheduleLockDocument': schemaUserEventScheduleLockDocumentSchema,
   'SavedEventDocument': schemaSavedEventDocumentSchema,
@@ -10475,6 +11676,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
   'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
   'OverrideEventSuccessRotationsCallablePayload': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
+  'SubmitEventSuccessWingmanRequestCallablePayload': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   'MarkEventAttendanceCallableResponse': schemaMarkEventAttendanceCallableResponseSchema,
   'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
@@ -10513,6 +11715,12 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_participations.schema.json': schemaEventParticipationDocumentSchema,
   'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,
   'firestore/event_success_feedback.schema.json': schemaEventSuccessFeedbackDocumentSchema,
+  'firestore/event_success_preferences.schema.json': schemaEventSuccessPreferenceDocumentSchema,
+  'firestore/event_success_compatibility_responses.schema.json': schemaEventSuccessCompatibilityResponseDocumentSchema,
+  'firestore/event_success_wingman_requests.schema.json': schemaEventSuccessWingmanRequestDocumentSchema,
+  'firestore/event_success_assignments.schema.json': schemaEventSuccessAssignmentDocumentSchema,
+  'firestore/event_success_scorecards.schema.json': schemaEventSuccessScorecardDocumentSchema,
+  'firestore/event_safety_reports.schema.json': schemaEventSafetyReportDocumentSchema,
   'firestore/club_schedule_locks.schema.json': schemaClubScheduleLockDocumentSchema,
   'firestore/user_event_schedule_locks.schema.json': schemaUserEventScheduleLockDocumentSchema,
   'firestore/saved_events.schema.json': schemaSavedEventDocumentSchema,
@@ -10546,6 +11754,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
   'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
   'callables/override_event_success_rotations_payload.schema.json': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
+  'callables/submit_event_success_wingman_request_payload.schema.json': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   'callable_responses/mark_event_attendance_response.schema.json': schemaMarkEventAttendanceCallableResponseSchema,
   'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,

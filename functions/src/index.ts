@@ -53,6 +53,11 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {
+  fetchEventSuccessWingmanCandidates,
+  submitEventSuccessWingmanRequest,
+  withdrawEventSuccessWingmanRequest,
+} from "./eventSuccess/wingmanRequests";
 export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
   createEventReview,

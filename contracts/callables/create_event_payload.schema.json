@@ -52,6 +52,9 @@
     "eventFormat": {
       "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
     },
+    "eventSuccessDefaults": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessDefaults"
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,

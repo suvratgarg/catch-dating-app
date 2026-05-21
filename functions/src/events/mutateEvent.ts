@@ -90,6 +90,12 @@ interface EventMutationDeps {
 type ParsedEventConstraints = NonNullable<
   CreateEventCallablePayload["constraints"]
 >;
+type EventSuccessDefaultsPayload = NonNullable<
+  CreateEventCallablePayload["eventSuccessDefaults"]
+>;
+type EventSuccessStructureConfigPayload = NonNullable<
+  EventSuccessDefaultsPayload["structureConfig"]
+>;
 type CreateEventPayloadWithPolicy = CreateEventCallablePayload & {
   eventPolicy?: EventPolicyBundleDoc;
   eventFormat?: EventFormatSnapshot;
@@ -150,6 +156,9 @@ export async function createEventHandler(
     db.collection("events").doc(data.eventId) :
     db.collection("events").doc();
   const privateAccessRef = db.collection("eventPrivateAccess").doc(eventRef.id);
+  const eventSuccessPlanRef = db
+    .collection("eventSuccessPlans")
+    .doc(eventRef.id);
   const clubRef = db.collection("clubs").doc(data.clubId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
@@ -185,11 +194,26 @@ export async function createEventHandler(
       throw new HttpsError("internal", "Event policy was not normalized.");
     }
     const inviteCode = normalizedInviteCodeForCreate(data, eventPolicy);
-    const privateAccessSnap = await tx.get(privateAccessRef);
+    const eventSuccessPlan = buildCreateEventSuccessPlanDoc({
+      data,
+      eventId: eventRef.id,
+      event,
+      serverTimestamp: deps.serverTimestamp,
+    });
+    const [privateAccessSnap, eventSuccessPlanSnap] = await Promise.all([
+      tx.get(privateAccessRef),
+      eventSuccessPlan ? tx.get(eventSuccessPlanRef) : Promise.resolve(null),
+    ]);
     if (privateAccessSnap.exists) {
       throw new HttpsError(
         "already-exists",
         "Event private access already exists."
+      );
+    }
+    if (eventSuccessPlanSnap?.exists) {
+      throw new HttpsError(
+        "already-exists",
+        "Event success plan already exists."
       );
     }
 
@@ -208,6 +232,9 @@ export async function createEventHandler(
         createdAt: deps.serverTimestamp?.() ??
           admin.firestore.FieldValue.serverTimestamp(),
       });
+    }
+    if (eventSuccessPlan) {
+      tx.create(eventSuccessPlanRef, eventSuccessPlan);
     }
     createdEvent = event;
   });
@@ -645,6 +672,294 @@ function buildCreateEventDoc(
     cohortCounts: {},
     waitlistedCohortCounts: {},
   };
+}
+
+/**
+ * Builds the optional initial event-success plan owned by createEvent.
+ * @param {object} params Source event and callable payload.
+ * @return {object|null} Firestore plan doc, or null when disabled.
+ */
+function buildCreateEventSuccessPlanDoc(params: {
+  data: CreateEventCallablePayload;
+  eventId: string;
+  event: EventDoc;
+  serverTimestamp?: () => FirebaseFirestore.FieldValue;
+}): Record<string, unknown> | null {
+  const defaults = params.data.eventSuccessDefaults;
+  if (!defaults?.enabled) return null;
+
+  const timestamp = params.serverTimestamp?.() ??
+    admin.firestore.FieldValue.serverTimestamp();
+  const eventFormat = params.event.eventFormat;
+  const activityKind = eventFormat.activityKind;
+  const interactionModel = eventFormat.interactionModel;
+  const targetAttendeeCount = clampInteger(
+    params.event.capacityLimit,
+    1,
+    1000,
+    20
+  );
+  const playbookId =
+    normalizeString(defaults.playbookId) ??
+    normalizeString(eventFormat.defaultPlaybookId) ??
+    defaultEventSuccessPlaybookIdFor(activityKind);
+  const selectedModuleIds = stableStringList(
+    defaults.selectedModuleIds,
+    24,
+    defaultEventSuccessModuleIdsFor(interactionModel, activityKind)
+  );
+
+  return {
+    eventId: params.eventId,
+    clubId: params.data.clubId,
+    playbookId,
+    selectedModuleIds,
+    targetAttendeeCount,
+    structureConfig: normalizeEventSuccessStructureConfig(
+      defaults.structureConfig,
+      interactionModel,
+      targetAttendeeCount
+    ),
+    hostGoal:
+      normalizeString(defaults.hostGoal) ??
+      "Help attendees meet at least two new people.",
+    wingmanRequestsEnabled: defaults.wingmanRequestsEnabled ?? true,
+    contextualOpenersEnabled: defaults.contextualOpenersEnabled ?? true,
+    compatibilityAffectsRanking:
+      defaults.compatibilityAffectsRanking ?? activityKind === "singlesMixer",
+    questionnaireConfig: normalizeEventSuccessQuestionnaireConfig(
+      defaults.questionnaireConfig
+    ),
+    activeStepIndex: 0,
+    status: "setup",
+    revealStatus: "idle",
+    activeRevealRoundIndex: 0,
+    revealStartedAt: null,
+    revealEndsAt: null,
+    attendeePrompt: normalizeNullableString(defaults.attendeePrompt),
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    frozenAt: null,
+    completedAt: null,
+  };
+}
+
+/**
+ * Returns a valid event-success structure for the event format.
+ * @param {object=} raw Optional client defaults.
+ * @param {string} interactionModel Event interaction model.
+ * @param {number} targetAttendeeCount Capacity used for whole-group formats.
+ * @return {object} Persistable structure config.
+ */
+function normalizeEventSuccessStructureConfig(
+  raw: EventSuccessStructureConfigPayload | undefined,
+  interactionModel: EventFormatSnapshot["interactionModel"],
+  targetAttendeeCount: number
+) {
+  const fallback = defaultEventSuccessStructureConfigFor(
+    interactionModel,
+    targetAttendeeCount
+  );
+  return {
+    unitKind: raw?.unitKind ?? fallback.unitKind,
+    unitSize: raw?.unitSize ?? fallback.unitSize,
+    unitCount: raw?.unitCount ?? fallback.unitCount,
+    rotationIntervalMinutes:
+      raw?.rotationIntervalMinutes ?? fallback.rotationIntervalMinutes,
+    revealCountdownSeconds:
+      raw?.revealCountdownSeconds ?? fallback.revealCountdownSeconds,
+  };
+}
+
+/**
+ * Returns a valid questionnaire config from optional defaults.
+ * @param {object=} raw Optional questionnaire config.
+ * @return {object} Persistable questionnaire config.
+ */
+function normalizeEventSuccessQuestionnaireConfig(
+  raw: EventSuccessDefaultsPayload["questionnaireConfig"] | undefined
+) {
+  return {
+    templateId: normalizeString(raw?.templateId) ?? "balanced",
+    ...(raw?.customTitle !== undefined ?
+      {customTitle: normalizeNullableString(raw.customTitle)} :
+      {}),
+    ...(raw?.customQuestions !== undefined ?
+      {customQuestions: raw.customQuestions} :
+      {}),
+  };
+}
+
+/**
+ * Returns a stable unique string list, falling back when empty.
+ * @param {string[] | undefined} values Candidate strings.
+ * @param {number} maxItems Maximum number of returned strings.
+ * @param {string[]} fallback Fallback values when candidates are empty.
+ * @return {string[]} Stable unique strings.
+ */
+function stableStringList(
+  values: string[] | undefined,
+  maxItems: number,
+  fallback: string[]
+): string[] {
+  const normalized = (values ?? [])
+    .map((value) => normalizeString(value))
+    .filter((value): value is string => value !== null);
+  const source = normalized.length > 0 ? normalized : fallback;
+  return [...new Set(source)].sort().slice(0, maxItems);
+}
+
+/**
+ * Trims a string and returns null when blank.
+ * @param {unknown} value Raw value.
+ * @return {string|null} Normalized string.
+ */
+function normalizeString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized.length === 0 ? null : normalized;
+}
+
+/**
+ * Trims a nullable string and preserves explicit null for Firestore.
+ * @param {unknown} value Raw value.
+ * @return {string|null} Normalized nullable string.
+ */
+function normalizeNullableString(value: unknown): string | null {
+  return normalizeString(value);
+}
+
+/**
+ * Clamps an integer-like value into a valid range.
+ * @param {unknown} value Raw value.
+ * @param {number} min Minimum value.
+ * @param {number} max Maximum value.
+ * @param {number} fallback Fallback when not finite.
+ * @return {number} Clamped integer.
+ */
+function clampInteger(
+  value: unknown,
+  min: number,
+  max: number,
+  fallback: number
+): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.min(max, Math.max(min, Math.round(value)));
+}
+
+/**
+ * Maps event activity to a default event-success playbook.
+ * @param {string} activityKind Activity kind.
+ * @return {string} Playbook id.
+ */
+function defaultEventSuccessPlaybookIdFor(
+  activityKind: EventFormatSnapshot["activityKind"]
+): string {
+  switch (activityKind) {
+  case "pickleball":
+  case "padel":
+  case "tennis":
+  case "badminton":
+    return "pickleball_rotations";
+  case "pubQuiz":
+    return "pub_quiz_team_mixer";
+  case "dinner":
+    return "dinner_table_mixer";
+  case "singlesMixer":
+    return "algorithmic_mixer_reveal";
+  case "barCrawl":
+  case "openActivity":
+    return "host_led_social";
+  default:
+    return "social_run_light";
+  }
+}
+
+/**
+ * Returns default module ids for an event format.
+ * @param {string} interactionModel Event interaction model.
+ * @param {string} activityKind Activity kind.
+ * @return {string[]} Default module ids.
+ */
+function defaultEventSuccessModuleIdsFor(
+  interactionModel: EventFormatSnapshot["interactionModel"],
+  activityKind: EventFormatSnapshot["activityKind"]
+): string[] {
+  const base = [
+    "qr_check_in",
+    "host_script",
+    "social_missions",
+    "wingman_requests",
+    "contextual_openers",
+    "decomposed_feedback",
+    "host_analytics",
+    "safety_controls",
+  ];
+  switch (interactionModel) {
+  case "pacePods":
+    return [...base, "micro_pods"];
+  case "pairedRotations":
+    return [...base, "guided_rotations", "live_reveal"];
+  case "teamRotations":
+    return [...base, "micro_pods", "live_reveal"];
+  case "freeFormMixer":
+    return activityKind === "singlesMixer" ?
+      [...base, "guided_rotations", "live_reveal",
+        "compatibility_questionnaire"] :
+      [...base, "guided_rotations", "live_reveal"];
+  default:
+    return base;
+  }
+}
+
+/**
+ * Returns default event-success structure for an event format.
+ * @param {string} interactionModel Event interaction model.
+ * @param {number} targetAttendeeCount Event target size.
+ * @return {object} Structure config.
+ */
+function defaultEventSuccessStructureConfigFor(
+  interactionModel: EventFormatSnapshot["interactionModel"],
+  targetAttendeeCount: number
+): EventSuccessStructureConfigPayload {
+  switch (interactionModel) {
+  case "pairedRotations":
+  case "freeFormMixer":
+    return {
+      unitKind: "pairs",
+      unitSize: 2,
+      unitCount: null,
+      rotationIntervalMinutes: 15,
+      revealCountdownSeconds: 10,
+    };
+  case "teamRotations":
+    return {
+      unitKind: "teams",
+      unitSize: 5,
+      unitCount: 3,
+      rotationIntervalMinutes: null,
+      revealCountdownSeconds: 10,
+    };
+  case "seatedTable":
+    return {
+      unitKind: "tables",
+      unitSize: 4,
+      unitCount: null,
+      rotationIntervalMinutes: 30,
+      revealCountdownSeconds: 10,
+    };
+  case "pacePods":
+  case "hostLedProgram":
+  case "openFormat":
+  default:
+    return {
+      unitKind: "wholeGroup",
+      unitSize: targetAttendeeCount,
+      unitCount: 1,
+      rotationIntervalMinutes: null,
+      revealCountdownSeconds: 10,
+    };
+  }
 }
 
 /**

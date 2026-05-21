@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_assignments.schema.json",
+  "title": "EventSuccessAssignmentDocument",
+  "description": "Server-owned live guidance assignment stored at eventSuccessAssignments/{eventId_moduleId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessAssignments",
+  "x-firestore-path": "eventSuccessAssignments/{assignmentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success assignment callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "moduleId",
+    "label",
+    "displayTitle",
+    "peerUids",
+    "source",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "moduleId": {
+      "type": "string",
+      "enum": ["micro_pods", "guided_rotations"]
+    },
+    "label": {"type": "string", "minLength": 1, "maxLength": 80},
+    "displayTitle": {"type": "string", "minLength": 1, "maxLength": 120},
+    "displaySubtitle": {"type": ["string", "null"], "maxLength": 240},
+    "peerUids": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+    },
+    "rotationSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "startsAt",
+          "endsAt",
+          "peerUid",
+          "compatibility"
+        ],
+        "properties": {
+          "roundIndex": {"type": "integer", "minimum": 0, "maximum": 100},
+          "label": {"type": "string", "minLength": 1, "maxLength": 80},
+          "startsAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+          "endsAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+          "peerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "compatibility": {
+            "type": "string",
+            "enum": [
+              "mutual_interest",
+              "one_way_interest",
+              "questionnaire_match",
+              "social",
+              "host_override"
+            ]
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "enum": ["server_v1", "host_override_v1", "server"]
+    },
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

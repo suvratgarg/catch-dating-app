@@ -267,22 +267,26 @@ class EventRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> createEvent({required Event event, String? inviteCode}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('createEvent')
-            .call(
-              CreateEventCallableRequest.fromEvent(
-                event,
-                inviteCode: inviteCode,
-              ).toJson(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'create event',
-          resource: _collectionPath,
+  Future<void> createEvent({
+    required Event event,
+    String? inviteCode,
+    Map<String, Object?>? eventSuccessDefaults,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('createEvent')
+        .call(
+          CreateEventCallableRequest.fromEvent(
+            event,
+            inviteCode: inviteCode,
+            eventSuccessDefaults: eventSuccessDefaults,
+          ).toJson(),
         ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create event',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<void> updateEventDetails({
     required Event event,

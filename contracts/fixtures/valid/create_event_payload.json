@@ -14,6 +14,35 @@
     "interactionModel": "pacePods",
     "defaultPlaybookId": "social_run_light"
   },
+  "eventSuccessDefaults": {
+    "enabled": true,
+    "playbookId": "social_run_light",
+    "selectedModuleIds": [
+      "qr_check_in",
+      "micro_pods",
+      "social_missions",
+      "wingman_requests",
+      "contextual_openers",
+      "decomposed_feedback",
+      "host_analytics",
+      "safety_controls"
+    ],
+    "structureConfig": {
+      "unitKind": "wholeGroup",
+      "unitSize": 12,
+      "unitCount": 1,
+      "rotationIntervalMinutes": null,
+      "revealCountdownSeconds": 10
+    },
+    "hostGoal": "Make it easy for attendees to meet two new people.",
+    "wingmanRequestsEnabled": true,
+    "contextualOpenersEnabled": true,
+    "compatibilityAffectsRanking": false,
+    "questionnaireConfig": {
+      "templateId": "balanced"
+    },
+    "attendeePrompt": "Ask someone what route they want to try next."
+  },
   "distanceKm": 5,
   "pace": "easy",
   "capacityLimit": 12,

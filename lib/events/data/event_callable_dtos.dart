@@ -12,12 +12,14 @@ final class CreateEventCallableRequest {
     required this.constraints,
     required this.eventPolicy,
     required this.eventFormat,
+    required this.eventSuccessDefaults,
     required this.inviteCode,
   });
 
   factory CreateEventCallableRequest.fromEvent(
     Event event, {
     String? inviteCode,
+    Map<String, Object?>? eventSuccessDefaults,
   }) => CreateEventCallableRequest(
     eventId: event.id,
     clubId: event.clubId,
@@ -28,6 +30,7 @@ final class CreateEventCallableRequest {
     constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
     eventPolicy: event.eventPolicy?.toJson(),
     eventFormat: event.eventFormat.toJson(),
+    eventSuccessDefaults: eventSuccessDefaults,
     inviteCode: inviteCode,
   );
 
@@ -40,6 +43,7 @@ final class CreateEventCallableRequest {
   final EventConstraintsCallableDto constraints;
   final Map<String, Object?>? eventPolicy;
   final Map<String, Object?> eventFormat;
+  final Map<String, Object?>? eventSuccessDefaults;
   final String? inviteCode;
 
   Map<String, Object?> toJson() => {
@@ -52,6 +56,7 @@ final class CreateEventCallableRequest {
     'constraints': constraints.toJson(),
     'eventPolicy': ?eventPolicy,
     'eventFormat': eventFormat,
+    'eventSuccessDefaults': ?eventSuccessDefaults,
     'privateAccess': ?_privateAccessJson(inviteCode),
   };
 }

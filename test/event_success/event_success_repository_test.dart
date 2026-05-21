@@ -1,20 +1,15 @@
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
-    show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
+    show buildEvent, buildPublicProfile, buildUser;
 
 void main() {
   group('EventSuccessRepository', () {
@@ -25,12 +20,7 @@ void main() {
     setUp(() {
       firestore = FakeFirebaseFirestore();
       functions = TestFirebaseFunctions();
-      repository = EventSuccessRepository(
-        firestore,
-        EventParticipationRepository(firestore),
-        PublicProfileRepository(firestore),
-        functions: functions,
-      );
+      repository = EventSuccessRepository(firestore, functions: functions);
     });
 
     test('creates a default host plan for an event once', () async {
@@ -227,50 +217,34 @@ void main() {
       expect(updated?.answerIds, ['event_energy_playful_competition']);
     });
 
-    test(
-      'saves and withdraws an explicit host-visible wingman request',
-      () async {
-        final event = buildEvent(id: 'event-1', clubId: 'club-1');
-        final target = buildPublicProfile(uid: 'runner-2', name: 'Riya');
+    test('calls server-owned wingman request callables', () async {
+      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final target = buildPublicProfile(uid: 'runner-2', name: 'Riya');
 
-        await repository.saveWingmanRequest(
-          event: event,
-          requesterUid: 'runner-1',
-          target: target,
-          note: 'Please help us land in the same rotation.',
-        );
+      await repository.saveWingmanRequest(
+        event: event,
+        target: target,
+        note: '  Please help us land in the same rotation.  ',
+      );
+      await repository.withdrawWingmanRequest(event: event);
 
-        final saved = await repository
-            .watchWingmanRequestForUser(eventId: event.id, uid: 'runner-1')
-            .first;
-        expect(saved?.id, 'event-1_runner-1');
-        expect(saved?.targetUid, 'runner-2');
-        expect(saved?.status, EventSuccessWingmanRequestStatus.active);
-        expect(saved?.hostVisibleConsent, isTrue);
-        expect(saved?.note, 'Please help us land in the same rotation.');
-
-        final eventRequests = await repository
-            .watchWingmanRequestsForEvent(event.id)
-            .first;
-        expect(eventRequests.single.requesterUid, 'runner-1');
-
-        await repository.withdrawWingmanRequest(
-          event: event,
-          requesterUid: 'runner-1',
-        );
-
-        final withdrawn = await repository
-            .watchWingmanRequestForUser(eventId: event.id, uid: 'runner-1')
-            .first;
-        expect(withdrawn?.status, EventSuccessWingmanRequestStatus.withdrawn);
-        expect(withdrawn?.targetUid, 'runner-2');
-
-        final activeRequests = await repository
-            .watchWingmanRequestsForEvent(event.id)
-            .first;
-        expect(activeRequests, isEmpty);
-      },
-    );
+      final submit =
+          functions.httpsCallable('submitEventSuccessWingmanRequest')
+              as TestHttpsCallable;
+      final withdraw =
+          functions.httpsCallable('withdrawEventSuccessWingmanRequest')
+              as TestHttpsCallable;
+      expect(submit.calls, [
+        {
+          'eventId': 'event-1',
+          'targetUid': 'runner-2',
+          'note': 'Please help us land in the same rotation.',
+        },
+      ]);
+      expect(withdraw.calls, [
+        {'eventId': 'event-1'},
+      ]);
+    });
 
     test(
       'watches server-owned micro-pod assignments for one attendee',
@@ -395,154 +369,45 @@ void main() {
       },
     );
 
-    test(
-      'fetches wingman request candidates from attended participants only',
-      () async {
-        final event = buildEvent(id: 'event-1');
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'runner-1',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.man,
-            cohortAtSignup: EventCohortIds.menInterestedInWomen,
-          ),
-        );
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'runner-2',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.woman,
-            cohortAtSignup: EventCohortIds.womenInterestedInMen,
-          ),
-        );
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'runner-3',
-            status: EventParticipationStatus.signedUp,
-            genderAtSignup: Gender.woman,
-            cohortAtSignup: EventCohortIds.womenInterestedInMen,
-          ),
-        );
-        await firestore
-            .collection('publicProfiles')
-            .doc('runner-2')
-            .set(buildPublicProfile(uid: 'runner-2', name: 'Rhea').toJson());
-        await firestore
-            .collection('publicProfiles')
-            .doc('runner-3')
-            .set(buildPublicProfile(uid: 'runner-3', name: 'Naina').toJson());
+    test('fetches wingman request candidates through callable', () async {
+      final profile = buildPublicProfile(
+        uid: 'runner-2',
+        name: 'Rhea',
+        gender: Gender.woman,
+      );
+      functions.setResponse('fetchEventSuccessWingmanCandidates', {
+        'profiles': [
+          {'uid': profile.uid, ...profile.toJson()},
+        ],
+      });
 
-        final candidates = await repository.fetchWingmanRequestCandidates(
-          eventId: event.id,
-          currentUser: buildUser(
-            uid: 'runner-1',
-            gender: Gender.man,
-            interestedInGenders: const [Gender.woman],
-          ),
-        );
+      final candidates = await repository.fetchWingmanRequestCandidates(
+        eventId: 'event-1',
+        currentUser: buildUser(
+          uid: 'runner-1',
+          gender: Gender.man,
+          interestedInGenders: const [Gender.woman],
+        ),
+      );
 
-        expect(candidates.map((profile) => profile.uid), ['runner-2']);
-      },
-    );
-
-    test(
-      'filters wingman request candidates by viewer interest and signup cohort',
-      () async {
-        final event = buildEvent(id: 'event-1');
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'viewer',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.woman,
-            cohortAtSignup: EventCohortIds.womenInterestedInMen,
-          ),
-        );
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'compatible-man',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.man,
-            cohortAtSignup: EventCohortIds.menInterestedInWomen,
-          ),
-        );
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'incompatible-woman',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.woman,
-            cohortAtSignup: EventCohortIds.womenInterestedInMen,
-          ),
-        );
-        await _seedParticipation(
-          firestore,
-          buildEventParticipation(
-            event: event,
-            uid: 'man-not-seeking-women',
-            status: EventParticipationStatus.attended,
-            genderAtSignup: Gender.man,
-            cohortAtSignup: EventCohortIds.queerOrOpen,
-          ),
-        );
-        await firestore
-            .collection('publicProfiles')
-            .doc('compatible-man')
-            .set(
-              buildPublicProfile(
-                uid: 'compatible-man',
-                name: 'Arjun',
-                gender: Gender.man,
-              ).toJson(),
-            );
-        await firestore
-            .collection('publicProfiles')
-            .doc('incompatible-woman')
-            .set(
-              buildPublicProfile(
-                uid: 'incompatible-woman',
-                name: 'Riya',
-                gender: Gender.woman,
-              ).toJson(),
-            );
-        await firestore
-            .collection('publicProfiles')
-            .doc('man-not-seeking-women')
-            .set(
-              buildPublicProfile(
-                uid: 'man-not-seeking-women',
-                name: 'Kabir',
-                gender: Gender.man,
-              ).toJson(),
-            );
-
-        final candidates = await repository.fetchWingmanRequestCandidates(
-          eventId: event.id,
-          currentUser: buildUser(
-            uid: 'viewer',
-            gender: Gender.woman,
-            interestedInGenders: const [Gender.man],
-          ),
-        );
-
-        expect(candidates.map((profile) => profile.uid), ['compatible-man']);
-      },
-    );
+      final callable =
+          functions.httpsCallable('fetchEventSuccessWingmanCandidates')
+              as TestHttpsCallable;
+      expect(callable.calls, [
+        {'eventId': 'event-1'},
+      ]);
+      expect(candidates.map((profile) => profile.uid), ['runner-2']);
+      expect(candidates.single.name, 'Rhea');
+    });
   });
 }
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};
+
+  void setResponse(String name, Object? response) {
+    (httpsCallable(name) as TestHttpsCallable).response = response;
+  }
 
   @override
   HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) {
@@ -555,11 +420,12 @@ class TestHttpsCallable extends Fake implements HttpsCallable {
 
   final String name;
   final calls = <Object?>[];
+  Object? response;
 
   @override
   Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
     calls.add(parameters);
-    return TestHttpsCallableResult<T>(null as T);
+    return TestHttpsCallableResult<T>(response as T);
   }
 }
 
@@ -571,14 +437,4 @@ class TestHttpsCallableResult<T> extends Fake
 
   @override
   T get data => dataValue;
-}
-
-Future<void> _seedParticipation(
-  FakeFirebaseFirestore firestore,
-  EventParticipation participation,
-) {
-  return firestore
-      .collection('eventParticipations')
-      .doc(participation.id)
-      .set(participation.toJson());
 }

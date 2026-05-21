@@ -1,0 +1,11 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "uid": "user-1",
+  "answerIds": [
+    "event_energy_easy_conversation",
+    "first_conversation_question"
+  ],
+  "createdAt": {"_seconds": 1777615200, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777615260, "_nanoseconds": 0}
+}

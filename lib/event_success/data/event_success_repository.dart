@@ -1,16 +1,14 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -22,12 +20,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_success_repository.g.dart';
 
 class EventSuccessRepository {
-  const EventSuccessRepository(
-    this._db,
-    this._participationRepository,
-    this._publicProfileRepository, {
-    FirebaseFunctions? functions,
-  }) : _functions = functions;
+  const EventSuccessRepository(this._db, {FirebaseFunctions? functions})
+    : _functions = functions;
 
   static const _plansPath = 'eventSuccessPlans';
   static const _feedbackPath = 'eventSuccessFeedback';
@@ -36,10 +30,9 @@ class EventSuccessRepository {
   static const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
   static const _compatibilityResponsesPath =
       'eventSuccessCompatibilityResponses';
+  static const _scorecardsPath = 'eventSuccessScorecards';
 
   final FirebaseFirestore _db;
-  final EventParticipationRepository _participationRepository;
-  final PublicProfileRepository _publicProfileRepository;
   final FirebaseFunctions? _functions;
 
   CollectionReference<EventSuccessPlan> get _plansRef => _db
@@ -132,7 +125,7 @@ class EventSuccessRepository {
     ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch event success plan',
+      action: 'open live event guide',
       resource: _plansPath,
     ),
   );
@@ -145,8 +138,26 @@ class EventSuccessRepository {
             .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch event success feedback',
+          action: 'load event feedback',
           resource: _feedbackPath,
+        ),
+      );
+
+  Stream<EventSuccessScorecard?> watchScorecardForEvent(String eventId) =>
+      withBackendErrorStream(
+        () => _db
+            .collection(_scorecardsPath)
+            .doc(eventId)
+            .snapshots()
+            .map(
+              (doc) => doc.exists
+                  ? _eventSuccessScorecardFromJson(doc.data() ?? const {})
+                  : null,
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'load event report',
+          resource: _scorecardsPath,
         ),
       );
 
@@ -160,7 +171,7 @@ class EventSuccessRepository {
     ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user event success feedback',
+      action: 'load your event feedback',
       resource: _feedbackPath,
     ),
   );
@@ -177,7 +188,7 @@ class EventSuccessRepository {
     ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user event success assignment',
+      action: 'load your event assignment',
       resource: _assignmentsPath,
     ),
   );
@@ -202,7 +213,7 @@ class EventSuccessRepository {
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch event success assignments',
+      action: 'load event assignments',
       resource: _assignmentsPath,
     ),
   );
@@ -228,7 +239,7 @@ class EventSuccessRepository {
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'create event success plan',
+          action: 'create live event guide',
           resource: _plansPath,
         ),
       );
@@ -243,7 +254,7 @@ class EventSuccessRepository {
     ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user event success preference',
+      action: 'load your event preference',
       resource: _preferencesPath,
     ),
   );
@@ -257,7 +268,7 @@ class EventSuccessRepository {
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch event success preferences',
+      action: 'load event preferences',
       resource: _preferencesPath,
     ),
   );
@@ -266,7 +277,7 @@ class EventSuccessRepository {
     () => _planRef(plan.eventId).set(plan.copyWith(updatedAt: DateTime.now())),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'save event success plan',
+      action: 'save live event guide',
       resource: _plansPath,
     ),
   );
@@ -283,7 +294,7 @@ class EventSuccessRepository {
     }),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'update event success live step',
+      action: 'update live event step',
       resource: _plansPath,
     ),
   );
@@ -311,7 +322,7 @@ class EventSuccessRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'start event success reveal countdown',
+      action: 'start reveal countdown',
       resource: _plansPath,
     ),
   );
@@ -334,7 +345,7 @@ class EventSuccessRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'reveal event success round',
+      action: 'reveal event round',
       resource: _plansPath,
     ),
   );
@@ -350,7 +361,7 @@ class EventSuccessRepository {
         }),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'reset event success reveal',
+          action: 'reset event reveal',
           resource: _plansPath,
         ),
       );
@@ -398,7 +409,7 @@ class EventSuccessRepository {
         }),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'complete event success plan',
+          action: 'complete live event guide',
           resource: _plansPath,
         ),
       );
@@ -413,7 +424,7 @@ class EventSuccessRepository {
     ).snapshots().map((doc) => doc.exists ? doc.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user compatibility questionnaire',
+      action: 'load your match clue answers',
       resource: _compatibilityResponsesPath,
     ),
   );
@@ -426,7 +437,7 @@ class EventSuccessRepository {
         ),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'submit event success feedback',
+          action: 'submit event feedback',
           resource: _feedbackPath,
         ),
       );
@@ -444,7 +455,7 @@ class EventSuccessRepository {
         },
         context: const BackendErrorContext(
           service: BackendService.functions,
-          action: 'generate event success pods',
+          action: 'generate event pods',
           resource: _assignmentsPath,
         ),
       );
@@ -462,7 +473,7 @@ class EventSuccessRepository {
         },
         context: const BackendErrorContext(
           service: BackendService.functions,
-          action: 'generate event success rotations',
+          action: 'generate event rotations',
           resource: _assignmentsPath,
         ),
       );
@@ -483,7 +494,7 @@ class EventSuccessRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'override event success rotations',
+      action: 'adjust event rotations',
       resource: _assignmentsPath,
     ),
   );
@@ -496,7 +507,7 @@ class EventSuccessRepository {
     () => _setPreference(event: event, uid: uid, microPodsOptedOut: optedOut),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'save event success preference',
+      action: 'save event preference',
       resource: _preferencesPath,
     ),
   );
@@ -513,7 +524,7 @@ class EventSuccessRepository {
     ),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'save event success preference',
+      action: 'save event preference',
       resource: _preferencesPath,
     ),
   );
@@ -545,74 +556,51 @@ class EventSuccessRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'save compatibility questionnaire',
+      action: 'save match clue answers',
       resource: _compatibilityResponsesPath,
     ),
   );
 
   Future<void> saveWingmanRequest({
     required Event event,
-    required String requesterUid,
     required PublicProfile target,
     String? note,
   }) => withBackendErrorContext(
-    () async {
-      final ref = _wingmanRequestDoc(eventId: event.id, uid: requesterUid);
-      final now = DateTime.now();
-      final existing = (await ref.get()).data();
-      final normalizedNote = note?.trim();
-      final request = EventSuccessWingmanRequest(
-        id: eventSuccessWingmanRequestId(eventId: event.id, uid: requesterUid),
-        eventId: event.id,
-        clubId: event.clubId,
-        requesterUid: requesterUid,
-        targetUid: target.uid,
-        status: EventSuccessWingmanRequestStatus.active,
-        hostVisibleConsent: true,
-        note: normalizedNote == null || normalizedNote.isEmpty
-            ? null
-            : normalizedNote,
-        createdAt: existing?.createdAt ?? now,
-        updatedAt: now,
-      );
-      await ref.set(request);
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions.httpsCallable('submitEventSuccessWingmanRequest').call({
+        'eventId': event.id,
+        'targetUid': target.uid,
+        'note': ?_trimToNull(note),
+      });
     },
     context: const BackendErrorContext(
-      service: BackendService.firestore,
+      service: BackendService.functions,
       action: 'save event wingman request',
       resource: _wingmanRequestsPath,
     ),
   );
 
-  Future<void> withdrawWingmanRequest({
-    required Event event,
-    required String requesterUid,
-  }) => withBackendErrorContext(
-    () async {
-      final ref = _wingmanRequestDoc(eventId: event.id, uid: requesterUid);
-      final existing = (await ref.get()).data();
-      if (existing == null) return;
-      await ref.set(
-        EventSuccessWingmanRequest(
-          id: existing.id,
-          eventId: existing.eventId,
-          clubId: existing.clubId,
-          requesterUid: existing.requesterUid,
-          targetUid: existing.targetUid,
-          status: EventSuccessWingmanRequestStatus.withdrawn,
-          hostVisibleConsent: existing.hostVisibleConsent,
-          note: existing.note,
-          createdAt: existing.createdAt,
-          updatedAt: DateTime.now(),
+  Future<void> withdrawWingmanRequest({required Event event}) =>
+      withBackendErrorContext(
+        () {
+          final functions = _functions;
+          if (functions == null) {
+            throw StateError('FirebaseFunctions is not configured.');
+          }
+          return functions
+              .httpsCallable('withdrawEventSuccessWingmanRequest')
+              .call(EventIdCallableRequest(event.id).toJson());
+        },
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'withdraw event wingman request',
+          resource: _wingmanRequestsPath,
         ),
       );
-    },
-    context: const BackendErrorContext(
-      service: BackendService.firestore,
-      action: 'withdraw event wingman request',
-      resource: _wingmanRequestsPath,
-    ),
-  );
 
   Future<void> _setPreference({
     required Event event,
@@ -644,76 +632,35 @@ class EventSuccessRepository {
     required UserProfile currentUser,
   }) => withBackendErrorContext(
     () async {
-      final participations = await _participationRepository
-          .fetchParticipationsForEvent(eventId: eventId);
-      final currentCohortId = const EventCohortResolver()
-          .resolve(EventAttendeeProfile.fromUserProfile(currentUser))
-          .id;
-      final candidateIds =
-          participations
-              .where(
-                (participation) =>
-                    participation.status == EventParticipationStatus.attended,
-              )
-              .where(
-                (participation) => _isEligibleWingmanRequestCandidate(
-                  viewer: currentUser,
-                  viewerCohortId: currentCohortId,
-                  candidate: participation,
-                ),
-              )
-              .map((participation) => participation.uid)
-              .where((uid) => uid != currentUser.uid)
-              .toSet()
-              .toList()
-            ..sort();
-      return _publicProfileRepository.fetchPublicProfiles(candidateIds);
+      if (currentUser.uid.trim().isEmpty) return const <PublicProfile>[];
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      final result = await functions
+          .httpsCallable('fetchEventSuccessWingmanCandidates')
+          .call<Map<String, dynamic>>(EventIdCallableRequest(eventId).toJson());
+      final profiles = result.data['profiles'];
+      if (profiles is! List) return const <PublicProfile>[];
+      return profiles
+          .whereType<Map>()
+          .map((profile) {
+            return PublicProfile.fromJson(Map<String, dynamic>.from(profile));
+          })
+          .toList(growable: false);
     },
     context: const BackendErrorContext(
-      service: BackendService.firestore,
+      service: BackendService.functions,
       action: 'fetch wingman request candidates',
-      resource: 'eventParticipations',
+      resource: _wingmanRequestsPath,
     ),
   );
-}
-
-bool _isEligibleWingmanRequestCandidate({
-  required UserProfile viewer,
-  required String viewerCohortId,
-  required EventParticipation candidate,
-}) {
-  final candidateGender = candidate.genderAtSignup;
-  if (candidate.uid == viewer.uid || candidateGender == null) return false;
-  if (!viewer.interestedInGenders.contains(candidateGender)) return false;
-
-  final candidateCohortId = candidate.cohortAtSignup;
-  return switch (viewerCohortId) {
-    EventCohortIds.womenInterestedInMen =>
-      candidateCohortId == EventCohortIds.menInterestedInWomen,
-    EventCohortIds.menInterestedInWomen =>
-      candidateCohortId == EventCohortIds.womenInterestedInMen,
-    _ => _candidateCohortCanIncludeViewer(candidateCohortId, viewer.gender),
-  };
-}
-
-bool _candidateCohortCanIncludeViewer(
-  String? candidateCohortId,
-  Gender viewerGender,
-) {
-  return switch (candidateCohortId) {
-    EventCohortIds.menInterestedInWomen => viewerGender == Gender.woman,
-    EventCohortIds.womenInterestedInMen => viewerGender == Gender.man,
-    EventCohortIds.queerOrOpen || EventCohortIds.nonBinaryOrOther => true,
-    _ => false,
-  };
 }
 
 @riverpod
 EventSuccessRepository eventSuccessRepository(Ref ref) =>
     EventSuccessRepository(
       ref.watch(firebaseFirestoreProvider),
-      ref.watch(eventParticipationRepositoryProvider),
-      ref.watch(publicProfileRepositoryProvider),
       functions: ref.watch(firebaseFunctionsProvider),
     );
 
@@ -726,6 +673,12 @@ Stream<List<EventSuccessFeedback>> watchEventSuccessFeedback(
   Ref ref,
   String eventId,
 ) => ref.watch(eventSuccessRepositoryProvider).watchFeedbackForEvent(eventId);
+
+@riverpod
+Stream<EventSuccessScorecard?> watchEventSuccessScorecard(
+  Ref ref,
+  String eventId,
+) => ref.watch(eventSuccessRepositoryProvider).watchScorecardForEvent(eventId);
 
 @riverpod
 Stream<EventSuccessFeedback?> watchUserEventSuccessFeedback(
@@ -838,6 +791,42 @@ String eventSuccessPeerUidsKey(List<String> uids) {
   if (uids.isEmpty) return '';
   final stableUids = uids.toSet().toList()..sort();
   return stableUids.join('|');
+}
+
+EventSuccessScorecard _eventSuccessScorecardFromJson(
+  Map<String, dynamic> json,
+) {
+  return EventSuccessScorecard(
+    bookedCount: _nonNegativeInt(json['bookedCount']),
+    checkedInCount: _nonNegativeInt(json['checkedInCount']),
+    attendeesWhoMetTwoPlusPeople: _nonNegativeInt(
+      json['attendeesWhoMetTwoPlusPeople'],
+    ),
+    mutualMatchCount: _nonNegativeInt(json['mutualMatchCount']),
+    chatStartedCount: _nonNegativeInt(json['chatStartedCount']),
+    repeatSignupCount: _nonNegativeInt(json['repeatSignupCount']),
+    averageWelcomeRating: _rating(json['averageWelcomeRating']),
+    averageStructureRating: _rating(json['averageStructureRating']),
+    safetyIncidentCount: _nonNegativeInt(json['safetyIncidentCount']),
+    feedbackResponseCount: _nonNegativeInt(json['feedbackCount']),
+  );
+}
+
+int _nonNegativeInt(Object? value) {
+  if (value is int) return value < 0 ? 0 : value;
+  if (value is num) return value < 0 ? 0 : value.toInt();
+  return 0;
+}
+
+double _rating(Object? value) {
+  if (value is! num || !value.isFinite) return 0;
+  return value.clamp(0, 5).toDouble();
+}
+
+String? _trimToNull(String? value) {
+  final normalized = value?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return normalized;
 }
 
 List<String> _decodePeerUidsKey(String value) {

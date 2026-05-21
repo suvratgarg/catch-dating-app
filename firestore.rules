@@ -922,13 +922,14 @@ service cloud.firestore {
 
     match /eventSuccessFeedback/{feedbackId} {
       allow read: if isAuthed()
-        && (
-          resource.data.uid == request.auth.uid
-          || isClubHostForEvent(resource.data.eventId)
-        );
+        && resource.data.uid == request.auth.uid;
       allow create, update: if isAuthed()
         && isValidEventSuccessFeedback(feedbackId, request.resource.data);
       allow delete: if false;
+    }
+
+    match /eventSafetyReports/{reportId} {
+      allow read, write: if false;
     }
 
     match /eventSuccessPreferences/{preferenceId} {
@@ -985,11 +986,7 @@ service cloud.firestore {
         && resource.data.status == 'active'
         && resource.data.hostVisibleConsent == true
         && isClubHostForEvent(resource.data.eventId);
-      allow create, update: if isAuthed()
-        && isValidEventSuccessWingmanRequest(
-          requestId,
-          request.resource.data
-        );
+      allow create, update: if false;
       allow delete: if false;
     }
 
@@ -1016,7 +1013,7 @@ service cloud.firestore {
     }
 
     match /eventSuccessScorecards/{eventId} {
-      allow read: if canReadEventSuccess(eventId);
+      allow read: if isAuthed() && isClubHostForEvent(eventId);
       allow write: if false;
     }
 

@@ -282,6 +282,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? markedAttendanceUserId;
   String? selfCheckedInEventId;
   Event? fetchedEvent;
+  Map<String, Object?>? createdEventSuccessDefaults;
   final Map<String, Event?> watchedEvents = {};
   final Map<String, List<Event>> clubEvents = {};
   final Map<String, List<Event>> attendedEvents = {};
@@ -294,12 +295,17 @@ class FakeEventRepository extends Fake implements EventRepository {
   String generateId() => generatedId;
 
   @override
-  Future<void> createEvent({required Event event, String? inviteCode}) async {
+  Future<void> createEvent({
+    required Event event,
+    String? inviteCode,
+    Map<String, Object?>? eventSuccessDefaults,
+  }) async {
     if (createError != null) {
       throw createError!;
     }
     createdEvent = event;
     createdEventInviteCode = inviteCode;
+    createdEventSuccessDefaults = eventSuccessDefaults;
   }
 
   @override
