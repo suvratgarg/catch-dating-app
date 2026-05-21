@@ -1,7 +1,7 @@
 # Production Release Checklist
 
 Created: 2026-04-29
-Last updated: 2026-05-01
+Last updated: 2026-05-21
 
 Purpose: track the work needed to make Catch production-ready for store distribution, using Code With Andrea's public "Flutter in Production" curriculum as the learning path and translating each topic into repo-specific implementation tasks.
 
@@ -148,8 +148,8 @@ Current evidence:
   Actions. The latest proof run is `iOS TestFlight Release` run `26191839683`
   on commit `228060a4`, with `upload_to_testflight=false`.
 - TestFlight upload/install/launch and iOS Maps behavior are verified through
-  the automatic nightly App Store Connect/Xcode Cloud build process as of
-  2026-05-21.
+  the App Store Connect/Xcode Cloud build process as of 2026-05-21. The old
+  blind 12 a.m. schedule has since been retired.
 
 Teaching notes:
 
@@ -534,9 +534,8 @@ Current evidence:
   `get-task-allow=false`.
 - Physical-device profile runtime has been verified on the available iPhone in
   this setup pass.
-- TestFlight install/launch is verified through the automatic nightly
-  App Store Connect/Xcode Cloud build process. iOS Maps behavior works on that
-  TestFlight build.
+- TestFlight install/launch is verified through the App Store Connect/Xcode
+  Cloud build process. iOS Maps behavior works on that TestFlight build.
 
 Teaching notes:
 
@@ -546,7 +545,7 @@ Verification:
 
 - `flutter build ios --release --dart-define=APP_ENV=prod`
 - Xcode archive or CLI upload to App Store Connect.
-- TestFlight install on a clean device. Done through nightly App Store
+- TestFlight install on a clean device. Done through App Store
   Connect/Xcode Cloud distribution; repeat when release signing, Maps secret
   injection, or store distribution settings change.
 
@@ -611,9 +610,10 @@ Catch-specific tasks:
 - Standardize TestFlight ownership. Current decision: Xcode Cloud is canonical
   for TestFlight upload, GitHub Actions is checks/Firebase deploys/manual
   archive fallback. GitHub TestFlight upload is break-glass only.
-- Remove wasteful scheduled TestFlight releases. Pending App Store Connect
-  change: remove the blind 12 a.m. Xcode Cloud schedule and use
-  change-triggered start conditions filtered to app-shipping paths.
+- Remove wasteful scheduled TestFlight releases. Done 2026-05-21 in App Store
+  Connect: the blind 12 a.m. Xcode Cloud schedule was removed and replaced with
+  a branch-change start condition on `main`, auto-cancel enabled, and
+  app-shipping file/folder rules.
 - Future cleanup TODO: migrate TestFlight upload fully to GitHub Actions later
   if we want one repo-owned mobile release pipeline. See
   `docs/release_operations.md`.

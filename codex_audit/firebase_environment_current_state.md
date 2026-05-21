@@ -262,12 +262,13 @@ verify App Store Connect account settings, TestFlight groups, export-compliance
 answers, privacy forms, Xcode Cloud start conditions, or review metadata without
 direct App Store Connect access.
 
-Xcode Cloud is the canonical TestFlight uploader as of 2026-05-21. The nightly
-App Store Connect/Xcode Cloud build has proven TestFlight upload/install/launch
-and iOS Maps behavior. The remaining live App Store Connect change is to remove
-the blind 12 a.m. schedule and make the workflow change-triggered on app-shipping
-paths. GitHub Actions keeps a manual iOS archive/export workflow; its TestFlight
-upload input is break-glass only.
+Xcode Cloud is the canonical TestFlight uploader as of 2026-05-21. App Store
+Connect/Xcode Cloud has proven TestFlight upload/install/launch and iOS Maps
+behavior. The old blind 12 a.m. schedule has been removed from the live
+`Default` workflow; it now starts on branch changes to `main`, auto-cancels
+older same-branch builds, and filters to app-shipping file/folder rules. GitHub
+Actions keeps a manual iOS archive/export workflow; its TestFlight upload input
+is break-glass only.
 
 ## Local Config Rules
 
