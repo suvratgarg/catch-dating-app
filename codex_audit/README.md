@@ -34,6 +34,7 @@ Apple signing, Developer ID notarization, and remaining setup caveats.
 | [`lib_feature_completeness_matrix.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/lib_feature_completeness_matrix.md) | Current feature map | Folder-level completion status and product gaps. |
 | [`safety_blocking_account_deletion_plan.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/safety_blocking_account_deletion_plan.md) | Current safety plan with implementation notes | Blocking, reporting, and account deletion intent/history. |
 | [`ios_release_readiness_audit_2026-04-30.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/ios_release_readiness_audit_2026-04-30.md) | Recent iOS evidence | iOS signing/runtime findings and device verification notes. |
+| [`config_cicd_platform_audit_2026-05-21.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/config_cicd_platform_audit_2026-05-21.md) | Active tracker | Config/CI-CD/deploy/bootstrap/contracts/analytics brittleness findings with prioritized fixes. |
 
 ## Historical Evidence
 

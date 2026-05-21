@@ -1,0 +1,41 @@
+name: Contracts CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  schema-contracts:
+    name: Validate schema contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      # ajv / ajv-formats resolve from functions/node_modules via createRequire.
+      - run: npm --prefix functions ci
+
+      - name: Validate contract sources
+        run: node tool/validate_schema_contracts.mjs
+
+      - name: Verify generated schema contract outputs are current
+        run: |
+          node tool/generate_schema_contracts.mjs --check
+          node --check tool/generated/schema_contract_validators.mjs
+
+      - name: Check schema/type boundaries
+        run: node tool/check_schema_type_boundaries.mjs
+
+      - name: Check schema path literals
+        run: node tool/check_schema_path_literals.mjs
+
+      - name: Check Firestore rules semantics against schemas
+        run: node tool/check_firestore_rules_semantics.mjs

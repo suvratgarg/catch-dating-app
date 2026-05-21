@@ -45,6 +45,7 @@ jobs:
               'flutter-ci.yml',
               'functions-ci.yml',
               'firestore-rules-ci.yml',
+              'contracts-ci.yml',
               'app-build-matrix.yml',
             ];
             const timeoutMs = 20 * 60 * 1000;
