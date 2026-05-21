@@ -46,6 +46,13 @@ export {onMessageCreated} from "./matching/onMessageCreated";
 export {
   onEventSuccessFeedbackWritten,
 } from "./marketplace/eventSuccessScorecards";
+export {
+  generateEventSuccessPods,
+} from "./eventSuccess/generateEventSuccessPods";
+export {
+  generateEventSuccessRotations,
+  overrideEventSuccessRotations,
+} from "./eventSuccess/generateEventSuccessRotations";
 export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
   createEventReview,

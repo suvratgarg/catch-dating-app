@@ -280,6 +280,8 @@ test("createClubHandler creates a club and host membership edge",
       phoneNumber: "+91 99999 99999",
       email: "hello@example.com",
       hostDefaults: {
+        primaryActivityKind: "socialRun",
+        supportedActivityKinds: ["socialRun"],
         eventPolicy: {
           admissionPreset: "openCapacity",
           minAge: 0,
@@ -293,13 +295,22 @@ test("createClubHandler creates a club and host membership edge",
         },
         eventSuccess: {
           enabled: false,
-          playbookId: "socialRun",
+          playbookId: "social_run_light",
           selectedModuleIds: [],
+          structureConfig: {
+            unitKind: "pods",
+            unitSize: 4,
+            unitCount: null,
+            rotationIntervalMinutes: null,
+            revealCountdownSeconds: 10,
+          },
           hostGoal: "Help attendees meet at least two new people.",
-          privateCrushEnabled: true,
+          wingmanRequestsEnabled: true,
           contextualOpenersEnabled: true,
+          compatibilityAffectsRanking: false,
           attendeePrompt: null,
         },
+        eventSuccessByActivityKind: {},
       },
     });
     assert.deepEqual(

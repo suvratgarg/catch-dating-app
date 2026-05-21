@@ -20,7 +20,6 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
         welcomeRating: 5,
         structureRating: 4,
         metNewPeopleCount: 3,
-        markedPrivateCrush: true,
         safetyConcern: false,
       },
       {
@@ -30,7 +29,6 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
         welcomeRating: 3,
         structureRating: 2,
         metNewPeopleCount: 1,
-        markedPrivateCrush: false,
         safetyConcern: true,
       },
     ],
@@ -48,7 +46,6 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     checkedInCount: 8,
     feedbackCount: 2,
     attendeesWhoMetTwoPlusPeople: 1,
-    privateCrushCount: 1,
     mutualMatchCount: 2,
     chatStartedCount: 1,
     repeatSignupCount: 0,

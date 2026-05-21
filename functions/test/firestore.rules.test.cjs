@@ -247,13 +247,24 @@ function eventSuccessPlan(overrides = {}) {
     eventId: "event-1",
     clubId: "club-1",
     playbookId: "run_social",
-    selectedModuleIds: ["arrival", "private_crush"],
+    selectedModuleIds: ["arrival", "wingman_requests"],
     targetAttendeeCount: 20,
+    structureConfig: {
+      unitKind: "pods",
+      unitSize: 4,
+      unitCount: 5,
+      revealCountdownSeconds: 10,
+    },
     hostGoal: "Help everyone meet three new people.",
-    privateCrushEnabled: true,
+    wingmanRequestsEnabled: true,
     contextualOpenersEnabled: true,
+    compatibilityAffectsRanking: false,
     activeStepIndex: 0,
     status: "setup",
+    revealStatus: "idle",
+    activeRevealRoundIndex: 0,
+    revealStartedAt: null,
+    revealEndsAt: null,
     attendeePrompt: "Look for someone who runs your pace.",
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
@@ -271,11 +282,70 @@ function eventSuccessFeedback(overrides = {}) {
     welcomeRating: 5,
     structureRating: 4,
     metNewPeopleCount: 3,
-    markedPrivateCrush: true,
     safetyConcern: false,
     privateNote: "Good pacing and useful prompts.",
     createdAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
     updatedAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    ...overrides,
+  };
+}
+
+function eventSuccessAssignment(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    moduleId: "micro_pods",
+    label: "Pod A",
+    displayTitle: "Pod A",
+    displaySubtitle: "4 people in this event pod.",
+    peerUids: ["runner-2", "runner-3", "runner-4"],
+    source: "server_v1",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
+function eventSuccessPreference(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    microPodsOptedOut: true,
+    guidedRotationsOptedOut: false,
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
+function eventSuccessCompatibilityResponse(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    answerIds: [
+      "event_energy_new_people",
+      "first_conversation_activity",
+    ],
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
+function eventSuccessWingmanRequest(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    requesterUid: "runner-1",
+    targetUid: "runner-2",
+    status: "active",
+    hostVisibleConsent: true,
+    note: "Please pair us in a rotation.",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     ...overrides,
   };
 }
@@ -1414,6 +1484,11 @@ describe("firestore.rules", () => {
       await assertSucceeds(updateDoc(planRef, {
         activeStepIndex: 1,
         status: "live",
+        compatibilityAffectsRanking: true,
+        revealStatus: "countingDown",
+        activeRevealRoundIndex: 0,
+        revealStartedAt: serverTimestamp(),
+        revealEndsAt: Timestamp.fromDate(new Date("2026-05-01T10:00:10.000Z")),
         updatedAt: serverTimestamp(),
         frozenAt: serverTimestamp(),
       }));
@@ -1432,6 +1507,29 @@ describe("firestore.rules", () => {
       await assertFails(
         updateDoc(planRef, {
           selectedModuleIds: Array.from({length: 25}, (_, index) => `m-${index}`),
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          structureConfig: {
+            unitKind: "pairs",
+            unitSize: 2,
+            rotationIntervalMinutes: 2,
+            revealCountdownSeconds: 10,
+          },
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          revealStatus: "spoiled",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          compatibilityAffectsRanking: "yes",
           updatedAt: serverTimestamp(),
         }),
       );
@@ -1561,6 +1659,335 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
+      );
+    });
+
+    it("allows participants to manage only their own event-success preferences", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({uid: "runner-2", status: "cancelled"}),
+      );
+
+      const preferenceRef = doc(
+        authedDb("runner-1"),
+        "eventSuccessPreferences",
+        "event-1_runner-1",
+      );
+
+      await assertSucceeds(setDoc(preferenceRef, eventSuccessPreference()));
+      await assertSucceeds(updateDoc(preferenceRef, {
+        microPodsOptedOut: false,
+        updatedAt: serverTimestamp(),
+      }));
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessPreferences",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventSuccessPreferences"),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventSuccessPreferences",
+            "event-1_runner-2",
+          ),
+          eventSuccessPreference({uid: "runner-2"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessPreferences",
+            "event-1_runner-2",
+          ),
+          eventSuccessPreference({uid: "runner-2"}),
+        ),
+      );
+    });
+
+    it("lets participants manage private compatibility answers without host read access", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({uid: "runner-2", status: "cancelled"}),
+      );
+
+      const responseRef = doc(
+        authedDb("runner-1"),
+        "eventSuccessCompatibilityResponses",
+        "event-1_runner-1",
+      );
+
+      await assertSucceeds(
+        setDoc(responseRef, eventSuccessCompatibilityResponse()),
+      );
+      await assertSucceeds(updateDoc(responseRef, {
+        answerIds: ["event_energy_playful_competition"],
+        updatedAt: serverTimestamp(),
+      }));
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessCompatibilityResponses",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessCompatibilityResponses",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(
+              authedDb("host-1"),
+              "eventSuccessCompatibilityResponses",
+            ),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventSuccessCompatibilityResponses",
+            "event-1_runner-2",
+          ),
+          eventSuccessCompatibilityResponse({uid: "runner-2"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessCompatibilityResponses",
+            "event-1_runner-2",
+          ),
+          eventSuccessCompatibilityResponse({uid: "runner-2"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          responseRef,
+          eventSuccessCompatibilityResponse({
+            answerIds: Array.from({length: 9}, (_, index) => `answer-${index}`),
+          }),
+        ),
+      );
+    });
+
+    it("allows attended users to create explicit host-visible wingman requests", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
+          uid: "runner-2",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-3"],
+        eventParticipation({
+          uid: "runner-3",
+          status: "signedUp",
+        }),
+      );
+
+      const requestRef = doc(
+        authedDb("runner-1"),
+        "eventSuccessWingmanRequests",
+        "event-1_runner-1",
+      );
+
+      await assertSucceeds(setDoc(requestRef, eventSuccessWingmanRequest()));
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventSuccessWingmanRequests"),
+            where("eventId", "==", "event-1"),
+            where("status", "==", "active"),
+            where("hostVisibleConsent", "==", true),
+          ),
+        ),
+      );
+      await assertSucceeds(updateDoc(requestRef, {
+        status: "withdrawn",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+          eventSuccessWingmanRequest({hostVisibleConsent: false}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+          eventSuccessWingmanRequest({targetUid: "runner-3"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-3"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-3",
+          ),
+          eventSuccessWingmanRequest({
+            requesterUid: "runner-3",
+            targetUid: "runner-1",
+          }),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-2",
+          ),
+          eventSuccessWingmanRequest(),
+        ),
+      );
+    });
+
+    it("keeps event-success assignments server-owned and scoped to the attendee", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({uid: "runner-2", status: "signedUp"}),
+      );
+      await seed(
+        ["eventSuccessAssignments", "event-1_micro_pods_runner-1"],
+        eventSuccessAssignment(),
+      );
+
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessAssignments",
+            "event-1_micro_pods_runner-1",
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessAssignments",
+            "event-1_micro_pods_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventSuccessAssignments",
+            "event-1_micro_pods_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessAssignments",
+            "event-1_micro_pods_runner-2",
+          ),
+          eventSuccessAssignment({uid: "runner-2"}),
+        ),
       );
     });
 

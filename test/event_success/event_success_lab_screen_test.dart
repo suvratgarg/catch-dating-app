@@ -103,10 +103,11 @@ void main() {
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
 
     final checkInSwitch = find.bySemanticsLabel(
-      'QR check-in and live roster module',
+      'Attendance and live roster module',
     );
     expect(checkInSwitch, findsOneWidget);
 
+    await tester.scrollUntilVisible(checkInSwitch, 300);
     await tester.tap(checkInSwitch);
     await tester.pumpAndSettle();
 

@@ -606,8 +606,11 @@ export interface EventFormatSnapshot {
  * Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.
  */
 export interface ClubHostDefaults {
+  primaryActivityKind?: EventFormatSnapshot["activityKind"];
+  supportedActivityKinds?: EventFormatSnapshot["activityKind"][];
   eventPolicy: EventPolicyDefaults;
   eventSuccess: EventSuccessDefaults;
+  eventSuccessByActivityKind?: Record<string, EventSuccessDefaults>;
 }
 
 /**
@@ -627,6 +630,19 @@ export interface EventPolicyDefaults {
 }
 
 /**
+ * embedded event success structure config
+ * Stored inside clubs/{clubId}.hostDefaults.eventSuccess.structureConfig and
+ * eventSuccessPlans/{eventId}.structureConfig.
+ */
+export interface EventSuccessStructureConfig {
+  unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+  unitSize: number;
+  unitCount?: number | null;
+  rotationIntervalMinutes?: number | null;
+  revealCountdownSeconds: number;
+}
+
+/**
  * embedded event success defaults
  * Stored inside clubs/{clubId}.hostDefaults.eventSuccess.
  */
@@ -634,9 +650,14 @@ export interface EventSuccessDefaults {
   enabled: boolean;
   playbookId: string;
   selectedModuleIds: string[];
+  structureConfig?: EventSuccessStructureConfig;
   hostGoal: string;
-  privateCrushEnabled: boolean;
+  wingmanRequestsEnabled: boolean;
   contextualOpenersEnabled: boolean;
+  compatibilityAffectsRanking?: boolean;
+  questionnaireConfig?:
+    | { templateId: string; customTitle?: string
+    | null; customQuestions?: unknown[] };
   attendeePrompt?: string | null;
 }
 

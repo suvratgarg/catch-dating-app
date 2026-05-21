@@ -12,7 +12,6 @@ export interface EventSuccessFeedbackDocument {
   welcomeRating: number;
   structureRating: number;
   metNewPeopleCount: number;
-  markedPrivateCrush: boolean;
   safetyConcern: boolean;
   privateNote?: string | null;
   /**

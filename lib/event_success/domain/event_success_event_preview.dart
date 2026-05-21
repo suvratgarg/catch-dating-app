@@ -150,8 +150,8 @@ EventSuccessAttendeeState _attendeeStateFromEvent({
     prompt: playbook.activityType.isMovementHeavy
         ? 'Find someone running your pace and ask what route they want to try next.'
         : 'Find someone on your team and ask what brought them here.',
-    privateCrushCandidates: const [
-      PrivateCrushCandidate(
+    wingmanRequestCandidates: const [
+      WingmanRequestCandidate(
         displayName: 'Preview attendee',
         context: 'Will be replaced by checked-in people from this event',
       ),
@@ -175,21 +175,23 @@ EventSuccessScorecard _scorecardFromEvent({
   final introCount = checkedInCount <= 0
       ? 0
       : math.max(1, (checkedInCount * 0.45).round());
-  final crushCount = checkedInCount <= 0
+  final mutualMatches = checkedInCount <= 0
       ? 0
-      : math.max(1, (checkedInCount * 0.18).round());
-  final mutualMatches = crushCount ~/ 3;
+      : math.max(1, (checkedInCount * 0.06).round());
+  final wingmanRequests = checkedInCount <= 0
+      ? 0
+      : math.max(1, (checkedInCount * 0.12).round());
 
   return EventSuccessScorecard(
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     attendeesWhoMetTwoPlusPeople: introCount,
-    privateCrushCount: crushCount,
     mutualMatchCount: mutualMatches,
     chatStartedCount: (mutualMatches * 0.6).round(),
     repeatSignupCount: bookedCount <= 0 ? 0 : (bookedCount * 0.2).round(),
     averageWelcomeRating: 3.8,
     averageStructureRating: 3.4,
     safetyIncidentCount: 0,
+    wingmanRequestCount: wingmanRequests,
   );
 }

@@ -2227,6 +2227,53 @@ export const clubDocumentSchema: Record<string, unknown> = {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "primaryActivityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "supportedActivityKinds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "socialRun",
+              "running",
+              "walking",
+              "pickleball",
+              "padel",
+              "tennis",
+              "badminton",
+              "cycling",
+              "spinClass",
+              "yoga",
+              "strengthTraining",
+              "pubQuiz",
+              "barCrawl",
+              "dinner",
+              "singlesMixer",
+              "openActivity"
+            ]
+          }
+        },
         "eventPolicy": {
           "type": "object",
           "additionalProperties": false,
@@ -2314,15 +2361,136 @@ export const clubDocumentSchema: Record<string, unknown> = {
                 "maxLength": 120
               }
             },
+            "structureConfig": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "unitKind",
+                "unitSize",
+                "revealCountdownSeconds"
+              ],
+              "properties": {
+                "unitKind": {
+                  "type": "string",
+                  "enum": [
+                    "wholeGroup",
+                    "pods",
+                    "pairs",
+                    "teams",
+                    "tables"
+                  ]
+                },
+                "unitSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "unitCount": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "rotationIntervalMinutes": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 5,
+                  "maximum": 180
+                },
+                "revealCountdownSeconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 60
+                }
+              }
+            },
             "hostGoal": {
               "type": "string",
               "maxLength": 300
             },
-            "privateCrushEnabled": {
+            "wingmanRequestsEnabled": {
               "type": "boolean"
             },
             "contextualOpenersEnabled": {
               "type": "boolean"
+            },
+            "compatibilityAffectsRanking": {
+              "type": "boolean"
+            },
+            "questionnaireConfig": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "templateId"
+              ],
+              "properties": {
+                "templateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "customTitle": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "customQuestions": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "prompt",
+                      "options"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "options": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 5,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "label"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 120
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             "attendeePrompt": {
               "type": [
@@ -2330,6 +2498,171 @@ export const clubDocumentSchema: Record<string, unknown> = {
                 "null"
               ],
               "maxLength": 300
+            }
+          }
+        },
+        "eventSuccessByActivityKind": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "playbookId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "selectedModuleIds": {
+                "type": "array",
+                "maxItems": 24,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              "structureConfig": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "unitKind",
+                  "unitSize",
+                  "revealCountdownSeconds"
+                ],
+                "properties": {
+                  "unitKind": {
+                    "type": "string",
+                    "enum": [
+                      "wholeGroup",
+                      "pods",
+                      "pairs",
+                      "teams",
+                      "tables"
+                    ]
+                  },
+                  "unitSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "unitCount": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "rotationIntervalMinutes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 5,
+                    "maximum": 180
+                  },
+                  "revealCountdownSeconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 60
+                  }
+                }
+              },
+              "hostGoal": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "wingmanRequestsEnabled": {
+                "type": "boolean"
+              },
+              "contextualOpenersEnabled": {
+                "type": "boolean"
+              },
+              "compatibilityAffectsRanking": {
+                "type": "boolean"
+              },
+              "questionnaireConfig": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "templateId"
+                ],
+                "properties": {
+                  "templateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "customTitle": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "customQuestions": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "prompt",
+                        "options"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "prompt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 140
+                        },
+                        "options": {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 5,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "label"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 120
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 80
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "attendeePrompt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 300
+              }
             }
           }
         }
@@ -3611,7 +3944,7 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
     "selectedModuleIds",
     "targetAttendeeCount",
     "hostGoal",
-    "privateCrushEnabled",
+    "wingmanRequestsEnabled",
     "contextualOpenersEnabled",
     "activeStepIndex",
     "status",
@@ -3648,15 +3981,136 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       "minimum": 1,
       "maximum": 1000
     },
+    "structureConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitKind",
+        "unitSize",
+        "revealCountdownSeconds"
+      ],
+      "properties": {
+        "unitKind": {
+          "type": "string",
+          "enum": [
+            "wholeGroup",
+            "pods",
+            "pairs",
+            "teams",
+            "tables"
+          ]
+        },
+        "unitSize": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "unitCount": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 200
+        },
+        "rotationIntervalMinutes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 5,
+          "maximum": 180
+        },
+        "revealCountdownSeconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 60
+        }
+      }
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300
     },
-    "privateCrushEnabled": {
+    "wingmanRequestsEnabled": {
       "type": "boolean"
     },
     "contextualOpenersEnabled": {
       "type": "boolean"
+    },
+    "compatibilityAffectsRanking": {
+      "type": "boolean"
+    },
+    "questionnaireConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "templateId"
+      ],
+      "properties": {
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "customTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 80
+        },
+        "customQuestions": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "prompt",
+              "options"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "prompt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              },
+              "options": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 5,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "label"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "activeStepIndex": {
       "type": "integer",
@@ -3669,6 +4123,73 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         "setup",
         "live",
         "complete"
+      ]
+    },
+    "revealStatus": {
+      "type": "string",
+      "enum": [
+        "idle",
+        "countingDown",
+        "revealed"
+      ]
+    },
+    "activeRevealRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "revealStartedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revealEndsAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
       ]
     },
     "attendeePrompt": {
@@ -3793,7 +4314,6 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
     "welcomeRating",
     "structureRating",
     "metNewPeopleCount",
-    "markedPrivateCrush",
     "safetyConcern",
     "createdAt",
     "updatedAt"
@@ -3828,9 +4348,6 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100
-    },
-    "markedPrivateCrush": {
-      "type": "boolean"
     },
     "safetyConcern": {
       "type": "boolean"
@@ -6355,6 +6872,53 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "primaryActivityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "supportedActivityKinds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "socialRun",
+              "running",
+              "walking",
+              "pickleball",
+              "padel",
+              "tennis",
+              "badminton",
+              "cycling",
+              "spinClass",
+              "yoga",
+              "strengthTraining",
+              "pubQuiz",
+              "barCrawl",
+              "dinner",
+              "singlesMixer",
+              "openActivity"
+            ]
+          }
+        },
         "eventPolicy": {
           "type": "object",
           "additionalProperties": false,
@@ -6442,15 +7006,136 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                 "maxLength": 120
               }
             },
+            "structureConfig": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "unitKind",
+                "unitSize",
+                "revealCountdownSeconds"
+              ],
+              "properties": {
+                "unitKind": {
+                  "type": "string",
+                  "enum": [
+                    "wholeGroup",
+                    "pods",
+                    "pairs",
+                    "teams",
+                    "tables"
+                  ]
+                },
+                "unitSize": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "unitCount": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 200
+                },
+                "rotationIntervalMinutes": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 5,
+                  "maximum": 180
+                },
+                "revealCountdownSeconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 60
+                }
+              }
+            },
             "hostGoal": {
               "type": "string",
               "maxLength": 300
             },
-            "privateCrushEnabled": {
+            "wingmanRequestsEnabled": {
               "type": "boolean"
             },
             "contextualOpenersEnabled": {
               "type": "boolean"
+            },
+            "compatibilityAffectsRanking": {
+              "type": "boolean"
+            },
+            "questionnaireConfig": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "templateId"
+              ],
+              "properties": {
+                "templateId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "customTitle": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "customQuestions": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "prompt",
+                      "options"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "options": {
+                        "type": "array",
+                        "minItems": 2,
+                        "maxItems": 5,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "label"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 120
+                            },
+                            "label": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 80
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             "attendeePrompt": {
               "type": [
@@ -6458,6 +7143,171 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
                 "null"
               ],
               "maxLength": 300
+            }
+          }
+        },
+        "eventSuccessByActivityKind": {
+          "type": "object",
+          "maxProperties": 16,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "playbookId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "selectedModuleIds": {
+                "type": "array",
+                "maxItems": 24,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              "structureConfig": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "unitKind",
+                  "unitSize",
+                  "revealCountdownSeconds"
+                ],
+                "properties": {
+                  "unitKind": {
+                    "type": "string",
+                    "enum": [
+                      "wholeGroup",
+                      "pods",
+                      "pairs",
+                      "teams",
+                      "tables"
+                    ]
+                  },
+                  "unitSize": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  },
+                  "unitCount": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "rotationIntervalMinutes": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 5,
+                    "maximum": 180
+                  },
+                  "revealCountdownSeconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 60
+                  }
+                }
+              },
+              "hostGoal": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "wingmanRequestsEnabled": {
+                "type": "boolean"
+              },
+              "contextualOpenersEnabled": {
+                "type": "boolean"
+              },
+              "compatibilityAffectsRanking": {
+                "type": "boolean"
+              },
+              "questionnaireConfig": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "templateId"
+                ],
+                "properties": {
+                  "templateId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "customTitle": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80
+                  },
+                  "customQuestions": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "prompt",
+                        "options"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "prompt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 140
+                        },
+                        "options": {
+                          "type": "array",
+                          "minItems": 2,
+                          "maxItems": 5,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "id",
+                              "label"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 120
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 80
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "attendeePrompt": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 300
+              }
             }
           }
         }
@@ -6592,6 +7442,53 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "primaryActivityKind": {
+              "type": "string",
+              "enum": [
+                "socialRun",
+                "running",
+                "walking",
+                "pickleball",
+                "padel",
+                "tennis",
+                "badminton",
+                "cycling",
+                "spinClass",
+                "yoga",
+                "strengthTraining",
+                "pubQuiz",
+                "barCrawl",
+                "dinner",
+                "singlesMixer",
+                "openActivity"
+              ]
+            },
+            "supportedActivityKinds": {
+              "type": "array",
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "socialRun",
+                  "running",
+                  "walking",
+                  "pickleball",
+                  "padel",
+                  "tennis",
+                  "badminton",
+                  "cycling",
+                  "spinClass",
+                  "yoga",
+                  "strengthTraining",
+                  "pubQuiz",
+                  "barCrawl",
+                  "dinner",
+                  "singlesMixer",
+                  "openActivity"
+                ]
+              }
+            },
             "eventPolicy": {
               "type": "object",
               "additionalProperties": false,
@@ -6679,15 +7576,136 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                     "maxLength": 120
                   }
                 },
+                "structureConfig": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "unitKind",
+                    "unitSize",
+                    "revealCountdownSeconds"
+                  ],
+                  "properties": {
+                    "unitKind": {
+                      "type": "string",
+                      "enum": [
+                        "wholeGroup",
+                        "pods",
+                        "pairs",
+                        "teams",
+                        "tables"
+                      ]
+                    },
+                    "unitSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 1000
+                    },
+                    "unitCount": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 200
+                    },
+                    "rotationIntervalMinutes": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 5,
+                      "maximum": 180
+                    },
+                    "revealCountdownSeconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 60
+                    }
+                  }
+                },
                 "hostGoal": {
                   "type": "string",
                   "maxLength": 300
                 },
-                "privateCrushEnabled": {
+                "wingmanRequestsEnabled": {
                   "type": "boolean"
                 },
                 "contextualOpenersEnabled": {
                   "type": "boolean"
+                },
+                "compatibilityAffectsRanking": {
+                  "type": "boolean"
+                },
+                "questionnaireConfig": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "templateId"
+                  ],
+                  "properties": {
+                    "templateId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "customTitle": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "customQuestions": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "id",
+                          "prompt",
+                          "options"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "prompt": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 140
+                          },
+                          "options": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 5,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "id",
+                                "label"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 120
+                                },
+                                "label": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 80
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 },
                 "attendeePrompt": {
                   "type": [
@@ -6695,6 +7713,171 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
                     "null"
                   ],
                   "maxLength": 300
+                }
+              }
+            },
+            "eventSuccessByActivityKind": {
+              "type": "object",
+              "maxProperties": 16,
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "playbookId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "selectedModuleIds": {
+                    "type": "array",
+                    "maxItems": 24,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    }
+                  },
+                  "structureConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "unitKind",
+                      "unitSize",
+                      "revealCountdownSeconds"
+                    ],
+                    "properties": {
+                      "unitKind": {
+                        "type": "string",
+                        "enum": [
+                          "wholeGroup",
+                          "pods",
+                          "pairs",
+                          "teams",
+                          "tables"
+                        ]
+                      },
+                      "unitSize": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
+                      },
+                      "unitCount": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 200
+                      },
+                      "rotationIntervalMinutes": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 5,
+                        "maximum": 180
+                      },
+                      "revealCountdownSeconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      }
+                    }
+                  },
+                  "hostGoal": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "wingmanRequestsEnabled": {
+                    "type": "boolean"
+                  },
+                  "contextualOpenersEnabled": {
+                    "type": "boolean"
+                  },
+                  "compatibilityAffectsRanking": {
+                    "type": "boolean"
+                  },
+                  "questionnaireConfig": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "templateId"
+                    ],
+                    "properties": {
+                      "templateId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "customTitle": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 80
+                      },
+                      "customQuestions": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "id",
+                            "prompt",
+                            "options"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 120
+                            },
+                            "prompt": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 140
+                            },
+                            "options": {
+                              "type": "array",
+                              "minItems": 2,
+                              "maxItems": 5,
+                              "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "id",
+                                  "label"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 120
+                                  },
+                                  "label": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 80
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "attendeePrompt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 300
+                  }
                 }
               }
             }
@@ -7850,6 +9033,71 @@ export const markEventAttendanceCallablePayloadSchema: Record<string, unknown> =
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+} as const;
+
+export const overrideEventSuccessRotationsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/override_event_success_rotations_payload.schema.json",
+  "title": "OverrideEventSuccessRotationsCallablePayload",
+  "description": "Callable payload accepted by overrideEventSuccessRotations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "rounds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "pairings"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "pairings": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "uidA",
+                "uidB"
+              ],
+              "properties": {
+                "uidA": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "uidB": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 } as const;

@@ -90,8 +90,11 @@
       "collectionPath": "embedded club host defaults",
       "comment": "Stored inside clubs/{clubId}.hostDefaults and copied into new event drafts.",
       "fields": [
+        { "name": "primaryActivityKind", "tsType": "EventFormatSnapshot[\"activityKind\"]", "optional": true },
+        { "name": "supportedActivityKinds", "tsType": "EventFormatSnapshot[\"activityKind\"][]", "optional": true },
         { "name": "eventPolicy", "tsType": "EventPolicyDefaults" },
-        { "name": "eventSuccess", "tsType": "EventSuccessDefaults" }
+        { "name": "eventSuccess", "tsType": "EventSuccessDefaults" },
+        { "name": "eventSuccessByActivityKind", "tsType": "Record<string, EventSuccessDefaults>", "optional": true }
       ]
     },
     {
@@ -111,6 +114,18 @@
       ]
     },
     {
+      "name": "EventSuccessStructureConfig",
+      "collectionPath": "embedded event success structure config",
+      "comment": "Stored inside clubs/{clubId}.hostDefaults.eventSuccess.structureConfig and eventSuccessPlans/{eventId}.structureConfig.",
+      "fields": [
+        { "name": "unitKind", "tsType": "\"wholeGroup\" | \"pods\" | \"pairs\" | \"teams\" | \"tables\"" },
+        { "name": "unitSize", "tsType": "number" },
+        { "name": "unitCount", "tsType": "number | null", "optional": true },
+        { "name": "rotationIntervalMinutes", "tsType": "number | null", "optional": true },
+        { "name": "revealCountdownSeconds", "tsType": "number" }
+      ]
+    },
+    {
       "name": "EventSuccessDefaults",
       "collectionPath": "embedded event success defaults",
       "comment": "Stored inside clubs/{clubId}.hostDefaults.eventSuccess.",
@@ -118,9 +133,12 @@
         { "name": "enabled", "tsType": "boolean" },
         { "name": "playbookId", "tsType": "string" },
         { "name": "selectedModuleIds", "tsType": "string[]" },
+        { "name": "structureConfig", "tsType": "EventSuccessStructureConfig", "optional": true },
         { "name": "hostGoal", "tsType": "string" },
-        { "name": "privateCrushEnabled", "tsType": "boolean" },
+        { "name": "wingmanRequestsEnabled", "tsType": "boolean" },
         { "name": "contextualOpenersEnabled", "tsType": "boolean" },
+        { "name": "compatibilityAffectsRanking", "tsType": "boolean", "optional": true },
+        { "name": "questionnaireConfig", "tsType": "{ templateId: string; customTitle?: string | null; customQuestions?: unknown[] }", "optional": true },
         { "name": "attendeePrompt", "tsType": "string | null", "optional": true }
       ]
     },

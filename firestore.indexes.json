@@ -42,6 +42,15 @@
       ]
     },
     {
+      "collectionGroup": "eventSuccessWingmanRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "hostVisibleConsent", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [

@@ -16,7 +16,6 @@
     "welcomeRating",
     "structureRating",
     "metNewPeopleCount",
-    "markedPrivateCrush",
     "safetyConcern",
     "createdAt",
     "updatedAt"
@@ -45,9 +44,6 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 100
-    },
-    "markedPrivateCrush": {
-      "type": "boolean"
     },
     "safetyConcern": {
       "type": "boolean"

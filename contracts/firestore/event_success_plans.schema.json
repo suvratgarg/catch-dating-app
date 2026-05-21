@@ -16,7 +16,7 @@
     "selectedModuleIds",
     "targetAttendeeCount",
     "hostGoal",
-    "privateCrushEnabled",
+    "wingmanRequestsEnabled",
     "contextualOpenersEnabled",
     "activeStepIndex",
     "status",
@@ -49,15 +49,24 @@
       "minimum": 1,
       "maximum": 1000
     },
+    "structureConfig": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessStructureConfig"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300
     },
-    "privateCrushEnabled": {
+    "wingmanRequestsEnabled": {
       "type": "boolean"
     },
     "contextualOpenersEnabled": {
       "type": "boolean"
+    },
+    "compatibilityAffectsRanking": {
+      "type": "boolean"
+    },
+    "questionnaireConfig": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessQuestionnaireConfig"
     },
     "activeStepIndex": {
       "type": "integer",
@@ -67,6 +76,21 @@
     "status": {
       "type": "string",
       "enum": ["setup", "live", "complete"]
+    },
+    "revealStatus": {
+      "type": "string",
+      "enum": ["idle", "countingDown", "revealed"]
+    },
+    "activeRevealRoundIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "revealStartedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "revealEndsAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
     },
     "attendeePrompt": {
       "type": ["string", "null"],

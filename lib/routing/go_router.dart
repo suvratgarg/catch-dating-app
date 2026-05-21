@@ -19,6 +19,7 @@ import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_sc
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
@@ -100,6 +101,7 @@ enum Routes {
   paymentConfirmationScreen('/payment-confirmation'),
   eventPolicyLabScreen('/dev/event-policy-lab'),
   eventSuccessLabScreen('/dev/event-success-lab'),
+  eventSuccessManualQaScreen('/dev/event-success-manual-qa'),
   eventSuccessPreviewScreen('/dev/event-success-preview/:clubId/:eventId');
 
   const Routes(this.path);
@@ -118,6 +120,7 @@ const _fromQueryParam = 'from';
 const _onboardingIntentQueryParam = 'intent';
 const _completeProfileIntent = 'complete-profile';
 const _completeRunPreferencesIntent = 'complete-run-preferences';
+const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
 
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
@@ -131,7 +134,7 @@ GoRouter goRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: Routes.startScreen.path,
+    initialLocation: _initialLocationFromPlatform(),
     refreshListenable: notifier,
     observers: [AnalyticsRouteObserver(analytics)],
     redirect: (context, state) {
@@ -313,6 +316,12 @@ GoRouter goRouter(Ref ref) {
           path: Routes.eventSuccessLabScreen.path,
           name: Routes.eventSuccessLabScreen.name,
           builder: (context, state) => const EventSuccessLabScreen(),
+        ),
+      if (AppConfig.enableEventSuccessPreview)
+        GoRoute(
+          path: Routes.eventSuccessManualQaScreen.path,
+          name: Routes.eventSuccessManualQaScreen.name,
+          builder: (context, state) => const EventSuccessManualQaScreen(),
         ),
       if (AppConfig.enableEventSuccessPreview)
         GoRoute(
@@ -546,6 +555,20 @@ GoRouter goRouter(Ref ref) {
   );
 }
 
+String _initialLocationFromPlatform() {
+  if (_initialRouteOverride.startsWith('/')) {
+    return _initialRouteOverride;
+  }
+
+  final defaultRouteName =
+      WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+  if (defaultRouteName.isNotEmpty &&
+      defaultRouteName != Navigator.defaultRouteName) {
+    return defaultRouteName;
+  }
+  return Routes.startScreen.path;
+}
+
 /// Routes that unauthenticated users may access for read-only browsing.
 bool _isPublicRoute(String matchedLocation) {
   if (AppConfig.enableEventPolicyLab &&
@@ -554,6 +577,10 @@ bool _isPublicRoute(String matchedLocation) {
   }
   if (AppConfig.enableEventSuccessPreview &&
       matchedLocation == Routes.eventSuccessLabScreen.path) {
+    return true;
+  }
+  if (AppConfig.enableEventSuccessPreview &&
+      matchedLocation == Routes.eventSuccessManualQaScreen.path) {
     return true;
   }
   if (matchedLocation == Routes.startScreen.path) return true;

@@ -16,6 +16,9 @@ abstract final class SettingsKeys {
   static const paymentHistoryRow = ValueKey('settings.paymentHistory.row');
   static const eventPolicyLabRow = ValueKey('settings.eventPolicyLab.row');
   static const eventSuccessLabRow = ValueKey('settings.eventSuccessLab.row');
+  static const eventSuccessManualQaRow = ValueKey(
+    'settings.eventSuccessManualQa.row',
+  );
   static const signOutRow = ValueKey('settings.signOut.row');
   static const deleteAccountRow = ValueKey('settings.deleteAccount.row');
 

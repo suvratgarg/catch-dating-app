@@ -77,8 +77,10 @@ class EventSuccessLabScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: _Section(
-                title: 'System modules',
-                child: _ModuleGrid(modules: EventSuccessModuleCatalog.all),
+                title: 'Architecture layers',
+                child: _ModuleGrid(
+                  moduleGroups: EventSuccessModuleCatalog.allByProductLayer,
+                ),
               ),
             ),
             SliverToBoxAdapter(
@@ -145,7 +147,7 @@ class _LabHero extends StatelessWidget {
             ),
             const SizedBox(height: CatchSpacing.s3),
             Text(
-              'A first-pass workspace for improving what happens during events: host scripts, check-in, social pods, private crushes, decomposed reviews, and coaching.',
+              'A first-pass workspace for improving what happens during events: structure, attendance, assignments, live reveal moments, host help, feedback, and coaching.',
               style: CatchTextStyles.bodyL(
                 context,
                 color: t.accentInk.withValues(alpha: 0.86),
@@ -421,9 +423,9 @@ class _RunOfShow extends StatelessWidget {
 }
 
 class _ModuleGrid extends StatelessWidget {
-  const _ModuleGrid({required this.modules});
+  const _ModuleGrid({required this.moduleGroups});
 
-  final List<EventSuccessModule> modules;
+  final Map<EventSuccessProductLayer, List<EventSuccessModule>> moduleGroups;
 
   @override
   Widget build(BuildContext context) {
@@ -437,14 +439,45 @@ class _ModuleGrid extends StatelessWidget {
           spacing: CatchSpacing.s3,
           runSpacing: CatchSpacing.s3,
           children: [
-            for (final module in modules)
+            for (final entry in moduleGroups.entries) ...[
               SizedBox(
-                width: width,
-                child: _ModuleCard(module: module),
+                width: constraints.maxWidth,
+                child: _LayerHeader(layer: entry.key),
               ),
+              for (final module in entry.value)
+                SizedBox(
+                  width: width,
+                  child: _ModuleCard(module: module),
+                ),
+            ],
           ],
         );
       },
+    );
+  }
+}
+
+class _LayerHeader extends StatelessWidget {
+  const _LayerHeader({required this.layer});
+
+  final EventSuccessProductLayer layer;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: CatchSpacing.s2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(layer.label, style: CatchTextStyles.titleS(context)),
+          const SizedBox(height: CatchSpacing.s1),
+          Text(
+            layer.description,
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -550,8 +583,8 @@ class _CoachPanel extends StatelessWidget {
                 value: brief.scorecard.introCoverageRate,
               ),
               EventSuccessMetricPill(
-                label: 'Private crush',
-                value: brief.scorecard.privateCrushRate,
+                label: 'Host help',
+                value: brief.scorecard.wingmanRequestRate,
               ),
               EventSuccessMetricPill(
                 label: 'Chat start',

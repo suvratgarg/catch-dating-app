@@ -8,7 +8,6 @@ interface EventSuccessFeedbackLike {
   eventId: string;
   clubId: string;
   uid: string;
-  markedPrivateCrush?: boolean;
   safetyConcern?: boolean;
   createdAt?: FirebaseFirestore.Timestamp;
 }
@@ -261,7 +260,6 @@ export function buildFeedbackSignalFact(
     visibility: "aggregateSafe",
     occurredAt: feedback.createdAt,
     metadata: {
-      markedPrivateCrush: feedback.markedPrivateCrush,
       safetyConcern: feedback.safetyConcern,
     },
   };

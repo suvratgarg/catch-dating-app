@@ -655,6 +655,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _applyClubDefaults(ClubHostDefaults defaults) {
+    _selectedActivityKind = defaults.primaryActivityKind;
     final policy = defaults.eventPolicy;
     _selectedAdmissionPreset = _admissionPresetFromDefault(
       policy.admissionPreset,
@@ -673,7 +674,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       policy.dynamicPricingMaxInPaise,
     );
     _selectedCancellationPolicyId = policy.cancellationPolicyId;
-    _eventSuccessDefaults = defaults.eventSuccess;
+    _eventSuccessDefaults = defaults.eventSuccessForActivity(
+      _selectedActivityKind,
+    );
   }
 
   String? get _inviteCodeHint {
@@ -790,6 +793,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       if (!activityKind.isDistanceBased) {
                         _selectedPace = null;
                       }
+                      _eventSuccessDefaults = widget.club.hostDefaults
+                          .eventSuccessForActivity(activityKind);
                     }),
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
@@ -839,6 +844,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     onCancellationPolicyChanged: (policyId) => setState(
                       () => _selectedCancellationPolicyId = policyId,
                     ),
+                    activityKind: _selectedActivityKind,
                     eventSuccessDefaults: _eventSuccessDefaults,
                     onEventSuccessDefaultsChanged: (defaults) =>
                         setState(() => _eventSuccessDefaults = defaults),

@@ -1,6 +1,10 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 
 enum EventSuccessSetupStatus {
   needsWork('Needs work'),
@@ -16,33 +20,68 @@ class EventSuccessHostDraft {
     required this.playbook,
     required this.selectedModuleIds,
     required this.targetAttendeeCount,
+    required this.structureConfig,
     this.hostGoal = 'Help attendees meet at least two new people.',
-    this.privateCrushEnabled = true,
+    this.wingmanRequestsEnabled = true,
     this.contextualOpenersEnabled = true,
+    this.compatibilityAffectsRanking = false,
+    this.questionnaireConfig =
+        const EventSuccessQuestionnaireConfig.defaultTemplate(),
   }) : assert(targetAttendeeCount > 0);
 
   factory EventSuccessHostDraft.fromPlaybook(
     EventSuccessPlaybook playbook, {
     int? targetAttendeeCount,
   }) {
+    final target =
+        targetAttendeeCount ??
+        ((playbook.capacity.min + playbook.capacity.max) / 2).round();
+    final profile = EventSuccessActivityProfile.forActivity(
+      playbook.activityType,
+      targetAttendeeCount: target,
+    );
     return EventSuccessHostDraft(
       playbook: playbook,
-      selectedModuleIds: playbook.modules
-          .where((module) => module.enabledByDefault)
-          .map((module) => module.id)
+      selectedModuleIds: profile.defaultModuleIds
+          .where(playbook.moduleIds.contains)
+          .toSet(),
+      targetAttendeeCount: target,
+      structureConfig: profile.structureConfig,
+      compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
+    );
+  }
+
+  factory EventSuccessHostDraft.fromActivity(
+    ActivityKind activityKind, {
+    int? targetAttendeeCount,
+  }) {
+    final profile = EventSuccessActivityProfile.forActivity(
+      activityKind,
+      targetAttendeeCount: targetAttendeeCount,
+    );
+    return EventSuccessHostDraft(
+      playbook: profile.playbook,
+      selectedModuleIds: profile.defaultModuleIds
+          .where(profile.playbook.moduleIds.contains)
           .toSet(),
       targetAttendeeCount:
           targetAttendeeCount ??
-          ((playbook.capacity.min + playbook.capacity.max) / 2).round(),
+          ((profile.playbook.capacity.min + profile.playbook.capacity.max) / 2)
+              .round(),
+      structureConfig: profile.structureConfig,
+      compatibilityAffectsRanking: profile.compatibilityAffectsRankingByDefault,
     );
   }
 
   final EventSuccessPlaybook playbook;
   final Set<String> selectedModuleIds;
   final int targetAttendeeCount;
+  final EventSuccessStructureConfig structureConfig;
   final String hostGoal;
-  final bool privateCrushEnabled;
+  final bool wingmanRequestsEnabled;
   final bool contextualOpenersEnabled;
+  final bool compatibilityAffectsRanking;
+  final EventSuccessQuestionnaireConfig questionnaireConfig;
 
   List<EventSuccessModule> get selectedModules => playbook.modules
       .where((module) => selectedModuleIds.contains(module.id))
@@ -65,26 +104,72 @@ class EventSuccessHostDraft {
     return copyWith(selectedModuleIds: nextIds);
   }
 
+  EventSuccessHostDraft normalizeForActivity(ActivityKind activityKind) {
+    final profile = EventSuccessActivityProfile.forActivity(
+      activityKind,
+      targetAttendeeCount: targetAttendeeCount,
+    );
+    final compatibleSelectedIds = selectedModuleIds
+        .where(profile.isSelectable)
+        .where(profile.playbook.moduleIds.contains)
+        .toSet();
+    final selectedIds = compatibleSelectedIds.isEmpty
+        ? profile.defaultModuleIds
+        : compatibleSelectedIds;
+    return copyWith(
+      playbook: profile.playbook,
+      selectedModuleIds: selectedIds,
+      structureConfig: structureConfig.isLegacyDefault
+          ? profile.structureConfig
+          : structureConfig,
+      compatibilityAffectsRanking:
+          selectedIds.contains(
+            EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+          ) &&
+          (compatibilityAffectsRanking ||
+              profile.compatibilityAffectsRankingByDefault),
+    );
+  }
+
   EventSuccessHostDraft copyWith({
     EventSuccessPlaybook? playbook,
     Set<String>? selectedModuleIds,
     int? targetAttendeeCount,
+    EventSuccessStructureConfig? structureConfig,
     String? hostGoal,
-    bool? privateCrushEnabled,
+    bool? wingmanRequestsEnabled,
     bool? contextualOpenersEnabled,
+    bool? compatibilityAffectsRanking,
+    EventSuccessQuestionnaireConfig? questionnaireConfig,
   }) {
     final resolvedPlaybook = playbook ?? this.playbook;
     final resolvedIds = selectedModuleIds ?? this.selectedModuleIds;
+    final resolvedTargetAttendeeCount =
+        targetAttendeeCount ?? this.targetAttendeeCount;
+    final resolvedModuleIds = resolvedIds
+        .where(resolvedPlaybook.moduleIds.contains)
+        .toSet();
+    final canUseCompatibilityRanking = resolvedModuleIds.contains(
+      EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+    );
     return EventSuccessHostDraft(
       playbook: resolvedPlaybook,
-      selectedModuleIds: resolvedIds
-          .where(resolvedPlaybook.moduleIds.contains)
-          .toSet(),
-      targetAttendeeCount: targetAttendeeCount ?? this.targetAttendeeCount,
+      selectedModuleIds: resolvedModuleIds,
+      targetAttendeeCount: resolvedTargetAttendeeCount,
+      structureConfig:
+          structureConfig?.normalizedForTarget(resolvedTargetAttendeeCount) ??
+          this.structureConfig.normalizedForTarget(resolvedTargetAttendeeCount),
       hostGoal: hostGoal ?? this.hostGoal,
-      privateCrushEnabled: privateCrushEnabled ?? this.privateCrushEnabled,
+      wingmanRequestsEnabled:
+          wingmanRequestsEnabled ?? this.wingmanRequestsEnabled,
       contextualOpenersEnabled:
           contextualOpenersEnabled ?? this.contextualOpenersEnabled,
+      compatibilityAffectsRanking:
+          canUseCompatibilityRanking &&
+          (compatibilityAffectsRanking ?? this.compatibilityAffectsRanking),
+      questionnaireConfig:
+          questionnaireConfig?.normalized() ??
+          this.questionnaireConfig.normalized(),
     );
   }
 
@@ -103,18 +188,33 @@ class EventSuccessHostDraft {
     )) {
       issues.add('Add safety controls before any live pilot.');
     }
-    if (privateCrushEnabled &&
+    if (selectedModuleIds.contains(
+          EventSuccessModuleCatalog.guidedRotations.id,
+        ) &&
+        structureConfig.rotationIntervalMinutes == null) {
+      issues.add('Add a rotation cadence before using guided rotations.');
+    }
+    if (selectedModuleIds.contains(EventSuccessModuleCatalog.liveReveal.id) &&
         !selectedModuleIds.contains(
-          EventSuccessModuleCatalog.privateCrush.id,
+          EventSuccessModuleCatalog.guidedRotations.id,
+        ) &&
+        !selectedModuleIds.contains(EventSuccessModuleCatalog.microPods.id)) {
+      issues.add('Live reveal needs a selected assignment layer.');
+    }
+    if (wingmanRequestsEnabled &&
+        !selectedModuleIds.contains(
+          EventSuccessModuleCatalog.wingmanRequests.id,
         )) {
-      issues.add('Private crush is enabled, but the module is not selected.');
+      issues.add(
+        'Wingman requests are enabled, but the host-help layer is not selected.',
+      );
     }
     if (contextualOpenersEnabled &&
         !selectedModuleIds.contains(
           EventSuccessModuleCatalog.contextualOpeners.id,
         )) {
       issues.add(
-        'Contextual openers are enabled, but the module is not selected.',
+        'Post-match openers are enabled, but the conversation layer is not selected.',
       );
     }
     return issues;
@@ -175,7 +275,7 @@ class EventSuccessAttendeeState {
     required this.attendeeName,
     required this.podLabel,
     required this.prompt,
-    required this.privateCrushCandidates,
+    required this.wingmanRequestCandidates,
     this.checkedIn = true,
     this.followUpOpen = true,
   });
@@ -184,13 +284,13 @@ class EventSuccessAttendeeState {
   final String attendeeName;
   final String podLabel;
   final String prompt;
-  final List<PrivateCrushCandidate> privateCrushCandidates;
+  final List<WingmanRequestCandidate> wingmanRequestCandidates;
   final bool checkedIn;
   final bool followUpOpen;
 }
 
-class PrivateCrushCandidate {
-  const PrivateCrushCandidate({
+class WingmanRequestCandidate {
+  const WingmanRequestCandidate({
     required this.displayName,
     required this.context,
     this.marked = false,
@@ -220,17 +320,17 @@ abstract final class EventSuccessFeatureSamples {
     podLabel: 'Pace pod B · 6:15-6:45/km',
     prompt:
         'Find someone training for a race and ask what they are building toward.',
-    privateCrushCandidates: [
-      PrivateCrushCandidate(
+    wingmanRequestCandidates: [
+      WingmanRequestCandidate(
         displayName: 'Naina',
         context: 'Ran in your pace pod',
         marked: true,
       ),
-      PrivateCrushCandidate(
+      WingmanRequestCandidate(
         displayName: 'Rhea',
         context: 'Met during cooldown coffee',
       ),
-      PrivateCrushCandidate(
+      WingmanRequestCandidate(
         displayName: 'Meera',
         context: 'Answered the same race prompt',
       ),

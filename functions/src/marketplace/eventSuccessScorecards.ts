@@ -16,7 +16,6 @@ interface EventSuccessFeedbackDoc {
   welcomeRating: number;
   structureRating: number;
   metNewPeopleCount: number;
-  markedPrivateCrush: boolean;
   safetyConcern: boolean;
   createdAt?: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
@@ -29,7 +28,6 @@ export interface EventSuccessScorecardDoc {
   checkedInCount: number;
   feedbackCount: number;
   attendeesWhoMetTwoPlusPeople: number;
-  privateCrushCount: number;
   mutualMatchCount: number;
   chatStartedCount: number;
   repeatSignupCount: number;
@@ -113,9 +111,6 @@ export function buildEventSuccessScorecard(params: {
     feedbackCount,
     attendeesWhoMetTwoPlusPeople: feedback.filter(
       (item) => item.metNewPeopleCount >= 2
-    ).length,
-    privateCrushCount: feedback.filter(
-      (item) => item.markedPrivateCrush
     ).length,
     mutualMatchCount: matches.length,
     chatStartedCount: matches.filter((match) => match.lastMessageAt != null)

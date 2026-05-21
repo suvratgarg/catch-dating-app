@@ -82,6 +82,7 @@ EventParticipation buildEventParticipation({
   required String uid,
   EventParticipationStatus status = EventParticipationStatus.signedUp,
   DateTime? createdAt,
+  Gender? genderAtSignup,
   String? cohortAtSignup,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
@@ -106,6 +107,7 @@ EventParticipation buildEventParticipation({
         ? timestamp
         : null,
     deletedAt: status == EventParticipationStatus.deleted ? timestamp : null,
+    genderAtSignup: genderAtSignup,
     cohortAtSignup: cohortAtSignup,
   );
 }

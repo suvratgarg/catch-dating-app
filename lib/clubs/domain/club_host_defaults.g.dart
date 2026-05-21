@@ -8,6 +8,17 @@ part of 'club_host_defaults.dart';
 
 _ClubHostDefaults _$ClubHostDefaultsFromJson(Map<String, dynamic> json) =>
     _ClubHostDefaults(
+      primaryActivityKind:
+          $enumDecodeNullable(
+            _$ActivityKindEnumMap,
+            json['primaryActivityKind'],
+          ) ??
+          ActivityKind.socialRun,
+      supportedActivityKinds:
+          (json['supportedActivityKinds'] as List<dynamic>?)
+              ?.map((e) => $enumDecode(_$ActivityKindEnumMap, e))
+              .toList() ??
+          const <ActivityKind>[],
       eventPolicy: json['eventPolicy'] == null
           ? const EventPolicyDefaults()
           : EventPolicyDefaults.fromJson(
@@ -18,10 +29,45 @@ _ClubHostDefaults _$ClubHostDefaultsFromJson(Map<String, dynamic> json) =>
           : EventSuccessDefaults.fromJson(
               json['eventSuccess'] as Map<String, dynamic>,
             ),
+      eventSuccessByActivityKind:
+          (json['eventSuccessByActivityKind'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(
+              k,
+              EventSuccessDefaults.fromJson(e as Map<String, dynamic>),
+            ),
+          ) ??
+          const <String, EventSuccessDefaults>{},
     );
 
-Map<String, dynamic> _$ClubHostDefaultsToJson(_ClubHostDefaults instance) =>
-    <String, dynamic>{
-      'eventPolicy': instance.eventPolicy.toJson(),
-      'eventSuccess': instance.eventSuccess.toJson(),
-    };
+Map<String, dynamic> _$ClubHostDefaultsToJson(
+  _ClubHostDefaults instance,
+) => <String, dynamic>{
+  'primaryActivityKind': _$ActivityKindEnumMap[instance.primaryActivityKind]!,
+  'supportedActivityKinds': instance.supportedActivityKinds
+      .map((e) => _$ActivityKindEnumMap[e]!)
+      .toList(),
+  'eventPolicy': instance.eventPolicy.toJson(),
+  'eventSuccess': instance.eventSuccess.toJson(),
+  'eventSuccessByActivityKind': instance.eventSuccessByActivityKind.map(
+    (k, e) => MapEntry(k, e.toJson()),
+  ),
+};
+
+const _$ActivityKindEnumMap = {
+  ActivityKind.socialRun: 'socialRun',
+  ActivityKind.running: 'running',
+  ActivityKind.walking: 'walking',
+  ActivityKind.pickleball: 'pickleball',
+  ActivityKind.padel: 'padel',
+  ActivityKind.tennis: 'tennis',
+  ActivityKind.badminton: 'badminton',
+  ActivityKind.cycling: 'cycling',
+  ActivityKind.spinClass: 'spinClass',
+  ActivityKind.yoga: 'yoga',
+  ActivityKind.strengthTraining: 'strengthTraining',
+  ActivityKind.pubQuiz: 'pubQuiz',
+  ActivityKind.barCrawl: 'barCrawl',
+  ActivityKind.dinner: 'dinner',
+  ActivityKind.singlesMixer: 'singlesMixer',
+  ActivityKind.openActivity: 'openActivity',
+};

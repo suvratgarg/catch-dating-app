@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -42,13 +43,86 @@ class ClubHostDefaultsStep extends StatelessWidget {
                 onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
           ),
           gapH20,
+          _DefaultActivityCard(
+            selectedActivityKind: defaults.primaryActivityKind,
+            onChanged: (activityKind) => onChanged(
+              defaults.copyWith(
+                primaryActivityKind: activityKind,
+                supportedActivityKinds:
+                    defaults.effectiveSupportedActivityKinds.contains(
+                      activityKind,
+                    )
+                    ? defaults.supportedActivityKinds
+                    : [...defaults.supportedActivityKinds, activityKind],
+              ),
+            ),
+          ),
+          gapH20,
           EventSuccessDefaultsPanel(
-            defaults: defaults.eventSuccess,
-            onChanged: (eventSuccess) =>
-                onChanged(defaults.copyWith(eventSuccess: eventSuccess)),
+            defaults: defaults.eventSuccessForActivity(
+              defaults.primaryActivityKind,
+            ),
+            activityKind: defaults.primaryActivityKind,
+            onChanged: (eventSuccess) => onChanged(
+              defaults.copyWithEventSuccessForActivity(
+                activityKind: defaults.primaryActivityKind,
+                defaults: eventSuccess,
+              ),
+            ),
             title: 'Default event success',
             subtitle:
-                'Apply this run-of-show setup automatically when creating new events.',
+                'Apply activity-aware run-of-show defaults automatically when creating new events.',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DefaultActivityCard extends StatelessWidget {
+  const _DefaultActivityCard({
+    required this.selectedActivityKind,
+    required this.onChanged,
+  });
+
+  final ActivityKind selectedActivityKind;
+  final ValueChanged<ActivityKind> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Default activity', style: CatchTextStyles.titleM(context)),
+          gapH4,
+          Text(
+            'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          gapH12,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final activityKind in ActivityKind.eventCreationDefaults)
+                Semantics(
+                  button: true,
+                  selected: selectedActivityKind == activityKind,
+                  label: 'Use ${activityKind.label} by default',
+                  child: GestureDetector(
+                    onTap: () => onChanged(activityKind),
+                    child: VibeTag(
+                      label: activityKind.label,
+                      active: selectedActivityKind == activityKind,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
