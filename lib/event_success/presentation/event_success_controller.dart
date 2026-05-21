@@ -33,7 +33,7 @@ class EventSuccessController extends _$EventSuccessController {
   void build() {}
 
   Future<EventSuccessPlan> ensurePlan(Event event) async {
-    requireSignedInUid(ref, action: 'set up event success');
+    requireSignedInUid(ref, action: 'set up the live event guide');
     return ref.read(eventSuccessRepositoryProvider).ensurePlanForEvent(event);
   }
 
@@ -42,7 +42,7 @@ class EventSuccessController extends _$EventSuccessController {
     required EventSuccessHostDraft draft,
     String? attendeePrompt,
   }) async {
-    requireSignedInUid(ref, action: 'save event success setup');
+    requireSignedInUid(ref, action: 'save the live event guide');
     final normalizedPrompt = attendeePrompt?.trim();
     final nextPlan = plan
         .copyWithDraft(draft, updatedAt: DateTime.now())
@@ -58,7 +58,7 @@ class EventSuccessController extends _$EventSuccessController {
     required String eventId,
     required int activeStepIndex,
   }) async {
-    requireSignedInUid(ref, action: 'run event success live mode');
+    requireSignedInUid(ref, action: 'run live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
         .updateActiveStep(eventId: eventId, activeStepIndex: activeStepIndex);
@@ -97,7 +97,7 @@ class EventSuccessController extends _$EventSuccessController {
   }
 
   Future<void> completePlan(String eventId) async {
-    requireSignedInUid(ref, action: 'complete event success plan');
+    requireSignedInUid(ref, action: 'complete the live event guide');
     await ref
         .read(eventSuccessRepositoryProvider)
         .completePlan(eventId: eventId);
@@ -114,10 +114,7 @@ class EventSuccessController extends _$EventSuccessController {
     EventSuccessQuestionnaireConfig questionnaireConfig =
         const EventSuccessQuestionnaireConfig.defaultTemplate(),
   }) async {
-    final uid = requireSignedInUid(
-      ref,
-      action: 'save compatibility questionnaire',
-    );
+    final uid = requireSignedInUid(ref, action: 'save match clue answers');
     await ref
         .read(eventSuccessRepositoryProvider)
         .saveCompatibilityResponse(
@@ -136,22 +133,17 @@ class EventSuccessController extends _$EventSuccessController {
     required PublicProfile target,
     String? note,
   }) async {
-    final uid = requireSignedInUid(ref, action: 'ask host for help');
+    requireSignedInUid(ref, action: 'ask host for help');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .saveWingmanRequest(
-          event: event,
-          requesterUid: uid,
-          target: target,
-          note: note,
-        );
+        .saveWingmanRequest(event: event, target: target, note: note);
   }
 
   Future<void> withdrawWingmanRequest({required Event event}) async {
-    final uid = requireSignedInUid(ref, action: 'withdraw host help request');
+    requireSignedInUid(ref, action: 'withdraw host help request');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .withdrawWingmanRequest(event: event, requesterUid: uid);
+        .withdrawWingmanRequest(event: event);
   }
 
   Future<void> generateMicroPods({required String eventId}) async {

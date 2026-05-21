@@ -20,9 +20,8 @@ class EventSuccessDefaultsPanel extends StatefulWidget {
     required this.defaults,
     required this.activityKind,
     required this.onChanged,
-    this.title = 'Event success',
-    this.subtitle =
-        'Choose whether new events should get a saved run-of-show setup.',
+    this.title = 'Live event guide',
+    this.subtitle = 'Choose whether new events should get a saved live plan.',
   });
 
   final EventSuccessDefaults defaults;
@@ -181,11 +180,11 @@ class _EventSuccessDefaultsPanelState extends State<EventSuccessDefaultsPanel> {
                     )
                   : null,
               title: Text(
-                'Use questionnaire for pairing',
+                'Let answers guide pairings',
                 style: CatchTextStyles.labelL(context),
               ),
               subtitle: Text(
-                'Off keeps answers for clues only. On lets generated pairings use them as a soft ranking boost.',
+                'Off keeps answers for reveal clues only. On lets suggested pairings use them as one light input.',
                 style: CatchTextStyles.bodyS(context, color: t.ink2),
               ),
             ),

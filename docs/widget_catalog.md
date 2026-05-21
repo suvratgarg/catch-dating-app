@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.92
+version: 2.5.93
 updated: 2026-05-21
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,15 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.93
+
+- Split event-success host, companion, and live-reveal presentation surfaces
+  into focused `part` files for setup, live controls, report, reveal actions,
+  attendee cards, wingman requests, feedback, and shared widgets while keeping
+  the public import points stable.
+- Host setup now uses progressive disclosure for advanced event structure,
+  tool, and delivery controls.
 
 ### 2.5.92
 
@@ -1778,35 +1787,35 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:35` | Dev/staging manual QA harness. Uses Catch primitives and segmented controls to switch event format, host surface, attendee moment, ranking signal, and opt-out states while rendering production host and attendee surfaces side by side from fixture data. |
-| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:234` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile and hides unsupported tools. Live mode keeps the active run-of-show compact, then groups current-step tools and supporting controls for attendance, wingman requests, compatibility signal status, conversation cues, assignments, and reveal controls. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
+| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:243` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile and hides unsupported tools behind progressive disclosure. Live mode keeps the active guide compact, then groups current-step tools and supporting controls for attendance, wingman requests, reveal clues, conversation cues, assignments, and reveal controls. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
 | `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle default setup, inherit activity-specific recommendations, configure structure defaults, set the host goal and attendee prompt, and enable/disable supported tools, wingman requests, questionnaire ranking, and contextual openers. |
-| `_SetupTab` | `lib/event_success/presentation/event_success_host_screen.dart:408` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, product-layer module toggles, compatibility ranking opt-in, wingman requests, and setup save/ensure mutations. Freezes setup after event start. |
+| `_SetupTab` | `lib/event_success/presentation/host_parts/event_success_host_setup.dart:3` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, module toggles, reveal-clue opt-in, wingman requests, and setup save/ensure mutations. Essentials render first; advanced structure, tool, and delivery controls are progressively disclosed. |
 
 ### ConsumerStatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_CompatibilityQuestionnaireSection` | `lib/event_success/presentation/event_success_companion_screen.dart:580` | Attendee companion questionnaire card for event-scoped compatibility answers. Uses Catch primitives for chips, badges, surfaces, and save/update actions; communicates whether answers are clues-only or may affect generated rotations. |
+| `_CompatibilityQuestionnaireSection` | `lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:3` | Attendee companion quick-question card for event-scoped reveal clues. Uses Catch primitives for chips, badges, surfaces, and save/update actions; communicates whether answers are clues-only or can guide suggested rotations. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:42` | Host Manage section loader for event-success plan, roster, feedback, assignment, preference, and wingman-request data. Synthesizes a default plan for hosts until setup is saved, preserving attendee companion gating. |
-| `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/event_success_live_reveal_card.dart:47` | Host Live-mode reveal console for structured assignment flows. Shows a kinetic countdown, round queue, assignment clues, and host actions to start countdown, reveal now, or reset reveal state. |
-| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/event_success_live_reveal_card.dart:291` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, then shows partners or podmates with opt-out controls intact. |
+| `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart:3` | Host Live-mode reveal console for structured assignment flows. Shows a kinetic countdown, round queue, assignment clues, and host actions to start countdown, reveal now, or reset reveal state. |
+| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, then shows partners or podmates with opt-out controls intact. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessPromptCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:591` | Shared prompt card used by event-success preview and attendee companion surfaces. |
-| `EventSuccessConversationCueCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:630` | Shared conversation cue card used by host Live mode and attendee companion surfaces for live prompts and post-match opener suggestions. |
-| `EventSuccessPostEventReport` | `lib/event_success/presentation/event_success_feature_blocks.dart:258` | Shared post-event report surface. Shows report metric pills, `Working well` strengths, and coach recommendation tiles. |
-| `_HostReportSignalGrid` | `lib/event_success/presentation/event_success_host_screen.dart:1068` | Host report signal-quality summary using `EventSuccessMetricPill` and `CatchBadge` primitives for feedback response, assignment coverage, opt-outs, and wingman requests. |
-| `EventSuccessMetricPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:857` | Shared percentage pill for event-success reports and lab/preview metrics. |
-| `EventSuccessRecommendationTile` | `lib/event_success/presentation/event_success_feature_blocks.dart:809` | Shared recommendation tile for post-event reports and the event-success lab coach sample. |
-| `EventSuccessDarkPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:869` | Shared dark hero pill for event-success lab and contextual preview heroes. |
+| `EventSuccessPromptCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:616` | Shared prompt card used by event-success preview and attendee companion surfaces. |
+| `EventSuccessConversationCueCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:655` | Shared conversation cue card used by host Live mode and attendee companion surfaces for live prompts and post-match opener suggestions. |
+| `EventSuccessPostEventReport` | `lib/event_success/presentation/event_success_feature_blocks.dart:266` | Shared post-event report surface. Shows report metric pills, `Working well` strengths, and coach recommendation tiles. |
+| `_HostReportSignalGrid` | `lib/event_success/presentation/host_parts/event_success_host_report.dart:114` | Host report signal-quality summary using `EventSuccessMetricPill` and `CatchBadge` primitives for feedback response, assignment coverage, opt-outs, and wingman requests. |
+| `EventSuccessMetricPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:865` | Shared percentage pill for event-success reports and lab/preview metrics. |
+| `EventSuccessRecommendationTile` | `lib/event_success/presentation/event_success_feature_blocks.dart:817` | Shared recommendation tile for post-event reports and the event-success lab coach sample. |
+| `EventSuccessDarkPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:894` | Shared dark hero pill for event-success lab and contextual preview heroes. |
 
 ---
 

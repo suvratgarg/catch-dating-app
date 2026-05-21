@@ -29,10 +29,10 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Questionnaire pack', style: CatchTextStyles.labelL(context)),
+        Text('Question set', style: CatchTextStyles.labelL(context)),
         gapH6,
         Text(
-          'Choose a reusable template or make a host-authored questionnaire for this event.',
+          'Choose a reusable template or write custom questions for this event.',
           style: CatchTextStyles.bodyS(context, color: t.ink2),
         ),
         gapH10,
@@ -162,8 +162,8 @@ class _CustomQuestionnaireFields extends StatelessWidget {
       children: [
         CatchTextField(
           key: const ValueKey('customQuestionnaireTitle'),
-          label: 'Custom questionnaire name',
-          initialValue: value.customTitle ?? 'Custom questionnaire',
+          label: 'Custom question set name',
+          initialValue: value.customTitle ?? 'Custom question set',
           enabled: enabled,
           inputFormatters: [LengthLimitingTextInputFormatter(80)],
           textInputAction: TextInputAction.next,

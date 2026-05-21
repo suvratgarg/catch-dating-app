@@ -239,13 +239,13 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
     EventSuccessModuleCatalog.wingmanRequests.id:
         'Explicit host-help requests let shy attendees ask for a natural introduction while the room is live.',
     EventSuccessModuleCatalog.contextualOpeners.id:
-        'Post-match openers use event context without exposing private questionnaire answers.',
+        'Post-match openers use event context without exposing private answers.',
     EventSuccessModuleCatalog.decomposedFeedback.id:
         'Feedback should be specific enough to improve the next event without becoming a public score.',
     EventSuccessModuleCatalog.hostAnalytics.id:
         'Hosts need a short coaching summary, not a wall of metrics.',
     EventSuccessModuleCatalog.safetyControls.id:
-        'Blocks, reports, visibility, and opt-outs have to apply across every event-success surface.',
+        'Blocks, reports, visibility, and opt-outs have to apply across every live guide surface.',
   };
 
   switch (activityKind.defaultInteractionModel) {
@@ -271,13 +271,13 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.microPods.id:
             'A separate pod layer competes with the court-pair structure.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
-            'Optional answers can add clues or softly boost partner ranking after safety and interest checks.',
+            'Optional answers can add clues or softly guide partner suggestions after safety and interest checks.',
       };
     case EventInteractionModel.teamRotations:
       return {
         ...common,
         EventSuccessModuleCatalog.microPods.id:
-            'For quiz formats this is the team assignment layer.',
+            'For quiz formats this is the team setup.',
         EventSuccessModuleCatalog.liveReveal.id:
             'Team reveals give the host a clear start moment without showing every future move.',
         EventSuccessModuleCatalog.guidedRotations.id:
@@ -307,7 +307,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.microPods.id:
             'Pods can help arrival, but should not replace the main reveal or rotation flow.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
-            'This is the right format for questionnaire clues and optional ranking.',
+            'This is the right format for clue questions and suggested pairings.',
       };
     case EventInteractionModel.hostLedProgram:
       return {
@@ -317,7 +317,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.guidedRotations.id:
             'Timed pair rotations do not fit the core class structure.',
         EventSuccessModuleCatalog.liveReveal.id:
-            'Reveal ceremonies need an assignment layer and are not part of the default class flow.',
+            'Reveal ceremonies need a pod or rotation plan and are not part of the default class flow.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Optional answers can support post-event context without changing the class.',
       };
@@ -329,7 +329,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.guidedRotations.id:
             'Use only when the host turns the open event into a structured assignment flow.',
         EventSuccessModuleCatalog.liveReveal.id:
-            'Use only with a selected assignment layer.',
+            'Use only with selected pods or rotations.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Use when the host wants clues or compatibility context.',
       };
@@ -351,6 +351,6 @@ String _summaryFor(ActivityKind activityKind) {
     EventInteractionModel.hostLedProgram =>
       'Keep the class or program intact. Add arrival, light prompts, follow-up, and feedback around the edges.',
     EventInteractionModel.openFormat =>
-      'Start with the basic safety, attendance, prompt, and follow-up layer; let the host opt into structure.',
+      'Start with basic safety, attendance, prompt, and follow-up tools; let the host opt into structure.',
   };
 }

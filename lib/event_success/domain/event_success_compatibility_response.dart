@@ -454,7 +454,7 @@ abstract final class EventSuccessQuestionnairePackLibrary {
         title: config.customTitle?.trim().isNotEmpty == true
             ? config.customTitle!.trim()
             : 'Custom',
-        subtitle: 'Host-authored questionnaire for this event.',
+        subtitle: 'Custom questions for this event.',
         questions: config.customQuestions,
         custom: true,
       );
@@ -476,7 +476,7 @@ final class EventSuccessQuestionnaireConfig {
   const EventSuccessQuestionnaireConfig.customTemplate()
     : this(
         templateId: EventSuccessQuestionnairePackLibrary.customId,
-        customTitle: 'Custom questionnaire',
+        customTitle: 'Custom question set',
         customQuestions:
             EventSuccessQuestionnairePackLibrary.customStarterQuestions,
       );
