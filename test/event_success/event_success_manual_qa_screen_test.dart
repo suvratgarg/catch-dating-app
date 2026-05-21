@@ -126,6 +126,58 @@ void main() {
     expect(find.text('revealed'), findsWidgets);
     expect(find.text('Sign in required'), findsNothing);
   });
+
+  testWidgets('manual QA covers flagship singles live reveal', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 2200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const EventSuccessManualQaScreen(),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Singles mixer'));
+    await tester.pump();
+
+    expect(find.textContaining('Singles Mixer'), findsWidgets);
+    expect(find.text('10s reveal'), findsOneWidget);
+
+    await tester.tap(
+      find.descendant(
+        of: find.byType(CatchSegmentedControl<EventSuccessHostTab>),
+        matching: find.text('Live'),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining('Step 1/4: Quick questions'), findsWidgets);
+
+    await _tapHostNext(tester);
+    expect(
+      find.textContaining('Step 2/4: Check in and clue card'),
+      findsWidgets,
+    );
+
+    await _tapHostNext(tester);
+    expect(find.textContaining('Step 3/4: Rounds and reveal'), findsWidgets);
+    expect(
+      find.text('Meet people before seeing suggested matches.'),
+      findsWidgets,
+    );
+
+    await _tapHostButton(tester, 'Drop 10s countdown');
+    expect(find.text('countingDown'), findsWidgets);
+
+    await _tapHostButton(tester, 'Reveal now');
+    expect(find.text('revealed'), findsWidgets);
+    expect(find.text('Sign in required'), findsNothing);
+  });
 }
 
 Future<void> _tapHostNext(WidgetTester tester) async {

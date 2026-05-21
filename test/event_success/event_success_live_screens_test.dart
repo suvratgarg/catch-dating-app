@@ -17,6 +17,8 @@ import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,12 +73,20 @@ void main() {
     expect(find.text('Attendee prompt'), findsOneWidget);
     expect(find.text('Recommended setup'), findsOneWidget);
     expect(find.text('Tools'), findsOneWidget);
+    expect(find.text('Delivery moments'), findsOneWidget);
+    expect(find.text('Save setup'), findsOneWidget);
+    expect(find.text('Default on'), findsNothing);
+    expect(find.text('Wingman requests'), findsNothing);
+
+    await tester.tap(find.text('Tools'));
+    await tester.pumpAndSettle();
     expect(find.text('Default on'), findsOneWidget);
     expect(find.text('Recommended'), findsWidgets);
-    expect(find.text('Delivery moments'), findsOneWidget);
+
+    await tester.tap(find.text('Delivery moments'));
+    await tester.pumpAndSettle();
     expect(find.text('Wingman requests'), findsWidgets);
     expect(find.text('Post-match openers'), findsWidgets);
-    expect(find.text('Save setup'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
     await tester.pumpAndSettle();
@@ -128,7 +138,7 @@ void main() {
     expect(find.text('Live mode needs saved setup'), findsOneWidget);
     expect(find.text('Live host mode'), findsNothing);
     expect(find.text('Next'), findsNothing);
-    expect(find.text('Mark event-success plan complete'), findsNothing);
+    expect(find.text('Mark live guide complete'), findsNothing);
   });
 
   testWidgets('host report is hidden when host analytics is disabled', (
@@ -171,7 +181,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Host analytics disabled'), findsOneWidget);
+    expect(find.text('Post-event insights are off'), findsOneWidget);
     expect(find.text('Post-event host report'), findsNothing);
   });
 
@@ -253,15 +263,15 @@ void main() {
       ),
     );
 
-    expect(find.text('Host signal quality'), findsOneWidget);
+    expect(find.text('How reliable is this report?'), findsOneWidget);
     expect(find.text('Feedback 40%'), findsOneWidget);
-    expect(find.text('Assignment coverage 80%'), findsOneWidget);
-    expect(find.text('Assignment opt-out 20%'), findsOneWidget);
+    expect(find.text('People included 80%'), findsOneWidget);
+    expect(find.text('Opted out 20%'), findsOneWidget);
     expect(find.text('Wingman help 20%'), findsOneWidget);
     expect(find.text('2/5 feedback'), findsOneWidget);
     expect(find.text('4 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
-    expect(find.text('1 wingman requests'), findsOneWidget);
+    expect(find.text('1 host-help requests'), findsOneWidget);
     expect(find.text('Working well'), findsOneWidget);
   });
 
@@ -947,8 +957,10 @@ void main() {
             eventSuccessRepositoryProvider.overrideWithValue(
               EventSuccessRepository(
                 firestore,
-                EventParticipationRepository(firestore),
-                PublicProfileRepository(firestore),
+                functions: _WingmanTestFirebaseFunctions(
+                  firestore,
+                  requesterUid: 'runner-1',
+                ),
               ),
             ),
           ],
@@ -1161,11 +1173,7 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           eventSuccessRepositoryProvider.overrideWithValue(
-            EventSuccessRepository(
-              firestore,
-              EventParticipationRepository(firestore),
-              PublicProfileRepository(firestore),
-            ),
+            EventSuccessRepository(firestore),
           ),
         ],
         child: Consumer(
@@ -1192,8 +1200,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Compatibility questionnaire'), findsOneWidget);
-    expect(find.text('Can affect rotations'), findsOneWidget);
+    expect(find.text('A few quick questions'), findsOneWidget);
+    expect(find.text('Can guide pairings'), findsOneWidget);
 
     await tester.tap(find.text('A shared activity'));
     await tester.pump();
@@ -1251,11 +1259,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(plan)),
           eventSuccessRepositoryProvider.overrideWithValue(
-            EventSuccessRepository(
-              firestore,
-              EventParticipationRepository(firestore),
-              PublicProfileRepository(firestore),
-            ),
+            EventSuccessRepository(firestore),
           ),
         ],
         child: MaterialApp(
@@ -1270,8 +1274,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Compatibility questionnaire'), findsOneWidget);
-    expect(find.text('Can affect rotations'), findsOneWidget);
+    expect(find.text('A few quick questions'), findsOneWidget);
+    expect(find.text('Can guide pairings'), findsOneWidget);
     expect(
       find.text('No companion actions are active for this event.'),
       findsNothing,
@@ -1294,11 +1298,7 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             eventSuccessRepositoryProvider.overrideWithValue(
-              EventSuccessRepository(
-                firestore,
-                EventParticipationRepository(firestore),
-                PublicProfileRepository(firestore),
-              ),
+              EventSuccessRepository(firestore),
             ),
           ],
           child: Consumer(
@@ -1337,7 +1337,7 @@ void main() {
       expect(find.textContaining('compare routes'), findsOneWidget);
 
       await tester.scrollUntilVisible(
-        find.text('Event feedback'),
+        find.text('How did it feel?'),
         400,
         scrollable: find.byType(Scrollable).first,
       );
@@ -1604,7 +1604,7 @@ void main() {
 
     expect(find.text('Revealed'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsOneWidget);
-    expect(find.textContaining('compatibility signal'), findsOneWidget);
+    expect(find.textContaining('stronger interest'), findsOneWidget);
   });
 
   testWidgets(
@@ -1777,11 +1777,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(plan)),
           eventSuccessRepositoryProvider.overrideWithValue(
-            EventSuccessRepository(
-              firestore,
-              EventParticipationRepository(firestore),
-              PublicProfileRepository(firestore),
-            ),
+            EventSuccessRepository(firestore),
           ),
           publicProfileRepositoryProvider.overrideWithValue(
             PublicProfileRepository(firestore),
@@ -1867,11 +1863,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(plan)),
           eventSuccessRepositoryProvider.overrideWithValue(
-            EventSuccessRepository(
-              firestore,
-              EventParticipationRepository(firestore),
-              PublicProfileRepository(firestore),
-            ),
+            EventSuccessRepository(firestore),
           ),
           publicProfileRepositoryProvider.overrideWithValue(
             PublicProfileRepository(firestore),
@@ -1938,7 +1930,7 @@ void main() {
       );
 
       expect(find.text('Ask host for help'), findsNothing);
-      expect(find.text('Event feedback'), findsNothing);
+      expect(find.text('How did it feel?'), findsNothing);
       expect(
         find.text('No companion actions are active for this event.'),
         findsOneWidget,
@@ -1988,7 +1980,7 @@ void main() {
     expect(find.text('Companion not available'), findsOneWidget);
     expect(
       find.text(
-        'The host has not enabled event companion tools for this event yet.',
+        'The host has not enabled the live event guide for this event yet.',
       ),
       findsOneWidget,
     );
@@ -2168,4 +2160,75 @@ EventSuccessWingmanRequest _wingmanRequest({
     createdAt: now,
     updatedAt: now,
   );
+}
+
+class _WingmanTestFirebaseFunctions extends Fake implements FirebaseFunctions {
+  _WingmanTestFirebaseFunctions(this._firestore, {required this.requesterUid});
+
+  final FirebaseFirestore _firestore;
+  final String requesterUid;
+
+  @override
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) {
+    return _WingmanTestHttpsCallable(
+      name,
+      firestore: _firestore,
+      requesterUid: requesterUid,
+    );
+  }
+}
+
+class _WingmanTestHttpsCallable extends Fake implements HttpsCallable {
+  _WingmanTestHttpsCallable(
+    this.name, {
+    required FirebaseFirestore firestore,
+    required this.requesterUid,
+  }) : _firestore = firestore;
+
+  final String name;
+  final FirebaseFirestore _firestore;
+  final String requesterUid;
+
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    final payload = Map<String, Object?>.from(parameters as Map);
+    final eventId = payload['eventId'] as String;
+    if (name == 'submitEventSuccessWingmanRequest') {
+      final now = Timestamp.fromDate(DateTime(2026, 5, 21));
+      await _firestore
+          .collection('eventSuccessWingmanRequests')
+          .doc(
+            eventSuccessWingmanRequestId(eventId: eventId, uid: requesterUid),
+          )
+          .set({
+            'eventId': eventId,
+            'clubId': 'club-1',
+            'requesterUid': requesterUid,
+            'targetUid': payload['targetUid'],
+            'status': 'active',
+            'hostVisibleConsent': true,
+            'note': payload['note'],
+            'createdAt': now,
+            'updatedAt': now,
+          });
+    } else if (name == 'withdrawEventSuccessWingmanRequest') {
+      await _firestore
+          .collection('eventSuccessWingmanRequests')
+          .doc(
+            eventSuccessWingmanRequestId(eventId: eventId, uid: requesterUid),
+          )
+          .update({'status': 'withdrawn'});
+    }
+    return _WingmanTestHttpsCallableResult<T>(null as T);
+  }
+}
+
+class _WingmanTestHttpsCallableResult<T> extends Fake
+    implements HttpsCallableResult<T> {
+  _WingmanTestHttpsCallableResult(this.dataValue);
+
+  final T dataValue;
+
+  @override
+  T get data => dataValue;
 }

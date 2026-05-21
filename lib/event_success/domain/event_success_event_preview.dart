@@ -82,7 +82,7 @@ class EventSuccessEventPreview {
       integrationNotes: [
         'Seeds host setup from Event.capacityLimit and the event format playbook.',
         'Uses roster counts when available, then falls back to Event.bookedCount and Event.checkedInCount.',
-        'Keeps all event-success modules read-only until persistence, privacy, and safety ownership are approved.',
+        'Keeps live guide tools read-only until persistence, privacy, and safety ownership are approved.',
       ],
     );
   }

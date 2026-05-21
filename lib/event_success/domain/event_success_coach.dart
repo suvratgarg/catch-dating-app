@@ -82,7 +82,7 @@ class EventSuccessCoach {
           id: 'reduce_assignment_pressure',
           title: 'Make structured participation feel easier to opt into',
           rationale:
-              'A high opt-out rate usually means the assignment layer needs clearer framing, shorter rounds, or softer host facilitation.',
+              'A high opt-out rate usually means pods or rotations need clearer framing, shorter rounds, or softer host facilitation.',
           priority: EventRecommendationPriority.medium,
           stage: EventSuccessStage.opening,
           moduleIds: ['host_script', 'guided_rotations', 'micro_pods'],
