@@ -54,12 +54,12 @@ which do not overlap the event_success feature work.
 | ID  | Sev | Area              | One-line                                                          | Done |
 |-----|-----|-------------------|-------------------------------------------------------------------|------|
 | I1  | P1  | iOS/TestFlight    | No app-level `PrivacyInfo.xcprivacy` — likely TestFlight warnings  | [ ]  |
-| A1  | P1  | Analytics         | Analytics only collects in release+prod; debug runs send nothing  | [ ]  |
+| A1  | P1  | Analytics         | Analytics only collects in release+prod; debug runs send nothing  | [x]  |
 | D2  | P1  | Contracts         | Contracts SSOT has **no CI gate** — silent drift                  | [x]  |
 | C1  | P3  | CI/CD             | `flutter-ci.yml` missing `cache: true`                            | [x]  |
-| C2  | P2  | CI/CD             | `firebase-tools` installed unpinned in deploy/CI                  | [ ]  |
+| C2  | P2  | CI/CD             | `firebase-tools` installed unpinned in deploy/CI                  | [x]  |
 | C3  | P2  | CI/CD             | `firebase-dev-deploy` uses fragile `workflow_run` + JS poll        | [ ]  |
-| C5  | P3  | CI/CD             | Flutter version floats `3.41.x` (CI) vs pinned `3.41.9` (Xcode)   | [ ]  |
+| C5  | P3  | CI/CD             | Flutter version floats `3.41.x` (CI) vs pinned `3.41.9` (Xcode)   | [x]  |
 | C6  | P3  | CI/CD             | PR build matrix only builds `dev` flavor                          | [ ]  |
 | C8  | P3  | CI/CD             | BigQuery export extensions never deployed by pipeline             | [ ]  |
 | I2  | P2  | iOS               | App Check activated twice (native AppDelegate + Dart)             | [ ]  |
@@ -145,9 +145,12 @@ off in debug.
 - Then trigger events and confirm in Firebase Console → Analytics → DebugView.
 - The `observability-evidence.yml` workflow is the place to record the proof.
 
-**Action:** add a short "How to verify analytics" section to
-`docs/release_operations.md` (or `README.md`) with the command above so this is
-not re-discovered as a bug every release.
+**Action (DONE 2026-05-21):** added a "Verifying Analytics, Crashlytics, And
+BigQuery" section to `docs/release_operations.md` documenting the collection
+gate, the `ENABLE_OBSERVABILITY_COLLECTION=true` DebugView recipe, the
+`-FIRDebugEnabled` launch arg, the `observability_smoke` canary event, and the
+Firestore→BigQuery vs GA4→BigQuery distinction. The integration itself was
+already correct — this removes the "analytics looks broken" false alarm.
 
 ---
 
@@ -199,20 +202,20 @@ If `contracts-ci` ever flakes on this step in real CI, revisit here first.)
 
 ## P2 — Medium
 
-### C2 — `firebase-tools` installed unpinned [quick]
+### C2 — `firebase-tools` installed unpinned (DONE 2026-05-21)
 
 **Where:** `firebase-deploy.yml`, `firebase-dev-deploy.yml`,
-`firestore-rules-ci.yml`, `release-readiness.yml` all run
+`firestore-rules-ci.yml`, `release-readiness.yml` all ran
 `npm install -g firebase-tools` with no version.
 
-**Problem:** every CI run picks up whatever `firebase-tools` is latest that day.
-A breaking release (or a change in default deploy behavior, rules compiler,
-emulator) silently flows into deploys and the rules emulator. This is a classic
-"it worked yesterday" cause.
+**Was:** every CI run picked up whatever `firebase-tools` was latest that day. A
+breaking release (or a change in default deploy behavior, rules compiler,
+emulator) silently flowed into deploys and the rules emulator — a classic "it
+worked yesterday" cause.
 
-**Fix:** pin a known-good version, e.g. `npm install -g firebase-tools@<X.Y.Z>`,
-in all four workflows. Bump deliberately. (Check the version currently on the
-machine that last had a green deploy and pin to that.)
+**Fix applied:** pinned all four workflows to `firebase-tools@15.1.0` (the
+version installed on the dev machine, treated as known-good). Bump deliberately
+in future, in all four files together.
 
 ### C3 — `firebase-dev-deploy` trigger + poll is fragile [large]
 
@@ -311,11 +314,13 @@ workflow, so they could be stale on a green build. **Now** covered by the
   workflow input "ga4_bigquery_evidence" exists precisely because the team knows
   this is an open manual step.
 
-**Action [needs console]:** in the Firebase Console for `catch-dating-app-64e51`
-(prod), confirm BigQuery linking is on and **"Export Google Analytics data"** is
-checked. Note: GA4→BQ only backfills from the day it is enabled — enable it
-sooner rather than later. Then GA4 events appear in the
-`analytics_<propertyId>` dataset.
+**Action [needs console] — still open:** in the Firebase Console for
+`catch-dating-app-64e51` (prod), confirm BigQuery linking is on and **"Export
+Google Analytics data"** is checked. Note: GA4→BQ only backfills from the day it
+is enabled — enable it sooner rather than later. Then GA4 events appear in the
+`analytics_<propertyId>` dataset. The repo-side documentation of this step was
+added to `docs/release_operations.md` on 2026-05-21; the console toggle itself
+cannot be done from the repo and is the user's to verify.
 
 ### N1 — `google-services.json` carries only one flavor [large]
 
@@ -352,12 +357,15 @@ package matches the flavor being built.
 three other Flutter workflows have it. Added `cache: true`. Pure CI-speed /
 consistency change.
 
-### C5 — Flutter version drift between CI and Xcode Cloud [quick]
+### C5 — Flutter version drift between CI and Xcode Cloud (DONE 2026-05-21)
 
-GitHub workflows pin `flutter-version: '3.41.x'` (floating patch); Xcode Cloud's
-`ios/ci_scripts/ci_post_clone.sh` pins `FLUTTER_VERSION` default `3.41.9`. CI
-and the actual release build can compile on different Flutter patches. Pin both
-to the same explicit version (e.g. `3.41.9`).
+GitHub workflows pinned `flutter-version: '3.41.x'` (floating patch) while Xcode
+Cloud's `ios/ci_scripts/ci_post_clone.sh` pins `FLUTTER_VERSION` default
+`3.41.9` — so CI and the actual release build could compile on different Flutter
+patches. **Fix applied:** pinned `flutter-version` to `3.41.9` in all six
+occurrences across `flutter-ci.yml`, `app-build-matrix.yml` (×3),
+`release-readiness.yml`, and `ios-testflight-release.yml`, matching Xcode Cloud.
+Bump both places together in future.
 
 ### C6 — PR build matrix only builds the `dev` flavor [quick-ish]
 
@@ -479,7 +487,14 @@ codegen-time guard that rejects the `YOUR_KEY_ID_HERE` placeholder.
 - **2026-05-21** — D2 + D3 fixed: added `.github/workflows/contracts-ci.yml`;
   added `contracts-ci.yml` to the `firebase-dev-deploy.yml` required-check poll.
   Verified all five contract checks pass on clean `origin/main`; generator
-  confirmed deterministic (write-mode → empty diff).
+  confirmed deterministic (write-mode → empty diff). Committed as `7833fb18`.
+- **2026-05-21** — A1 fixed: added the "Verifying Analytics, Crashlytics, And
+  BigQuery" section to `docs/release_operations.md`. A2 documented there too
+  (the console toggle remains the user's to verify).
+- **2026-05-21** — C2 fixed: pinned `firebase-tools@15.1.0` in all four
+  deploy/CI workflows. C5 fixed: pinned `flutter-version: 3.41.9` everywhere.
+- **2026-05-21** — `docs/release_operations.md` "Required PR Checks" updated to
+  list `contracts-ci.yml`.
 
 ## Verification done during this audit
 
