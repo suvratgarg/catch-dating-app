@@ -127,6 +127,45 @@ export interface CreateEventCallablePayload {
       [k: string]: unknown;
     };
   };
+  eventSuccessDefaults?: {
+    enabled?: boolean;
+    playbookId?: string;
+    /**
+     * @maxItems 24
+     */
+    selectedModuleIds?: string[];
+    structureConfig?: {
+      unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+      unitSize: number;
+      unitCount?: number | null;
+      rotationIntervalMinutes?: number | null;
+      revealCountdownSeconds: number;
+    };
+    hostGoal?: string;
+    wingmanRequestsEnabled?: boolean;
+    contextualOpenersEnabled?: boolean;
+    compatibilityAffectsRanking?: boolean;
+    questionnaireConfig?: {
+      templateId: string;
+      customTitle?: string | null;
+      /**
+       * @maxItems 8
+       */
+      customQuestions?: {
+        id: string;
+        prompt: string;
+        /**
+         * @minItems 2
+         * @maxItems 5
+         */
+        options: {
+          id: string;
+          label: string;
+        }[];
+      }[];
+    };
+    attendeePrompt?: string | null;
+  };
   constraints?: {
     minAge?: number;
     maxAge?: number;

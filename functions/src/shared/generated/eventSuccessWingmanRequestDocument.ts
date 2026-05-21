@@ -3,17 +3,16 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.
+ * Explicit attendee request for host-visible introduction help stored at eventSuccessWingmanRequests/{eventId_uid}.
  */
-export interface EventSuccessFeedbackDocument {
+export interface EventSuccessWingmanRequestDocument {
   eventId: string;
   clubId: string;
-  uid: string;
-  welcomeRating: number;
-  structureRating: number;
-  metNewPeopleCount: number;
-  safetyConcern: boolean;
-  privateNote?: string | null;
+  requesterUid: string;
+  targetUid: string;
+  status: "active" | "withdrawn";
+  hostVisibleConsent: true;
+  note?: string | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

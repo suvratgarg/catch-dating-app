@@ -3,17 +3,17 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.
+ * Attendee-owned compatibility questionnaire answers stored at eventSuccessCompatibilityResponses/{eventId_uid}. Hosts cannot read individual answers.
  */
-export interface EventSuccessFeedbackDocument {
+export interface EventSuccessCompatibilityResponseDocument {
   eventId: string;
   clubId: string;
   uid: string;
-  welcomeRating: number;
-  structureRating: number;
-  metNewPeopleCount: number;
-  safetyConcern: boolean;
-  privateNote?: string | null;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  answerIds: string[];
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

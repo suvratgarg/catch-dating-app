@@ -1635,7 +1635,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows hosts to read feedback for their event without exposing it to unrelated users", async () => {
+    it("keeps raw attendee feedback private from hosts and unrelated users", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
@@ -1646,10 +1646,10 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDoc(doc(authedDb("runner-1"), "eventSuccessFeedback", "event-1_runner-1")),
       );
-      await assertSucceeds(
+      await assertFails(
         getDoc(doc(authedDb("host-1"), "eventSuccessFeedback", "event-1_runner-1")),
       );
-      await assertSucceeds(
+      await assertFails(
         getDocs(
           query(
             collection(authedDb("host-1"), "eventSuccessFeedback"),
@@ -1659,6 +1659,41 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
+      );
+    });
+
+    it("keeps event safety reports server-owned", async () => {
+      await seed(["eventSafetyReports", "event-1_runner-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        reporterUserId: "runner-1",
+        feedbackId: "event-1_runner-1",
+        source: "event_success_feedback",
+        status: "open",
+        createdAt: Timestamp.fromDate(new Date("2026-05-02T03:00:00.000Z")),
+        updatedAt: Timestamp.fromDate(new Date("2026-05-02T03:00:00.000Z")),
+      });
+
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "eventSafetyReports", "event-1_runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("host-1"), "eventSafetyReports", "event-1_runner-1")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventSafetyReports", "event-1_runner-2"),
+          {
+            eventId: "event-1",
+            clubId: "club-1",
+            reporterUserId: "runner-1",
+            feedbackId: "event-1_runner-1",
+            source: "event_success_feedback",
+            status: "open",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          },
+        ),
       );
     });
 
@@ -1808,7 +1843,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows attended users to create explicit host-visible wingman requests", async () => {
+    it("keeps wingman requests server-owned and host-visible", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
@@ -1834,13 +1869,10 @@ describe("firestore.rules", () => {
         }),
       );
 
-      const requestRef = doc(
-        authedDb("runner-1"),
-        "eventSuccessWingmanRequests",
-        "event-1_runner-1",
+      await seed(
+        ["eventSuccessWingmanRequests", "event-1_runner-1"],
+        eventSuccessWingmanRequest(),
       );
-
-      await assertSucceeds(setDoc(requestRef, eventSuccessWingmanRequest()));
       await assertSucceeds(
         getDoc(
           doc(
@@ -1860,10 +1892,6 @@ describe("firestore.rules", () => {
           ),
         ),
       );
-      await assertSucceeds(updateDoc(requestRef, {
-        status: "withdrawn",
-        updatedAt: serverTimestamp(),
-      }));
       await assertSucceeds(
         getDoc(
           doc(
@@ -1872,6 +1900,13 @@ describe("firestore.rules", () => {
             "event-1_runner-1",
           ),
         ),
+      );
+      await seed(
+        ["eventSuccessWingmanRequests", "event-1_runner-1"],
+        eventSuccessWingmanRequest({
+          status: "withdrawn",
+          updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:05:00.000Z")),
+        }),
       );
       await assertFails(
         getDoc(
@@ -1889,6 +1924,26 @@ describe("firestore.rules", () => {
             "eventSuccessWingmanRequests",
             "event-1_runner-1",
           ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+          eventSuccessWingmanRequest(),
+        ),
+      );
+      await assertFails(
+        updateDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessWingmanRequests",
+            "event-1_runner-1",
+          ),
+          {status: "active", updatedAt: serverTimestamp()},
         ),
       );
       await assertFails(
@@ -1991,7 +2046,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("exposes event scorecards only through the event-success read policy", async () => {
+    it("exposes event scorecards only to the event host", async () => {
       await seed(["clubs", "club-1"], club());
       await seed(["events", "event-1"], event());
       await seed(
@@ -2008,7 +2063,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDoc(doc(authedDb("host-1"), "eventSuccessScorecards", "event-1")),
       );
-      await assertSucceeds(
+      await assertFails(
         getDoc(doc(authedDb("runner-1"), "eventSuccessScorecards", "event-1")),
       );
       await assertFails(

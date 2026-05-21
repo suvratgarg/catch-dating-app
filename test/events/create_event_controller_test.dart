@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -116,6 +117,47 @@ void main() {
         expect(createdEvent.eventFormat, const EventFormatSnapshot.socialRun());
       },
     );
+
+    test('sends enabled event-success defaults through createEvent', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 18),
+            endTime: DateTime(2025, 3, 1, 20),
+            meetingPoint: 'Dinner table',
+            startingPointLat: 19.076,
+            startingPointLng: 72.8777,
+            eventFormat: EventFormatSnapshot.fromActivityKind(
+              ActivityKind.dinner,
+            ),
+            distanceKm: 0,
+            pace: PaceLevel.easy,
+            description: 'Dinner',
+            currency: defaultCurrencyCode,
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+            eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
+              ActivityKind.dinner,
+              enabled: true,
+              targetAttendeeCount: 12,
+            ),
+          );
+
+      final defaults = fakeEventRepository.createdEventSuccessDefaults;
+      expect(defaults, isNotNull);
+      expect(defaults!['enabled'], true);
+      expect(defaults['playbookId'], 'dinner_table_mixer');
+      expect(defaults['selectedModuleIds'], contains('qr_check_in'));
+    });
 
     test('allows zero distance for non-distance event formats', () async {
       final fakeEventRepository = FakeEventRepository();

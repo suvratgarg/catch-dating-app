@@ -94,6 +94,42 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessFeedbackDocument.ts",
   },
   {
+    name: "EventSuccessPreferenceDocument",
+    source: "firestore/event_success_preferences.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessPreferenceDocument.ts",
+  },
+  {
+    name: "EventSuccessCompatibilityResponseDocument",
+    source: "firestore/event_success_compatibility_responses.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessCompatibilityResponseDocument.ts",
+  },
+  {
+    name: "EventSuccessWingmanRequestDocument",
+    source: "firestore/event_success_wingman_requests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessWingmanRequestDocument.ts",
+  },
+  {
+    name: "EventSuccessAssignmentDocument",
+    source: "firestore/event_success_assignments.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessAssignmentDocument.ts",
+  },
+  {
+    name: "EventSuccessScorecardDocument",
+    source: "firestore/event_success_scorecards.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessScorecardDocument.ts",
+  },
+  {
+    name: "EventSafetyReportDocument",
+    source: "firestore/event_safety_reports.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSafetyReportDocument.ts",
+  },
+  {
     name: "ClubScheduleLockDocument",
     source: "firestore/club_schedule_locks.schema.json",
     typeOutput:
@@ -275,6 +311,14 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "overrideEventSuccessRotationsCallablePayload.ts",
+  },
+  {
+    name: "SubmitEventSuccessWingmanRequestCallablePayload",
+    source:
+      "callables/submit_event_success_wingman_request_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "submitEventSuccessWingmanRequestCallablePayload.ts",
   },
   {
     name: "MarkEventAttendanceCallableResponse",

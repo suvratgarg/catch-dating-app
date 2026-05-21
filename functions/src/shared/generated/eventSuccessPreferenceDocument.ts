@@ -3,17 +3,14 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.
+ * Attendee-owned opt-out preferences for live event guidance stored at eventSuccessPreferences/{eventId_uid}.
  */
-export interface EventSuccessFeedbackDocument {
+export interface EventSuccessPreferenceDocument {
   eventId: string;
   clubId: string;
   uid: string;
-  welcomeRating: number;
-  structureRating: number;
-  metNewPeopleCount: number;
-  safetyConcern: boolean;
-  privateNote?: string | null;
+  microPodsOptedOut: boolean;
+  guidedRotationsOptedOut: boolean;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

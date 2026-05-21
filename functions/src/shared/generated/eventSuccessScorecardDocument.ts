@@ -3,24 +3,21 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.
+ * Server-owned aggregate event coaching metrics stored at eventSuccessScorecards/{eventId}. Raw attendee feedback remains private.
  */
-export interface EventSuccessFeedbackDocument {
+export interface EventSuccessScorecardDocument {
   eventId: string;
   clubId: string;
-  uid: string;
-  welcomeRating: number;
-  structureRating: number;
-  metNewPeopleCount: number;
-  safetyConcern: boolean;
-  privateNote?: string | null;
-  /**
-   * Serialized Firestore Timestamp fixture shape.
-   */
-  createdAt: {
-    _seconds: number;
-    _nanoseconds: number;
-  };
+  bookedCount: number;
+  checkedInCount: number;
+  feedbackCount: number;
+  attendeesWhoMetTwoPlusPeople: number;
+  mutualMatchCount: number;
+  chatStartedCount: number;
+  repeatSignupCount: number;
+  averageWelcomeRating: number;
+  averageStructureRating: number;
+  safetyIncidentCount: number;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

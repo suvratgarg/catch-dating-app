@@ -271,6 +271,53 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       scorecard: scorecard,
     );
   }
+
+  EventSuccessBrief buildBriefFromScorecard({
+    required Event event,
+    EventSuccessScorecard? scorecard,
+    List<EventSuccessAssignment> assignments = const [],
+    List<EventSuccessAssignment> rotationAssignments = const [],
+    List<EventSuccessPreference> preferences = const [],
+    List<EventSuccessWingmanRequest> wingmanRequests = const [],
+  }) {
+    final assignedUids = _assignmentParticipantUids([
+      ...assignments,
+      ...rotationAssignments,
+    ]);
+    final optedOutUids = preferences
+        .where(
+          (preference) =>
+              preference.microPodsOptedOut ||
+              preference.guidedRotationsOptedOut,
+        )
+        .map((preference) => preference.uid)
+        .toSet();
+    final baseScorecard =
+        scorecard ??
+        EventSuccessScorecard(
+          bookedCount: event.signedUpCount,
+          checkedInCount: event.attendedCount,
+          attendeesWhoMetTwoPlusPeople: 0,
+          mutualMatchCount: 0,
+          chatStartedCount: 0,
+          repeatSignupCount: 0,
+          averageWelcomeRating: 0,
+          averageStructureRating: 0,
+          safetyIncidentCount: 0,
+        );
+    return const EventSuccessCoach().analyze(
+      playbook: playbook,
+      scorecard: baseScorecard.copyWith(
+        bookedCount: event.signedUpCount,
+        checkedInCount: event.attendedCount,
+        assignmentParticipantCount: assignedUids.length,
+        assignmentOptOutCount: optedOutUids.length,
+        wingmanRequestCount: wingmanRequests
+            .where((request) => request.isActive)
+            .length,
+      ),
+    );
+  }
 }
 
 Set<String> _assignmentParticipantUids(

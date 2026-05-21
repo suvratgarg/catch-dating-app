@@ -2,13 +2,21 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_feedback.schema.json",
   "title": "EventSuccessFeedbackDocument",
-  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.",
+  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSuccessFeedback",
   "x-firestore-path": "eventSuccessFeedback/{feedbackId}",
   "x-document-id-field": "id",
-  "x-owner": "attendee direct write after attended event; host read",
+  "x-owner": "attendee direct write after attended event; attendee read; backend aggregate",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
   "required": [
     "eventId",
     "clubId",
@@ -57,6 +65,24 @@
     },
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
     }
   }
 }

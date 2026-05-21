@@ -2,7 +2,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {EventDoc, MatchDoc} from "../shared/firestore";
-import {buildEventSuccessScorecard} from "./eventSuccessScorecards";
+import {
+  buildEventSuccessScorecard,
+  writeEventSafetyReportIfNeeded,
+} from "./eventSuccessScorecards";
 
 test("buildEventSuccessScorecard computes event aggregates", () => {
   const scorecard = buildEventSuccessScorecard({
@@ -51,8 +54,73 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     repeatSignupCount: 0,
     averageWelcomeRating: 4,
     averageStructureRating: 3,
-    safetyIncidentCount: 1,
+    safetyIncidentCount: 0,
     updatedAt: "SERVER_TIMESTAMP",
+  });
+});
+
+test("buildEventSuccessScorecard exposes safety count after sample", () => {
+  const scorecard = buildEventSuccessScorecard({
+    eventId: "event-1",
+    event: {
+      clubId: "club-1",
+      bookedCount: 10,
+      checkedInCount: 8,
+    } as EventDoc,
+    feedback: Array.from({length: 5}, (_, index) => ({
+      eventId: "event-1",
+      clubId: "club-1",
+      uid: `user-${index}`,
+      welcomeRating: 5,
+      structureRating: 4,
+      metNewPeopleCount: 3,
+      safetyConcern: index === 0,
+    })),
+    matches: [],
+    updatedAt: "SERVER_TIMESTAMP" as never,
+  });
+
+  assert.equal(scorecard.safetyIncidentCount, 1);
+});
+
+test("writeEventSafetyReportIfNeeded stores safety review", async () => {
+  const writes: Record<string, unknown> = {};
+  await writeEventSafetyReportIfNeeded(
+    "event-1_user-1",
+    {
+      eventId: "event-1",
+      clubId: "club-1",
+      uid: "user-1",
+      welcomeRating: 3,
+      structureRating: 2,
+      metNewPeopleCount: 1,
+      safetyConcern: true,
+      privateNote: "  Needs review.  ",
+    },
+    {
+      firestore: () => ({
+        collection: (collectionId: string) => ({
+          doc: (docId: string) => ({
+            set: async (data: unknown) => {
+              writes[`${collectionId}/${docId}`] = data;
+            },
+          }),
+        }),
+      } as unknown as FirebaseFirestore.Firestore),
+      serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+    }
+  );
+
+  assert.deepEqual(writes["eventSafetyReports/event-1_user-1"], {
+    eventId: "event-1",
+    clubId: "club-1",
+    reporterUserId: "user-1",
+    feedbackId: "event-1_user-1",
+    source: "event_success_feedback",
+    status: "open",
+    createdAt: "SERVER_TIMESTAMP",
+    updatedAt: "SERVER_TIMESTAMP",
+    note: "Needs review.",
   });
 });
 

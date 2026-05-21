@@ -50,6 +50,27 @@ void main() {
           constraints: constraints,
           eventPolicy: null,
           eventFormat: eventFormat,
+          eventSuccessDefaults: {
+            'enabled': true,
+            'playbookId': 'social_run_light',
+            'selectedModuleIds': [
+              'qr_check_in',
+              'micro_pods',
+              'social_missions',
+            ],
+            'structureConfig': {
+              'unitKind': 'wholeGroup',
+              'unitSize': 24,
+              'unitCount': 1,
+              'rotationIntervalMinutes': null,
+              'revealCountdownSeconds': 10,
+            },
+            'hostGoal': 'Help attendees meet at least two new people.',
+            'wingmanRequestsEnabled': true,
+            'contextualOpenersEnabled': true,
+            'compatibilityAffectsRanking': false,
+            'questionnaireConfig': {'templateId': 'balanced'},
+          },
           inviteCode: 'CATCH_2026',
         ).toJson(),
       );

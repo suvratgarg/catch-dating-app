@@ -19,6 +19,12 @@ import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
+import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
+import {EventSuccessCompatibilityResponseDocument} from "./eventSuccessCompatibilityResponseDocument";
+import {EventSuccessWingmanRequestDocument} from "./eventSuccessWingmanRequestDocument";
+import {EventSuccessAssignmentDocument} from "./eventSuccessAssignmentDocument";
+import {EventSuccessScorecardDocument} from "./eventSuccessScorecardDocument";
+import {EventSafetyReportDocument} from "./eventSafetyReportDocument";
 import {ClubScheduleLockDocument} from "./clubScheduleLockDocument";
 import {UserEventScheduleLockDocument} from "./userEventScheduleLockDocument";
 import {SavedEventDocument} from "./savedEventDocument";
@@ -52,6 +58,7 @@ import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
+import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallableResponse";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
@@ -88,6 +95,12 @@ import {
   eventParticipationDocumentSchema,
   eventSuccessPlanDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
+  eventSuccessPreferenceDocumentSchema,
+  eventSuccessCompatibilityResponseDocumentSchema,
+  eventSuccessWingmanRequestDocumentSchema,
+  eventSuccessAssignmentDocumentSchema,
+  eventSuccessScorecardDocumentSchema,
+  eventSafetyReportDocumentSchema,
   clubScheduleLockDocumentSchema,
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
@@ -121,6 +134,7 @@ import {
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  submitEventSuccessWingmanRequestCallablePayloadSchema,
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
@@ -206,6 +220,30 @@ export const validateEventSuccessFeedbackDocument:
   ValidateFunction<EventSuccessFeedbackDocument> =
     ajv.compile(eventSuccessFeedbackDocumentSchema) as
       ValidateFunction<EventSuccessFeedbackDocument>;
+export const validateEventSuccessPreferenceDocument:
+  ValidateFunction<EventSuccessPreferenceDocument> =
+    ajv.compile(eventSuccessPreferenceDocumentSchema) as
+      ValidateFunction<EventSuccessPreferenceDocument>;
+export const validateEventSuccessCompatibilityResponseDocument:
+  ValidateFunction<EventSuccessCompatibilityResponseDocument> =
+    ajv.compile(eventSuccessCompatibilityResponseDocumentSchema) as
+      ValidateFunction<EventSuccessCompatibilityResponseDocument>;
+export const validateEventSuccessWingmanRequestDocument:
+  ValidateFunction<EventSuccessWingmanRequestDocument> =
+    ajv.compile(eventSuccessWingmanRequestDocumentSchema) as
+      ValidateFunction<EventSuccessWingmanRequestDocument>;
+export const validateEventSuccessAssignmentDocument:
+  ValidateFunction<EventSuccessAssignmentDocument> =
+    ajv.compile(eventSuccessAssignmentDocumentSchema) as
+      ValidateFunction<EventSuccessAssignmentDocument>;
+export const validateEventSuccessScorecardDocument:
+  ValidateFunction<EventSuccessScorecardDocument> =
+    ajv.compile(eventSuccessScorecardDocumentSchema) as
+      ValidateFunction<EventSuccessScorecardDocument>;
+export const validateEventSafetyReportDocument:
+  ValidateFunction<EventSafetyReportDocument> =
+    ajv.compile(eventSafetyReportDocumentSchema) as
+      ValidateFunction<EventSafetyReportDocument>;
 export const validateClubScheduleLockDocument:
   ValidateFunction<ClubScheduleLockDocument> =
     ajv.compile(clubScheduleLockDocumentSchema) as
@@ -338,6 +376,10 @@ export const validateOverrideEventSuccessRotationsCallablePayload:
   ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
     ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
       ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
+export const validateSubmitEventSuccessWingmanRequestCallablePayload:
+  ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload> =
+    ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema) as
+      ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload>;
 export const validateMarkEventAttendanceCallableResponse:
   ValidateFunction<MarkEventAttendanceCallableResponse> =
     ajv.compile(markEventAttendanceCallableResponseSchema) as

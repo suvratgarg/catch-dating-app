@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_wingman_requests.schema.json",
+  "title": "EventSuccessWingmanRequestDocument",
+  "description": "Explicit attendee request for host-visible introduction help stored at eventSuccessWingmanRequests/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessWingmanRequests",
+  "x-firestore-path": "eventSuccessWingmanRequests/{requestId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write after attended event; host read only while active and consented",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "requesterUid",
+    "targetUid",
+    "status",
+    "hostVisibleConsent",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requesterUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "status": {"type": "string", "enum": ["active", "withdrawn"]},
+    "hostVisibleConsent": {"type": "boolean", "const": true},
+    "note": {"type": ["string", "null"], "maxLength": 240},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

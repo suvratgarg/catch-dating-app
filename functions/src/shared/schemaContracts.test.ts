@@ -52,6 +52,15 @@ import {
   validateClubMembershipDocument,
   validateEventDocument,
   validateEventParticipationDocument,
+  validateEventSafetyReportDocument,
+  validateEventSuccessAssignmentDocument,
+  validateEventSuccessCompatibilityResponseDocument,
+  validateEventSuccessFeedbackDocument,
+  validateEventSuccessPlanDocument,
+  validateEventSuccessPreferenceDocument,
+  validateEventSuccessScorecardDocument,
+  validateEventSuccessWingmanRequestDocument,
+  validateSubmitEventSuccessWingmanRequestCallablePayload,
   validateSavedEventDocument,
   validateSeedEventManifestDocument,
   validateClubMembershipCallablePayload,
@@ -141,6 +150,40 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateEventParticipationDocument as Validator,
     readFixture("fixtures/valid/event_participation_doc.json")
+  );
+  assertValid(
+    validateEventSuccessPlanDocument as Validator,
+    readFixture("fixtures/valid/event_success_plan_doc.json")
+  );
+  assertValid(
+    validateEventSuccessFeedbackDocument as Validator,
+    readFixture("fixtures/valid/event_success_feedback_doc.json")
+  );
+  assertValid(
+    validateEventSuccessPreferenceDocument as Validator,
+    readFixture("fixtures/valid/event_success_preference_doc.json")
+  );
+  assertValid(
+    validateEventSuccessCompatibilityResponseDocument as Validator,
+    readFixture(
+      "fixtures/valid/event_success_compatibility_response_doc.json"
+    )
+  );
+  assertValid(
+    validateEventSuccessWingmanRequestDocument as Validator,
+    readFixture("fixtures/valid/event_success_wingman_request_doc.json")
+  );
+  assertValid(
+    validateEventSuccessAssignmentDocument as Validator,
+    readFixture("fixtures/valid/event_success_assignment_doc.json")
+  );
+  assertValid(
+    validateEventSuccessScorecardDocument as Validator,
+    readFixture("fixtures/valid/event_success_scorecard_doc.json")
+  );
+  assertValid(
+    validateEventSafetyReportDocument as Validator,
+    readFixture("fixtures/valid/event_safety_report_doc.json")
   );
   assertValid(
     validateClubScheduleLockDocument as Validator,
@@ -263,6 +306,12 @@ test("generated schema validators accept valid contract fixtures", () => {
   assertValid(
     validateMarkEventAttendanceCallablePayload as Validator,
     readFixture("fixtures/valid/mark_event_attendance_payload.json")
+  );
+  assertValid(
+    validateSubmitEventSuccessWingmanRequestCallablePayload as Validator,
+    readFixture(
+      "fixtures/valid/submit_event_success_wingman_request_payload.json"
+    )
   );
   assertValid(
     validateMarkEventAttendanceCallableResponse as Validator,

@@ -1,0 +1,11 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "requesterUid": "user-1",
+  "targetUid": "user-2",
+  "status": "active",
+  "hostVisibleConsent": true,
+  "note": "Could you help us talk after the round?",
+  "createdAt": {"_seconds": 1777615200, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777615260, "_nanoseconds": 0}
+}

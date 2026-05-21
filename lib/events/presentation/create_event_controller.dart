@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -161,12 +160,18 @@ class CreateEventController extends _$CreateEventController {
       constraints: constraints,
       eventPolicy: eventPolicy,
     );
-    await eventRepo.createEvent(event: event, inviteCode: normalizedInviteCode);
-    if (eventSuccessDefaults.enabled) {
-      await ref
-          .read(eventSuccessRepositoryProvider)
-          .savePlan(eventSuccessDefaults.toPlanForEvent(event));
-    }
+    await eventRepo.createEvent(
+      event: event,
+      inviteCode: normalizedInviteCode,
+      eventSuccessDefaults: eventSuccessDefaults.enabled
+          ? eventSuccessDefaults
+                .normalizedForActivity(
+                  event.activityKind,
+                  targetAttendeeCount: event.capacityLimit,
+                )
+                .toJson()
+          : null,
+    );
     return event;
   }
 }

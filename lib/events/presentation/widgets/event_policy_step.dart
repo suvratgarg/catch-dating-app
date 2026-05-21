@@ -453,9 +453,9 @@ class EventPolicyStep extends StatelessWidget {
             defaults: eventSuccessDefaults,
             activityKind: activityKind,
             onChanged: onEventSuccessDefaultsChanged,
-            title: 'Event success setup',
+            title: 'Live event guide',
             subtitle:
-                'Save a run-of-show setup with this event so Live mode is available when it starts.',
+                'Save a simple plan with this event so Live mode is ready when it starts.',
           ),
         ],
       ),

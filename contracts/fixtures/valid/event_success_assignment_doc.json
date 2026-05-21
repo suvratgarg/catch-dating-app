@@ -1,0 +1,23 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "uid": "user-1",
+  "moduleId": "guided_rotations",
+  "label": "Round 1",
+  "displayTitle": "Meet Ananya",
+  "displaySubtitle": "Court 2",
+  "peerUids": ["user-2"],
+  "rotationSlots": [
+    {
+      "roundIndex": 0,
+      "label": "Round 1",
+      "startsAt": {"_seconds": 1777615200, "_nanoseconds": 0},
+      "endsAt": {"_seconds": 1777616100, "_nanoseconds": 0},
+      "peerUid": "user-2",
+      "compatibility": "questionnaire_match"
+    }
+  ],
+  "source": "server_v1",
+  "createdAt": {"_seconds": 1777615000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777615060, "_nanoseconds": 0}
+}
