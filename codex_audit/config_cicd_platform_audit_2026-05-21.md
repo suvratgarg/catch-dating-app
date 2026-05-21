@@ -1,6 +1,6 @@
 ---
 doc_id: config_cicd_platform_audit
-version: 1.1.0
+version: 1.2.0
 created: 2026-05-21
 updated: 2026-05-21
 owner: config_cicd_platform_audit
@@ -53,19 +53,20 @@ which do not overlap the event_success feature work.
 
 | ID  | Sev | Area              | One-line                                                          | Done |
 |-----|-----|-------------------|-------------------------------------------------------------------|------|
-| I1  | P1  | iOS/TestFlight    | No app-level `PrivacyInfo.xcprivacy` — likely TestFlight warnings  | [ ]  |
+| I1  | P3  | iOS/TestFlight    | Xcode build warnings — pod noise + AccentColor (was: privacy manifest) | [x]  |
 | A1  | P1  | Analytics         | Analytics only collects in release+prod; debug runs send nothing  | [x]  |
 | D2  | P1  | Contracts         | Contracts SSOT has **no CI gate** — silent drift                  | [x]  |
 | C1  | P3  | CI/CD             | `flutter-ci.yml` missing `cache: true`                            | [x]  |
 | C2  | P2  | CI/CD             | `firebase-tools` installed unpinned in deploy/CI                  | [x]  |
 | C3  | P2  | CI/CD             | `firebase-dev-deploy` uses fragile `workflow_run` + JS poll        | [ ]  |
 | C5  | P3  | CI/CD             | Flutter version floats `3.41.x` (CI) vs pinned `3.41.9` (Xcode)   | [x]  |
-| C6  | P3  | CI/CD             | PR build matrix only builds `dev` flavor                          | [ ]  |
-| C8  | P3  | CI/CD             | BigQuery export extensions never deployed by pipeline             | [ ]  |
+| C6  | P3  | CI/CD             | PR build matrix only builds `dev` flavor                          | [x]  |
+| C8  | P3  | CI/CD             | BigQuery export extensions never deployed by pipeline             | [x]  |
 | I2  | P2  | iOS               | App Check activated twice (native AppDelegate + Dart)             | [ ]  |
 | I3  | P3  | iOS               | No-flavor `Release.xcconfig` silently uses prod credentials       | [ ]  |
 | I4  | P3  | iOS               | `FirebaseFirestore` pod pinned to prebuilt fork — desync risk     | [x]  |
-| I5  | P3  | iOS               | Podfile `SWIFT_SUPPRESS_WARNINGS=YES` hides all pod warnings      | [ ]  |
+| I5  | P3  | iOS               | Podfile pod-warning suppression — now `inhibit_all_warnings!`     | [x]  |
+| I6  | P3  | iOS               | Crashlytics symbol-upload phase runs every build (benign)         | [ ]  |
 | B1  | P2  | Bootstrap         | Remote Config fetch failure swallowed silently                   | [x]  |
 | B3  | P2  | Bootstrap         | Web App Check silently disabled when unconfigured                 | [ ]  |
 | D1  | P1  | Contracts         | Three parallel schema representations, mid-migration              | [ ]  |
@@ -79,44 +80,6 @@ which do not overlap the event_success feature work.
 ---
 
 ## P1 — High
-
-### I1 — No app-level iOS privacy manifest [needs console-ish] [large]
-
-**Where:** `ios/Runner/` — there is no `PrivacyInfo.xcprivacy`. The only
-`*.xcprivacy` files in the project are inside `ios/Pods/**` (third-party SDKs).
-
-**Problem:** Since Apple's privacy-manifest requirement, an app that uses
-"required reason" APIs (file timestamps, `UserDefaults`, system boot time, free
-disk space) must declare them in an app-target `PrivacyInfo.xcprivacy`, plus
-declare collected data types. A missing/incomplete manifest is the single most
-common source of **TestFlight upload warnings** (`ITMS-91053` "Missing API
-declaration", `ITMS-91054`, privacy-report warnings). This is the most likely
-explanation for "we still have some warnings on Xcode when we deploy to
-TestFlight".
-
-**Why brittle:** the warning surfaces only at upload time, long after the build
-"succeeds" locally — so it is invisible to `flutter analyze`/CI.
-
-**Fix:**
-1. Get the **exact** warning text from the most recent TestFlight upload
-   (App Store Connect → the build → "General" / the email Apple sends). The
-   warning names the specific API category and offending binary.
-2. Add `ios/Runner/PrivacyInfo.xcprivacy` with `NSPrivacyAccessedAPITypes`
-   (typical Flutter app needs: `UserDefaults` reason `CA92.1`, file timestamp
-   `C617.1`, system boot time `35F9.1`, disk space `E174.1` — confirm against
-   the actual warning) and `NSPrivacyCollectedDataTypes` for what Catch collects
-   (precise/coarse location, photos, phone number, user ID, crash + analytics
-   data).
-3. Add the file to the **Runner target** in Xcode (Build Phases → Copy Bundle
-   Resources). Editing `project.pbxproj` by hand is error-prone — do it in
-   Xcode or with a verified script.
-4. Re-archive and confirm the warning is gone.
-
-**Effort:** ~1–2 h once the exact warning text is known. **Blocked on** the user
-pasting the actual TestFlight warning so the manifest is scoped correctly rather
-than guessed.
-
----
 
 ### A1 — Analytics never collects outside release+prod [quick to verify]
 
@@ -357,6 +320,58 @@ package matches the flavor being built.
 
 ## P3 — Low / papercuts
 
+### I1 — Xcode/TestFlight build warnings (DONE 2026-05-21)
+
+**Original hypothesis was wrong.** This was filed P1 as "missing iOS privacy
+manifest causing TestFlight warnings". The user supplied the actual warning
+list — there are **no** `ITMS-9105x` privacy-manifest warnings and no App Store
+*validation* failures. They are ordinary **compiler/linker build warnings** that
+do not block TestFlight. Reclassified P3. Breakdown of the ~60 warnings:
+
+- **~22 from the `health` pub package** (`HealthDataReader.swift`,
+  `SwiftHealthPlugin.swift`, `HealthDataWriter.swift`) — implicit `Optional→Any`
+  coercions, non-exhaustive switch, unreachable catch, unused vars. Upstream
+  third-party code.
+- **~25 from other Flutter plugin pods** — `firebase_auth`, `cloud_firestore`,
+  `image_picker_ios`, `geolocator_apple`, `share_plus`, `razorpay_flutter`,
+  `firebase_remote_config`, `device_info_plus`, `google_maps_flutter_ios`,
+  `firebase_core`, `firebase_messaging`, `Google-Maps-iOS-Utils` — mostly iOS
+  deprecations (`keyWindow`, `kUTType*`, `authorizationStatus`). Upstream.
+- **`Search path '…/MetalToolchain/…' not found`** repeated across many pods —
+  an **Xcode Cloud build-machine environment** issue (the Metal toolchain is not
+  provisioned on the runner). Not a repo problem. See I-note below.
+- **`Ignoring duplicate libraries: -lc++ / -lsqlite3 / -lz`** and
+  **`dummy.o has no symbols`** — cosmetic CocoaPods/linker noise under
+  `use_frameworks!`. Harmless.
+- **2 genuinely app-owned**: `AccentColor` missing from the asset catalog, and
+  the Crashlytics symbol-upload run-script phase (see I6).
+
+**Fix applied:**
+1. **Pod noise** — added `inhibit_all_warnings!` to the `Runner` target in
+   `ios/Podfile` (and removed the now-redundant per-pod `SWIFT_SUPPRESS_WARNINGS`
+   block — see I5). This silences every third-party pod compiler warning,
+   including all `health` warnings, in one idiomatic directive. It only affects
+   Pods — the Runner target's own warnings still surface, which is the correct
+   behavior. `ruby -c ios/Podfile` passes.
+2. **`AccentColor`** — `project.pbxproj` sets
+   `ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor` but the catalog
+   had no such color. Added `ios/Runner/Assets.xcassets/AccentColor.colorset/`
+   with the brand color `#FF4E1F`. No `project.pbxproj` edit needed (`.xcassets`
+   is a folder reference).
+
+**Still noisy after this (documented, not fixed):** the Metal-toolchain
+search-path warnings (Xcode Cloud environment — provision the Metal toolchain on
+the runner, or ignore) and the duplicate-library linker warnings (cosmetic).
+
+### I6 — Crashlytics symbol-upload phase runs every build (benign) [needs Xcode]
+
+The Runner project's `[firebase_crashlytics] Crashlytics Upload Symbols`
+run-script build phase has no declared outputs, so Xcode warns it cannot be
+cached and runs it every build. For archive/release builds you *want* the dSYM
+upload to run every time, so the behavior is correct — only the warning is
+noise. Silencing it means adding input/output file lists to the script phase in
+`project.pbxproj` (Xcode-surgery; do it in Xcode, not by hand). Low priority.
+
 ### C1 — `flutter-ci.yml` missing `cache: true` — FIXED 2026-05-21
 
 `subosito/flutter-action` in `flutter-ci.yml` lacked `cache: true` while the
@@ -373,24 +388,28 @@ occurrences across `flutter-ci.yml`, `app-build-matrix.yml` (×3),
 `release-readiness.yml`, and `ios-testflight-release.yml`, matching Xcode Cloud.
 Bump both places together in future.
 
-### C6 — PR build matrix only builds the `dev` flavor [quick-ish]
+### C6 — PR build matrix only built the `dev` flavor (DONE 2026-05-21)
 
-`app-build-matrix.yml` builds web/android/iOS only for `dev`. The prod/staging
-compile paths differ (different `xcconfig` includes, different dart-define
-files, different `GoogleService-Info.plist`). A prod-only build break is not
-caught until `release-readiness.yml` or Xcode Cloud. Consider adding a prod
-config-only iOS build (`flutter build ios --release --config-only --flavor prod`)
-to the matrix, or at least a prod web build.
+`app-build-matrix.yml` built web/android/iOS only for `dev`; the prod compile
+path differs (different `xcconfig` includes, dart-define files, Firebase
+options) so a prod-only build break was not caught until `release-readiness.yml`
+or Xcode Cloud. **Fix applied:** added a `Build prod web artifact`
+(`flutter_with_env.sh prod build web --release`) step to the `web` job — it
+exercises the prod dart-defines and prod Firebase options with no extra secrets
+(web builds skip the Maps-key validation). A prod *iOS* leg was deliberately not
+added: it would need `GOOGLE_MAPS_IOS_API_KEY_PROD` wired into the unprivileged
+PR-triggered workflow; the prod web leg covers the config/dart-define risk.
 
-### C8 — BigQuery export extensions never deployed by the pipeline [quick doc]
+### C8 — BigQuery export extensions never deployed by the pipeline (DONE 2026-05-21)
 
 `tool/deploy_firebase_targets.sh` handles `functions/firestore/storage/hosting/
 remoteconfig`. The six `extensions` in `firebase.json` are not in the default
-deploy target list, so extension parameter changes never ship via CI (they were
-installed manually). `firebase deploy --only extensions` *can* be run on demand
-(the script routes unknown targets through). Action: document that extension
-changes need a manual `--only extensions` deploy, or add `extensions` to a
-deliberate deploy path.
+deploy target list, so extension parameter changes never ship via CI.
+**Fix applied:** documented in `docs/release_operations.md` ("Firebase Deploy
+Order") that extension changes require a deliberate
+`./tool/firebase_with_env.sh <env> deploy --only extensions`. Left out of the
+automatic path on purpose — extension redeploys can be disruptive and should
+stay deliberate.
 
 ### I3 — No-flavor `Release.xcconfig` uses prod credentials [quick]
 
@@ -411,13 +430,17 @@ the expected SDK and silently desync, causing pod resolution or link errors.
 **Fix applied:** added a comment above the `pod` line spelling out the
 bump-with-`cloud_firestore` rule. (Comment only — no behavior change.)
 
-### I5 — Podfile suppresses all warnings for three pods [quick]
+### I5 — Podfile pod-warning suppression (DONE 2026-05-21)
 
-`ios/Podfile` `post_install` sets `SWIFT_SUPPRESS_WARNINGS = YES` for
-`firebase_storage`, `firebase_analytics`, `cloud_functions` to hide one known
-upstream retroactive-conformance warning. This hides **every** future warning in
-those pods too. Revisit when FlutterFire fixes the upstream issue, and remove
-the suppression then.
+`ios/Podfile` `post_install` previously set `SWIFT_SUPPRESS_WARNINGS = YES` for
+three pods only (`firebase_storage`, `firebase_analytics`, `cloud_functions`).
+The original audit advised *narrowing* this. That advice is **reversed** now
+that the actual warning list is known (see I1): the warnings are ~50 items of
+un-actionable third-party pod noise across a dozen pods. **Fix applied:**
+replaced the three-pod block with a single target-level `inhibit_all_warnings!`,
+the idiomatic CocoaPods directive for exactly this situation. It silences all
+pod compiler warnings, never the Runner target's own — so the app's real
+warnings still surface. Behavior-only change (warnings ≠ codegen ≠ runtime).
 
 ### A3 — `GoogleService-Info.plist` `IS_ANALYTICS_ENABLED=false` [quick verify]
 
@@ -474,14 +497,8 @@ codegen-time guard that rejects the `YOUR_KEY_ID_HERE` placeholder.
 
 ## Suggested order of work
 
-1. **A1 + A2** — fastest path to "analytics works": document the verify recipe
-   and confirm the GA4→BigQuery console link. No code risk.
-2. **I1** — get the real TestFlight warning text, then add the privacy manifest.
-   This is the user's stated pain point.
-3. **D2** — DONE. Contracts SSOT now has a CI gate.
-4. **C2** — pin `firebase-tools`. One-line-per-file, removes a whole class of
-   "deploy broke on its own" incidents.
-5. Then the remaining P2s (C3, B1, B3, I2, N1), then P3 papercuts.
+Most of the audit is now done (see Status summary). What is left is decision- or
+console-gated — see "Remaining items" below.
 
 ## Work log
 
@@ -504,30 +521,34 @@ codegen-time guard that rejects the `YOUR_KEY_ID_HERE` placeholder.
 - **2026-05-21** — B1 fixed: startup Remote Config fetch failure now logged via
   `ErrorLogger` instead of swallowed (`lib/main.dart`); `flutter analyze` clean.
 - **2026-05-21** — I4 fixed: documented the `FirebaseFirestore` pod pin rule
-  with a Podfile comment.
+  with a Podfile comment. Committed as `b4b1f107`.
+- **2026-05-21** — User supplied the real TestFlight/Xcode warning list. I1
+  re-diagnosed: build/compiler warnings, not a privacy-manifest issue (no
+  `ITMS-9105x`). Reclassified P1→P3.
+- **2026-05-21** — I1 fixed: added `inhibit_all_warnings!` to the Podfile to
+  silence ~50 third-party pod warnings; added the missing `AccentColor`
+  colorset. I5 resolved by the same `inhibit_all_warnings!` change. I6 logged
+  (Crashlytics every-build phase — benign).
+- **2026-05-21** — C6 fixed: added a prod web release build to
+  `app-build-matrix.yml`. C8 fixed: documented the manual `--only extensions`
+  deploy in `release_operations.md`.
 
 ## Remaining items and what they need
 
 Everything still unchecked needs either a product/architecture decision, an
 external console, or iOS-project surgery — i.e. not a safe unattended fix:
 
-- **I1** — needs the exact TestFlight warning text from the user before the
-  privacy manifest can be scoped (guessing risks shipping a wrong manifest).
 - **D1** — needs a decision: finish or freeze the schema-contract unification
   migration (`docs/schema_contract_unification_tracker.md`).
 - **C3** — workflow redesign (GitHub Deployment Environment vs the JS poll);
   larger change, touches deploy gating.
-- **C6** — add prod/staging build legs to `app-build-matrix.yml`; needs the prod
-  Maps key secret wired into that workflow's scope.
-- **C8** — decide whether `extensions` joins a deliberate deploy path or stays
-  manual; documented as manual-for-now.
 - **I2** — App Check is configured both natively and from Dart; collapsing to
   one path is security-sensitive (a wrong move locks users out) — needs a
   deliberate decision, not an unattended edit.
 - **I3** — removing/neutering the no-flavor `Release/Debug/Profile.xcconfig`
   requires editing `project.pbxproj`; do it in Xcode, not blind.
-- **I5** — narrowing `SWIFT_SUPPRESS_WARNINGS` needs the specific upstream
-  warning identifier; revisit when FlutterFire fixes it upstream.
+- **I6** — silencing the Crashlytics every-build warning needs a `project.pbxproj`
+  script-phase edit; do it in Xcode. Benign — low priority.
 - **B3** — needs a decision: should a prod *web* build with no App Check site
   key hard-crash at launch, or boot degraded? (Also: is Flutter web even a
   shipping surface? `firebase.json` hosting serves the `website/` marketing
@@ -538,6 +559,9 @@ external console, or iOS-project surgery — i.e. not a safe unattended fix:
   decision affecting the env-swap workflow.
 - **W1 / M1** — W1 is a marginal cosmetic gate; M1 is a local-machine `.env`
   hygiene note (the file is git-ignored, nothing to change in-repo).
+- **Metal toolchain search-path warnings** — an Xcode Cloud build-machine
+  environment issue (provision the Metal toolchain on the runner); not a repo
+  change.
 
 ## Verification done during this audit
 

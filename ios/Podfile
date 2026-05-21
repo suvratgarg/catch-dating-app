@@ -67,6 +67,12 @@ end
 target 'Runner' do
   use_frameworks!
 
+  # Silence compiler warnings from third-party pods (Flutter plugins, Firebase,
+  # health, etc.). These warnings are upstream code we cannot act on, and they
+  # bury the Runner target's own warnings in build/TestFlight logs. This does
+  # NOT affect the Runner target — the app's own warnings still surface.
+  inhibit_all_warnings!
+
   # Prebuilt Firestore frameworks (much faster CI/local builds than compiling
   # the gRPC/abseil source). The :tag MUST match the Firebase iOS SDK version
   # that the installed cloud_firestore plugin expects — bump this whenever
@@ -91,12 +97,8 @@ post_install do |installer|
       if target.name == 'geolocator_apple'
         add_preprocessor_definition(config, 'BYPASS_PERMISSION_LOCATION_ALWAYS=1')
       end
-
-      # Suppress FlutterFire retroactive FlutterError:Error conformance warnings
-      # (upstream bug in firebase_storage, firebase_analytics, cloud_functions).
-      if %w[firebase_storage firebase_analytics cloud_functions].include?(target.name)
-        config.build_settings['SWIFT_SUPPRESS_WARNINGS'] = 'YES'
-      end
+      # Per-pod SWIFT_SUPPRESS_WARNINGS is no longer needed — inhibit_all_warnings!
+      # on the Runner target covers every pod.
     end
   end
 

@@ -264,6 +264,17 @@ Remote Config is intentionally separate from the standard backend deploy:
 ./tool/deploy_firebase_targets.sh prod remoteconfig
 ```
 
+Firebase Extensions (the six `firestore-bigquery-export` instances in
+`firebase.json`) are **not** part of the standard backend deploy and are not
+in the `deploy_firebase_targets.sh` default target set. When extension
+parameters change in `firebase.json`, deploy them explicitly and deliberately:
+
+```bash
+./tool/firebase_with_env.sh prod deploy --only extensions
+```
+
+Otherwise extension config in the repo silently drifts from what is installed.
+
 After production Functions deploys, sync callable invokers if needed:
 
 ```bash
