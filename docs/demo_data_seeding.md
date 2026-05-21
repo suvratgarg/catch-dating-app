@@ -45,6 +45,9 @@ Depending on the scenario, the seeder creates:
   and older completed states;
 - `eventParticipations/{eventId_uid}` for signed-up, waitlisted, attended, and
   cancelled states;
+- `eventSuccessPlans/{eventId}` plus event-success preferences, quick question
+  answers, live-reveal assignments, private feedback, wingman requests, and
+  aggregate scorecards for seeded singles mixers;
 - `savedEvents/{uid_eventId}` for anchor users;
 - `swipes/{uid}/outgoing/{targetUid}` and reciprocal likes for anchor-user match flows;
 - `matches/{matchId}` and `matches/{matchId}/messages/{messageId}`;

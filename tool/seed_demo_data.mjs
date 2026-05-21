@@ -17,6 +17,13 @@ import {
   validateActivityNotificationDocument,
   validateChatMessageDocument,
   validateMatchDocument,
+  validateEventSuccessAssignmentDocument,
+  validateEventSuccessCompatibilityResponseDocument,
+  validateEventSuccessFeedbackDocument,
+  validateEventSuccessPlanDocument,
+  validateEventSuccessPreferenceDocument,
+  validateEventSuccessScorecardDocument,
+  validateEventSuccessWingmanRequestDocument,
   validatePaymentDocument,
   validatePhotoPromptAnswer,
   validateProfilePromptAnswer,
@@ -569,6 +576,13 @@ function buildSeed({
   const payments = [];
   const reviews = [];
   const notifications = [];
+  const eventSuccessPlans = [];
+  const eventSuccessPreferences = [];
+  const eventSuccessCompatibilityResponses = [];
+  const eventSuccessWingmanRequests = [];
+  const eventSuccessAssignments = [];
+  const eventSuccessFeedback = [];
+  const eventSuccessScorecards = [];
 
   for (const city of scenario.cities) {
     const cityAnchors = anchorProfiles.filter((person) => person.city === city);
@@ -600,6 +614,19 @@ function buildSeed({
         });
         const roster = buildRoster({event, runIndex, clubMembers, anchorProfiles: cityAnchors});
         applyRosterAggregates(event, roster);
+        const eventSuccessDocs = buildEventSuccessDocs({
+          seedMarker,
+          event,
+          roster,
+          now,
+        });
+        eventSuccessPlans.push(...eventSuccessDocs.plans);
+        eventSuccessPreferences.push(...eventSuccessDocs.preferences);
+        eventSuccessCompatibilityResponses.push(...eventSuccessDocs.compatibilityResponses);
+        eventSuccessWingmanRequests.push(...eventSuccessDocs.wingmanRequests);
+        eventSuccessAssignments.push(...eventSuccessDocs.assignments);
+        eventSuccessFeedback.push(...eventSuccessDocs.feedback);
+        eventSuccessScorecards.push(...eventSuccessDocs.scorecards);
         events.push(event);
         for (const rosterEntry of roster) {
           participations.push(buildParticipation({seedMarker, event, entry: rosterEntry, now}));
@@ -652,6 +679,13 @@ function buildSeed({
     ...memberships.map((membership) => ({path: `clubMemberships/${membership.id}`, data: membership.doc})),
     ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
     ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
+    ...eventSuccessPlans.map((plan) => ({path: `eventSuccessPlans/${plan.id}`, data: plan.doc})),
+    ...eventSuccessPreferences.map((preference) => ({path: `eventSuccessPreferences/${preference.id}`, data: preference.doc})),
+    ...eventSuccessCompatibilityResponses.map((response) => ({path: `eventSuccessCompatibilityResponses/${response.id}`, data: response.doc})),
+    ...eventSuccessWingmanRequests.map((request) => ({path: `eventSuccessWingmanRequests/${request.id}`, data: request.doc})),
+    ...eventSuccessAssignments.map((assignment) => ({path: `eventSuccessAssignments/${assignment.id}`, data: assignment.doc})),
+    ...eventSuccessFeedback.map((feedback) => ({path: `eventSuccessFeedback/${feedback.id}`, data: feedback.doc})),
+    ...eventSuccessScorecards.map((scorecard) => ({path: `eventSuccessScorecards/${scorecard.id}`, data: scorecard.doc})),
     ...scheduleLocks,
     ...savedEvents.map((savedEvent) => ({path: `savedEvents/${savedEvent.id}`, data: savedEvent.doc})),
     ...swipes.map((swipe) => ({path: `swipes/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
@@ -1035,6 +1069,8 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
   const id = `${seedPrefix}_run_${city}_${String(clubIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
   const meetingPoint = meetingPointForRun({city, clubIndex, runIndex});
+  const eventFormat = seedEventFormatForRun(runIndex);
+  const isSinglesMixer = eventFormat.activityKind === "singlesMixer";
   return {
     id,
     clubId: club.id,
@@ -1049,12 +1085,16 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
       meetingPoint: meetingPoint.label,
       startingPointLat: meetingPoint.lat,
       startingPointLng: meetingPoint.lng,
-      locationDetails: meetingPoint.detail,
-      eventFormat: socialRunEventFormat(),
-      distanceKm: [3, 5, 7, 10, 12, 15][runIndex % 6],
+      locationDetails: isSinglesMixer ?
+        "Check in with the host near the Catch table." :
+        meetingPoint.detail,
+      eventFormat,
+      distanceKm: isSinglesMixer ? 0 : [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,
       capacityLimit: pattern.capacity,
-      description: `${cityMeta.label} ${pace} event with a seeded roster for end-to-end testing.`,
+      description: isSinglesMixer ?
+        `${cityMeta.label} singles mixer with guided rotations, quick questions, and a live reveal.` :
+        `${cityMeta.label} ${pace} event with a seeded roster for end-to-end testing.`,
       priceInPaise: pattern.price,
       bookedCount: 0,
       checkedInCount: 0,
@@ -1077,12 +1117,40 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
   };
 }
 
+function seedEventFormatForRun(runIndex) {
+  if (runIndex % 4 === 0) return singlesMixerEventFormat();
+  return socialRunEventFormat();
+}
+
 function socialRunEventFormat() {
   return {
     version: 1,
     activityKind: "socialRun",
     interactionModel: "pacePods",
     defaultPlaybookId: "social_run_light",
+  };
+}
+
+function singlesMixerEventFormat() {
+  return {
+    version: 1,
+    activityKind: "singlesMixer",
+    interactionModel: "pairedRotations",
+    defaultPlaybookId: "algorithmic_mixer_reveal",
+    defaultModuleIds: [
+      "qr_check_in",
+      "guided_rotations",
+      "live_reveal",
+      "compatibility_questionnaire",
+      "wingman_requests",
+      "decomposed_feedback",
+      "host_analytics",
+      "safety_controls",
+    ],
+    activityDetails: {
+      formatLabel: "Singles live reveal",
+      primaryMoment: "Live reveal",
+    },
   };
 }
 
@@ -1242,6 +1310,266 @@ function buildSavedEvent({seedMarker, uid, eventId, now}) {
       savedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -6})),
     },
   };
+}
+
+function buildEventSuccessDocs({seedMarker, event, roster, now}) {
+  const empty = {
+    plans: [],
+    preferences: [],
+    compatibilityResponses: [],
+    wingmanRequests: [],
+    assignments: [],
+    feedback: [],
+    scorecards: [],
+  };
+  if (!isLiveRevealSeedEvent(event)) return empty;
+
+  const participants = roster.filter((entry) =>
+    entry.status === "signedUp" || entry.status === "attended"
+  );
+  if (participants.length < 2) return empty;
+
+  const createdAt = admin.firestore.Timestamp.fromDate(
+    offsetDate(event.doc.startTime.toDate(), {days: -3})
+  );
+  const updatedAt = admin.firestore.Timestamp.fromDate(
+    offsetDate(event.doc.startTime.toDate(), {days: -1})
+  );
+  const planStatus = eventSuccessPlanStatus(event, now);
+  const revealStartedAt = planStatus === "setup" ? null :
+    admin.firestore.Timestamp.fromDate(offsetDate(event.doc.startTime.toDate(), {minutes: 18}));
+  const revealEndsAt = planStatus === "setup" ? null :
+    admin.firestore.Timestamp.fromDate(offsetDate(event.doc.startTime.toDate(), {minutes: 18, seconds: 10}));
+  const frozenAt = event.doc.bookedCount > 0 || event.doc.waitlistedCount > 0 ?
+    updatedAt :
+    null;
+  const completedAt = planStatus === "complete" ?
+    admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 20})) :
+    null;
+
+  const plans = [{
+    id: event.id,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      playbookId: "algorithmic_mixer_reveal",
+      selectedModuleIds: [
+        "qr_check_in",
+        "guided_rotations",
+        "live_reveal",
+        "compatibility_questionnaire",
+        "wingman_requests",
+        "decomposed_feedback",
+        "host_analytics",
+        "safety_controls",
+      ],
+      targetAttendeeCount: Math.max(event.doc.capacityLimit, participants.length),
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        unitCount: Math.ceil(participants.length / 2),
+        rotationIntervalMinutes: 12,
+        revealCountdownSeconds: 10,
+      },
+      hostGoal: "Help singles meet several promising people without awkward room logistics.",
+      wingmanRequestsEnabled: true,
+      contextualOpenersEnabled: true,
+      compatibilityAffectsRanking: true,
+      questionnaireConfig: {
+        templateId: "balanced",
+        customTitle: "Quick match clues",
+      },
+      activeStepIndex: planStatus === "setup" ? 0 : 2,
+      status: planStatus,
+      revealStatus: planStatus === "setup" ? "idle" : "revealed",
+      activeRevealRoundIndex: planStatus === "setup" ? 0 : 1,
+      revealStartedAt,
+      revealEndsAt,
+      attendeePrompt: "Notice who felt easy to talk to, then use the reveal to follow up.",
+      createdAt,
+      updatedAt,
+      frozenAt,
+      completedAt,
+    },
+  }];
+
+  const preferences = participants.map((entry, index) => ({
+    id: `${event.id}_${entry.person.uid}`,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: entry.person.uid,
+      microPodsOptedOut: false,
+      guidedRotationsOptedOut: index % 7 === 0,
+      createdAt,
+      updatedAt,
+    },
+  }));
+
+  const compatibilityResponses = participants.slice(0, 12).map((entry, index) => ({
+    id: `${event.id}_${entry.person.uid}`,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: entry.person.uid,
+      answerIds: compatibilityAnswerIdsForIndex(index),
+      createdAt,
+      updatedAt,
+    },
+  }));
+
+  const assignments = buildEventSuccessAssignments({
+    seedMarker,
+    event,
+    participants,
+    createdAt,
+    updatedAt,
+  });
+
+  const completedParticipants = participants.filter((entry) => entry.status === "attended");
+  const feedback = completedParticipants.slice(0, 8).map((entry, index) => ({
+    id: `${event.id}_${entry.person.uid}`,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: entry.person.uid,
+      welcomeRating: 4 + (index % 2),
+      structureRating: index % 3 === 0 ? 5 : 4,
+      metNewPeopleCount: 2 + (index % 4),
+      safetyConcern: false,
+      privateNote: index === 0 ?
+        "The reveal made it easier to follow up without guessing." :
+        null,
+      createdAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 25 + index})),
+      updatedAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 25 + index})),
+    },
+  }));
+
+  const wingmanRequests = completedParticipants.length >= 2 ? [{
+    id: `${event.id}_${completedParticipants[0].person.uid}`,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      requesterUid: completedParticipants[0].person.uid,
+      targetUid: completedParticipants[1].person.uid,
+      status: "active",
+      hostVisibleConsent: true,
+      note: "Could you help us find each other after the reveal?",
+      createdAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 18})),
+      updatedAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 18})),
+    },
+  }] : [];
+
+  const scorecards = feedback.length > 0 ? [{
+    id: event.id,
+    doc: {
+      ...seedMarker,
+      eventId: event.id,
+      clubId: event.clubId,
+      bookedCount: event.doc.bookedCount,
+      checkedInCount: event.doc.checkedInCount,
+      feedbackCount: feedback.length,
+      attendeesWhoMetTwoPlusPeople: feedback.filter((doc) => doc.doc.metNewPeopleCount >= 2).length,
+      mutualMatchCount: Math.min(3, Math.floor(completedParticipants.length / 2)),
+      chatStartedCount: Math.min(2, Math.floor(completedParticipants.length / 3)),
+      repeatSignupCount: Math.min(2, Math.floor(completedParticipants.length / 4)),
+      averageWelcomeRating: averageRating(feedback, "welcomeRating"),
+      averageStructureRating: averageRating(feedback, "structureRating"),
+      safetyIncidentCount: feedback.filter((doc) => doc.doc.safetyConcern).length,
+      updatedAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 35})),
+    },
+  }] : [];
+
+  return {
+    plans,
+    preferences,
+    compatibilityResponses,
+    wingmanRequests,
+    assignments,
+    feedback,
+    scorecards,
+  };
+}
+
+function isLiveRevealSeedEvent(event) {
+  return event.doc.status === "active" &&
+    event.doc.eventFormat?.activityKind === "singlesMixer" &&
+    event.doc.eventFormat?.defaultPlaybookId === "algorithmic_mixer_reveal";
+}
+
+function eventSuccessPlanStatus(event, now) {
+  if (event.doc.endTime.toDate() <= now) return "complete";
+  if (event.doc.startTime.toDate() <= now) return "live";
+  return "setup";
+}
+
+function compatibilityAnswerIdsForIndex(index) {
+  const answerSets = [
+    ["event_energy_easy_conversation", "first_conversation_stories"],
+    ["event_energy_playful", "first_conversation_food"],
+    ["event_energy_deep_chat", "first_conversation_music"],
+    ["event_energy_try_anything", "first_conversation_travel"],
+  ];
+  return answerSets[index % answerSets.length];
+}
+
+function buildEventSuccessAssignments({seedMarker, event, participants, createdAt, updatedAt}) {
+  if (participants.length < 2) return [];
+  return participants.map((entry, index) => {
+    const firstPeer = participants[(index + 1) % participants.length].person;
+    const secondPeer = participants.length > 2 ?
+      participants[(index + 2) % participants.length].person :
+      null;
+    const rotationPeers = [firstPeer, secondPeer].filter(Boolean);
+    const peerUids = [...new Set(rotationPeers.map((peer) => peer.uid))];
+    return {
+      id: `${event.id}_guided_rotations_${entry.person.uid}`,
+      doc: {
+        ...seedMarker,
+        eventId: event.id,
+        clubId: event.clubId,
+        uid: entry.person.uid,
+        moduleId: "guided_rotations",
+        label: "Live reveal rotations",
+        displayTitle: `Start with ${displayNameForSeedPerson(firstPeer)}`,
+        displaySubtitle: "Follow the host cue when the reveal opens.",
+        peerUids,
+        rotationSlots: rotationPeers.map((peer, roundIndex) =>
+          eventSuccessRotationSlot({event, roundIndex, peer})
+        ),
+        source: "server_v1",
+        createdAt,
+        updatedAt,
+      },
+    };
+  });
+}
+
+function displayNameForSeedPerson(person) {
+  return person.displayName || person.name || person.firstName || "someone new";
+}
+
+function eventSuccessRotationSlot({event, roundIndex, peer}) {
+  const startsAt = offsetDate(event.doc.startTime.toDate(), {minutes: 12 + roundIndex * 12});
+  return {
+    roundIndex,
+    label: `Round ${roundIndex + 1}`,
+    startsAt: admin.firestore.Timestamp.fromDate(startsAt),
+    endsAt: admin.firestore.Timestamp.fromDate(offsetDate(startsAt, {minutes: 12})),
+    peerUid: peer.uid,
+    compatibility: roundIndex === 0 ? "questionnaire_match" : "social",
+  };
+}
+
+function averageRating(feedback, field) {
+  if (feedback.length === 0) return 0;
+  const total = feedback.reduce((sum, doc) => sum + doc.doc[field], 0);
+  return Number((total / feedback.length).toFixed(1));
 }
 
 function buildSwipeMatchDocs({seedPrefix, seedMarker, event, roster, anchorProfiles, now}) {
@@ -1608,6 +1936,13 @@ export function validateSeedDocuments(writePlan) {
     clubMemberships: 0,
     events: 0,
     eventParticipations: 0,
+    eventSuccessPlans: 0,
+    eventSuccessPreferences: 0,
+    eventSuccessCompatibilityResponses: 0,
+    eventSuccessWingmanRequests: 0,
+    eventSuccessAssignments: 0,
+    eventSuccessFeedback: 0,
+    eventSuccessScorecards: 0,
     clubScheduleLocks: 0,
     userEventScheduleLocks: 0,
     savedEvents: 0,
@@ -1682,6 +2017,55 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.eventParticipations += 1;
+    } else if (isEventSuccessPlanPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessPlanDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessPlans += 1;
+    } else if (isEventSuccessPreferencePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessPreferenceDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessPreferences += 1;
+    } else if (isEventSuccessCompatibilityResponsePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessCompatibilityResponseDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessCompatibilityResponses += 1;
+    } else if (isEventSuccessWingmanRequestPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessWingmanRequestDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessWingmanRequests += 1;
+    } else if (isEventSuccessAssignmentPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessAssignmentDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessAssignments += 1;
+    } else if (isEventSuccessFeedbackPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessFeedbackDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessFeedback += 1;
+    } else if (isEventSuccessScorecardPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateEventSuccessScorecardDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.eventSuccessScorecards += 1;
     } else if (isClubScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
         validateClubScheduleLockDocument,
@@ -1852,6 +2236,34 @@ function isRunPath(docPath) {
 
 function isEventParticipationPath(docPath) {
   return /^eventParticipations\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessPlanPath(docPath) {
+  return /^eventSuccessPlans\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessPreferencePath(docPath) {
+  return /^eventSuccessPreferences\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessCompatibilityResponsePath(docPath) {
+  return /^eventSuccessCompatibilityResponses\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessWingmanRequestPath(docPath) {
+  return /^eventSuccessWingmanRequests\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessAssignmentPath(docPath) {
+  return /^eventSuccessAssignments\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessFeedbackPath(docPath) {
+  return /^eventSuccessFeedback\/[^/]+$/.test(docPath);
+}
+
+function isEventSuccessScorecardPath(docPath) {
+  return /^eventSuccessScorecards\/[^/]+$/.test(docPath);
 }
 
 function isClubScheduleLockPath(docPath) {
@@ -2058,6 +2470,20 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   }
   if (doc.path.startsWith("eventParticipations/")) {
     return newAnchorSet.has(doc.data.uid);
+  }
+  if (doc.path.startsWith("eventSuccessPreferences/") ||
+      doc.path.startsWith("eventSuccessCompatibilityResponses/") ||
+      doc.path.startsWith("eventSuccessFeedback/")) {
+    return newAnchorSet.has(doc.data.uid);
+  }
+  if (doc.path.startsWith("eventSuccessWingmanRequests/")) {
+    return newAnchorSet.has(doc.data.requesterUid) ||
+      newAnchorSet.has(doc.data.targetUid);
+  }
+  if (doc.path.startsWith("eventSuccessAssignments/")) {
+    return newAnchorSet.has(doc.data.uid) ||
+      (Array.isArray(doc.data.peerUids) &&
+        doc.data.peerUids.some((uid) => newAnchorSet.has(uid)));
   }
   if (doc.path.startsWith("userEventScheduleLocks/")) {
     return newAnchorSet.has(doc.data.uid);
@@ -2707,8 +3133,9 @@ function daysFromNow(days) {
   return offsetDate(new Date(), {days});
 }
 
-function offsetDate(date, {days = 0, hours = 0, minutes = 0}) {
-  return new Date(date.getTime() + (((days * 24 + hours) * 60 + minutes) * 60 * 1000));
+function offsetDate(date, {days = 0, hours = 0, minutes = 0, seconds = 0}) {
+  const offsetSeconds = (((days * 24 + hours) * 60 + minutes) * 60) + seconds;
+  return new Date(date.getTime() + offsetSeconds * 1000);
 }
 
 function stableNumber(value, mod) {

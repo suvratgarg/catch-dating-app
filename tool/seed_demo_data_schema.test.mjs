@@ -36,6 +36,13 @@ test("seed document validation accepts valid profile and event docs", () => {
     clubMemberships: 1,
     events: 1,
     eventParticipations: 1,
+    eventSuccessPlans: 0,
+    eventSuccessPreferences: 0,
+    eventSuccessCompatibilityResponses: 0,
+    eventSuccessWingmanRequests: 0,
+    eventSuccessAssignments: 0,
+    eventSuccessFeedback: 0,
+    eventSuccessScorecards: 0,
     clubScheduleLocks: 0,
     userEventScheduleLocks: 0,
     savedEvents: 1,
@@ -199,6 +206,66 @@ test("seed document validation accepts schedule locks and seed manifests", () =>
   assert.equal(result.clubScheduleLocks, 1);
   assert.equal(result.userEventScheduleLocks, 1);
   assert.equal(result.seedManifests, 1);
+});
+
+test("seed document validation accepts event-success launch docs", () => {
+  const result = validateSeedDocuments({
+    docs: [
+      {
+        path: "eventSuccessPlans/event-1",
+        data: validEventSuccessPlanDoc(),
+      },
+      {
+        path: "eventSuccessPreferences/event-1_runner-1",
+        data: validEventSuccessPreferenceDoc(),
+      },
+      {
+        path: "eventSuccessCompatibilityResponses/event-1_runner-1",
+        data: validEventSuccessCompatibilityResponseDoc(),
+      },
+      {
+        path: "eventSuccessWingmanRequests/event-1_runner-1",
+        data: validEventSuccessWingmanRequestDoc(),
+      },
+      {
+        path: "eventSuccessAssignments/event-1_guided_rotations_runner-1",
+        data: validEventSuccessAssignmentDoc(),
+      },
+      {
+        path: "eventSuccessFeedback/event-1_runner-1",
+        data: validEventSuccessFeedbackDoc(),
+      },
+      {
+        path: "eventSuccessScorecards/event-1",
+        data: validEventSuccessScorecardDoc(),
+      },
+    ],
+  });
+
+  assert.equal(result.eventSuccessPlans, 1);
+  assert.equal(result.eventSuccessPreferences, 1);
+  assert.equal(result.eventSuccessCompatibilityResponses, 1);
+  assert.equal(result.eventSuccessWingmanRequests, 1);
+  assert.equal(result.eventSuccessAssignments, 1);
+  assert.equal(result.eventSuccessFeedback, 1);
+  assert.equal(result.eventSuccessScorecards, 1);
+});
+
+test("seed event-success validation rejects stale assignment modules", () => {
+  assert.throws(
+    () => validateSeedDocuments({
+      docs: [
+        {
+          path: "eventSuccessAssignments/event-1_live_reveal_runner-1",
+          data: {
+            ...validEventSuccessAssignmentDoc(),
+            moduleId: "live_reveal",
+          },
+        },
+      ],
+    }),
+    /eventSuccessAssignments\/event-1_live_reveal_runner-1 failed schema validation/
+  );
 });
 
 test("seed document validation rejects stale schedule lock owners", () => {
@@ -534,6 +601,167 @@ function validSavedEventDoc() {
     uid: "runner-1",
     eventId: "event-1",
     savedAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+  };
+}
+
+function validEventSuccessPlanDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    playbookId: "algorithmic_mixer_reveal",
+    selectedModuleIds: [
+      "qr_check_in",
+      "guided_rotations",
+      "live_reveal",
+      "compatibility_questionnaire",
+    ],
+    targetAttendeeCount: 24,
+    structureConfig: {
+      unitKind: "pairs",
+      unitSize: 2,
+      unitCount: 12,
+      rotationIntervalMinutes: 12,
+      revealCountdownSeconds: 10,
+    },
+    hostGoal: "Help everyone meet a few promising people.",
+    wingmanRequestsEnabled: true,
+    contextualOpenersEnabled: true,
+    compatibilityAffectsRanking: true,
+    questionnaireConfig: {
+      templateId: "balanced",
+      customTitle: "Quick match clues",
+    },
+    activeStepIndex: 1,
+    status: "live",
+    revealStatus: "countingDown",
+    activeRevealRoundIndex: 0,
+    revealStartedAt: fakeTimestamp("2026-05-01T01:00:00.000Z"),
+    revealEndsAt: fakeTimestamp("2026-05-01T01:00:10.000Z"),
+    attendeePrompt: "Notice who felt easy to talk to.",
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+    frozenAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+    completedAt: null,
+  };
+}
+
+function validEventSuccessPreferenceDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    microPodsOptedOut: false,
+    guidedRotationsOptedOut: false,
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+  };
+}
+
+function validEventSuccessCompatibilityResponseDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    answerIds: [
+      "event_energy_easy_conversation",
+      "first_conversation_stories",
+    ],
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+  };
+}
+
+function validEventSuccessWingmanRequestDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    requesterUid: "runner-1",
+    targetUid: "runner-2",
+    status: "active",
+    hostVisibleConsent: true,
+    note: "Could you help us find each other after the reveal?",
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+  };
+}
+
+function validEventSuccessAssignmentDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    moduleId: "guided_rotations",
+    label: "Live reveal rotations",
+    displayTitle: "Start with Runner Two",
+    displaySubtitle: "Follow the host cue when the reveal opens.",
+    peerUids: ["runner-2"],
+    rotationSlots: [
+      {
+        roundIndex: 0,
+        label: "Round 1",
+        startsAt: fakeTimestamp("2026-05-01T01:00:00.000Z"),
+        endsAt: fakeTimestamp("2026-05-01T01:12:00.000Z"),
+        peerUid: "runner-2",
+        compatibility: "questionnaire_match",
+      },
+    ],
+    source: "server_v1",
+    createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T00:05:00.000Z"),
+  };
+}
+
+function validEventSuccessFeedbackDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    welcomeRating: 5,
+    structureRating: 4,
+    metNewPeopleCount: 3,
+    safetyConcern: false,
+    privateNote: "The reveal made it easier to follow up.",
+    createdAt: fakeTimestamp("2026-05-01T02:00:00.000Z"),
+    updatedAt: fakeTimestamp("2026-05-01T02:05:00.000Z"),
+  };
+}
+
+function validEventSuccessScorecardDoc() {
+  return {
+    synthetic: true,
+    seedPrefix: "demo_test",
+    scenario: "schema-test",
+    eventId: "event-1",
+    clubId: "club-1",
+    bookedCount: 12,
+    checkedInCount: 10,
+    feedbackCount: 6,
+    attendeesWhoMetTwoPlusPeople: 5,
+    mutualMatchCount: 3,
+    chatStartedCount: 2,
+    repeatSignupCount: 1,
+    averageWelcomeRating: 4.5,
+    averageStructureRating: 4.2,
+    safetyIncidentCount: 0,
+    updatedAt: fakeTimestamp("2026-05-01T02:10:00.000Z"),
   };
 }
 
