@@ -1,8 +1,8 @@
 ---
 doc_id: schema_contracts
-version: 0.1.0
-updated: 2026-05-15
-owner: schema_contract_unification
+version: 0.1.1
+updated: 2026-05-22
+owner: data_contracts
 status: draft
 ---
 
@@ -12,9 +12,9 @@ This directory is the new contract-first source for Firestore document shapes,
 embedded profile objects, prompt catalogs, callable patch payloads, fixtures,
 and future storage-path migrations.
 
-The migration tracker lives in
-`docs/schema_contract_unification_tracker.md`. Start there before changing
-contract scope or generator behavior.
+The contract runbook lives in `docs/data_contracts.md`. Start there before
+changing contract scope, generator behavior, rules metadata, or migration
+policy.
 
 ## Rules
 

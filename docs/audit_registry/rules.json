@@ -231,18 +231,18 @@
       "title": "Preserve event policy engine through production migration",
       "status": "active",
       "introduced_in": {
-        "doc_id": "event_policy_engine_in_development",
-        "version": "0.1.0"
+        "doc_id": "event_policies_readme",
+        "version": "1.0.0"
       },
       "applies_to": [
         "lib/event_policies/**",
         "test/event_policies/**",
-        "codex_audit/event_policy_engine_in_development.md",
+        "lib/event_policies/README.md",
         "PROJECT_CONTEXT.md"
       ],
-      "instruction": "Treat lib/event_policies as an intentional in-development feature under production migration, not dead code. New run creation and booking may write/read EventPolicyBundle snapshots, but the dev lab must remain read-only and the migration must stay backward-compatible with legacy capacity, price, and RunConstraints documents until the schema migration is complete.",
+      "instruction": "Treat lib/event_policies as an intentional in-development feature under production migration, not dead code. New event creation and booking may write/read EventPolicyBundle snapshots, but the dev lab must remain read-only and the migration must stay backward-compatible with legacy capacity, price, and EventConstraints documents until the schema migration is complete.",
       "sunset_when": [
-        "The event policy engine fully replaces legacy run capacity, price, and RunConstraints fields",
+        "The event policy engine fully replaces legacy event capacity, price, and EventConstraints fields",
         "Or the product decision explicitly cancels the event-policy migration"
       ]
     },
@@ -250,14 +250,13 @@
       "title": "Preserve parallel event success layer until product decision",
       "status": "active",
       "introduced_in": {
-        "doc_id": "event_success_layer_in_development",
-        "version": "0.2.0"
+        "doc_id": "event_success",
+        "version": "1.0.0"
       },
       "applies_to": [
         "lib/event_success/**",
         "test/event_success/**",
-        "codex_audit/event_success_layer_in_development.md",
-        "codex_audit/event_success_completion_tracker.md",
+        "docs/event_success.md",
         "PROJECT_CONTEXT.md"
       ],
       "instruction": "Treat lib/event_success as an intentional in-development production rollout, not dead code. It may be wired into live event routes through controller/repository seams, but new live modules need explicit privacy, safety, backend ownership, and Firestore read/write behavior in the same pass. Private-crush target identities stay attendee-private; host reporting may use aggregate metrics only.",

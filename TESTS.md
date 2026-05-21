@@ -1,14 +1,19 @@
 # Catch Test Status
 
-Last updated: 2026-05-03
+Last updated: 2026-05-21
 
-This file is the current test-suite inventory. The old 112-item aspirational
-checklist has been retired because many of those tests now exist under different
-names and more feature coverage has been added.
+This file is the human-readable test policy and inventory. It should not try to
+hand-maintain every test filename; the repo changes too quickly for that to stay
+true. Use the commands below for the live list.
 
-## Verification Commands
+## Live Inventory Commands
 
-Use these commands for normal local verification:
+```bash
+find test -maxdepth 2 -type f -name '*test.dart' | sort
+find functions -path '*test*' -type f | sort
+```
+
+Normal local verification:
 
 ```bash
 flutter analyze
@@ -18,79 +23,46 @@ npm --prefix functions test
 ./tool/validate_firebase_environment.sh <active-env>
 ```
 
-## Last Verification
+Rules tests need the Firestore and Storage emulators unless they are already
+running:
 
-Firestore error handling and rules hardening pass, 2026-05-03:
+```bash
+firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
+```
 
-- `flutter analyze` passed: no errors, no warnings on all modified files.
-- `npm --prefix functions run lint` passed.
-- `npm --prefix functions test` passed: 24 tests (including 2 new FieldValue rules tests).
-- Firestore rules deployed to dev, staging, and prod with predeploy hook passing 24/24.
-- `flutter test --concurrency=1` — all existing tests pass.
+## Current Test Areas
 
-Notes:
+Flutter coverage currently spans analytics, auth, dashboard, events, clubs,
+event-success surfaces, force update, image uploads, locations, onboarding,
+payments, profile/user profile, public profile, reviews, routing, safety,
+swipes/catches, chats/matches, and shared UI primitives.
 
-- Prefer `flutter test --concurrency=1` for the broad suite. A previous fully
-  parallel `flutter test` run exposed a `two_dimensional_scrollables`/TableView
-  isolation issue in `test/run_clubs/run_clubs_widgets_test.dart`; that file
-  passes by itself and the serialized suite passed in the iOS readiness pass.
-- `./tool/validate_firebase_environment.sh <env>` checks the current root
-  Firebase files against one environment. Run
-  `./tool/use_firebase_environment.sh <env>` first when switching.
-- Functions `npm test` runs the unit/guard suite plus the Firestore emulator
-  rules tests. The rules tests also run automatically as a predeploy hook during
-  `firebase deploy --only firestore:rules` and in CI on every PR that touches
-  `firestore.rules` (`.github/workflows/firestore-rules-ci.yml`).
-- The App Check callable guard lives at
-  [`functions/test/callable-app-check.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/callable-app-check.test.cjs)
-  and fails if a callable endpoint bypasses the shared App Check options.
+Functions coverage currently spans callable App Check guards, payments, event
+booking/waitlist/cancellation paths, clubs, event success, places, safety,
+waitlist HTTP, Firestore rules, and Storage rules.
 
-## Current Flutter Test Inventory
-
-| Area | Test files |
-| --- | --- |
-| Analytics | `test/analytics/app_analytics_test.dart` |
-| Auth | `test/auth/auth_repository_test.dart`, `test/auth/presentation/auth_error_message_test.dart` |
-| Core config | `test/core/app_config_test.dart`, `test/core/indian_city_test.dart` |
-| Dashboard | `test/dashboard/dashboard_screen_test.dart`, `test/dashboard/dashboard_full_view_model_test.dart` |
-| Error logging | `test/exceptions/error_logger_test.dart` |
-| Force update | `test/force_update/version_test.dart` |
-| Image uploads | `test/image_uploads/photo_upload_controller_test.dart` |
-| Onboarding | `test/onboarding/onboarding_controller_test.dart`, `test/onboarding/onboarding_step_test.dart`, `test/onboarding/onboarding_widgets_test.dart` |
-| Payments | `test/payments/payment_history_repository_test.dart`, `test/payments/payment_history_screen_test.dart`, `test/payments/payment_repository_test.dart` |
-| Profile | `test/profile/edit_profile_form_data_test.dart`, `test/profile/edit_profile_screen_test.dart`, `test/profile/profile_validation_test.dart`, `test/profile/profile_widgets_test.dart` |
-| Reviews | `test/reviews/review_document_id_test.dart` |
-| Routing | `test/routing/router_redirect_test.dart`, `test/routing/router_widgets_test.dart` |
-| Run clubs | `test/run_clubs/run_clubs_controllers_test.dart`, `test/run_clubs/run_clubs_flow_test.dart`, `test/run_clubs/run_clubs_list_controller_test.dart`, `test/run_clubs/run_clubs_repository_test.dart`, `test/run_clubs/run_clubs_widgets_test.dart` |
-| Runs | `test/runs/create_run_controller_test.dart`, `test/runs/create_run_screen_test.dart`, `test/runs/location_picker_screen_test.dart`, `test/runs/run_booking_controller_test.dart`, `test/runs/run_detail_controller_test.dart`, `test/runs/run_detail_widgets_test.dart`, `test/runs/run_domain_test.dart`, `test/runs/run_eligibility_test.dart`, `test/runs/run_formatters_test.dart`, `test/runs/run_repository_test.dart`, `test/runs/runs_domain_helpers_test.dart`, `test/runs/runs_widgets_test.dart` |
-| Swipes | `test/swipes/profile_card_content_test.dart`, `test/swipes/swipe_candidate_repository_preferences_test.dart`, `test/swipes/swipe_candidate_repository_test.dart`, `test/swipes/swipe_empty_content_test.dart`, `test/swipes/swipe_queue_notifier_test.dart`, `test/swipes/swipe_window_test.dart` |
-| Chats and matches | `test/chats/chat_list_tile_test.dart`, `test/chats/chat_message_test.dart`, `test/chats/chat_repository_test.dart`, `test/chats/chat_screen_test.dart`, `test/chats/fcm_service_test.dart`, `test/chats/match_repository_test.dart`, `test/chats/matches_list_screen_test.dart`, `test/chats/message_bubble_test.dart` |
-| User profile | `test/user_profile/user_profile_domain_test.dart`, `test/user_profile/user_profile_repository_test.dart` |
-
-## Current Functions Test Inventory
-
-| Area | Test files |
-| --- | --- |
-| App Check guard | `functions/test/callable-app-check.test.cjs` |
-| Payments | `functions/src/payments/paymentValidation.test.ts`, `functions/src/payments/createRazorpayOrder.test.ts`, `functions/src/payments/verifyRazorpayPayment.test.ts` |
-| Safety | `functions/src/safety/accountDeletion.test.ts`, `functions/src/safety/blocking.test.ts`, `functions/src/safety/reporting.test.ts` |
-| Waitlist HTTP endpoint | `functions/src/waitlist/joinWaitlist.test.ts` |
-| Firestore rules emulator | `functions/test/firestore.rules.test.cjs` |
+The audit registry stores detailed pass evidence in
+`docs/audit_registry/passes.jsonl` and per-file status in
+`docs/audit_registry/files.jsonl`. Use those for historical proof instead of
+recreating long Markdown checklists.
 
 ## Known Gaps
 
-- There is still no dedicated end-to-end device test flow for real phone OTP,
-  photo upload, push token delivery, and a complete booking/swipe/chat loop.
-- App Store/TestFlight and Play internal testing still need store-distributed
-  smoke tests.
-- The design-handoff visual gallery exists, but there is no durable golden-test
-  suite comparing key 390 x 844 screens against the handoff.
-- Functions rules emulator coverage is part of `npm test`, the Firestore
-  predeploy hook, and CI. New rule changes should include corresponding test
-  cases in `functions/test/firestore.rules.test.cjs`.
+- No default end-to-end device test covers real phone OTP, photo upload, push
+  delivery, Razorpay checkout, and the full booking -> catches -> chat loop.
+- Store-distributed smokes still need Play internal testing and deliberate
+  TestFlight/Xcode Cloud evidence when release-critical settings change.
+- Golden testing is intentionally limited; visual regression coverage is not a
+  durable substitute for device QA on the core 390 x 844 surfaces yet.
+- Live-service checks for App Check, Analytics DebugView, Crashlytics
+  symbolication, native maps, and push should stay out of the default PR suite
+  until they have stable credentials, fixtures, cleanup, and run targets.
 
-## Historical Trackers
+## Policy
 
-The old feature-specific tracker files are archived under
-[`codex_audit/archive/root_trackers/`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/archive/root_trackers/).
-Use them as historical evidence only; this file is the current test inventory.
+- Prefer focused tests near the feature that owns the behavior.
+- Add emulator-backed rules tests for every Firestore or Storage rule change.
+- Add repository/controller tests when moving behavior out of widgets.
+- Do not add another root-level aspirational checklist. If a new gap needs to
+  survive across sessions, add it to the relevant durable doc or the audit
+  registry backlog with a stable id.

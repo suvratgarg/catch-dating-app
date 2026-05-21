@@ -58,8 +58,8 @@ Current state:
 - **Firestore config document `config/cities` is required in every environment.**
   The `isValidCity()` rules function reads from it. Deploying Firestore rules
   without this document will reject all profile edits and club creations.
-  See [`docs/deploy_runbook_2026_05_04.md`](../docs/deploy_runbook_2026_05_04.md)
-  for the exact document contents.
+  Keep the exact document contents aligned with the release prerequisites in
+  [`docs/release_operations.md`](../docs/release_operations.md).
 - **TTL policy on `rateLimits.expiresAt` is required in every environment.**
   Create it in Firebase Console → Firestore → TTL Policies. Without it,
   rate-limit counter documents accumulate indefinitely.
@@ -71,6 +71,39 @@ Current state:
   measurement IDs. Fresh iOS/Android SDK config downloads still omit Analytics
   metadata, so use Firebase project analytics details and DebugView evidence
   rather than the native config files alone to verify mobile Analytics.
+
+## Current environment state
+
+Last consolidated from live environment evidence on 2026-05-21.
+
+| Environment | Firebase project | Project number |
+|---|---|---|
+| `dev` | `catchdates-dev` | `619661127800` |
+| `staging` | `catchdates-staging` | `822303414140` |
+| `prod` | `catch-dating-app-64e51` | `574779808785` |
+
+- GitHub Actions Firebase deploy and data-validation workflows use keyless
+  Google Cloud auth through GitHub OIDC. Each `dev`, `staging`, and `prod`
+  GitHub Environment points at a dedicated `github-actions-deploy` service
+  account in the matching Google Cloud project.
+- Cloud Billing API is enabled in all three projects. Firebase CLI deploys
+  query billing status during Functions deploys, so disabling
+  `cloudbilling.googleapis.com` breaks GitHub OIDC deploy jobs even when
+  service-account authentication succeeds.
+- Active Firebase app registrations are one Android, one iOS, and one web app
+  per environment for `com.catchdates.app`. Production active registrations are
+  `Catch Prod Android`, `Catch Prod iOS`, and `Catch Prod Web`.
+- App Check service enforcement is `ENFORCED` for Firestore, Storage, and
+  Firebase Authentication in all three projects. Callable Cloud Functions use
+  `enforceAppCheck: true`; the public marketing waitlist endpoint remains
+  public by design with an explicit origin allowlist.
+- Functions, Firestore indexes, Firestore rules, and Storage rules were
+  deployed to staging and prod from release candidate `d61fb162` on 2026-05-20.
+  Later commits through `228060a4` were workflow/runtime updates only and did
+  not require another staging/prod Firebase deploy.
+- Storage bucket locations are not fully aligned: dev and staging default
+  buckets are in `ASIA-SOUTH1`, while prod's default bucket is in
+  `US-CENTRAL1`. Firebase Storage bucket location cannot be changed in place.
 
 ## Runtime source of truth
 
