@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
@@ -13,6 +17,17 @@ import 'events_test_helpers.dart';
 
 void main() {
   group('LocationPickerScreen', () {
+    test('Catch map styles are valid JSON arrays', () {
+      expect(
+        jsonDecode(catchGoogleMapStyleFor(Brightness.light)),
+        isA<List<dynamic>>(),
+      );
+      expect(
+        jsonDecode(catchGoogleMapStyleFor(Brightness.dark)),
+        isA<List<dynamic>>(),
+      );
+    });
+
     test('stores the initial location argument', () {
       const initialLocation = LocationCoordinate(19.076, 72.8777);
       const screen = LocationPickerScreen(initialLocation: initialLocation);
@@ -41,6 +56,29 @@ void main() {
             .onPressed,
         isNull,
       );
+    });
+
+    testWidgets('styles map tiles from the active app brightness', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: ThemeMode.dark,
+            home: const LocationPickerScreen(loadMapTiles: false),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final googleMap = tester.widget<gmaps.GoogleMap>(
+        find.byType(gmaps.GoogleMap),
+      );
+
+      expect(googleMap.mapType, gmaps.MapType.none);
+      expect(googleMap.style, catchGoogleMapStyleFor(Brightness.dark));
     });
 
     testWidgets('updates the selected point when the map callback fires', (

@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -24,25 +23,13 @@ class EventDetailOverviewSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final description = event.description.trim();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(event.title, style: CatchTextStyles.displayL(context)),
-        gapH6,
-        Row(
-          children: [
-            VibeTag(label: event.pace.label, active: true),
-            gapW6,
-            Text(
-              event.shortDateLabel,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
-            ),
-          ],
-        ),
-        gapH20,
+        gapH16,
         EventStatsGrid(event: event),
         gapH20,
         WhenWhereCard(event: event, onLocationTap: onLocationTap),

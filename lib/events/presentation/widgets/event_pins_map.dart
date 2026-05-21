@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
@@ -65,6 +66,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
   @override
   Widget build(BuildContext context) {
     final onEventSelected = widget.onEventSelected;
+    final mapStyle = catchGoogleMapStyleFor(Theme.of(context).brightness);
 
     final pinnedEvents = widget.events
         .where((event) => event.hasExactStartingPoint)
@@ -80,6 +82,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
     }
 
     return gmaps.GoogleMap(
+      style: mapStyle,
       initialCameraPosition: gmaps.CameraPosition(
         target: widget.initialCenter.toGoogleMapsLatLng(),
         zoom: widget.initialZoom,
@@ -97,7 +100,9 @@ class _EventPinsMapState extends State<EventPinsMap> {
                 ? gmaps.BitmapDescriptor.defaultMarkerWithHue(
                     gmaps.BitmapDescriptor.hueOrange,
                   )
-                : gmaps.BitmapDescriptor.defaultMarker,
+                : gmaps.BitmapDescriptor.defaultMarkerWithHue(
+                    gmaps.BitmapDescriptor.hueCyan,
+                  ),
             onTap: onEventSelected == null
                 ? null
                 : () => onEventSelected(event),

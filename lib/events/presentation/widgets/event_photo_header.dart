@@ -1,7 +1,6 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:flutter/material.dart';
 
 class EventPhotoHeader extends StatelessWidget {
@@ -30,74 +29,6 @@ class EventPhotoHeader extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
-          top: 52,
-          right: 16,
-          child: CatchBadge(
-            label: '${event.signedUpCount}/${event.capacityLimit} spots',
-            tone: CatchBadgeTone.live,
-            size: CatchBadgeSize.md,
-          ),
-        ),
-        Positioned(
-          left: CatchSpacing.s5,
-          right: CatchSpacing.s5,
-          bottom: 16,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      event.meetingPoint,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white70,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      event.title,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        height: 1.1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  event.distanceLabel,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -116,15 +47,17 @@ class _EventPhotoBackground extends StatelessWidget {
         photoUrl,
         fit: BoxFit.cover,
         semanticLabel: '${event.title} photo',
-        errorBuilder: (_, _, _) => const _EventPhotoFallback(),
+        errorBuilder: (_, _, _) => _EventPhotoFallback(event: event),
       );
     }
-    return const _EventPhotoFallback();
+    return _EventPhotoFallback(event: event);
   }
 }
 
 class _EventPhotoFallback extends StatelessWidget {
-  const _EventPhotoFallback();
+  const _EventPhotoFallback({required this.event});
+
+  final Event event;
 
   @override
   Widget build(BuildContext context) {
@@ -139,11 +72,30 @@ class _EventPhotoFallback extends StatelessWidget {
       ),
       child: Center(
         child: Icon(
-          Icons.directions_run,
+          _fallbackIconFor(event.activityKind),
           color: t.primary.withValues(alpha: 0.42),
           size: 72,
         ),
       ),
     );
   }
+}
+
+IconData _fallbackIconFor(ActivityKind activityKind) {
+  return switch (activityKind) {
+    ActivityKind.socialRun || ActivityKind.running => Icons.directions_run,
+    ActivityKind.walking => Icons.directions_walk,
+    ActivityKind.pickleball ||
+    ActivityKind.padel ||
+    ActivityKind.tennis ||
+    ActivityKind.badminton => Icons.sports_tennis,
+    ActivityKind.cycling || ActivityKind.spinClass => Icons.directions_bike,
+    ActivityKind.yoga => Icons.self_improvement,
+    ActivityKind.strengthTraining => Icons.fitness_center,
+    ActivityKind.pubQuiz => Icons.quiz_outlined,
+    ActivityKind.barCrawl => Icons.local_bar_outlined,
+    ActivityKind.dinner => Icons.restaurant_outlined,
+    ActivityKind.singlesMixer => Icons.groups_outlined,
+    ActivityKind.openActivity => Icons.event_available_outlined,
+  };
 }

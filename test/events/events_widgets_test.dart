@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -137,13 +138,37 @@ void main() {
         expect(find.text('3/20'), findsOneWidget);
         expect(find.text('6:30 AM – 7:45 AM'), findsOneWidget);
         expect(find.text('Wednesday, 23 Apr'), findsOneWidget);
-        expect(find.text('Bandra Fort'), findsNWidgets(2));
+        expect(find.text('Bandra Fort'), findsOneWidget);
         expect(find.text('Meet by the parking lot'), findsOneWidget);
-        expect(find.text('Wednesday Morning Event'), findsOneWidget);
-        expect(find.text('3/20 spots'), findsOneWidget);
-        expect(find.text('5.5km'), findsOneWidget);
+        expect(find.text('Wednesday Morning Event'), findsNothing);
+        expect(find.text('3/20 spots'), findsNothing);
+        expect(find.text('5.5km'), findsNothing);
       },
     );
+
+    testWidgets('stats strip adapts its labels for non-distance events', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(body: EventStatsGrid(event: event)),
+      );
+
+      expect(find.text('Pickleball'), findsOneWidget);
+      expect(find.text('Activity'), findsOneWidget);
+      expect(find.text('Easy'), findsOneWidget);
+      expect(find.text('Skill level'), findsOneWidget);
+      expect(find.text('0/20'), findsOneWidget);
+      expect(find.text('Distance'), findsNothing);
+      expect(find.text('Pace level'), findsNothing);
+      expect(find.text('km'), findsNothing);
+    });
 
     testWidgets('location card opens map only when exact coordinates exist', (
       tester,
@@ -572,6 +597,33 @@ void main() {
         expect(find.byType(Image), findsNothing);
       },
     );
+
+    testWidgets('event photo header does not duplicate event detail copy', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        meetingPoint: 'Deuce',
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
+          home: Scaffold(
+            body: SizedBox(height: 320, child: EventPhotoHeader(event: event)),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.byIcon(Icons.sports_tennis), findsOneWidget);
+      expect(find.text(event.title), findsNothing);
+      expect(find.text('Deuce'), findsNothing);
+      expect(find.text('Pickleball'), findsNothing);
+      expect(find.text('0/20 spots'), findsNothing);
+    });
 
     testWidgets('event photo header renders the uploaded event photo', (
       tester,

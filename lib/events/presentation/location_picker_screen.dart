@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,11 +74,13 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final mapStyle = catchGoogleMapStyleFor(Theme.of(context).brightness);
 
     return Scaffold(
       body: Stack(
         children: [
           gmaps.GoogleMap(
+            style: mapStyle,
             initialCameraPosition: gmaps.CameraPosition(
               target: (widget.initialLocation ?? _defaultCenter)
                   .toGoogleMapsLatLng(),
@@ -88,6 +91,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
                 gmaps.Marker(
                   markerId: const gmaps.MarkerId('selected-starting-point'),
                   position: _selected!.toGoogleMapsLatLng(),
+                  icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
+                    gmaps.BitmapDescriptor.hueOrange,
+                  ),
                 ),
             },
             myLocationButtonEnabled: false,

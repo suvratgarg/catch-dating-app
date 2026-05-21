@@ -6,11 +6,13 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import 'events_test_helpers.dart';
 
@@ -167,6 +169,36 @@ void main() {
     final map = tester.widget<EventPinsMap>(find.byType(EventPinsMap));
     expect(map.selectedEventId, 'second-event');
     expect(map.selectedEventCenter, const LocationCoordinate(22.75, 75.9));
+  });
+
+  testWidgets('event pin maps use the active app brightness style', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      id: 'styled-event',
+      meetingPoint: 'Race Course Road main gate',
+      startingPointLat: 22.72,
+      startingPointLng: 75.86,
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.dark,
+        home: EventPinsMap(
+          events: [event],
+          initialCenter: const LocationCoordinate(22.72, 75.86),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final googleMap = tester.widget<gmaps.GoogleMap>(
+      find.byType(gmaps.GoogleMap),
+    );
+
+    expect(googleMap.style, catchGoogleMapStyleFor(Brightness.dark));
   });
 }
 
