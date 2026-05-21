@@ -339,13 +339,13 @@ Do not make these live-service tests block every PR until they have stable
 fixtures, reset/cleanup steps, and documented credentials. Prefer a separate
 manual or scheduled workflow that records release evidence.
 
-For observability smoke proof, use a release-like non-production build with
-collection explicitly enabled:
+For observability smoke proof, use a profile or release-like non-production
+build with collection explicitly enabled:
 
 ```bash
 ENABLE_OBSERVABILITY_COLLECTION=true \
 EMIT_OBSERVABILITY_SMOKE_EVENT=true \
-./tool/flutter_with_env.sh staging run --release -d <device-id>
+./tool/flutter_with_env.sh staging run --profile -d <device-id>
 ```
 
 The smoke define emits one nonfatal Crashlytics event with reason
