@@ -140,6 +140,7 @@ void main() {
         AppConfig.shouldCollectObservabilityFor(
           environment: AppEnvironment.prod,
           releaseMode: true,
+          profileMode: false,
           useFirebaseEmulators: false,
           forceNonProductionCollection: false,
         ),
@@ -149,6 +150,7 @@ void main() {
         AppConfig.shouldCollectObservabilityFor(
           environment: AppEnvironment.prod,
           releaseMode: false,
+          profileMode: false,
           useFirebaseEmulators: false,
           forceNonProductionCollection: true,
         ),
@@ -158,6 +160,7 @@ void main() {
         AppConfig.shouldCollectObservabilityFor(
           environment: AppEnvironment.prod,
           releaseMode: true,
+          profileMode: false,
           useFirebaseEmulators: true,
           forceNonProductionCollection: true,
         ),
@@ -170,6 +173,7 @@ void main() {
         AppConfig.shouldCollectObservabilityFor(
           environment: AppEnvironment.staging,
           releaseMode: true,
+          profileMode: false,
           useFirebaseEmulators: false,
           forceNonProductionCollection: false,
         ),
@@ -179,11 +183,65 @@ void main() {
         AppConfig.shouldCollectObservabilityFor(
           environment: AppEnvironment.staging,
           releaseMode: true,
+          profileMode: false,
           useFirebaseEmulators: false,
           forceNonProductionCollection: true,
         ),
         isTrue,
       );
     });
+
+    test('allows explicit collection in non-production profile builds', () {
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.staging,
+          releaseMode: false,
+          profileMode: true,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: false,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.shouldCollectObservabilityFor(
+          environment: AppEnvironment.staging,
+          releaseMode: false,
+          profileMode: true,
+          useFirebaseEmulators: false,
+          forceNonProductionCollection: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test(
+      'uses Firebase Crashlytics reporter for release or explicit profile smoke',
+      () {
+        expect(
+          AppConfig.shouldUseFirebaseCrashReporterFor(
+            releaseMode: true,
+            profileMode: false,
+            forceObservabilityCollection: false,
+          ),
+          isTrue,
+        );
+        expect(
+          AppConfig.shouldUseFirebaseCrashReporterFor(
+            releaseMode: false,
+            profileMode: true,
+            forceObservabilityCollection: true,
+          ),
+          isTrue,
+        );
+        expect(
+          AppConfig.shouldUseFirebaseCrashReporterFor(
+            releaseMode: false,
+            profileMode: true,
+            forceObservabilityCollection: false,
+          ),
+          isFalse,
+        );
+      },
+    );
   });
 }

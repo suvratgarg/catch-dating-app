@@ -81,20 +81,39 @@ class AppConfig {
   static bool shouldCollectObservabilityFor({
     required AppEnvironment environment,
     required bool releaseMode,
+    required bool profileMode,
     required bool useFirebaseEmulators,
     required bool forceNonProductionCollection,
   }) {
-    if (!releaseMode || useFirebaseEmulators) return false;
-    if (environment.isProduction) return true;
-    return forceNonProductionCollection;
+    if (useFirebaseEmulators) return false;
+    if (releaseMode && environment.isProduction) return true;
+    if (releaseMode || profileMode) return forceNonProductionCollection;
+    return false;
   }
 
   static bool get shouldCollectObservability => shouldCollectObservabilityFor(
     environment: environment,
     releaseMode: kReleaseMode,
+    profileMode: kProfileMode,
     useFirebaseEmulators: useFirebaseEmulators,
     forceNonProductionCollection: enableObservabilityCollection,
   );
+
+  @visibleForTesting
+  static bool shouldUseFirebaseCrashReporterFor({
+    required bool releaseMode,
+    required bool profileMode,
+    required bool forceObservabilityCollection,
+  }) {
+    return releaseMode || (profileMode && forceObservabilityCollection);
+  }
+
+  static bool get shouldUseFirebaseCrashReporter =>
+      shouldUseFirebaseCrashReporterFor(
+        releaseMode: kReleaseMode,
+        profileMode: kProfileMode,
+        forceObservabilityCollection: enableObservabilityCollection,
+      );
 
   static const bool enableObservabilityCollection = bool.fromEnvironment(
     'ENABLE_OBSERVABILITY_COLLECTION',
