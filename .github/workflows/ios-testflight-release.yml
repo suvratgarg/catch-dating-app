@@ -4,10 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       upload_to_testflight:
-        description: Upload the exported build to TestFlight after verification.
+        description: Break-glass only. Xcode Cloud is the canonical TestFlight uploader.
         required: true
         default: false
         type: boolean
+      break_glass_reason:
+        description: Required when upload_to_testflight is true. Explain why Xcode Cloud is not being used.
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -143,6 +148,27 @@ jobs:
           path: build/ios/export/prod/Catch.ipa
           if-no-files-found: error
           retention-days: 14
+
+      - name: Guard break-glass TestFlight upload
+        if: ${{ github.event.inputs.upload_to_testflight == 'true' }}
+        env:
+          BREAK_GLASS_REASON: ${{ github.event.inputs.break_glass_reason }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${BREAK_GLASS_REASON//[[:space:]]/}" ]]; then
+            echo "GitHub TestFlight upload is break-glass only."
+            echo "Use Xcode Cloud for routine TestFlight distribution, or provide break_glass_reason."
+            exit 1
+          fi
+
+          {
+            echo "## Break-glass TestFlight upload"
+            echo
+            echo "Xcode Cloud is the canonical TestFlight uploader."
+            echo "This GitHub upload path is being used as a fallback for:"
+            echo
+            echo "$BREAK_GLASS_REASON"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload to TestFlight
         if: ${{ github.event.inputs.upload_to_testflight == 'true' }}

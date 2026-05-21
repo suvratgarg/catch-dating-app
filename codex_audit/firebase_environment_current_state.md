@@ -259,11 +259,15 @@ The GitHub `prod` environment has the required App Store Connect secret names:
 
 The repository can verify workflow wiring and secret presence, but it cannot
 verify App Store Connect account settings, TestFlight groups, export-compliance
-answers, privacy forms, or review metadata without direct App Store Connect
-access. The latest listed `iOS TestFlight Release` workflow runs from
-2026-05-17 failed on push-triggered runs, and GitHub no longer returned logs for
-the latest failed run during this pass. No successful manual
-`Release Readiness` or `Observability Evidence` run is currently recorded.
+answers, privacy forms, Xcode Cloud start conditions, or review metadata without
+direct App Store Connect access.
+
+Xcode Cloud is the canonical TestFlight uploader as of 2026-05-21. The nightly
+App Store Connect/Xcode Cloud build has proven TestFlight upload/install/launch
+and iOS Maps behavior. The remaining live App Store Connect change is to remove
+the blind 12 a.m. schedule and make the workflow change-triggered on app-shipping
+paths. GitHub Actions keeps a manual iOS archive/export workflow; its TestFlight
+upload input is break-glass only.
 
 ## Local Config Rules
 
