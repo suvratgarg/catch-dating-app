@@ -20,7 +20,6 @@ class WhenWhereCard extends StatelessWidget {
 
     return CatchSurface(
       padding: const EdgeInsets.all(16),
-      tone: CatchSurfaceTone.raised,
       radius: CatchRadius.md,
       borderColor: t.line,
       child: Column(
@@ -110,14 +109,14 @@ class WhenWhereCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            event.meetingPoint,
+                            event.locationName,
                             style: CatchTextStyles.titleM(context),
                           ),
-                          if (event.locationDetails != null &&
-                              event.locationDetails!.isNotEmpty) ...[
+                          if (event.locationNotes != null &&
+                              event.locationNotes!.isNotEmpty) ...[
                             const SizedBox(height: 2),
                             Text(
-                              event.locationDetails!,
+                              event.locationNotes!,
                               style: CatchTextStyles.bodyS(
                                 context,
                                 color: t.ink2,

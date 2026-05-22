@@ -49,7 +49,7 @@ void main() {
     expect(repository.addedReview?.comment, 'Friendly crew.');
   });
 
-  testWidgets('empty reviews state is centered across the section width', (
+  testWidgets('empty event reviews state uses compact inline layout', (
     tester,
   ) async {
     final repository = _FakeReviewsRepository();
@@ -64,14 +64,16 @@ void main() {
       reviews: const [],
     );
 
-    final sectionCenter = tester.getCenter(find.byType(EventReviewsSection)).dx;
-    final iconCenter = tester
-        .getCenter(find.byIcon(Icons.rate_review_outlined))
+    final iconRight = tester
+        .getTopRight(find.byIcon(Icons.rate_review_outlined))
         .dx;
-    final titleCenter = tester.getCenter(find.text('No reviews yet')).dx;
+    final titleLeft = tester.getTopLeft(find.text('No reviews yet')).dx;
 
-    expect(iconCenter, closeTo(sectionCenter, 1));
-    expect(titleCenter, closeTo(sectionCenter, 1));
+    expect(titleLeft, greaterThan(iconRight));
+    expect(
+      find.text('Reviews appear after attendees complete the event.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('own review can be edited and deleted from the sheet', (

@@ -137,6 +137,7 @@ abstract final class CatchTextStyles {
         fontWeight: FontWeight.w500,
         height: 1.40,
         letterSpacing: 0,
+        decoration: TextDecoration.none,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -152,6 +153,7 @@ abstract final class CatchTextStyles {
     fontWeight: weight,
     height: height,
     letterSpacing: size * trackingEm,
+    decoration: TextDecoration.none,
     color: color ?? CatchTokens.of(context).ink,
   );
 
@@ -167,6 +169,7 @@ abstract final class CatchTextStyles {
     fontWeight: weight,
     height: height,
     letterSpacing: size * trackingEm,
+    decoration: TextDecoration.none,
     color: color ?? CatchTokens.of(context).ink,
   );
 }

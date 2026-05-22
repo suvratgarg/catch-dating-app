@@ -159,7 +159,6 @@ class _EmptyRosterMessage extends StatelessWidget {
 
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
-      tone: CatchSurfaceTone.raised,
       radius: CatchRadius.md,
       borderColor: t.line,
       child: Row(

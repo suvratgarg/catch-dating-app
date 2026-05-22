@@ -2,6 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -60,6 +62,7 @@ void main() {
               MapPinTile(startingPoint: null, onTap: () => mapTapped = true),
               MapPinTile(
                 startingPoint: const LocationCoordinate(19.076, 72.8777),
+                selectedLabel: 'Bandra Fort',
                 onTap: () {},
               ),
               CatchNumberStepper(
@@ -78,12 +81,30 @@ void main() {
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('Select a date'), findsOneWidget);
       expect(find.text('23/04/2026'), findsOneWidget);
-      expect(find.text('Pin exact starting point on map'), findsOneWidget);
-      expect(find.text('Starting point pinned'), findsOneWidget);
+      expect(find.text('Choose on map'), findsOneWidget);
+      expect(find.text('Bandra Fort'), findsOneWidget);
       expect(find.text('75 min'), findsOneWidget);
+      expect(
+        tester.getSize(find.widgetWithText(PickerTile, 'Select a date')).height,
+        CatchControlMetrics.mdMinHeight,
+      );
+      expect(
+        tester
+            .getSize(find.widgetWithText(CatchNumberStepper, '75 min'))
+            .height,
+        CatchControlMetrics.mdMinHeight,
+      );
+      expect(
+        tester.getSize(find.widgetWithText(MapPinTile, 'Choose on map')).height,
+        CatchControlMetrics.mdMinHeight,
+      );
+      expect(
+        tester.getSize(find.widgetWithText(MapPinTile, 'Bandra Fort')).height,
+        CatchControlMetrics.mdMinHeight,
+      );
 
       await tester.tap(find.text('Select a date'));
-      await tester.tap(find.text('Pin exact starting point on map'));
+      await tester.tap(find.text('Choose on map'));
       await tester.tap(find.byTooltip('Decrease duration'));
       await tester.tap(find.byTooltip('Increase duration'));
       await tester.pump();
@@ -133,6 +154,7 @@ void main() {
         expect(find.text('AGE 21–35'), findsOneWidget);
         expect(find.text('MAX 8 MEN'), findsOneWidget);
         expect(find.text('MAX 10 WOMEN'), findsOneWidget);
+        expect(find.byType(CatchMetricStrip), findsOneWidget);
         expect(find.text('5.5'), findsOneWidget);
         expect(find.text('Pace level'), findsOneWidget);
         expect(find.text('3/20'), findsOneWidget);
@@ -576,7 +598,7 @@ void main() {
     });
 
     testWidgets(
-      'event photo header uses a plain fallback without an event photo',
+      'event photo header uses the shared branded fallback without a photo',
       (tester) async {
         final event = buildEvent();
 
@@ -593,7 +615,7 @@ void main() {
         );
         await tester.pump();
 
-        expect(find.byIcon(Icons.directions_run), findsOneWidget);
+        expect(find.byIcon(Icons.directions_run), findsNothing);
         expect(find.byType(Image), findsNothing);
       },
     );
@@ -618,7 +640,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byIcon(Icons.sports_tennis), findsOneWidget);
+      expect(find.byIcon(Icons.sports_tennis), findsNothing);
       expect(find.text(event.title), findsNothing);
       expect(find.text('Deuce'), findsNothing);
       expect(find.text('Pickleball'), findsNothing);
