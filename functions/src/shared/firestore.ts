@@ -344,6 +344,7 @@ export interface EventDoc {
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
+  meetingLocation?: EventMeetingLocation | null;
   /** nullable in Firestore */
   startingPointLat?: number | null;
   /** nullable in Firestore */
@@ -560,7 +561,21 @@ export interface PhotoPromptAnswer {
   photoIndex: number;
   promptId: string;
   prompt: string;
-  caption: string;
+  caption?: string | null;
+}
+
+/**
+ * embedded event meeting location
+ * Canonical meeting location stored inside events and accepted by event
+ * callables during the legacy location-field migration.
+ */
+export interface EventMeetingLocation {
+  name: string;
+  address?: string | null;
+  placeId?: string | null;
+  latitude: number;
+  longitude: number;
+  notes?: string | null;
 }
 
 /**

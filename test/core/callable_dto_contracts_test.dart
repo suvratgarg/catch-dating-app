@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
@@ -18,6 +19,14 @@ void main() {
         startTimeMillis: DateTime.utc(2026, 6, 1, 6).millisecondsSinceEpoch,
         endTimeMillis: DateTime.utc(2026, 6, 1, 7).millisecondsSinceEpoch,
         meetingPoint: 'Cubbon Park gate',
+        meetingLocation: const EventMeetingLocation(
+          name: 'Cubbon Park gate',
+          address: 'Cubbon Park, Bengaluru',
+          placeId: 'places/cubbon',
+          latitude: 12.9763,
+          longitude: 77.5929,
+          notes: 'Meet beside the main entrance.',
+        ),
         startingPointLat: 12.9763,
         startingPointLng: 77.5929,
         locationDetails: 'Meet beside the main entrance.',

@@ -14,7 +14,7 @@ import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {isClubHost} from "../shared/clubHosts";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
-const TARGET_POD_SIZE = 5;
+const DEFAULT_TARGET_POD_SIZE = 5;
 const MAX_IN_FILTER_VALUES = 30;
 const ACTIVE_STATUSES = ["attended", "signedUp"] as const;
 
@@ -32,6 +32,11 @@ interface EventSuccessPlanDoc {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
+  structureConfig?: {
+    unitKind?: unknown;
+    unitSize?: unknown;
+    unitCount?: unknown;
+  };
 }
 
 interface EventParticipationDoc {
@@ -154,7 +159,7 @@ export async function generateEventSuccessPodsHandler(
   const eligibleParticipants = preferCheckedInParticipants(participants);
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
-  const groups = buildPods(eligibleParticipants, blockedPairs);
+  const groups = buildPods(eligibleParticipants, blockedPairs, plan);
   const assignments = buildAssignments({
     eventId,
     clubId: event.clubId,
@@ -269,17 +274,16 @@ function preferCheckedInParticipants(
  * Splits active participants into deterministic micro-pods.
  * @param {Array<ActiveParticipant>} participants Active participant list.
  * @param {Set<string>} blockedPairs Undirected blocked pair keys.
+ * @param {EventSuccessPlanDoc} plan Persisted event-success plan.
  * @return {Array<Array<ActiveParticipant>>} Pod groups.
  */
 function buildPods(
   participants: ActiveParticipant[],
-  blockedPairs: Set<string>
+  blockedPairs: Set<string>,
+  plan: EventSuccessPlanDoc
 ): ActiveParticipant[][] {
   if (participants.length === 0) return [];
-  const podCount = Math.max(
-    1,
-    Math.ceil(participants.length / TARGET_POD_SIZE)
-  );
+  const podCount = groupCountForPlan(plan, participants.length);
   const groups = Array.from(
     {length: podCount},
     () => [] as ActiveParticipant[]
@@ -298,6 +302,47 @@ function buildPods(
     }
   }
   return groups.filter((group) => group.length > 0);
+}
+
+/**
+ * Resolves the group count from saved structure, falling back to target size.
+ * @param {EventSuccessPlanDoc} plan Persisted event-success plan.
+ * @param {number} participantCount Eligible participant count.
+ * @return {number} Number of groups to seed.
+ */
+function groupCountForPlan(
+  plan: EventSuccessPlanDoc,
+  participantCount: number
+): number {
+  if (plan.structureConfig?.unitKind === "wholeGroup") return 1;
+  const configuredCount = boundedInteger(
+    plan.structureConfig?.unitCount,
+    1,
+    200
+  );
+  if (configuredCount !== null) return configuredCount;
+  const targetSize = boundedInteger(
+    plan.structureConfig?.unitSize,
+    2,
+    50
+  ) ?? DEFAULT_TARGET_POD_SIZE;
+  return Math.max(1, Math.ceil(participantCount / targetSize));
+}
+
+/**
+ * Returns an integer in range from a possibly-untyped Firestore value.
+ * @param {unknown} value Raw numeric value.
+ * @param {number} min Minimum accepted value.
+ * @param {number} max Maximum accepted value.
+ * @return {number|null} Clamped integer or null.
+ */
+function boundedInteger(
+  value: unknown,
+  min: number,
+  max: number
+): number | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  return Math.max(min, Math.min(max, Math.floor(value)));
 }
 
 /**

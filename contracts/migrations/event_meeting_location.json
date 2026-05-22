@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "logicalName": "eventMeetingLocation",
+  "currentPhase": "dual_write_live",
+  "reason": "Events historically split attendee-facing venue text, coordinates, and directions across meetingPoint, startingPointLat, startingPointLng, and locationDetails. Google Places and mandatory map selection need one coherent location contract while old clients and projections still depend on the legacy fields.",
+  "currentShape": {
+    "legacyFields": [
+      "events/{eventId}.meetingPoint",
+      "events/{eventId}.startingPointLat",
+      "events/{eventId}.startingPointLng",
+      "events/{eventId}.locationDetails"
+    ]
+  },
+  "candidateShape": {
+    "field": "meetingLocation",
+    "contract": "contracts/shared/event_common.schema.json#/definitions/eventMeetingLocation",
+    "item": {
+      "name": "attendee-facing place or pinned-location name",
+      "address": "nullable Google formatted address",
+      "placeId": "nullable Google Places id",
+      "latitude": "required pinned latitude",
+      "longitude": "required pinned longitude",
+      "notes": "nullable host directions such as gate, entrance, or floor"
+    }
+  },
+  "phases": [
+    {
+      "id": "contract",
+      "status": "complete",
+      "description": "Add meetingLocation to the event document and create/update callable schemas while leaving legacy fields required for compatibility."
+    },
+    {
+      "id": "client_dual_write",
+      "status": "complete",
+      "description": "Create/edit event clients submit meetingLocation and mirror the legacy location fields from that object."
+    },
+    {
+      "id": "backend_dual_write",
+      "status": "complete",
+      "description": "Event callables normalize meetingLocation, derive legacy fields, and synthesize meetingLocation from legacy payloads during the transition."
+    },
+    {
+      "id": "backfill_existing_events",
+      "status": "pending",
+      "description": "Dry-run existing events, derive meetingLocation from legacy fields where coordinates are present, report unpinned or blank-name events, then apply per environment."
+    },
+    {
+      "id": "require_structured_location",
+      "status": "pending",
+      "description": "After supported clients dual-write meetingLocation and backfill is clean, make meetingLocation required in event documents and callable payloads."
+    },
+    {
+      "id": "retire_legacy_fields",
+      "status": "pending",
+      "description": "Remove meetingPoint, startingPointLat, startingPointLng, and locationDetails from primary app code, contracts, and seed tooling only after old clients are no longer supported."
+    }
+  ],
+  "knownConsumers": [
+    "lib/events/domain/event.dart",
+    "lib/events/data/event_callable_dtos.dart",
+    "lib/events/presentation/create_event_screen.dart",
+    "lib/hosts/presentation/edit_hosted_event_screen.dart",
+    "functions/src/events/mutateEvent.ts",
+    "functions/src/events/selfCheckInAttendance.ts",
+    "functions/src/shared/notifications.ts",
+    "functions/src/clubs/syncClubNextEvent.ts",
+    "tool/seed_demo_data.mjs"
+  ],
+  "rulesAndIndexes": {
+    "firestoreRules": "No direct event writes are allowed, so callable validation owns this migration.",
+    "firestoreIndexes": "No new indexes are required until the app queries by nested meetingLocation fields."
+  }
+}

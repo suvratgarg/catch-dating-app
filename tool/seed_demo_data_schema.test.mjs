@@ -536,6 +536,14 @@ function validEventDoc() {
     startTime: fakeTimestamp("2026-05-20T01:30:00.000Z"),
     endTime: fakeTimestamp("2026-05-20T02:40:00.000Z"),
     meetingPoint: "Race Course Road gate",
+    meetingLocation: {
+      name: "Race Course Road gate",
+      address: null,
+      placeId: null,
+      latitude: 22.7196,
+      longitude: 75.8577,
+      notes: "Meet near the main gate.",
+    },
     startingPointLat: 22.7196,
     startingPointLng: 75.8577,
     locationDetails: "Meet near the main gate.",
@@ -826,7 +834,6 @@ function validPhotoPromptAnswer() {
     photoIndex: 0,
     promptId: photoPrompt.id,
     prompt: photoPrompt.title,
-    caption: "Race day, before the nerves kicked in.",
   };
 }
 

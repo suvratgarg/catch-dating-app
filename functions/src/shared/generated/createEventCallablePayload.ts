@@ -11,6 +11,17 @@ export interface CreateEventCallablePayload {
   startTimeMillis: number;
   endTimeMillis: number;
   meetingPoint: string;
+  /**
+   * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
+   */
+  meetingLocation?: {
+    name: string;
+    address?: string | null;
+    placeId?: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    notes?: string | null;
+  };
   startingPointLat: number;
   startingPointLng: number;
   locationDetails?: string | null;

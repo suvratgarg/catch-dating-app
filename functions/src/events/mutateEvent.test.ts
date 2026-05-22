@@ -271,8 +271,8 @@ function event(overrides: FakeData = {}): FakeData {
     startTime: ts("2026-05-02T01:30:00.000Z"),
     endTime: ts("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
-    startingPointLat: null,
-    startingPointLng: null,
+    startingPointLat: 19.07,
+    startingPointLng: 72.82,
     locationDetails: null,
     distanceKm: 5,
     pace: "easy",
@@ -334,6 +334,14 @@ test("createEventHandler creates a server-owned event for the club host",
       startTime: ts("2026-05-02T01:30:00.000Z"),
       endTime: ts("2026-05-02T02:30:00.000Z"),
       meetingPoint: "Carter Road",
+      meetingLocation: {
+        name: "Carter Road",
+        address: null,
+        placeId: null,
+        latitude: 19.07,
+        longitude: 72.82,
+        notes: null,
+      },
       startingPointLat: 19.07,
       startingPointLng: 72.82,
       locationDetails: null,
@@ -487,9 +495,83 @@ test("createEventHandler creates event success plans atomically", async () => {
   ]);
   assert.equal(plan?.targetAttendeeCount, 20);
   assert.equal(plan?.hostGoal, "Help everyone meet two new people.");
+  assert.equal(plan?.wingmanRequestsEnabled, false);
+  assert.equal(plan?.contextualOpenersEnabled, false);
+  assert.equal(plan?.compatibilityAffectsRanking, false);
   assert.equal(plan?.attendeePrompt, "Ask what route they want to try next.");
   assert.equal(plan?.status, "setup");
   assert.equal(plan?.createdAt, plan?.updatedAt);
+});
+
+test(
+  "createEventHandler derives event success booleans from modules",
+  async () => {
+    const h = harness({"clubs/club-1": club()});
+
+    await createEventHandler(
+      request("host-1", payload({
+        eventSuccessDefaults: {
+          enabled: true,
+          selectedModuleIds: [
+            "qr_check_in",
+            "wingman_requests",
+            "contextual_openers",
+            "compatibility_questionnaire",
+          ],
+          wingmanRequestsEnabled: false,
+          contextualOpenersEnabled: false,
+          compatibilityAffectsRanking: true,
+        },
+      })),
+      h.deps
+    );
+
+    const plan = h.firestore.get("eventSuccessPlans/event-1");
+    assert.equal(plan?.wingmanRequestsEnabled, true);
+    assert.equal(plan?.contextualOpenersEnabled, true);
+    assert.equal(plan?.compatibilityAffectsRanking, true);
+  }
+);
+
+test("createEventHandler defaults pub quiz teams from capacity", async () => {
+  const h = harness({"clubs/club-1": club()});
+
+  await createEventHandler(
+    request("host-1", payload({
+      capacityLimit: 50,
+      distanceKm: 0,
+      eventFormat: {
+        version: 1,
+        activityKind: "pubQuiz",
+        interactionModel: "teamRotations",
+        defaultPlaybookId: "pub_quiz_team_mixer",
+      },
+      eventSuccessDefaults: {
+        enabled: true,
+        playbookId: "pub_quiz_team_mixer",
+        selectedModuleIds: ["qr_check_in", "micro_pods", "live_reveal"],
+        structureConfig: {
+          unitKind: "teams",
+          unitSize: 5,
+          unitCount: 3,
+          rotationIntervalMinutes: null,
+          revealCountdownSeconds: 10,
+        },
+        hostGoal: "Balance trivia teams.",
+      },
+    })),
+    h.deps
+  );
+
+  const plan = h.firestore.get("eventSuccessPlans/event-1");
+  assert.equal(plan?.targetAttendeeCount, 50);
+  assert.deepEqual(plan?.structureConfig, {
+    unitKind: "teams",
+    unitSize: 5,
+    unitCount: null,
+    rotationIntervalMinutes: null,
+    revealCountdownSeconds: 10,
+  });
 });
 
 test("createEventHandler rejects orphan-prone event success plan conflicts",

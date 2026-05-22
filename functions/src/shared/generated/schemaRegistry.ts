@@ -37,14 +37,13 @@ export const photoPromptAnswerSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/embedded/photo_prompt_answer.schema.json",
   "title": "PhotoPromptAnswer",
-  "description": "One optional caption prompt for a profile photo slot.",
+  "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "photoIndex",
     "promptId",
-    "prompt",
-    "caption"
+    "prompt"
   ],
   "properties": {
     "photoIndex": {
@@ -64,7 +63,9 @@ export const photoPromptAnswerSchema: Record<string, unknown> = {
     },
     "caption": {
       "type": "string",
-      "maxLength": 140
+      "maxLength": 140,
+      "deprecated": true,
+      "description": "Legacy user-entered caption retained for compatibility with older documents."
     }
   },
   "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -120,14 +121,13 @@ export const profilePhotoSchema: Record<string, unknown> = {
       "anyOf": [
         {
           "title": "PhotoPromptAnswer",
-          "description": "One optional caption prompt for a profile photo slot.",
+          "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
           "type": "object",
           "additionalProperties": false,
           "required": [
             "photoIndex",
             "promptId",
-            "prompt",
-            "caption"
+            "prompt"
           ],
           "properties": {
             "photoIndex": {
@@ -147,7 +147,9 @@ export const profilePhotoSchema: Record<string, unknown> = {
             },
             "caption": {
               "type": "string",
-              "maxLength": 140
+              "maxLength": 140,
+              "deprecated": true,
+              "description": "Legacy user-entered caption retained for compatibility with older documents."
             }
           },
           "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -722,14 +724,13 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       "maxItems": 6,
       "items": {
         "title": "PhotoPromptAnswer",
-        "description": "One optional caption prompt for a profile photo slot.",
+        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "photoIndex",
           "promptId",
-          "prompt",
-          "caption"
+          "prompt"
         ],
         "properties": {
           "photoIndex": {
@@ -749,7 +750,9 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           },
           "caption": {
             "type": "string",
-            "maxLength": 140
+            "maxLength": 140,
+            "deprecated": true,
+            "description": "Legacy user-entered caption retained for compatibility with older documents."
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -806,14 +809,13 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
             "anyOf": [
               {
                 "title": "PhotoPromptAnswer",
-                "description": "One optional caption prompt for a profile photo slot.",
+                "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
                   "photoIndex",
                   "promptId",
-                  "prompt",
-                  "caption"
+                  "prompt"
                 ],
                 "properties": {
                   "photoIndex": {
@@ -833,7 +835,9 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
                   },
                   "caption": {
                     "type": "string",
-                    "maxLength": 140
+                    "maxLength": 140,
+                    "deprecated": true,
+                    "description": "Legacy user-entered caption retained for compatibility with older documents."
                   }
                 },
                 "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -1423,14 +1427,13 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
       "maxItems": 6,
       "items": {
         "title": "PhotoPromptAnswer",
-        "description": "One optional caption prompt for a profile photo slot.",
+        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "photoIndex",
           "promptId",
-          "prompt",
-          "caption"
+          "prompt"
         ],
         "properties": {
           "photoIndex": {
@@ -1450,7 +1453,9 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           },
           "caption": {
             "type": "string",
-            "maxLength": 140
+            "maxLength": 140,
+            "deprecated": true,
+            "description": "Legacy user-entered caption retained for compatibility with older documents."
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -1507,14 +1512,13 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
             "anyOf": [
               {
                 "title": "PhotoPromptAnswer",
-                "description": "One optional caption prompt for a profile photo slot.",
+                "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
                   "photoIndex",
                   "promptId",
-                  "prompt",
-                  "caption"
+                  "prompt"
                 ],
                 "properties": {
                   "photoIndex": {
@@ -1534,7 +1538,9 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
                   },
                   "caption": {
                     "type": "string",
-                    "maxLength": 140
+                    "maxLength": 140,
+                    "deprecated": true,
+                    "description": "Legacy user-entered caption retained for compatibility with older documents."
                   }
                 },
                 "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -3015,6 +3021,61 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 240
+    },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
     },
     "startingPointLat": {
       "type": [
@@ -7285,14 +7346,13 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
           "maxItems": 6,
           "items": {
             "title": "PhotoPromptAnswer",
-            "description": "One optional caption prompt for a profile photo slot.",
+            "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
             "type": "object",
             "additionalProperties": false,
             "required": [
               "photoIndex",
               "promptId",
-              "prompt",
-              "caption"
+              "prompt"
             ],
             "properties": {
               "photoIndex": {
@@ -7312,7 +7372,9 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
               },
               "caption": {
                 "type": "string",
-                "maxLength": 140
+                "maxLength": 140,
+                "deprecated": true,
+                "description": "Legacy user-entered caption retained for compatibility with older documents."
               }
             },
             "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -7367,14 +7429,13 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
                 "anyOf": [
                   {
                     "title": "PhotoPromptAnswer",
-                    "description": "One optional caption prompt for a profile photo slot.",
+                    "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
                       "photoIndex",
                       "promptId",
-                      "prompt",
-                      "caption"
+                      "prompt"
                     ],
                     "properties": {
                       "photoIndex": {
@@ -7394,7 +7455,9 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
                       },
                       "caption": {
                         "type": "string",
-                        "maxLength": 140
+                        "maxLength": 140,
+                        "deprecated": true,
+                        "description": "Legacy user-entered caption retained for compatibility with older documents."
                       }
                     },
                     "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -9034,6 +9097,61 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 240
     },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
     "startingPointLat": {
       "type": "number",
       "minimum": -90,
@@ -9672,6 +9790,61 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
           "type": "string",
           "minLength": 1,
           "maxLength": 240
+        },
+        "meetingLocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -180,
+              "maximum": 180
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
         },
         "startingPointLat": {
           "anyOf": [
@@ -11287,7 +11460,7 @@ export const photoPromptCatalog = {
     {
       "id": "proofIRun",
       "title": "Proof I actually event",
-      "placeholder": "Add a caption for this running photo."
+      "placeholder": "Choose this when the photo is the proof."
     },
     {
       "id": "finishLine",
@@ -11311,7 +11484,7 @@ export const photoPromptCatalog = {
     },
     {
       "id": "captionThis",
-      "title": "Caption this",
+      "title": "First thought?",
       "placeholder": "Give people an easy opening line."
     }
   ]

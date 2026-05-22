@@ -2,6 +2,14 @@
   "eventId": "event-1",
   "fields": {
     "meetingPoint": "Updated meeting point",
+    "meetingLocation": {
+      "name": "Updated meeting point",
+      "address": null,
+      "placeId": null,
+      "latitude": 22.7196,
+      "longitude": 75.8577,
+      "notes": null
+    },
     "locationDetails": null,
     "pace": "moderate"
   }

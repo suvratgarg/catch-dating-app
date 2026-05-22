@@ -3,11 +3,15 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * One optional caption prompt for a profile photo slot.
+ * One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.
  */
 export interface PhotoPromptAnswer {
   photoIndex: number;
   promptId: string;
   prompt: string;
-  caption: string;
+  /**
+   * @deprecated
+   * Legacy user-entered caption retained for compatibility with older documents.
+   */
+  caption?: string;
 }

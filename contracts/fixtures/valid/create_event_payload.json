@@ -4,6 +4,14 @@
   "startTimeMillis": 1778889600000,
   "endTimeMillis": 1778893800000,
   "meetingPoint": "Race Course Road gate",
+  "meetingLocation": {
+    "name": "Race Course Road gate",
+    "address": "Race Course Road, Indore",
+    "placeId": "race-course-road-gate",
+    "latitude": 22.7196,
+    "longitude": 75.8577,
+    "notes": "Meet near the main gate."
+  },
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
