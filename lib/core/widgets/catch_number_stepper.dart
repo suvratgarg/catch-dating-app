@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:flutter/material.dart';
 
 class CatchNumberStepper extends StatelessWidget {
@@ -50,17 +50,21 @@ class CatchNumberStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      tone: CatchSurfaceTone.raised,
-      radius: CatchRadius.md,
-      borderColor: t.line,
+    return CatchControlShell(
+      tone: CatchControlTone.raised,
+      enabled: enabled,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
       child: Row(
         children: [
           IconButton(
             tooltip: decreaseTooltip,
             icon: Icon(Icons.remove_rounded, color: t.ink),
             onPressed: _decrease,
+            constraints: const BoxConstraints.tightFor(
+              width: CatchControlMetrics.stepperIconExtent,
+              height: CatchControlMetrics.stepperIconExtent,
+            ),
+            padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
           ),
           Expanded(
@@ -75,6 +79,11 @@ class CatchNumberStepper extends StatelessWidget {
             tooltip: increaseTooltip,
             icon: Icon(Icons.add_rounded, color: t.ink),
             onPressed: _increase,
+            constraints: const BoxConstraints.tightFor(
+              width: CatchControlMetrics.stepperIconExtent,
+              height: CatchControlMetrics.stepperIconExtent,
+            ),
+            padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
           ),
         ],

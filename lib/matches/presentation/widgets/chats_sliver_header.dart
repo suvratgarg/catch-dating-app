@@ -1,88 +1,63 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chat_search_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const double _chatsBrowseHeaderHeight = 88;
 
 class ChatsSliverHeader extends CatchSliverHeader {
-  ChatsSliverHeader({required int count, bool showSearchField = true})
+  ChatsSliverHeader({bool showSearchAction = true})
     : super(
-        title: _TitleRow(count: count),
-        bottom: showSearchField ? const _SearchRow() : null,
-        bottomHeight:
-            CatchTextField.compactControlHeight +
-            CatchSliverHeader.searchControlTopPadding +
-            CatchSliverHeader.contentAfterSearchGap,
+        title: const SizedBox.shrink(),
+        bottomHeight: _chatsBrowseHeaderHeight,
+        bottom: _ChatsBrowseHeader(showSearchAction: showSearchAction),
       );
 }
 
-class _TitleRow extends StatelessWidget {
-  const _TitleRow({required this.count});
+class _ChatsBrowseHeader extends ConsumerStatefulWidget {
+  const _ChatsBrowseHeader({required this.showSearchAction});
 
-  final int count;
+  final bool showSearchAction;
 
   @override
-  Widget build(BuildContext context) {
-    final countLabel = count == 1 ? '1 chat' : '$count chats';
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-        CatchSpacing.s5,
-        CatchSpacing.s2,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Chats', style: CatchTextStyles.displayL(context)),
-                gapH4,
-                Text(
-                  'Messages from your matches',
-                  style: CatchTextStyles.bodyS(context),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.s2),
-            child: CatchBadge(
-              label: countLabel,
-              tone: CatchBadgeTone.brand,
-              size: CatchBadgeSize.md,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  ConsumerState<_ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
 }
 
-class _SearchRow extends StatelessWidget {
-  const _SearchRow();
+class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
+  bool _searchOpen = false;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSliverHeader.searchControlTopPadding,
-        CatchSpacing.s5,
-        CatchSliverHeader.contentAfterSearchGap,
+    final query = ref.watch(chatSearchQueryProvider);
+    final searchActive = _searchOpen || query.isNotEmpty;
+
+    return CatchBrowseHeader(
+      title: 'Chats',
+      subtitle: 'Messages from your matches',
+      searchActive: searchActive,
+      searchField: ChatSearchField(
+        autofocus: true,
+        onSubmitted: _closeEmptySearch,
+        onFocusChanged: _handleSearchFocusChanged,
       ),
-      child: const SizedBox(
-        height: CatchTextField.compactControlHeight,
-        child: ChatSearchField(),
-      ),
+      onOpenSearch: () => setState(() => _searchOpen = true),
+      searchActionVisible: widget.showSearchAction,
+      searchTooltip: 'Search chats',
+      searchSemanticLabel: 'Search chats',
     );
+  }
+
+  void _closeEmptySearch(String value) {
+    if (value.trim().isNotEmpty || !_searchOpen) return;
+    setState(() => _searchOpen = false);
+  }
+
+  void _handleSearchFocusChanged(bool focused) {
+    if (focused || !_searchOpen) return;
+    if (ref.read(chatSearchQueryProvider).trim().isEmpty) {
+      setState(() => _searchOpen = false);
+    }
   }
 }

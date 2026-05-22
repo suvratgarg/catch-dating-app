@@ -21,7 +21,7 @@ class _AvatarChip extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 64,
+          width: 82,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -29,14 +29,18 @@ class _AvatarChip extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(CatchRadius.sm),
+                    borderRadius: BorderRadius.circular(CatchRadius.md),
                     child: Container(
-                      width: 64,
-                      height: 64,
+                      width: 76,
+                      height: 76,
                       decoration: BoxDecoration(
                         border: Border.all(color: t.line2, width: 1.5),
                       ),
-                      child: _ClubImage(club: club, preferProfileImage: true),
+                      child: _ClubImage(
+                        club: club,
+                        preferProfileImage: true,
+                        showFallbackFooterLabel: false,
+                      ),
                     ),
                   ),
                   if (showLiveBadge)
@@ -52,7 +56,7 @@ class _AvatarChip extends StatelessWidget {
                     ),
                 ],
               ),
-              const SizedBox(height: 6),
+              gapH6,
               Text(
                 club.name,
                 style: CatchTextStyles.labelM(context, color: t.ink),

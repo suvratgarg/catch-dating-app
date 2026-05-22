@@ -305,6 +305,7 @@ class CatchTopBarIconAction extends StatelessWidget {
     this.background,
     this.backgroundColor,
     this.foregroundColor,
+    this.size,
   });
 
   final IconData icon;
@@ -313,6 +314,7 @@ class CatchTopBarIconAction extends StatelessWidget {
   final Color? background;
   final Color? backgroundColor;
   final Color? foregroundColor;
+  final double? size;
 
   @override
   Widget build(BuildContext context) {
@@ -323,6 +325,7 @@ class CatchTopBarIconAction extends StatelessWidget {
       child: IconBtn(
         onTap: onPressed,
         background: backgroundColor ?? background,
+        size: size ?? IconBtn.defaultSize,
         child: Icon(icon, size: CatchIcon.md, color: foregroundColor ?? t.ink),
       ),
     );
