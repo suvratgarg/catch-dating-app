@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/club_list_tile.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -20,6 +22,8 @@ class ClubAvatarRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchHorizontalRail(
       title: 'Your clubs',
+      height: 112,
+      spacing: 14,
       itemCount: clubs.length,
       itemBuilder: (context, index) {
         final club = clubs[index];
@@ -55,15 +59,15 @@ class _CreateClubButton extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: SizedBox(
-            width: 64,
+            width: 82,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 76,
+                  height: 76,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(CatchRadius.md),
                     border: Border.all(
                       color: t.line2,
                       width: 1.5,
@@ -73,14 +77,10 @@ class _CreateClubButton extends StatelessWidget {
                   ),
                   child: Icon(Icons.add_rounded, size: 24, color: t.ink2),
                 ),
-                const SizedBox(height: 6),
+                gapH6,
                 Text(
                   'Create',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: t.ink2,
-                  ),
+                  style: CatchTextStyles.labelM(context, color: t.ink2),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

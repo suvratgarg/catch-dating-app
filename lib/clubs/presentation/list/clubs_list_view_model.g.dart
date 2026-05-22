@@ -82,6 +82,60 @@ abstract class _$SelectedClubCity extends $Notifier<CityData> {
   }
 }
 
+@ProviderFor(SelectedClubCityWasUserSelected)
+final selectedClubCityWasUserSelectedProvider =
+    SelectedClubCityWasUserSelectedProvider._();
+
+final class SelectedClubCityWasUserSelectedProvider
+    extends $NotifierProvider<SelectedClubCityWasUserSelected, bool> {
+  SelectedClubCityWasUserSelectedProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedClubCityWasUserSelectedProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedClubCityWasUserSelectedHash();
+
+  @$internal
+  @override
+  SelectedClubCityWasUserSelected create() => SelectedClubCityWasUserSelected();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$selectedClubCityWasUserSelectedHash() =>
+    r'56d712603b6be38f3f6285edc66e4b72225d9455';
+
+abstract class _$SelectedClubCityWasUserSelected extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 /// **KeepAlive notifier — simple string state**
 ///
 /// Holds the current search query text. [keepAlive] ensures the query

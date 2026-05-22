@@ -27,7 +27,9 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -182,70 +184,187 @@ void main() {
       expect(_catchButtonWithLabel('Host'), findsOneWidget);
     });
 
-    testWidgets(
-      'ClubsHeader updates search query and clears it when the city changes',
-      (tester) async {
-        final container = ProviderContainer(
-          retry: (_, _) => null,
-          overrides: [
-            cityListProvider.overrideWith((ref) async => _testCities),
-            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
-            uidProvider.overrideWith((ref) => Stream.value(null)),
-          ],
-        );
-        addTearDown(container.dispose);
+    testWidgets('ClubsHeader expands search and updates the search query', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        await tester.pumpWidget(
-          UncontrolledProviderScope(
-            container: container,
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: Scaffold(
-                body: Builder(
-                  builder: (context) => CustomScrollView(
-                    slivers: ClubsSliverHeader().buildSlivers(context),
-                  ),
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => CustomScrollView(
+                  slivers: [
+                    ...ClubsSliverHeader().buildSlivers(context),
+                    const SliverToBoxAdapter(child: SizedBox(height: 700)),
+                  ],
                 ),
               ),
             ),
           ),
-        );
-        await _pumpClubUi(tester);
+        ),
+      );
+      await _pumpClubUi(tester);
 
-        expect(
-          tester.getSize(find.byType(CityPicker)).height,
-          CatchTextField.compactControlHeight,
-        );
-        expect(
-          tester.getSize(find.byType(CatchTextField)).height,
-          CatchTextField.compactControlHeight,
-        );
+      final initialCityTriggerSize = tester.getSize(find.byType(CityPicker));
+      expect(initialCityTriggerSize.width, initialCityTriggerSize.height);
+      expect(initialCityTriggerSize.width, lessThanOrEqualTo(60));
+      final initialTitleTop = tester.getTopLeft(find.text('Clubs')).dy;
 
-        await tester.enterText(find.byType(TextField), 'asha');
-        await tester.pump();
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
+      await tester.pump();
 
-        expect(container.read(clubSearchQueryProvider), 'asha');
+      expect(find.text('Clubs').hitTestable(), findsOneWidget);
+      expect(find.byType(CityPicker).hitTestable(), findsOneWidget);
+      final scrolledTitleTop = tester.getTopLeft(find.text('Clubs')).dy;
+      expect(scrolledTitleTop, greaterThanOrEqualTo(0));
+      expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
+      expect(find.byType(CatchTextField), findsNothing);
 
-        await tester.tap(find.byIcon(Icons.close_rounded));
-        await tester.pump();
+      await tester.tap(find.byIcon(Icons.search_rounded));
+      await tester.pump();
+      final midSearchMorphFrame = Duration(
+        milliseconds: CatchMotion.base.inMilliseconds ~/ 2,
+      );
+      await tester.pump(midSearchMorphFrame);
 
-        expect(container.read(clubSearchQueryProvider), isEmpty);
+      final morphingSearchWidth = tester
+          .getSize(find.byType(CatchTextField))
+          .width;
+      expect(
+        morphingSearchWidth,
+        greaterThan(CatchTextField.compactControlHeight),
+      );
 
-        await tester.enterText(find.byType(TextField), 'asha');
-        await tester.pump();
+      await _pumpClubUi(tester);
 
-        await tester.tap(find.text('Mumbai'));
-        await _pumpClubUi(tester);
-        await tester.tap(find.text('Delhi').hitTestable());
-        await _pumpClubUi(tester);
+      final expandedSearchWidth = tester
+          .getSize(find.byType(CatchTextField))
+          .width;
+      expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
+      expect(
+        tester.getSize(find.byType(CatchTextField)).height,
+        CatchTextField.compactControlHeight,
+      );
+      expect(find.byIcon(Icons.arrow_back_rounded), findsNothing);
+      expect(find.byIcon(Icons.keyboard_hide_rounded), findsNothing);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).textInputAction,
+        TextInputAction.done,
+      );
 
-        expect(container.read(selectedClubCityProvider).name, 'delhi');
-        expect(container.read(clubSearchQueryProvider), isEmpty);
+      await tester.enterText(find.byType(TextField), 'asha');
+      await tester.pump();
 
-        final searchField = tester.widget<TextField>(find.byType(TextField));
-        expect(searchField.controller!.text, isEmpty);
-      },
-    );
+      expect(container.read(clubSearchQueryProvider), 'asha');
+
+      await tester.tap(find.byIcon(Icons.close_rounded));
+      await tester.pump();
+
+      expect(container.read(clubSearchQueryProvider), isEmpty);
+
+      final searchField = tester.widget<TextField>(find.byType(TextField));
+      expect(searchField.controller!.text, isEmpty);
+
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await _pumpClubUi(tester);
+
+      expect(find.byType(CatchTextField), findsNothing);
+    });
+
+    testWidgets('CityPicker renders a circular city trigger', (tester) async {
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          cityListProvider.overrideWith(
+            (ref) async => const [
+              CityData(
+                name: 'hyderabad',
+                label: 'Hyderabad',
+                latitude: 17.3850,
+                longitude: 78.4867,
+              ),
+            ],
+          ),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      container
+          .read(selectedClubCityProvider.notifier)
+          .setCity(
+            const CityData(
+              name: 'hyderabad',
+              label: 'Hyderabad',
+              latitude: 17.3850,
+              longitude: 78.4867,
+            ),
+          );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(body: Center(child: CityPicker())),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
+      expect(find.text('HYD'), findsNothing);
+      expect(find.text('Hyderabad'), findsNothing);
+      final triggerSize = tester.getSize(find.byType(CityPicker));
+      expect(triggerSize.width, triggerSize.height);
+      expect(triggerSize.width, lessThanOrEqualTo(60));
+    });
+
+    testWidgets('CityPicker changes city and clears the club search query', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(clubSearchQueryProvider.notifier).setQuery('asha');
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(body: Center(child: CityPicker())),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      await tester.tap(find.byType(CityPicker));
+      await _pumpClubUi(tester);
+      await tester.tap(find.text('Delhi').hitTestable());
+      await _pumpClubUi(tester);
+
+      expect(container.read(selectedClubCityProvider).name, 'delhi');
+      expect(container.read(clubSearchQueryProvider), isEmpty);
+    });
 
     testWidgets('ClubsHeader add button navigates to create club', (
       tester,
@@ -485,6 +604,7 @@ void main() {
       expect(find.text('3'), findsNWidgets(2));
       expect(find.text('1'), findsOneWidget);
       expect(find.text('₹30'), findsOneWidget);
+      expect(find.byType(CatchMetricStrip), findsOneWidget);
       expect(find.text('Members'), findsOneWidget);
       expect(find.text('Upcoming'), findsOneWidget);
       expect(find.text('4.7'), findsOneWidget);
@@ -517,7 +637,7 @@ void main() {
     });
 
     testWidgets(
-      'ClubHeroAppBar shows rating and pops back from the detail route',
+      'ClubHeroAppBar shows club identity and pops back from the detail route',
       (tester) async {
         final router = GoRouter(
           initialLocation: '/',
@@ -559,7 +679,9 @@ void main() {
         await tester.tap(find.text('Open hero'));
         await _pumpClubUi(tester);
 
-        expect(find.text('4.8'), findsOneWidget);
+        expect(find.text('Rated Club'), findsOneWidget);
+        expect(find.text('Bandra, Mumbai'), findsOneWidget);
+        expect(find.text('4.8'), findsNothing);
 
         await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
         await _pumpClubUi(tester);
@@ -568,7 +690,7 @@ void main() {
       },
     );
 
-    testWidgets('ClubHeroAppBar uses branded fallback without a cover image', (
+    testWidgets('ClubHeroAppBar uses clean fallback without a cover image', (
       tester,
     ) async {
       await pumpTestApp(
@@ -583,9 +705,10 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubCoverFallback), findsOneWidget);
-      expect(find.text('MM'), findsOneWidget);
-      expect(find.text('Mumbai'), findsWidgets);
+      expect(find.byType(ClubCoverFallback), findsNothing);
+      expect(find.text('MM'), findsNothing);
+      expect(find.text('Morning Miles'), findsOneWidget);
+      expect(find.text('Bandra, Mumbai'), findsOneWidget);
     });
 
     testWidgets('ClubListTile variants navigate to detail routes', (
@@ -655,19 +778,31 @@ void main() {
       await pumpTestApp(
         tester,
         ClubListTile(
-          club: buildClub(name: 'No Cover Club', imageUrl: null),
+          club: buildClub(
+            name: 'No Cover Club',
+            area: 'Signal Hill',
+            imageUrl: null,
+          ),
           variant: ClubListTileVariant.directory,
         ),
       );
 
       expect(find.byType(ClubCoverFallback), findsOneWidget);
-      expect(find.text('NC'), findsOneWidget);
+      expect(find.text('NC'), findsNothing);
+      expect(find.byIcon(Icons.location_on_rounded), findsOneWidget);
+      expect(find.text('Signal Hill'), findsNothing);
+      expect(find.textContaining('Signal Hill ·'), findsOneWidget);
     });
 
     testWidgets('ClubDetailBody host view exposes edit and create navigation', (
       tester,
     ) async {
-      final club = buildClub(id: 'club-host', hostUserId: 'host-1');
+      final club = buildClub(
+        id: 'club-host',
+        area: 'Saket',
+        hostUserId: 'host-1',
+        hostName: 'Asha Host',
+      );
       final router = GoRouter(
         initialLocation: '/',
         routes: [
@@ -721,7 +856,13 @@ void main() {
       expect(find.text('Share'), findsNothing);
       expect(find.text('Edit club'), findsOneWidget);
       expect(find.text('Add event'), findsOneWidget);
+      expect(find.text('Hosted by Asha Host'), findsOneWidget);
+      expect(find.text('View profile'), findsOneWidget);
+      expect(find.text('Club host'), findsNothing);
+      expect(find.text('Hosts events in Saket'), findsNothing);
 
+      await tester.ensureVisible(find.text('Edit club'));
+      await _pumpClubUi(tester);
       await tester.tap(find.text('Edit club'));
       await _pumpClubUi(tester);
 
@@ -730,6 +871,8 @@ void main() {
       router.go('/');
       await _pumpClubUi(tester);
 
+      await tester.ensureVisible(find.text('Add event'));
+      await _pumpClubUi(tester);
       await tester.tap(find.text('Add event'));
       await _pumpClubUi(tester);
 
@@ -787,12 +930,13 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('Host'), findsOneWidget);
-      expect(find.text('Asha Shah'), findsOneWidget);
-      expect(find.text('Club host'), findsOneWidget);
-      expect(find.text('Hosts events in Bandra'), findsOneWidget);
+      expect(find.text('Host'), findsNothing);
+      expect(find.text('Hosted by Asha Shah'), findsOneWidget);
+      expect(find.text('View profile'), findsOneWidget);
+      expect(find.text('Club host'), findsNothing);
+      expect(find.text('Hosts events in Bandra'), findsNothing);
 
-      await tester.tap(find.text('Asha Shah'));
+      await tester.tap(find.text('Hosted by Asha Shah'));
       await _pumpClubUi(tester);
 
       expect(find.text('Profile host-42'), findsOneWidget);
@@ -1003,7 +1147,8 @@ void main() {
         );
         await tester.pump();
 
-        expect(find.text('Mumbai'), findsOneWidget);
+        expect(find.byType(CityPicker), findsOneWidget);
+        expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
         expect(find.byType(CatchTextField), findsNothing);
         expect(find.text('No clubs in this city yet'), findsOneWidget);
       },

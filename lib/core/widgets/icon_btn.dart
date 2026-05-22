@@ -25,9 +25,11 @@ class IconBtn extends StatelessWidget {
     required this.child,
     this.onTap,
     this.background,
-    this.size = 40,
+    this.size = defaultSize,
     this.borderRadius,
   });
+
+  static const double defaultSize = 40;
 
   final Widget child;
   final VoidCallback? onTap;
@@ -35,7 +37,7 @@ class IconBtn extends StatelessWidget {
   /// Override fill colour. Defaults to [CatchTokens.raised].
   final Color? background;
 
-  /// Diameter of the button circle. Defaults to 40.
+  /// Diameter of the button circle. Defaults to [defaultSize].
   final double size;
 
   /// Override shape radius. Defaults to [CatchRadius.pill] (full circle).

@@ -34,7 +34,12 @@ class _DirectoryCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  _ClubImage(club: club),
+                  _ClubImage(
+                    club: club,
+                    fallbackCompact: false,
+                    showFallbackLocationChip: false,
+                    showFallbackFooterLabel: false,
+                  ),
                   const DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(

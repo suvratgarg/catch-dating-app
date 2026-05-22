@@ -16,7 +16,7 @@ class ChatsListScreen extends ConsumerWidget {
     final vm = viewModelAsync.asData?.value;
     final count = vm?.totalThreadCount ?? 0;
     final query = ref.watch(chatSearchQueryProvider).trim();
-    final showSearchField = count > 0 || query.isNotEmpty;
+    final showSearchAction = count > 0 || query.isNotEmpty;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -24,8 +24,7 @@ class ChatsListScreen extends ConsumerWidget {
         child: CustomScrollView(
           slivers: [
             ...ChatsSliverHeader(
-              count: count,
-              showSearchField: showSearchField,
+              showSearchAction: showSearchAction,
             ).buildSlivers(context),
             const ChatsList(),
           ],

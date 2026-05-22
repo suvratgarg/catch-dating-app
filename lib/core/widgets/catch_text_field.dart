@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,6 +25,7 @@ class CatchTextField extends StatefulWidget {
     this.validator,
     this.onChanged,
     this.onSubmitted,
+    this.onFocusChanged,
     this.onTap,
     this.enabled = true,
     this.readOnly = false,
@@ -46,8 +48,9 @@ class CatchTextField extends StatefulWidget {
     this.showClearButton = false,
   });
 
-  static const double compactControlHeight = 52;
-  static const double mdControlHeight = 56;
+  static const double compactControlHeight =
+      CatchControlMetrics.compactMinHeight;
+  static const double mdControlHeight = CatchControlMetrics.mdMinHeight;
 
   final String label;
   final bool isOptional;
@@ -61,6 +64,7 @@ class CatchTextField extends StatefulWidget {
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final ValueChanged<bool>? onFocusChanged;
   final VoidCallback? onTap;
   final bool enabled;
   final bool readOnly;
@@ -90,7 +94,7 @@ class CatchTextField extends StatefulWidget {
   State<CatchTextField> createState() => _CatchTextFieldState();
 }
 
-enum CatchTextFieldSize { compact, md }
+enum CatchTextFieldSize { floating, compact, md }
 
 enum CatchTextFieldShape { rounded, pill }
 
@@ -146,7 +150,10 @@ class _CatchTextFieldState extends State<CatchTextField> {
     super.dispose();
   }
 
-  void _handleFocusChanged() => setState(() {});
+  void _handleFocusChanged() {
+    widget.onFocusChanged?.call(_focusNode.hasFocus);
+    setState(() {});
+  }
 
   void _attachControllerListener(TextEditingController controller) {
     _listenedController?.removeListener(_syncFieldValue);
@@ -173,26 +180,14 @@ class _CatchTextFieldState extends State<CatchTextField> {
         final supportText = error ?? widget.helperText;
         final canInteract = !widget.readOnly || widget.onTap != null;
         final t = CatchTokens.of(context);
-        final borderColor = _borderColor(t, hasError);
-        final controlHeight = _singleLineControlHeight;
-        final inputShell = AnimatedContainer(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          height: controlHeight,
-          decoration: BoxDecoration(
-            color: _fillColor(t),
-            borderRadius: BorderRadius.circular(_radius),
-            border: Border.all(color: borderColor, width: 1.5),
-            boxShadow: _focusNode.hasFocus && !hasError
-                ? [
-                    BoxShadow(
-                      color: t.primarySoft,
-                      blurRadius: 0,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                : CatchElevation.none,
-          ),
+        final inputShell = CatchControlShell(
+          size: _controlSize,
+          shape: _controlShape,
+          tone: _controlTone,
+          enabled: widget.enabled,
+          hasError: hasError,
+          focused: _focusNode.hasFocus,
+          padding: EdgeInsets.zero,
           child: TextField(
             controller: _controller,
             focusNode: _focusNode,
@@ -202,7 +197,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
             enableInteractiveSelection: canInteract,
             autofocus: widget.autofocus,
             keyboardType: widget.keyboardType,
-            textInputAction: widget.textInputAction,
+            textInputAction: widget.textInputAction ?? TextInputAction.done,
             textCapitalization: widget.textCapitalization,
             inputFormatters: widget.inputFormatters,
             autofillHints: widget.autofillHints,
@@ -211,15 +206,13 @@ class _CatchTextFieldState extends State<CatchTextField> {
             minLines: widget.minLines,
             textAlignVertical: _textAlignVertical,
             onTap: widget.onTap,
+            onTapOutside: (_) => _focusNode.unfocus(),
             onChanged: (value) {
               state.didChange(value);
               widget.onChanged?.call(value);
             },
-            onSubmitted: widget.onSubmitted,
-            style: CatchTextStyles.bodyL(
-              context,
-              color: widget.enabled ? t.ink : t.ink3,
-            ),
+            onSubmitted: _handleSubmitted,
+            style: _textStyle(context, color: widget.enabled ? t.ink : t.ink3),
             cursorColor: t.primary,
             decoration: InputDecoration(
               isDense: true,
@@ -232,9 +225,9 @@ class _CatchTextFieldState extends State<CatchTextField> {
               focusedErrorBorder: InputBorder.none,
               contentPadding: _contentPadding,
               hintText: widget.hintText,
-              hintStyle: CatchTextStyles.bodyL(context, color: t.ink3),
+              hintStyle: _textStyle(context, color: t.ink3),
               prefixText: widget.prefixText,
-              prefixStyle: CatchTextStyles.bodyL(context, color: t.ink2),
+              prefixStyle: _textStyle(context, color: t.ink2),
               suffixText: widget.suffixText,
               suffixStyle: CatchTextStyles.bodyM(context, color: t.ink2),
               prefixIconConstraints: _iconConstraints,
@@ -249,9 +242,25 @@ class _CatchTextFieldState extends State<CatchTextField> {
             ),
           ),
         );
+        final sizedInputShell = _singleLineControlHeight == null
+            ? inputShell
+            : SizedBox(height: _singleLineControlHeight, child: inputShell);
+
+        final field = widget.showLabel
+            ? sizedInputShell
+            : Semantics(
+                label: widget.label,
+                textField: true,
+                child: sizedInputShell,
+              );
+
+        if (!widget.showLabel && supportText == null) {
+          return field;
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (widget.showLabel) ...[
               CatchFormFieldLabel(
@@ -261,14 +270,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
               ),
               const SizedBox(height: CatchSpacing.s2),
             ],
-            if (widget.showLabel)
-              inputShell
-            else
-              Semantics(
-                label: widget.label,
-                textField: true,
-                child: inputShell,
-              ),
+            field,
             if (supportText != null) ...[
               const SizedBox(height: CatchSpacing.s1),
               Text(
@@ -285,21 +287,6 @@ class _CatchTextFieldState extends State<CatchTextField> {
     );
   }
 
-  Color _borderColor(CatchTokens t, bool hasError) {
-    if (hasError) return t.danger;
-    if (!widget.enabled) return t.line;
-    if (_focusNode.hasFocus) return t.primary;
-    return t.line2;
-  }
-
-  Color _fillColor(CatchTokens t) {
-    if (!widget.enabled) return t.raised;
-    return switch (widget.tone) {
-      CatchTextFieldTone.surface => t.surface,
-      CatchTextFieldTone.raised => t.raised,
-    };
-  }
-
   Color _supportColor(CatchTokens t) {
     return switch (widget.helperTone) {
       CatchTextFieldSupportTone.neutral => t.ink3,
@@ -308,11 +295,9 @@ class _CatchTextFieldState extends State<CatchTextField> {
     };
   }
 
-  double get _radius {
-    return switch (widget.shape) {
-      CatchTextFieldShape.rounded => CatchRadius.sm,
-      CatchTextFieldShape.pill => CatchRadius.pill,
-    };
+  void _handleSubmitted(String value) {
+    widget.onSubmitted?.call(value);
+    _focusNode.unfocus();
   }
 
   Widget? _buildSuffixIcon(CatchTokens t) {
@@ -328,6 +313,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
             );
           }
           return IconButton(
+            tooltip: 'Clear ${widget.label}',
             icon: const Icon(Icons.close_rounded, size: 16),
             onPressed: () {
               _controller.clear();
@@ -346,44 +332,51 @@ class _CatchTextFieldState extends State<CatchTextField> {
   }
 
   EdgeInsets get _contentPadding {
-    return switch (widget.size) {
-      CatchTextFieldSize.compact => const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 0,
-      ),
-      CatchTextFieldSize.md => const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 14,
-      ),
-    };
+    return CatchControlMetrics.textFieldContentPadding(_controlSize);
+  }
+
+  TextStyle _textStyle(BuildContext context, {required Color color}) {
+    return widget.size == CatchTextFieldSize.floating
+        ? CatchTextStyles.bodyM(context, color: color)
+        : CatchTextStyles.bodyL(context, color: color);
   }
 
   BoxConstraints? get _iconConstraints {
     if (widget.maxLines != 1 || widget.minLines != null) return null;
 
+    final extent = CatchControlMetrics.iconExtent(_controlSize);
+    return BoxConstraints.tightFor(width: extent, height: extent);
+  }
+
+  CatchControlSize get _controlSize {
     return switch (widget.size) {
-      CatchTextFieldSize.compact => const BoxConstraints.tightFor(
-        width: CatchTextField.compactControlHeight,
-        height: CatchTextField.compactControlHeight,
-      ),
-      CatchTextFieldSize.md => const BoxConstraints.tightFor(
-        width: CatchTextField.mdControlHeight,
-        height: CatchTextField.mdControlHeight,
-      ),
+      CatchTextFieldSize.floating => CatchControlSize.floating,
+      CatchTextFieldSize.compact => CatchControlSize.compact,
+      CatchTextFieldSize.md => CatchControlSize.md,
     };
   }
 
-  double? get _singleLineControlHeight {
-    if (widget.maxLines != 1 || widget.minLines != null) return null;
+  CatchControlShape get _controlShape {
+    return switch (widget.shape) {
+      CatchTextFieldShape.rounded => CatchControlShape.rounded,
+      CatchTextFieldShape.pill => CatchControlShape.pill,
+    };
+  }
 
-    return switch (widget.size) {
-      CatchTextFieldSize.compact => CatchTextField.compactControlHeight,
-      CatchTextFieldSize.md => CatchTextField.mdControlHeight,
+  CatchControlTone get _controlTone {
+    return switch (widget.tone) {
+      CatchTextFieldTone.surface => CatchControlTone.surface,
+      CatchTextFieldTone.raised => CatchControlTone.raised,
     };
   }
 
   TextAlignVertical? get _textAlignVertical {
     if (widget.maxLines != 1 || widget.minLines != null) return null;
     return TextAlignVertical.center;
+  }
+
+  double? get _singleLineControlHeight {
+    if (widget.maxLines != 1 || widget.minLines != null) return null;
+    return CatchControlMetrics.minHeight(_controlSize);
   }
 }

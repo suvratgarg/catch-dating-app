@@ -4,7 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ClubsSearchField extends ConsumerWidget {
-  const ClubsSearchField({super.key});
+  const ClubsSearchField({
+    super.key,
+    this.autofocus = false,
+    this.onSubmitted,
+    this.onFocusChanged,
+  });
+
+  final bool autofocus;
+  final ValueChanged<String>? onSubmitted;
+  final ValueChanged<bool>? onFocusChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,7 +27,10 @@ class ClubsSearchField extends ConsumerWidget {
       hintText: 'Search clubs',
       size: CatchTextFieldSize.compact,
       shape: CatchTextFieldShape.pill,
-      textInputAction: TextInputAction.search,
+      autofocus: autofocus,
+      textInputAction: TextInputAction.done,
+      onSubmitted: onSubmitted,
+      onFocusChanged: onFocusChanged,
       prefixIcon: const Icon(Icons.search_rounded, size: 18),
       showClearButton: true,
     );
