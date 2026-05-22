@@ -63,11 +63,29 @@ class EventSuccessHostSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
-    final shouldLoadRoster = showTabs || initialTab == EventSuccessHostTab.live;
+    if (planAsync.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        child: Center(child: CatchLoadingIndicator()),
+      );
+    }
+    if (planAsync.hasError) {
+      return CatchInlineErrorState.fromError(
+        planAsync.error!,
+        context: AppErrorContext.event,
+        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
+      );
+    }
+
+    final persistedPlan = planAsync.asData?.value;
+    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
+    final hasSavedGuide = persistedPlan != null;
+    final shouldLoadRoster =
+        hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadScorecard =
-        showTabs || initialTab == EventSuccessHostTab.report;
+        hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.report);
     final shouldLoadAssignments =
-        showTabs || initialTab == EventSuccessHostTab.live;
+        hasSavedGuide && (showTabs || initialTab == EventSuccessHostTab.live);
     final shouldLoadPreferences = shouldLoadAssignments;
     final shouldLoadWingmanRequests = shouldLoadAssignments;
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
@@ -120,8 +138,7 @@ class EventSuccessHostSection extends ConsumerWidget {
           )
         : const AsyncData(<PublicProfile>[]);
 
-    if (planAsync.isLoading ||
-        rosterAsync.isLoading ||
+    if (rosterAsync.isLoading ||
         scorecardAsync.isLoading ||
         assignmentsAsync.isLoading ||
         rotationAssignmentsAsync.isLoading ||
@@ -131,13 +148,6 @@ class EventSuccessHostSection extends ConsumerWidget {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
         child: Center(child: CatchLoadingIndicator()),
-      );
-    }
-    if (planAsync.hasError) {
-      return CatchInlineErrorState.fromError(
-        planAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
       );
     }
     if (rosterAsync.hasError) {
@@ -199,8 +209,6 @@ class EventSuccessHostSection extends ConsumerWidget {
       );
     }
 
-    final persistedPlan = planAsync.asData?.value;
-    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
     final roster =
         rosterAsync.asData?.value ?? EventParticipationRoster.empty();
     final scorecard = scorecardAsync.asData?.value;

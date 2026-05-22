@@ -46,10 +46,15 @@ extension on EventSuccessHostTab {
 }
 
 class _PlanSummary extends StatelessWidget {
-  const _PlanSummary({required this.plan, required this.draft});
+  const _PlanSummary({
+    required this.plan,
+    required this.draft,
+    required this.planIsPersisted,
+  });
 
   final EventSuccessPlan plan;
   final EventSuccessHostDraft draft;
+  final bool planIsPersisted;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +73,10 @@ class _PlanSummary extends StatelessWidget {
               ? CatchBadgeTone.success
               : CatchBadgeTone.warning,
         ),
-        CatchBadge(label: plan.status.hostLabel, tone: CatchBadgeTone.live),
+        CatchBadge(
+          label: planIsPersisted ? plan.status.hostLabel : 'Not saved',
+          tone: planIsPersisted ? CatchBadgeTone.live : CatchBadgeTone.warning,
+        ),
       ],
     );
   }

@@ -14,12 +14,18 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
     required this.targetAttendeeCount,
     required this.enabled,
     required this.onChanged,
+    this.showRotationCadence = true,
+    this.showRevealCountdown = true,
+    this.revealCountdownLabel = 'Reveal countdown',
   });
 
   final EventSuccessStructureConfig value;
   final int targetAttendeeCount;
   final bool enabled;
   final ValueChanged<EventSuccessStructureConfig> onChanged;
+  final bool showRotationCadence;
+  final bool showRevealCountdown;
+  final String revealCountdownLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +50,30 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
               tone: CatchBadgeTone.neutral,
               icon: Icons.grid_view_rounded,
             ),
-            CatchBadge(
-              label: value.rotates
-                  ? '${value.rotationIntervalMinutes} min rotations'
-                  : 'No timed rotation',
-              tone: value.rotates
-                  ? CatchBadgeTone.live
-                  : CatchBadgeTone.neutral,
-              icon: value.rotates
-                  ? Icons.sync_alt_rounded
-                  : Icons.schedule_outlined,
-            ),
+            if (showRotationCadence)
+              CatchBadge(
+                label: value.rotates
+                    ? '${value.rotationIntervalMinutes} min rotations'
+                    : 'No timed rotation',
+                tone: value.rotates
+                    ? CatchBadgeTone.live
+                    : CatchBadgeTone.neutral,
+                icon: value.rotates
+                    ? Icons.sync_alt_rounded
+                    : Icons.schedule_outlined,
+              ),
+            if (showRevealCountdown && value.revealCountdownSeconds > 0)
+              CatchBadge(
+                label: '${value.revealCountdownSeconds}s reveal',
+                tone: CatchBadgeTone.neutral,
+                icon: Icons.timer_outlined,
+              ),
           ],
         ),
         gapH8,
         Text(value.unitKind.setupHint, style: CatchTextStyles.bodyS(context)),
         gapH12,
-        Text('Unit type', style: CatchTextStyles.labelL(context)),
+        Text('Flow type', style: CatchTextStyles.labelL(context)),
         gapH8,
         Wrap(
           spacing: CatchSpacing.s2,
@@ -89,10 +102,10 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 SizedBox(
                   width: itemWidth,
                   child: _StructureNumberField(
-                    label: 'Unit size',
+                    label: value.unitKind.peoplePerLabel,
                     detail: value.unitKind == EventSuccessUnitKind.wholeGroup
                         ? 'Whole-group formats use the target attendance.'
-                        : 'How many people should be in each unit.',
+                        : 'Target size for each ${value.unitKind.singularLabel}.',
                     child: CatchNumberStepper(
                       value: value.unitSize,
                       min: value.unitKind == EventSuccessUnitKind.wholeGroup
@@ -113,10 +126,10 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 SizedBox(
                   width: itemWidth,
                   child: _StructureNumberField(
-                    label: 'Unit count',
+                    label: value.unitKind.countLabel,
                     detail: value.unitKind.supportsUnitCount
-                        ? 'Set a host-owned count or let Catch calculate it.'
-                        : 'Whole-group formats keep one shared unit.',
+                        ? 'Set a host-owned count or let Catch estimate it from attendance.'
+                        : 'Whole-group formats keep everyone in one shared flow.',
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -151,20 +164,31 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                           ],
                         ),
                         gapH8,
-                        CatchNumberStepper(
-                          value: value.unitCount ?? estimatedUnitCount,
-                          min: 1,
-                          max: 40,
-                          formatValue: (number) =>
-                              '${number.toInt()} ${value.unitKind.label.toLowerCase()}',
-                          enabled:
-                              enabled &&
-                              value.unitKind.supportsUnitCount &&
-                              value.unitCount != null,
-                          onChanged: (number) => onChanged(
-                            value.copyWith(unitCount: number.toInt()),
+                        if (value.unitCount == null)
+                          Text(
+                            value.unitKind.supportsUnitCount
+                                ? 'Auto: about $estimatedUnitCount ${value.unitKind.label.toLowerCase()} from $targetAttendeeCount target attendees.'
+                                : 'One shared group for the full event.',
+                            style: CatchTextStyles.bodyS(
+                              context,
+                              color: t.ink2,
+                            ),
+                          )
+                        else
+                          CatchNumberStepper(
+                            value: value.unitCount ?? estimatedUnitCount,
+                            min: 1,
+                            max: 40,
+                            formatValue: (number) =>
+                                '${number.toInt()} ${value.unitKind.label.toLowerCase()}',
+                            enabled:
+                                enabled &&
+                                value.unitKind.supportsUnitCount &&
+                                value.unitCount != null,
+                            onChanged: (number) => onChanged(
+                              value.copyWith(unitCount: number.toInt()),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -173,46 +197,52 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             );
           },
         ),
-        gapH12,
-        Text('Rotation cadence', style: CatchTextStyles.labelL(context)),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final interval in const <int?>[null, 10, 15, 20, 30])
-              CatchChip(
-                label: interval == null ? 'No timed rotation' : '$interval min',
-                active: value.rotationIntervalMinutes == interval,
-                enabled: enabled,
-                onTap: enabled
-                    ? () => onChanged(
-                        value.copyWith(rotationIntervalMinutes: interval),
-                      )
-                    : null,
-              ),
-          ],
-        ),
-        gapH12,
-        Text('Reveal countdown', style: CatchTextStyles.labelL(context)),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final seconds in const [0, 5, 10, 15])
-              CatchChip(
-                label: seconds == 0 ? 'Off' : '${seconds}s',
-                active: value.revealCountdownSeconds == seconds,
-                enabled: enabled,
-                onTap: enabled
-                    ? () => onChanged(
-                        value.copyWith(revealCountdownSeconds: seconds),
-                      )
-                    : null,
-              ),
-          ],
-        ),
+        if (showRotationCadence) ...[
+          gapH12,
+          Text('Rotation cadence', style: CatchTextStyles.labelL(context)),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final interval in const <int?>[null, 10, 15, 20, 30])
+                CatchChip(
+                  label: interval == null
+                      ? 'No timed rotation'
+                      : '$interval min',
+                  active: value.rotationIntervalMinutes == interval,
+                  enabled: enabled,
+                  onTap: enabled
+                      ? () => onChanged(
+                          value.copyWith(rotationIntervalMinutes: interval),
+                        )
+                      : null,
+                ),
+            ],
+          ),
+        ],
+        if (showRevealCountdown) ...[
+          gapH12,
+          Text(revealCountdownLabel, style: CatchTextStyles.labelL(context)),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final seconds in const [0, 5, 10, 15])
+                CatchChip(
+                  label: seconds == 0 ? 'Off' : '${seconds}s',
+                  active: value.revealCountdownSeconds == seconds,
+                  enabled: enabled,
+                  onTap: enabled
+                      ? () => onChanged(
+                          value.copyWith(revealCountdownSeconds: seconds),
+                        )
+                      : null,
+                ),
+            ],
+          ),
+        ],
         if (!enabled) ...[
           gapH8,
           Text(
@@ -247,7 +277,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
       EventSuccessUnitKind.teams => value.copyWith(
         unitKind: kind,
         unitSize: value.unitSize.clamp(3, 8).toInt(),
-        unitCount: value.unitCount ?? 3,
+        unitCount: null,
         rotationIntervalMinutes: value.rotationIntervalMinutes,
       ),
       EventSuccessUnitKind.tables => value.copyWith(

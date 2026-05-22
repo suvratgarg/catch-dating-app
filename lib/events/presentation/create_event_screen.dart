@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -25,6 +26,7 @@ import 'package:catch_dating_app/events/presentation/widgets/create_event_step_h
 import 'package:catch_dating_app/events/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_details_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_success_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/events/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/where_step.dart';
@@ -57,7 +59,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
-  static const _totalSteps = 4;
+  static const _totalSteps = 5;
   final _pageController = PageController();
   int _currentStep = 0;
   Event? _createdEvent;
@@ -87,6 +89,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
   LocationCoordinate? _startingPoint;
+  String? _meetingLocationAddress;
+  String? _meetingLocationPlaceId;
 
   // Step 0 — Event details
   final _distanceController = TextEditingController();
@@ -111,13 +115,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventCancellationPolicyId _selectedCancellationPolicyId =
       EventCancellationPolicyId.standard;
   EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
-
-  GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
-    0 => _eventDetailsFormKey,
-    1 => _whereFormKey,
-    2 => _whenFormKey,
-    _ => _eventPolicyFormKey,
-  };
 
   DateTime? get _selectedStartDateTime {
     final selectedDate = _selectedDate;
@@ -160,6 +157,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       basePriceInPaise: basePriceInPaise,
       inviteCodeHint: _inviteCodeHint,
     );
+  }
+
+  int get _eventSuccessTargetAttendeeCount {
+    final parsed = int.tryParse(_capacityController.text.trim());
+    if (parsed == null || parsed < 1) return 20;
+    return parsed;
   }
 
   VoidCallback? get _decreaseDurationCallback =>
@@ -258,18 +261,30 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   Future<void> _pickLocation() async {
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
-    final result = await Navigator.of(context).push<LocationCoordinate>(
+    final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           countryIsoCode: countryIsoCodeForCityName(widget.club.location),
-          initialLocation: _startingPoint ?? deviceLocation,
+          initialLocation: _startingPoint,
+          initialCenter: _startingPoint ?? deviceLocation,
+          initialLabel: _startingPoint == null
+              ? null
+              : _trimmedTextOrNull(_meetingPointController),
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
       ),
     );
     if (result != null) {
-      setState(() => _startingPoint = result);
+      setState(() {
+        _startingPoint = result.coordinate;
+        _meetingLocationAddress = result.address;
+        _meetingLocationPlaceId = result.placeId;
+        final placeName = result.displayName;
+        if (placeName != null) {
+          _meetingPointController.text = placeName;
+        }
+      });
     }
   }
 
@@ -332,8 +347,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  bool _validateCurrentStep() =>
-      _currentStepKey.currentState?.validate() ?? true;
+  bool _validateCurrentStep() {
+    final formKey = switch (_currentStep) {
+      0 => _eventDetailsFormKey,
+      1 => _whereFormKey,
+      2 => _whenFormKey,
+      3 => _eventPolicyFormKey,
+      _ => null,
+    };
+    return formKey?.currentState?.validate() ?? true;
+  }
 
   bool _validateCurrentSchedule() {
     if (_currentStep != 2) return true;
@@ -349,6 +372,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void _submit() {
     final startTime = _selectedStartDateTime!;
     final endTime = startTime.add(Duration(minutes: _durationMinutes));
+    final meetingLocation = _currentMeetingLocation;
+    if (meetingLocation == null) return;
 
     CreateEventController.submitMutation.run(ref, (tx) async {
       final createdEvent = await tx
@@ -357,10 +382,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             clubId: widget.club.id,
             startTime: startTime,
             endTime: endTime,
-            meetingPoint: _meetingPointController.text.trim(),
-            startingPointLat: _startingPoint?.latitude,
-            startingPointLng: _startingPoint?.longitude,
-            locationDetails: _trimmedTextOrNull(_locationDetailsController),
+            meetingLocation: meetingLocation,
             eventFormat: EventFormatSnapshot.fromActivityKind(
               _selectedActivityKind,
             ),
@@ -410,6 +432,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     paceName: _selectedPace?.name,
     meetingPoint: _trimmedTextOrNull(_meetingPointController),
     locationDetails: _trimmedTextOrNull(_locationDetailsController),
+    meetingLocationAddress: _meetingLocationAddress,
+    meetingLocationPlaceId: _meetingLocationPlaceId,
     startingPointLat: _startingPoint?.latitude,
     startingPointLng: _startingPoint?.longitude,
     selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
@@ -480,6 +504,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       if (draft.locationDetails != null) {
         _locationDetailsController.text = draft.locationDetails!;
       }
+      _meetingLocationAddress = draft.meetingLocationAddress;
+      _meetingLocationPlaceId = draft.meetingLocationPlaceId;
       if (draft.startingPointLat != null && draft.startingPointLng != null) {
         _startingPoint = LocationCoordinate(
           draft.startingPointLat!,
@@ -562,6 +588,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       paceName: _selectedPace?.name,
       meetingPoint: _trimmedTextOrNull(_meetingPointController),
       locationDetails: _trimmedTextOrNull(_locationDetailsController),
+      meetingLocationAddress: _meetingLocationAddress,
+      meetingLocationPlaceId: _meetingLocationPlaceId,
       startingPointLat: _startingPoint?.latitude,
       startingPointLng: _startingPoint?.longitude,
       selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
@@ -626,11 +654,26 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return text.isEmpty ? null : text;
   }
 
+  EventMeetingLocation? get _currentMeetingLocation {
+    final coordinate = _startingPoint;
+    final name = _trimmedTextOrNull(_meetingPointController);
+    if (coordinate == null || name == null) return null;
+    return EventMeetingLocation(
+      name: name,
+      address: _meetingLocationAddress,
+      placeId: _meetingLocationPlaceId,
+      latitude: coordinate.latitude,
+      longitude: coordinate.longitude,
+      notes: _trimmedTextOrNull(_locationDetailsController),
+    ).normalized();
+  }
+
   static String _stepTitle(int step) => switch (step) {
     0 => 'Event basics',
-    1 => 'Venue & meet point',
+    1 => 'Meeting location',
     2 => 'When is the event?',
     3 => 'Event policy',
+    4 => 'Live event guide',
     _ => throw RangeError.range(step, 0, _totalSteps - 1, 'step'),
   };
 
@@ -794,7 +837,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         _selectedPace = null;
                       }
                       _eventSuccessDefaults = widget.club.hostDefaults
-                          .eventSuccessForActivity(activityKind);
+                          .eventSuccessForActivity(
+                            activityKind,
+                            targetAttendeeCount:
+                                _eventSuccessTargetAttendeeCount,
+                          );
                     }),
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
@@ -804,6 +851,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     meetingPointController: _meetingPointController,
                     locationDetailsController: _locationDetailsController,
                     startingPoint: _startingPoint,
+                    onMeetingPointChanged: (_) => setState(() {}),
                     onPickLocation: _pickLocation,
                   ),
                   WhenStep(
@@ -844,8 +892,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     onCancellationPolicyChanged: (policyId) => setState(
                       () => _selectedCancellationPolicyId = policyId,
                     ),
+                  ),
+                  EventSuccessStep(
                     activityKind: _selectedActivityKind,
                     eventSuccessDefaults: _eventSuccessDefaults,
+                    targetAttendeeCount: _eventSuccessTargetAttendeeCount,
                     onEventSuccessDefaultsChanged: (defaults) =>
                         setState(() => _eventSuccessDefaults = defaults),
                   ),
@@ -853,7 +904,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               ),
             ),
             if (submitMutation.hasError)
-              ErrorBanner(message: mutationErrorMessage(submitMutation)),
+              ErrorBanner(
+                message: mutationErrorMessage(
+                  submitMutation,
+                  context: AppErrorContext.event,
+                ),
+              ),
             StepperFooter(
               isLastStep: _currentStep == _totalSteps - 1,
               isLoading: submitMutation.isPending,

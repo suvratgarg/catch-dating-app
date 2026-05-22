@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -139,6 +141,68 @@ void main() {
     expect(find.text('Live host mode'), findsNothing);
     expect(find.text('Next'), findsNothing);
     expect(find.text('Mark live guide complete'), findsNothing);
+  });
+
+  testWidgets('host live guide skips live streams until setup is saved', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-unsaved-live-guide');
+    final rosterController = StreamController<EventParticipationRoster>();
+    final assignmentsController =
+        StreamController<List<EventSuccessAssignment>>();
+    final rotationAssignmentsController =
+        StreamController<List<EventSuccessAssignment>>();
+    final preferencesController =
+        StreamController<List<EventSuccessPreference>>();
+    final wingmanRequestsController =
+        StreamController<List<EventSuccessWingmanRequest>>();
+    addTearDown(() {
+      rosterController.close();
+      assignmentsController.close();
+      rotationAssignmentsController.close();
+      preferencesController.close();
+      wingmanRequestsController.close();
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+          watchEventParticipationRosterProvider(
+            event.id,
+          ).overrideWith((ref) => rosterController.stream),
+          watchEventSuccessAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => assignmentsController.stream),
+          watchEventSuccessRotationAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => rotationAssignmentsController.stream),
+          watchEventSuccessPreferencesProvider(
+            event.id,
+          ).overrideWith((ref) => preferencesController.stream),
+          watchEventSuccessWingmanRequestsProvider(
+            event.id,
+          ).overrideWith((ref) => wingmanRequestsController.stream),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: EventSuccessHostSection(
+              event: event,
+              initialTab: EventSuccessHostTab.live,
+              showTabs: false,
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Live mode needs saved setup'), findsOneWidget);
+    expect(find.text('Live host mode'), findsNothing);
   });
 
   testWidgets('host report is hidden when host analytics is disabled', (
