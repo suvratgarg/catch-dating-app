@@ -369,7 +369,7 @@ class _ActivityItem {
       items.add(
         _ActivityItem(
           title: _eventReminderTitle(event.startTime, now),
-          subtitle: '${event.meetingPoint} · ${event.activitySummaryLabel}',
+          subtitle: '${event.locationName} · ${event.activitySummaryLabel}',
           createdAt: reminderAt,
           icon: Icons.directions_run_rounded,
           route: Routes.eventDetailScreen.path

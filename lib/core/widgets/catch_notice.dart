@@ -6,6 +6,9 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'catch_notice.g.dart';
 
 enum CatchNoticeTone { status, success, warning, danger, event }
 
@@ -61,12 +64,8 @@ class AppNoticeQueue {
   AppNotice? get current => notices.isEmpty ? null : notices.first;
 }
 
-final appNoticeControllerProvider =
-    NotifierProvider<AppNoticeController, AppNoticeQueue>(
-      AppNoticeController.new,
-    );
-
-class AppNoticeController extends Notifier<AppNoticeQueue> {
+@Riverpod(keepAlive: true)
+class AppNoticeController extends _$AppNoticeController {
   @override
   AppNoticeQueue build() => const AppNoticeQueue();
 

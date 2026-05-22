@@ -500,7 +500,7 @@ class _EventFocusCard extends StatelessWidget {
                 gapH6,
                 _EventFocusMetaLine(
                   icon: Icons.location_on_outlined,
-                  label: item.event.meetingPoint,
+                  label: item.event.locationName,
                 ),
                 gapH6,
                 _EventFocusMetaLine(

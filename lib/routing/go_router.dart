@@ -108,6 +108,14 @@ enum Routes {
   final String path;
 }
 
+HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
+  return switch (state.uri.queryParameters['section']) {
+    'live' => HostEventManageSection.live,
+    'report' => HostEventManageSection.report,
+    _ => HostEventManageSection.setup,
+  };
+}
+
 // Navigator keys are file-level so they are created once for the app lifetime.
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _dashboardShellKey = GlobalKey<NavigatorState>();
@@ -248,6 +256,7 @@ GoRouter goRouter(Ref ref) {
             final Event event => event,
             _ => null,
           },
+          initialSection: _hostManageSectionFromState(state),
         ),
       ),
       GoRoute(
@@ -260,6 +269,7 @@ GoRouter goRouter(Ref ref) {
             final Event event => event,
             _ => null,
           },
+          initialSection: _hostManageSectionFromState(state),
         ),
       ),
       GoRoute(
