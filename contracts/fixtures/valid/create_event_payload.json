@@ -4,6 +4,14 @@
   "startTimeMillis": 1778889600000,
   "endTimeMillis": 1778893800000,
   "meetingPoint": "Race Course Road gate",
+  "meetingLocation": {
+    "name": "Race Course Road gate",
+    "address": "Race Course Road, Indore",
+    "placeId": "race-course-road-gate",
+    "latitude": 22.7196,
+    "longitude": 75.8577,
+    "notes": "Meet near the main gate."
+  },
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
@@ -13,6 +21,35 @@
     "activityKind": "socialRun",
     "interactionModel": "pacePods",
     "defaultPlaybookId": "social_run_light"
+  },
+  "eventSuccessDefaults": {
+    "enabled": true,
+    "playbookId": "social_run_light",
+    "selectedModuleIds": [
+      "qr_check_in",
+      "micro_pods",
+      "social_missions",
+      "wingman_requests",
+      "contextual_openers",
+      "decomposed_feedback",
+      "host_analytics",
+      "safety_controls"
+    ],
+    "structureConfig": {
+      "unitKind": "wholeGroup",
+      "unitSize": 12,
+      "unitCount": 1,
+      "rotationIntervalMinutes": null,
+      "revealCountdownSeconds": 10
+    },
+    "hostGoal": "Make it easy for attendees to meet two new people.",
+    "wingmanRequestsEnabled": true,
+    "contextualOpenersEnabled": true,
+    "compatibilityAffectsRanking": false,
+    "questionnaireConfig": {
+      "templateId": "balanced"
+    },
+    "attendeePrompt": "Ask someone what route they want to try next."
   },
   "distanceKm": 5,
   "pace": "easy",

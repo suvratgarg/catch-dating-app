@@ -11,8 +11,8 @@ enum EventSocialIntensity {
   guided('Guided', 'Host-led prompts and small group structure.'),
   structured('Structured', 'Planned rotations, teams, or timed moments.'),
   algorithmic(
-    'Algorithmic',
-    'Questionnaires, compatibility clues, and reveal.',
+    'Reveal-led',
+    'Short questions, match clues, and live reveal moments.',
   );
 
   const EventSocialIntensity(this.label, this.description);
@@ -67,7 +67,7 @@ enum EventSuccessProductLayer {
   ),
   compatibility(
     'Compatibility',
-    'Uses questionnaire and preference signals to explain good matches.',
+    'Uses short answers and preferences to create better reveal clues.',
   ),
   liveReveal(
     'Live reveal',
@@ -280,6 +280,43 @@ class EventSuccessScorecard {
   final int assignmentParticipantCount;
   final int assignmentOptOutCount;
   final int wingmanRequestCount;
+
+  EventSuccessScorecard copyWith({
+    int? bookedCount,
+    int? checkedInCount,
+    int? attendeesWhoMetTwoPlusPeople,
+    int? mutualMatchCount,
+    int? chatStartedCount,
+    int? repeatSignupCount,
+    double? averageWelcomeRating,
+    double? averageStructureRating,
+    int? safetyIncidentCount,
+    int? feedbackResponseCount,
+    int? assignmentParticipantCount,
+    int? assignmentOptOutCount,
+    int? wingmanRequestCount,
+  }) {
+    return EventSuccessScorecard(
+      bookedCount: bookedCount ?? this.bookedCount,
+      checkedInCount: checkedInCount ?? this.checkedInCount,
+      attendeesWhoMetTwoPlusPeople:
+          attendeesWhoMetTwoPlusPeople ?? this.attendeesWhoMetTwoPlusPeople,
+      mutualMatchCount: mutualMatchCount ?? this.mutualMatchCount,
+      chatStartedCount: chatStartedCount ?? this.chatStartedCount,
+      repeatSignupCount: repeatSignupCount ?? this.repeatSignupCount,
+      averageWelcomeRating: averageWelcomeRating ?? this.averageWelcomeRating,
+      averageStructureRating:
+          averageStructureRating ?? this.averageStructureRating,
+      safetyIncidentCount: safetyIncidentCount ?? this.safetyIncidentCount,
+      feedbackResponseCount:
+          feedbackResponseCount ?? this.feedbackResponseCount,
+      assignmentParticipantCount:
+          assignmentParticipantCount ?? this.assignmentParticipantCount,
+      assignmentOptOutCount:
+          assignmentOptOutCount ?? this.assignmentOptOutCount,
+      wingmanRequestCount: wingmanRequestCount ?? this.wingmanRequestCount,
+    );
+  }
 
   double get checkInRate => _rate(checkedInCount, bookedCount);
 

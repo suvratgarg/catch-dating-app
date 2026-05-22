@@ -1,12 +1,13 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'celebration_effects_controller.g.dart';
 
 enum CelebrationMomentKind { eventCreated, eventJoined, eventCheckedIn, match }
 
-final celebrationEffectsControllerProvider =
-    Provider<CelebrationEffectsController>(
-      (ref) => const CelebrationEffectsController(),
-    );
+@Riverpod(keepAlive: true)
+CelebrationEffectsController celebrationEffectsController(Ref ref) =>
+    const CelebrationEffectsController();
 
 class CelebrationEffectsController {
   const CelebrationEffectsController();

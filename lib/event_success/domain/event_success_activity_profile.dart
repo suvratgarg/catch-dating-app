@@ -239,13 +239,13 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
     EventSuccessModuleCatalog.wingmanRequests.id:
         'Explicit host-help requests let shy attendees ask for a natural introduction while the room is live.',
     EventSuccessModuleCatalog.contextualOpeners.id:
-        'Post-match openers use event context without exposing private questionnaire answers.',
+        'Post-match openers use event context without exposing private answers.',
     EventSuccessModuleCatalog.decomposedFeedback.id:
         'Feedback should be specific enough to improve the next event without becoming a public score.',
     EventSuccessModuleCatalog.hostAnalytics.id:
         'Hosts need a short coaching summary, not a wall of metrics.',
     EventSuccessModuleCatalog.safetyControls.id:
-        'Blocks, reports, visibility, and opt-outs have to apply across every event-success surface.',
+        'Blocks, reports, visibility, and opt-outs have to apply across every live guide surface.',
   };
 
   switch (activityKind.defaultInteractionModel) {
@@ -271,17 +271,17 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.microPods.id:
             'A separate pod layer competes with the court-pair structure.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
-            'Optional answers can add clues or softly boost partner ranking after safety and interest checks.',
+            'Optional answers can add clues or softly guide partner suggestions after safety and interest checks.',
       };
     case EventInteractionModel.teamRotations:
       return {
         ...common,
         EventSuccessModuleCatalog.microPods.id:
-            'For quiz formats this is the team assignment layer.',
+            'For quiz formats this is the team setup.',
         EventSuccessModuleCatalog.liveReveal.id:
             'Team reveals give the host a clear start moment without showing every future move.',
         EventSuccessModuleCatalog.guidedRotations.id:
-            'Pair rotations are not the core unit for a quiz; keep this advanced until team reshuffles need it.',
+            'Pair rotations are not the main quiz structure; keep this advanced until team reshuffles need it.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Answers can help balance teams or generate clues when the host wants a more dating-forward quiz.',
       };
@@ -293,7 +293,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.liveReveal.id:
             'Table reveals are useful for anticipation, but should follow the seating plan.',
         EventSuccessModuleCatalog.microPods.id:
-            'Tables are already the group unit; a separate pod toggle adds confusion.',
+            'Tables already define the room structure; a separate pod toggle adds confusion.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Answers are useful for seating clues and soft table placement.',
       };
@@ -307,7 +307,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.microPods.id:
             'Pods can help arrival, but should not replace the main reveal or rotation flow.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
-            'This is the right format for questionnaire clues and optional ranking.',
+            'This is the right format for clue questions and suggested pairings.',
       };
     case EventInteractionModel.hostLedProgram:
       return {
@@ -317,7 +317,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.guidedRotations.id:
             'Timed pair rotations do not fit the core class structure.',
         EventSuccessModuleCatalog.liveReveal.id:
-            'Reveal ceremonies need an assignment layer and are not part of the default class flow.',
+            'Reveal ceremonies need a pod or rotation plan and are not part of the default class flow.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Optional answers can support post-event context without changing the class.',
       };
@@ -329,7 +329,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.guidedRotations.id:
             'Use only when the host turns the open event into a structured assignment flow.',
         EventSuccessModuleCatalog.liveReveal.id:
-            'Use only with a selected assignment layer.',
+            'Use only with selected pods or rotations.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Use when the host wants clues or compatibility context.',
       };
@@ -343,14 +343,14 @@ String _summaryFor(ActivityKind activityKind) {
     EventInteractionModel.pairedRotations =>
       'Use the natural court/pair structure: timed rounds, partner reveals, and optional compatibility clues.',
     EventInteractionModel.teamRotations =>
-      'Treat teams as the assignment unit. Balance arrivals, reveal teams, and use prompts between rounds.',
+      'Plan around teams. Balance arrivals, reveal teams, and use prompts between rounds.',
     EventInteractionModel.seatedTable =>
-      'Use tables as the assignment unit. Add rotations only when the host has a clear course or seat-change cadence.',
+      'Plan around tables. Add rotations only when the host has a clear course or seat-change cadence.',
     EventInteractionModel.freeFormMixer =>
       'Create kinetic reveal moments with countdowns, clues, and structured rounds while keeping interest private.',
     EventInteractionModel.hostLedProgram =>
       'Keep the class or program intact. Add arrival, light prompts, follow-up, and feedback around the edges.',
     EventInteractionModel.openFormat =>
-      'Start with the basic safety, attendance, prompt, and follow-up layer; let the host opt into structure.',
+      'Start with basic safety, attendance, prompt, and follow-up tools; let the host opt into structure.',
   };
 }

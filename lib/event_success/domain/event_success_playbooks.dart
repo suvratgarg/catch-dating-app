@@ -50,7 +50,7 @@ abstract final class EventSuccessModuleCatalog {
     productLayer: EventSuccessProductLayer.eventStructure,
     stage: EventSuccessStage.opening,
     attendeePromise: 'The room gets clear social permission to talk.',
-    hostPromise: 'Gives non-professional hosts a simple run-of-show.',
+    hostPromise: 'Gives non-professional hosts a simple live guide.',
     setupSteps: [
       'Prepare a welcome line, safety note, and first prompt.',
       'Keep the script short enough to use live.',
@@ -143,12 +143,13 @@ abstract final class EventSuccessModuleCatalog {
 
   static const compatibilityQuestionnaire = EventSuccessModule(
     id: 'compatibility_questionnaire',
-    title: 'Compatibility questionnaire',
+    title: 'Match clue questions',
     type: EventSuccessModuleType.compatibilityQuestionnaire,
     productLayer: EventSuccessProductLayer.compatibility,
     stage: EventSuccessStage.before,
     attendeePromise: 'Matching moments have a reason beyond looks.',
-    hostPromise: 'Supports clues, reveal, and post-event matching experiments.',
+    hostPromise:
+        'Creates reveal clues and optional pairing context without promising chemistry.',
     enabledByDefault: false,
     setupSteps: [
       'Ask fewer than ten questions in the first version.',
@@ -156,7 +157,7 @@ abstract final class EventSuccessModuleCatalog {
       'Explain compatibility as conversation context, not destiny.',
     ],
     riskControls: [
-      'Avoid implying the algorithm can predict chemistry.',
+      'Avoid implying Catch can predict chemistry.',
       'Do not block organic interaction before the reveal.',
     ],
   );
@@ -202,7 +203,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const decomposedFeedback = EventSuccessModule(
     id: 'decomposed_feedback',
-    title: 'Decomposed feedback',
+    title: 'Private feedback',
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,
@@ -211,13 +212,13 @@ abstract final class EventSuccessModuleCatalog {
         'Separates welcome, balance, structure, safety, and chemistry.',
     setupSteps: [
       'Ask short dimension-level questions after the event.',
-      'Use coaching summaries before public ranking changes.',
+      'Use private summaries before drawing public conclusions.',
     ],
   );
 
   static const hostAnalytics = EventSuccessModule(
     id: 'host_analytics',
-    title: 'Host analytics and coach',
+    title: 'Host recap',
     type: EventSuccessModuleType.hostAnalytics,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.hostDebrief,
@@ -325,7 +326,7 @@ abstract final class EventSuccessMetricCatalog {
     id: 'dimension_ratings',
     label: 'Dimension ratings',
     description: 'Welcome, crowd balance, structure, safety, and venue scores.',
-    target: 'Use private coaching before public ranking penalties.',
+    target: 'Use private coaching before public host-quality labels.',
   );
 
   static const repeatAttendance = EventSuccessMetric(
@@ -758,7 +759,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Did host-help requests create more live introductions?',
     ],
     wiringNotes: [
-      'This playbook is the fallback for activities whose core unit is the whole group.',
+      'This playbook is the fallback for activities whose default flow keeps everyone together.',
     ],
   );
 
@@ -768,7 +769,7 @@ abstract final class EventSuccessPlaybookLibrary {
     activityType: ActivityKind.singlesMixer,
     socialIntensity: EventSocialIntensity.algorithmic,
     summary:
-        'A mixer format with optional questionnaires, clues, reveal moments, host help, and explanations.',
+        'A mixer format with short questions, clues, reveal moments, host help, and explanations.',
     attendeePromise:
         'The event has a shared ritual, but chemistry is still yours to judge.',
     hostPromise:
@@ -796,7 +797,7 @@ abstract final class EventSuccessPlaybookLibrary {
     runOfShow: [
       EventRunOfShowStep(
         stage: EventSuccessStage.before,
-        title: 'Short questionnaire',
+        title: 'Quick questions',
         durationMinutes: 4,
         hostInstruction:
             'Use questions that set up conversation, not permanence.',
@@ -815,9 +816,8 @@ abstract final class EventSuccessPlaybookLibrary {
         stage: EventSuccessStage.mixing,
         title: 'Rounds and reveal',
         durationMinutes: 45,
-        hostInstruction: 'Event two or three rounds before any match reveal.',
-        attendeeExperience:
-            'Meet people before seeing algorithmic suggestions.',
+        hostInstruction: 'Run two or three rounds before any match reveal.',
+        attendeeExperience: 'Meet people before seeing suggested matches.',
         moduleIds: ['guided_rotations', 'live_reveal', 'social_missions'],
       ),
       EventRunOfShowStep(
@@ -834,7 +834,7 @@ abstract final class EventSuccessPlaybookLibrary {
     metrics: EventSuccessMetricCatalog.core,
     antiPatterns: [
       'Do not sell compatibility as a guarantee of spark.',
-      'Do not reveal too early; people should meet before algorithmic framing.',
+      'Do not reveal too early; people should meet before match framing.',
       'Do not make phone use dominate the room.',
     ],
     iterationQuestions: [

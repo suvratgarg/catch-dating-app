@@ -68,7 +68,20 @@
         { "name": "photoIndex", "tsType": "number" },
         { "name": "promptId", "tsType": "string" },
         { "name": "prompt", "tsType": "string" },
-        { "name": "caption", "tsType": "string" }
+        { "name": "caption", "tsType": "string | null", "optional": true }
+      ]
+    },
+    {
+      "name": "EventMeetingLocation",
+      "collectionPath": "embedded event meeting location",
+      "comment": "Canonical meeting location stored inside events and accepted by event callables during the legacy location-field migration.",
+      "fields": [
+        { "name": "name", "tsType": "string" },
+        { "name": "address", "tsType": "string | null", "optional": true },
+        { "name": "placeId", "tsType": "string | null", "optional": true },
+        { "name": "latitude", "tsType": "number" },
+        { "name": "longitude", "tsType": "number" },
+        { "name": "notes", "tsType": "string | null", "optional": true }
       ]
     },
     {

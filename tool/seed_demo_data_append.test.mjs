@@ -136,7 +136,6 @@ test("seed public profiles carry thumbnail URLs for tiny avatar surfaces", () =>
       photoIndex: 0,
       promptId: "proofIRun",
       prompt: "Proof I actually event",
-      caption: "Race morning.",
     }],
     preferredRunTimes: ["morning"],
   };

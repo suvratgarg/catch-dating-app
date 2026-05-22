@@ -1,19 +1,19 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -23,11 +23,13 @@ class ProfilePhotoEditorScreen extends ConsumerStatefulWidget {
     required this.index,
     this.photo,
     this.initialImage,
+    this.canDelete = false,
   });
 
   final int index;
   final ProfilePhoto? photo;
   final XFile? initialImage;
+  final bool canDelete;
 
   @override
   ConsumerState<ProfilePhotoEditorScreen> createState() =>
@@ -39,6 +41,7 @@ Future<bool?> openProfilePhotoEditor({
   required WidgetRef ref,
   required int index,
   ProfilePhoto? photo,
+  bool canDelete = false,
 }) async {
   XFile? initialImage;
   if (photo == null) {
@@ -55,6 +58,7 @@ Future<bool?> openProfilePhotoEditor({
         index: index,
         photo: photo,
         initialImage: initialImage,
+        canDelete: canDelete,
       ),
     ),
   );
@@ -63,32 +67,21 @@ Future<bool?> openProfilePhotoEditor({
 class _ProfilePhotoEditorScreenState
     extends ConsumerState<ProfilePhotoEditorScreen> {
   final _cropKey = GlobalKey();
-  late final TextEditingController _captionController;
-  late PhotoPromptDefinition _definition;
+  String? _promptId;
   Uint8List? _imageBytes;
   bool _loadingImage = false;
   bool _saving = false;
+  bool _deleting = false;
 
   @override
   void initState() {
     super.initState();
     final existingPrompt = widget.photo?.prompt;
-    _definition = existingPrompt == null
-        ? defaultPhotoPromptForIndex(widget.index)
-        : photoPromptDefinition(existingPrompt.promptId);
-    _captionController = TextEditingController(
-      text: existingPrompt?.caption ?? '',
-    );
+    _promptId = existingPrompt?.promptId;
     final initialImage = widget.initialImage;
     if (initialImage != null) {
       unawaited(_setImage(initialImage));
     }
-  }
-
-  @override
-  void dispose() {
-    _captionController.dispose();
-    super.dispose();
   }
 
   Future<void> _setImage(XFile image) async {
@@ -128,19 +121,18 @@ class _ProfilePhotoEditorScreenState
   }
 
   Future<void> _save() async {
-    if (_saving || _loadingImage) return;
+    if (_saving || _deleting || _loadingImage) return;
     final hasExistingPhoto = widget.photo != null;
     if (!hasExistingPhoto && _imageBytes == null) return;
 
     setState(() => _saving = true);
     try {
-      final caption = normalizePhotoPromptCaption(_captionController.text);
-      final prompt = caption.isEmpty
+      final selectedDefinition = _selectedDefinition;
+      final prompt = selectedDefinition == null
           ? null
           : photoPromptAnswerFor(
               photoIndex: widget.index,
-              definition: _definition,
-              caption: caption,
+              definition: selectedDefinition,
             );
       final croppedImage = await _croppedImageFile();
       await PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
@@ -158,25 +150,51 @@ class _ProfilePhotoEditorScreenState
     }
   }
 
+  Future<void> _deletePhoto() async {
+    if (!widget.canDelete || widget.photo == null || _saving || _deleting) {
+      return;
+    }
+    final confirmed = await showConfirmDangerDialog(
+      context: context,
+      title: 'Delete photo?',
+      message: 'This removes the photo from your profile.',
+      confirmLabel: 'Delete',
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _deleting = true);
+    try {
+      await PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+        await tx
+            .get(photoUploadControllerProvider.notifier)
+            .deletePhoto(widget.index);
+      });
+      if (mounted) Navigator.of(context).pop(true);
+    } finally {
+      if (mounted) setState(() => _deleting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final hasEditableImage = _imageBytes != null;
     final canSave =
         !_saving &&
+        !_deleting &&
         !_loadingImage &&
         (widget.photo != null || hasEditableImage);
+    final promptChoices = _PhotoPromptChoice.values();
+    final selectedPromptChoice = promptChoices.firstWhere(
+      (choice) => choice.id == _promptId,
+      orElse: () => promptChoices.first,
+    );
+    final canDelete = widget.photo != null && widget.canDelete;
 
     return Scaffold(
       backgroundColor: t.bg,
       appBar: AppBar(
         title: Text(widget.photo == null ? 'Add photo' : 'Edit photo'),
-        actions: [
-          CatchTextButton(
-            label: _saving ? 'Saving' : 'Save',
-            onPressed: canSave ? _save : null,
-          ),
-        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -207,48 +225,66 @@ class _ProfilePhotoEditorScreenState
               ),
             ),
             gapH16,
-            CatchButton(
-              label: widget.photo == null ? 'Choose photo' : 'Replace photo',
-              onPressed: _saving ? null : _replaceImage,
-              icon: const Icon(Icons.photo_library_outlined),
-              fullWidth: true,
+            CatchFormFieldLabel(label: 'Photo prompt', isOptional: true),
+            gapH8,
+            CatchSelectMenu<_PhotoPromptChoice>(
+              values: promptChoices,
+              value: selectedPromptChoice,
+              itemLabel: (choice) => choice.label,
+              semanticLabel: 'Photo prompt',
+              prefixIcon: const Icon(Icons.auto_awesome_outlined),
+              onChanged: _saving || _deleting
+                  ? null
+                  : (choice) => setState(() => _promptId = choice?.id),
             ),
             gapH20,
-            DropdownButtonFormField<PhotoPromptDefinition>(
-              initialValue: _definition,
-              decoration: const InputDecoration(labelText: 'Photo prompt'),
-              items: [
-                for (final definition in photoPromptCatalog)
-                  DropdownMenuItem(
-                    value: definition,
-                    child: Text(definition.title),
-                  ),
-              ],
-              onChanged: _saving
-                  ? null
-                  : (definition) {
-                      if (definition == null) return;
-                      setState(() => _definition = definition);
-                    },
+            CatchButton(
+              label: _saving ? 'Saving' : 'Save changes',
+              onPressed: canSave ? _save : null,
+              isLoading: _saving,
+              fullWidth: true,
             ),
-            gapH16,
-            CatchTextField(
-              label: 'Caption',
-              controller: _captionController,
-              enabled: !_saving,
-              maxLines: 3,
-              textCapitalization: TextCapitalization.sentences,
-              hintText: _definition.placeholder,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(
-                  maximumPhotoPromptCaptionLength,
+            gapH12,
+            CatchButton(
+              label: widget.photo == null ? 'Choose photo' : 'Change photo',
+              onPressed: _saving || _deleting ? null : _replaceImage,
+              icon: const Icon(Icons.photo_library_outlined),
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
+            ),
+            if (widget.photo != null) ...[
+              gapH12,
+              CatchButton(
+                label: _deleting ? 'Deleting' : 'Delete photo',
+                onPressed: canDelete ? _deletePhoto : null,
+                isLoading: _deleting,
+                icon: const Icon(Icons.delete_outline_rounded),
+                variant: CatchButtonVariant.danger,
+                fullWidth: true,
+                semanticsLabel: canDelete
+                    ? 'Delete photo ${widget.index + 1}'
+                    : 'Delete photo unavailable',
+              ),
+              if (!widget.canDelete) ...[
+                gapH8,
+                Text(
+                  'Keep at least $minimumProfilePhotoCount photos on your profile.',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: t.ink2),
                 ),
               ],
-            ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  PhotoPromptDefinition? get _selectedDefinition {
+    final id = _promptId;
+    if (id == null) return null;
+    return photoPromptDefinition(id);
   }
 }
 
@@ -299,4 +335,17 @@ class _PhotoEditorPreview extends StatelessWidget {
       ),
     );
   }
+}
+
+final class _PhotoPromptChoice {
+  const _PhotoPromptChoice({required this.id, required this.label});
+
+  final String? id;
+  final String label;
+
+  static List<_PhotoPromptChoice> values() => [
+    const _PhotoPromptChoice(id: null, label: 'No prompt'),
+    for (final definition in photoPromptCatalog)
+      _PhotoPromptChoice(id: definition.id, label: definition.title),
+  ];
 }

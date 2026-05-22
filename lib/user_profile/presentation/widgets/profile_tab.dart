@@ -397,6 +397,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
             ref: ref,
             index: index,
             photo: index < profilePhotos.length ? profilePhotos[index] : null,
+            canDelete: profilePhotos.length > minimumProfilePhotoCount,
           ),
         ),
         onDeletePhoto: (index) => unawaited(

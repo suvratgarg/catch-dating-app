@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.6.1
-updated: 2026-05-21
+version: 1.7.0
+updated: 2026-05-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -128,13 +128,46 @@ If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
 workflow for intentional redeploys or environment-specific recovery.
 
-Current note from the 2026-05-20 environment pass: the latest automatic dev
-deploy on `main` failed because Firebase CLI could not query Cloud Billing API
-for `catchdates-dev`. `cloudbilling.googleapis.com` is now enabled in dev,
-staging, and prod. The next deploy candidate must include the current
-`tool/deploy_firebase_targets.sh` wrapper fix so the logical `functions` target
-expands to explicit callable names and does not prompt to delete legacy live
-run/run-club functions in non-interactive CI.
+Current note from the 2026-05-20 environment pass: the Cloud Billing API
+blocker is resolved in dev, staging, and prod, and the latest automatic
+`Firebase Dev Deploy` run on `main` passed. Keep using
+`tool/deploy_firebase_targets.sh` so the logical `functions` target expands to
+explicit callable names and does not prompt to delete legacy live run/run-club
+functions in non-interactive CI.
+
+## Release Setup Evidence Snapshot
+
+Current setup/build/signing/distribution verdict: there is no known local
+build, Firebase, Firestore, App Check, Gradle, Xcode, Apple signing, Developer
+ID, notarization, or trust-chain blocker remaining in the current workspace.
+
+Verified setup state:
+
+- Web builds, Android signed APK/AAB creation, iOS App Store IPA export, and
+  macOS release builds have passed in the current release setup evidence.
+- Android upload-key SHA-1/SHA-256 fingerprints are registered on Firebase for
+  the currently verified upload artifacts.
+- Firebase App Check provider configs and enforcement are verified for active
+  Android, iOS/macOS, and web registrations.
+- Direct macOS distribution is Developer ID signed, timestamped, notarized,
+  stapled, and Gatekeeper accepted.
+- TestFlight upload/install/launch and iOS Maps behavior are confirmed through
+  App Store Connect/Xcode Cloud evidence.
+
+Still outside this setup verdict:
+
+- Android real-device smoke testing remains hardware-gated until an authorized
+  Android phone is connected.
+- macOS phone-auth runtime behavior is intentionally deferred because Firebase
+  Auth `verifyPhoneNumber()` is unavailable on macOS.
+- Play internal testing, store metadata, privacy/data-safety forms,
+  screenshots, legal/support URLs, and production Crashlytics/Analytics
+  dashboard validation remain release-management/product tasks.
+- Play app-signing certificate fingerprints still need to be added to Firebase
+  after Play Console enrollment. Local upload-key fingerprints are already
+  registered.
+- Mac App Store distribution has not been validated. Direct Developer ID
+  distribution is validated.
 
 ## App Version And Force-Update Gate
 
@@ -508,8 +541,7 @@ Migration checklist:
 3. Prove one full GitHub upload/install/launch/Maps cycle from TestFlight.
 4. Disable Xcode Cloud TestFlight distribution and remove any Xcode Cloud
    schedule/start condition that can upload builds.
-5. Update this document and `codex_audit/production_release_checklist.md` to
-   mark GitHub Actions as canonical.
+5. Update this document to mark GitHub Actions as canonical.
 
 The repository can verify that the GitHub `prod` environment has the required
 App Store Connect secret names and that the local/Xcode Cloud scripts fail
@@ -535,3 +567,20 @@ These still require human confirmation outside repository checks:
 
 Run `Release Readiness` before store submission and `Observability Evidence`
 after generating Crashlytics/Analytics proof.
+
+## Store Product Backlog
+
+The old production-release checklist was consolidated into this section on
+2026-05-21. Keep store/account/product release tasks here instead of creating
+another Codex audit checklist.
+
+| Area | Remaining decision or proof |
+|---|---|
+| In-app reviews | Add `in_app_review`, choose high-satisfaction trigger moments, throttle prompts, and add a settings fallback after store IDs exist. |
+| Legal and support links | Confirm public privacy, terms, support/contact, and account-deletion URLs; expose them from the settings surface and store metadata. |
+| Accessibility | Run a large-text, VoiceOver/TalkBack, contrast, hit-target, and semantics pass across auth, onboarding, dashboard, clubs, events, catches, chat, and profile/settings. |
+| Store metadata | Finalize listing name, screenshots, privacy forms, export-compliance answers, support URL, privacy policy, terms URL, and review notes. |
+| Play internal testing | Produce Android internal-testing install/launch/maps evidence before Play release. |
+| Observability | Capture Crashlytics visibility/symbolication and Analytics DebugView proof with a release-like dev/staging build. |
+| Feature toggles and A/B testing | Defer until there is a concrete rollout problem; do not introduce a toggle framework as release ceremony. |
+| Shorebird/code push | Defer for first release. Reconsider only after app-store release operations are stable and rollback policy is explicit. |

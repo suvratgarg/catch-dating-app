@@ -15,6 +15,9 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'app.g.dart';
 
 typedef ForceUpdateRefresh =
     Future<void> Function(
@@ -24,9 +27,8 @@ typedef ForceUpdateRefresh =
     });
 
 @visibleForTesting
-final forceUpdateRefreshProvider = Provider<ForceUpdateRefresh>(
-  (ref) => _refreshForceUpdateGate,
-);
+@Riverpod(keepAlive: true)
+ForceUpdateRefresh forceUpdateRefresh(Ref ref) => _refreshForceUpdateGate;
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});

@@ -1,6 +1,6 @@
 {
-  "version": "3.0.9",
-  "updated": "2026-05-18",
+  "version": "4.1.1",
+  "updated": "2026-05-22",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -25,15 +25,27 @@
         "Only source refactoring is needed"
       ]
     },
-    "docs/widget_cleanup_todo.md": {
-      "purpose": "Short human-readable widget cleanup pointer. Active state lives in backlog.json; detailed history lives in the archive.",
+    "lib/README.md": {
+      "purpose": "Feature code map, feature-level README index, and cross-cutting code-doc routing.",
       "read_when": [
-        "User asks what is next in widget cleanup",
-        "Need the pointer to active scanner/backlog sources"
+        "Starting broad lib/ feature work",
+        "Choosing which feature-level README to open",
+        "Checking feature folder structure or cross-cutting architecture doc owners"
       ],
       "skip_when": [
-        "Use backlog.json for machine-readable current state",
-        "Use archived history only when an old stable id points there"
+        "A narrow file-level task already has a specific owner doc"
+      ]
+    },
+    "firebase/README.md": {
+      "purpose": "Firebase environment config, App Check, aliases, native/web config files, deploy prerequisites, and current environment state.",
+      "read_when": [
+        "Switching Firebase environments",
+        "Changing native or web Firebase config",
+        "Diagnosing App Check, project registration, or deploy prerequisite issues",
+        "Checking current dev/staging/prod Firebase state"
+      ],
+      "skip_when": [
+        "No Firebase environment behavior is touched"
       ]
     },
     "docs/widget_catalog.md": {
@@ -70,20 +82,34 @@
         "Cleaning visible swipe-language copy"
       ],
       "skip_when": [
-        "Only checking schema contracts; use schema_contract_unification_tracker.md",
+        "Only checking schema contracts; use data_contracts.md",
         "Only checking widget inventory; use widget_catalog.md"
       ]
     },
-    "docs/ui_layout_spacing.md": {
-      "purpose": "Durable UI spacing and layout contracts for screen gutters, tab body insets, sliver body gaps, and card/photo spacing.",
+    "docs/config_cicd_platform_audit_2026-05-21.md": {
+      "purpose": "Temporary active tracker for remaining config, CI/CD, platform, observability, contract-source, and environment-codegen follow-ups after the 2026-05-21 hardening pass.",
       "read_when": [
-        "Changing shared screen padding or tab body insets",
+        "Checking unfinished config or CI/CD hardening items",
+        "Verifying GA4 BigQuery, Crashlytics symbol-upload noise, analytics plist state, Razorpay env codegen, or contract-source migration decisions",
+        "Reviewing why firebase-tools, Flutter versions, contracts CI, app-build matrix, App Check activation, and Android google-services guards changed"
+      ],
+      "skip_when": [
+        "Only executing normal release operations; use release_operations.md",
+        "Only changing schema contracts; use data_contracts.md"
+      ]
+    },
+    "docs/ui_architecture.md": {
+      "purpose": "Unified layout architecture guide for spacing, scroll ownership, slivers, NestedScrollView tab bodies, sticky headers, and scroll-heavy widget tests.",
+      "read_when": [
+        "Changing shared screen padding, tab body insets, or sliver body gaps",
         "Adding layout constants intended to be reused across sibling widgets",
-        "Debugging inconsistent spacing between sliver/tab bodies"
+        "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
+        "Debugging inconsistent spacing, blank scroll states, or overflow scroll bugs"
       ],
       "skip_when": [
         "The task is pure business logic or repository/controller work",
-        "A local component uses a one-off spacing value that is not becoming a reusable contract"
+        "A local component uses a one-off spacing value that is not becoming a reusable contract",
+        "No scroll/sliver behavior is involved; use SLIVER-001 summary instead"
       ]
     },
     "docs/audit_registry/rules.json": {
@@ -101,8 +127,8 @@
         "A task is a trivial one-off command"
       ]
     },
-    "codex_audit/event_policy_engine_in_development.md": {
-      "purpose": "Human-readable preservation marker for the parallel event-policy engine, preview fixtures, cancellation/settlement policy axis, and dev-only lab that are intentionally not wired into live booking yet.",
+    "lib/event_policies/README.md": {
+      "purpose": "Feature-local preservation marker and migration guide for event policy bundles, preview fixtures, admission, waitlists, pricing, cancellation, settlement, and the dev-only lab.",
       "read_when": [
         "Auditing lib/event_policies",
         "Considering dead-code cleanup of event policy files",
@@ -114,27 +140,42 @@
         "The task does not touch event policies, run admission, waitlists, pricing, cancellation, settlement, or booking migration"
       ]
     },
-    "codex_audit/event_success_layer_in_development.md": {
-      "purpose": "Human-readable preservation marker for the live-wired but still in-development event-success layer.",
+    "lib/safety/README.md": {
+      "purpose": "Feature-local source of truth for blocking, reporting, account deletion, safety retention, and deletion/anonymization behavior.",
+      "read_when": [
+        "Changing block or unblock flows",
+        "Changing report-user behavior",
+        "Changing account deletion or anonymization behavior",
+        "Changing safety-related Firestore rules or callable ownership"
+      ],
+      "skip_when": [
+        "No safety, reporting, block, or deletion behavior is touched"
+      ]
+    },
+    "lib/user_profile/README.md": {
+      "purpose": "Feature-local source of truth for private profile identity fields, profile edit policy, public projection inputs, and remaining verified profile issues.",
+      "read_when": [
+        "Changing profile edit UI",
+        "Changing phone, date of birth, gender, or display-name behavior",
+        "Changing public profile projection inputs",
+        "Planning profile schema migration"
+      ],
+      "skip_when": [
+        "No user-profile contract or profile edit behavior is touched"
+      ]
+    },
+    "docs/event_success.md": {
+      "purpose": "Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions.",
       "read_when": [
         "Auditing lib/event_success",
         "Considering dead-code cleanup of event success files",
-        "Changing live event-success host setup, attendee companion, private follow-up, feedback, or report behavior",
-        "Planning live event facilitation, host coaching, check-in, private crushes, decomposed feedback, or activity-agnostic event platform work"
-      ],
-      "skip_when": [
-        "The task does not touch live event success, host tooling, event quality, attendee mixing, or post-event matching strategy"
-      ]
-    },
-    "codex_audit/event_success_completion_tracker.md": {
-      "purpose": "Current production event-success rollout tracker with remaining watch items and proof commands.",
-      "read_when": [
-        "Checking whether event-success production wiring is complete",
         "Changing event-success host setup, attendee companion, or feedback/report metrics",
-        "Preparing a future cleanup pass around event-success in-development code"
+        "Changing event-success Firestore collections, Functions, scorecards, or participant metrics",
+        "Running manual QA for event-success host or attendee surfaces",
+        "Planning live event facilitation, host coaching, check-in, host help, reveal, compatibility, or activity-agnostic event platform work"
       ],
       "skip_when": [
-        "The task does not touch event-success rollout status or current pass proof"
+        "The task does not touch live event success, event quality, attendee mixing, participant metrics, or post-event coaching strategy"
       ]
     },
     "docs/controller_patterns.md": {
@@ -160,16 +201,6 @@
         "The task is purely visual and does not add, remove, enable, disable, or change an action"
       ]
     },
-    "docs/sliver_layout_guide.md": {
-      "purpose": "Sliver-native layout guide and Catch-specific scroll contracts, including the scroll-away title plus pinned bottom-row header rule.",
-      "read_when": [
-        "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
-        "Debugging blank/overflow scroll bugs"
-      ],
-      "skip_when": [
-        "No scroll/sliver behavior is involved; use SLIVER-001 summary instead"
-      ]
-    },
     "docs/error-handling-audit.md": {
       "purpose": "Active app-wide error-management source of truth, backend hard-migration checklist, frontend/local error-management playbook, presentation descriptor contract, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
       "read_when": [
@@ -183,31 +214,22 @@
         "No error behavior is touched"
       ]
     },
-    "docs/firestore_functions_data_contract_tracker.md": {
-      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, data-contract tracker, Firestore type-generation workflow, and Firestore rules emulator-test workflow.",
+    "docs/data_contracts.md": {
+      "purpose": "Firestore document shape, Cloud Functions write ownership, schema tooling, relationship documents, migration policy, and rules-test workflow.",
       "read_when": [
         "Changing Firestore rules",
         "Changing Functions mutation boundaries",
-        "Changing shared data contracts",
+        "Changing shared data contracts or schema-source tooling",
         "Changing Dart-to-TypeScript Firestore type generation",
-        "Running or diagnosing Firestore rules tests"
-      ],
-      "skip_when": [
-        "Pure Flutter presentation work"
-      ]
-    },
-    "docs/schema_contract_unification_tracker.md": {
-      "purpose": "Long-horizon contract-first migration plan for Dart/TypeScript schemas, runtime validation, prompt catalogs, seed validation, rules metadata, and future storage-path renames.",
-      "read_when": [
-        "Changing schema-source tooling",
-        "Changing Dart or TypeScript model generation",
         "Changing callable validation schemas",
         "Changing prompt catalogs or profile prompts",
         "Changing seed validation or demo seed document builders",
-        "Planning storage-path migrations such as swipes to profile decisions"
+        "Changing relationship/action documents, match-scoped messages, beta reset strategy, or deletion/anonymization cleanup",
+        "Planning storage-path migrations such as swipes to profile decisions",
+        "Running or diagnosing Firestore rules tests"
       ],
       "skip_when": [
-        "Using current Firestore rules test workflow only; use firestore_functions_data_contract_tracker instead",
+        "Pure Flutter presentation work",
         "Running day-to-day demo ops without changing seeded document shape"
       ]
     },
@@ -221,19 +243,6 @@
       ],
       "skip_when": [
         "No backend write ownership or notification behavior is touched"
-      ]
-    },
-    "docs/firestore_relationship_documents_migration.md": {
-      "purpose": "Persistent tracker for retired relationship arrays, edge/action documents, match-scoped messages, beta reset strategy, Firestore rules simplification after relationship migration, and relationship-doc deletion/anonymization cleanup.",
-      "read_when": [
-        "Changing run-club membership, run participation, saved-run, match-message, or relationship-array behavior",
-        "Planning Firestore rules simplification after relationship-doc migration",
-        "Planning beta data reset or edge-doc validation before deploy",
-        "Writing or running relationship validation or legacy chat migration scripts",
-        "Planning account, run, club, review, match, or chat deletion/anonymization cleanup"
-      ],
-      "skip_when": [
-        "No Firestore relationship, migration, or deletion contract is touched"
       ]
     },
     "docs/audit_registry/README.md": {
@@ -253,7 +262,8 @@
         "Answering what remains pending"
       ],
       "skip_when": [
-        "A user only needs high-level prose from widget_cleanup_todo.md"
+        "A user only needs high-level prose from docs/README.md",
+        "A closed historical detail is only needed for proof; use passes.jsonl/files.jsonl instead"
       ]
     },
     "docs/audit_registry/doc_versions.json": {
@@ -277,12 +287,13 @@
       ]
     },
     "docs/release_operations.md": {
-      "purpose": "Consolidated CI, release, deploy, environment, smoke-test, and release-evidence runbook.",
+      "purpose": "Consolidated CI, release, deploy, environment, smoke-test, store-readiness, and release-evidence runbook.",
       "read_when": [
         "Changing GitHub Actions release gates",
         "Deploying Firebase/Functions/rules/storage changes",
         "Preparing TestFlight or production release evidence",
-        "Checking environment setup or deploy order"
+        "Checking environment setup or deploy order",
+        "Checking remaining store/product release tasks after production checklist deletion"
       ],
       "skip_when": [
         "No CI, deploy, release, or environment behavior is touched"

@@ -162,9 +162,9 @@ export function normalizeProfilePrompts(
 }
 
 /**
- * Normalizes photo captions into public profile prompt records.
- * @param {PhotoPromptAnswer[] | undefined} prompts Stored captions.
- * @return {PhotoPromptAnswer[]} Public photo prompt captions.
+ * Normalizes photo prompt selections into public profile prompt records.
+ * @param {PhotoPromptAnswer[] | undefined} prompts Stored prompt selections.
+ * @return {PhotoPromptAnswer[]} Public photo prompt selections.
  */
 export function normalizePhotoPrompts(
   prompts: PhotoPromptAnswer[] | undefined
@@ -174,15 +174,16 @@ export function normalizePhotoPrompts(
       photoIndex: prompt.photoIndex,
       promptId: prompt.promptId.trim(),
       prompt: prompt.prompt.trim(),
-      caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
+      ...(prompt.caption !== undefined && {
+        caption: collapseStackedPromptBlankLines(prompt.caption ?? "").trim(),
+      }),
     }))
     .filter((prompt) =>
       Number.isInteger(prompt.photoIndex) &&
       prompt.photoIndex >= 0 &&
       prompt.photoIndex < maxProfilePhotos &&
       prompt.promptId.length > 0 &&
-      prompt.prompt.length > 0 &&
-      prompt.caption.length > 0
+      prompt.prompt.length > 0
     )
     .slice(0, maxProfilePhotos);
 }
@@ -283,7 +284,7 @@ function isStoredProfilePhoto(value: unknown): value is StoredProfilePhoto {
 }
 
 /**
- * Normalizes a grouped photo prompt/caption.
+ * Normalizes a grouped photo prompt selection.
  * @param {PhotoPromptAnswer | null | undefined} prompt Stored prompt.
  * @param {number} position Photo position.
  * @return {PhotoPromptAnswer | null} Normalized prompt or null.

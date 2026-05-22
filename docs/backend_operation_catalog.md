@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.2.1
-updated: 2026-05-17
+version: 1.2.2
+updated: 2026-05-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -75,7 +75,7 @@ should be repairable from edge/source documents.
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete, hosted `clubs/{clubId}.hostName` / `hostAvatarUrl` updates, authored `reviews/{reviewId}.reviewerName` updates | Sole owner of current user-identity projections. Uses `displayName`, then first name, then legacy fallback; projects grouped `profilePhotos` plus legacy `photoUrls`/`photoThumbnailUrls` compatibility arrays for tiny avatar surfaces. Existing stale public profiles can be repaired with `node tool/recompute_public_profiles.mjs --env dev --apply`; existing stale event-club host projections can be repaired with `node tool/recompute_club_host_profiles.mjs --env dev --apply`; existing stale review author names can be repaired with `node tool/recompute_review_author_profiles.mjs --env dev --apply` after `npm --prefix functions run build`. |
-| `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls`, `users/{uid}.profilePhotos` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/event-detail hype avatars must use thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm event backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; the script now updates grouped `profilePhotos` as well as legacy thumbnail arrays. |
+| `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls`, `users/{uid}.profilePhotos` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/event-detail hype avatars must use thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm --prefix functions run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; the script now updates grouped `profilePhotos` as well as legacy thumbnail arrays. |
 | `createClub` | Callable | `ClubsRepository.createClub` | `clubs/{clubId}`, `clubMemberships/{clubId_uid}`, `clubHostClaims/{uid}` | Server derives host identity from authenticated user using the shared public profile projection helper; initializes lifecycle fields as active/unarchived; the membership edge is the source of truth and `memberCount` is the parent aggregate. `clubHostClaims/{uid}` enforces the current product rule that a user can host at most one club. |
 | `updateClub` | Callable | `ClubsRepository.updateClub` | `clubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `clubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
 | `joinClub` | Callable | `ClubsRepository.joinClub` | `clubMemberships/{clubId_uid}`, `clubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. `syncClubMemberStats` repairs the parent count from active membership edges after any membership write. |
@@ -117,7 +117,7 @@ should be repairable from edge/source documents.
 | Dart initiator | Collection/path | Operation | Rule owner | Keep direct? |
 |---|---|---|---|---|
 | `UserProfileRepository.setUserProfile` | `users/{uid}` | Initial profile create after onboarding identity step. | Owner create plus full shape validation. | Yes. This is initial owner-owned profile creation. |
-| `SavedEventRepository.watchSavedEvent` / `saveRun` / `unsaveRun` | `savedEvents/{uid_eventId}` | Render, save, or unsave one event for the current user. | Owner direct edge read/create/delete with deterministic ids. | Yes. No user-profile projection is maintained. |
+| `SavedEventRepository.watchSavedEvent` / `saveEvent` / `unsaveEvent` | `savedEvents/{uid_eventId}` | Render, save, or unsave one event for the current user. | Owner direct edge read/create/delete with deterministic ids. | Yes. No user-profile projection is maintained. |
 | `FcmService._saveToken` | `users/{uid}.fcmToken` | Store current push token. | Owner direct update of only `fcmToken`. | Yes. Runtime token update. |
 | `OnboardingDraftRepository.saveDraft/deleteDraft` | `onboarding_drafts/{uid}` | Private draft set/delete. | Owner-only, intentionally extensible. | Yes. Private volatile draft state. |
 | `SwipeRepository.recordSwipe` | `swipes/{uid}/outgoing/{targetId}` | Create own outgoing swipe. | Path/data identity, attended-event, block, and payload rules. | Yes. Match creation remains trigger-owned. |

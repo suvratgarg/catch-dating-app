@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -29,6 +31,37 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('Catch typography does not inherit underline decoration', (
+    tester,
+  ) async {
+    late final List<TextStyle> styles;
+
+    await tester.pumpWidget(
+      _wrap(
+        DefaultTextStyle.merge(
+          style: const TextStyle(decoration: TextDecoration.underline),
+          child: Builder(
+            builder: (context) {
+              styles = [
+                CatchTextStyles.displayM(context),
+                CatchTextStyles.titleL(context),
+                CatchTextStyles.bodyL(context),
+                CatchTextStyles.bodyS(context),
+                CatchTextStyles.labelL(context),
+                CatchTextStyles.mono(context),
+              ];
+              return const Text('Typography sample');
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(styles.map((style) => style.decoration).toSet(), {
+      TextDecoration.none,
+    });
+  });
+
   testWidgets(
     'CatchButton supports size, full width, tap, and loading states',
     (tester) async {
@@ -331,6 +364,63 @@ void main() {
     await tester.tap(find.byTooltip('Decrease height'));
     await tester.pump();
     expect(find.text('170 cm'), findsOneWidget);
+  });
+
+  testWidgets('single-line controls share the md minimum height contract', (
+    tester,
+  ) async {
+    CityOption? selected;
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 320,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CatchTextField(
+                key: Key('control-text-field'),
+                label: 'Search',
+                showLabel: false,
+                hintText: 'Search',
+              ),
+              const SizedBox(height: 12),
+              CatchSelectMenu<CityOption>(
+                key: const Key('control-select-menu'),
+                values: defaultCityOptions,
+                value: selected,
+                itemLabel: (city) => city.label,
+                hintText: 'Select city',
+                onChanged: (value) => selected = value,
+              ),
+              const SizedBox(height: 12),
+              CatchNumberStepper(
+                key: const Key('control-number-stepper'),
+                value: 60,
+                min: 30,
+                max: 120,
+                formatValue: (value) => '${value.round()} min',
+                onChanged: (_) {},
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    const expectedHeight = CatchControlMetrics.mdMinHeight;
+    expect(
+      tester.getSize(find.byKey(const Key('control-text-field'))).height,
+      expectedHeight,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('control-select-menu'))).height,
+      expectedHeight,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('control-number-stepper'))).height,
+      expectedHeight,
+    );
   });
 
   testWidgets('CatchChip supports active, tap, and removable states', (
@@ -830,6 +920,37 @@ void main() {
       expect(formKey.currentState!.validate(), isTrue);
     },
   );
+
+  testWidgets('CatchTextField exposes a keyboard done action by default', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: 'Asha');
+    addTearDown(controller.dispose);
+    var submitted = '';
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchTextField(
+          label: 'Name',
+          controller: controller,
+          onSubmitted: (value) => submitted = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+
+    final editableText = tester.widget<EditableText>(find.byType(EditableText));
+    expect(editableText.textInputAction, TextInputAction.done);
+    expect(editableText.focusNode.hasFocus, isTrue);
+
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+
+    expect(submitted, 'Asha');
+    expect(editableText.focusNode.hasFocus, isFalse);
+  });
 
   testWidgets(
     'CatchTextField syncs external controller edits into validation',

@@ -30,7 +30,7 @@
       "prompt": {
         "promptId": "catalog photo prompt id",
         "prompt": "catalog prompt display text",
-        "caption": "user supplied caption"
+        "caption": "legacy user supplied caption; new clients store prompt-only selections"
       },
       "moderation": {
         "status": "pending | approved | rejected",
@@ -77,6 +77,11 @@
       "id": "new_primary",
       "status": "complete",
       "description": "Read and project profilePhotos as the canonical shape while retaining legacy arrays as compatibility output."
+    },
+    {
+      "id": "prompt_only_selection",
+      "status": "complete",
+      "description": "Photo editing no longer captures user captions. New writes store only the catalog prompt selection; the caption field remains optional for legacy documents until a cleanup backfill removes it."
     },
     {
       "id": "retire_legacy_arrays",

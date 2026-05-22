@@ -8,7 +8,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 
 enum EventSuccessSetupStatus {
   needsWork('Needs work'),
-  readyForPilot('Ready for pilot');
+  readyForLaunch('Ready for launch');
 
   const EventSuccessSetupStatus(this.label);
 
@@ -92,7 +92,7 @@ class EventSuccessHostDraft {
       .toList(growable: false);
 
   EventSuccessSetupStatus get status => readinessIssues.isEmpty
-      ? EventSuccessSetupStatus.readyForPilot
+      ? EventSuccessSetupStatus.readyForLaunch
       : EventSuccessSetupStatus.needsWork;
 
   bool isModuleSelected(String moduleId) =>
@@ -101,6 +101,16 @@ class EventSuccessHostDraft {
   EventSuccessHostDraft toggleModule(String moduleId) {
     final nextIds = {...selectedModuleIds};
     if (!nextIds.remove(moduleId)) nextIds.add(moduleId);
+    return copyWith(selectedModuleIds: nextIds);
+  }
+
+  EventSuccessHostDraft withModuleSelection(String moduleId, bool selected) {
+    final nextIds = {...selectedModuleIds};
+    if (selected) {
+      nextIds.add(moduleId);
+    } else {
+      nextIds.remove(moduleId);
+    }
     return copyWith(selectedModuleIds: nextIds);
   }
 
@@ -186,7 +196,7 @@ class EventSuccessHostDraft {
     if (!selectedModuleIds.contains(
       EventSuccessModuleCatalog.safetyControls.id,
     )) {
-      issues.add('Add safety controls before any live pilot.');
+      issues.add('Add safety controls before using this live.');
     }
     if (selectedModuleIds.contains(
           EventSuccessModuleCatalog.guidedRotations.id,
@@ -199,14 +209,14 @@ class EventSuccessHostDraft {
           EventSuccessModuleCatalog.guidedRotations.id,
         ) &&
         !selectedModuleIds.contains(EventSuccessModuleCatalog.microPods.id)) {
-      issues.add('Live reveal needs a selected assignment layer.');
+      issues.add('Live reveal needs a pod or rotation tool selected.');
     }
     if (wingmanRequestsEnabled &&
         !selectedModuleIds.contains(
           EventSuccessModuleCatalog.wingmanRequests.id,
         )) {
       issues.add(
-        'Wingman requests are enabled, but the host-help layer is not selected.',
+        'Wingman requests are enabled, but the host-help tool is not selected.',
       );
     }
     if (contextualOpenersEnabled &&
@@ -214,7 +224,7 @@ class EventSuccessHostDraft {
           EventSuccessModuleCatalog.contextualOpeners.id,
         )) {
       issues.add(
-        'Post-match openers are enabled, but the conversation layer is not selected.',
+        'Post-match openers are enabled, but the conversation tool is not selected.',
       );
     }
     return issues;

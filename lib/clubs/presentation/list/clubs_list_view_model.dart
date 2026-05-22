@@ -5,7 +5,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -85,12 +84,9 @@ class SelectedClubCity extends _$SelectedClubCity {
   }
 }
 
-final selectedClubCityWasUserSelectedProvider =
-    NotifierProvider<SelectedClubCityWasUserSelected, bool>(
-      SelectedClubCityWasUserSelected.new,
-    );
-
-class SelectedClubCityWasUserSelected extends Notifier<bool> {
+@Riverpod(keepAlive: true)
+class SelectedClubCityWasUserSelected
+    extends _$SelectedClubCityWasUserSelected {
   @override
   bool build() => false;
 

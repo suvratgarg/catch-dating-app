@@ -4,10 +4,11 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
@@ -21,6 +22,8 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
     super.key,
     this.countryIsoCode,
     this.initialLocation,
+    this.initialCenter,
+    this.initialLabel,
     this.loadMapTiles = true,
   });
 
@@ -30,6 +33,13 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
   /// If provided, the map opens centred on this pin.
   final LocationCoordinate? initialLocation;
 
+  /// If provided without [initialLocation], the map opens centred here without
+  /// treating it as an already selected meeting location.
+  final LocationCoordinate? initialCenter;
+
+  /// Existing attendee-facing name for [initialLocation], if known.
+  final String? initialLabel;
+
   /// Retained as a test hook while the screen uses the Google Maps SDK.
   final bool loadMapTiles;
 
@@ -38,14 +48,35 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
       _LocationPickerScreenState();
 }
 
+@immutable
+class LocationPickerResult {
+  const LocationPickerResult({
+    required this.coordinate,
+    this.name,
+    this.address,
+    this.placeId,
+  });
+
+  final LocationCoordinate coordinate;
+  final String? name;
+  final String? address;
+  final String? placeId;
+
+  String? get displayName => _trimToNull(name) ?? _trimToNull(address);
+}
+
 class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   final _searchController = TextEditingController();
   LocationCoordinate? _selected;
+  String? _selectedLabel;
+  String? _selectedAddress;
+  String? _selectedPlaceId;
   gmaps.GoogleMapController? _mapController;
   Timer? _searchDebounce;
   String _sessionToken = _newSessionToken();
   var _suggestions = <PlaceAutocompleteSuggestion>[];
   var _searching = false;
+  PlaceAutocompleteSuggestion? _pendingSuggestion;
   String? _searchError;
 
   LocationCoordinate get _defaultCenter {
@@ -60,6 +91,8 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   void initState() {
     super.initState();
     _selected = widget.initialLocation;
+    _selectedLabel = _trimToNull(widget.initialLabel);
+    _searchController.text = _selectedLabel ?? '';
   }
 
   @override
@@ -73,8 +106,11 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final mapStyle = catchGoogleMapStyleFor(Theme.of(context).brightness);
+    final initialCameraTarget =
+        widget.initialLocation ?? widget.initialCenter ?? _defaultCenter;
+    final hasInitialCameraHint =
+        widget.initialLocation != null || widget.initialCenter != null;
 
     return Scaffold(
       body: Stack(
@@ -82,9 +118,8 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           gmaps.GoogleMap(
             style: mapStyle,
             initialCameraPosition: gmaps.CameraPosition(
-              target: (widget.initialLocation ?? _defaultCenter)
-                  .toGoogleMapsLatLng(),
-              zoom: widget.initialLocation != null ? 15 : 12,
+              target: initialCameraTarget.toGoogleMapsLatLng(),
+              zoom: hasInitialCameraHint ? 15 : 12,
             ),
             markers: {
               if (_selected != null)
@@ -106,45 +141,76 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             onMapCreated: (controller) => _mapController = controller,
             onTap: (point) => _setSelectedPoint(point.toLocationCoordinate()),
           ),
-          MapOverlayControls(
-            trailing: CatchSurface(
-              tone: CatchSurfaceTone.raised,
-              elevation: CatchSurfaceElevation.overlay,
-              borderColor: t.line,
-              radius: CatchRadius.pill,
-              child: CatchTopBarTextAction(
-                label: 'Confirm',
-                onPressed: _selected == null
-                    ? null
-                    : () => Navigator.of(context).pop(_selected),
+          Positioned(
+            top: CatchSpacing.s4,
+            left: CatchSpacing.s4,
+            right: CatchSpacing.s4,
+            child: SafeArea(
+              bottom: false,
+              child: _MapPickerSearchRow(
+                onBack: () => Navigator.of(context).maybePop(),
+                searchPanel: _PlaceSearchPanel(
+                  controller: _searchController,
+                  suggestions: _suggestions,
+                  stateText: _searchStateText,
+                  errorText: _searchError,
+                  onChanged: _onSearchChanged,
+                  onSuggestionSelected: _selectSuggestion,
+                ),
               ),
-            ),
-            below: _PlaceSearchPanel(
-              controller: _searchController,
-              suggestions: _suggestions,
-              searching: _searching,
-              errorText: _searchError,
-              onChanged: _onSearchChanged,
-              onSuggestionSelected: _selectSuggestion,
             ),
           ),
           Positioned(
             bottom: 16,
             left: 16,
             right: 16,
-            child: _SelectedPointStatusCard(hasSelection: _selected != null),
+            child: SafeArea(
+              top: false,
+              child: _SelectedPointPanel(
+                selectedLabel: _selectedLabel,
+                hasSelection: _selected != null,
+                onConfirm: _selected == null || _pendingSuggestion != null
+                    ? null
+                    : () => Navigator.of(context).pop(
+                        LocationPickerResult(
+                          coordinate: _selected!,
+                          name: _selectedLabel,
+                          address: _selectedAddress,
+                          placeId: _selectedPlaceId,
+                        ),
+                      ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _setSelectedPoint(LocationCoordinate point) {
+  String? get _searchStateText {
+    if (_pendingSuggestion != null) return 'Selecting...';
+    if (_searching && _suggestions.isEmpty) return 'Searching...';
+    return null;
+  }
+
+  void _setSelectedPoint(
+    LocationCoordinate point, {
+    String? label,
+    String? address,
+    String? placeId,
+  }) {
     setState(() {
       _selected = point;
+      _selectedLabel = _trimToNull(label);
+      _selectedAddress = _trimToNull(address);
+      _selectedPlaceId = _trimToNull(placeId);
       _suggestions = const [];
+      _pendingSuggestion = null;
       _searchError = null;
     });
+    if (_selectedLabel == null) {
+      _searchController.clear();
+    }
   }
 
   void _onSearchChanged(String value) {
@@ -155,9 +221,15 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
         _suggestions = const [];
         _searchError = null;
         _searching = false;
+        _pendingSuggestion = null;
       });
       return;
     }
+    setState(() {
+      _suggestions = const [];
+      _searchError = null;
+      _searching = true;
+    });
     _searchDebounce = Timer(
       const Duration(milliseconds: 300),
       () => _searchPlaces(query),
@@ -176,7 +248,11 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           .autocomplete(
             input: query,
             sessionToken: _sessionToken,
-            bias: _selected ?? widget.initialLocation ?? _defaultCenter,
+            bias:
+                _selected ??
+                widget.initialLocation ??
+                widget.initialCenter ??
+                _defaultCenter,
             countryIsoCode: _countryIsoCode,
           );
       if (!mounted || _searchController.text.trim() != query) return;
@@ -195,10 +271,14 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   }
 
   Future<void> _selectSuggestion(PlaceAutocompleteSuggestion suggestion) async {
+    final label = _suggestionLabel(suggestion);
     setState(() {
-      _searching = true;
+      _pendingSuggestion = suggestion;
+      _suggestions = const [];
+      _searching = false;
       _searchError = null;
     });
+    FocusScope.of(context).unfocus();
 
     try {
       final place = await ref
@@ -206,12 +286,16 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           .details(placeId: suggestion.placeId, sessionToken: _sessionToken);
       if (!mounted) return;
       _sessionToken = _newSessionToken();
-      _searchController.text = place.displayName.isNotEmpty
+      final displayName = place.displayName.isNotEmpty
           ? place.displayName
-          : suggestion.description;
-      _setSelectedPoint(place.location);
-      setState(() => _searching = false);
-      FocusScope.of(context).unfocus();
+          : label;
+      _searchController.text = displayName;
+      _setSelectedPoint(
+        place.location,
+        label: displayName,
+        address: place.formattedAddress,
+        placeId: place.placeId,
+      );
       await _mapController?.animateCamera(
         gmaps.CameraUpdate.newLatLngZoom(
           place.location.toGoogleMapsLatLng(),
@@ -221,6 +305,8 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
+        _pendingSuggestion = null;
+        _suggestions = [suggestion];
         _searching = false;
         _searchError = 'Could not load that place. Try another result.';
       });
@@ -230,11 +316,50 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
 String _newSessionToken() => 'places-${DateTime.now().microsecondsSinceEpoch}';
 
+String? _trimToNull(String? value) {
+  final trimmed = value?.trim();
+  if (trimmed == null || trimmed.isEmpty) return null;
+  return trimmed;
+}
+
+String _suggestionLabel(PlaceAutocompleteSuggestion suggestion) {
+  if (suggestion.mainText.isNotEmpty) return suggestion.mainText;
+  if (suggestion.description.isNotEmpty) return suggestion.description;
+  return 'selected place';
+}
+
+class _MapPickerSearchRow extends StatelessWidget {
+  const _MapPickerSearchRow({required this.searchPanel, required this.onBack});
+
+  final Widget searchPanel;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchTopBarIconAction(
+          icon: Icons.arrow_back_ios_new_rounded,
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          backgroundColor: t.surface.withValues(alpha: 0.94),
+          size: CatchControlMetrics.floatingMinHeight,
+          onPressed: onBack,
+        ),
+        gapW12,
+        Expanded(child: searchPanel),
+      ],
+    );
+  }
+}
+
 class _PlaceSearchPanel extends StatelessWidget {
   const _PlaceSearchPanel({
     required this.controller,
     required this.suggestions,
-    required this.searching,
+    required this.stateText,
     required this.errorText,
     required this.onChanged,
     required this.onSuggestionSelected,
@@ -242,7 +367,7 @@ class _PlaceSearchPanel extends StatelessWidget {
 
   final TextEditingController controller;
   final List<PlaceAutocompleteSuggestion> suggestions;
-  final bool searching;
+  final String? stateText;
   final String? errorText;
   final ValueChanged<String> onChanged;
   final ValueChanged<PlaceAutocompleteSuggestion> onSuggestionSelected;
@@ -250,6 +375,7 @@ class _PlaceSearchPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final isPending = stateText != null;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -262,70 +388,64 @@ class _PlaceSearchPanel extends StatelessWidget {
           textInputAction: TextInputAction.search,
           textCapitalization: TextCapitalization.words,
           hintText: 'Search for a meeting point',
-          size: CatchTextFieldSize.compact,
+          errorText: errorText,
+          size: CatchTextFieldSize.floating,
           shape: CatchTextFieldShape.pill,
           tone: CatchTextFieldTone.raised,
           prefixIcon: const Icon(Icons.search_rounded, size: 18),
-          suffixIcon: searching
-              ? const Padding(
-                  padding: EdgeInsets.all(CatchSpacing.s3),
+          suffixText: stateText,
+          suffixIcon: isPending
+              ? const Center(
                   child: SizedBox.square(
                     dimension: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 )
               : null,
-          showClearButton: !searching,
+          showClearButton: !isPending,
         ),
-        if (errorText != null || suggestions.isNotEmpty) ...[
+        if (suggestions.isNotEmpty) ...[
           gapH8,
           CatchSurface(
             padding: EdgeInsets.zero,
             elevation: CatchSurfaceElevation.overlay,
             borderColor: t.line,
-            child: errorText != null
-                ? _SearchStatusRow(
-                    icon: Icons.error_outline_rounded,
-                    text: errorText!,
-                    color: t.danger,
-                  )
-                : ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 260),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      itemCount: suggestions.length,
-                      separatorBuilder: (_, _) =>
-                          Divider(height: 1, color: t.line),
-                      itemBuilder: (context, index) {
-                        final suggestion = suggestions[index];
-                        return ListTile(
-                          dense: true,
-                          leading: const Icon(Icons.place_outlined),
-                          title: Text(
-                            suggestion.mainText.isNotEmpty
-                                ? suggestion.mainText
-                                : suggestion.description,
-                            style: CatchTextStyles.labelM(context),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 260),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: suggestions.length,
+                separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
+                itemBuilder: (context, index) {
+                  final suggestion = suggestions[index];
+                  return ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.place_outlined),
+                    title: Text(
+                      suggestion.mainText.isNotEmpty
+                          ? suggestion.mainText
+                          : suggestion.description,
+                      style: CatchTextStyles.labelM(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: suggestion.secondaryText.isEmpty
+                        ? null
+                        : Text(
+                            suggestion.secondaryText,
+                            style: CatchTextStyles.bodyS(
+                              context,
+                              color: t.ink2,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          subtitle: suggestion.secondaryText.isEmpty
-                              ? null
-                              : Text(
-                                  suggestion.secondaryText,
-                                  style: CatchTextStyles.bodyS(
-                                    context,
-                                    color: t.ink2,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                          onTap: () => onSuggestionSelected(suggestion),
-                        );
-                      },
-                    ),
-                  ),
+                    onTap: () => onSuggestionSelected(suggestion),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ],
@@ -333,73 +453,77 @@ class _PlaceSearchPanel extends StatelessWidget {
   }
 }
 
-class _SelectedPointStatusCard extends StatelessWidget {
-  const _SelectedPointStatusCard({required this.hasSelection});
+class _SelectedPointPanel extends StatelessWidget {
+  const _SelectedPointPanel({
+    required this.hasSelection,
+    required this.selectedLabel,
+    required this.onConfirm,
+  });
 
   final bool hasSelection;
+  final String? selectedLabel;
+  final VoidCallback? onConfirm;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final title = hasSelection
+        ? selectedLabel ?? 'Pinned location'
+        : 'No location selected';
+    final subtitle = hasSelection
+        ? selectedLabel == null
+              ? 'Confirm this map pin or tap elsewhere to adjust.'
+              : 'Confirm this place or tap elsewhere to adjust.'
+        : 'Search for a place or tap the map to set the meeting point.';
 
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
       elevation: CatchSurfaceElevation.overlay,
       borderColor: t.line,
-      radius: CatchRadius.pill,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      radius: CatchRadius.md,
+      backgroundColor: t.surface.withValues(alpha: 0.96),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            hasSelection
-                ? Icons.check_circle_outline_rounded
-                : Icons.touch_app_rounded,
-            size: 18,
-            color: hasSelection ? t.success : t.ink2,
-          ),
-          gapW8,
-          Flexible(
-            child: Text(
-              hasSelection
-                  ? 'Starting point selected. Tap elsewhere to adjust.'
-                  : 'Tap on the map to set the starting point.',
-              style: CatchTextStyles.bodyS(
-                context,
-                color: hasSelection ? t.ink : t.ink2,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                hasSelection
+                    ? Icons.check_circle_outline_rounded
+                    : Icons.touch_app_rounded,
+                size: 20,
+                color: hasSelection ? t.success : t.ink2,
               ),
-              textAlign: TextAlign.center,
-            ),
+              gapW12,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.labelL(context, color: t.ink),
+                    ),
+                    gapH4,
+                    Text(
+                      subtitle,
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SearchStatusRow extends StatelessWidget {
-  const _SearchStatusRow({
-    required this.icon,
-    required this.text,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 18),
-          gapW8,
-          Expanded(
-            child: Text(
-              text,
-              style: CatchTextStyles.bodyS(context, color: color),
-            ),
+          gapH12,
+          CatchButton(
+            label: 'Confirm location',
+            onPressed: onConfirm,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
           ),
         ],
       ),

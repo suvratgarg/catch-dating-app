@@ -35,6 +35,25 @@ enum EventSuccessUnitKind implements Labelled {
   };
 
   bool get supportsUnitCount => this != EventSuccessUnitKind.wholeGroup;
+
+  String get peoplePerLabel => switch (this) {
+    EventSuccessUnitKind.wholeGroup => 'Attendance target',
+    EventSuccessUnitKind.pods => 'People per pod',
+    EventSuccessUnitKind.pairs => 'People per pair',
+    EventSuccessUnitKind.teams => 'People per team',
+    EventSuccessUnitKind.tables => 'People per table',
+  };
+
+  String get countLabel => switch (this) {
+    EventSuccessUnitKind.wholeGroup => 'Group count',
+    EventSuccessUnitKind.pods => 'Pod count',
+    EventSuccessUnitKind.pairs => 'Pair count',
+    EventSuccessUnitKind.teams => 'Team count',
+    EventSuccessUnitKind.tables => 'Table count',
+  };
+
+  String countText(int count) =>
+      '$count ${count == 1 ? singularLabel : label.toLowerCase()}';
 }
 
 class EventSuccessStructureConfig {
@@ -80,7 +99,7 @@ class EventSuccessStructureConfig {
       EventInteractionModel.teamRotations => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.teams,
         unitSize: 5,
-        unitCount: 3,
+        unitCount: null,
         rotationIntervalMinutes: null,
       ),
       EventInteractionModel.seatedTable => const EventSuccessStructureConfig(
@@ -144,10 +163,32 @@ class EventSuccessStructureConfig {
       rotationIntervalMinutes == null &&
       revealCountdownSeconds == 10;
 
+  bool get isDeprecatedTeamRotationDefault =>
+      unitKind == EventSuccessUnitKind.teams &&
+      unitSize == 5 &&
+      unitCount == 3 &&
+      rotationIntervalMinutes == null &&
+      revealCountdownSeconds == 10;
+
   int estimatedUnitCount(int attendeeCount) {
-    if (unitCount != null) return unitCount!;
-    if (unitKind == EventSuccessUnitKind.wholeGroup) return 1;
-    return (attendeeCount / unitSize).ceil().clamp(1, 200).toInt();
+    return estimateForAttendance(attendeeCount).unitCount;
+  }
+
+  EventSuccessStructureEstimate estimateForAttendance(int attendeeCount) {
+    final safeAttendeeCount = attendeeCount.clamp(1, 1000).toInt();
+    if (unitKind == EventSuccessUnitKind.wholeGroup) {
+      return EventSuccessStructureEstimate(
+        attendeeCount: safeAttendeeCount,
+        unitCount: 1,
+      );
+    }
+    final estimatedCount =
+        unitCount ??
+        (safeAttendeeCount / unitSize).ceil().clamp(1, 200).toInt();
+    return EventSuccessStructureEstimate(
+      attendeeCount: safeAttendeeCount,
+      unitCount: estimatedCount,
+    );
   }
 
   int maxRotationRoundsForDuration(Duration duration) {
@@ -211,6 +252,24 @@ class EventSuccessStructureConfig {
     rotationIntervalMinutes,
     revealCountdownSeconds,
   );
+}
+
+class EventSuccessStructureEstimate {
+  const EventSuccessStructureEstimate({
+    required this.attendeeCount,
+    required this.unitCount,
+  }) : assert(attendeeCount > 0),
+       assert(unitCount > 0);
+
+  final int attendeeCount;
+  final int unitCount;
+
+  int get minPeoplePerUnit => attendeeCount ~/ unitCount;
+
+  int get maxPeoplePerUnit =>
+      (attendeeCount / unitCount).ceil().clamp(1, attendeeCount).toInt();
+
+  bool get isEven => minPeoplePerUnit == maxPeoplePerUnit;
 }
 
 const _sentinel = Object();

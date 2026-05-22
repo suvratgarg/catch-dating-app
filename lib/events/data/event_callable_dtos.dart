@@ -12,12 +12,14 @@ final class CreateEventCallableRequest {
     required this.constraints,
     required this.eventPolicy,
     required this.eventFormat,
+    required this.eventSuccessDefaults,
     required this.inviteCode,
   });
 
   factory CreateEventCallableRequest.fromEvent(
     Event event, {
     String? inviteCode,
+    Map<String, Object?>? eventSuccessDefaults,
   }) => CreateEventCallableRequest(
     eventId: event.id,
     clubId: event.clubId,
@@ -28,6 +30,7 @@ final class CreateEventCallableRequest {
     constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
     eventPolicy: event.eventPolicy?.toJson(),
     eventFormat: event.eventFormat.toJson(),
+    eventSuccessDefaults: eventSuccessDefaults,
     inviteCode: inviteCode,
   );
 
@@ -40,6 +43,7 @@ final class CreateEventCallableRequest {
   final EventConstraintsCallableDto constraints;
   final Map<String, Object?>? eventPolicy;
   final Map<String, Object?> eventFormat;
+  final Map<String, Object?>? eventSuccessDefaults;
   final String? inviteCode;
 
   Map<String, Object?> toJson() => {
@@ -52,6 +56,7 @@ final class CreateEventCallableRequest {
     'constraints': constraints.toJson(),
     'eventPolicy': ?eventPolicy,
     'eventFormat': eventFormat,
+    'eventSuccessDefaults': ?eventSuccessDefaults,
     'privateAccess': ?_privateAccessJson(inviteCode),
   };
 }
@@ -93,6 +98,7 @@ final class EventDetailsCallableDto {
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
+    required this.meetingLocation,
     required this.startingPointLat,
     required this.startingPointLng,
     required this.locationDetails,
@@ -102,23 +108,30 @@ final class EventDetailsCallableDto {
     required this.description,
   });
 
-  factory EventDetailsCallableDto.fromEvent(Event event) =>
-      EventDetailsCallableDto(
-        startTimeMillis: event.startTime.millisecondsSinceEpoch,
-        endTimeMillis: event.endTime.millisecondsSinceEpoch,
-        meetingPoint: event.meetingPoint,
-        startingPointLat: event.startingPointLat,
-        startingPointLng: event.startingPointLng,
-        locationDetails: event.locationDetails,
-        photoUrl: event.photoUrl,
-        distanceKm: event.distanceKm,
-        pace: event.pace.name,
-        description: event.description,
-      );
+  factory EventDetailsCallableDto.fromEvent(Event event) {
+    final meetingLocation = event.effectiveMeetingLocation;
+    if (meetingLocation == null) {
+      throw StateError('Event ${event.id} is missing a meeting location.');
+    }
+    return EventDetailsCallableDto(
+      startTimeMillis: event.startTime.millisecondsSinceEpoch,
+      endTimeMillis: event.endTime.millisecondsSinceEpoch,
+      meetingPoint: meetingLocation.name,
+      meetingLocation: meetingLocation.normalized(),
+      startingPointLat: meetingLocation.latitude,
+      startingPointLng: meetingLocation.longitude,
+      locationDetails: meetingLocation.notes,
+      photoUrl: event.photoUrl,
+      distanceKm: event.distanceKm,
+      pace: event.pace.name,
+      description: event.description,
+    );
+  }
 
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
+  final EventMeetingLocation meetingLocation;
   final double? startingPointLat;
   final double? startingPointLng;
   final String? locationDetails;
@@ -131,6 +144,7 @@ final class EventDetailsCallableDto {
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,
+    'meetingLocation': meetingLocation.toJson(),
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': locationDetails,

@@ -16,6 +16,9 @@
         "startTimeMillis": {"type": "integer"},
         "endTimeMillis": {"type": "integer"},
         "meetingPoint": {"type": "string", "minLength": 1, "maxLength": 240},
+        "meetingLocation": {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
+        },
         "startingPointLat": {
           "anyOf": [
             {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},

@@ -111,7 +111,7 @@ PhotoPromptDefinition photoPromptDefinition(String promptId) {
     orElse: () => PhotoPromptDefinition(
       id: promptId,
       title: promptId,
-      placeholder: 'Add a caption.',
+      placeholder: 'Choose a prompt.',
     ),
   );
 }
@@ -149,7 +149,7 @@ ProfilePromptAnswer profilePromptAnswerFor({
 PhotoPromptAnswer photoPromptAnswerFor({
   required int photoIndex,
   required PhotoPromptDefinition definition,
-  required String caption,
+  String caption = '',
 }) {
   return PhotoPromptAnswer(
     photoIndex: photoIndex,
@@ -206,7 +206,6 @@ List<PhotoPromptAnswer> normalizePhotoPromptAnswers(
     final index = answer.photoIndex;
     if (index < 0 || index >= maxPhotoPromptCaptions) continue;
     final normalizedCaption = normalizePhotoPromptCaption(answer.caption);
-    if (normalizedCaption.isEmpty) continue;
     final definition = photoPromptDefinition(answer.promptId.trim());
     byPhotoIndex[index] = answer.copyWith(
       photoIndex: index,
@@ -233,7 +232,17 @@ List<Map<String, dynamic>> photoPromptsToJson(
 ) {
   return normalizePhotoPromptAnswers(
     answers,
-  ).map((answer) => answer.toJson()).toList(growable: false);
+  ).map(photoPromptSelectionToJson).toList(growable: false);
+}
+
+Map<String, dynamic> photoPromptSelectionToJson(PhotoPromptAnswer answer) {
+  final normalizedCaption = normalizePhotoPromptCaption(answer.caption);
+  return <String, dynamic>{
+    'photoIndex': answer.photoIndex,
+    'promptId': answer.promptId,
+    'prompt': answer.displayPrompt,
+    if (normalizedCaption.isNotEmpty) 'caption': normalizedCaption,
+  };
 }
 
 ProfilePromptAnswer? profilePromptById(
@@ -281,22 +290,18 @@ List<PhotoPromptAnswer> replacePhotoPromptAnswer({
   required Iterable<PhotoPromptAnswer> current,
   required int photoIndex,
   required PhotoPromptDefinition definition,
-  required String caption,
+  String caption = '',
 }) {
   final byPhotoIndex = {
     for (final prompt in normalizePhotoPromptAnswers(current))
       prompt.photoIndex: prompt,
   };
   final normalized = normalizePhotoPromptCaption(caption);
-  if (normalized.isEmpty) {
-    byPhotoIndex.remove(photoIndex);
-  } else {
-    byPhotoIndex[photoIndex] = photoPromptAnswerFor(
-      photoIndex: photoIndex,
-      definition: definition,
-      caption: normalized,
-    );
-  }
+  byPhotoIndex[photoIndex] = photoPromptAnswerFor(
+    photoIndex: photoIndex,
+    definition: definition,
+    caption: normalized,
+  );
   return normalizePhotoPromptAnswers(byPhotoIndex.values);
 }
 

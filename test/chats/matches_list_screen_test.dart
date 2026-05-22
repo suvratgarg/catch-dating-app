@@ -3,6 +3,8 @@ import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -97,7 +99,7 @@ Match _buildMatch({
 }
 
 void main() {
-  testWidgets('chat sliver header search fits while pinned and editable', (
+  testWidgets('chat sliver header search expands while pinned and editable', (
     tester,
   ) async {
     final container = ProviderContainer();
@@ -111,7 +113,10 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => CustomScrollView(
-                slivers: ChatsSliverHeader(count: 0).buildSlivers(context),
+                slivers: [
+                  ...ChatsSliverHeader().buildSlivers(context),
+                  const SliverToBoxAdapter(child: SizedBox(height: 700)),
+                ],
               ),
             ),
           ),
@@ -124,8 +129,41 @@ void main() {
     expect(find.text('Chats'), findsOneWidget);
     expect(find.text('Messages from your matches'), findsOneWidget);
     expect(find.text('Your catches'), findsNothing);
-    expect(find.text('0 chats'), findsOneWidget);
+    expect(find.text('0 chats'), findsNothing);
+    expect(find.byType(TextField), findsNothing);
+    final initialTitleTop = tester.getTopLeft(find.text('Chats')).dy;
 
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -220));
+    await tester.pump();
+
+    expect(find.text('Chats').hitTestable(), findsOneWidget);
+    final scrolledTitleTop = tester.getTopLeft(find.text('Chats')).dy;
+    expect(scrolledTitleTop, greaterThanOrEqualTo(0));
+    expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
+
+    await tester.tap(find.byIcon(Icons.search_rounded));
+    await tester.pump();
+    final midSearchMorphFrame = Duration(
+      milliseconds: CatchMotion.base.inMilliseconds ~/ 2,
+    );
+    await tester.pump(midSearchMorphFrame);
+
+    final morphingSearchWidth = tester.getSize(find.byType(TextField)).width;
+    expect(
+      morphingSearchWidth,
+      greaterThan(CatchTextField.compactControlHeight),
+    );
+
+    await pumpFeatureUi(tester);
+
+    final expandedSearchWidth = tester.getSize(find.byType(TextField)).width;
+    expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.byIcon(Icons.keyboard_hide_rounded), findsNothing);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).textInputAction,
+      TextInputAction.done,
+    );
     await tester.enterText(find.byType(TextField), 'taylor');
     await tester.pump();
 
@@ -137,6 +175,11 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(container.read(chatSearchQueryProvider), isEmpty);
+
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(TextField), findsNothing);
   });
 
   testWidgets('shows the empty state when there are no matches', (
@@ -288,7 +331,7 @@ void main() {
     expect(find.text('Latest message'), findsOneWidget);
     expect(find.text('Older message'), findsNothing);
     expect(find.text('1'), findsOneWidget);
-    expect(find.text('2 chats'), findsOneWidget);
+    expect(find.text('2 chats'), findsNothing);
     expect(find.text('3 active'), findsNothing);
     expect(find.text('Messages'), findsNothing);
   });

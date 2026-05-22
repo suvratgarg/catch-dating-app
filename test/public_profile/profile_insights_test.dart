@@ -55,7 +55,7 @@ void main() {
       expect(summary.suggestions.map((suggestion) => suggestion.title), [
         'Add 3 clear photos',
         'Answer all 3 prompts',
-        'Caption your photos',
+        'Add photo prompts',
       ]);
     });
   });

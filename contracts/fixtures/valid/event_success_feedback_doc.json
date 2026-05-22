@@ -1,18 +1,12 @@
 {
   "eventId": "event-1",
   "clubId": "club-1",
-  "uid": "runner-1",
+  "uid": "user-1",
   "welcomeRating": 5,
   "structureRating": 4,
   "metNewPeopleCount": 3,
   "safetyConcern": false,
-  "privateNote": "Good welcome, the cooldown prompt helped.",
-  "createdAt": {
-    "_seconds": 1778897400,
-    "_nanoseconds": 0
-  },
-  "updatedAt": {
-    "_seconds": 1778897400,
-    "_nanoseconds": 0
-  }
+  "privateNote": "Good pacing.",
+  "createdAt": {"_seconds": 1777619000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777619060, "_nanoseconds": 0}
 }

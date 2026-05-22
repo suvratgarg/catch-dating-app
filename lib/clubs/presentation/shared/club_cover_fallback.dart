@@ -9,10 +9,15 @@ class ClubCoverFallback extends StatelessWidget {
     super.key,
     required this.club,
     this.compact = false,
-  });
+    bool? showLocationChip,
+    bool? showFooterLabel,
+  }) : showLocationChip = showLocationChip ?? !compact,
+       showFooterLabel = showFooterLabel ?? true;
 
   final Club club;
   final bool compact;
+  final bool showLocationChip;
+  final bool showFooterLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -30,43 +35,38 @@ class ClubCoverFallback extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CustomPaint(painter: _ClubRoutePainter(palette.line)),
-          Positioned(
-            right: compact ? -12 : -20,
-            bottom: compact ? -18 : -28,
-            child: Icon(
-              Icons.directions_run_rounded,
-              size: compact ? 72 : 128,
-              color: Colors.white.withValues(alpha: compact ? 0.08 : 0.10),
-            ),
-          ),
-          Center(
+          CustomPaint(painter: _ClubCoverPatternPainter(palette)),
+          Align(
+            alignment: Alignment.center,
             child: Container(
-              width: compact ? 56 : 96,
-              height: compact ? 56 : 96,
+              width: compact ? 42 : 62,
+              height: compact ? 42 : 62,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.16),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.30),
-                  width: 1.5,
-                ),
+                color: palette.iconFill,
+                borderRadius: BorderRadius.circular(compact ? 16 : 22),
+                border: Border.all(color: palette.iconBorder, width: 1.2),
               ),
-              child: Text(
-                _initials(club.name),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: compact ? 18 : 34,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0,
-                ),
+              child: Icon(
+                Icons.location_on_rounded,
+                size: compact ? 23 : 32,
+                color: palette.icon,
               ),
             ),
           ),
-          if (!compact)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withValues(alpha: 0.10),
+                  Colors.black.withValues(alpha: 0.04),
+                ],
+              ),
+            ),
+          ),
+          if (showLocationChip)
             Positioned(
               left: CatchSpacing.s4,
               top: CatchSpacing.s4,
@@ -75,21 +75,22 @@ class ClubCoverFallback extends StatelessWidget {
                 label: cityLabel(club.location),
               ),
             ),
-          Positioned(
-            left: compact ? 8 : CatchSpacing.s4,
-            bottom: compact ? 8 : CatchSpacing.s4,
-            child: Text(
-              compact ? club.area : 'Club',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: compact
-                  ? CatchTextStyles.labelS(
-                      context,
-                      color: Colors.white.withValues(alpha: 0.78),
-                    )
-                  : CatchTextStyles.labelL(context, color: t.primaryInk),
+          if (showFooterLabel)
+            Positioned(
+              left: compact ? 8 : CatchSpacing.s4,
+              bottom: compact ? 8 : CatchSpacing.s4,
+              child: Text(
+                compact ? club.area : 'Club',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: compact
+                    ? CatchTextStyles.labelS(
+                        context,
+                        color: palette.text.withValues(alpha: 0.76),
+                      )
+                    : CatchTextStyles.labelL(context, color: t.ink2),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -104,81 +105,119 @@ class _CoverChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.22),
+        color: Colors.white.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.62)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.86)),
+          Icon(icon, size: 14, color: t.primary),
           const SizedBox(width: 4),
-          Text(
-            label,
-            style: CatchTextStyles.labelS(
-              context,
-              color: Colors.white.withValues(alpha: 0.88),
-            ),
-          ),
+          Text(label, style: CatchTextStyles.labelS(context, color: t.ink2)),
         ],
       ),
     );
   }
 }
 
-class _ClubRoutePainter extends CustomPainter {
-  const _ClubRoutePainter(this.color);
+class _ClubCoverPatternPainter extends CustomPainter {
+  const _ClubCoverPatternPainter(this.palette);
 
-  final Color color;
+  final _ClubCoverPalette palette;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
+    final blockPaint = Paint()
+      ..color = palette.block
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * -0.08,
+          size.height * 0.52,
+          size.width * 0.72,
+          size.height * 0.56,
+        ),
+        Radius.circular(size.shortestSide * 0.18),
+      ),
+      blockPaint,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * 0.50,
+          size.height * -0.12,
+          size.width * 0.62,
+          size.height * 0.42,
+        ),
+        Radius.circular(size.shortestSide * 0.16),
+      ),
+      blockPaint..color = palette.block.withValues(alpha: 0.44),
+    );
+
+    final gridPaint = Paint()
+      ..color = palette.line.withValues(alpha: 0.28)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = size.shortestSide * 0.035
+      ..strokeWidth = 1;
+    final gap = size.shortestSide * 0.18;
+    for (var x = -size.height; x < size.width + size.height; x += gap) {
+      canvas.drawLine(
+        Offset(x, size.height),
+        Offset(x + size.height, 0),
+        gridPaint,
+      );
+    }
+
+    final routePaint = Paint()
+      ..color = palette.line
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.shortestSide * 0.026
       ..strokeCap = StrokeCap.round;
 
     final path = Path()
-      ..moveTo(size.width * -0.08, size.height * 0.70)
+      ..moveTo(size.width * -0.06, size.height * 0.70)
       ..cubicTo(
         size.width * 0.22,
-        size.height * 0.42,
+        size.height * 0.58,
         size.width * 0.34,
-        size.height * 0.96,
+        size.height * 0.84,
         size.width * 0.58,
-        size.height * 0.66,
+        size.height * 0.62,
       )
       ..cubicTo(
-        size.width * 0.76,
-        size.height * 0.44,
-        size.width * 0.86,
+        size.width * 0.75,
+        size.height * 0.46,
+        size.width * 0.90,
         size.height * 0.58,
-        size.width * 1.10,
-        size.height * 0.30,
+        size.width * 1.08,
+        size.height * 0.42,
       );
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, routePaint);
 
-    final dotPaint = Paint()..color = color.withValues(alpha: 0.62);
+    final dotPaint = Paint()..color = palette.accent.withValues(alpha: 0.50);
     canvas.drawCircle(
-      Offset(size.width * 0.20, size.height * 0.54),
+      Offset(size.width * 0.18, size.height * 0.60),
       size.shortestSide * 0.025,
       dotPaint,
     );
     canvas.drawCircle(
-      Offset(size.width * 0.72, size.height * 0.52),
+      Offset(size.width * 0.74, size.height * 0.54),
       size.shortestSide * 0.022,
       dotPaint,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _ClubRoutePainter oldDelegate) =>
-      oldDelegate.color != color;
+  bool shouldRepaint(covariant _ClubCoverPatternPainter oldDelegate) =>
+      oldDelegate.palette != palette;
 }
 
 class _ClubCoverPalette {
@@ -186,52 +225,72 @@ class _ClubCoverPalette {
     required this.start,
     required this.end,
     required this.line,
+    required this.block,
+    required this.accent,
+    required this.iconFill,
+    required this.iconBorder,
+    required this.icon,
+    required this.text,
   });
 
   final Color start;
   final Color end;
   final Color line;
+  final Color block;
+  final Color accent;
+  final Color iconFill;
+  final Color iconBorder;
+  final Color icon;
+  final Color text;
 
   static _ClubCoverPalette forSeed(String seed) {
     final palettes = [
       _ClubCoverPalette(
-        start: const Color(0xFF21433D),
-        end: const Color(0xFF6A3D2A),
-        line: const Color(0xFFE6D8B8).withValues(alpha: 0.20),
+        start: const Color(0xFFFFF6EF),
+        end: const Color(0xFFEAF4EF),
+        line: const Color(0xFF7C978B).withValues(alpha: 0.24),
+        block: const Color(0xFFFFD9C9).withValues(alpha: 0.56),
+        accent: const Color(0xFFFF5A36),
+        iconFill: Colors.white.withValues(alpha: 0.72),
+        iconBorder: const Color(0xFFFFD4C5),
+        icon: const Color(0xFFFF5A36),
+        text: const Color(0xFF5A4A40),
       ),
       _ClubCoverPalette(
-        start: const Color(0xFF243D5A),
-        end: const Color(0xFF5B2F4B),
-        line: const Color(0xFFD9E7F2).withValues(alpha: 0.20),
+        start: const Color(0xFFF4F0FF),
+        end: const Color(0xFFEAF4FA),
+        line: const Color(0xFF7E8FA7).withValues(alpha: 0.25),
+        block: const Color(0xFFE4D7FF).withValues(alpha: 0.52),
+        accent: const Color(0xFF4A7BC5),
+        iconFill: Colors.white.withValues(alpha: 0.72),
+        iconBorder: const Color(0xFFD9E0F5),
+        icon: const Color(0xFF4A7BC5),
+        text: const Color(0xFF464A5B),
       ),
       _ClubCoverPalette(
-        start: const Color(0xFF39452D),
-        end: const Color(0xFF7A4C32),
-        line: const Color(0xFFF1E3C6).withValues(alpha: 0.20),
+        start: const Color(0xFFFFF7DE),
+        end: const Color(0xFFEFF6E8),
+        line: const Color(0xFF969C74).withValues(alpha: 0.25),
+        block: const Color(0xFFFFE1A6).withValues(alpha: 0.50),
+        accent: const Color(0xFFD28A23),
+        iconFill: Colors.white.withValues(alpha: 0.72),
+        iconBorder: const Color(0xFFF1DBA8),
+        icon: const Color(0xFFD28A23),
+        text: const Color(0xFF554D35),
       ),
       _ClubCoverPalette(
-        start: const Color(0xFF2E385A),
-        end: const Color(0xFF365947),
-        line: const Color(0xFFE2F0DD).withValues(alpha: 0.20),
+        start: const Color(0xFFEFF8F6),
+        end: const Color(0xFFFFF0EA),
+        line: const Color(0xFF769D97).withValues(alpha: 0.25),
+        block: const Color(0xFFCDEBE5).withValues(alpha: 0.56),
+        accent: const Color(0xFF218A77),
+        iconFill: Colors.white.withValues(alpha: 0.72),
+        iconBorder: const Color(0xFFCBE7E2),
+        icon: const Color(0xFF218A77),
+        text: const Color(0xFF38544F),
       ),
     ];
     final index = seed.codeUnits.fold<int>(0, (sum, unit) => sum + unit);
     return palettes[index % palettes.length];
   }
-}
-
-String _initials(String name) {
-  final words = name
-      .trim()
-      .split(RegExp(r'\s+'))
-      .where((word) => word.isNotEmpty)
-      .toList(growable: false);
-  if (words.isEmpty) {
-    return 'RC';
-  }
-  return words
-      .take(2)
-      .map((word) => word.characters.first)
-      .join()
-      .toUpperCase();
 }

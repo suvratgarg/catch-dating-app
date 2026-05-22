@@ -47,8 +47,12 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       selectedModuleIds: draft.selectedModuleIds.toList()..sort(),
       structureConfig: draft.structureConfig,
       hostGoal: draft.hostGoal,
-      wingmanRequestsEnabled: draft.wingmanRequestsEnabled,
-      contextualOpenersEnabled: draft.contextualOpenersEnabled,
+      wingmanRequestsEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.wingmanRequests.id,
+      ),
+      contextualOpenersEnabled: draft.isModuleSelected(
+        EventSuccessModuleCatalog.contextualOpeners.id,
+      ),
       compatibilityAffectsRanking: draft.compatibilityAffectsRanking,
       questionnaireConfig: draft.questionnaireConfig,
       attendeePrompt: _trimToNull(attendeePrompt),
@@ -80,16 +84,21 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     final selectedIds = selectedModuleIds
         .where(playbook.moduleIds.contains)
         .toSet();
+    final resolvedSelectedIds = selectedIds.isEmpty
+        ? defaultDraft.selectedModuleIds
+        : selectedIds;
     return defaultDraft.copyWith(
-      selectedModuleIds: selectedIds.isEmpty
-          ? defaultDraft.selectedModuleIds
-          : selectedIds,
+      selectedModuleIds: resolvedSelectedIds,
       structureConfig: structureConfig.isLegacyDefault
           ? defaultDraft.structureConfig
           : structureConfig,
       hostGoal: hostGoal.trim().isEmpty ? defaultDraft.hostGoal : hostGoal,
-      wingmanRequestsEnabled: wingmanRequestsEnabled,
-      contextualOpenersEnabled: contextualOpenersEnabled,
+      wingmanRequestsEnabled: resolvedSelectedIds.contains(
+        EventSuccessModuleCatalog.wingmanRequests.id,
+      ),
+      contextualOpenersEnabled: resolvedSelectedIds.contains(
+        EventSuccessModuleCatalog.contextualOpeners.id,
+      ),
       compatibilityAffectsRanking: compatibilityAffectsRanking,
       questionnaireConfig: questionnaireConfig,
     );
@@ -132,14 +141,23 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     return EventSuccessDefaults.fromDraft(
       recommendedDraft.copyWith(
         selectedModuleIds: selectedIds,
-        structureConfig: structureConfig.isLegacyDefault
+        structureConfig:
+            _shouldUseRecommendedStructure(
+              activityKind,
+              structureConfig,
+              targetAttendeeCount,
+            )
             ? recommendedDraft.structureConfig
             : structureConfig,
         hostGoal: hostGoal.trim().isEmpty
             ? recommendedDraft.hostGoal
             : hostGoal,
-        wingmanRequestsEnabled: wingmanRequestsEnabled,
-        contextualOpenersEnabled: contextualOpenersEnabled,
+        wingmanRequestsEnabled: selectedIds.contains(
+          EventSuccessModuleCatalog.wingmanRequests.id,
+        ),
+        contextualOpenersEnabled: selectedIds.contains(
+          EventSuccessModuleCatalog.contextualOpeners.id,
+        ),
         compatibilityAffectsRanking:
             compatibilitySelected &&
             (useCurrentSelectedIds
@@ -184,4 +202,16 @@ bool _playbookMatchesActivity(
 ) {
   if (playbook.activityType == activityKind) return true;
   return activityKind.defaultPlaybookId == playbook.id;
+}
+
+bool _shouldUseRecommendedStructure(
+  ActivityKind activityKind,
+  EventSuccessStructureConfig structureConfig,
+  int? targetAttendeeCount,
+) {
+  if (structureConfig.isLegacyDefault) return true;
+  return targetAttendeeCount != null &&
+      activityKind.defaultInteractionModel ==
+          EventInteractionModel.teamRotations &&
+      structureConfig.isDeprecatedTeamRotationDefault;
 }

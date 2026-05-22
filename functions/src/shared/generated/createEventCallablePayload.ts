@@ -11,6 +11,17 @@ export interface CreateEventCallablePayload {
   startTimeMillis: number;
   endTimeMillis: number;
   meetingPoint: string;
+  /**
+   * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
+   */
+  meetingLocation?: {
+    name: string;
+    address?: string | null;
+    placeId?: string | null;
+    latitude: number | null;
+    longitude: number | null;
+    notes?: string | null;
+  };
   startingPointLat: number;
   startingPointLng: number;
   locationDetails?: string | null;
@@ -126,6 +137,45 @@ export interface CreateEventCallablePayload {
     activityDetails?: {
       [k: string]: unknown;
     };
+  };
+  eventSuccessDefaults?: {
+    enabled?: boolean;
+    playbookId?: string;
+    /**
+     * @maxItems 24
+     */
+    selectedModuleIds?: string[];
+    structureConfig?: {
+      unitKind: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+      unitSize: number;
+      unitCount?: number | null;
+      rotationIntervalMinutes?: number | null;
+      revealCountdownSeconds: number;
+    };
+    hostGoal?: string;
+    wingmanRequestsEnabled?: boolean;
+    contextualOpenersEnabled?: boolean;
+    compatibilityAffectsRanking?: boolean;
+    questionnaireConfig?: {
+      templateId: string;
+      customTitle?: string | null;
+      /**
+       * @maxItems 8
+       */
+      customQuestions?: {
+        id: string;
+        prompt: string;
+        /**
+         * @minItems 2
+         * @maxItems 5
+         */
+        options: {
+          id: string;
+          label: string;
+        }[];
+      }[];
+    };
+    attendeePrompt?: string | null;
   };
   constraints?: {
     minAge?: number;

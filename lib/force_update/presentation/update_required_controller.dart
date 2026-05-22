@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final updateRequiredControllerProvider = Provider<UpdateRequiredController>((
-  ref,
-) {
-  return UpdateRequiredController(ref.watch(externalLinkControllerProvider));
-});
+part 'update_required_controller.g.dart';
+
+@Riverpod(keepAlive: true)
+UpdateRequiredController updateRequiredController(Ref ref) =>
+    UpdateRequiredController(ref.watch(externalLinkControllerProvider));
 
 class UpdateRequiredController {
   const UpdateRequiredController(this._links);

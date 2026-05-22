@@ -42,7 +42,9 @@ export async function refreshClubNextEvent(
   const nextEvent = nextEventSnap.docs[0]?.data() as EventDoc | undefined;
   await clubRef.set({
     nextEventAt: nextEvent?.startTime ?? null,
-    nextEventLabel: nextEvent?.meetingPoint ?? null,
+    nextEventLabel: nextEvent ?
+      nextEvent.meetingLocation?.name ?? nextEvent.meetingPoint :
+      null,
   }, {merge: true});
 }
 

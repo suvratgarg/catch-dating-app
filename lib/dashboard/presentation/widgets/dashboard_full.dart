@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -168,94 +167,14 @@ class DashboardFullSliverBody extends ConsumerWidget {
   }
 }
 
-enum _HostToolsBucket { active, past }
-
-class HostToolsRail extends StatefulWidget {
+class HostToolsRail extends StatelessWidget {
   const HostToolsRail({super.key, required this.tools});
 
   final List<DashboardHostEventTool> tools;
 
   @override
-  State<HostToolsRail> createState() => _HostToolsRailState();
-}
-
-class _HostToolsRailState extends State<HostToolsRail> {
-  var _selectedBucket = _HostToolsBucket.active;
-
-  @override
-  void didUpdateWidget(covariant HostToolsRail oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _normalizeSelectedBucket();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _normalizeSelectedBucket();
-  }
-
-  void _normalizeSelectedBucket() {
-    final active = widget.tools.where((tool) => !tool.isPast).toList();
-    final past = widget.tools.where((tool) => tool.isPast).toList();
-    if (_selectedBucket == _HostToolsBucket.active && active.isEmpty) {
-      _selectedBucket = _HostToolsBucket.past;
-    }
-    if (_selectedBucket == _HostToolsBucket.past && past.isEmpty) {
-      _selectedBucket = _HostToolsBucket.active;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final active = widget.tools.where((tool) => !tool.isPast).toList();
-    final past = widget.tools.where((tool) => tool.isPast).toList();
-    final hasBothBuckets = active.isNotEmpty && past.isNotEmpty;
-    final selectedTools = switch (_selectedBucket) {
-      _HostToolsBucket.active => active,
-      _HostToolsBucket.past => past,
-    };
-
-    if (!hasBothBuckets) {
-      return _HostToolsCarouselAdapter(tools: widget.tools);
-    }
-
-    final t = CatchTokens.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Host operations', style: CatchTextStyles.titleM(context)),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchChip(
-              label: 'Active ${active.length}',
-              active: _selectedBucket == _HostToolsBucket.active,
-              icon: const Icon(Icons.tune_rounded),
-              onTap: () =>
-                  setState(() => _selectedBucket = _HostToolsBucket.active),
-            ),
-            CatchChip(
-              label: 'Past ${past.length}',
-              active: _selectedBucket == _HostToolsBucket.past,
-              icon: const Icon(Icons.history_rounded),
-              onTap: () =>
-                  setState(() => _selectedBucket = _HostToolsBucket.past),
-            ),
-          ],
-        ),
-        gapH8,
-        Text(
-          _selectedBucket == _HostToolsBucket.active
-              ? 'Current host tasks stay first; past events remain available for corrections.'
-              : 'Past hosted events stay reachable for missed attendance and follow-up operations.',
-          style: CatchTextStyles.bodyS(context, color: t.ink2),
-        ),
-        gapH12,
-        _HostToolsCarouselAdapter(tools: selectedTools),
-      ],
-    );
+    return _HostToolsCarouselAdapter(tools: tools);
   }
 }
 
@@ -282,6 +201,11 @@ class _HostToolsCarouselAdapter extends StatelessWidget {
       onTakeAttendance: (event) => context.pushNamed(
         Routes.attendanceSheet.name,
         pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+      ),
+      onViewReport: (event) => context.pushNamed(
+        Routes.hostEventManageScreen.name,
+        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        queryParameters: const {'section': 'report'},
       ),
     );
   }

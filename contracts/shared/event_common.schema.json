@@ -72,6 +72,38 @@
         {"type": "null"}
       ]
     },
+    "eventMeetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": ["name", "latitude", "longitude"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": ["string", "null"],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "$ref": "#/definitions/latitude"
+        },
+        "longitude": {
+          "$ref": "#/definitions/longitude"
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "maxLength": 1000
+        }
+      }
+    },
     "nullableString": {
       "$ref": "profile_common.schema.json#/definitions/nullableString"
     },

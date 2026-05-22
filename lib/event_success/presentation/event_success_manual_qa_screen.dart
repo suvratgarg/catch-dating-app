@@ -763,36 +763,43 @@ class _DarkPill extends StatelessWidget {
 enum _ManualQaScenario {
   socialRun,
   racketPairs,
-  quizTeams;
+  quizTeams,
+  singlesMixer;
 
   String get label => switch (this) {
     _ManualQaScenario.socialRun => 'Social run',
     _ManualQaScenario.racketPairs => 'Racket pairs',
     _ManualQaScenario.quizTeams => 'Quiz teams',
+    _ManualQaScenario.singlesMixer => 'Singles mixer',
   };
 
   IconData get icon => switch (this) {
     _ManualQaScenario.socialRun => Icons.directions_run_rounded,
     _ManualQaScenario.racketPairs => Icons.sports_tennis_rounded,
     _ManualQaScenario.quizTeams => Icons.quiz_outlined,
+    _ManualQaScenario.singlesMixer => Icons.favorite_border_rounded,
   };
 
   ActivityKind get activityKind => switch (this) {
     _ManualQaScenario.socialRun => ActivityKind.socialRun,
     _ManualQaScenario.racketPairs => ActivityKind.pickleball,
     _ManualQaScenario.quizTeams => ActivityKind.pubQuiz,
+    _ManualQaScenario.singlesMixer => ActivityKind.singlesMixer,
   };
 
   EventSuccessPlaybook get playbook => switch (this) {
     _ManualQaScenario.socialRun => EventSuccessPlaybookLibrary.socialRun,
     _ManualQaScenario.racketPairs => EventSuccessPlaybookLibrary.pickleball,
     _ManualQaScenario.quizTeams => EventSuccessPlaybookLibrary.pubQuiz,
+    _ManualQaScenario.singlesMixer =>
+      EventSuccessPlaybookLibrary.algorithmicMixer,
   };
 
   int get targetCount => switch (this) {
     _ManualQaScenario.socialRun => 22,
     _ManualQaScenario.racketPairs => 12,
     _ManualQaScenario.quizTeams => 18,
+    _ManualQaScenario.singlesMixer => 32,
   };
 
   EventSuccessStructureConfig get structureConfig => switch (this) {
@@ -815,12 +822,19 @@ enum _ManualQaScenario {
       rotationIntervalMinutes: 20,
       revealCountdownSeconds: 10,
     ),
+    _ManualQaScenario.singlesMixer => const EventSuccessStructureConfig(
+      unitKind: EventSuccessUnitKind.pairs,
+      unitSize: 2,
+      rotationIntervalMinutes: 12,
+      revealCountdownSeconds: 10,
+    ),
   };
 
   String get meetingPoint => switch (this) {
     _ManualQaScenario.socialRun => 'Race Course Road main gate',
     _ManualQaScenario.racketPairs => 'Court 2 by the clubhouse',
     _ManualQaScenario.quizTeams => 'Upstairs quiz room',
+    _ManualQaScenario.singlesMixer => 'Main lounge check-in desk',
   };
 }
 
@@ -1378,6 +1392,8 @@ class _ManualQaFixtures {
       'Ask your next partner what makes a great doubles teammate.',
     _ManualQaScenario.quizTeams =>
       'Ask your team for one niche thing they know too much about.',
+    _ManualQaScenario.singlesMixer =>
+      'Ask your next match what kind of event night they secretly love.',
   };
 }
 

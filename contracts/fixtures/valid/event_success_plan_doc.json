@@ -1,32 +1,35 @@
 {
   "eventId": "event-1",
   "clubId": "club-1",
-  "playbookId": "social_run_light",
+  "playbookId": "algorithmic_mixer_reveal",
   "selectedModuleIds": [
     "qr_check_in",
-    "host_script",
-    "micro_pods",
+    "guided_rotations",
+    "live_reveal",
+    "compatibility_questionnaire",
     "wingman_requests",
-    "safety_controls"
+    "decomposed_feedback",
+    "host_analytics"
   ],
   "targetAttendeeCount": 24,
-  "hostGoal": "Help attendees meet at least two new people.",
+  "structureConfig": {
+    "unitKind": "pairs",
+    "unitSize": 2,
+    "rotationIntervalMinutes": 15,
+    "revealCountdownSeconds": 15
+  },
+  "hostGoal": "Help everyone meet a few new people without awkward logistics.",
   "wingmanRequestsEnabled": true,
   "contextualOpenersEnabled": true,
-  "activeStepIndex": 1,
-  "status": "live",
-  "attendeePrompt": "Find someone running your pace and ask what route they want to try next.",
-  "createdAt": {
-    "_seconds": 1778886000,
-    "_nanoseconds": 0
+  "compatibilityAffectsRanking": true,
+  "questionnaireConfig": {
+    "templateId": "balanced"
   },
-  "updatedAt": {
-    "_seconds": 1778887800,
-    "_nanoseconds": 0
-  },
-  "frozenAt": {
-    "_seconds": 1778887800,
-    "_nanoseconds": 0
-  },
-  "completedAt": null
+  "activeStepIndex": 0,
+  "status": "setup",
+  "revealStatus": "idle",
+  "activeRevealRoundIndex": 0,
+  "attendeePrompt": "Ask what brought them here tonight.",
+  "createdAt": {"_seconds": 1777615000, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1777615060, "_nanoseconds": 0}
 }

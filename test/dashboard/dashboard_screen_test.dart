@@ -1036,12 +1036,13 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Host tools'), findsOneWidget);
-      expect(find.text('1 event'), findsOneWidget);
-      expect(find.text('HOST TOOLS'), findsOneWidget);
-      expect(find.text('ATTENDANCE OPEN'), findsOneWidget);
+      expect(find.text('Host tools'), findsNothing);
+      expect(find.text('1 event'), findsNothing);
+      expect(find.text('HOST TOOLS'), findsNothing);
+      expect(find.text('Host event'), findsOneWidget);
+      expect(find.text('Attendance open'), findsOneWidget);
       expect(find.text('Take attendance'), findsOneWidget);
-      expect(find.text('Manage event'), findsOneWidget);
+      expect(find.text('Manage event'), findsNothing);
       expect(find.text('Take Attendance'), findsNothing);
       expect(find.textContaining('NEXT EVENT'), findsNothing);
     });
@@ -1101,13 +1102,15 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Host operations'), findsOneWidget);
-      expect(find.text('Active 2'), findsOneWidget);
-      expect(find.text('Past 1'), findsOneWidget);
-      expect(find.text('HOST TOOLS'), findsOneWidget);
+      expect(find.text('Host operations'), findsNothing);
+      expect(find.text('Active 2'), findsNothing);
+      expect(find.text('Past 1'), findsNothing);
+      expect(find.text('HOST TOOLS'), findsNothing);
+      expect(find.text('Host event'), findsOneWidget);
       expect(find.text('Manage event'), findsOneWidget);
-      expect(find.text('Attendance opens later'), findsOneWidget);
-      expect(find.text('1/2'), findsOneWidget);
+      expect(find.text('Attendance opens later'), findsNothing);
+      expect(find.text('Upcoming'), findsOneWidget);
+      expect(find.text('1 of 3'), findsOneWidget);
       expect(find.textContaining('2/20 booked'), findsOneWidget);
 
       await tester.drag(
@@ -1116,15 +1119,59 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('2/2'), findsOneWidget);
+      expect(find.text('2 of 3'), findsOneWidget);
       expect(find.textContaining('7/20 booked'), findsOneWidget);
 
-      await tester.tap(find.text('Past 1'));
+      await tester.drag(
+        find.byKey(const Key('host-event-tools-carousel')),
+        const Offset(-120, 0),
+      );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('1 event'), findsOneWidget);
+      expect(find.text('3 of 3'), findsOneWidget);
       expect(find.textContaining('4/20 booked'), findsOneWidget);
       expect(find.text('Attendance closed'), findsOneWidget);
+      expect(find.text('View report'), findsOneWidget);
+    });
+
+    testWidgets('keeps host event progress bounded for large event counts', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final tools = [
+        for (var index = 0; index < 100; index += 1)
+          DashboardHostEventTool(
+            event: buildEvent(
+              id: 'hosted-event-$index',
+              clubId: 'club-host',
+              startTime: now.add(Duration(hours: index + 1)),
+            ),
+            attendanceState: HostEventAttendanceState.opensLater,
+          ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(body: HostToolsRail(tools: tools)),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Host tools'), findsNothing);
+      expect(find.text('100 events'), findsNothing);
+      expect(find.text('1 of 100'), findsOneWidget);
+      expect(find.text('1/100'), findsNothing);
+      expect(
+        tester
+            .getSize(find.byKey(const Key('host-event-tools-page-indicator')))
+            .width,
+        lessThanOrEqualTo(
+          tester
+              .getSize(find.byKey(const Key('host-event-tools-carousel')))
+              .width,
+        ),
+      );
     });
   });
 
@@ -1289,6 +1336,44 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Attendance club-host hosted-event'), findsOneWidget);
+    });
+
+    testWidgets('host tools rail opens report for closed attendance', (
+      tester,
+    ) async {
+      final event = buildEvent(id: 'hosted-event', clubId: 'club-host');
+      final tool = DashboardHostEventTool(
+        event: event,
+        attendanceState: HostEventAttendanceState.closed,
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => Scaffold(body: HostToolsRail(tools: [tool])),
+          ),
+          GoRoute(
+            path: Routes.hostEventManageScreen.path,
+            name: Routes.hostEventManageScreen.name,
+            builder: (_, state) => Scaffold(
+              body: Text(
+                'Manage ${state.pathParameters['clubId']} ${state.pathParameters['eventId']} ${state.uri.queryParameters['section']}',
+              ),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      );
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('View report'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Manage club-host hosted-event report'), findsOneWidget);
     });
   });
 }

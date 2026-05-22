@@ -36,14 +36,13 @@ export const photoPromptAnswerSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/embedded/photo_prompt_answer.schema.json",
   "title": "PhotoPromptAnswer",
-  "description": "One optional caption prompt for a profile photo slot.",
+  "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "photoIndex",
     "promptId",
-    "prompt",
-    "caption"
+    "prompt"
   ],
   "properties": {
     "photoIndex": {
@@ -63,7 +62,9 @@ export const photoPromptAnswerSchema = {
     },
     "caption": {
       "type": "string",
-      "maxLength": 140
+      "maxLength": 140,
+      "deprecated": true,
+      "description": "Legacy user-entered caption retained for compatibility with older documents."
     }
   },
   "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -119,14 +120,13 @@ export const profilePhotoSchema = {
       "anyOf": [
         {
           "title": "PhotoPromptAnswer",
-          "description": "One optional caption prompt for a profile photo slot.",
+          "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
           "type": "object",
           "additionalProperties": false,
           "required": [
             "photoIndex",
             "promptId",
-            "prompt",
-            "caption"
+            "prompt"
           ],
           "properties": {
             "photoIndex": {
@@ -146,7 +146,9 @@ export const profilePhotoSchema = {
             },
             "caption": {
               "type": "string",
-              "maxLength": 140
+              "maxLength": 140,
+              "deprecated": true,
+              "description": "Legacy user-entered caption retained for compatibility with older documents."
             }
           },
           "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -721,14 +723,13 @@ export const userProfileDocumentSchema = {
       "maxItems": 6,
       "items": {
         "title": "PhotoPromptAnswer",
-        "description": "One optional caption prompt for a profile photo slot.",
+        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "photoIndex",
           "promptId",
-          "prompt",
-          "caption"
+          "prompt"
         ],
         "properties": {
           "photoIndex": {
@@ -748,7 +749,9 @@ export const userProfileDocumentSchema = {
           },
           "caption": {
             "type": "string",
-            "maxLength": 140
+            "maxLength": 140,
+            "deprecated": true,
+            "description": "Legacy user-entered caption retained for compatibility with older documents."
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -805,14 +808,13 @@ export const userProfileDocumentSchema = {
             "anyOf": [
               {
                 "title": "PhotoPromptAnswer",
-                "description": "One optional caption prompt for a profile photo slot.",
+                "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
                   "photoIndex",
                   "promptId",
-                  "prompt",
-                  "caption"
+                  "prompt"
                 ],
                 "properties": {
                   "photoIndex": {
@@ -832,7 +834,9 @@ export const userProfileDocumentSchema = {
                   },
                   "caption": {
                     "type": "string",
-                    "maxLength": 140
+                    "maxLength": 140,
+                    "deprecated": true,
+                    "description": "Legacy user-entered caption retained for compatibility with older documents."
                   }
                 },
                 "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -1422,14 +1426,13 @@ export const publicProfileDocumentSchema = {
       "maxItems": 6,
       "items": {
         "title": "PhotoPromptAnswer",
-        "description": "One optional caption prompt for a profile photo slot.",
+        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
         "type": "object",
         "additionalProperties": false,
         "required": [
           "photoIndex",
           "promptId",
-          "prompt",
-          "caption"
+          "prompt"
         ],
         "properties": {
           "photoIndex": {
@@ -1449,7 +1452,9 @@ export const publicProfileDocumentSchema = {
           },
           "caption": {
             "type": "string",
-            "maxLength": 140
+            "maxLength": 140,
+            "deprecated": true,
+            "description": "Legacy user-entered caption retained for compatibility with older documents."
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -1506,14 +1511,13 @@ export const publicProfileDocumentSchema = {
             "anyOf": [
               {
                 "title": "PhotoPromptAnswer",
-                "description": "One optional caption prompt for a profile photo slot.",
+                "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
                   "photoIndex",
                   "promptId",
-                  "prompt",
-                  "caption"
+                  "prompt"
                 ],
                 "properties": {
                   "photoIndex": {
@@ -1533,7 +1537,9 @@ export const publicProfileDocumentSchema = {
                   },
                   "caption": {
                     "type": "string",
-                    "maxLength": 140
+                    "maxLength": 140,
+                    "deprecated": true,
+                    "description": "Legacy user-entered caption retained for compatibility with older documents."
                   }
                 },
                 "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -3015,6 +3021,61 @@ export const eventDocumentSchema = {
       "minLength": 1,
       "maxLength": 240
     },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
     "startingPointLat": {
       "type": [
         "number",
@@ -3936,6 +3997,14 @@ export const eventSuccessPlanDocumentSchema = {
   "x-firestore-path": "eventSuccessPlans/{eventId}",
   "x-document-id-field": "id",
   "x-owner": "club host direct write; event participants read",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
   "required": [
     "eventId",
     "clubId",
@@ -4291,6 +4360,38 @@ export const eventSuccessPlanDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
   }
 };
@@ -4299,13 +4400,21 @@ export const eventSuccessFeedbackDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_feedback.schema.json",
   "title": "EventSuccessFeedbackDocument",
-  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.",
+  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "eventSuccessFeedback",
   "x-firestore-path": "eventSuccessFeedback/{feedbackId}",
   "x-document-id-field": "id",
-  "x-owner": "attendee direct write after attended event; host read",
+  "x-owner": "attendee direct write after attended event; attendee read; backend aggregate",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
   "required": [
     "eventId",
     "clubId",
@@ -4356,6 +4465,925 @@ export const eventSuccessFeedbackDocumentSchema = {
         "string",
         "null"
       ],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSuccessPreferenceDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_preferences.schema.json",
+  "title": "EventSuccessPreferenceDocument",
+  "description": "Attendee-owned opt-out preferences for live event guidance stored at eventSuccessPreferences/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessPreferences",
+  "x-firestore-path": "eventSuccessPreferences/{preferenceId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write while signed up or attended; host read for assignment generation context",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "microPodsOptedOut",
+    "guidedRotationsOptedOut",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "microPodsOptedOut": {
+      "type": "boolean"
+    },
+    "guidedRotationsOptedOut": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSuccessCompatibilityResponseDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_compatibility_responses.schema.json",
+  "title": "EventSuccessCompatibilityResponseDocument",
+  "description": "Attendee-owned compatibility questionnaire answers stored at eventSuccessCompatibilityResponses/{eventId_uid}. Hosts cannot read individual answers.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessCompatibilityResponses",
+  "x-firestore-path": "eventSuccessCompatibilityResponses/{responseId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write while signed up or attended; backend read for opted-in assignment generation",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "answerIds",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "answerIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSuccessWingmanRequestDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_wingman_requests.schema.json",
+  "title": "EventSuccessWingmanRequestDocument",
+  "description": "Explicit attendee request for host-visible introduction help stored at eventSuccessWingmanRequests/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessWingmanRequests",
+  "x-firestore-path": "eventSuccessWingmanRequests/{requestId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write after attended event; host read only while active and consented",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "requesterUid",
+    "targetUid",
+    "status",
+    "hostVisibleConsent",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requesterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "withdrawn"
+      ]
+    },
+    "hostVisibleConsent": {
+      "type": "boolean",
+      "const": true
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSuccessAssignmentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_assignments.schema.json",
+  "title": "EventSuccessAssignmentDocument",
+  "description": "Server-owned live guidance assignment stored at eventSuccessAssignments/{eventId_moduleId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessAssignments",
+  "x-firestore-path": "eventSuccessAssignments/{assignmentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event-success assignment callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "moduleId",
+    "label",
+    "displayTitle",
+    "peerUids",
+    "source",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "moduleId": {
+      "type": "string",
+      "enum": [
+        "micro_pods",
+        "guided_rotations"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "displayTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "displaySubtitle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    },
+    "peerUids": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "rotationSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "startsAt",
+          "endsAt",
+          "peerUid",
+          "compatibility"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "endsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "peerUid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "compatibility": {
+            "type": "string",
+            "enum": [
+              "mutual_interest",
+              "one_way_interest",
+              "questionnaire_match",
+              "social",
+              "host_override"
+            ]
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "server_v1",
+        "host_override_v1",
+        "server"
+      ]
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSuccessScorecardDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_scorecards.schema.json",
+  "title": "EventSuccessScorecardDocument",
+  "description": "Server-owned aggregate event coaching metrics stored at eventSuccessScorecards/{eventId}. Raw attendee feedback remains private.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessScorecards",
+  "x-firestore-path": "eventSuccessScorecards/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "onEventSuccessFeedbackWritten trigger",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "bookedCount",
+    "checkedInCount",
+    "feedbackCount",
+    "attendeesWhoMetTwoPlusPeople",
+    "mutualMatchCount",
+    "chatStartedCount",
+    "repeatSignupCount",
+    "averageWelcomeRating",
+    "averageStructureRating",
+    "safetyIncidentCount",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "bookedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "checkedInCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "feedbackCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "attendeesWhoMetTwoPlusPeople": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mutualMatchCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "chatStartedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "repeatSignupCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "averageWelcomeRating": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "averageStructureRating": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "safetyIncidentCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventSafetyReportDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_safety_reports.schema.json",
+  "title": "EventSafetyReportDocument",
+  "description": "Catch-private safety review item materialized from event feedback concerns.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSafetyReports",
+  "x-firestore-path": "eventSafetyReports/{reportId}",
+  "x-document-id-field": "id",
+  "x-owner": "onEventSuccessFeedbackWritten trigger",
+  "required": [
+    "eventId",
+    "clubId",
+    "reporterUserId",
+    "feedbackId",
+    "source",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reporterUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "feedbackId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 256
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "event_success_feedback"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "reviewed",
+        "dismissed"
+      ]
+    },
+    "note": {
+      "type": "string",
       "maxLength": 500
     },
     "createdAt": {
@@ -6317,14 +7345,13 @@ export const updateUserProfileCallablePayloadSchema = {
           "maxItems": 6,
           "items": {
             "title": "PhotoPromptAnswer",
-            "description": "One optional caption prompt for a profile photo slot.",
+            "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
             "type": "object",
             "additionalProperties": false,
             "required": [
               "photoIndex",
               "promptId",
-              "prompt",
-              "caption"
+              "prompt"
             ],
             "properties": {
               "photoIndex": {
@@ -6344,7 +7371,9 @@ export const updateUserProfileCallablePayloadSchema = {
               },
               "caption": {
                 "type": "string",
-                "maxLength": 140
+                "maxLength": 140,
+                "deprecated": true,
+                "description": "Legacy user-entered caption retained for compatibility with older documents."
               }
             },
             "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -6399,14 +7428,13 @@ export const updateUserProfileCallablePayloadSchema = {
                 "anyOf": [
                   {
                     "title": "PhotoPromptAnswer",
-                    "description": "One optional caption prompt for a profile photo slot.",
+                    "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
                       "photoIndex",
                       "promptId",
-                      "prompt",
-                      "caption"
+                      "prompt"
                     ],
                     "properties": {
                       "photoIndex": {
@@ -6426,7 +7454,9 @@ export const updateUserProfileCallablePayloadSchema = {
                       },
                       "caption": {
                         "type": "string",
-                        "maxLength": 140
+                        "maxLength": 140,
+                        "deprecated": true,
+                        "description": "Legacy user-entered caption retained for compatibility with older documents."
                       }
                     },
                     "x-catch-catalog": "../catalogs/photo_prompts.json"
@@ -8066,6 +9096,61 @@ export const createEventCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 240
     },
+    "meetingLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+      "required": [
+        "name",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "address": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "placeId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
     "startingPointLat": {
       "type": "number",
       "minimum": -90,
@@ -8478,6 +9563,167 @@ export const createEventCallablePayloadSchema = {
         }
       }
     },
+    "eventSuccessDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "playbookId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "selectedModuleIds": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "structureConfig": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unitKind",
+            "unitSize",
+            "revealCountdownSeconds"
+          ],
+          "properties": {
+            "unitKind": {
+              "type": "string",
+              "enum": [
+                "wholeGroup",
+                "pods",
+                "pairs",
+                "teams",
+                "tables"
+              ]
+            },
+            "unitSize": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "unitCount": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 200
+            },
+            "rotationIntervalMinutes": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 5,
+              "maximum": 180
+            },
+            "revealCountdownSeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60
+            }
+          }
+        },
+        "hostGoal": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "wingmanRequestsEnabled": {
+          "type": "boolean"
+        },
+        "contextualOpenersEnabled": {
+          "type": "boolean"
+        },
+        "compatibilityAffectsRanking": {
+          "type": "boolean"
+        },
+        "questionnaireConfig": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "templateId"
+          ],
+          "properties": {
+            "templateId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "customTitle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "customQuestions": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "prompt",
+                  "options"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "options": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 5,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "label"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "attendeePrompt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        }
+      }
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,
@@ -8543,6 +9789,61 @@ export const updateEventCallablePayloadSchema = {
           "type": "string",
           "minLength": 1,
           "maxLength": 240
+        },
+        "meetingLocation": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -90,
+              "maximum": 90
+            },
+            "longitude": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": -180,
+              "maximum": 180
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
         },
         "startingPointLat": {
           "anyOf": [
@@ -9097,6 +10398,38 @@ export const overrideEventSuccessRotationsCallablePayloadSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const submitEventSuccessWingmanRequestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/submit_event_success_wingman_request_payload.schema.json",
+  "title": "SubmitEventSuccessWingmanRequestCallablePayload",
+  "description": "Callable payload accepted by submitEventSuccessWingmanRequest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "targetUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
     }
   }
 };
@@ -10126,7 +11459,7 @@ export const photoPromptCatalog = {
     {
       "id": "proofIRun",
       "title": "Proof I actually event",
-      "placeholder": "Add a caption for this running photo."
+      "placeholder": "Choose this when the photo is the proof."
     },
     {
       "id": "finishLine",
@@ -10150,7 +11483,7 @@ export const photoPromptCatalog = {
     },
     {
       "id": "captionThis",
-      "title": "Caption this",
+      "title": "First thought?",
       "placeholder": "Give people an easy opening line."
     }
   ]

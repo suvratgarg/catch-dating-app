@@ -148,6 +148,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   late TimeOfDay _selectedStartTime;
   late int _durationMinutes;
   late LocationCoordinate? _startingPoint;
+  String? _meetingLocationAddress;
+  String? _meetingLocationPlaceId;
   late PaceLevel _selectedPace;
   late EventAdmissionPreset _selectedAdmissionPreset;
   late bool _dynamicPricingEnabled;
@@ -188,12 +190,18 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   void initState() {
     super.initState();
     final event = widget.event;
+    final meetingLocation = event.effectiveMeetingLocation;
     _selectedDate = DateUtils.dateOnly(event.startTime);
     _selectedStartTime = TimeOfDay.fromDateTime(event.startTime);
     _durationMinutes = event.endTime.difference(event.startTime).inMinutes;
     _startingPoint = event.hasExactStartingPoint
-        ? LocationCoordinate(event.startingPointLat!, event.startingPointLng!)
+        ? LocationCoordinate(
+            event.effectiveStartingPointLat!,
+            event.effectiveStartingPointLng!,
+          )
         : null;
+    _meetingLocationAddress = meetingLocation?.address;
+    _meetingLocationPlaceId = meetingLocation?.placeId;
     _selectedPace = event.pace;
 
     _dateController.text = _formatDate(_selectedDate);
@@ -201,8 +209,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       hour: _selectedStartTime.hour,
       minute: _selectedStartTime.minute,
     );
-    _meetingPointController.text = event.meetingPoint;
-    _locationDetailsController.text = event.locationDetails ?? '';
+    _meetingPointController.text = event.locationName;
+    _locationDetailsController.text = event.locationNotes ?? '';
     _distanceController.text = EventFormatters.distanceKm(
       event.distanceKm,
       includeUnit: false,
@@ -344,13 +352,16 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               gapH8,
               CatchTextField(
                 key: CreateEventFormKeys.meetingPoint,
-                label: 'Meeting point',
+                label: 'Location name',
                 controller: _meetingPointController,
                 enabled: _canEdit,
                 hintText: 'e.g. Bandstand Promenade, Bandra',
+                helperText:
+                    'This is what attendees see in event cards and details.',
                 prefixIcon: const Icon(Icons.location_on_outlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
+                onChanged: (_) => setState(() {}),
                 validator: (value) =>
                     value == null || value.trim().isEmpty ? 'Required' : null,
               ),
@@ -358,7 +369,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               MapPinTile(
                 key: CreateEventFormKeys.mapPicker,
                 startingPoint: _startingPoint,
-                onTap: _canEdit ? _pickLocation : () {},
+                selectedLabel: _meetingPointController.text,
+                enabled: _canEdit,
+                onTap: _pickLocation,
               ),
               gapH16,
               CatchTextField(
@@ -547,18 +560,28 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
 
   Future<void> _pickLocation() async {
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
-    final result = await Navigator.of(context).push<LocationCoordinate>(
+    final result = await Navigator.of(context).push<LocationPickerResult>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           countryIsoCode: countryIsoCodeForCityName(widget.club.location),
-          initialLocation: _startingPoint ?? deviceLocation,
+          initialLocation: _startingPoint,
+          initialCenter: _startingPoint ?? deviceLocation,
+          initialLabel: _trimToNull(_meetingPointController.text),
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
       ),
     );
     if (result != null) {
-      setState(() => _startingPoint = result);
+      setState(() {
+        _startingPoint = result.coordinate;
+        _meetingLocationAddress = result.address;
+        _meetingLocationPlaceId = result.placeId;
+        final placeName = result.displayName;
+        if (placeName != null) {
+          _meetingPointController.text = placeName;
+        }
+      });
     }
   }
 
@@ -596,6 +619,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final endTime = _scheduleLocked
         ? widget.event.endTime
         : startTime.add(Duration(minutes: _durationMinutes));
+    final meetingLocation = EventMeetingLocation(
+      name: _meetingPointController.text.trim(),
+      address: _meetingLocationAddress,
+      placeId: _meetingLocationPlaceId,
+      latitude: _startingPoint!.latitude,
+      longitude: _startingPoint!.longitude,
+      notes: _trimToNull(_locationDetailsController.text),
+    ).normalized();
     final includePolicy = !_policyLocked;
     final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
     final eventPolicy = includePolicy
@@ -611,10 +642,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final nextEvent = widget.event.copyWith(
       startTime: startTime,
       endTime: endTime,
-      meetingPoint: _meetingPointController.text.trim(),
-      startingPointLat: _startingPoint!.latitude,
-      startingPointLng: _startingPoint!.longitude,
-      locationDetails: _trimToNull(_locationDetailsController.text),
+      meetingPoint: meetingLocation.name,
+      meetingLocation: meetingLocation,
+      startingPointLat: meetingLocation.latitude,
+      startingPointLng: meetingLocation.longitude,
+      locationDetails: meetingLocation.notes,
       distanceKm: distanceKm,
       pace: widget.event.eventFormat.activityKind.isDistanceBased
           ? _selectedPace

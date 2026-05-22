@@ -171,8 +171,73 @@ void main() {
       );
       expect(runDraft.structureConfig.unitSize, 30);
       expect(quizDraft.structureConfig.unitKind, EventSuccessUnitKind.teams);
-      expect(quizDraft.structureConfig.unitCount, 3);
+      expect(quizDraft.structureConfig.unitCount, isNull);
+      expect(quizDraft.structureConfig.estimatedUnitCount(50), 10);
       expect(pickleballDraft.structureConfig.rotationIntervalMinutes, 15);
+    });
+
+    test(
+      'normalizes old fixed quiz team default to capacity-aware auto count',
+      () {
+        final defaults = const EventSuccessDefaults(
+          enabled: true,
+          playbookId: 'pub_quiz_team_mixer',
+          structureConfig: EventSuccessStructureConfig(
+            unitKind: EventSuccessUnitKind.teams,
+            unitSize: 5,
+            unitCount: 3,
+          ),
+        ).normalizedForActivity(ActivityKind.pubQuiz, targetAttendeeCount: 50);
+
+        final draft = defaults.toDraft(targetAttendeeCount: 50);
+
+        expect(draft.structureConfig.unitKind, EventSuccessUnitKind.teams);
+        expect(draft.structureConfig.unitSize, 5);
+        expect(draft.structureConfig.unitCount, isNull);
+        expect(draft.structureConfig.estimatedUnitCount(50), 10);
+      },
+    );
+
+    test('estimates group count and size ranges from actual attendance', () {
+      const autoTeams = EventSuccessStructureConfig(
+        unitKind: EventSuccessUnitKind.teams,
+        unitSize: 5,
+      );
+      const fixedTeams = EventSuccessStructureConfig(
+        unitKind: EventSuccessUnitKind.teams,
+        unitSize: 5,
+        unitCount: 4,
+      );
+
+      final fullAttendance = autoTeams.estimateForAttendance(50);
+      final partialAttendance = autoTeams.estimateForAttendance(37);
+      final fixedAttendance = fixedTeams.estimateForAttendance(11);
+
+      expect(fullAttendance.unitCount, 10);
+      expect(fullAttendance.minPeoplePerUnit, 5);
+      expect(fullAttendance.maxPeoplePerUnit, 5);
+      expect(partialAttendance.unitCount, 8);
+      expect(partialAttendance.minPeoplePerUnit, 4);
+      expect(partialAttendance.maxPeoplePerUnit, 5);
+      expect(fixedAttendance.unitCount, 4);
+      expect(fixedAttendance.minPeoplePerUnit, 2);
+      expect(fixedAttendance.maxPeoplePerUnit, 3);
+    });
+
+    test('module selection owns derived wingman and opener booleans', () {
+      final defaults = EventSuccessDefaults(
+        enabled: true,
+        selectedModuleIds: [EventSuccessModuleCatalog.checkIn.id],
+        wingmanRequestsEnabled: true,
+        contextualOpenersEnabled: true,
+      ).normalizedForActivity(ActivityKind.socialRun);
+
+      expect(
+        defaults.selectedModuleIds,
+        isNot(contains(EventSuccessModuleCatalog.wingmanRequests.id)),
+      );
+      expect(defaults.wingmanRequestsEnabled, isFalse);
+      expect(defaults.contextualOpenersEnabled, isFalse);
     });
 
     test('activity profiles keep impossible toggles out of defaults', () {

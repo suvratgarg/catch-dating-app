@@ -3,15 +3,17 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_location_links.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final paymentConfirmationControllerProvider =
-    Provider<PaymentConfirmationController>((ref) {
-      return PaymentConfirmationController(
-        links: ref.watch(externalLinkControllerProvider),
-        share: ref.watch(externalShareControllerProvider),
-      );
-    });
+part 'payment_confirmation_controller.g.dart';
+
+@Riverpod(keepAlive: true)
+PaymentConfirmationController paymentConfirmationController(Ref ref) {
+  return PaymentConfirmationController(
+    links: ref.watch(externalLinkControllerProvider),
+    share: ref.watch(externalShareControllerProvider),
+  );
+}
 
 class PaymentConfirmationController {
   const PaymentConfirmationController({
@@ -40,7 +42,7 @@ class PaymentConfirmationController {
   static Uri directionsUri(Event event) => directionsUriForEvent(event);
 
   static String inviteText(Event event) {
-    return 'Join me for an event! ${event.title} - ${event.meetingPoint}. '
+    return 'Join me for an event! ${event.title} - ${event.locationName}. '
         'Download Catch: https://catchdates.com';
   }
 

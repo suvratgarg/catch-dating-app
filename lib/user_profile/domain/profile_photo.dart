@@ -71,7 +71,7 @@ class ProfilePhoto {
     'thumbnailUrl': thumbnailUrl,
     'storagePath': storagePath,
     'thumbnailStoragePath': thumbnailStoragePath,
-    if (prompt != null) 'prompt': prompt!.toJson(),
+    if (prompt != null) 'prompt': photoPromptSelectionToJson(prompt!),
     if (moderation != null) 'moderation': moderation!.toJson(),
     'position': position,
     'createdAt': const TimestampConverter().toJson(createdAt),
@@ -384,23 +384,25 @@ List<Map<String, dynamic>> profilePhotoPromptsToJson(
   Iterable<ProfilePhoto> photos,
 ) => normalizeProfilePhotos(photos)
     .where((photo) => photo.prompt != null)
-    .map((photo) => photo.prompt!.copyWith(photoIndex: photo.position).toJson())
+    .map(
+      (photo) => photoPromptSelectionToJson(
+        photo.prompt!.copyWith(photoIndex: photo.position),
+      ),
+    )
     .toList(growable: false);
 
 ProfilePhoto replaceProfilePhotoPrompt({
   required ProfilePhoto photo,
   required PhotoPromptDefinition definition,
-  required String caption,
+  String caption = '',
 }) {
   final normalizedCaption = normalizePhotoPromptCaption(caption);
   return photo.copyWith(
-    prompt: normalizedCaption.isEmpty
-        ? null
-        : photoPromptAnswerFor(
-            photoIndex: photo.position,
-            definition: definition,
-            caption: normalizedCaption,
-          ),
+    prompt: photoPromptAnswerFor(
+      photoIndex: photo.position,
+      definition: definition,
+      caption: normalizedCaption,
+    ),
     updatedAt: DateTime.now(),
   );
 }

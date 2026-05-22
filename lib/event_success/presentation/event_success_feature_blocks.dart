@@ -37,7 +37,8 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final readinessTone = _draft.status == EventSuccessSetupStatus.readyForPilot
+    final readinessTone =
+        _draft.status == EventSuccessSetupStatus.readyForLaunch
         ? CatchBadgeTone.success
         : CatchBadgeTone.warning;
 
@@ -135,7 +136,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             icon: Icons.play_circle_outline_rounded,
             title: 'Live host mode',
             subtitle:
-                'A phone-friendly run-of-show for check-in, welcome, current instruction, and next social cue.',
+                'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.',
             badge: CatchBadge(label: 'Host only', tone: CatchBadgeTone.brand),
           ),
           const SizedBox(height: CatchSpacing.s4),
@@ -468,7 +469,7 @@ class _ModuleToggleRow extends StatelessWidget {
               ),
             ),
             Semantics(
-              label: '${module.title} module',
+              label: '${module.title} tool',
               toggled: selected,
               child: Material(
                 type: MaterialType.transparency,
@@ -499,7 +500,7 @@ class _IssueList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchBadge(
-            label: 'Before pilot',
+            label: 'Before launch',
             tone: CatchBadgeTone.warning,
             icon: Icons.warning_amber_rounded,
           ),

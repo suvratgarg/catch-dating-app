@@ -5,11 +5,12 @@ Flutter app for iOS, Android, web, and macOS.
 Current docs:
 
 - [PROJECT_CONTEXT.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/PROJECT_CONTEXT.md) is the architecture and product map.
+- [lib/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/README.md) is the feature code map and points to feature-level READMEs.
+- [docs/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/README.md) is the docs index and source-of-truth map.
 - [firebase/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md) is the Firebase environment runbook.
 - [functions/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/README.md) is the Cloud Functions runbook.
 - [TESTS.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md) is the current test-suite inventory.
-- [codex_audit/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/README.md) explains which audit docs are current versus historical.
-- [codex_audit/release_setup_2026-04-30/current_release_setup_audit.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md) is the current setup/build/signing/distribution verdict.
+- [docs/release_operations.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/release_operations.md) is the current setup/build/signing/distribution and release-operations verdict.
 
 ## Local setup
 

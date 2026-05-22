@@ -57,6 +57,34 @@ void main() {
       expect(descriptor.retryable, isTrue);
     });
 
+    test('does not expose debug metadata in user-facing copy', () {
+      const error = BackendOperationException(
+        code: 'invalid-argument',
+        message: 'Unable to create event right now. Please try again.',
+        debugMessage:
+            'functions.create event failed with cloud_functions/invalid-argument: '
+            'eventSuccessDefaults: must NOT have additional properties',
+        context: BackendErrorContext(
+          service: BackendService.functions,
+          action: 'create event',
+          resource: 'events',
+        ),
+      );
+
+      final descriptor = appErrorDescriptor(
+        error,
+        context: AppErrorContext.event,
+      );
+
+      expect(
+        descriptor.message,
+        'Unable to create event right now. Please try again.',
+      );
+      expect(descriptor.message, isNot(contains('[DEBUG]')));
+      expect(descriptor.message, isNot(contains('firebase_functions')));
+      expect(descriptor.message, isNot(contains('additional properties')));
+    });
+
     test('uses catches copy for swipe load failures', () {
       const error = BackendOperationException(
         code: 'swipe-candidates-timeout',

@@ -103,7 +103,7 @@ void main() {
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
 
     final checkInSwitch = find.bySemanticsLabel(
-      'Attendance and live roster module',
+      'Attendance and live roster tool',
     );
     expect(checkInSwitch, findsOneWidget);
 

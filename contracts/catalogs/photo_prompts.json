@@ -10,7 +10,7 @@
     {
       "id": "proofIRun",
       "title": "Proof I actually event",
-      "placeholder": "Add a caption for this running photo."
+      "placeholder": "Choose this when the photo is the proof."
     },
     {
       "id": "finishLine",
@@ -34,7 +34,7 @@
     },
     {
       "id": "captionThis",
-      "title": "Caption this",
+      "title": "First thought?",
       "placeholder": "Give people an easy opening line."
     }
   ]

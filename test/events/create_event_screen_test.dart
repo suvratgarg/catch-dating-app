@@ -1,7 +1,11 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -12,8 +16,10 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -64,8 +70,7 @@ void main() {
         await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Next');
         await tester.pump();
-        expect(find.text('Required'), findsOneWidget);
-        expect(find.text('Pin a starting point'), findsOneWidget);
+        expect(find.text('Choose a meeting location'), findsOneWidget);
 
         await _enterCreateEventText(
           tester,
@@ -96,7 +101,11 @@ void main() {
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '40');
         await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '30');
         await _pumpTestAnimation(tester);
-        await _tapPrimaryButton(tester, 'Schedule event');
+        expect(find.text('Live event guide'), findsNothing);
+        expect(find.text('Host goal'), findsNothing);
+        expect(find.text('Schedule event'), findsNothing);
+
+        await _tapPrimaryButton(tester, 'Next');
         await tester.pump();
 
         expect(find.text('<= max'), findsOneWidget);
@@ -105,6 +114,15 @@ void main() {
         await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
         await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
         await _pumpTestAnimation(tester);
+        await _tapPrimaryButton(tester, 'Next');
+        await _pumpTestAnimation(tester);
+
+        expect(find.text('Live event guide'), findsWidgets);
+        expect(
+          find.textContaining('Prepare the host guide for this event'),
+          findsOneWidget,
+        );
+
         await _tapPrimaryButton(tester, 'Schedule event');
         await _pumpTestAnimation(tester);
 
@@ -159,6 +177,79 @@ void main() {
         expect(find.text('Setup'), findsWidgets);
       },
     );
+
+    testWidgets('live guide uses capacity-aware pub quiz team plan', (
+      tester,
+    ) async {
+      await _pumpCreateEventFlow(
+        tester,
+        clubOverride: buildClub(name: 'Saket Run Club').copyWith(
+          hostDefaults: ClubHostDefaults(
+            primaryActivityKind: ActivityKind.pubQuiz,
+            eventSuccess: EventSuccessDefaults.recommendedForActivity(
+              ActivityKind.pubQuiz,
+              enabled: true,
+              targetAttendeeCount: 50,
+            ),
+          ),
+        ),
+      );
+      await _openCreateEventFlow(tester);
+
+      await _enterCreateEventText(
+        tester,
+        CreateEventFormKeys.description,
+        'Trivia with balanced teams.',
+      );
+      await _pumpTestAnimation(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await _enterCreateEventText(
+        tester,
+        CreateEventFormKeys.meetingPoint,
+        'Quiz hall',
+      );
+      await _pickMapPoint(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await _pickFutureDate(tester);
+      await _acceptInitialTime(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '50');
+      await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      expect(find.textContaining('about 10 teams'), findsWidgets);
+      expect(
+        find.textContaining('If 50 attend, Catch suggests 10 teams of 5.'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('If 37 check in, expect 8 teams of 4-5.'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('3 teams'), findsNothing);
+      expect(find.text('Match clue questions'), findsOneWidget);
+      expect(
+        find.text('Wingman requests', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Post-match openers', skipOffstage: false),
+        findsOneWidget,
+      );
+
+      expect(
+        find.text('Team reveal countdown', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(find.text('Rotation cadence', skipOffstage: false), findsNothing);
+    });
 
     testWidgets(
       'invite-only creation copy says the event is listed but booking-gated',
@@ -271,10 +362,10 @@ void main() {
         gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
       );
       await tester.pump();
-      await tester.tap(find.text('Confirm'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
       await _pumpTestAnimation(tester);
 
-      expect(find.text('Starting point pinned'), findsOneWidget);
+      expect(find.text('Pinned location'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Back'));
       await _pumpTestAnimation(tester);
@@ -286,6 +377,61 @@ void main() {
       await tester.tap(find.text('Discard'));
       await _pumpTestAnimation(tester);
       expect(find.text('Open'), findsOneWidget);
+    });
+
+    testWidgets('fills the location name from a Google place selection', (
+      tester,
+    ) async {
+      await _pumpCreateEventFlow(
+        tester,
+        overrides: [
+          placesRepositoryProvider.overrideWithValue(
+            const _FakePlacesRepository(
+              suggestions: [
+                PlaceAutocompleteSuggestion(
+                  placeId: 'cubbon-park',
+                  description: 'Cubbon Park, Bengaluru, Karnataka',
+                  mainText: 'Cubbon Park',
+                  secondaryText: 'Bengaluru, Karnataka',
+                ),
+              ],
+              placeDetails: PlaceDetails(
+                placeId: 'cubbon-park',
+                displayName: 'Cubbon Park',
+                formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',
+                location: LocationCoordinate(12.9763, 77.5929),
+              ),
+            ),
+          ),
+        ],
+      );
+      await _openCreateEventFlow(tester);
+
+      await _fillBasicsStep(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
+      await _pumpTestAnimation(tester);
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search for a meeting point'),
+        'Cubbon',
+      );
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pump();
+      await tester.tap(find.text('Cubbon Park'));
+      await tester.pump();
+      await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
+      await _pumpTestAnimation(tester);
+
+      expect(find.text('Cubbon Park'), findsWidgets);
+      final nameField = tester.widget<TextField>(
+        find.descendant(
+          of: find.byKey(CreateEventFormKeys.meetingPoint),
+          matching: find.byType(TextField),
+        ),
+      );
+      expect(nameField.controller?.text, 'Cubbon Park');
     });
 
     testWidgets('shows the submission error banner when creation fails', (
@@ -304,6 +450,43 @@ void main() {
       await _submitValidEvent(tester);
 
       expect(find.text('create failed'), findsOneWidget);
+      expect(find.text('Schedule event'), findsOneWidget);
+    });
+
+    testWidgets('keeps create-event backend diagnostics out of the banner', (
+      tester,
+    ) async {
+      final fakeEventRepository = FakeEventRepository()
+        ..createError = const BackendOperationException(
+          code: 'invalid-argument',
+          message: 'Unable to create event right now. Please try again.',
+          debugMessage:
+              'functions.create event failed with firebase_functions/'
+              'invalid-argument: eventSuccessDefaults: must NOT have '
+              'additional properties',
+          context: BackendErrorContext(
+            service: BackendService.functions,
+            action: 'create event',
+            resource: 'events',
+          ),
+        );
+      await _pumpCreateEventFlow(
+        tester,
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      await _openCreateEventFlow(tester);
+
+      await _submitValidEvent(tester);
+
+      expect(
+        find.text('Unable to create event right now. Please try again.'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('[DEBUG]'), findsNothing);
+      expect(find.textContaining('firebase_functions'), findsNothing);
+      expect(find.textContaining('additional properties'), findsNothing);
       expect(find.text('Schedule event'), findsOneWidget);
     });
 
@@ -357,10 +540,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Taylor'),
         300,
-        scrollable: find.descendant(
-          of: find.byKey(const Key('host_event_manage_scroll_view')),
-          matching: find.byType(Scrollable),
-        ),
+        scrollable: _hostManageScrollable(),
       );
       await _pumpTestAnimation(tester);
 
@@ -515,14 +695,17 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      final cancelButton = find.widgetWithText(CatchButton, 'Cancel event');
+      final cancelButton = find.widgetWithText(
+        CatchButton,
+        'Cancel published event',
+      );
       await tester.scrollUntilVisible(cancelButton, 300);
       await _pumpHostActionFrame(tester);
       await tester.tap(cancelButton.hitTestable());
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Cancel this event?'), findsOneWidget);
-      await tester.tap(_dialogAction('Cancel event'));
+      expect(find.text('Cancel published event?'), findsOneWidget);
+      await tester.tap(_dialogAction('Cancel published event'));
       await _pumpHostActionFrame(tester);
 
       expect(fakeEventRepository.hostCancelledEventId, 'event-cancel');
@@ -554,14 +737,17 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      final deleteButton = find.widgetWithText(CatchButton, 'Delete event');
+      final deleteButton = find.widgetWithText(
+        CatchButton,
+        'Delete unused event',
+      );
       await tester.scrollUntilVisible(deleteButton, 300);
       await _pumpHostActionFrame(tester);
       await tester.tap(deleteButton);
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Delete this event?'), findsOneWidget);
-      await tester.tap(_dialogAction('Delete event'));
+      expect(find.text('Delete unused event?'), findsOneWidget);
+      await tester.tap(_dialogAction('Delete unused event'));
       await _pumpHostActionFrame(tester);
 
       expect(fakeEventRepository.deletedEventId, 'event-delete');
@@ -590,11 +776,19 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      expect(find.widgetWithText(CatchButton, 'Delete event'), findsNothing);
       expect(
-        find.textContaining('Delete is unavailable once an event has bookings'),
-        findsOneWidget,
+        find.widgetWithText(CatchButton, 'Delete unused event'),
+        findsNothing,
       );
+      final unavailableCopy = find.textContaining(
+        'Delete unused event is unavailable once an event has bookings',
+      );
+      await tester.scrollUntilVisible(
+        unavailableCopy,
+        300,
+        scrollable: _hostManageScrollable(),
+      );
+      expect(unavailableCopy, findsOneWidget);
     });
 
     testWidgets('draft picker deletes persisted drafts and resumes another', (
@@ -669,13 +863,42 @@ EventDraft _buildEventDraft({
   );
 }
 
+class _FakePlacesRepository implements PlacesRepository {
+  const _FakePlacesRepository({
+    required this.suggestions,
+    required this.placeDetails,
+  });
+
+  final List<PlaceAutocompleteSuggestion> suggestions;
+  final PlaceDetails placeDetails;
+
+  @override
+  Future<List<PlaceAutocompleteSuggestion>> autocomplete({
+    required String input,
+    required String sessionToken,
+    LocationCoordinate? bias,
+    String? countryIsoCode,
+  }) async {
+    return suggestions;
+  }
+
+  @override
+  Future<PlaceDetails> details({
+    required String placeId,
+    required String sessionToken,
+  }) async {
+    return placeDetails;
+  }
+}
+
 Future<void> _pumpCreateEventFlow(
   WidgetTester tester, {
   Iterable overrides = const [],
   bool alwaysUse24HourFormat = false,
   DateTime Function()? now,
+  Club? clubOverride,
 }) async {
-  final club = buildClub();
+  final club = clubOverride ?? buildClub();
   final router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -772,6 +995,8 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
   await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
   await _pumpTestAnimation(tester);
+  await _tapPrimaryButton(tester, 'Next');
+  await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule event');
   await _pumpTestAnimation(tester);
 }
@@ -788,7 +1013,7 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
     gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
   );
   await tester.pump();
-  await tester.tap(find.text('Confirm'));
+  await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
   await _pumpTestAnimation(tester);
 }
 
@@ -895,6 +1120,13 @@ Future<void> _pumpHostActionFrame(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 300));
 }
+
+Finder _hostManageScrollable() => find
+    .descendant(
+      of: find.byKey(const Key('host_event_manage_scroll_view')),
+      matching: find.byType(Scrollable),
+    )
+    .first;
 
 Finder _dialogAction(String label) {
   return find.descendant(

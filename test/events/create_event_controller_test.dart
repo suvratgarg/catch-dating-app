@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -57,10 +58,7 @@ void main() {
               clubId: '  club-7  ',
               startTime: DateTime(2025, 3, 1, 6),
               endTime: DateTime(2025, 3, 1, 7, 15),
-              meetingPoint: '  Marine Drive  ',
-              startingPointLat: 19.076,
-              startingPointLng: 72.8777,
-              locationDetails: '   ',
+              meetingLocation: _meetingLocation(name: '  Marine Drive  '),
               eventFormat: const EventFormatSnapshot.socialRun(),
               distanceKm: 7.5,
               pace: PaceLevel.moderate,
@@ -91,6 +89,7 @@ void main() {
         expect(createdEvent.startTime, DateTime(2025, 3, 1, 6));
         expect(createdEvent.endTime, DateTime(2025, 3, 1, 7, 15));
         expect(createdEvent.meetingPoint, 'Marine Drive');
+        expect(createdEvent.meetingLocation?.name, 'Marine Drive');
         expect(createdEvent.startingPointLat, 19.076);
         expect(createdEvent.startingPointLng, 72.8777);
         expect(createdEvent.locationDetails, isNull);
@@ -117,6 +116,89 @@ void main() {
       },
     );
 
+    test('sends enabled event-success defaults through createEvent', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 18),
+            endTime: DateTime(2025, 3, 1, 20),
+            meetingLocation: _meetingLocation(name: 'Dinner table'),
+            eventFormat: EventFormatSnapshot.fromActivityKind(
+              ActivityKind.dinner,
+            ),
+            distanceKm: 0,
+            pace: PaceLevel.easy,
+            description: 'Dinner',
+            currency: defaultCurrencyCode,
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+            eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
+              ActivityKind.dinner,
+              enabled: true,
+              targetAttendeeCount: 12,
+            ),
+          );
+
+      final defaults = fakeEventRepository.createdEventSuccessDefaults;
+      expect(defaults, isNotNull);
+      expect(defaults!['enabled'], true);
+      expect(defaults['playbookId'], 'dinner_table_mixer');
+      expect(defaults['selectedModuleIds'], contains('qr_check_in'));
+    });
+
+    test(
+      'uses event capacity when normalizing pub quiz team defaults',
+      () async {
+        final fakeEventRepository = FakeEventRepository();
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(createEventControllerProvider.notifier)
+            .submit(
+              clubId: 'club-1',
+              startTime: DateTime(2025, 3, 1, 18),
+              endTime: DateTime(2025, 3, 1, 20),
+              meetingLocation: _meetingLocation(name: 'Quiz venue'),
+              eventFormat: EventFormatSnapshot.fromActivityKind(
+                ActivityKind.pubQuiz,
+              ),
+              distanceKm: 0,
+              pace: PaceLevel.easy,
+              description: 'Trivia night',
+              currency: defaultCurrencyCode,
+              constraints: const EventConstraints(),
+              eventPolicy: _eventPolicy(capacityLimit: 50),
+              eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
+                ActivityKind.pubQuiz,
+                enabled: true,
+                targetAttendeeCount: 50,
+              ),
+            );
+
+        final defaults = fakeEventRepository.createdEventSuccessDefaults;
+        final structure = defaults?['structureConfig'] as Map<String, Object?>?;
+        expect(defaults, isNotNull);
+        expect(defaults!['playbookId'], 'pub_quiz_team_mixer');
+        expect(structure?['unitKind'], 'teams');
+        expect(structure?['unitSize'], 5);
+        expect(structure?['unitCount'], isNull);
+      },
+    );
+
     test('allows zero distance for non-distance event formats', () async {
       final fakeEventRepository = FakeEventRepository();
       final container = ProviderContainer(
@@ -132,9 +214,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
-            meetingPoint: 'Dinner table',
-            startingPointLat: 19.076,
-            startingPointLng: 72.8777,
+            meetingLocation: _meetingLocation(name: 'Dinner table'),
             eventFormat: EventFormatSnapshot.fromActivityKind(
               ActivityKind.dinner,
             ),
@@ -168,9 +248,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 18),
             endTime: DateTime(2025, 3, 1, 20),
-            meetingPoint: 'Private route',
-            startingPointLat: 19.076,
-            startingPointLng: 72.8777,
+            meetingLocation: _meetingLocation(name: 'Private route'),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -213,7 +291,7 @@ void main() {
             clubId: '',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -230,7 +308,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(latitude: 91),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -247,7 +325,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 6),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -264,7 +342,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: '   ',
+            meetingLocation: _meetingLocation(name: '   '),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -281,7 +359,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 0,
             pace: PaceLevel.easy,
@@ -298,7 +376,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -315,7 +393,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -332,9 +410,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
-            startingPointLat: 19.076,
-            startingPointLng: 181,
+            meetingLocation: _meetingLocation(longitude: 181),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -351,9 +427,7 @@ void main() {
             clubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingPoint: 'Marine Drive',
-            startingPointLat: 19.076,
-            startingPointLng: 72.8777,
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
@@ -382,5 +456,19 @@ EventPolicyBundle _eventPolicy({
   return EventPolicyBundle.openEvent(
     capacityLimit: capacityLimit,
     basePriceInPaise: basePriceInPaise,
+  );
+}
+
+EventMeetingLocation _meetingLocation({
+  String name = 'Marine Drive',
+  double latitude = 19.076,
+  double longitude = 72.8777,
+  String? notes,
+}) {
+  return EventMeetingLocation(
+    name: name,
+    latitude: latitude,
+    longitude: longitude,
+    notes: notes,
   );
 }

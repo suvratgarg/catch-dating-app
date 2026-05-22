@@ -8,6 +8,8 @@ import {
 
 const eventSuccessFeedbackCollection = "eventSuccessFeedback";
 const eventSuccessScorecardsCollection = "eventSuccessScorecards";
+const eventSafetyReportsCollection = "eventSafetyReports";
+const MIN_FEEDBACK_FOR_HOST_SAFETY_COUNT = 5;
 
 interface EventSuccessFeedbackDoc {
   eventId: string;
@@ -17,6 +19,7 @@ interface EventSuccessFeedbackDoc {
   structureRating: number;
   metNewPeopleCount: number;
   safetyConcern: boolean;
+  privateNote?: string | null;
   createdAt?: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
 }
@@ -103,6 +106,8 @@ export function buildEventSuccessScorecard(params: {
 }): EventSuccessScorecardDoc {
   const {eventId, event, feedback, matches, updatedAt} = params;
   const feedbackCount = feedback.length;
+  const safetyIncidentCount = feedback.filter((item) => item.safetyConcern)
+    .length;
   return {
     eventId,
     clubId: event.clubId,
@@ -120,7 +125,9 @@ export function buildEventSuccessScorecard(params: {
     averageStructureRating: average(
       feedback.map((item) => item.structureRating)
     ),
-    safetyIncidentCount: feedback.filter((item) => item.safetyConcern).length,
+    safetyIncidentCount: feedbackCount >= MIN_FEEDBACK_FOR_HOST_SAFETY_COUNT ?
+      safetyIncidentCount :
+      0,
     updatedAt,
   };
 }
@@ -150,8 +157,11 @@ export async function onEventSuccessFeedbackWrittenHandler(
   );
 
   if (after) {
-    await recordParticipantSignalFactsBestEffort(deps.firestore(), [
-      buildFeedbackSignalFact(feedbackId, after),
+    await Promise.all([
+      recordParticipantSignalFactsBestEffort(deps.firestore(), [
+        buildFeedbackSignalFact(feedbackId, after),
+      ]),
+      writeEventSafetyReportIfNeeded(feedbackId, after, deps),
     ]);
   }
 }
@@ -184,4 +194,34 @@ function average(values: number[]): number {
   const valid = values.filter((value) => Number.isFinite(value) && value > 0);
   if (valid.length === 0) return 0;
   return valid.reduce((sum, value) => sum + value, 0) / valid.length;
+}
+
+/**
+ * Materializes a Catch-private safety review item for event feedback concerns.
+ * @param {string} feedbackId Feedback document id.
+ * @param {EventSuccessFeedbackDoc} feedback Feedback document.
+ * @param {EventSuccessScorecardDeps} deps Injectable Firebase dependencies.
+ */
+export async function writeEventSafetyReportIfNeeded(
+  feedbackId: string,
+  feedback: EventSuccessFeedbackDoc,
+  deps: EventSuccessScorecardDeps
+): Promise<void> {
+  if (feedback.safetyConcern !== true) return;
+
+  const note = feedback.privateNote?.trim();
+  await deps.firestore()
+    .collection(eventSafetyReportsCollection)
+    .doc(feedbackId)
+    .set({
+      eventId: feedback.eventId,
+      clubId: feedback.clubId,
+      reporterUserId: feedback.uid,
+      feedbackId,
+      source: "event_success_feedback",
+      status: "open",
+      createdAt: feedback.createdAt ?? deps.serverTimestamp(),
+      updatedAt: deps.serverTimestamp(),
+      ...(note && {note}),
+    }, {merge: true});
 }

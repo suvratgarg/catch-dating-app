@@ -24,6 +24,9 @@
     "startTimeMillis": {"type": "integer"},
     "endTimeMillis": {"type": "integer"},
     "meetingPoint": {"type": "string", "minLength": 1, "maxLength": 240},
+    "meetingLocation": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
+    },
     "startingPointLat": {"type": "number", "minimum": -90, "maximum": 90},
     "startingPointLng": {"type": "number", "minimum": -180, "maximum": 180},
     "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
@@ -51,6 +54,9 @@
     },
     "eventFormat": {
       "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+    },
+    "eventSuccessDefaults": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessDefaults"
     },
     "constraints": {
       "type": "object",

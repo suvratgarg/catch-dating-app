@@ -8,6 +8,51 @@ part of 'swipe_queue_notifier.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+
+@ProviderFor(swipeQueueLoadTimeout)
+@visibleForTesting
+final swipeQueueLoadTimeoutProvider = SwipeQueueLoadTimeoutProvider._();
+
+@visibleForTesting
+final class SwipeQueueLoadTimeoutProvider
+    extends $FunctionalProvider<Duration, Duration, Duration>
+    with $Provider<Duration> {
+  SwipeQueueLoadTimeoutProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'swipeQueueLoadTimeoutProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$swipeQueueLoadTimeoutHash();
+
+  @$internal
+  @override
+  $ProviderElement<Duration> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Duration create(Ref ref) {
+    return swipeQueueLoadTimeout(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Duration value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Duration>(value),
+    );
+  }
+}
+
+String _$swipeQueueLoadTimeoutHash() =>
+    r'b9128e41b91528012398a137958e3c6fbae438d1';
+
 /// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
@@ -93,7 +138,7 @@ final class SwipeQueueNotifierProvider
 }
 
 String _$swipeQueueNotifierHash() =>
-    r'392a4577dc9f631e9b340cfe57bebadbd582456f';
+    r'88dd74744a2ae0275d31c11b6d707b9f316abb1a';
 
 /// **Pattern C: Async state controller**
 ///

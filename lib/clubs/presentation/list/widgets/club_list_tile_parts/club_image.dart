@@ -1,10 +1,19 @@
 part of '../club_list_tile.dart';
 
 class _ClubImage extends StatelessWidget {
-  const _ClubImage({required this.club, this.preferProfileImage = false});
+  const _ClubImage({
+    required this.club,
+    this.preferProfileImage = false,
+    this.fallbackCompact = true,
+    this.showFallbackLocationChip,
+    this.showFallbackFooterLabel,
+  });
 
   final Club club;
   final bool preferProfileImage;
+  final bool fallbackCompact;
+  final bool? showFallbackLocationChip;
+  final bool? showFallbackFooterLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -21,5 +30,10 @@ class _ClubImage extends StatelessWidget {
     return _placeholder();
   }
 
-  Widget _placeholder() => ClubCoverFallback(club: club, compact: true);
+  Widget _placeholder() => ClubCoverFallback(
+    club: club,
+    compact: fallbackCompact,
+    showLocationChip: showFallbackLocationChip,
+    showFooterLabel: showFallbackFooterLabel,
+  );
 }

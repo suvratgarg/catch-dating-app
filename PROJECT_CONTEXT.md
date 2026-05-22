@@ -306,8 +306,8 @@ Event policy:
   Settings screen links to it only when `AppConfig.enableEventPolicyLab` is true.
   The lab remains read-only/static; production testing should use the normal
   create-event flow.
-- The development tracker is
-  [`codex_audit/event_policy_engine_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_policy_engine_in_development.md).
+- The feature owner doc is
+  [`lib/event_policies/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/event_policies/README.md).
 
 Parallel event-success work:
 
@@ -332,8 +332,8 @@ Parallel event-success work:
   `Event`, `Club`, and roster counts into the existing preview blocks. It owns
   no persistence and exists only so host setup, live mode, attendee companion,
   and post-event report ideas can be reviewed against real events.
-- The development tracker is
-  [`codex_audit/event_success_layer_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_success_layer_in_development.md).
+- The current event-success architecture, QA, metrics, and guardrails live in
+  [`docs/event_success.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/event_success.md).
 
 Event detail CTA states are derived from `event.statusFor(userProfile)`:
 
@@ -739,10 +739,12 @@ Firebase deploys by alias:
 Useful local docs:
 
 - Repo readme: [`README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/README.md)
+- Feature code map: [`lib/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/README.md)
 - Test plan: [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md)
 - Firebase environments: [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
 - Functions runbook: [`functions/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/README.md)
-- Audit/doc index: [`codex_audit/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/README.md)
+- Docs index: [`docs/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/README.md)
+- Audit registry: [`docs/audit_registry/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/audit_registry/README.md)
 
 ## 12. Generated files and codegen rules
 
@@ -954,10 +956,9 @@ When working in this repo:
 
 These look like support material, not runtime app code:
 
-- `design_handoff_catch_dating_app/`
 - `catch-dating-app/`
 
-They may still be useful as design reference, but primary product code lives in `lib/` and `functions/`.
+Primary product code lives in `lib/` and `functions/`.
 
 ## 18. Firestore error handling conventions
 

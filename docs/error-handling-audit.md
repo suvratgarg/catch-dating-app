@@ -1,7 +1,7 @@
 ---
 doc_id: error_handling_audit
-version: 2.6.1
-updated: 2026-05-13
+version: 2.6.2
+updated: 2026-05-22
 owner: recursive_audit_loop
 status: active
 ---
@@ -198,6 +198,10 @@ important transitions.
 
 - Never show raw `FirebaseException.message`, stack traces, callable details, or
   plugin object dumps to normal users.
+- `appErrorMessage`, `backendErrorMessage`, mutation banners, snackbars, and
+  error-state widgets must not append debug diagnostics to user-facing copy,
+  even in debug builds. Developer details belong in `ErrorLogger`,
+  Crashlytics, analytics metadata, backend logs, and the Flutter console.
 - Never log PII in error metadata: names, phone numbers, exact birth dates,
   chat/message text, profile bio, photo URLs, precise locations, payment ids or
   signatures, and document ids unless they are already non-sensitive public ids.
@@ -577,7 +581,7 @@ Layer 5: Telemetry
 ```
 AppException (sealed)
 ├── SignInRequiredException          // Auth required for action
-├── NetworkException                  // connection-failed / timeout / too-many-requests
+├── NetworkException                  // offline / connection-failed / timeout / too-many-requests
 ├── PermissionException               // permission-denied
 ├── ValidationException               // user-correctable input/backend validation
 ├── PaymentCancelledException         // User cancelled Razorpay
@@ -624,6 +628,8 @@ This mapping happens in `lib/core/backend_error_util.dart`.
 The same common mapping is used across Firestore and Functions. Auth, Storage,
 Remote Config, App Check, Messaging, payment, and run-booking paths add
 service-specific copy and domain mappers where needed.
+Client-side obvious-offline checks may create `NetworkException('offline')`
+before waiting for a backend timeout when no current/cached data is available.
 
 ### What's missing from the hierarchy
 
@@ -644,7 +650,7 @@ pass.
 | Exception | Code | Meaning | Origin | User Surface |
 |-----------|------|---------|--------|--------------|
 | `SignInRequiredException` | `sign-in-required` | User must be signed in before an action can proceed. | Auth/session guard, Firebase unauthenticated codes | Inline banner, snackbar, or auth context title |
-| `NetworkException` | `connection-failed`, `timeout`, `too-many-requests` | Connectivity, deadline, or rate-limit failure. | Firestore / Functions mapping | Branded retry surface, stale/offline banner when cached data exists |
+| `NetworkException` | `offline`, `connection-failed`, `timeout`, `too-many-requests` | Connectivity, deadline, or rate-limit failure. | Connectivity preflight, Firestore / Functions mapping | Immediate offline state when no cached data exists; branded retry surface or stale/offline banner when cached data exists |
 | `PermissionException` | `permission-denied` | User is not allowed to perform the action. | Firestore / Functions security failure | Branded error surface or inline mutation error |
 | `ValidationException` | Firebase/Auth validation code or `validation-failed` | User-correctable invalid input. | Auth mapper or reusable validation boundary | Inline form/banner copy |
 | `PaymentCancelledException` | `payment-cancelled` | User cancelled checkout. | Razorpay callback | Usually non-fatal snackbar or inline payment state |

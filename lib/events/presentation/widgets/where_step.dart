@@ -13,6 +13,7 @@ class WhereStep extends StatelessWidget {
     required this.meetingPointController,
     required this.locationDetailsController,
     required this.startingPoint,
+    required this.onMeetingPointChanged,
     required this.onPickLocation,
   });
 
@@ -20,6 +21,7 @@ class WhereStep extends StatelessWidget {
   final TextEditingController meetingPointController;
   final TextEditingController locationDetailsController;
   final LocationCoordinate? startingPoint;
+  final ValueChanged<String> onMeetingPointChanged;
   final VoidCallback onPickLocation;
 
   @override
@@ -34,29 +36,19 @@ class WhereStep extends StatelessWidget {
           24,
         ),
         children: [
-          CatchTextField(
-            key: CreateEventFormKeys.meetingPoint,
-            label: 'Meeting point',
-            controller: meetingPointController,
-            hintText: 'e.g. Bandstand Promenade, Bandra',
-            prefixIcon: const Icon(Icons.location_on_outlined),
-            textCapitalization: TextCapitalization.words,
-            textInputAction: TextInputAction.next,
-            validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
-          ),
-          const SizedBox(height: 20),
-          const FieldLabel('Pin on map'),
+          const FieldLabel('Meeting location'),
           const SizedBox(height: 8),
           FormField<LocationCoordinate>(
             key: ValueKey(startingPoint),
             validator: (_) =>
-                startingPoint == null ? 'Pin a starting point' : null,
+                startingPoint == null ? 'Choose a meeting location' : null,
             builder: (field) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 MapPinTile(
                   key: CreateEventFormKeys.mapPicker,
                   startingPoint: startingPoint,
+                  selectedLabel: _trimToNull(meetingPointController.text),
                   onTap: onPickLocation,
                 ),
                 if (field.hasError) ...[
@@ -72,6 +64,26 @@ class WhereStep extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          CatchTextField(
+            key: CreateEventFormKeys.meetingPoint,
+            label: 'Location name',
+            controller: meetingPointController,
+            hintText: 'e.g. Bandstand Promenade, Bandra',
+            helperText: startingPoint == null
+                ? 'Pick a map location first. Google Places fills this when available.'
+                : 'Edit this if attendees need a clearer name.',
+            prefixIcon: const Icon(Icons.location_on_outlined),
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            onChanged: onMeetingPointChanged,
+            validator: (value) {
+              if (startingPoint == null) return null;
+              return value == null || value.trim().isEmpty
+                  ? 'Add a location name'
+                  : null;
+            },
+          ),
           const SizedBox(height: 20),
           CatchTextField(
             key: CreateEventFormKeys.locationDetails,
@@ -79,6 +91,7 @@ class WhereStep extends StatelessWidget {
             isOptional: true,
             controller: locationDetailsController,
             hintText: 'e.g. Meet outside the blue gate, third entrance',
+            helperText: 'Gate, entrance, floor, or landmark for the group.',
             prefixIcon: const Icon(Icons.info_outline),
             maxLines: 3,
             textCapitalization: TextCapitalization.sentences,
@@ -88,4 +101,10 @@ class WhereStep extends StatelessWidget {
       ),
     );
   }
+}
+
+String? _trimToNull(String value) {
+  final trimmed = value.trim();
+  if (trimmed.isEmpty) return null;
+  return trimmed;
 }

@@ -19,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
@@ -27,13 +28,15 @@ import 'package:go_router/go_router.dart';
 //   3  Chats     (MatchesListScreen)
 //   4  Profile   (ProfileScreen)
 
-final appShellFcmInitializationProvider = FutureProvider.autoDispose
-    .family<void, String>((ref, uid) async {
-      final fcmService = ref.watch(fcmServiceProvider);
-      if (!fcmService.isSupportedPlatform) return;
+part 'app_shell.g.dart';
 
-      await fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
-    });
+@riverpod
+Future<void> appShellFcmInitialization(Ref ref, String uid) async {
+  final fcmService = ref.watch(fcmServiceProvider);
+  if (!fcmService.isSupportedPlatform) return;
+
+  await fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
+}
 
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
