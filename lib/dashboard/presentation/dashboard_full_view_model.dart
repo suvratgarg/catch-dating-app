@@ -552,8 +552,8 @@ double _proximityScore(UserProfile? viewer, Event event) {
     longitude: viewer?.longitude,
   );
   final eventLocation = LocationCoordinate.fromNullable(
-    latitude: event.startingPointLat,
-    longitude: event.startingPointLng,
+    latitude: event.effectiveStartingPointLat,
+    longitude: event.effectiveStartingPointLng,
   );
   if (userLocation == null || eventLocation == null) return 0;
 

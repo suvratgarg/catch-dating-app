@@ -25,7 +25,7 @@ class HostEventToolsCarousel extends StatefulWidget {
     required this.tools,
     required this.onManageEvent,
     required this.onTakeAttendance,
-    this.title = 'Host tools',
+    required this.onViewReport,
   });
 
   static const railKey = Key('host-event-tools-carousel');
@@ -34,7 +34,7 @@ class HostEventToolsCarousel extends StatefulWidget {
   final List<HostEventToolItem> tools;
   final ValueChanged<Event> onManageEvent;
   final ValueChanged<Event> onTakeAttendance;
-  final String title;
+  final ValueChanged<Event> onViewReport;
 
   @override
   State<HostEventToolsCarousel> createState() => _HostEventToolsCarouselState();
@@ -63,97 +63,75 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
     }
 
     final selectedTool = widget.tools[_selectedIndex];
-    final countLabel = widget.tools.length == 1
-        ? '1 event'
-        : '${widget.tools.length} events';
-
-    return Column(
+    return SizedBox(
       key: HostEventToolsCarousel.railKey,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(widget.title, style: CatchTextStyles.titleL(context)),
-            gapW8,
-            CatchBadge(label: countLabel, tone: CatchBadgeTone.brand),
-          ],
-        ),
-        gapH10,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cardWidth = constraints.hasBoundedWidth
-                ? constraints.maxWidth
-                : MediaQuery.sizeOf(context).width;
-            final canAdvance = _selectedIndex < widget.tools.length - 1;
-            final canRetreat = _selectedIndex > 0;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final cardWidth = constraints.hasBoundedWidth
+              ? constraints.maxWidth
+              : MediaQuery.sizeOf(context).width;
+          final canAdvance = _selectedIndex < widget.tools.length - 1;
+          final canRetreat = _selectedIndex > 0;
 
-            return SizedBox(
-              width: cardWidth,
-              child: Semantics(
-                label: 'Host event tools carousel',
-                value:
-                    'Hosted event ${_selectedIndex + 1} of ${widget.tools.length}',
-                increasedValue: canAdvance
-                    ? 'Hosted event ${_selectedIndex + 2} of ${widget.tools.length}'
+          return SizedBox(
+            width: cardWidth,
+            child: Semantics(
+              label: 'Host event tools carousel',
+              value:
+                  'Hosted event ${_selectedIndex + 1} of ${widget.tools.length}',
+              increasedValue: canAdvance
+                  ? 'Hosted event ${_selectedIndex + 2} of ${widget.tools.length}'
+                  : null,
+              decreasedValue: canRetreat
+                  ? 'Hosted event $_selectedIndex of ${widget.tools.length}'
+                  : null,
+              onIncrease: widget.tools.length > 1 && canAdvance
+                  ? () => setState(() => _selectedIndex += 1)
+                  : null,
+              onDecrease: widget.tools.length > 1 && canRetreat
+                  ? () => setState(() => _selectedIndex -= 1)
+                  : null,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragStart: widget.tools.length > 1
+                    ? (_) => _dragDistance = 0
                     : null,
-                decreasedValue: canRetreat
-                    ? 'Hosted event $_selectedIndex of ${widget.tools.length}'
+                onHorizontalDragUpdate: widget.tools.length > 1
+                    ? (details) => _dragDistance += details.primaryDelta ?? 0
                     : null,
-                onIncrease: widget.tools.length > 1 && canAdvance
-                    ? () => setState(() => _selectedIndex += 1)
+                onHorizontalDragEnd: widget.tools.length > 1
+                    ? (details) => _handleHorizontalDragEnd(
+                        details: details,
+                        itemCount: widget.tools.length,
+                      )
                     : null,
-                onDecrease: widget.tools.length > 1 && canRetreat
-                    ? () => setState(() => _selectedIndex -= 1)
+                onHorizontalDragCancel: widget.tools.length > 1
+                    ? () => _dragDistance = 0
                     : null,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onHorizontalDragStart: widget.tools.length > 1
-                      ? (_) => _dragDistance = 0
-                      : null,
-                  onHorizontalDragUpdate: widget.tools.length > 1
-                      ? (details) => _dragDistance += details.primaryDelta ?? 0
-                      : null,
-                  onHorizontalDragEnd: widget.tools.length > 1
-                      ? (details) => _handleHorizontalDragEnd(
-                          details: details,
-                          itemCount: widget.tools.length,
-                        )
-                      : null,
-                  onHorizontalDragCancel: widget.tools.length > 1
-                      ? () => _dragDistance = 0
-                      : null,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
-                    child: HostEventToolCard(
-                      key: ValueKey(
-                        'host-event-tool-${selectedTool.event.id}-'
-                        '${selectedTool.attendanceState.name}',
-                      ),
-                      item: selectedTool,
-                      cardIndex: _selectedIndex,
-                      cardCount: widget.tools.length,
-                      onManageEvent: widget.onManageEvent,
-                      onTakeAttendance: widget.onTakeAttendance,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  transitionBuilder: (child, animation) =>
+                      FadeTransition(opacity: animation, child: child),
+                  child: HostEventToolCard(
+                    key: ValueKey(
+                      'host-event-tool-${selectedTool.event.id}-'
+                      '${selectedTool.attendanceState.name}',
                     ),
+                    item: selectedTool,
+                    cardIndex: _selectedIndex,
+                    cardCount: widget.tools.length,
+                    onManageEvent: widget.onManageEvent,
+                    onTakeAttendance: widget.onTakeAttendance,
+                    onViewReport: widget.onViewReport,
                   ),
                 ),
               ),
-            );
-          },
-        ),
-        if (widget.tools.length > 1) ...[
-          gapH10,
-          HostEventToolsPageIndicator(
-            key: HostEventToolsCarousel.pageIndicatorKey,
-            selectedIndex: _selectedIndex,
-            itemCount: widget.tools.length,
-          ),
-        ],
-      ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -195,29 +173,31 @@ class HostEventToolsPageIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Center(
-      child: Semantics(
-        label: 'Host event ${selectedIndex + 1} of $itemCount',
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          spacing: CatchSpacing.s1,
-          runSpacing: CatchSpacing.s1,
-          children: [
-            for (var index = 0; index < itemCount; index += 1)
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                width: index == selectedIndex ? 22 : 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: index == selectedIndex
-                      ? t.primary
-                      : t.line2.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(999),
-                ),
+    final progress = ((selectedIndex + 1) / itemCount).clamp(0.0, 1.0);
+
+    return Semantics(
+      label: 'Host event ${selectedIndex + 1} of $itemCount',
+      child: Row(
+        children: [
+          Text(
+            '${selectedIndex + 1} of $itemCount',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.labelS(context, color: t.ink2),
+          ),
+          gapW10,
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                backgroundColor: t.line2.withValues(alpha: 0.9),
+                valueColor: AlwaysStoppedAnimation<Color>(t.primary),
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -231,6 +211,7 @@ class HostEventToolCard extends StatelessWidget {
     required this.cardCount,
     required this.onManageEvent,
     required this.onTakeAttendance,
+    required this.onViewReport,
   });
 
   final HostEventToolItem item;
@@ -238,6 +219,7 @@ class HostEventToolCard extends StatelessWidget {
   final int cardCount;
   final ValueChanged<Event> onManageEvent;
   final ValueChanged<Event> onTakeAttendance;
+  final ValueChanged<Event> onViewReport;
 
   @override
   Widget build(BuildContext context) {
@@ -280,14 +262,12 @@ class HostEventToolCard extends StatelessWidget {
                         runSpacing: CatchSpacing.s1,
                         children: [
                           CatchBadge(
-                            label: 'Host tools',
+                            label: 'Host event',
                             tone: CatchBadgeTone.brand,
-                            uppercase: true,
                           ),
                           CatchBadge(
                             label: item.attendanceState.badgeLabel,
                             tone: item.attendanceState.badgeTone,
-                            uppercase: true,
                             icon: item.canTakeAttendance
                                 ? Icons.checklist_rounded
                                 : null,
@@ -295,16 +275,17 @@ class HostEventToolCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (cardCount > 1) ...[
-                      gapW8,
-                      CatchBadge(
-                        label: '${cardIndex + 1}/$cardCount',
-                        tone: CatchBadgeTone.neutral,
-                      ),
-                    ],
                   ],
                 ),
-                gapH14,
+                if (cardCount > 1) ...[
+                  gapH10,
+                  HostEventToolsPageIndicator(
+                    key: HostEventToolsCarousel.pageIndicatorKey,
+                    selectedIndex: cardIndex,
+                    itemCount: cardCount,
+                  ),
+                ],
+                gapH16,
                 Text(
                   event.title,
                   maxLines: 2,
@@ -319,7 +300,7 @@ class HostEventToolCard extends StatelessWidget {
                 gapH6,
                 _HostEventMetaLine(
                   icon: Icons.location_on_outlined,
-                  label: event.meetingPoint,
+                  label: event.locationName,
                 ),
                 gapH6,
                 _HostEventMetaLine(
@@ -333,6 +314,7 @@ class HostEventToolCard extends StatelessWidget {
                   item: item,
                   onManageEvent: onManageEvent,
                   onTakeAttendance: onTakeAttendance,
+                  onViewReport: onViewReport,
                 ),
               ],
             ),
@@ -348,40 +330,24 @@ class _HostEventToolActions extends StatelessWidget {
     required this.item,
     required this.onManageEvent,
     required this.onTakeAttendance,
+    required this.onViewReport,
   });
 
   final HostEventToolItem item;
   final ValueChanged<Event> onManageEvent;
   final ValueChanged<Event> onTakeAttendance;
+  final ValueChanged<Event> onViewReport;
 
   @override
   Widget build(BuildContext context) {
-    final primaryAction = item.canTakeAttendance
-        ? _HostEventAction.takeAttendance
-        : _HostEventAction.manage;
-    final secondaryAction = item.canTakeAttendance
-        ? _HostEventAction.manage
-        : _HostEventAction.attendanceUnavailable;
+    final action = _hostEventActionForState(item.attendanceState);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _HostEventActionButton(
-          action: primaryAction,
-          item: item,
-          isPrimary: true,
-          onManageEvent: onManageEvent,
-          onTakeAttendance: onTakeAttendance,
-        ),
-        gapH10,
-        _HostEventActionButton(
-          action: secondaryAction,
-          item: item,
-          isPrimary: false,
-          onManageEvent: onManageEvent,
-          onTakeAttendance: onTakeAttendance,
-        ),
-      ],
+    return _HostEventActionButton(
+      action: action,
+      item: item,
+      onManageEvent: onManageEvent,
+      onTakeAttendance: onTakeAttendance,
+      onViewReport: onViewReport,
     );
   }
 }
@@ -390,29 +356,25 @@ class _HostEventActionButton extends StatelessWidget {
   const _HostEventActionButton({
     required this.action,
     required this.item,
-    required this.isPrimary,
     required this.onManageEvent,
     required this.onTakeAttendance,
+    required this.onViewReport,
   });
 
   final _HostEventAction action;
   final HostEventToolItem item;
-  final bool isPrimary;
   final ValueChanged<Event> onManageEvent;
   final ValueChanged<Event> onTakeAttendance;
+  final ValueChanged<Event> onViewReport;
 
   @override
   Widget build(BuildContext context) {
     return CatchButton(
-      label: action.label(item.attendanceState),
+      label: action.label,
       icon: Icon(action.icon, size: 18),
-      variant: isPrimary
-          ? CatchButtonVariant.primary
-          : CatchButtonVariant.secondary,
+      variant: CatchButtonVariant.primary,
       fullWidth: true,
-      onPressed: action.isEnabled(item.attendanceState)
-          ? () => _handleAction()
-          : null,
+      onPressed: _handleAction,
     );
   }
 
@@ -422,8 +384,8 @@ class _HostEventActionButton extends StatelessWidget {
         onManageEvent(item.event);
       case _HostEventAction.takeAttendance:
         onTakeAttendance(item.event);
-      case _HostEventAction.attendanceUnavailable:
-        break;
+      case _HostEventAction.viewReport:
+        onViewReport(item.event);
     }
   }
 }
@@ -501,34 +463,30 @@ class HostToolPalette {
   }
 }
 
-enum _HostEventAction { manage, takeAttendance, attendanceUnavailable }
+enum _HostEventAction { manage, takeAttendance, viewReport }
+
+_HostEventAction _hostEventActionForState(HostEventAttendanceState state) {
+  return switch (state) {
+    HostEventAttendanceState.open => _HostEventAction.takeAttendance,
+    HostEventAttendanceState.opensLater => _HostEventAction.manage,
+    HostEventAttendanceState.closed => _HostEventAction.viewReport,
+  };
+}
 
 extension on _HostEventAction {
   IconData get icon {
     return switch (this) {
       _HostEventAction.manage => Icons.tune_rounded,
       _HostEventAction.takeAttendance => Icons.checklist_rounded,
-      _HostEventAction.attendanceUnavailable => Icons.schedule_rounded,
+      _HostEventAction.viewReport => Icons.insights_outlined,
     };
   }
 
-  String label(HostEventAttendanceState state) {
+  String get label {
     return switch (this) {
       _HostEventAction.manage => 'Manage event',
       _HostEventAction.takeAttendance => 'Take attendance',
-      _HostEventAction.attendanceUnavailable => switch (state) {
-        HostEventAttendanceState.open => 'Take attendance',
-        HostEventAttendanceState.opensLater => 'Attendance opens later',
-        HostEventAttendanceState.closed => 'Attendance closed',
-      },
-    };
-  }
-
-  bool isEnabled(HostEventAttendanceState state) {
-    return switch (this) {
-      _HostEventAction.manage => true,
-      _HostEventAction.takeAttendance => state == HostEventAttendanceState.open,
-      _HostEventAction.attendanceUnavailable => false,
+      _HostEventAction.viewReport => 'View report',
     };
   }
 }
@@ -538,7 +496,7 @@ extension HostEventAttendanceStateLabels on HostEventAttendanceState {
     return switch (this) {
       HostEventAttendanceState.open => 'Attendance open',
       HostEventAttendanceState.opensLater => 'Upcoming',
-      HostEventAttendanceState.closed => 'Closed',
+      HostEventAttendanceState.closed => 'Attendance closed',
     };
   }
 

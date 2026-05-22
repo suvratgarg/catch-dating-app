@@ -2,22 +2,21 @@ import 'dart:ui';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:share_plus/share_plus.dart';
+
+part 'external_share.g.dart';
 
 typedef ExternalShareLauncher = Future<void> Function(ShareParams params);
 
-final externalShareLauncherProvider = Provider<ExternalShareLauncher>((ref) {
-  return (params) async {
-    await SharePlus.instance.share(params);
-  };
-});
+@Riverpod(keepAlive: true)
+ExternalShareLauncher externalShareLauncher(Ref ref) => (params) async {
+  await SharePlus.instance.share(params);
+};
 
-final externalShareControllerProvider = Provider<ExternalShareController>((
-  ref,
-) {
-  return ExternalShareController(ref.watch(externalShareLauncherProvider));
-});
+@Riverpod(keepAlive: true)
+ExternalShareController externalShareController(Ref ref) =>
+    ExternalShareController(ref.watch(externalShareLauncherProvider));
 
 class ExternalShareController {
   const ExternalShareController(this._share);

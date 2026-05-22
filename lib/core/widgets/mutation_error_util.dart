@@ -8,7 +8,10 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 /// if (mutation.hasError)
 ///   ErrorBanner(message: mutationErrorMessage(mutation)),
 /// ```
-String mutationErrorMessage(MutationState mutation) {
+String mutationErrorMessage(
+  MutationState mutation, {
+  AppErrorContext context = AppErrorContext.generic,
+}) {
   if (!mutation.hasError) return '';
-  return appErrorMessage((mutation as MutationError).error);
+  return appErrorMessage((mutation as MutationError).error, context: context);
 }

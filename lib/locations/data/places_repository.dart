@@ -5,14 +5,16 @@ import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/domain/place.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/locations/domain/place.dart'
     show PlaceAutocompleteSuggestion, PlaceDetails;
 
-final placesRepositoryProvider = Provider<PlacesRepository>((ref) {
-  return FirebasePlacesRepository(ref.watch(firebaseFunctionsProvider));
-});
+part 'places_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+PlacesRepository placesRepository(Ref ref) =>
+    FirebasePlacesRepository(ref.watch(firebaseFunctionsProvider));
 
 abstract interface class PlacesRepository {
   Future<List<PlaceAutocompleteSuggestion>> autocomplete({

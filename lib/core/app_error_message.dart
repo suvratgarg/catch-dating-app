@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/backend_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 enum AppErrorContext {
@@ -78,11 +77,6 @@ AppException? _normalizeForPresentation(Object error) {
 
 String _messageFor(Object error, AppException? appException) {
   if (appException == null) return backendErrorMessage(error);
-  if (kDebugMode &&
-      appException.debugMessage != null &&
-      appException.debugMessage!.isNotEmpty) {
-    return '${appException.message}\n\n[DEBUG] ${appException.debugMessage}';
-  }
   return appException.message;
 }
 

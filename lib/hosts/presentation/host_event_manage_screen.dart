@@ -287,17 +287,16 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
   }) {
     return switch (_selectedSection) {
       HostEventManageSection.setup => [
+        HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+        ),
+        gapH20,
         _HostEventSummaryCard(club: club, event: event),
         if (event.effectiveEventPolicy.usesInviteOnly) ...[
           gapH20,
           _HostPrivateAccessCard(club: club, event: event),
         ],
-        gapH20,
-        _HostEventActionsCard(
-          event: event,
-          hasKnownActivity: hasKnownActivity,
-          onDeleted: onDeleted,
-        ),
         gapH20,
         EventSuccessHostSection(
           event: event,
@@ -305,9 +304,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           showTabs: false,
         ),
         gapH20,
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.setup,
+        _HostEventActionsCard(
+          event: event,
+          hasKnownActivity: hasKnownActivity,
+          onDeleted: onDeleted,
         ),
       ],
       HostEventManageSection.live => [
@@ -601,7 +601,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                     Text(
                       event.isCancelled
                           ? 'This event has already been cancelled.'
-                          : 'Edit operational details here. Cancel events that have activity; delete only unused drafts or accidental events.',
+                          : 'Use cancel for published events that should leave schedules but keep attendee, payment, and history records. Delete is only for unused events created by mistake.',
                       style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
@@ -642,7 +642,7 @@ class _HostEventActionsCard extends ConsumerWidget {
           if (!event.isCancelled) gapH10,
           if (!event.isCancelled)
             CatchButton(
-              label: 'Cancel event',
+              label: 'Cancel published event',
               onPressed: isMutating
                   ? null
                   : () => _confirmCancelEvent(context, ref),
@@ -654,12 +654,12 @@ class _HostEventActionsCard extends ConsumerWidget {
           if (!event.isCancelled) gapH10,
           if (hasKnownActivity)
             Text(
-              'Delete is unavailable once an event has bookings, waitlist, attendance, payments, or reviews. Cancel it instead.',
+              'Delete unused event is unavailable once an event has bookings, waitlist, attendance, payments, or reviews. Cancel the published event instead.',
               style: CatchTextStyles.bodyS(context, color: t.ink3),
             )
           else
             CatchButton(
-              label: 'Delete event',
+              label: 'Delete unused event',
               onPressed: isMutating
                   ? null
                   : () => _confirmDeleteEvent(context, ref),
@@ -678,14 +678,14 @@ class _HostEventActionsCard extends ConsumerWidget {
   Future<void> _confirmCancelEvent(BuildContext context, WidgetRef ref) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Cancel this event?',
+      title: 'Cancel published event?',
       message: hasKnownActivity
           ? 'Booked and waitlisted attendees will be notified. Attendance, payment, and review history will stay attached to this event.'
           : 'This removes the event from upcoming schedules while keeping a history record. If it was created by mistake and has no activity, you can delete it instead.',
       actions: const [
         CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
         CatchDialogAction(
-          label: 'Cancel event',
+          label: 'Cancel published event',
           value: true,
           isDestructive: true,
         ),
@@ -712,13 +712,13 @@ class _HostEventActionsCard extends ConsumerWidget {
   Future<void> _confirmDeleteEvent(BuildContext context, WidgetRef ref) async {
     final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      title: 'Delete this event?',
+      title: 'Delete unused event?',
       message:
           'Only events with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the event.',
       actions: const [
         CatchDialogAction(label: 'Keep event', value: false, isDefault: true),
         CatchDialogAction(
-          label: 'Delete event',
+          label: 'Delete unused event',
           value: true,
           isDestructive: true,
         ),
@@ -775,7 +775,7 @@ class _HostEventSummaryCard extends StatelessWidget {
           _HostEventSummaryRow(
             icon: Icons.location_on_outlined,
             label: 'Meet',
-            value: event.meetingPoint,
+            value: event.locationName,
           ),
           _HostEventSummaryRow(
             icon: Icons.route_rounded,

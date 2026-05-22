@@ -48,6 +48,11 @@ void main() {
         backendErrorMessage(error),
         contains('The request timed out. Please try again.'),
       );
+      expect(backendErrorMessage(error), isNot(contains('[DEBUG]')));
+      expect(
+        backendErrorMessage(error),
+        isNot(contains('cloud_firestore/deadline-exceeded')),
+      );
     });
 
     test('strips common Dart error prefixes', () {
