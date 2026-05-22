@@ -27,12 +27,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _lockDeviceOrientation();
-  await _initializeFirebaseServices();
+  final remoteConfigError = await _initializeFirebaseServices();
 
   final errorLogger = ErrorLogger();
   await errorLogger.initialize();
   final analytics = AppAnalytics();
   await analytics.initialize();
+  if (remoteConfigError != null) {
+    errorLogger.logError(
+      remoteConfigError.$1,
+      remoteConfigError.$2,
+      reason:
+          'Remote Config fetchAndActivate failed at startup; the '
+          'force-update gate is running on bundled defaults.',
+    );
+  }
   _emitObservabilitySmokeIfRequested(errorLogger, analytics);
 
   _registerErrorHandlers(errorLogger);
@@ -89,7 +98,9 @@ Future<void> _lockDeviceOrientation() {
 
 // ── Global error handlers ─────────────────────────────────────────────────────
 
-Future<void> _initializeFirebaseServices() async {
+/// Returns the Remote Config fetch failure (error, stack) when the initial
+/// fetch fails, or null. See [_initializeRemoteConfig].
+Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _activateFirebaseAppCheck();
 
@@ -99,7 +110,7 @@ Future<void> _initializeFirebaseServices() async {
     persistenceEnabled: true,
   );
 
-  await _initializeRemoteConfig();
+  final remoteConfigError = await _initializeRemoteConfig();
 
   if (AppConfig.supportsPushMessagingOnCurrentPlatform) {
     registerFirebaseMessagingBackgroundHandler();
@@ -114,9 +125,14 @@ Future<void> _initializeFirebaseServices() async {
       region: firebaseFunctionsRegion,
     ).useFunctionsEmulator(host, 5001);
   }
+
+  return remoteConfigError;
 }
 
-Future<void> _initializeRemoteConfig() async {
+/// Returns the fetch failure (error, stack) when the initial Remote Config
+/// fetch fails, or null on success. The caller logs it once [ErrorLogger] is
+/// ready — the app still boots on bundled defaults either way.
+Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
   final remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setConfigSettings(
     RemoteConfigSettings(
@@ -127,8 +143,12 @@ Future<void> _initializeRemoteConfig() async {
   await remoteConfig.setDefaults(kAppVersionConfigDefaults);
   try {
     await remoteConfig.fetchAndActivate();
-  } catch (_) {
-    // fetch failed — the defaults set above will serve as the gate.
+    return null;
+  } catch (error, stackTrace) {
+    // Fetch failed — bundled defaults serve the force-update gate. Return the
+    // failure so a real misconfig (bad RC template, App Check block, project
+    // mismatch) is visible in Crashlytics instead of silently swallowed.
+    return (error, stackTrace);
   }
 }
 

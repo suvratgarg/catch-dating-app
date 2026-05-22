@@ -17,7 +17,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.x'
+          flutter-version: '3.41.9'
           channel: stable
           cache: true
 
@@ -25,6 +25,11 @@ jobs:
 
       - name: Build dev web artifact
         run: ./tool/flutter_with_env.sh dev build web --debug
+
+      # Also compile the prod config (prod dart-defines + prod Firebase
+      # options) so a prod-only build break is caught on PRs, not at release.
+      - name: Build prod web artifact
+        run: ./tool/flutter_with_env.sh prod build web --release
 
   android:
     name: Android debug APK
@@ -41,7 +46,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.x'
+          flutter-version: '3.41.9'
           channel: stable
           cache: true
 
@@ -71,7 +76,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.x'
+          flutter-version: '3.41.9'
           channel: stable
           cache: true
 

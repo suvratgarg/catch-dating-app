@@ -23,7 +23,7 @@ jobs:
 
       - run: npm --prefix functions ci
 
-      - run: npm install -g firebase-tools
+      - run: npm install -g firebase-tools@15.1.0
 
       - run: node tool/check_firestore_contract.mjs
 

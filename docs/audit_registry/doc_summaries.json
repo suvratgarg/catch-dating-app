@@ -1,5 +1,5 @@
 {
-  "version": "4.1.0",
+  "version": "4.1.1",
   "updated": "2026-05-22",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -84,6 +84,18 @@
       "skip_when": [
         "Only checking schema contracts; use data_contracts.md",
         "Only checking widget inventory; use widget_catalog.md"
+      ]
+    },
+    "docs/config_cicd_platform_audit_2026-05-21.md": {
+      "purpose": "Temporary active tracker for remaining config, CI/CD, platform, observability, contract-source, and environment-codegen follow-ups after the 2026-05-21 hardening pass.",
+      "read_when": [
+        "Checking unfinished config or CI/CD hardening items",
+        "Verifying GA4 BigQuery, Crashlytics symbol-upload noise, analytics plist state, Razorpay env codegen, or contract-source migration decisions",
+        "Reviewing why firebase-tools, Flutter versions, contracts CI, app-build matrix, App Check activation, and Android google-services guards changed"
+      ],
+      "skip_when": [
+        "Only executing normal release operations; use release_operations.md",
+        "Only changing schema contracts; use data_contracts.md"
       ]
     },
     "docs/ui_architecture.md": {

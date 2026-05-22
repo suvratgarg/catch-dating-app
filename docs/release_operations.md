@@ -19,6 +19,7 @@ Configure GitHub branch protection for `main` to require:
 - Flutter analysis and tests.
 - Functions lint/build/tests.
 - Firestore rules emulator tests.
+- Schema contract validation (the `contracts/` source of truth).
 - Web build.
 - Android debug APK build.
 - iOS simulator build.
@@ -30,6 +31,7 @@ The current workflows are:
 | `.github/workflows/flutter-ci.yml` | Flutter analysis, unit/widget tests, generated Firestore type drift check. |
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
 | `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
+| `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/app-build-matrix.yml` | Dev web, Android debug APK, and iOS simulator build gates. |
 | `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
@@ -295,6 +297,17 @@ Remote Config is intentionally separate from the standard backend deploy:
 ./tool/deploy_firebase_targets.sh prod remoteconfig
 ```
 
+Firebase Extensions (the six `firestore-bigquery-export` instances in
+`firebase.json`) are **not** part of the standard backend deploy and are not
+in the `deploy_firebase_targets.sh` default target set. When extension
+parameters change in `firebase.json`, deploy them explicitly and deliberately:
+
+```bash
+./tool/firebase_with_env.sh prod deploy --only extensions
+```
+
+Otherwise extension config in the repo silently drifts from what is installed.
+
 After production Functions deploys, sync callable invokers if needed:
 
 ```bash
@@ -314,6 +327,58 @@ After a backend deploy, smoke test:
 - Swipe, match, chat message, unread count, block/report.
 - Payment history, review prompt, notifications.
 - Demo-data validation for the affected environment when demo tooling changed.
+
+## Verifying Analytics, Crashlytics, And BigQuery
+
+Observability collection is gated, so a normal debug `flutter run` deliberately
+sends **nothing** — this is expected, not a bug.
+
+### When collection is on
+
+`AppConfig.shouldCollectObservability` (in `lib/core/app_config.dart`) controls
+both Firebase Analytics and Crashlytics. It is true only when:
+
+- the build is release mode **and** the environment is `prod`; or
+- a release/profile build passes `--dart-define=ENABLE_OBSERVABILITY_COLLECTION=true`.
+
+In a debug build it is always false: `AppAnalytics.initialize()` calls
+`setAnalyticsCollectionEnabled(false)`, so even Firebase **DebugView shows
+nothing** (DebugView requires collection to be enabled).
+
+### How to verify Analytics events reach Firebase
+
+1. Run with collection forced on (the env wrapper forwards the flag as a
+   dart-define):
+
+   ```bash
+   ENABLE_OBSERVABILITY_COLLECTION=true ./tool/flutter_with_env.sh dev run
+   ```
+
+2. For iOS DebugView also add the launch argument `-FIRDebugEnabled`
+   (Xcode scheme → Run → Arguments), or `adb shell setprop debug.firebase.analytics.app <applicationId>` on Android.
+3. Exercise flows that call `AppAnalytics.logEvent` (auth, club view, booking,
+   swipe, chat).
+4. Confirm the events in Firebase Console → Analytics → **DebugView** for the
+   matching environment's project.
+5. Record the proof through the `observability-evidence.yml` workflow.
+
+A smoke build can also emit a single canary event with
+`--dart-define=EMIT_OBSERVABILITY_SMOKE_EVENT=true` (event name
+`observability_smoke`).
+
+### BigQuery — two separate exports, do not conflate them
+
+- **Firestore → BigQuery**: configured in-repo. `firebase.json` declares six
+  `firestore-bigquery-export` extension instances (`bq-event-success-*`,
+  `bq-participant-*`), installed in all three projects. These stream Firestore
+  collections into BigQuery. Extension parameter changes are **not** part of the
+  normal `deploy_firebase_targets.sh` target set — push them with an explicit
+  `firebase deploy --only extensions` when changed.
+- **GA4 → BigQuery**: a Firebase Console link, not repo config. Enable it at
+  Firebase Console → Project Settings → Integrations → BigQuery, with
+  **"Export Google Analytics data"** checked, for `catch-dating-app-64e51`
+  (prod). GA4→BigQuery only backfills from the day it is enabled. Capture the
+  dataset link in the `ga4_bigquery_evidence` input of `observability-evidence.yml`.
 
 ## Automated Integration Test Backlog
 

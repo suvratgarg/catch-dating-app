@@ -15,7 +15,7 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.0",
+    "version": "4.1.1",
     "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
@@ -159,6 +159,13 @@
     "updated": "2026-05-17",
     "status": "active",
     "read_policy": "Use only while closing remaining cardless public-profile UX work: profile prompt picker, compatibility expansion, quality coaching, visual regression coverage, device QA, and visible swipe-language cleanup."
+  },
+  "config_cicd_platform_audit": {
+    "path": "docs/config_cicd_platform_audit_2026-05-21.md",
+    "version": "1.3.1",
+    "updated": "2026-05-22",
+    "status": "active",
+    "read_policy": "Use only while closing remaining config, CI/CD, platform, observability, contract-source, and environment-codegen follow-ups from the 2026-05-21 hardening pass."
   },
   "release_operations": {
     "path": "docs/release_operations.md",
