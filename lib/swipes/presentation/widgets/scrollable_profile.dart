@@ -286,24 +286,11 @@ class _PhotoPromptOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          prompt.displayPrompt,
-          style: CatchTextStyles.labelL(context, color: Colors.white70),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        gapH6,
-        Text(
-          prompt.caption,
-          style: CatchTextStyles.titleL(context, color: Colors.white),
-          maxLines: 3,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
+    return Text(
+      prompt.displayPrompt,
+      style: CatchTextStyles.titleM(context, color: Colors.white),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
@@ -519,10 +506,8 @@ String _photoReactionPreview({
   required String ordinalLabel,
   required PhotoPromptAnswer? prompt,
 }) {
-  final caption = prompt?.caption.trim();
-  if (caption != null && caption.isNotEmpty) {
-    return '${prompt!.displayPrompt}: $caption';
-  }
+  final photoPrompt = prompt?.displayPrompt.trim();
+  if (photoPrompt != null && photoPrompt.isNotEmpty) return photoPrompt;
   return '${profile.name}\'s $ordinalLabel';
 }
 

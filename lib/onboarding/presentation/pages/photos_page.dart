@@ -94,6 +94,7 @@ class PhotosPage extends ConsumerWidget {
                   photo: index < profilePhotos.length
                       ? profilePhotos[index]
                       : null,
+                  canDelete: profilePhotos.length > minimumProfilePhotoCount,
                 ),
               );
             },

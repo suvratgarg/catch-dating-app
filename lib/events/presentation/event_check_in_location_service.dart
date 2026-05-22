@@ -1,10 +1,11 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final eventCheckInLocationServiceProvider =
-    Provider<EventCheckInLocationService>(
-      (ref) => const GeolocatorEventCheckInLocationService(),
-    );
+part 'event_check_in_location_service.g.dart';
+
+@Riverpod(keepAlive: true)
+EventCheckInLocationService eventCheckInLocationService(Ref ref) =>
+    const GeolocatorEventCheckInLocationService();
 
 class EventCheckInLocation {
   const EventCheckInLocation({required this.latitude, required this.longitude});

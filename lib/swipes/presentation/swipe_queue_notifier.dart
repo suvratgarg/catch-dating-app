@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -8,7 +9,6 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_notifier.g.dart';
@@ -20,9 +20,8 @@ const _swipeQueueLoadContext = BackendErrorContext(
 );
 
 @visibleForTesting
-final swipeQueueLoadTimeoutProvider = Provider<Duration>(
-  (ref) => const Duration(seconds: 12),
-);
+@Riverpod(keepAlive: true)
+Duration swipeQueueLoadTimeout(Ref ref) => const Duration(seconds: 12);
 
 /// **Pattern C: Async state controller**
 ///
@@ -47,6 +46,12 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     String eventId, {
     Set<String> vibeIds = const {},
   }) async {
+    if (ref.watch(isObviouslyOfflineProvider)) {
+      final cachedProfiles = state.value;
+      if (cachedProfiles != null) return cachedProfiles;
+      throw obviousOfflineException(context: _swipeQueueLoadContext);
+    }
+
     final timeout = ref.watch(swipeQueueLoadTimeoutProvider);
     final currentUserId = await _loadStep(
       ref.watch(uidProvider.future),

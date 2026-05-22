@@ -74,12 +74,12 @@ const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
 ];
 
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
-  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually event', placeholder: 'Add a caption for this running photo.',),
+  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually event', placeholder: 'Choose this when the photo is the proof.',),
   SchemaPhotoPromptDefinition(id: 'finishLine', title: 'After the finish line', placeholder: 'What was happening in this moment?',),
   SchemaPhotoPromptDefinition(id: 'notRunning', title: 'When I\'m not running', placeholder: 'Show another side of your life.',),
   SchemaPhotoPromptDefinition(id: 'favoritePeople', title: 'My favorite people know me as', placeholder: 'A small detail friends would recognize.',),
   SchemaPhotoPromptDefinition(id: 'weekendEnergy', title: 'Weekend energy', placeholder: 'What does this photo say about your weekends?',),
-  SchemaPhotoPromptDefinition(id: 'captionThis', title: 'Caption this', placeholder: 'Give people an easy opening line.',),
+  SchemaPhotoPromptDefinition(id: 'captionThis', title: 'First thought?', placeholder: 'Give people an easy opening line.',),
 ];
 
 const schemaProfilePromptAnswerSchema = <String, Object?>{
@@ -117,14 +117,13 @@ const schemaPhotoPromptAnswerSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/embedded/photo_prompt_answer.schema.json',
   'title': 'PhotoPromptAnswer',
-  'description': 'One optional caption prompt for a profile photo slot.',
+  'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
     'photoIndex',
     'promptId',
     'prompt',
-    'caption',
   ],
   'properties': <String, Object?>{
     'photoIndex': <String, Object?>{
@@ -145,6 +144,8 @@ const schemaPhotoPromptAnswerSchema = <String, Object?>{
     'caption': <String, Object?>{
       'type': 'string',
       'maxLength': 140,
+      'deprecated': true,
+      'description': 'Legacy user-entered caption retained for compatibility with older documents.',
     },
   },
   'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -200,14 +201,13 @@ const schemaProfilePhotoSchema = <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'title': 'PhotoPromptAnswer',
-          'description': 'One optional caption prompt for a profile photo slot.',
+          'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
           'type': 'object',
           'additionalProperties': false,
           'required': <Object?>[
             'photoIndex',
             'promptId',
             'prompt',
-            'caption',
           ],
           'properties': <String, Object?>{
             'photoIndex': <String, Object?>{
@@ -228,6 +228,8 @@ const schemaProfilePhotoSchema = <String, Object?>{
             'caption': <String, Object?>{
               'type': 'string',
               'maxLength': 140,
+              'deprecated': true,
+              'description': 'Legacy user-entered caption retained for compatibility with older documents.',
             },
           },
           'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -480,14 +482,13 @@ const schemaUpdateUserProfileCallablePayloadSchema =
           'maxItems': 6,
           'items': <String, Object?>{
             'title': 'PhotoPromptAnswer',
-            'description': 'One optional caption prompt for a profile photo slot.',
+            'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
             'type': 'object',
             'additionalProperties': false,
             'required': <Object?>[
               'photoIndex',
               'promptId',
               'prompt',
-              'caption',
             ],
             'properties': <String, Object?>{
               'photoIndex': <String, Object?>{
@@ -508,6 +509,8 @@ const schemaUpdateUserProfileCallablePayloadSchema =
               'caption': <String, Object?>{
                 'type': 'string',
                 'maxLength': 140,
+                'deprecated': true,
+                'description': 'Legacy user-entered caption retained for compatibility with older documents.',
               },
             },
             'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -562,14 +565,13 @@ const schemaUpdateUserProfileCallablePayloadSchema =
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'title': 'PhotoPromptAnswer',
-                    'description': 'One optional caption prompt for a profile photo slot.',
+                    'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                     'type': 'object',
                     'additionalProperties': false,
                     'required': <Object?>[
                       'photoIndex',
                       'promptId',
                       'prompt',
-                      'caption',
                     ],
                     'properties': <String, Object?>{
                       'photoIndex': <String, Object?>{
@@ -590,6 +592,8 @@ const schemaUpdateUserProfileCallablePayloadSchema =
                       'caption': <String, Object?>{
                         'type': 'string',
                         'maxLength': 140,
+                        'deprecated': true,
+                        'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                       },
                     },
                     'x-catch-catalog': '../catalogs/photo_prompts.json',

@@ -33,10 +33,10 @@ class PhotoSlot extends StatelessWidget {
     final borderRadius = BorderRadius.circular(CatchRadius.lg);
 
     final hasPhoto = url != null;
-    final promptLabel = prompt?.caption.trim();
+    final promptLabel = prompt?.displayPrompt.trim();
     final label = switch ((hasPhoto, isLoading, isActive)) {
       (true, true, _) => 'Photo ${index + 1} uploading',
-      (true, false, _) => 'Replace photo ${index + 1}',
+      (true, false, _) => 'Edit photo ${index + 1}',
       (false, true, _) => 'Photo ${index + 1} uploading',
       (false, false, true) => 'Add photo ${index + 1}',
       _ => 'Photo slot ${index + 1} unavailable',

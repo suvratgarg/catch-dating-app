@@ -24,6 +24,8 @@ abstract class EventDraft with _$EventDraft {
     // Where step
     String? meetingPoint,
     String? locationDetails,
+    String? meetingLocationAddress,
+    String? meetingLocationPlaceId,
     double? startingPointLat,
     double? startingPointLng,
     // When step
@@ -68,6 +70,8 @@ extension EventDraftX on EventDraft {
       paceName == null &&
       meetingPoint == null &&
       locationDetails == null &&
+      meetingLocationAddress == null &&
+      meetingLocationPlaceId == null &&
       startingPointLat == null &&
       startingPointLng == null &&
       selectedDateMillis == null &&

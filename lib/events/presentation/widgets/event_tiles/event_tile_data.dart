@@ -49,7 +49,7 @@ class EventTileData {
   String get clubId => event.clubId;
   String get eventId => event.id;
   String get title => event.title;
-  String get meetingPoint => event.meetingPoint;
+  String get meetingPoint => event.locationName;
   String get dateLabel => event.shortDateLabel;
   String get longDateLabel => event.longDateLabel;
   String get timeLabel => EventFormatters.time(event.startTime);

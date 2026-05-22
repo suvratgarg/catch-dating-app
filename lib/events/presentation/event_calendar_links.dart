@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final eventCalendarControllerProvider = Provider<EventCalendarController>((
-  ref,
-) {
-  return EventCalendarController(ref.watch(externalLinkControllerProvider));
-});
+part 'event_calendar_links.g.dart';
+
+@Riverpod(keepAlive: true)
+EventCalendarController eventCalendarController(Ref ref) =>
+    EventCalendarController(ref.watch(externalLinkControllerProvider));
 
 class EventCalendarController {
   const EventCalendarController(this._links);
@@ -46,17 +46,17 @@ String _calendarDetails(Event event) {
     'Catch event',
     event.description.trim(),
     event.activitySummaryLabel,
-    if (event.locationDetails?.trim().isNotEmpty == true)
-      event.locationDetails!.trim(),
+    if (event.locationNotes?.trim().isNotEmpty == true)
+      event.locationNotes!.trim(),
   ]..removeWhere((line) => line.isEmpty);
 
   return details.join('\n');
 }
 
 String _calendarLocation(Event event) {
-  final locationDetails = event.locationDetails?.trim();
+  final locationDetails = event.locationNotes?.trim();
   if (locationDetails == null || locationDetails.isEmpty) {
-    return event.meetingPoint;
+    return event.locationName;
   }
-  return '${event.meetingPoint}, $locationDetails';
+  return '${event.locationName}, $locationDetails';
 }

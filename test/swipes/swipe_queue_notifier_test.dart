@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -9,6 +10,7 @@ import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -30,11 +32,15 @@ class FakeSwipeRecordRepository extends Fake implements SwipeRepository {
 
 class FakeSwipeCandidateRepository extends Fake
     implements SwipeCandidateRepository {
+  FakeSwipeCandidateRepository([this.candidates = const []]);
+
+  final List<PublicProfile> candidates;
+
   @override
   Future<List<PublicProfile>> fetchCandidates({
     required String eventId,
     required currentUser,
-  }) async => const [];
+  }) async => candidates;
 }
 
 class HangingUserProfileRepository extends Fake
@@ -42,6 +48,17 @@ class HangingUserProfileRepository extends Fake
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) =>
       Completer<UserProfile?>().future;
+}
+
+class LoadedUserProfileRepository extends Fake
+    implements UserProfileRepository {
+  LoadedUserProfileRepository(this.profile);
+
+  final UserProfile? profile;
+
+  @override
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      profile;
 }
 
 void main() {
@@ -60,6 +77,7 @@ void main() {
     test('does not pop the queue when signed-in uid is unavailable', () async {
       final container = ProviderContainer(
         overrides: [
+          isObviouslyOfflineProvider.overrideWithValue(false),
           uidProvider.overrideWith((ref) => Stream.value(null)),
           watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           authRepositoryProvider.overrideWithValue(authRepository),
@@ -97,6 +115,7 @@ void main() {
         authRepository.currentUserValue = TestUser(uid: 'runner-1');
         final container = ProviderContainer(
           overrides: [
+            isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
@@ -144,6 +163,7 @@ void main() {
       authRepository.currentUserValue = TestUser(uid: 'runner-1');
       final container = ProviderContainer(
         overrides: [
+          isObviouslyOfflineProvider.overrideWithValue(false),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
@@ -201,6 +221,7 @@ void main() {
         swipeRepository.recordCompleter = Completer<void>();
         final container = ProviderContainer(
           overrides: [
+            isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
@@ -254,6 +275,7 @@ void main() {
     test('surfaces a retryable timeout instead of loading forever', () async {
       final container = ProviderContainer(
         overrides: [
+          isObviouslyOfflineProvider.overrideWithValue(false),
           swipeQueueLoadTimeoutProvider.overrideWithValue(
             const Duration(milliseconds: 1),
           ),
@@ -286,6 +308,81 @@ void main() {
             .having((e) => e.code, 'code', 'swipe-candidates-timeout')
             .having((e) => e.retryable, 'retryable', isTrue),
       );
+    });
+
+    test('surfaces obvious offline state before waiting for timeout', () async {
+      final container = ProviderContainer(
+        overrides: [
+          isObviouslyOfflineProvider.overrideWithValue(true),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          userProfileRepositoryProvider.overrideWithValue(
+            HangingUserProfileRepository(),
+          ),
+          swipeCandidateRepositoryProvider.overrideWith(
+            (ref) => candidateRepository,
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final sub = container.listen(
+        swipeQueueProvider('event-1'),
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(sub.close);
+
+      await container.pump();
+
+      final state = container.read(swipeQueueProvider('event-1'));
+      expect(state.hasError, isTrue);
+      expect(
+        state.error,
+        isA<NetworkException>()
+            .having((e) => e.code, 'code', 'offline')
+            .having((e) => e.retryable, 'retryable', isTrue),
+      );
+    });
+
+    test('keeps cached queue data when connectivity drops offline', () async {
+      final connectivity = StreamController<List<ConnectivityResult>>();
+      addTearDown(connectivity.close);
+
+      final container = ProviderContainer(
+        overrides: [
+          appConnectivityProvider.overrideWith((ref) => connectivity.stream),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          userProfileRepositoryProvider.overrideWithValue(
+            LoadedUserProfileRepository(buildUser(uid: 'runner-1')),
+          ),
+          swipeCandidateRepositoryProvider.overrideWith(
+            (ref) => FakeSwipeCandidateRepository([
+              buildPublicProfile(uid: 'runner-2'),
+            ]),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final sub = container.listen(
+        swipeQueueProvider('event-1'),
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(sub.close);
+
+      connectivity.add(const [ConnectivityResult.wifi]);
+      final profiles = await container.read(
+        swipeQueueProvider('event-1').future,
+      );
+      expect(profiles.map((p) => p.uid), ['runner-2']);
+
+      connectivity.add(const [ConnectivityResult.none]);
+      await container.pump();
+
+      final state = container.read(swipeQueueProvider('event-1'));
+      expect(state.hasError, isFalse);
+      expect(state.value?.map((p) => p.uid), ['runner-2']);
     });
   });
 }
