@@ -229,8 +229,8 @@ function normalizeProfilePromptPayloads(value: unknown): unknown {
 }
 
 /**
- * Trims photo prompt id/title fields while preserving caption validation
- * semantics.
+ * Trims photo prompt id/title fields while preserving legacy caption validation
+ * semantics when older clients send captions.
  * @param {unknown} value Raw photo prompt payloads.
  * @return {unknown} Normalized photo prompt payloads.
  */
@@ -269,6 +269,9 @@ function normalizeProfilePhotoPayloads(value: unknown): unknown {
         ...item.prompt,
         promptId: trimIfString(item.prompt.promptId),
         prompt: trimIfString(item.prompt.prompt),
+        ...(item.prompt.caption !== undefined && {
+          caption: trimIfString(item.prompt.caption),
+        }),
       };
     }
     return normalized;
@@ -490,9 +493,13 @@ function toFirestorePatch(
         ...prompt,
         promptId: prompt.promptId.trim(),
         prompt: prompt.prompt.trim(),
-        caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
+        ...(prompt.caption !== undefined && {
+          caption: collapseStackedPromptBlankLines(prompt.caption ?? "").trim(),
+        }),
       }))
-      .filter((prompt) => prompt.caption.length > 0);
+      .filter((prompt) =>
+        prompt.promptId.length > 0 && prompt.prompt.length > 0
+      );
   }
   if (fields.profilePhotos !== undefined) {
     updateFields.profilePhotos = fields.profilePhotos.map((photo) => ({

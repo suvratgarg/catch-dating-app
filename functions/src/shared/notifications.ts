@@ -185,22 +185,23 @@ export function eventActivityNotificationCopy(
   event: EventDoc
 ): {title: string; body: string} {
   const eventLabel = `${formatDistance(event.distanceKm)} event`;
+  const locationName = event.meetingLocation?.name ?? event.meetingPoint;
   switch (type) {
   case "eventReminder":
     return {
       title: "Your event starts soon",
-      body: `Your ${eventLabel} from ${event.meetingPoint} starts in about ` +
+      body: `Your ${eventLabel} from ${locationName} starts in about ` +
         "15 minutes.",
     };
   case "eventSignup":
     return {
       title: "You're booked",
-      body: `Your ${eventLabel} from ${event.meetingPoint} is confirmed.`,
+      body: `Your ${eventLabel} from ${locationName} is confirmed.`,
     };
   case "waitlistPromotion":
     return {
       title: "You're in",
-      body: `A spot opened for your ${eventLabel} from ${event.meetingPoint}.`,
+      body: `A spot opened for your ${eventLabel} from ${locationName}.`,
     };
   case "eventUpdated":
     return {
@@ -210,13 +211,13 @@ export function eventActivityNotificationCopy(
   case "eventCancelled":
     return {
       title: "Event cancelled",
-      body: `Your ${eventLabel} from ${event.meetingPoint} has been cancelled.`,
+      body: `Your ${eventLabel} from ${locationName} has been cancelled.`,
     };
   default:
     return {
       title: "Event update",
       body: `There is an update for your ${eventLabel} from ` +
-        `${event.meetingPoint}.`,
+        `${locationName}.`,
     };
   }
 }

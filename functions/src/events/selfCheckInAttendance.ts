@@ -178,8 +178,8 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   // ── 4. GPS proximity ────────────────────────────────────────────────────
 
-  const eventLat = event.startingPointLat;
-  const eventLng = event.startingPointLng;
+  const eventLat = event.meetingLocation?.latitude ?? event.startingPointLat;
+  const eventLng = event.meetingLocation?.longitude ?? event.startingPointLng;
 
   if (eventLat != null && eventLng != null) {
     if (latitude == null || longitude == null) {

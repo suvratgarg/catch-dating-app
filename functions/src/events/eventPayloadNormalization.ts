@@ -21,6 +21,11 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
       stringFields: ["inviteCode"],
     });
   }
+  if (isRecord(payload.meetingLocation)) {
+    payload.meetingLocation = normalizeMeetingLocation(
+      payload.meetingLocation
+    );
+  }
   if (isRecord(payload.eventSuccessDefaults)) {
     payload.eventSuccessDefaults = normalizeEventSuccessDefaults(
       payload.eventSuccessDefaults
@@ -42,6 +47,11 @@ export function normalizeUpdateEventPayload(data: unknown): unknown {
     stringFields: ["meetingPoint", "description"],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
+  if (isRecord(normalizedFields.meetingLocation)) {
+    normalizedFields.meetingLocation = normalizeMeetingLocation(
+      normalizedFields.meetingLocation
+    );
+  }
   if (isRecord(normalizedFields.privateAccess)) {
     normalizedFields.privateAccess = normalizeFields(
       normalizedFields.privateAccess,
@@ -142,6 +152,18 @@ function normalizeEventSuccessDefaults(data: PayloadRecord): PayloadRecord {
     );
   }
   return defaults;
+}
+
+/**
+ * Trims structured meeting-location text fields before schema validation.
+ * @param {PayloadRecord} data Meeting location payload.
+ * @return {PayloadRecord} Normalized meeting location.
+ */
+function normalizeMeetingLocation(data: PayloadRecord): PayloadRecord {
+  return normalizeFields(data, {
+    stringFields: ["name"],
+    nullableStringFields: ["address", "placeId", "notes"],
+  });
 }
 
 /**

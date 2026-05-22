@@ -294,6 +294,70 @@ test("keeps blocked participant pairs out of the same pod", async () => {
   assert.ok(!(runnerThree?.peerUids as string[]).includes("runner-1"));
 });
 
+test("uses saved unit size for generated pod count", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 3,
+        unitCount: null,
+      },
+    },
+    ...Object.fromEntries(
+      Array.from({length: 7}, (_, index) => [
+        `eventParticipations/event-1_runner-${index + 1}`,
+        {
+          eventId: "event-1",
+          uid: `runner-${index + 1}`,
+          status: "signedUp",
+        },
+      ])
+    ),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 7, podCount: 3});
+});
+
+test("uses saved fixed unit count when present", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 5,
+        unitCount: 4,
+      },
+    },
+    ...Object.fromEntries(
+      Array.from({length: 10}, (_, index) => [
+        `eventParticipations/event-1_runner-${index + 1}`,
+        {
+          eventId: "event-1",
+          uid: `runner-${index + 1}`,
+          status: "signedUp",
+        },
+      ])
+    ),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 10, podCount: 4});
+});
+
 test("excludes opted-out attendees from generated pods", async () => {
   const {firestore, deps} = harness({
     "eventParticipations/event-1_runner-1": {

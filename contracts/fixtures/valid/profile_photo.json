@@ -7,8 +7,7 @@
   "prompt": {
     "photoIndex": 0,
     "promptId": "proofIRun",
-    "prompt": "Proof I actually event",
-    "caption": "Race morning."
+    "prompt": "Proof I actually event"
   },
   "moderation": {
     "status": "approved",

@@ -155,15 +155,6 @@ const greenFlagAnswers = [
   "I show up on time and bring extra safety pins on race day.",
   "I know when to talk and when to enjoy a quiet stretch.",
 ];
-const photoCaptions = [
-  "Usually happier after kilometre three.",
-  "The smile is real; the pace was suspicious.",
-  "Proof that I occasionally leave the treadmill.",
-  "My favorite kind of post-event light.",
-  "Race day nerves, finish line energy.",
-  "Not pictured: the snack I was thinking about.",
-];
-
 function promptsById(catalog) {
   return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
 }
@@ -178,14 +169,13 @@ function profilePromptAnswer(promptId, answer) {
   };
 }
 
-function photoPromptAnswer(photoIndex, promptId, caption) {
+function photoPromptAnswer(photoIndex, promptId) {
   const prompt = photoPromptsById.get(promptId);
   if (!prompt) throw new Error(`Unknown photo prompt id: ${promptId}`);
   return {
     photoIndex,
     promptId: prompt.id,
     prompt: prompt.title,
-    caption,
   };
 }
 
@@ -207,13 +197,8 @@ function profilePromptsForIndex(index) {
 }
 
 function photoPromptsForIndex(index) {
-  return [
-    photoPromptAnswer(
-      0,
-      "proofIRun",
-      photoCaptions[index % photoCaptions.length]
-    ),
-  ];
+  const prompt = photoPromptCatalog.prompts[index % photoPromptCatalog.prompts.length];
+  return [photoPromptAnswer(0, prompt.id)];
 }
 const profilePhotos = [
   "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
@@ -1071,6 +1056,9 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
   const meetingPoint = meetingPointForRun({city, clubIndex, runIndex});
   const eventFormat = seedEventFormatForRun(runIndex);
   const isSinglesMixer = eventFormat.activityKind === "singlesMixer";
+  const locationDetails = isSinglesMixer ?
+    "Check in with the host near the Catch table." :
+    meetingPoint.detail;
   return {
     id,
     clubId: club.id,
@@ -1083,11 +1071,17 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
       meetingPoint: meetingPoint.label,
+      meetingLocation: {
+        name: meetingPoint.label,
+        address: null,
+        placeId: null,
+        latitude: meetingPoint.lat,
+        longitude: meetingPoint.lng,
+        notes: locationDetails,
+      },
       startingPointLat: meetingPoint.lat,
       startingPointLng: meetingPoint.lng,
-      locationDetails: isSinglesMixer ?
-        "Check in with the host near the Catch table." :
-        meetingPoint.detail,
+      locationDetails,
       eventFormat,
       distanceKm: isSinglesMixer ? 0 : [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,

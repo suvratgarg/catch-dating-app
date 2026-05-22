@@ -20,11 +20,20 @@ export function validateCallableWithAjv<T>(
   if (validator(data)) return data;
   const message = (validator.errors ?? [])
     .map((error) => {
-      const location = error.instancePath
+      const path = error.instancePath
         .split("/")
         .filter((part) => part.length > 0)
         .join(".");
-      return `${location}: ${error.message ?? "failed validation"}`;
+      const additionalProperty =
+        error.keyword === "additionalProperties" ?
+          (error.params as {additionalProperty?: unknown}).additionalProperty :
+          undefined;
+      const location = typeof additionalProperty === "string" ?
+        [path, additionalProperty].filter(Boolean).join(".") :
+        path;
+      return location ?
+        `${location}: ${error.message ?? "failed validation"}` :
+        error.message ?? "failed validation";
     })
     .join("; ");
   throw new HttpsError("invalid-argument", message);
