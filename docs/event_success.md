@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.0.0
+version: 1.0.1
 updated: 2026-05-22
 owner: recursive_audit_loop
 status: active
@@ -159,6 +159,9 @@ Remaining gates:
 - Should hosts ever see free-text attendee notes, or only thresholded summaries?
 - Do we need event-level safety reports without a specific target user?
 - What should the host analytics anonymity threshold be?
+- Once QA coverage is complete, should Host Manage hide the setup editor
+  entirely for events that started without a saved live guide and show only the
+  locked explanatory state plus attendance/report surfaces?
 
 ## Verification
 

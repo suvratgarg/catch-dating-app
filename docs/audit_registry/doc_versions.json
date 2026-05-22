@@ -92,8 +92,8 @@
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.6.1",
-    "updated": "2026-05-13",
+    "version": "2.6.2",
+    "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
@@ -141,7 +141,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.94",
+    "version": "2.5.101",
     "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."

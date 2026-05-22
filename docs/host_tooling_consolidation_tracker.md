@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.0.9
-updated: 2026-05-20
+version: 1.0.11
+updated: 2026-05-22
 owner: host_tooling
 status: active
 ---
@@ -31,7 +31,7 @@ The target state is:
 
 | Surface | File | Scope | Current actions | Cardinality | Current issues |
 | --- | --- | --- | --- | --- | --- |
-| Dashboard host tools rail | `lib/dashboard/presentation/widgets/dashboard_full.dart` (`HostToolsRail`) | Per hosted event | Manage event, Attendance when window is open | Unbounded hosted events | Uses shared `HostEventToolsCarousel`; Dashboard owns route navigation only and remains the primary host operations entry point. |
+| Dashboard host tools rail | `lib/dashboard/presentation/widgets/dashboard_full.dart` (`HostToolsRail`) | Per hosted event | Manage event, Take attendance, View report | Unbounded hosted events | Uses shared `HostEventToolsCarousel`; Dashboard owns route navigation only. The host card is self-contained, with in-card identity, lifecycle state, bounded progress, and a contextual CTA. |
 | Dashboard host tools model | `lib/dashboard/presentation/dashboard_full_view_model.dart` (`DashboardHostEventTool`) | Per hosted event | Uses `HostEventAttendanceState`, keeps non-cancelled past hosted events, and separates active from past operations | Unbounded hosted events | Dashboard owns composition and routing only. Attendance-window rules now live in `lib/hosts/domain/host_attendance_window.dart`. |
 | Club detail host management panel | `lib/clubs/presentation/detail/widgets/club_detail_body.dart` (`HostClubManagementPanel`) | Per club | Add event, Edit club, upcoming booked/waitlist/revenue stats | One hosted club by current product rule | Club detail now renders one host-only management section instead of separate tools and stats widgets. Club create/edit owns host defaults for event policy and event-success setup. |
 | Club schedule section | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart` | Per event in hosted club context | Hosted badge and event detail navigation | Unbounded upcoming events | Resolved for first pass: host-owned events use the `HOSTED` tile state without turning schedule rows into dense control clusters. Deeper operations remain in Dashboard / Host Manage. |
@@ -74,8 +74,9 @@ The target state is:
 - `HostToolSection`: reusable labeled section with `HOST TOOLS` treatment,
   optional count badge, and consistent spacing.
 - `HostEventToolCard`: full-width snapping per-event operational card for
-  unbounded hosted events. Actions should stack on their own lines when labels are
-  long.
+  unbounded hosted events. The card owns host identity, attendance lifecycle,
+  position/progress, and one contextual CTA so Dashboard can compose it without
+  separate section header/footer chrome.
 - `HostClubManagementPanel`: club-level host action and aggregate stats section.
 - `HostEventAttendanceState` and attendance-window helpers live in
   `lib/hosts/domain/host_attendance_window.dart` so Dashboard, arrival actions,
@@ -89,9 +90,9 @@ The target state is:
 
 ### Surface-Specific Target State
 
-- Dashboard: use full-width snapping host event cards and page indicators,
-  parallel to `EventFocusRail` but
-  visually host-specific.
+- Dashboard: use self-contained full-width snapping host event cards with
+  in-card bounded progress indicators, parallel to `EventFocusRail` but visually
+  host-specific.
 - Club detail: render one club-level host management section with actions and
   aggregate stats; keep per-event operations in Host Manage.
 - Club schedule: for hosts, surface hosted event state and at least a Manage
@@ -163,6 +164,11 @@ The target state is:
   the event first and then saves the optional event-success plan. Decide whether
   event-success setup should be folded into the `createEvent` callable so event
   creation and setup persistence are atomic.
+- TODO `HOST-MANAGE-UNSAVED-STARTED-EDITOR-001`: Host Manage currently keeps
+  the disabled event-success setup editor visible when an event has started
+  without a saved live guide so QA can still inspect the default plan. After
+  the setup/live/report states are fully tested, hide the editor in this state
+  and show only the explanatory locked notice plus attendance/report surfaces.
 - Should club archive/delete actions be visible to hosts, or should those
   backend callables remain admin/maintenance-only until archived-club browse and
   search filtering is fully product-approved?
