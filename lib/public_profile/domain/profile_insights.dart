@@ -132,7 +132,7 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
     for (final photo in profilePhotos)
       if (photo.prompt != null) photo.prompt!,
   ];
-  final captionCount = normalizePhotoPromptAnswers(
+  final photoPromptCount = normalizePhotoPromptAnswers(
     nestedPhotoPrompts.isNotEmpty ? nestedPhotoPrompts : profile.photoPrompts,
   ).length;
   final runningDetailsComplete =
@@ -176,10 +176,11 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
       weight: 12,
       isComplete:
           photoCount > 0 &&
-          captionCount >= _targetPhotoCaptionCount(photoCount),
+          photoPromptCount >= _targetPhotoPromptCount(photoCount),
       suggestion: const ProfileQualitySuggestion(
-        title: 'Caption your photos',
-        detail: 'A caption turns a photo into something people can reply to.',
+        title: 'Add photo prompts',
+        detail:
+            'Prompts make photos easier to react to without writing captions.',
       ),
     ),
     _QualityItem(
@@ -501,7 +502,7 @@ List<ProfileConfidenceSignal> _confidenceSignals({
   return signals.take(2).toList(growable: false);
 }
 
-int _targetPhotoCaptionCount(int photoCount) {
+int _targetPhotoPromptCount(int photoCount) {
   if (photoCount <= 0) return 1;
   if (photoCount == 1) return 1;
   return 2;

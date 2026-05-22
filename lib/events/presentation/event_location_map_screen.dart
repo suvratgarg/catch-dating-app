@@ -85,8 +85,8 @@ class EventLocationMapScreen extends ConsumerWidget {
     }
 
     final point = LocationCoordinate(
-      event.startingPointLat!,
-      event.startingPointLng!,
+      event.effectiveStartingPointLat!,
+      event.effectiveStartingPointLng!,
     );
 
     return Scaffold(
@@ -139,14 +139,14 @@ class EventLocationMapScreen extends ConsumerWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                event.meetingPoint,
+                                event.locationName,
                                 style: CatchTextStyles.titleM(context),
                               ),
-                              if (event.locationDetails != null &&
-                                  event.locationDetails!.isNotEmpty) ...[
+                              if (event.locationNotes != null &&
+                                  event.locationNotes!.isNotEmpty) ...[
                                 const SizedBox(height: 2),
                                 Text(
-                                  event.locationDetails!,
+                                  event.locationNotes!,
                                   style: CatchTextStyles.bodyS(
                                     context,
                                     color: t.ink2,

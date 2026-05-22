@@ -92,8 +92,8 @@ class _EventPinsMapState extends State<EventPinsMap> {
           gmaps.Marker(
             markerId: gmaps.MarkerId(event.id),
             position: gmaps.LatLng(
-              event.startingPointLat!,
-              event.startingPointLng!,
+              event.effectiveStartingPointLat!,
+              event.effectiveStartingPointLng!,
             ),
             infoWindow: gmaps.InfoWindow(title: event.title),
             icon: widget.selectedEventId == event.id

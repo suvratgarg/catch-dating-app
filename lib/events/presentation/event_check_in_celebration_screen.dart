@@ -38,7 +38,7 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
         CelebrationDetail(
           icon: Icons.location_on_outlined,
           label: 'Meet point',
-          value: event.meetingPoint,
+          value: event.locationName,
         ),
       ],
       primaryAction: CelebrationAction(

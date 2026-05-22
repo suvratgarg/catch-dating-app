@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 
 Uri directionsUriForEvent(Event event) {
-  final lat = event.startingPointLat;
-  final lng = event.startingPointLng;
+  final lat = event.effectiveStartingPointLat;
+  final lng = event.effectiveStartingPointLng;
 
   if (lat != null && lng != null) {
     return _directionsUri(latitude: lat, longitude: lng);
   }
 
-  return _searchUri(query: event.meetingPoint);
+  return _searchUri(query: event.locationName);
 }
 
 Uri _directionsUri({required double latitude, required double longitude}) {

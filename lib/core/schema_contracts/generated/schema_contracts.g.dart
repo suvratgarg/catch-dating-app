@@ -49,14 +49,13 @@ const schemaPhotoPromptAnswerSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/embedded/photo_prompt_answer.schema.json',
   'title': 'PhotoPromptAnswer',
-  'description': 'One optional caption prompt for a profile photo slot.',
+  'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
     'photoIndex',
     'promptId',
     'prompt',
-    'caption',
   ],
   'properties': <String, Object?>{
     'photoIndex': <String, Object?>{
@@ -77,6 +76,8 @@ const schemaPhotoPromptAnswerSchema = <String, Object?>{
     'caption': <String, Object?>{
       'type': 'string',
       'maxLength': 140,
+      'deprecated': true,
+      'description': 'Legacy user-entered caption retained for compatibility with older documents.',
     },
   },
   'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -132,14 +133,13 @@ const schemaProfilePhotoSchema = <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'title': 'PhotoPromptAnswer',
-          'description': 'One optional caption prompt for a profile photo slot.',
+          'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
           'type': 'object',
           'additionalProperties': false,
           'required': <Object?>[
             'photoIndex',
             'promptId',
             'prompt',
-            'caption',
           ],
           'properties': <String, Object?>{
             'photoIndex': <String, Object?>{
@@ -160,6 +160,8 @@ const schemaProfilePhotoSchema = <String, Object?>{
             'caption': <String, Object?>{
               'type': 'string',
               'maxLength': 140,
+              'deprecated': true,
+              'description': 'Legacy user-entered caption retained for compatibility with older documents.',
             },
           },
           'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -734,14 +736,13 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'maxItems': 6,
       'items': <String, Object?>{
         'title': 'PhotoPromptAnswer',
-        'description': 'One optional caption prompt for a profile photo slot.',
+        'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
           'photoIndex',
           'promptId',
           'prompt',
-          'caption',
         ],
         'properties': <String, Object?>{
           'photoIndex': <String, Object?>{
@@ -762,6 +763,8 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'caption': <String, Object?>{
             'type': 'string',
             'maxLength': 140,
+            'deprecated': true,
+            'description': 'Legacy user-entered caption retained for compatibility with older documents.',
           },
         },
         'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -818,14 +821,13 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
             'anyOf': <Object?>[
               <String, Object?>{
                 'title': 'PhotoPromptAnswer',
-                'description': 'One optional caption prompt for a profile photo slot.',
+                'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                 'type': 'object',
                 'additionalProperties': false,
                 'required': <Object?>[
                   'photoIndex',
                   'promptId',
                   'prompt',
-                  'caption',
                 ],
                 'properties': <String, Object?>{
                   'photoIndex': <String, Object?>{
@@ -846,6 +848,8 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
                   'caption': <String, Object?>{
                     'type': 'string',
                     'maxLength': 140,
+                    'deprecated': true,
+                    'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                   },
                 },
                 'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -1435,14 +1439,13 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'maxItems': 6,
       'items': <String, Object?>{
         'title': 'PhotoPromptAnswer',
-        'description': 'One optional caption prompt for a profile photo slot.',
+        'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
         'type': 'object',
         'additionalProperties': false,
         'required': <Object?>[
           'photoIndex',
           'promptId',
           'prompt',
-          'caption',
         ],
         'properties': <String, Object?>{
           'photoIndex': <String, Object?>{
@@ -1463,6 +1466,8 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'caption': <String, Object?>{
             'type': 'string',
             'maxLength': 140,
+            'deprecated': true,
+            'description': 'Legacy user-entered caption retained for compatibility with older documents.',
           },
         },
         'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -1519,14 +1524,13 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
             'anyOf': <Object?>[
               <String, Object?>{
                 'title': 'PhotoPromptAnswer',
-                'description': 'One optional caption prompt for a profile photo slot.',
+                'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                 'type': 'object',
                 'additionalProperties': false,
                 'required': <Object?>[
                   'photoIndex',
                   'promptId',
                   'prompt',
-                  'caption',
                 ],
                 'properties': <String, Object?>{
                   'photoIndex': <String, Object?>{
@@ -1547,6 +1551,8 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
                   'caption': <String, Object?>{
                     'type': 'string',
                     'maxLength': 140,
+                    'deprecated': true,
+                    'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                   },
                 },
                 'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -3027,6 +3033,61 @@ const schemaEventDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+    },
+    'meetingLocation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+      'required': <Object?>[
+        'name',
+        'latitude',
+        'longitude',
+      ],
+      'properties': <String, Object?>{
+        'name': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'address': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 500,
+        },
+        'placeId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 256,
+        },
+        'latitude': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
+          'minimum': -90,
+          'maximum': 90,
+        },
+        'longitude': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
+          'minimum': -180,
+          'maximum': 180,
+        },
+        'notes': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 1000,
+        },
+      },
     },
     'startingPointLat': <String, Object?>{
       'type': <Object?>[
@@ -7297,14 +7358,13 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
           'maxItems': 6,
           'items': <String, Object?>{
             'title': 'PhotoPromptAnswer',
-            'description': 'One optional caption prompt for a profile photo slot.',
+            'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
             'type': 'object',
             'additionalProperties': false,
             'required': <Object?>[
               'photoIndex',
               'promptId',
               'prompt',
-              'caption',
             ],
             'properties': <String, Object?>{
               'photoIndex': <String, Object?>{
@@ -7325,6 +7385,8 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
               'caption': <String, Object?>{
                 'type': 'string',
                 'maxLength': 140,
+                'deprecated': true,
+                'description': 'Legacy user-entered caption retained for compatibility with older documents.',
               },
             },
             'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -7379,14 +7441,13 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
                     'title': 'PhotoPromptAnswer',
-                    'description': 'One optional caption prompt for a profile photo slot.',
+                    'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
                     'type': 'object',
                     'additionalProperties': false,
                     'required': <Object?>[
                       'photoIndex',
                       'promptId',
                       'prompt',
-                      'caption',
                     ],
                     'properties': <String, Object?>{
                       'photoIndex': <String, Object?>{
@@ -7407,6 +7468,8 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                       'caption': <String, Object?>{
                         'type': 'string',
                         'maxLength': 140,
+                        'deprecated': true,
+                        'description': 'Legacy user-entered caption retained for compatibility with older documents.',
                       },
                     },
                     'x-catch-catalog': '../catalogs/photo_prompts.json',
@@ -9046,6 +9109,61 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 240,
     },
+    'meetingLocation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+      'required': <Object?>[
+        'name',
+        'latitude',
+        'longitude',
+      ],
+      'properties': <String, Object?>{
+        'name': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'address': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 500,
+        },
+        'placeId': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 256,
+        },
+        'latitude': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
+          'minimum': -90,
+          'maximum': 90,
+        },
+        'longitude': <String, Object?>{
+          'type': <Object?>[
+            'number',
+            'null',
+          ],
+          'minimum': -180,
+          'maximum': 180,
+        },
+        'notes': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 1000,
+        },
+      },
+    },
     'startingPointLat': <String, Object?>{
       'type': 'number',
       'minimum': -90,
@@ -9684,6 +9802,61 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 240,
+        },
+        'meetingLocation': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+          'required': <Object?>[
+            'name',
+            'latitude',
+            'longitude',
+          ],
+          'properties': <String, Object?>{
+            'name': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+            },
+            'address': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 500,
+            },
+            'placeId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 256,
+            },
+            'latitude': <String, Object?>{
+              'type': <Object?>[
+                'number',
+                'null',
+              ],
+              'minimum': -90,
+              'maximum': 90,
+            },
+            'longitude': <String, Object?>{
+              'type': <Object?>[
+                'number',
+                'null',
+              ],
+              'minimum': -180,
+              'maximum': 180,
+            },
+            'notes': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+          },
         },
         'startingPointLat': <String, Object?>{
           'anyOf': <Object?>[

@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -43,15 +46,23 @@ void main() {
 
       expect(find.text('Pick starting point'), findsNothing);
       expect(find.byTooltip('Back'), findsOneWidget);
+      expect(find.text('Choose meeting location'), findsNothing);
+      expect(find.text('No location selected'), findsOneWidget);
       expect(
-        find.text('Tap on the map to set the starting point.'),
+        find.text(
+          'Search for a place or tap the map to set the meeting point.',
+        ),
         findsOneWidget,
       );
       expect(find.byType(CatchTextField), findsOneWidget);
+      final backButtonSize = tester.getSize(find.byType(IconBtn));
+      final searchFieldSize = tester.getSize(find.byType(CatchTextField));
+      expect(searchFieldSize.height, CatchControlMetrics.floatingMinHeight);
+      expect(searchFieldSize.height, backButtonSize.height);
       expect(
         tester
-            .widget<CatchTopBarTextAction>(
-              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Confirm location'),
             )
             .onPressed,
         isNull,
@@ -81,6 +92,34 @@ void main() {
       expect(googleMap.style, catchGoogleMapStyleFor(Brightness.dark));
     });
 
+    testWidgets('initial center does not count as a selected location', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        const LocationPickerScreen(
+          initialCenter: LocationCoordinate(19.076, 72.8777),
+          loadMapTiles: false,
+        ),
+      );
+
+      final googleMap = tester.widget<gmaps.GoogleMap>(
+        find.byType(gmaps.GoogleMap),
+      );
+
+      expect(googleMap.initialCameraPosition.target.latitude, 19.076);
+      expect(googleMap.initialCameraPosition.target.longitude, 72.8777);
+      expect(find.text('No location selected'), findsOneWidget);
+      expect(
+        tester
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Confirm location'),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+
     testWidgets('updates the selected point when the map callback fires', (
       tester,
     ) async {
@@ -99,15 +138,16 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.text('Pinned location'), findsOneWidget);
       expect(
-        find.text('Starting point selected. Tap elsewhere to adjust.'),
+        find.text('Confirm this map pin or tap elsewhere to adjust.'),
         findsOneWidget,
       );
       expect(find.text('19.110000, 72.910000'), findsNothing);
       expect(
         tester
-            .widget<CatchTopBarTextAction>(
-              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Confirm location'),
             )
             .onPressed,
         isNotNull,
@@ -126,7 +166,7 @@ void main() {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute<LocationCoordinate?>(
+                        MaterialPageRoute<LocationPickerResult?>(
                           builder: (_) => const LocationPickerScreen(
                             initialLocation: LocationCoordinate(
                               19.076,
@@ -149,21 +189,22 @@ void main() {
         await tester.tap(find.text('Open'));
         await pumpFeatureUi(tester);
 
+        expect(find.text('Pinned location'), findsOneWidget);
         expect(
-          find.text('Starting point selected. Tap elsewhere to adjust.'),
+          find.text('Confirm this map pin or tap elsewhere to adjust.'),
           findsOneWidget,
         );
         expect(find.text('19.076000, 72.877700'), findsNothing);
         expect(
           tester
-              .widget<CatchTopBarTextAction>(
-                find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+              .widget<CatchButton>(
+                find.widgetWithText(CatchButton, 'Confirm location'),
               )
               .onPressed,
           isNotNull,
         );
 
-        await tester.tap(find.widgetWithText(CatchTopBarTextAction, 'Confirm'));
+        await tester.tap(find.widgetWithText(CatchButton, 'Confirm location'));
         await pumpFeatureUi(tester);
 
         expect(find.text('Open'), findsOneWidget);
@@ -205,26 +246,108 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
       await tester.pump();
 
-      expect(find.text('Cubbon Park'), findsOneWidget);
+      expect(find.text('Cubbon Park'), findsWidgets);
       expect(find.text('Bengaluru, Karnataka'), findsOneWidget);
 
       await tester.tap(find.text('Cubbon Park'));
       await tester.pump();
 
+      expect(find.text('Cubbon Park'), findsWidgets);
       expect(
-        find.text('Starting point selected. Tap elsewhere to adjust.'),
+        find.text('Confirm this place or tap elsewhere to adjust.'),
         findsOneWidget,
       );
       expect(find.text('12.976300, 77.592900'), findsNothing);
       expect(
         tester
-            .widget<CatchTopBarTextAction>(
-              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Confirm location'),
             )
             .onPressed,
         isNotNull,
       );
     });
+
+    testWidgets(
+      'shows immediate feedback while loading selected place details',
+      (tester) async {
+        final detailsCompleter = Completer<PlaceDetails>();
+        await pumpEventsTestApp(
+          tester,
+          const LocationPickerScreen(loadMapTiles: false),
+          overrides: [
+            placesRepositoryProvider.overrideWithValue(
+              _FakePlacesRepository(
+                suggestions: const [
+                  PlaceAutocompleteSuggestion(
+                    placeId: 'cubbon-park',
+                    description: 'Cubbon Park, Bengaluru, Karnataka',
+                    mainText: 'Cubbon Park',
+                    secondaryText: 'Bengaluru, Karnataka',
+                  ),
+                ],
+                placeDetails: const PlaceDetails(
+                  placeId: 'cubbon-park',
+                  displayName: 'Cubbon Park',
+                  formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',
+                  location: LocationCoordinate(12.9763, 77.5929),
+                ),
+                detailsFuture: detailsCompleter.future,
+              ),
+            ),
+          ],
+        );
+
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Search for a meeting point'),
+          'Cubbon',
+        );
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pump();
+
+        await tester.tap(find.text('Cubbon Park'));
+        await tester.pump();
+
+        expect(find.text('Selecting...'), findsOneWidget);
+        expect(find.text('Selecting Cubbon Park...'), findsNothing);
+        expect(
+          find.text('Loading place details and moving the map.'),
+          findsNothing,
+        );
+        expect(find.text('Bengaluru, Karnataka'), findsNothing);
+        expect(
+          tester
+              .widget<CatchButton>(
+                find.widgetWithText(CatchButton, 'Confirm location'),
+              )
+              .onPressed,
+          isNull,
+        );
+
+        detailsCompleter.complete(
+          const PlaceDetails(
+            placeId: 'cubbon-park',
+            displayName: 'Cubbon Park',
+            formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',
+            location: LocationCoordinate(12.9763, 77.5929),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          find.text('Confirm this place or tap elsewhere to adjust.'),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .widget<CatchButton>(
+                find.widgetWithText(CatchButton, 'Confirm location'),
+              )
+              .onPressed,
+          isNotNull,
+        );
+      },
+    );
   });
 }
 
@@ -232,10 +355,12 @@ class _FakePlacesRepository implements PlacesRepository {
   const _FakePlacesRepository({
     required this.suggestions,
     required this.placeDetails,
+    this.detailsFuture,
   });
 
   final List<PlaceAutocompleteSuggestion> suggestions;
   final PlaceDetails placeDetails;
+  final Future<PlaceDetails>? detailsFuture;
 
   @override
   Future<List<PlaceAutocompleteSuggestion>> autocomplete({
@@ -252,6 +377,6 @@ class _FakePlacesRepository implements PlacesRepository {
     required String placeId,
     required String sessionToken,
   }) async {
-    return placeDetails;
+    return detailsFuture ?? placeDetails;
   }
 }

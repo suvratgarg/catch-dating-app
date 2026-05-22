@@ -118,7 +118,8 @@ EventMapViewModel buildEventMapViewModel({
 }
 
 bool hasEventMapPin(Event event) =>
-    event.startingPointLat != null && event.startingPointLng != null;
+    event.effectiveStartingPointLat != null &&
+    event.effectiveStartingPointLng != null;
 
 bool isUpcomingMapRun(Event event, DateTime now) =>
     !event.isCancelled && event.startTime.isAfter(now);

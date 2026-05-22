@@ -117,8 +117,8 @@ class _EventMapScreenState extends ConsumerState<EventMapScreen> {
 LocationCoordinate? _startingPointFor(Event? event) {
   if (event == null) return null;
   return LocationCoordinate.fromNullable(
-    latitude: event.startingPointLat,
-    longitude: event.startingPointLng,
+    latitude: event.effectiveStartingPointLat,
+    longitude: event.effectiveStartingPointLng,
   );
 }
 

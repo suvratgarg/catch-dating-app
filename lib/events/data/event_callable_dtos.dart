@@ -98,6 +98,7 @@ final class EventDetailsCallableDto {
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
+    required this.meetingLocation,
     required this.startingPointLat,
     required this.startingPointLng,
     required this.locationDetails,
@@ -107,23 +108,30 @@ final class EventDetailsCallableDto {
     required this.description,
   });
 
-  factory EventDetailsCallableDto.fromEvent(Event event) =>
-      EventDetailsCallableDto(
-        startTimeMillis: event.startTime.millisecondsSinceEpoch,
-        endTimeMillis: event.endTime.millisecondsSinceEpoch,
-        meetingPoint: event.meetingPoint,
-        startingPointLat: event.startingPointLat,
-        startingPointLng: event.startingPointLng,
-        locationDetails: event.locationDetails,
-        photoUrl: event.photoUrl,
-        distanceKm: event.distanceKm,
-        pace: event.pace.name,
-        description: event.description,
-      );
+  factory EventDetailsCallableDto.fromEvent(Event event) {
+    final meetingLocation = event.effectiveMeetingLocation;
+    if (meetingLocation == null) {
+      throw StateError('Event ${event.id} is missing a meeting location.');
+    }
+    return EventDetailsCallableDto(
+      startTimeMillis: event.startTime.millisecondsSinceEpoch,
+      endTimeMillis: event.endTime.millisecondsSinceEpoch,
+      meetingPoint: meetingLocation.name,
+      meetingLocation: meetingLocation.normalized(),
+      startingPointLat: meetingLocation.latitude,
+      startingPointLng: meetingLocation.longitude,
+      locationDetails: meetingLocation.notes,
+      photoUrl: event.photoUrl,
+      distanceKm: event.distanceKm,
+      pace: event.pace.name,
+      description: event.description,
+    );
+  }
 
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
+  final EventMeetingLocation meetingLocation;
   final double? startingPointLat;
   final double? startingPointLng;
   final String? locationDetails;
@@ -136,6 +144,7 @@ final class EventDetailsCallableDto {
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,
+    'meetingLocation': meetingLocation.toJson(),
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': locationDetails,

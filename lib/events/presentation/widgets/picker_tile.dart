@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:flutter/material.dart';
 
 class PickerTile extends StatelessWidget {
@@ -20,12 +20,11 @@ class PickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
+    return CatchControlShell(
       onTap: onTap,
-      tone: CatchSurfaceTone.raised,
-      radius: CatchRadius.md,
-      borderColor: t.line,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      tone: CatchControlTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      semanticButton: true,
       child: Row(
         children: [
           Icon(icon, size: 20, color: t.ink2),

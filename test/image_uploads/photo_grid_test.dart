@@ -84,6 +84,6 @@ void main() {
     await tester.pump();
 
     expect(deletedSlots, [1]);
-    expect(find.bySemanticsLabel('Replace photo 1'), findsOneWidget);
+    expect(find.bySemanticsLabel('Edit photo 1'), findsOneWidget);
   });
 }

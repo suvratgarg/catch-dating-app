@@ -28,6 +28,7 @@ Event buildEvent({
   DateTime? startTime,
   DateTime? endTime,
   String meetingPoint = 'Carter Road',
+  EventMeetingLocation? meetingLocation,
   double? startingPointLat,
   double? startingPointLng,
   String? locationDetails,
@@ -55,6 +56,14 @@ Event buildEvent({
     startTime: start,
     endTime: endTime ?? start.add(const Duration(hours: 1)),
     meetingPoint: meetingPoint,
+    meetingLocation:
+        meetingLocation ??
+        EventMeetingLocation.legacy(
+          name: meetingPoint,
+          latitude: startingPointLat,
+          longitude: startingPointLng,
+          notes: locationDetails,
+        ),
     startingPointLat: startingPointLat,
     startingPointLng: startingPointLng,
     locationDetails: locationDetails,

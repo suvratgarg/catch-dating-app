@@ -46,7 +46,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
         CelebrationDetail(
           icon: Icons.location_on_outlined,
           label: 'Where',
-          value: event.meetingPoint,
+          value: event.locationName,
         ),
         CelebrationDetail(
           icon: Icons.directions_run_rounded,

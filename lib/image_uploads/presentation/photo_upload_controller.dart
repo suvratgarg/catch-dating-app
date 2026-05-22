@@ -275,7 +275,7 @@ class PhotoUploadController extends _$PhotoUploadController {
     required PhotoPromptAnswer? prompt,
   }) {
     return _serializePhotoWrite(() async {
-      final uid = requireSignedInUid(ref, action: 'update photo caption');
+      final uid = requireSignedInUid(ref, action: 'update photo prompt');
       final userProfileRepository = ref.read(userProfileRepositoryProvider);
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
       if (latestUser == null) throw const DocumentNotFoundException('users');
