@@ -50,10 +50,7 @@ class CreateEventController extends _$CreateEventController {
     required String clubId,
     required DateTime startTime,
     required DateTime endTime,
-    required String meetingPoint,
-    double? startingPointLat,
-    double? startingPointLng,
-    String? locationDetails,
+    required EventMeetingLocation meetingLocation,
     required EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
@@ -70,13 +67,8 @@ class CreateEventController extends _$CreateEventController {
       fieldName: 'clubId',
       message: 'Club id is required.',
     );
-    final normalizedMeetingPoint = _requireNonBlank(
-      meetingPoint,
-      fieldName: 'meetingPoint',
-      message: 'Meeting point is required.',
-    );
+    final normalizedMeetingLocation = _requireMeetingLocation(meetingLocation);
     final normalizedDescription = description.trim();
-    final normalizedLocationDetails = _trimToNull(locationDetails);
 
     if (!endTime.isAfter(startTime)) {
       throw ArgumentError.value(
@@ -122,11 +114,6 @@ class CreateEventController extends _$CreateEventController {
         'Invite-only events need a code of at least 4 characters.',
       );
     }
-    final normalizedStartingPoint = _requireStartingPoint(
-      latitude: startingPointLat,
-      longitude: startingPointLng,
-    );
-
     final eventRepo = ref.read(eventRepositoryProvider);
     final eventId = eventRepo.generateId();
     String? photoUrl;
@@ -145,10 +132,11 @@ class CreateEventController extends _$CreateEventController {
       clubId: normalizedClubId,
       startTime: startTime,
       endTime: endTime,
-      meetingPoint: normalizedMeetingPoint,
-      startingPointLat: normalizedStartingPoint.latitude,
-      startingPointLng: normalizedStartingPoint.longitude,
-      locationDetails: normalizedLocationDetails,
+      meetingPoint: normalizedMeetingLocation.name,
+      meetingLocation: normalizedMeetingLocation,
+      startingPointLat: normalizedMeetingLocation.latitude,
+      startingPointLng: normalizedMeetingLocation.longitude,
+      locationDetails: normalizedMeetingLocation.notes,
       photoUrl: photoUrl,
       eventFormat: eventFormat,
       distanceKm: distanceKm,
@@ -176,15 +164,24 @@ class CreateEventController extends _$CreateEventController {
   }
 }
 
-({double latitude, double longitude}) _requireStartingPoint({
-  required double? latitude,
-  required double? longitude,
+EventMeetingLocation _requireMeetingLocation(EventMeetingLocation location) {
+  final normalized = location.normalized();
+  _requireNonBlank(
+    normalized.name,
+    fieldName: 'meetingLocation.name',
+    message: 'Meeting location is required.',
+  );
+  _requireStartingPoint(
+    latitude: normalized.latitude,
+    longitude: normalized.longitude,
+  );
+  return normalized;
+}
+
+void _requireStartingPoint({
+  required double latitude,
+  required double longitude,
 }) {
-  if (latitude == null || longitude == null) {
-    throw ArgumentError(
-      'A pinned starting point is required for event check-in and directions.',
-    );
-  }
   if (latitude < -90 || latitude > 90) {
     throw ArgumentError.value(
       latitude,
@@ -199,7 +196,6 @@ class CreateEventController extends _$CreateEventController {
       'Invalid longitude.',
     );
   }
-  return (latitude: latitude, longitude: longitude);
 }
 
 String _requireNonBlank(

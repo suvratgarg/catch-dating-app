@@ -759,7 +759,7 @@ abstract final class EventSuccessPlaybookLibrary {
       'Did host-help requests create more live introductions?',
     ],
     wiringNotes: [
-      'This playbook is the fallback for activities whose core unit is the whole group.',
+      'This playbook is the fallback for activities whose default flow keeps everyone together.',
     ],
   );
 

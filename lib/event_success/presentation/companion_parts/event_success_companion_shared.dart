@@ -39,7 +39,7 @@ class _CompanionHero extends StatelessWidget {
           ),
           gapH6,
           Text(
-            '${plan.playbook.title} · ${event.meetingPoint}',
+            '${plan.playbook.title} · ${event.locationName}',
             style: CatchTextStyles.bodyS(
               context,
               color: t.surface.withValues(alpha: 0.72),

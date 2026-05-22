@@ -55,7 +55,7 @@ final class EventSuccessRepositoryProvider
 }
 
 String _$eventSuccessRepositoryHash() =>
-    r'fe074d8af2b990eebab1590de743d29770994b59';
+    r'320f5d378a5edcea9a75361c0cb0b8bc9b4b0c77';
 
 @ProviderFor(watchEventSuccessPlan)
 final watchEventSuccessPlanProvider = WatchEventSuccessPlanFamily._();

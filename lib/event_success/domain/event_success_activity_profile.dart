@@ -281,7 +281,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.liveReveal.id:
             'Team reveals give the host a clear start moment without showing every future move.',
         EventSuccessModuleCatalog.guidedRotations.id:
-            'Pair rotations are not the core unit for a quiz; keep this advanced until team reshuffles need it.',
+            'Pair rotations are not the main quiz structure; keep this advanced until team reshuffles need it.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Answers can help balance teams or generate clues when the host wants a more dating-forward quiz.',
       };
@@ -293,7 +293,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         EventSuccessModuleCatalog.liveReveal.id:
             'Table reveals are useful for anticipation, but should follow the seating plan.',
         EventSuccessModuleCatalog.microPods.id:
-            'Tables are already the group unit; a separate pod toggle adds confusion.',
+            'Tables already define the room structure; a separate pod toggle adds confusion.',
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id:
             'Answers are useful for seating clues and soft table placement.',
       };
@@ -343,9 +343,9 @@ String _summaryFor(ActivityKind activityKind) {
     EventInteractionModel.pairedRotations =>
       'Use the natural court/pair structure: timed rounds, partner reveals, and optional compatibility clues.',
     EventInteractionModel.teamRotations =>
-      'Treat teams as the assignment unit. Balance arrivals, reveal teams, and use prompts between rounds.',
+      'Plan around teams. Balance arrivals, reveal teams, and use prompts between rounds.',
     EventInteractionModel.seatedTable =>
-      'Use tables as the assignment unit. Add rotations only when the host has a clear course or seat-change cadence.',
+      'Plan around tables. Add rotations only when the host has a clear course or seat-change cadence.',
     EventInteractionModel.freeFormMixer =>
       'Create kinetic reveal moments with countdowns, clues, and structured rounds while keeping interest private.',
     EventInteractionModel.hostLedProgram =>

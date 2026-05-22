@@ -104,6 +104,16 @@ class EventSuccessHostDraft {
     return copyWith(selectedModuleIds: nextIds);
   }
 
+  EventSuccessHostDraft withModuleSelection(String moduleId, bool selected) {
+    final nextIds = {...selectedModuleIds};
+    if (selected) {
+      nextIds.add(moduleId);
+    } else {
+      nextIds.remove(moduleId);
+    }
+    return copyWith(selectedModuleIds: nextIds);
+  }
+
   EventSuccessHostDraft normalizeForActivity(ActivityKind activityKind) {
     final profile = EventSuccessActivityProfile.forActivity(
       activityKind,

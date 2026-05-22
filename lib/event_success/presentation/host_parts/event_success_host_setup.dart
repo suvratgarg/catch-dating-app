@@ -60,9 +60,9 @@ class _SetupTabState extends State<_SetupTab> {
         widget.event.signedUpCount > 0 ||
         widget.event.waitlistCount > 0 ||
         widget.event.attendedCount > 0;
-    final setupFrozen =
-        hasParticipantActivity ||
-        !widget.event.startTime.isAfter(DateTime.now());
+    final eventHasStarted = !widget.event.startTime.isAfter(DateTime.now());
+    final setupFrozen = hasParticipantActivity || eventHasStarted;
+    final unsavedFrozen = !widget.planIsPersisted && setupFrozen;
 
     return Consumer(
       builder: (context, ref, _) {
@@ -86,7 +86,18 @@ class _SetupTabState extends State<_SetupTab> {
           physics: widget.physics,
           padding: widget.padding,
           children: [
-            if (!widget.planIsPersisted) ...[
+            if (unsavedFrozen) ...[
+              _NoticeCard(
+                icon: Icons.lock_clock_rounded,
+                title: eventHasStarted
+                    ? 'No saved live guide'
+                    : 'Live guide setup cannot be saved',
+                body: eventHasStarted
+                    ? 'This event started before a live guide was saved. Attendance and check-in stay available; guided live controls are unavailable for this event.'
+                    : 'This event already has participant activity. Attendance and check-in stay available; guided live controls are unavailable unless a guide was already saved.',
+              ),
+              gapH16,
+            ] else if (!widget.planIsPersisted) ...[
               _NoticeCard(
                 icon: Icons.cloud_upload_outlined,
                 title: 'Setup is not saved yet',
@@ -95,7 +106,7 @@ class _SetupTabState extends State<_SetupTab> {
               ),
               gapH16,
             ],
-            if (setupFrozen) ...[
+            if (setupFrozen && widget.planIsPersisted) ...[
               _NoticeCard(
                 icon: Icons.lock_clock_rounded,
                 title: 'Setup is frozen',
@@ -123,7 +134,11 @@ class _SetupTabState extends State<_SetupTab> {
                   gapH12,
                   _HostActivitySummary(profile: profile, draft: _resolvedDraft),
                   gapH16,
-                  _PlanSummary(plan: widget.plan, draft: _resolvedDraft),
+                  _PlanSummary(
+                    plan: widget.plan,
+                    draft: _resolvedDraft,
+                    planIsPersisted: widget.planIsPersisted,
+                  ),
                   if (_resolvedDraft.readinessIssues.isNotEmpty) ...[
                     gapH12,
                     _ReadinessIssues(issues: _resolvedDraft.readinessIssues),
@@ -144,7 +159,10 @@ class _SetupTabState extends State<_SetupTab> {
                     enabled: !setupFrozen,
                     hintText: 'Help attendees meet at least two new people.',
                     inputFormatters: [LengthLimitingTextInputFormatter(300)],
-                    textInputAction: TextInputAction.next,
+                    minLines: 2,
+                    maxLines: 4,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.newline,
                     onChanged: (_) => setState(() {}),
                   ),
                   gapH12,
@@ -154,14 +172,17 @@ class _SetupTabState extends State<_SetupTab> {
                     enabled: !setupFrozen,
                     hintText: widget.plan.attendeePromptFor(widget.event),
                     inputFormatters: [LengthLimitingTextInputFormatter(300)],
-                    textInputAction: TextInputAction.done,
+                    minLines: 2,
+                    maxLines: 4,
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.newline,
                     onChanged: (_) => setState(() {}),
                   ),
                   gapH16,
                   _SetupDisclosureSection(
                     title: 'Event structure',
                     subtitle:
-                        'Unit sizes, rotation cadence, and reveal countdown.',
+                        'People per group, count mode, rotation cadence, and reveal countdown.',
                     children: [
                       EventSuccessStructureConfigEditor(
                         value: _draft.structureConfig.normalizedForTarget(
@@ -288,7 +309,11 @@ class _SetupTabState extends State<_SetupTab> {
             ),
             gapH16,
             CatchButton(
-              label: widget.planIsPersisted ? 'Save setup' : 'Save and go live',
+              label: !widget.planIsPersisted && setupFrozen
+                  ? 'Save unavailable'
+                  : widget.planIsPersisted
+                  ? 'Save setup'
+                  : 'Save live guide',
               isLoading:
                   widget.fixtureActions?.onSaveSetup == null &&
                   (saveMutation.isPending || ensureMutation.isPending),
