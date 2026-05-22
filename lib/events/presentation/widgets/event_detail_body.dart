@@ -319,7 +319,7 @@ Future<void> _shareEvent(
   try {
     await share.shareText(
       text:
-          'Join me for ${event.title} at ${event.meetingPoint}: ${uri.toString()}',
+          'Join me for ${event.title} at ${event.locationName}: ${uri.toString()}',
       subject: event.title,
       origin: origin,
     );

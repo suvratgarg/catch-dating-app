@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_cover_fallback.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -33,8 +34,11 @@ class ClubHeroAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final width = MediaQuery.of(context).size.width;
+    final hasCover = CatchDetailHeroBackdrop.hasImage(club.imageUrl);
     // Shorter hero on landscape / tablets so content below is visible.
-    final expandedHeight = width > 600 ? 180.0 : 260.0;
+    final expandedHeight = width > 600
+        ? (hasCover ? 172.0 : 144.0)
+        : (hasCover ? 224.0 : 176.0);
 
     return SliverAppBar(
       expandedHeight: expandedHeight,
@@ -81,27 +85,9 @@ class ClubHeroAppBar extends StatelessWidget {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            club.imageUrl != null
-                ? Image.network(
-                    club.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => ClubCoverFallback(club: club),
-                  )
-                : ClubCoverFallback(club: club),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.4, 1.0],
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.65),
-                    ],
-                  ),
-                ),
-              ),
+            CatchDetailHeroBackdrop(
+              imageUrl: club.imageUrl,
+              semanticLabel: '${club.name} cover photo',
             ),
             Positioned(
               left: CatchSpacing.s5,
@@ -111,52 +97,35 @@ class ClubHeroAppBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (isHost)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: CatchBadge(
-                        label: 'HOST',
-                        tone: CatchBadgeTone.live,
-                        uppercase: true,
-                      ),
-                    ),
                   Text(
                     club.name,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w700,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.displayL(
+                      context,
                       color: Colors.white,
-                      height: 1.1,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  gapH8,
                   Row(
                     children: [
                       const Icon(
                         Icons.location_on_outlined,
-                        size: 14,
+                        size: 16,
                         color: Colors.white70,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        cityLabel(club.location),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.white70,
-                        ),
-                      ),
-                      if (club.rating > 0) ...[
-                        const SizedBox(width: 12),
-                        Icon(Icons.star_rounded, size: 14, color: t.gold),
-                        const SizedBox(width: 2),
-                        Text(
-                          club.rating.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white70,
+                      gapW4,
+                      Expanded(
+                        child: Text(
+                          '${club.area}, ${cityLabel(club.location)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.bodyS(
+                            context,
+                            color: Colors.white.withValues(alpha: 0.82),
                           ),
                         ),
-                      ],
+                      ),
                     ],
                   ),
                 ],

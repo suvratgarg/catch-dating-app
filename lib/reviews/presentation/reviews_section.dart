@@ -37,6 +37,8 @@ class ClubReviewsSection extends StatelessWidget {
       currentUid: currentUid,
       maxVisibleReviews: maxVisibleReviews,
       showAllAction: false,
+      compactEmptyState: true,
+      emptyMessage: 'Reviews appear after members attend an event.',
     );
   }
 }
@@ -81,6 +83,8 @@ class EventReviewsSection extends StatelessWidget {
           currentUid: currentUid,
           maxVisibleReviews: 3,
           showAllAction: reviews.length > 3,
+          compactEmptyState: true,
+          emptyMessage: 'Reviews appear after attendees complete the event.',
           onEditReview: canWriteEventReview
               ? (review) => showWriteReviewSheet(
                   context: context,
@@ -123,6 +127,8 @@ class ReviewsPreviewSection extends StatelessWidget {
     required this.currentUid,
     this.maxVisibleReviews = 3,
     this.showAllAction = false,
+    this.compactEmptyState = false,
+    this.emptyMessage,
     this.onEditReview,
   });
 
@@ -130,6 +136,8 @@ class ReviewsPreviewSection extends StatelessWidget {
   final String? currentUid;
   final int maxVisibleReviews;
   final bool showAllAction;
+  final bool compactEmptyState;
+  final String? emptyMessage;
   final ValueChanged<Review>? onEditReview;
 
   void _showAllReviews(BuildContext context) {
@@ -182,7 +190,7 @@ class ReviewsPreviewSection extends StatelessWidget {
             ),
             if (avgRating != null) ...[
               StarRating(rating: avgRating.round(), size: 14),
-              const SizedBox(width: 4),
+              gapW4,
               Text(
                 '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
                 style: CatchTextStyles.bodyS(context, color: t.ink2),
@@ -190,18 +198,30 @@ class ReviewsPreviewSection extends StatelessWidget {
             ],
           ],
         ),
-        const SizedBox(height: 12),
+        gapH12,
 
         // ── Review list ──────────────────────────────────────────────────────
         if (reviews.isEmpty)
           CatchEmptyState(
             icon: Icons.rate_review_outlined,
             title: 'No reviews yet',
-            message: 'Reviews from attendees will appear here after an event.',
-            surface: false,
-            iconSize: 28,
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
-            titleStyle: CatchTextStyles.titleM(context),
+            message:
+                emptyMessage ??
+                (compactEmptyState
+                    ? 'Reviews appear after members attend an event.'
+                    : 'Reviews from attendees will appear here after an event.'),
+            surface: compactEmptyState,
+            layout: compactEmptyState
+                ? CatchEmptyStateLayout.inline
+                : CatchEmptyStateLayout.stacked,
+            iconSize: compactEmptyState ? 22 : 28,
+            iconContainerSize: compactEmptyState ? 44 : null,
+            padding: compactEmptyState
+                ? const EdgeInsets.all(CatchSpacing.s4)
+                : const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+            titleStyle: compactEmptyState
+                ? CatchTextStyles.titleS(context)
+                : CatchTextStyles.titleM(context),
             messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
           )
         else ...[
@@ -256,7 +276,7 @@ class ReviewCard extends StatelessWidget {
           Row(
             children: [
               PersonAvatar(name: review.reviewerName, size: 32),
-              const SizedBox(width: 8),
+              gapW8,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,7 +305,7 @@ class ReviewCard extends StatelessWidget {
             ],
           ),
           if (review.comment.isNotEmpty) ...[
-            const SizedBox(height: 6),
+            gapH6,
             Text(
               review.comment,
               style: CatchTextStyles.bodyM(context, color: t.ink2),

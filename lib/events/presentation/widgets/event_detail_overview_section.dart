@@ -28,8 +28,6 @@ class EventDetailOverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(event.title, style: CatchTextStyles.displayL(context)),
-        gapH16,
         EventStatsGrid(event: event),
         gapH20,
         WhenWhereCard(event: event, onLocationTap: onLocationTap),
@@ -79,7 +77,6 @@ class _WhatToExpectSection extends StatelessWidget {
 
     return CatchSurface(
       padding: const EdgeInsets.all(14),
-      tone: CatchSurfaceTone.raised,
       radius: CatchRadius.md,
       borderColor: t.line,
       child: Column(
@@ -110,7 +107,6 @@ class _EventPolicySummary extends StatelessWidget {
 
     return CatchSurface(
       padding: const EdgeInsets.all(14),
-      tone: CatchSurfaceTone.raised,
       radius: CatchRadius.md,
       borderColor: t.line,
       child: Column(

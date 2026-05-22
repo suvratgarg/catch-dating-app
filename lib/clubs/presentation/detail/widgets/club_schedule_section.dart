@@ -39,13 +39,24 @@ class ClubScheduleSection extends StatelessWidget {
               CatchSpacing.s5,
               0,
               CatchSpacing.s5,
-              24,
+              20,
             ),
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
                 icon: Icons.calendar_month_outlined,
-                title: 'No upcoming events',
-                message: 'New events from this club will appear here.',
+                title: 'No events scheduled',
+                message: isHost
+                    ? 'Publish an event when this club is ready to meet.'
+                    : 'Future events will appear here once the host publishes one.',
+                layout: CatchEmptyStateLayout.inline,
+                iconSize: 22,
+                iconContainerSize: 44,
+                padding: const EdgeInsets.all(CatchSpacing.s4),
+                titleStyle: CatchTextStyles.titleS(context),
+                messageStyle: CatchTextStyles.bodyS(
+                  context,
+                  color: CatchTokens.of(context).ink2,
+                ),
               ),
             ),
           )
