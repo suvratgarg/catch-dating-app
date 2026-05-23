@@ -56,6 +56,7 @@ node --check tool/recompute_public_profiles.mjs
 node --check tool/validate_profile_decision_migration.mjs
 node --check tool/backfill_profile_decisions.mjs
 node --check tool/backfill_profile_photos.mjs
+node --check tool/repair_future_event_attendance.mjs
 node --check functions/scripts/backfill-profile-thumbnails.cjs
 node --test tool/seed_demo_data_append.test.mjs \
   tool/seed_demo_data_schema.test.mjs \
@@ -63,7 +64,8 @@ node --test tool/seed_demo_data_append.test.mjs \
   tool/recompute_public_profiles.test.mjs \
   tool/validate_profile_decision_migration.test.mjs \
   tool/backfill_profile_decisions.test.mjs \
-  tool/backfill_profile_photos.test.mjs
+  tool/backfill_profile_photos.test.mjs \
+  tool/repair_future_event_attendance.test.mjs
 node tool/seed_demo_data.mjs --scenario smoke --json >/dev/null
 
 echo "==> Analyzing Firestore type generator"

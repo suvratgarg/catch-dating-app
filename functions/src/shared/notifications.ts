@@ -223,6 +223,22 @@ export function eventActivityNotificationCopy(
 }
 
 /**
+ * Builds user-facing copy for the companion-ready push notification.
+ * @param {EventDoc} event Event whose live companion is ready.
+ * @return {object} Title and body copy.
+ */
+export function eventCompanionReadyNotificationCopy(
+  event: EventDoc
+): {title: string; body: string} {
+  const eventLabel = `${formatDistance(event.distanceKm)} event`;
+  const locationName = event.meetingLocation?.name ?? event.meetingPoint;
+  return {
+    title: "Your event companion is ready",
+    body: `Open the live guide for your ${eventLabel} from ${locationName}.`,
+  };
+}
+
+/**
  * Returns the user-scoped notification document reference.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {string} uid Notification owner UID.

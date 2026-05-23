@@ -4233,33 +4233,6 @@ export const eventSuccessPlanDocumentSchema = {
         }
       ]
     },
-    "revealEndsAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "attendeePrompt": {
       "type": [
         "string",
@@ -5212,7 +5185,6 @@ export const eventSuccessScorecardDocumentSchema = {
     "attendeesWhoMetTwoPlusPeople",
     "mutualMatchCount",
     "chatStartedCount",
-    "repeatSignupCount",
     "averageWelcomeRating",
     "averageStructureRating",
     "safetyIncidentCount",
@@ -5250,10 +5222,6 @@ export const eventSuccessScorecardDocumentSchema = {
       "minimum": 0
     },
     "chatStartedCount": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "repeatSignupCount": {
       "type": "integer",
       "minimum": 0
     },

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {buildFutureRunAttendanceRepairPlan} from "./repair_future_run_attendance.mjs";
+import {buildFutureEventAttendanceRepairPlan} from "./repair_future_event_attendance.mjs";
 
 test("future attended participations are downgraded and aggregates repaired",
   async () => {
@@ -49,7 +49,7 @@ test("future attended participations are downgraded and aggregates repaired",
       },
     });
 
-    const plan = await buildFutureRunAttendanceRepairPlan(
+    const plan = await buildFutureEventAttendanceRepairPlan(
       firestore,
       new Date("2026-05-13T13:30:00.000Z")
     );

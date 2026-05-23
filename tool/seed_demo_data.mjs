@@ -1332,8 +1332,6 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
   const planStatus = eventSuccessPlanStatus(event, now);
   const revealStartedAt = planStatus === "setup" ? null :
     admin.firestore.Timestamp.fromDate(offsetDate(event.doc.startTime.toDate(), {minutes: 18}));
-  const revealEndsAt = planStatus === "setup" ? null :
-    admin.firestore.Timestamp.fromDate(offsetDate(event.doc.startTime.toDate(), {minutes: 18, seconds: 10}));
   const frozenAt = event.doc.bookedCount > 0 || event.doc.waitlistedCount > 0 ?
     updatedAt :
     null;
@@ -1379,7 +1377,6 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
       revealStatus: planStatus === "setup" ? "idle" : "revealed",
       activeRevealRoundIndex: planStatus === "setup" ? 0 : 1,
       revealStartedAt,
-      revealEndsAt,
       attendeePrompt: "Notice who felt easy to talk to, then use the reveal to follow up.",
       createdAt,
       updatedAt,
@@ -1471,7 +1468,6 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
       attendeesWhoMetTwoPlusPeople: feedback.filter((doc) => doc.doc.metNewPeopleCount >= 2).length,
       mutualMatchCount: Math.min(3, Math.floor(completedParticipants.length / 2)),
       chatStartedCount: Math.min(2, Math.floor(completedParticipants.length / 3)),
-      repeatSignupCount: Math.min(2, Math.floor(completedParticipants.length / 4)),
       averageWelcomeRating: averageRating(feedback, "welcomeRating"),
       averageStructureRating: averageRating(feedback, "structureRating"),
       safetyIncidentCount: feedback.filter((doc) => doc.doc.safetyConcern).length,
@@ -1955,6 +1951,10 @@ export function validateSeedDocuments(writePlan) {
   const publicDocsByUid = new Map();
 
   for (const doc of writePlan.docs) {
+    if (doc.op === "update") {
+      continue;
+    }
+
     if (isUserProfilePath(doc.path)) {
       userDocsByUid.set(uidFromProfilePath(doc.path), doc.data);
       const data = schemaSerializableFirestoreData(doc.data);

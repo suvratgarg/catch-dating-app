@@ -28,7 +28,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   admin.initializeApp({projectId: resolveProjectId(args)});
   const firestore = admin.firestore();
-  const plan = await buildFutureRunAttendanceRepairPlan(firestore);
+  const plan = await buildFutureEventAttendanceRepairPlan(firestore);
 
   if (args.json) {
     console.log(JSON.stringify(plan.summary, null, 2));
@@ -37,15 +37,15 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry run only. Re-event with --apply to write repairs.");
+    console.log("\nDry run only. Re-run with --apply to write repairs.");
     return;
   }
 
-  await applyFutureRunAttendanceRepairPlan(firestore, plan);
+  await applyFutureEventAttendanceRepairPlan(firestore, plan);
   console.log("\nApplied future-event attendance repairs.");
 }
 
-export async function buildFutureRunAttendanceRepairPlan(
+export async function buildFutureEventAttendanceRepairPlan(
   firestore,
   now = new Date()
 ) {
@@ -140,7 +140,7 @@ export async function buildFutureRunAttendanceRepairPlan(
   };
 }
 
-export async function applyFutureRunAttendanceRepairPlan(firestore, plan) {
+export async function applyFutureEventAttendanceRepairPlan(firestore, plan) {
   for (let i = 0; i < plan.participationRepairs.length; i += 450) {
     const batch = firestore.batch();
     for (const repair of plan.participationRepairs.slice(i, i + 450)) {
@@ -165,6 +165,11 @@ export async function applyFutureRunAttendanceRepairPlan(firestore, plan) {
     await batch.commit();
   }
 }
+
+export const buildFutureRunAttendanceRepairPlan =
+  buildFutureEventAttendanceRepairPlan;
+export const applyFutureRunAttendanceRepairPlan =
+  applyFutureEventAttendanceRepairPlan;
 
 function aggregateParticipations(participations) {
   const aggregates = new Map();
@@ -292,7 +297,7 @@ function resolveProjectId(parsed) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/repair_future_run_attendance.mjs [options]
+  console.log(`Usage: node tool/repair_future_event_attendance.mjs [options]
 
 Downgrades invalid future-event attended participations to signedUp and repairs
 affected event aggregate counts.

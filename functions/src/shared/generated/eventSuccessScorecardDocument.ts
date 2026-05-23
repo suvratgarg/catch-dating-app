@@ -14,7 +14,6 @@ export interface EventSuccessScorecardDocument {
   attendeesWhoMetTwoPlusPeople: number;
   mutualMatchCount: number;
   chatStartedCount: number;
-  repeatSignupCount: number;
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;

@@ -52,10 +52,6 @@ export interface EventSuccessPlanDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
-  revealEndsAt?: {
-    _seconds: number;
-    _nanoseconds: number;
-  } | null;
   attendeePrompt?: string | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
