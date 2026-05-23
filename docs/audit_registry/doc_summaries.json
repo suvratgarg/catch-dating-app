@@ -165,7 +165,7 @@
       ]
     },
     "docs/event_success.md": {
-      "purpose": "Live event-success architecture, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions.",
+      "purpose": "Live event-success architecture, format mapping, product guardrails, Firestore contracts, manual QA, participant metrics, and open product decisions.",
       "read_when": [
         "Auditing lib/event_success",
         "Considering dead-code cleanup of event success files",

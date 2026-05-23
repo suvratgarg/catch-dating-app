@@ -67,7 +67,7 @@ resurrecting the deleted audit index.
 | B3  | P2  | Bootstrap         | Web App Check unconfigured — web not a shipped surface            | [x]  |
 | D1  | P1  | Contracts         | Three parallel schema representations, mid-migration              | [ ]  |
 | D3  | P2  | Contracts         | CI verifies only `firestore.ts` freshness, not contract outputs   | [x]  |
-| A2  | P2  | Analytics/BQ      | GA4→BigQuery link is a console task; verify it is enabled         | [ ]  |
+| A2  | P2  | Analytics/BQ      | GA4→BigQuery link is a console task; verify it is enabled         | [x]  |
 | A3  | P3  | Analytics         | `GoogleService-Info.plist` has `IS_ANALYTICS_ENABLED=false`       | [ ]  |
 | N1  | P2  | Android           | `google-services.json` has only 1 flavor's package               | [x]  |
 | W1  | P3  | Web               | Dead messaging service-worker registration removed               | [x]  |
@@ -272,7 +272,7 @@ workflow, so they could be stale on a green build. **Now** covered by the
 `generate_schema_contracts.mjs --check` step in the new `contracts-ci.yml`
 (see D2).
 
-### A2 — GA4 → BigQuery export link [needs console]
+### A2 — GA4 → BigQuery export link (DONE 2026-05-23)
 
 **Where:** `firebase.json` `extensions` block + `.firebaserc` etags.
 
@@ -281,19 +281,20 @@ workflow, so they could be stale on a green build. **Now** covered by the
   extension instances (`bq-event-success-feedback`, `bq-event-success-scorecards`,
   `bq-participant-*`) are declared and, per `.firebaserc` etags, installed in
   all three projects. This streams Firestore collections into BigQuery.
-- **GA4 → BigQuery export: not verifiable from the repo.** That is a Firebase
-  Console link (Project Settings → Integrations → BigQuery → enable the Google
-  Analytics export). It cannot live in repo config. The `observability-evidence.yml`
-  workflow input "ga4_bigquery_evidence" exists precisely because the team knows
-  this is an open manual step.
+- **GA4 → BigQuery export: enabled in Google Analytics Admin.** On
+  2026-05-23, the GA4 property `catch-dating-app-64e51` (`p526484083`) was
+  linked to BigQuery project `catch-dating-app-64e51` (`catch-dating-app`,
+  project number `574779808785`). The export dataset location is
+  `Mumbai (asia-south1)`, matching the Firestore-to-BigQuery extension
+  datasets. Daily event export is enabled for all 6 streams with no excluded
+  events. Streaming export, mobile advertising identifiers, and daily user-data
+  export were left disabled.
 
-**Action [needs console] — still open:** in the Firebase Console for
-`catch-dating-app-64e51` (prod), confirm BigQuery linking is on and **"Export
-Google Analytics data"** is checked. Note: GA4→BQ only backfills from the day it
-is enabled — enable it sooner rather than later. Then GA4 events appear in the
-`analytics_<propertyId>` dataset. The repo-side documentation of this step was
-added to `docs/release_operations.md` on 2026-05-21; the console toggle itself
-cannot be done from the repo and is the user's to verify.
+**Verification:** Google Analytics Admin → Product links → BigQuery links now
+shows `catch-dating-app-64e51` / `catch-dating-app` / `574779808785`. The
+expected BigQuery dataset is `analytics_526484083`; the first daily
+`events_YYYYMMDD` table appears after Google Analytics processes data for the
+next export cycle.
 
 ### N1 — `google-services.json` carries only one flavor (DONE 2026-05-21)
 
@@ -520,7 +521,10 @@ console-gated — see "Remaining items" below.
   confirmed deterministic (write-mode → empty diff). Committed as `7833fb18`.
 - **2026-05-21** — A1 fixed: added the "Verifying Analytics, Crashlytics, And
   BigQuery" section to `docs/release_operations.md`. A2 documented there too
-  (the console toggle remains the user's to verify).
+  (the console toggle still needed Analytics Admin access at that point).
+- **2026-05-23** — A2 fixed: Google Analytics Admin now shows a BigQuery link
+  from GA4 property `catch-dating-app-64e51` to BigQuery project
+  `catch-dating-app-64e51` in `Mumbai (asia-south1)` with daily event export.
 - **2026-05-21** — C2 fixed: pinned `firebase-tools@15.1.0` in all four
   deploy/CI workflows. C5 fixed: pinned `flutter-version: 3.41.9` everywhere.
 - **2026-05-21** — `docs/release_operations.md` "Required PR Checks" updated to
@@ -558,9 +562,9 @@ fixed in-repo:
 - **I6** — silencing the Crashlytics "runs every build" warning needs a
   `project.pbxproj` script-phase edit; do it in Xcode. Behavior is correct for
   archive builds — benign, low priority.
-- **A2 / A3** — Firebase Console verification only (GA4→BigQuery export link;
-  prod `GoogleService-Info.plist` analytics flag). Cannot be done from the repo;
-  steps are documented in `docs/release_operations.md`.
+- **A3** — Firebase Console verification only (prod `GoogleService-Info.plist`
+  analytics flag). Cannot be done from the repo; steps are documented in
+  `docs/release_operations.md`.
 - **M1** — root `.env` placeholder Razorpay key. `.env` is git-ignored — there
   is nothing to change in-repo. Local hygiene: ensure the real test key is
   present before running `build_runner`.

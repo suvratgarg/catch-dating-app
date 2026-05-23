@@ -671,7 +671,7 @@ If validation reports future events with `attended` participation edges, repair
 those stale edges before testing event detail or swipe flows:
 
 ```bash
-node tool/repair_future_run_attendance.mjs --env dev --apply
+node tool/repair_future_event_attendance.mjs --env dev --apply
 node tool/validate_firestore_data.mjs --env dev
 ```
 

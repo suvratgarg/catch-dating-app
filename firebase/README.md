@@ -71,6 +71,11 @@ Current state:
   measurement IDs. Fresh iOS/Android SDK config downloads still omit Analytics
   metadata, so use Firebase project analytics details and DebugView evidence
   rather than the native config files alone to verify mobile Analytics.
+- Production GA4 BigQuery export is linked for property
+  `catch-dating-app-64e51` (`p526484083`) to BigQuery project
+  `catch-dating-app-64e51` in `Mumbai (asia-south1)`. The expected dataset is
+  `analytics_526484083`. Daily event export is enabled for all streams; streaming
+  export, mobile advertising identifiers, and daily user-data export are off.
 
 ## Current environment state
 
