@@ -96,8 +96,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _distanceController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
+  final _customActivityLabelController = TextEditingController();
   final _descriptionController = TextEditingController();
   ActivityKind _selectedActivityKind = ActivityKind.socialRun;
+  EventInteractionModel _selectedInteractionModel =
+      ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
   PickedEventPhoto? _eventPhoto;
 
@@ -202,6 +205,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _distanceController.dispose();
     _capacityController.dispose();
     _priceController.dispose();
+    _customActivityLabelController.dispose();
     _descriptionController.dispose();
     _minAgeController.dispose();
     _maxAgeController.dispose();
@@ -383,9 +387,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             startTime: startTime,
             endTime: endTime,
             meetingLocation: meetingLocation,
-            eventFormat: EventFormatSnapshot.fromActivityKind(
-              _selectedActivityKind,
-            ),
+            eventFormat: _selectedEventFormat,
             distanceKm: _distanceKmForSelectedActivity(),
             pace: _selectedPace ?? PaceLevel.easy,
             description: _descriptionController.text.trim(),
@@ -429,6 +431,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     price: _trimmedTextOrNull(_priceController),
     description: _trimmedTextOrNull(_descriptionController),
     activityKind: _selectedActivityKind.name,
+    customActivityLabel: _customActivityLabelDraftValue,
+    interactionModel: _interactionModelDraftValue,
     paceName: _selectedPace?.name,
     meetingPoint: _trimmedTextOrNull(_meetingPointController),
     locationDetails: _trimmedTextOrNull(_locationDetailsController),
@@ -489,6 +493,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         _descriptionController.text = draft.description!;
       }
       _selectedActivityKind = _activityKindFromName(draft.activityKind);
+      _customActivityLabelController.text = draft.customActivityLabel ?? '';
+      _selectedInteractionModel = _interactionModelFromName(
+        draft.interactionModel,
+        fallback: _selectedActivityKind.defaultInteractionModel,
+      );
       if (draft.paceName != null) {
         try {
           _selectedPace = PaceLevel.values.byName(draft.paceName!);
@@ -585,6 +594,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       price: _trimmedTextOrNull(_priceController),
       description: _trimmedTextOrNull(_descriptionController),
       activityKind: _selectedActivityKind.name,
+      customActivityLabel: _customActivityLabelDraftValue,
+      interactionModel: _interactionModelDraftValue,
       paceName: _selectedPace?.name,
       meetingPoint: _trimmedTextOrNull(_meetingPointController),
       locationDetails: _trimmedTextOrNull(_locationDetailsController),
@@ -654,6 +665,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return text.isEmpty ? null : text;
   }
 
+  String? get _customActivityLabelDraftValue {
+    if (_selectedActivityKind != ActivityKind.openActivity) return null;
+    return _trimmedTextOrNull(_customActivityLabelController);
+  }
+
+  String? get _interactionModelDraftValue {
+    if (_selectedActivityKind != ActivityKind.openActivity) return null;
+    return _selectedInteractionModel.name;
+  }
+
   EventMeetingLocation? get _currentMeetingLocation {
     final coordinate = _startingPoint;
     final name = _trimmedTextOrNull(_meetingPointController);
@@ -666,6 +687,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       longitude: coordinate.longitude,
       notes: _trimmedTextOrNull(_locationDetailsController),
     ).normalized();
+  }
+
+  EventFormatSnapshot get _selectedEventFormat {
+    if (_selectedActivityKind != ActivityKind.openActivity) {
+      return EventFormatSnapshot.fromActivityKind(_selectedActivityKind);
+    }
+    return EventFormatSnapshot.custom(
+      label: _customActivityLabelController.text,
+      interactionModel: _selectedInteractionModel,
+      activityDetails: const {'configuredIn': 'create_event'},
+    );
   }
 
   static String _stepTitle(int step) => switch (step) {
@@ -699,6 +731,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   void _applyClubDefaults(ClubHostDefaults defaults) {
     _selectedActivityKind = defaults.primaryActivityKind;
+    _selectedInteractionModel = _selectedActivityKind.defaultInteractionModel;
     final policy = defaults.eventPolicy;
     _selectedAdmissionPreset = _admissionPresetFromDefault(
       policy.admissionPreset,
@@ -717,8 +750,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       policy.dynamicPricingMaxInPaise,
     );
     _selectedCancellationPolicyId = policy.cancellationPolicyId;
-    _eventSuccessDefaults = defaults.eventSuccessForActivity(
-      _selectedActivityKind,
+    _eventSuccessDefaults = defaults.eventSuccessForFormat(
+      _selectedEventFormat,
     );
   }
 
@@ -746,6 +779,17 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return ActivityKind.values.firstWhere(
       (activityKind) => activityKind.name == name,
       orElse: () => ActivityKind.socialRun,
+    );
+  }
+
+  static EventInteractionModel _interactionModelFromName(
+    String? name, {
+    required EventInteractionModel fallback,
+  }) {
+    if (name == null) return fallback;
+    return EventInteractionModel.values.firstWhere(
+      (model) => model.name == name,
+      orElse: () => fallback,
     );
   }
 
@@ -829,16 +873,30 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     photoImageBytes: _eventPhoto?.bytes,
                     onPickPhoto: _pickEventPhoto,
                     distanceController: _distanceController,
+                    customActivityLabelController:
+                        _customActivityLabelController,
                     descriptionController: _descriptionController,
                     selectedActivityKind: _selectedActivityKind,
                     onActivityKindChanged: (activityKind) => setState(() {
                       _selectedActivityKind = activityKind;
+                      _selectedInteractionModel =
+                          activityKind.defaultInteractionModel;
                       if (!activityKind.isDistanceBased) {
                         _selectedPace = null;
                       }
                       _eventSuccessDefaults = widget.club.hostDefaults
-                          .eventSuccessForActivity(
-                            activityKind,
+                          .eventSuccessForFormat(
+                            _selectedEventFormat,
+                            targetAttendeeCount:
+                                _eventSuccessTargetAttendeeCount,
+                          );
+                    }),
+                    selectedInteractionModel: _selectedInteractionModel,
+                    onInteractionModelChanged: (model) => setState(() {
+                      _selectedInteractionModel = model;
+                      _eventSuccessDefaults = widget.club.hostDefaults
+                          .eventSuccessForFormat(
+                            _selectedEventFormat,
                             targetAttendeeCount:
                                 _eventSuccessTargetAttendeeCount,
                           );
@@ -895,6 +953,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
                   EventSuccessStep(
                     activityKind: _selectedActivityKind,
+                    eventFormat: _selectedEventFormat,
                     eventSuccessDefaults: _eventSuccessDefaults,
                     targetAttendeeCount: _eventSuccessTargetAttendeeCount,
                     onEventSuccessDefaultsChanged: (defaults) =>

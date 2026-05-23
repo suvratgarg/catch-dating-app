@@ -18,10 +18,10 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-define_file="$repo_root/tool/dart_defines/$environment.json"
+define_file="$repo_root/tool/env/dart_defines/$environment.json"
 
 if [[ ! -f "$define_file" ]]; then
-  echo "Missing dart define file: tool/dart_defines/$environment.json"
+  echo "Missing dart define file: tool/env/dart_defines/$environment.json"
   exit 1
 fi
 

@@ -218,29 +218,33 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   void _submit() {
-    CreateClubController.submitMutation.run(ref, (transaction) async {
-      await transaction
-          .get(createClubControllerProvider.notifier)
-          .submit(
-            name: _nameController.text.trim(),
-            location: _selectedCity!,
-            area: _areaController.text.trim(),
-            description: _descriptionController.text.trim(),
-            existingClub: widget.initialClub,
-            coverImage: _coverImage?.image,
-            profileImage: _profileImage?.image,
-            instagramHandle: _trimmedTextOrNull(_instagramController),
-            phoneNumber: _trimmedTextOrNull(_phoneController),
-            email: _trimmedTextOrNull(_emailController),
-            hostDefaults: _hostDefaults,
-          );
+    unawaited(
+      CreateClubController.submitMutation
+          .run(ref, (transaction) async {
+            await transaction
+                .get(createClubControllerProvider.notifier)
+                .submit(
+                  name: _nameController.text.trim(),
+                  location: _selectedCity!,
+                  area: _areaController.text.trim(),
+                  description: _descriptionController.text.trim(),
+                  existingClub: widget.initialClub,
+                  coverImage: _coverImage?.image,
+                  profileImage: _profileImage?.image,
+                  instagramHandle: _trimmedTextOrNull(_instagramController),
+                  phoneNumber: _trimmedTextOrNull(_phoneController),
+                  email: _trimmedTextOrNull(_emailController),
+                  hostDefaults: _hostDefaults,
+                );
 
-      if (!_isEditing) {
-        await transaction
-            .get(createClubDraftControllerProvider.notifier)
-            .deleteDraft();
-      }
-    });
+            if (!_isEditing) {
+              await transaction
+                  .get(createClubDraftControllerProvider.notifier)
+                  .deleteDraft();
+            }
+          })
+          .catchError((Object _) {}),
+    );
   }
 
   static String? _trimmedTextOrNull(TextEditingController controller) {
@@ -302,7 +306,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     coverImageBytes: _coverImage?.bytes,
                     existingImageUrl: widget.initialClub?.imageUrl,
                     profileImageBytes: _profileImage?.bytes,
-                    existingProfileImageUrl: widget.initialClub?.profileImageUrl,
+                    existingProfileImageUrl:
+                        widget.initialClub?.profileImageUrl,
                     onPickCover: submitMutation.isPending
                         ? null
                         : _pickCoverImage,

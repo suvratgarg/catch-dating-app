@@ -188,7 +188,6 @@ EventSuccessScorecard _scorecardFromEvent({
     attendeesWhoMetTwoPlusPeople: introCount,
     mutualMatchCount: mutualMatches,
     chatStartedCount: (mutualMatches * 0.6).round(),
-    repeatSignupCount: bookedCount <= 0 ? 0 : (bookedCount * 0.2).round(),
     averageWelcomeRating: 3.8,
     averageStructureRating: 3.4,
     safetyIncidentCount: 0,

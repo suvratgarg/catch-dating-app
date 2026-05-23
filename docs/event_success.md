@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.0.1
-updated: 2026-05-22
+version: 1.0.3
+updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,6 +35,40 @@ Event success does not own a duplicate post-event interest surface. Private
 target identities remain attendee-private unless the attendee explicitly asks
 the host for help through the wingman request flow.
 
+## Format Mapping And Wiring
+
+Event-success setup is driven by the saved `EventFormatSnapshot`, not by raw
+event names alone. The intended live path is:
+
+```text
+activity kind or custom event name
+  -> EventFormatSnapshot interactionModel
+  -> EventSuccessActivityProfile and structure defaults
+  -> saved eventSuccessPlans/{eventId}
+  -> Host Manage setup/live/report UI
+  -> attendee companion runtime moment
+```
+
+The currently wired pieces are:
+
+- create-event format selection persists `activityKind`, custom label, and
+  selected `interactionModel`;
+- event-success defaults, structure, Host Manage setup, and preset labels use
+  the saved full format snapshot;
+- `createEvent` can create the event and initial event-success plan in one
+  backend transaction when event-success defaults are enabled;
+- Firestore rules allow host setup while the event is still pre-live, then
+  freeze setup-shaping fields after bookings, waitlist activity, check-ins,
+  event start, or live-plan freezing while still allowing live-control fields;
+- attendee companion routing, event-detail entry, and check-in auto-launch use
+  the saved plan/runtime rather than raw event type.
+
+Assignment generation is deliberately narrower than the format taxonomy. V1
+supports pair rotations and generic micro-pods with topology guards. True
+table-seating, team-balancing, doubles/court-aware, and dance-partner engines
+remain future backend work unless product narrows them into the existing V1
+assignment shapes.
+
 ## Code Map
 
 | Surface | Path |
@@ -53,7 +87,7 @@ the host for help through the wingman request flow.
 
 | Collection | Owner and visibility |
 |---|---|
-| `eventSuccessPlans/{eventId}` | Host-owned setup/live state. Active participants can read through event-success rules. |
+| `eventSuccessPlans/{eventId}` | Host-owned setup/live state. Setup fields freeze once participant activity/start/live status begins; active participants can read through event-success rules. |
 | `eventSuccessFeedback/{eventId_uid}` | Attendee-owned decomposed post-event feedback. Raw notes and safety details are private to attendee/backend. |
 | `eventSafetyReports/{feedbackId}` | Backend-owned Catch-private safety mirror for concerning feedback. |
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
@@ -64,13 +98,14 @@ the host for help through the wingman request flow.
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
-`tool/generated/`.
+`tool/contracts/generated/`.
 
 ## Product Guardrails
 
 - Keep high-churn state out of `events/{eventId}`. Use event-success edge docs.
-- Setup fields that affect attendee expectations should freeze once the event
-  starts unless product explicitly allows late changes and attendee notice.
+- Setup fields that affect attendee expectations freeze once the event starts
+  or participant activity begins unless product explicitly adds a late-change
+  path with attendee notice.
 - Compatibility tools are conversation context, not a promise of chemistry.
 - Social runs should stay lightweight; structured mixers, racket pairs, dinners,
   and quiz/team formats can carry more live facilitation.
@@ -152,6 +187,59 @@ Remaining gates:
   concrete.
 - Decide host analytics anonymity threshold: 3, 5, or dynamic by event size.
 
+These gates are external access or product-decision items, not hidden app
+wiring work. Do not mark them complete from code changes alone.
+
+## Recent Technical Closure
+
+The temporary Event Success technical-fixes tracker from 2026-05-23 is folded
+into this source-of-truth doc. Durable outcomes from that pass:
+
+- reveal countdowns are server-anchored and derive end time from
+  `revealStartedAt + structureConfig.revealCountdownSeconds`;
+- the companion route renders one stable scaffold across loading/error/content
+  states;
+- host reports no longer fabricate negative coaching from an absent scorecard;
+- the dead repeat-signup scorecard metric was removed;
+- wingman candidate fetching batches block/profile reads;
+- custom event formats persist from create-event through defaults, Host Manage,
+  and saved plans;
+- assignment callables share topology and compatibility policy guards;
+- companion auto-open/post-event runtime regressions have focused coverage;
+- local simulator phone-auth test bypass is guarded to non-production builds.
+
+## Recent Setup And Companion Ergonomics Pass
+
+The 2026-05-24 ergonomics pass reshaped both the host setup wizard and the
+attendee companion. The work was split into four phases; durable outcomes:
+
+- **Phase 1 — surface unification.** `EventSuccessSetupBody` is the shared
+  setup widget consumed by both `EventSuccessDefaultsPanel` (create-event last
+  step) and the Host Manage setup tab. The two surfaces stay in sync
+  automatically — no copy or behaviour drift.
+- **Phase 2 — lifecycle stages and inline pickers.** Setup body groups modules
+  into Arrival foundation, During event, and After event stage cards (plus
+  Advanced). Rotation cadence and reveal countdown live inline in the During
+  card; the questionnaire collapses three controls (module toggle, ranking
+  switch, content editor) into one Off / Clues only / Clues + soft pairing
+  three-state chooser, with custom prompts in a bottom sheet.
+- **Phase 3 — copy and dirty-state polish.** Module titles use host-readable
+  names (Synchronized partner reveal, Small starter groups, Timed partner
+  rotations, "Help me say hi" requests, Welcome script, Suggested first-message
+  openers, After-event attendee feedback, Booking balance preview). Frozen
+  state explains exactly what can still be edited. Save button surfaces an
+  unsaved-changes pill driven by a `_isDirty` getter that diffs the resolved
+  draft against the saved plan.
+- **Phase 4 — companion ergonomics.** Hero re-frames around "what now". Live
+  cards use Switch-based include/skip toggles instead of buttons. Pre-arrival
+  is informational only — no opt-out levers before the event starts. Three-tier
+  privacy badges (Private to you / Host can see / Catch private) appear on
+  every surface that produces persisted data. The companion build method is a
+  flat list-builder pattern, and the dead `if (showLiveReveal) reveal else
+  pod/rotation` inner branches inside `showPodAssignment` and
+  `showRotationSchedule` are removed (those runtime kinds are mutually
+  exclusive with `liveReveal`).
+
 ## Open Product Decisions
 
 - Should a safety/comfort concern always create a Catch-private report, or
@@ -172,7 +260,7 @@ pass receipts:
 - `functions/src/eventSuccess/*.test.ts`
 - `functions/src/marketplace/eventSuccessScorecards.test.ts`
 - `functions/test/firestore.rules.test.cjs`
-- `tool/seed_demo_data_schema.test.mjs`
+- `tool/demo/seed_demo_data_schema.test.mjs`
 - `test/core/schema_contracts_generated_test.dart`
 - `docs/audit_registry/passes.jsonl`
 

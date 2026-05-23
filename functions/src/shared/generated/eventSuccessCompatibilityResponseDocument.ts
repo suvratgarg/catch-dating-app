@@ -1,6 +1,6 @@
 /* eslint-disable */
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Regenerate with: node tool/generate_schema_contracts.mjs
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
  * Attendee-owned compatibility questionnaire answers stored at eventSuccessCompatibilityResponses/{eventId_uid}. Hosts cannot read individual answers.

@@ -33,11 +33,19 @@ abstract class ClubHostDefaults with _$ClubHostDefaults {
   EventSuccessDefaults eventSuccessForActivity(
     ActivityKind activityKind, {
     int? targetAttendeeCount,
+  }) => eventSuccessForFormat(
+    EventFormatSnapshot.fromActivityKind(activityKind),
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  EventSuccessDefaults eventSuccessForFormat(
+    EventFormatSnapshot format, {
+    int? targetAttendeeCount,
   }) {
     final configured =
-        eventSuccessByActivityKind[activityKind.name] ?? eventSuccess;
-    return configured.normalizedForActivity(
-      activityKind,
+        eventSuccessByActivityKind[format.activityKind.name] ?? eventSuccess;
+    return configured.normalizedForFormat(
+      format,
       targetAttendeeCount: targetAttendeeCount,
     );
   }

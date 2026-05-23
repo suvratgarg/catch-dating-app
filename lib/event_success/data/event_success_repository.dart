@@ -130,6 +130,19 @@ class EventSuccessRepository {
     ),
   );
 
+  Future<EventSuccessPlan?> fetchPlan(String eventId) =>
+      withBackendErrorContext(
+        () async {
+          final doc = await _planRef(eventId).get();
+          return doc.exists ? doc.data() : null;
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'open live event guide',
+          resource: _plansPath,
+        ),
+      );
+
   Stream<List<EventSuccessFeedback>> watchFeedbackForEvent(String eventId) =>
       withBackendErrorStream(
         () => _feedbackRef
@@ -302,21 +315,15 @@ class EventSuccessRepository {
   Future<void> startLiveRevealCountdown({
     required String eventId,
     required int roundIndex,
-    required int countdownSeconds,
   }) => withBackendErrorContext(
     () {
-      final now = DateTime.now();
       final safeRoundIndex = roundIndex.clamp(0, 100).toInt();
-      final safeSeconds = countdownSeconds.clamp(0, 60).toInt();
       return _planRef(eventId).update({
         'status': EventSuccessPlanStatus.live.name,
         'revealStatus': EventSuccessRevealStatus.countingDown.name,
         'activeRevealRoundIndex': safeRoundIndex,
-        'revealStartedAt': Timestamp.fromDate(now),
-        'revealEndsAt': Timestamp.fromDate(
-          now.add(Duration(seconds: safeSeconds)),
-        ),
-        'updatedAt': Timestamp.fromDate(now),
+        'revealStartedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
         'frozenAt': FieldValue.serverTimestamp(),
       });
     },
@@ -331,18 +338,14 @@ class EventSuccessRepository {
     required String eventId,
     required int roundIndex,
   }) => withBackendErrorContext(
-    () {
-      final now = DateTime.now();
-      return _planRef(eventId).update({
-        'status': EventSuccessPlanStatus.live.name,
-        'revealStatus': EventSuccessRevealStatus.revealed.name,
-        'activeRevealRoundIndex': roundIndex.clamp(0, 100).toInt(),
-        'revealStartedAt': Timestamp.fromDate(now),
-        'revealEndsAt': Timestamp.fromDate(now),
-        'updatedAt': Timestamp.fromDate(now),
-        'frozenAt': FieldValue.serverTimestamp(),
-      });
-    },
+    () => _planRef(eventId).update({
+      'status': EventSuccessPlanStatus.live.name,
+      'revealStatus': EventSuccessRevealStatus.revealed.name,
+      'activeRevealRoundIndex': roundIndex.clamp(0, 100).toInt(),
+      'revealStartedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'frozenAt': FieldValue.serverTimestamp(),
+    }),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'reveal event round',
@@ -356,8 +359,7 @@ class EventSuccessRepository {
           'revealStatus': EventSuccessRevealStatus.idle.name,
           'activeRevealRoundIndex': 0,
           'revealStartedAt': null,
-          'revealEndsAt': null,
-          'updatedAt': Timestamp.fromDate(DateTime.now()),
+          'updatedAt': FieldValue.serverTimestamp(),
         }),
         context: const BackendErrorContext(
           service: BackendService.firestore,
@@ -804,7 +806,6 @@ EventSuccessScorecard _eventSuccessScorecardFromJson(
     ),
     mutualMatchCount: _nonNegativeInt(json['mutualMatchCount']),
     chatStartedCount: _nonNegativeInt(json['chatStartedCount']),
-    repeatSignupCount: _nonNegativeInt(json['repeatSignupCount']),
     averageWelcomeRating: _rating(json['averageWelcomeRating']),
     averageStructureRating: _rating(json['averageStructureRating']),
     safetyIncidentCount: _nonNegativeInt(json['safetyIncidentCount']),

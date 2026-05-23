@@ -30,6 +30,7 @@ class RecordingMockFirebaseAuth extends MockFirebaseAuth {
   RecordingMockFirebaseAuth({super.signedIn, super.mockUser});
 
   String? verifiedPhoneNumber;
+  int? forceResendingToken;
   AuthCredential? signedInCredential;
   int signOutCallCount = 0;
 
@@ -53,6 +54,7 @@ class RecordingMockFirebaseAuth extends MockFirebaseAuth {
     Object? multiFactorSession,
   }) async {
     verifiedPhoneNumber = phoneNumber;
+    this.forceResendingToken = forceResendingToken;
     await super.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: verificationCompleted,
@@ -99,6 +101,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   Object? signOutError;
   Completer<void>? signOutCompleter;
   String? verifiedPhoneNumber;
+  int? forceResendingToken;
   VerifyPhoneNumberHandler? onVerifyPhoneNumber;
 
   @override
@@ -115,6 +118,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   @override
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
+    int? forceResendingToken,
     required void Function(String verificationId, int? resendToken) codeSent,
     required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
@@ -126,6 +130,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
       resource: 'phone_auth',
     );
     verifiedPhoneNumber = phoneNumber;
+    this.forceResendingToken = forceResendingToken;
     await onVerifyPhoneNumber?.call(
       verificationCompleted: verificationCompleted,
       verificationFailed: (error) {

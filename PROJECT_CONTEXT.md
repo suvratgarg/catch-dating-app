@@ -523,7 +523,7 @@ The generated TypeScript mirror of the Firestore schema is:
 - [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
 
 If you change a Dart model that a Cloud Function reads or writes, event
-`dart tool/generate_firestore_types.dart` and commit the generated TS mirror.
+`dart tool/contracts/generate_firestore_types.dart` and commit the generated TS mirror.
 
 ## 8. Backend contract
 
@@ -613,7 +613,7 @@ Files:
 - Firestore rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
 - Storage rules: [`storage.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/storage.rules)
 - Firestore ownership contract:
-  [`tool/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firestore_contract.json)
+  [`tool/contracts/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/contracts/firestore_contract.json)
 - Repeatable data-contract check:
   [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
 
@@ -827,7 +827,7 @@ Files involved:
 - Dart model: [`lib/clubs/domain/club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/domain/club.dart)
 - Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
 - TS types: [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
-- Ownership contract: [`tool/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firestore_contract.json)
+- Ownership contract: [`tool/contracts/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/contracts/firestore_contract.json)
 - Rules tests: [`functions/test/firestore.rules.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/firestore.rules.test.cjs)
 - Combined checker: [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
 
@@ -850,7 +850,7 @@ Impact:
 - Club pages aggregate event reviews for display but do not create club-level
   reviews.
 - Existing random-ID or missing-`eventId` reviews should be found by
-  `node tool/validate_firestore_data.mjs --env <env>` and migrated or archived
+  `node tool/data/validate_firestore_data.mjs --env <env>` and migrated or archived
   before tightening production data further.
 
 ### 14.3 Auth is phone-only and onboarding owns profile creation
@@ -907,9 +907,9 @@ all three projects; dev and staging were updated on 2026-05-01.
 Files involved:
 
 - [`lib/core/app_config.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_config.dart)
-- [`tool/dart_defines/dev.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/dev.json)
-- [`tool/dart_defines/staging.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/staging.json)
-- [`tool/dart_defines/prod.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/prod.json)
+- [`tool/env/dart_defines/dev.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/dev.json)
+- [`tool/env/dart_defines/staging.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/staging.json)
+- [`tool/env/dart_defines/prod.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/env/dart_defines/prod.json)
 - [`lib/firebase_options_dev.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_dev.dart)
 - [`lib/firebase_options_staging.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_staging.dart)
 - [`lib/firebase_options_prod.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_prod.dart)
@@ -941,7 +941,7 @@ When working in this repo:
 1. Read this file.
 2. Read the feature’s `domain`, `data`, and `presentation` files together.
 3. If a change touches a model used by Cloud Functions, update Dart, run
-   `dart tool/generate_firestore_types.dart`, and commit
+   `dart tool/contracts/generate_firestore_types.dart`, and commit
    `functions/src/shared/firestore.ts`.
 4. If a change touches rules-sensitive documents, check `firestore.rules` immediately.
 5. Run `build_runner` after annotation/model changes.
@@ -993,7 +993,7 @@ rejections gracefully so users (and developers) aren't left guessing.
   `listenForMutationErrorSnackbar` utility are the right display channels.
 - **Firestore rules tests and the contract checker event in CI** on every PR
   that touches rules, schema, or contract files. Keep
-  `functions/test/firestore.rules.test.cjs` and `tool/firestore_contract.json`
+  `functions/test/firestore.rules.test.cjs` and `tool/contracts/firestore_contract.json`
   in sync with rule changes.
 - **Log Firestore write failures to Analytics** via
   `AppAnalytics.logFirestoreWriteFailed()` so permission spikes and quota

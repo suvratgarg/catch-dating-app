@@ -114,12 +114,12 @@ class _HostActivitySummary extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchBadge(
-                label: profile.activityKind.label,
+                label: profile.formatLabel,
                 tone: CatchBadgeTone.brand,
                 icon: Icons.auto_awesome_outlined,
               ),
               CatchBadge(
-                label: profile.activityKind.defaultInteractionModel.label,
+                label: profile.interactionModel.label,
                 tone: CatchBadgeTone.neutral,
               ),
               CatchBadge(
@@ -307,7 +307,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Wingman requests',
+                  '"Help me say hi" requests',
                   style: CatchTextStyles.titleM(context),
                 ),
               ),

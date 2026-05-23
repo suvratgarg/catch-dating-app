@@ -264,7 +264,6 @@ function eventSuccessPlan(overrides = {}) {
     revealStatus: "idle",
     activeRevealRoundIndex: 0,
     revealStartedAt: null,
-    revealEndsAt: null,
     attendeePrompt: "Look for someone who runs your pace.",
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
@@ -1476,7 +1475,10 @@ describe("firestore.rules", () => {
   describe("event success", () => {
     it("allows only the event club host to create and update event success plans", async () => {
       await seed(["clubs", "club-1"], club());
-      await seed(["events", "event-1"], event());
+      await seed(["events", "event-1"], event({
+        startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
+        endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
+      }));
 
       const planRef = doc(authedDb("host-1"), "eventSuccessPlans", "event-1");
 
@@ -1488,7 +1490,6 @@ describe("firestore.rules", () => {
         revealStatus: "countingDown",
         activeRevealRoundIndex: 0,
         revealStartedAt: serverTimestamp(),
-        revealEndsAt: Timestamp.fromDate(new Date("2026-05-01T10:00:10.000Z")),
         updatedAt: serverTimestamp(),
         frozenAt: serverTimestamp(),
       }));
@@ -1503,6 +1504,12 @@ describe("firestore.rules", () => {
           doc(authedDb("host-1"), "eventSuccessPlans", "event-2"),
           eventSuccessPlan({eventId: "event-1"}),
         ),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          hostGoal: "Rewrite the locked setup.",
+          updatedAt: serverTimestamp(),
+        }),
       );
       await assertFails(
         updateDoc(planRef, {
@@ -1531,6 +1538,53 @@ describe("firestore.rules", () => {
         updateDoc(planRef, {
           compatibilityAffectsRanking: "yes",
           updatedAt: serverTimestamp(),
+        }),
+      );
+    });
+
+    it("freezes event success setup after participant activity or event start", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event({
+        startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
+        endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
+        bookedCount: 1,
+      }));
+      await seed(["events", "event-started"], event({
+        clubId: "club-1",
+        startTime: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
+        endTime: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+      }));
+
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "eventSuccessPlans", "event-1"),
+          eventSuccessPlan(),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "eventSuccessPlans", "event-started"),
+          eventSuccessPlan({
+            eventId: "event-started",
+          }),
+        ),
+      );
+
+      await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
+      const planRef = doc(authedDb("host-1"), "eventSuccessPlans", "event-1");
+
+      await assertFails(
+        updateDoc(planRef, {
+          hostGoal: "Late rewrite.",
+          updatedAt: serverTimestamp(),
+        }),
+      );
+      await assertSucceeds(
+        updateDoc(planRef, {
+          activeStepIndex: 1,
+          status: "live",
+          updatedAt: serverTimestamp(),
+          frozenAt: serverTimestamp(),
         }),
       );
     });

@@ -51,7 +51,6 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     attendeesWhoMetTwoPlusPeople: 1,
     mutualMatchCount: 2,
     chatStartedCount: 1,
-    repeatSignupCount: 0,
     averageWelcomeRating: 4,
     averageStructureRating: 3,
     safetyIncidentCount: 0,

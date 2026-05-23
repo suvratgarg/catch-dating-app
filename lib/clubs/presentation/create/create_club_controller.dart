@@ -125,36 +125,34 @@ class CreateClubController extends _$CreateClubController {
     }
 
     final clubsRepo = ref.read(clubsRepositoryProvider);
-    String? clubId;
-    String? imageUrl;
-    String? profileImageUrl;
-
-    if (coverImage != null || profileImage != null) {
-      clubId = clubsRepo.generateId();
-    }
-    if (coverImage != null) {
-      imageUrl = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadClubCover(clubId: clubId!, image: coverImage);
-    }
-    if (profileImage != null) {
-      profileImageUrl = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadClubProfileImage(clubId: clubId!, image: profileImage);
-    }
-
-    await clubsRepo.createClub(
-      clubId: clubId,
+    final reservedClubId = coverImage != null || profileImage != null
+        ? clubsRepo.generateId()
+        : null;
+    final createdClubId = await clubsRepo.createClub(
+      clubId: reservedClubId,
       name: name,
       description: description,
       location: location,
       area: area,
-      imageUrl: imageUrl,
-      profileImageUrl: profileImageUrl,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
       email: email,
       hostDefaults: hostDefaults,
     );
+
+    final mediaFields = <String, dynamic>{};
+    if (coverImage != null) {
+      mediaFields['imageUrl'] = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadClubCover(clubId: createdClubId, image: coverImage);
+    }
+    if (profileImage != null) {
+      mediaFields['profileImageUrl'] = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadClubProfileImage(clubId: createdClubId, image: profileImage);
+    }
+    if (mediaFields.isNotEmpty) {
+      await clubsRepo.updateClub(clubId: createdClubId, fields: mediaFields);
+    }
   }
 }

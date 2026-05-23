@@ -12,7 +12,7 @@ status: active
 
 Read this before changing Cloud Functions, Firestore rules, repository writes,
 callable interfaces, trigger-owned projections, payments, safety workflows, or
-notification fan-out. Treat `tool/firestore_contract.json` as the
+notification fan-out. Treat `tool/contracts/firestore_contract.json` as the
 machine-readable ownership contract and this document as the human map.
 
 ## Operating Rules
@@ -62,7 +62,7 @@ should be repairable from edge/source documents.
 
 | Priority | Finding | Status |
 |---|---|---|
-| P0 | `tool/firestore_contract.json` was stale for `users/{uid}.firstName`, `lastName`, and `displayName`; the generated Functions type and Firestore rules already had the fields. | Fixed in this pass. |
+| P0 | `tool/contracts/firestore_contract.json` was stale for `users/{uid}.firstName`, `lastName`, and `displayName`; the generated Functions type and Firestore rules already had the fields. | Fixed in this pass. |
 | P0 | Account deletion anonymized `name` but did not clear retained `firstName`, `lastName`, or `displayName` on `users/{uid}`. | Fixed in this pass. |
 | P1 | `RATE_LIMITS` declared several callable limits that were not applied at the handlers: `verifyRazorpayPayment`, `cancelEventSignUp`, `joinEventWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion`. `updateUserProfile` also had no configured limit. | Fixed. All listed handlers now call `checkRateLimit`; `updateUserProfile` is 60/minute to allow brisk field-by-field editing without leaving profile writes unbounded. |
 | P2 | The machine-readable contract records operations by collection, but not the Dart initiator method for every operation. | This doc fills the human map; a later tooling pass can validate Dart initiators automatically. |
@@ -74,7 +74,7 @@ should be repairable from edge/source documents.
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create; rate-limited at 60/minute. |
-| `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete, hosted `clubs/{clubId}.hostName` / `hostAvatarUrl` updates, authored `reviews/{reviewId}.reviewerName` updates | Sole owner of current user-identity projections. Uses `displayName`, then first name, then legacy fallback; projects grouped `profilePhotos` plus legacy `photoUrls`/`photoThumbnailUrls` compatibility arrays for tiny avatar surfaces. Existing stale public profiles can be repaired with `node tool/recompute_public_profiles.mjs --env dev --apply`; existing stale event-club host projections can be repaired with `node tool/recompute_club_host_profiles.mjs --env dev --apply`; existing stale review author names can be repaired with `node tool/recompute_review_author_profiles.mjs --env dev --apply` after `npm --prefix functions run build`. |
+| `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete, hosted `clubs/{clubId}.hostName` / `hostAvatarUrl` updates, authored `reviews/{reviewId}.reviewerName` updates | Sole owner of current user-identity projections. Uses `displayName`, then first name, then legacy fallback; projects grouped `profilePhotos` plus legacy `photoUrls`/`photoThumbnailUrls` compatibility arrays for tiny avatar surfaces. Existing stale public profiles can be repaired with `node tool/data/recompute_public_profiles.mjs --env dev --apply`; existing stale event-club host projections can be repaired with `node tool/data/recompute_club_host_profiles.mjs --env dev --apply`; existing stale review author names can be repaired with `node tool/data/recompute_review_author_profiles.mjs --env dev --apply` after `npm --prefix functions run build`. |
 | `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls`, `users/{uid}.profilePhotos` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/event-detail hype avatars must use thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm --prefix functions run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; the script now updates grouped `profilePhotos` as well as legacy thumbnail arrays. |
 | `createClub` | Callable | `ClubsRepository.createClub` | `clubs/{clubId}`, `clubMemberships/{clubId_uid}`, `clubHostClaims/{uid}` | Server derives host identity from authenticated user using the shared public profile projection helper; initializes lifecycle fields as active/unarchived; the membership edge is the source of truth and `memberCount` is the parent aggregate. `clubHostClaims/{uid}` enforces the current product rule that a user can host at most one club. |
 | `updateClub` | Callable | `ClubsRepository.updateClub` | `clubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `clubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
@@ -149,12 +149,12 @@ should be repairable from edge/source documents.
 
 | Projection | Source | Sync owner | Repair / validation |
 |---|---|---|---|
-| `publicProfiles/{uid}.name`, `profilePhotos`, legacy photo arrays, and public profile fields | `users/{uid}` | `syncPublicProfile` | Firestore trigger plus `tool/validate_firestore_data.mjs` profile checks and `tool/recompute_public_profiles.mjs` repair. |
-| `clubs/{clubId}.hostName`, `hostAvatarUrl` | Host `users/{hostUserId}` | `createClub` on create, then `syncPublicProfile` on profile writes | `tool/recompute_club_host_profiles.mjs`; validator emits `event-club-host-name-drift` / `event-club-host-avatar-drift`. |
-| `reviews/{reviewId}.reviewerName` | Reviewer `users/{reviewerUserId}` | `createEventReview` on create, then `syncPublicProfile` on profile writes | `tool/recompute_review_author_profiles.mjs`; validator emits `reviewer-name-drift`. |
+| `publicProfiles/{uid}.name`, `profilePhotos`, legacy photo arrays, and public profile fields | `users/{uid}` | `syncPublicProfile` | Firestore trigger plus `tool/data/validate_firestore_data.mjs` profile checks and `tool/data/recompute_public_profiles.mjs` repair. |
+| `clubs/{clubId}.hostName`, `hostAvatarUrl` | Host `users/{hostUserId}` | `createClub` on create, then `syncPublicProfile` on profile writes | `tool/data/recompute_club_host_profiles.mjs`; validator emits `event-club-host-name-drift` / `event-club-host-avatar-drift`. |
+| `reviews/{reviewId}.reviewerName` | Reviewer `users/{reviewerUserId}` | `createEventReview` on create, then `syncPublicProfile` on profile writes | `tool/data/recompute_review_author_profiles.mjs`; validator emits `reviewer-name-drift`. |
 | `notifications/{uid}/items/{id}.actorName`, notification `title`/`body` with names | Event-time public profile at notification creation | Notification trigger/callable that created the event | Historical notification copy. Do not back-update unless product decides notifications should become live profile cards. |
 | `matches/{matchId}.lastMessagePreview` | Latest message content | `onMessageCreated` | Message-content preview snapshot, not a user profile projection. |
-| `eventParticipations/{eventId_uid}.genderAtSignup`, `events/{eventId}.genderCounts` | User profile at booking/attendance time | Booking/attendance callables and aggregate repair tools | Signup-time constraint snapshot; do not rewrite after profile edits. `tool/repair_future_run_attendance.mjs` downgrades stale future-event `attended` edges to `signedUp`, fixes affected aggregates, and deletes invalid swipe artifacts. |
+| `eventParticipations/{eventId_uid}.genderAtSignup`, `events/{eventId}.genderCounts` | User profile at booking/attendance time | Booking/attendance callables and aggregate repair tools | Signup-time constraint snapshot; do not rewrite after profile edits. `tool/data/repair_future_event_attendance.mjs` downgrades stale future-event `attended` edges to `signedUp`, fixes affected aggregates, and deletes invalid swipe artifacts. |
 | `notifications/{uid}/items/{notificationId}` | Match/message triggers, create-event fan-out, host event update/cancellation, and booking/cancellation callables now; remaining event producers should use the same backend-owned helper. | Owner can read own items and update only `readAt`; client create/delete/content edits are denied. |
 | `blocks/{blockId}` | Safety callables | Direct client writes denied. |
 | `reports/{reportId}` | Safety callable | Direct client writes denied. |
@@ -185,7 +185,7 @@ When adding a new producer, write the timeline item through
 `functions/src/shared/notifications.ts`, keep IDs deterministic where the
 source event has a stable ID, add Functions tests for duplicate delivery, add a
 rules test if the client read/update contract changes, and extend
-`tool/firestore_contract.json`.
+`tool/contracts/firestore_contract.json`.
 
 Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
 `demoOpsCommand`, `seedPrefix`, and `synthetic`. Trigger-owned notification

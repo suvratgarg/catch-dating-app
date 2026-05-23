@@ -353,7 +353,7 @@ void main() {
       },
     );
 
-    test('uploads the cover image before creating the club', () async {
+    test('creates the club before uploading new club media', () async {
       final fakeRepository = FakeClubsRepository()..generatedId = 'club-42';
       final fakeImageUploadRepository = FakeImageUploadRepository(
         pickedImage: XFile('/tmp/club-cover.jpg'),
@@ -399,9 +399,11 @@ void main() {
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-42');
       expect(fakeRepository.lastCreateCall, isNotNull);
       expect(fakeRepository.lastCreateCall!.clubId, 'club-42');
+      expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
+      expect(fakeRepository.lastUpdatedClubId, 'club-42');
       expect(
-        fakeRepository.lastCreateCall!.imageUrl,
-        fakeImageUploadRepository.uploadResult,
+        fakeRepository.lastUpdatedFields,
+        containsPair('imageUrl', fakeImageUploadRepository.uploadResult),
       );
     });
 

@@ -174,6 +174,12 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
       eventId: "event-1",
       clubId: "club-1",
       selectedModuleIds: ["guided_rotations"],
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        revealCountdownSeconds: 10,
+      },
     },
     ...overrides,
   });
@@ -314,6 +320,50 @@ test(
     const slots = manOne?.rotationSlots as Array<Record<string, unknown>>;
     assert.equal(slots[0].peerUid, "woman-2");
     assert.equal(slots[0].compatibility, "questionnaire_match");
+  }
+);
+
+test(
+  "requires mutual interest for dating-coded generated rotations",
+  async () => {
+    const {firestore, deps} = harness({
+      "eventSuccessPlans/event-1": {
+        eventId: "event-1",
+        clubId: "club-1",
+        selectedModuleIds: [
+          "guided_rotations",
+          "compatibility_questionnaire",
+        ],
+        compatibilityAffectsRanking: true,
+        structureConfig: {
+          unitKind: "pairs",
+          unitSize: 2,
+          rotationIntervalMinutes: 15,
+          revealCountdownSeconds: 10,
+        },
+      },
+      ...participation("man-1"),
+      ...participation("woman-1"),
+      ...participation("nb-1"),
+      "users/man-1": user("man", ["woman"]),
+      "users/woman-1": user("woman", ["man"]),
+      "users/nb-1": user("nonbinary", ["woman"]),
+    });
+
+    const result = await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
+
+    assert.deepEqual(result, {assignmentCount: 2, roundCount: 1});
+    const manOne = firestore.get(
+      "eventSuccessAssignments/event-1_guided_rotations_man-1"
+    );
+    assert.deepEqual(manOne?.peerUids, ["woman-1"]);
+    assert.equal(
+      firestore.get("eventSuccessAssignments/event-1_guided_rotations_nb-1"),
+      undefined
+    );
   }
 );
 
@@ -513,6 +563,29 @@ test("rejects rotation generation when the module is disabled", async () => {
   );
 });
 
+test("rejects pair rotations for team structures", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 5,
+        revealCountdownSeconds: 10,
+      },
+    },
+  });
+
+  await assert.rejects(
+    () => generateEventSuccessRotationsHandler(callableRequest("host-1"), deps),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "Team assignment engine");
+      return true;
+    }
+  );
+});
+
 test("lets hosts override rotation pairings", async () => {
   const {firestore, deps, rateLimitCalls} = harness({
     ...participation("man-1"),
@@ -644,6 +717,52 @@ test("rejects override pairings for blocked attendees", async () => {
     }
   );
 });
+
+test(
+  "rejects dating-coded override pairings without mutual interest",
+  async () => {
+    const {deps} = harness({
+      "eventSuccessPlans/event-1": {
+        eventId: "event-1",
+        clubId: "club-1",
+        selectedModuleIds: [
+          "guided_rotations",
+          "compatibility_questionnaire",
+        ],
+        compatibilityAffectsRanking: true,
+        structureConfig: {
+          unitKind: "pairs",
+          unitSize: 2,
+          rotationIntervalMinutes: 15,
+          revealCountdownSeconds: 10,
+        },
+      },
+      ...participation("woman-1"),
+      ...participation("nb-1"),
+      "users/woman-1": user("woman", ["man"]),
+      "users/nb-1": user("nonbinary", ["woman"]),
+    });
+
+    await assert.rejects(
+      () => overrideEventSuccessRotationsHandler(
+        callableRequest("host-1", {
+          eventId: "event-1",
+          rounds: [
+            {
+              roundIndex: 0,
+              pairings: [{uidA: "woman-1", uidB: "nb-1"}],
+            },
+          ],
+        }),
+        deps
+      ),
+      (error) => {
+        isHttpsError(error, "failed-precondition", "mutual interest");
+        return true;
+      }
+    );
+  }
+);
 
 function participation(uid: string): Record<string, FakeData> {
   return {

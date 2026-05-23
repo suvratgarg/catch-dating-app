@@ -4,7 +4,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_models.dart'
 abstract final class EventSuccessModuleCatalog {
   static const crowdBalance = EventSuccessModule(
     id: 'crowd_balance',
-    title: 'Crowd balance planner',
+    title: 'Booking balance preview',
     type: EventSuccessModuleType.crowdBalance,
     productLayer: EventSuccessProductLayer.rosterAttendance,
     stage: EventSuccessStage.before,
@@ -45,7 +45,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const hostScript = EventSuccessModule(
     id: 'host_script',
-    title: 'Host script',
+    title: 'Welcome script',
     type: EventSuccessModuleType.formatTemplate,
     productLayer: EventSuccessProductLayer.eventStructure,
     stage: EventSuccessStage.opening,
@@ -59,7 +59,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const microPods = EventSuccessModule(
     id: 'micro_pods',
-    title: 'Micro-pods',
+    title: 'Small starter groups',
     type: EventSuccessModuleType.microPods,
     productLayer: EventSuccessProductLayer.assignments,
     stage: EventSuccessStage.opening,
@@ -90,7 +90,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const guidedRotations = EventSuccessModule(
     id: 'guided_rotations',
-    title: 'Guided rotations',
+    title: 'Timed partner rotations',
     type: EventSuccessModuleType.guidedRotations,
     productLayer: EventSuccessProductLayer.assignments,
     stage: EventSuccessStage.activity,
@@ -115,7 +115,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const liveReveal = EventSuccessModule(
     id: 'live_reveal',
-    title: 'Live reveal',
+    title: 'Synchronized partner reveal',
     type: EventSuccessModuleType.liveReveal,
     productLayer: EventSuccessProductLayer.liveReveal,
     stage: EventSuccessStage.activity,
@@ -164,7 +164,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const wingmanRequests = EventSuccessModule(
     id: 'wingman_requests',
-    title: 'Wingman requests',
+    title: '"Help me say hi" requests',
     type: EventSuccessModuleType.wingmanRequests,
     productLayer: EventSuccessProductLayer.hostFacilitation,
     stage: EventSuccessStage.mixing,
@@ -186,7 +186,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const contextualOpeners = EventSuccessModule(
     id: 'contextual_openers',
-    title: 'Post-match openers',
+    title: 'Suggested first-message openers',
     type: EventSuccessModuleType.contextualOpeners,
     productLayer: EventSuccessProductLayer.conversation,
     stage: EventSuccessStage.after,
@@ -203,7 +203,7 @@ abstract final class EventSuccessModuleCatalog {
 
   static const decomposedFeedback = EventSuccessModule(
     id: 'decomposed_feedback',
-    title: 'Private feedback',
+    title: 'After-event attendee feedback',
     type: EventSuccessModuleType.decomposedFeedback,
     productLayer: EventSuccessProductLayer.hostCoach,
     stage: EventSuccessStage.after,
@@ -329,13 +329,6 @@ abstract final class EventSuccessMetricCatalog {
     target: 'Use private coaching before public host-quality labels.',
   );
 
-  static const repeatAttendance = EventSuccessMetric(
-    id: 'repeat_attendance',
-    label: 'Repeat attendance',
-    description: 'Share of attendees who book another host event.',
-    target: 'Trend by host and event type.',
-  );
-
   static const core = <EventSuccessMetric>[
     checkInRate,
     introCoverage,
@@ -343,7 +336,6 @@ abstract final class EventSuccessMetricCatalog {
     mutualMatchRate,
     chatStartRate,
     dimensionRatings,
-    repeatAttendance,
   ];
 }
 

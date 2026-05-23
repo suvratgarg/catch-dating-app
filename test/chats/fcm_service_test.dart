@@ -23,6 +23,47 @@ void main() {
     });
   });
 
+  group('eventCompanionRouteFromMessageData', () {
+    test('returns the companion route for companion-ready notifications', () {
+      expect(
+        eventCompanionRouteFromMessageData({
+          'type': 'eventCompanionReady',
+          'clubId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        '/clubs/club-1/events/event-7/companion',
+      );
+    });
+
+    test('returns null for other event notifications', () {
+      expect(
+        eventCompanionRouteFromMessageData({
+          'type': 'eventReminder',
+          'clubId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        isNull,
+      );
+    });
+  });
+
+  group('routeFromMessageData', () {
+    test('keeps chat notification routing intact', () {
+      expect(routeFromMessageData({'matchId': 'match-7'}), '/chats/match-7');
+    });
+
+    test('routes companion-ready notifications', () {
+      expect(
+        routeFromMessageData({
+          'type': 'eventCompanionReady',
+          'clubId': 'club-1',
+          'eventId': 'event-7',
+        }),
+        '/clubs/club-1/events/event-7/companion',
+      );
+    });
+  });
+
   group('navigateToMessageRoute', () {
     late GoRouter router;
 
@@ -38,6 +79,13 @@ void main() {
                 path: 'chats/:matchId',
                 builder: (context, state) =>
                     Text(state.pathParameters['matchId']!),
+              ),
+              GoRoute(
+                path: 'clubs/:clubId/events/:eventId/companion',
+                builder: (context, state) => Text(
+                  'Companion ${state.pathParameters['clubId']} '
+                  '${state.pathParameters['eventId']}',
+                ),
               ),
             ],
           ),
@@ -57,6 +105,20 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.text('match-7'), findsOneWidget);
+    });
+
+    testWidgets('navigates when companion data is valid', (tester) async {
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await pumpFeatureUi(tester);
+
+      navigateToMessageRoute(router, {
+        'type': 'eventCompanionReady',
+        'clubId': 'club-1',
+        'eventId': 'event-7',
+      });
+      await pumpFeatureUi(tester);
+
+      expect(find.text('Companion club-1 event-7'), findsOneWidget);
     });
 
     testWidgets('does nothing when chat data is invalid', (tester) async {

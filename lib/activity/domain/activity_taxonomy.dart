@@ -192,6 +192,25 @@ class EventFormatSnapshot {
     );
   }
 
+  factory EventFormatSnapshot.custom({
+    required String label,
+    required EventInteractionModel interactionModel,
+    Map<String, Object?> activityDetails = const {},
+    List<String> defaultModuleIds = const [],
+  }) {
+    final normalizedLabel = label.trim();
+    return EventFormatSnapshot(
+      activityKind: ActivityKind.openActivity,
+      interactionModel: interactionModel,
+      customActivityLabel: normalizedLabel.isEmpty ? null : normalizedLabel,
+      defaultModuleIds: defaultModuleIds,
+      activityDetails: {
+        if (activityDetails.isNotEmpty) ...activityDetails,
+        'formatSource': 'custom',
+      },
+    );
+  }
+
   factory EventFormatSnapshot.fromJson(Map<String, dynamic>? json) {
     if (json == null) return const EventFormatSnapshot.socialRun();
     final activityKind = _enumByName(
@@ -208,9 +227,7 @@ class EventFormatSnapshot {
         activityKind.defaultInteractionModel,
       ),
       customActivityLabel: json['customActivityLabel'] as String?,
-      defaultPlaybookId:
-          json['defaultPlaybookId'] as String? ??
-          activityKind.defaultPlaybookId,
+      defaultPlaybookId: json['defaultPlaybookId'] as String?,
       defaultModuleIds:
           (json['defaultModuleIds'] as List<dynamic>?)
               ?.whereType<String>()

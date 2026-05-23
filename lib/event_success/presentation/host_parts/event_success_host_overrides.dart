@@ -42,7 +42,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Micro-pods',
+                  'Small starter groups',
                   style: CatchTextStyles.titleM(context),
                 ),
               ),
@@ -155,7 +155,7 @@ class _RotationsHostCard extends ConsumerWidget {
               gapW10,
               Expanded(
                 child: Text(
-                  'Guided rotations',
+                  'Timed partner rotations',
                   style: CatchTextStyles.titleM(context),
                 ),
               ),

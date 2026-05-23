@@ -59,7 +59,7 @@ The current contract layer covers:
   `sexualOrientation`. The profile contract does not include it.
 - `firestore.rules` no longer allows new user-profile writes with legacy
   `sexualOrientation`.
-- `tool/firestore_ts_overlay.json` makes public profile `languages` optional
+- `tool/contracts/firestore_ts_overlay.json` makes public profile `languages` optional
   while Dart has a default empty list. The contract keeps it optional because
   the backend projection currently omits empty language arrays.
 - `functions/src/shared/firestore.ts` is still generated from Dart models as a
@@ -78,10 +78,10 @@ For the full local contract gate, event:
 For the fast contract-source check, event:
 
 ```bash
-node tool/validate_schema_contracts.mjs
+node tool/contracts/validate_schema_contracts.mjs
 ```
 
 This checks JSON syntax, schema metadata, local `$ref` targets, prompt catalog
 uniqueness, catalog/schema limit alignment, and fixture placement. Generated
-TypeScript/Ajv/Dart output is checked by `node tool/generate_schema_contracts.mjs
+TypeScript/Ajv/Dart output is checked by `node tool/contracts/generate_schema_contracts.mjs
 --check` and by the full data-contract script.

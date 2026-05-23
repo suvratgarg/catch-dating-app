@@ -137,6 +137,14 @@ export VERBOSE_AUTH_DEBUG_LOGS=true
 ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
 ```
 
+For simulator-only Firebase test phone numbers, bypass Firebase Auth app
+verification explicitly for that run. This is rejected in production/release
+builds and should not be used for real phone-number verification:
+
+```bash
+DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=true ./tool/flutter_with_env.sh dev run -d "iPhone 17"
+```
+
 Android, iOS, and macOS builds use native flavors. The environment wrapper automatically adds the matching flavor for APK, App Bundle, iOS, and macOS builds:
 
 ```bash

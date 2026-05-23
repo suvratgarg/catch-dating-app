@@ -58,7 +58,7 @@ jobs:
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Contract check
-        run: node tool/check_firestore_contract.mjs
+        run: node tool/contracts/check_firestore_contract.mjs
 
       - name: Functions lint
         run: npm --prefix functions run lint

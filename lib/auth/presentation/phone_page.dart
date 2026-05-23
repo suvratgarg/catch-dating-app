@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
@@ -41,12 +43,18 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      if (ref.read(AuthController.sendOtpMutation).isPending) return;
+
       final countryCode = ref.read(authControllerProvider).countryCode;
-      AuthController.sendOtpMutation.run(ref, (tx) async {
-        await tx
-            .get(authControllerProvider.notifier)
-            .sendOtp(_phoneController.text.trim(), countryCode);
-      });
+      unawaited(
+        AuthController.sendOtpMutation
+            .run(ref, (tx) async {
+              await tx
+                  .get(authControllerProvider.notifier)
+                  .sendOtp(_phoneController.text.trim(), countryCode);
+            })
+            .catchError((Object _) {}),
+      );
     }
   }
 

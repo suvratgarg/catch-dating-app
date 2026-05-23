@@ -63,11 +63,11 @@ The app currently uses:
   for disabled services, denied permission, and permanently denied permission.
 - Public profile exact coordinates have been removed from the Dart model,
   Firestore TypeScript contract, and `syncPublicProfile` projection.
-- `tool/strip_public_profile_coordinates.mjs` can dry-run/apply removal of
+- `tool/data/strip_public_profile_coordinates.mjs` can dry-run/apply removal of
   legacy `latitude`/`longitude` fields from existing `publicProfiles` docs.
 - `latlong2.LatLng` has been removed from app-facing code and the dependency
   graph; SDK-specific coordinate types now stay at Google Maps adapter edges.
-- `tool/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
+- `tool/firebase/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
   SDK config for iOS and Android without printing secrets. It can also validate
   the server-side `GOOGLE_MAPS_PLACES_API_KEY` Secret Manager value with
   `--include-places-secret`, including rejecting accidental `keyString:`
@@ -140,7 +140,7 @@ References:
    - Store only the raw `AIza...` key. Do not paste a plist-style
      `keyString:` wrapper.
    - Validate the deployed project before debugging the app:
-     `node tool/validate_google_maps_config.mjs --env dev --platform ios --include-places-secret`.
+     `node tool/firebase/validate_google_maps_config.mjs --env dev --platform ios --include-places-secret`.
 6. Set conservative quotas before TestFlight:
    - Maps SDK daily map-load quota per project.
    - Places Autocomplete request quota.
@@ -154,7 +154,7 @@ References:
 
 ### Phase 1: Privacy Boundary
 
-- Run `tool/strip_public_profile_coordinates.mjs --env <env>` as a dry run,
+- Run `tool/data/strip_public_profile_coordinates.mjs --env <env>` as a dry run,
   then rerun with `--apply` for each environment that has legacy public
   coordinates.
 - Decide whether swipe cards should show no location copy, city-only copy, or a
@@ -196,7 +196,7 @@ References:
   force a provider change.
 - Keep Google Maps SDK keys in environment-specific native config, and validate
   the server-side Places secret with
-  `tool/validate_google_maps_config.mjs --include-places-secret` before
+  `tool/firebase/validate_google_maps_config.mjs --include-places-secret` before
   TestFlight or device QA.
 - Add budget alerts, quota limits, and release checklist items.
 - Add widget tests for disabled map base tiles and integration QA for real map
@@ -212,7 +212,7 @@ Completed:
 - Dashboard map view, create-run pin picker, run-detail location preview, and
   payment-confirmation directions all use the Google Maps stack.
 - Native iOS/Android Maps config is validated by
-  `tool/validate_google_maps_config.mjs`, and `tool/flutter_with_env.sh` runs
+  `tool/firebase/validate_google_maps_config.mjs`, and `tool/flutter_with_env.sh` runs
   that validation before native run/build commands. Places secret validation is
   opt-in with `--include-places-secret` because it requires `gcloud` access to
   Secret Manager and a live Google Places probe.

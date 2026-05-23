@@ -168,7 +168,7 @@ const data = validateCallableWithAjv<CreateEventCallablePayload>(
 ```
 
 Contract sources live under `contracts/`. Regenerate TypeScript validators and
-types with `node tool/generate_schema_contracts.mjs`; `./tool/check_data_contract.sh`
+types with `node tool/contracts/generate_schema_contracts.mjs`; `./tool/check_data_contract.sh`
 fails if generated output is stale. Normalization stays explicit at the callable
 boundary so JSON Schema validation remains side-effect free.
 
