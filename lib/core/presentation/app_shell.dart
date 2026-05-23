@@ -11,6 +11,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -73,6 +75,25 @@ class AppShell extends ConsumerWidget {
           ),
         );
       });
+      ref.listen(watchEventParticipationsForUserProvider(uid), (_, next) {
+        final participations = next.asData?.value;
+        if (participations == null) return;
+        final registry = ref.read(eventSuccessCompanionLaunchRegistryProvider);
+        final transitions = registry.attendedTransitionsForUser(
+          uid: uid,
+          participations: participations,
+        );
+        for (final participation in transitions) {
+          unawaited(
+            launchEventSuccessCompanionForParticipation(
+              context: context,
+              ref: ref,
+              uid: uid,
+              participation: participation,
+            ),
+          );
+        }
+      });
     }
 
     // Keep observability user IDs in sync with auth state. Also invalidate the
@@ -89,6 +110,9 @@ class AppShell extends ConsumerWidget {
         errorLogger: errorLogger,
         analytics: analytics,
       );
+      if (uid != prev?.asData?.value) {
+        ref.read(eventSuccessCompanionLaunchRegistryProvider).reset();
+      }
       if (uid == null && prev?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());
         ref.invalidate(watchUserProfileProvider);

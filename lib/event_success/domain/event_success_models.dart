@@ -245,7 +245,6 @@ class EventSuccessScorecard {
     required this.attendeesWhoMetTwoPlusPeople,
     required this.mutualMatchCount,
     required this.chatStartedCount,
-    required this.repeatSignupCount,
     required this.averageWelcomeRating,
     required this.averageStructureRating,
     required this.safetyIncidentCount,
@@ -258,7 +257,6 @@ class EventSuccessScorecard {
        assert(attendeesWhoMetTwoPlusPeople >= 0),
        assert(mutualMatchCount >= 0),
        assert(chatStartedCount >= 0),
-       assert(repeatSignupCount >= 0),
        assert(averageWelcomeRating >= 0 && averageWelcomeRating <= 5),
        assert(averageStructureRating >= 0 && averageStructureRating <= 5),
        assert(safetyIncidentCount >= 0),
@@ -272,7 +270,6 @@ class EventSuccessScorecard {
   final int attendeesWhoMetTwoPlusPeople;
   final int mutualMatchCount;
   final int chatStartedCount;
-  final int repeatSignupCount;
   final double averageWelcomeRating;
   final double averageStructureRating;
   final int safetyIncidentCount;
@@ -287,7 +284,6 @@ class EventSuccessScorecard {
     int? attendeesWhoMetTwoPlusPeople,
     int? mutualMatchCount,
     int? chatStartedCount,
-    int? repeatSignupCount,
     double? averageWelcomeRating,
     double? averageStructureRating,
     int? safetyIncidentCount,
@@ -303,7 +299,6 @@ class EventSuccessScorecard {
           attendeesWhoMetTwoPlusPeople ?? this.attendeesWhoMetTwoPlusPeople,
       mutualMatchCount: mutualMatchCount ?? this.mutualMatchCount,
       chatStartedCount: chatStartedCount ?? this.chatStartedCount,
-      repeatSignupCount: repeatSignupCount ?? this.repeatSignupCount,
       averageWelcomeRating: averageWelcomeRating ?? this.averageWelcomeRating,
       averageStructureRating:
           averageStructureRating ?? this.averageStructureRating,
@@ -326,8 +321,6 @@ class EventSuccessScorecard {
   double get mutualMatchRate => _rate(mutualMatchCount, checkedInCount);
 
   double get chatStartRate => _rate(chatStartedCount, mutualMatchCount);
-
-  double get repeatSignupRate => _rate(repeatSignupCount, checkedInCount);
 
   double get feedbackResponseRate =>
       _rate(feedbackResponseCount, checkedInCount);

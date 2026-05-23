@@ -111,7 +111,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               CatchBadge(
-                label: 'Live reveal',
+                label: 'Synchronized partner reveal',
                 tone: CatchBadgeTone.live,
                 icon: Icons.bolt_rounded,
                 backgroundColor: t.surface.withValues(alpha: 0.14),

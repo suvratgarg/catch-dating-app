@@ -4,9 +4,12 @@ import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
   group('EventSuccessPlaybookLibrary', () {
@@ -279,6 +282,36 @@ void main() {
       expect(mixer.compatibilityAffectsRankingByDefault, isTrue);
     });
 
+    test('format profiles use saved interaction model for custom formats', () {
+      const format = EventFormatSnapshot(
+        activityKind: ActivityKind.openActivity,
+        interactionModel: EventInteractionModel.teamRotations,
+        customActivityLabel: 'Trivia night',
+      );
+
+      final profile = EventSuccessActivityProfile.forFormat(
+        format,
+        targetAttendeeCount: 40,
+      );
+
+      expect(profile.formatLabel, 'Trivia night');
+      expect(profile.interactionModel, EventInteractionModel.teamRotations);
+      expect(
+        profile.assignmentAlgorithm,
+        EventSuccessAssignmentAlgorithm.teamBalancer,
+      );
+      expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
+      expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
+      expect(
+        profile.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.microPods.id),
+      );
+      expect(
+        profile.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.liveReveal.id),
+      );
+    });
+
     test('event defaults normalize to the selected activity', () {
       final racketDefaults = EventSuccessDefaults(
         enabled: true,
@@ -309,6 +342,37 @@ void main() {
         contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
       );
       expect(mixerDefaults.compatibilityAffectsRanking, isTrue);
+    });
+
+    test('event plan factories use saved format interaction model', () {
+      const format = EventFormatSnapshot(
+        activityKind: ActivityKind.openActivity,
+        interactionModel: EventInteractionModel.teamRotations,
+        customActivityLabel: 'Trivia night',
+      );
+      final event = buildEvent(
+        eventFormat: format,
+        capacityLimit: 42,
+        bookedCount: 30,
+      );
+
+      final defaultsPlan = const EventSuccessDefaults(
+        enabled: true,
+      ).toPlanForEvent(event, now: DateTime(2026, 5, 23, 12));
+      final directPlan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: DateTime(2026, 5, 23, 12),
+      );
+
+      for (final plan in [defaultsPlan, directPlan]) {
+        expect(plan.playbookId, EventSuccessPlaybookLibrary.pubQuiz.id);
+        expect(plan.structureConfig.unitKind, EventSuccessUnitKind.teams);
+        expect(plan.structureConfig.estimatedUnitCount(42), 9);
+        expect(
+          plan.selectedModuleIds,
+          contains(EventSuccessModuleCatalog.microPods.id),
+        );
+      }
     });
 
     test('activity normalization replaces legacy structure defaults', () {

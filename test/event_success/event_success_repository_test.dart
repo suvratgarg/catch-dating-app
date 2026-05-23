@@ -37,6 +37,19 @@ void main() {
       expect(samePlan.createdAt, plan.createdAt);
     });
 
+    test('fetches a saved plan by event id', () async {
+      final event = buildEvent(id: 'event-1');
+
+      expect(await repository.fetchPlan(event.id), isNull);
+
+      final plan = await repository.ensurePlanForEvent(event);
+      final fetched = await repository.fetchPlan(event.id);
+
+      expect(fetched?.eventId, plan.eventId);
+      expect(fetched?.clubId, plan.clubId);
+      expect(fetched?.playbookId, plan.playbookId);
+    });
+
     test('saves host setup and live step updates', () async {
       final event = buildEvent(id: 'event-1');
       final plan = await repository.ensurePlanForEvent(event);
@@ -61,7 +74,6 @@ void main() {
       await repository.startLiveRevealCountdown(
         eventId: event.id,
         roundIndex: 1,
-        countdownSeconds: 10,
       );
 
       final countingDown = await repository.watchPlan(event.id).first;

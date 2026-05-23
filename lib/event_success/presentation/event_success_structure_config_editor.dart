@@ -14,18 +14,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
     required this.targetAttendeeCount,
     required this.enabled,
     required this.onChanged,
-    this.showRotationCadence = true,
-    this.showRevealCountdown = true,
-    this.revealCountdownLabel = 'Reveal countdown',
   });
 
   final EventSuccessStructureConfig value;
   final int targetAttendeeCount;
   final bool enabled;
   final ValueChanged<EventSuccessStructureConfig> onChanged;
-  final bool showRotationCadence;
-  final bool showRevealCountdown;
-  final String revealCountdownLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -50,24 +44,6 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
               tone: CatchBadgeTone.neutral,
               icon: Icons.grid_view_rounded,
             ),
-            if (showRotationCadence)
-              CatchBadge(
-                label: value.rotates
-                    ? '${value.rotationIntervalMinutes} min rotations'
-                    : 'No timed rotation',
-                tone: value.rotates
-                    ? CatchBadgeTone.live
-                    : CatchBadgeTone.neutral,
-                icon: value.rotates
-                    ? Icons.sync_alt_rounded
-                    : Icons.schedule_outlined,
-              ),
-            if (showRevealCountdown && value.revealCountdownSeconds > 0)
-              CatchBadge(
-                label: '${value.revealCountdownSeconds}s reveal',
-                tone: CatchBadgeTone.neutral,
-                icon: Icons.timer_outlined,
-              ),
           ],
         ),
         gapH8,
@@ -197,52 +173,6 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             );
           },
         ),
-        if (showRotationCadence) ...[
-          gapH12,
-          Text('Rotation cadence', style: CatchTextStyles.labelL(context)),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final interval in const <int?>[null, 10, 15, 20, 30])
-                CatchChip(
-                  label: interval == null
-                      ? 'No timed rotation'
-                      : '$interval min',
-                  active: value.rotationIntervalMinutes == interval,
-                  enabled: enabled,
-                  onTap: enabled
-                      ? () => onChanged(
-                          value.copyWith(rotationIntervalMinutes: interval),
-                        )
-                      : null,
-                ),
-            ],
-          ),
-        ],
-        if (showRevealCountdown) ...[
-          gapH12,
-          Text(revealCountdownLabel, style: CatchTextStyles.labelL(context)),
-          gapH8,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              for (final seconds in const [0, 5, 10, 15])
-                CatchChip(
-                  label: seconds == 0 ? 'Off' : '${seconds}s',
-                  active: value.revealCountdownSeconds == seconds,
-                  enabled: enabled,
-                  onTap: enabled
-                      ? () => onChanged(
-                          value.copyWith(revealCountdownSeconds: seconds),
-                        )
-                      : null,
-                ),
-            ],
-          ),
-        ],
         if (!enabled) ...[
           gapH8,
           Text(

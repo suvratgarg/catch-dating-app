@@ -3,6 +3,12 @@ import 'package:flutter/foundation.dart';
 abstract final class CreateEventFormKeys {
   static const distance = ValueKey('create-event-distance-field');
   static const activityType = ValueKey('create-event-activity-type');
+  static const customActivityLabel = ValueKey(
+    'create-event-custom-activity-label-field',
+  );
+  static const customInteractionModel = ValueKey(
+    'create-event-custom-interaction-model',
+  );
   static const capacity = ValueKey('create-event-capacity-field');
   static const price = ValueKey('create-event-price-field');
   static const description = ValueKey('create-event-description-field');
@@ -30,6 +36,9 @@ abstract final class CreateEventFormKeys {
 
   static ValueKey<String> admissionPreset(String presetName) =>
       ValueKey('create-event-admission-preset-$presetName');
+
+  static ValueKey<String> interactionModel(String interactionModelName) =>
+      ValueKey('create-event-interaction-model-$interactionModelName');
 
   static ValueKey<String> deleteDraft(String draftId) =>
       ValueKey('create-event-delete-draft-$draftId');

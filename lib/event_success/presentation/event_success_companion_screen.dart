@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
@@ -45,6 +46,57 @@ part 'companion_parts/event_success_companion_live_cards.dart';
 part 'companion_parts/event_success_companion_wingman.dart';
 part 'companion_parts/event_success_companion_feedback.dart';
 
+AppBar _companionAppBar(BuildContext context) => AppBar(
+  title: const Text('Event companion'),
+  leading: IconButton(
+    icon: const Icon(Icons.arrow_back_rounded),
+    tooltip: 'Back',
+    onPressed: () => context.pop(),
+  ),
+);
+
+/// Renders [body] inside the stable companion chrome. Loading, error, and
+/// content states all share this scaffold so the app bar never pops in as the
+/// route's data-dependent provider waves resolve.
+Widget _companionScaffold(BuildContext context, Widget body) => Scaffold(
+  backgroundColor: CatchTokens.of(context).bg,
+  appBar: _companionAppBar(context),
+  body: body,
+);
+
+Widget _companionLoading(BuildContext context) =>
+    _companionScaffold(context, const Center(child: CatchLoadingIndicator()));
+
+Widget _companionError(
+  BuildContext context,
+  Object error,
+  AppErrorContext errorContext,
+  VoidCallback onRetry,
+) => _companionScaffold(
+  context,
+  Center(
+    child: Padding(
+      padding: const EdgeInsets.all(CatchSpacing.s5),
+      child: CatchInlineErrorState.fromError(
+        error,
+        context: errorContext,
+        onRetry: onRetry,
+      ),
+    ),
+  ),
+);
+
+Widget _companionMessage(BuildContext context, String title, String message) =>
+    _companionScaffold(
+      context,
+      Center(
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.s5),
+          child: CatchInlineErrorState(title: title, message: message),
+        ),
+      ),
+    );
+
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
@@ -67,75 +119,84 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         ? const AsyncData<EventParticipation?>(null)
         : ref.watch(watchEventParticipationProvider(eventId, uid));
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
+    // Wave 1: core event, profile, participation, and plan load together.
     if (eventAsync.isLoading && event == null) {
-      return const Scaffold(body: CatchLoadingIndicator());
+      return _companionLoading(context);
     }
     if (eventAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         eventAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventProvider(eventId)),
+        AppErrorContext.event,
+        () => ref.invalidate(watchEventProvider(eventId)),
       );
     }
     if (event == null) {
-      return const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This event is no longer available.',
+      return _companionMessage(
+        context,
+        'Event not found',
+        'This event is no longer available.',
       );
     }
     if (uid == null) {
-      return const CatchErrorScaffold(
-        title: 'Sign in required',
-        message: 'Sign in to open your event companion.',
+      return _companionMessage(
+        context,
+        'Sign in required',
+        'Sign in to open your event companion.',
       );
     }
     if (profileAsync.isLoading ||
         participationAsync.isLoading ||
         planAsync.isLoading) {
-      return const Scaffold(body: CatchLoadingIndicator());
+      return _companionLoading(context);
     }
     if (profileAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         profileAsync.error!,
-        context: AppErrorContext.profile,
-        onRetry: () => ref.invalidate(watchUserProfileProvider),
+        AppErrorContext.profile,
+        () => ref.invalidate(watchUserProfileProvider),
       );
     }
     if (participationAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         participationAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () =>
-            ref.invalidate(watchEventParticipationProvider(eventId, uid)),
+        AppErrorContext.event,
+        () => ref.invalidate(watchEventParticipationProvider(eventId, uid)),
       );
     }
     if (planAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         planAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
+        AppErrorContext.event,
+        () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
       );
     }
 
     final profile = profileAsync.asData?.value;
     final participation = participationAsync.asData?.value;
     if (profile == null || participation == null) {
-      return const CatchErrorScaffold(
-        title: 'No booking found',
-        message: 'Book this event before opening the companion.',
+      return _companionMessage(
+        context,
+        'No booking found',
+        'Book this event before opening the companion.',
       );
     }
 
     final plan = planAsync.asData?.value;
     if (plan == null) {
-      return const CatchErrorScaffold(
-        title: 'Companion not available',
-        message:
-            'The host has not enabled the live event guide for this event yet.',
+      return _companionMessage(
+        context,
+        'Companion not available',
+        'The host has not enabled the live event guide for this event yet.',
       );
     }
 
-    final referenceNow = DateTime.now();
+    final referenceNow =
+        ref.watch(eventSuccessCompanionClockProvider).asData?.value ??
+        DateTime.now();
     final runtime = EventSuccessRuntime(
       plan: plan,
       event: event,
@@ -160,14 +221,16 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           )
         : const AsyncData<EventSuccessCompatibilityResponse?>(null);
 
+    // Wave 2: compatibility response, resolved before the attendee moment.
     if (compatibilityAsync.isLoading) {
-      return const Scaffold(body: CatchLoadingIndicator());
+      return _companionLoading(context);
     }
     if (compatibilityAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         compatibilityAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessCompatibilityResponseProvider(
             eventId: eventId,
             uid: uid,
@@ -247,36 +310,40 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           )
         : const AsyncData<EventSuccessAssignment?>(null);
 
+    // Wave 3: moment-specific feedback, preference, wingman, and assignments.
     if (feedbackAsync.isLoading ||
         preferenceAsync.isLoading ||
         wingmanRequestAsync.isLoading ||
         assignmentAsync.isLoading ||
         rotationAsync.isLoading) {
-      return const Scaffold(body: CatchLoadingIndicator());
+      return _companionLoading(context);
     }
     if (feedbackAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         feedbackAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (assignmentAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         assignmentAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (rotationAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         rotationAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessRotationAssignmentProvider(
             eventId: eventId,
             uid: uid,
@@ -285,19 +352,21 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (preferenceAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         preferenceAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (wingmanRequestAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         wingmanRequestAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           watchUserEventSuccessWingmanRequestProvider(
             eventId: eventId,
             uid: uid,
@@ -306,10 +375,11 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (candidatesAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return _companionError(
+        context,
         candidatesAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
+        AppErrorContext.event,
+        () => ref.invalidate(
           wingmanRequestCandidatesProvider(
             eventId: eventId,
             currentUser: profile,
@@ -356,6 +426,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
           rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
       rotationPeersLoading: rotationPeersAsync.isLoading,
       guidedRotationsOptedOut: guidedRotationsOptedOut,
+      now: referenceNow,
     );
   }
 }
@@ -431,203 +502,164 @@ class _EventSuccessCompanionScreenState
       eventEnded: eventEnded,
       compatibilityResponseSaved: widget.compatibilityResponse != null,
     );
-    final showPrompt = attendeeMoment.showPrompt;
-    final showSelfCheckIn = attendeeMoment.showSelfCheckIn;
-    final showPreCheckInPlanning = attendeeMoment.showPreCheckInPlanning;
-    final showPodAssignment = attendeeMoment.showPodAssignment;
-    final showRotationSchedule = attendeeMoment.showRotationSchedule;
-    final showLiveReveal = attendeeMoment.showLiveReveal;
-    final showCompatibilityQuestionnaire =
-        attendeeMoment.showCompatibilityQuestionnaire;
-    final showConversationCues = attendeeMoment.showConversationCues;
-    final showPostEventOpeners = attendeeMoment.showPostEventOpeners;
-    final showWingmanRequest = attendeeMoment.showWingmanRequest;
-    final showFeedback = attendeeMoment.showFeedback;
     final wingmanCandidates = _wingmanCandidatesForViewer(
       viewer: widget.userProfile,
       candidates: widget.wingmanRequestCandidates,
     );
     final revealKind = _revealKindForAttendeeMoment(attendeeMoment);
-    final hasVisibleModule = attendeeMoment.hasVisibleModule;
+
+    // Build the card stack as a flat list — each `addCard` prepends a gap so
+    // spacing stays correct without cumulative-`gapH16` conditional chains.
+    final children = <Widget>[
+      _CompanionHero(
+        event: event,
+        plan: plan,
+        attended: attended,
+        showSelfCheckIn: attendeeMoment.showSelfCheckIn,
+        eventEnded: eventEnded,
+      ),
+    ];
+    void addCard(Widget card) {
+      children.add(gapH16);
+      children.add(card);
+    }
+
+    if (attendeeMoment.showSelfCheckIn) {
+      addCard(_SelfCheckInCard(event: event));
+    }
+    if (attendeeMoment.showPreCheckInPlanning) {
+      addCard(
+        _PreCheckInPlanningCard(
+          microPodsEnabled: runtime.microPodsEnabled,
+          guidedRotationsEnabled: runtime.guidedRotationsEnabled,
+          liveRevealEnabled: runtime.liveRevealEnabled,
+          socialMissionsEnabled: runtime.socialMissionsEnabled,
+          wingmanRequestsEnabled: runtime.wingmanRequestsEnabled,
+        ),
+      );
+    }
+    if (attendeeMoment.showCompatibilityQuestionnaire) {
+      addCard(
+        _CompatibilityQuestionnaireSection(
+          event: event,
+          plan: plan,
+          response: widget.compatibilityResponse,
+        ),
+      );
+    }
+    if (attendeeMoment.showPrompt) {
+      addCard(
+        EventSuccessPromptCard(
+          title: 'Social prompt',
+          prompt: plan.attendeePromptFor(event),
+        ),
+      );
+    }
+    if (attendeeMoment.showConversationCues) {
+      final isPostEvent = attendeeMoment.showPostEventOpeners;
+      addCard(
+        EventSuccessConversationCueCard(
+          title: isPostEvent
+              ? 'Suggested first-message openers'
+              : 'Conversation cues',
+          subtitle: isPostEvent
+              ? 'Use one after a mutual match opens.'
+              : 'Pick one when the room needs an easy next line.',
+          cues: isPostEvent
+              ? EventSuccessConversationCueLibrary.postEventOpenersFor(event)
+              : EventSuccessConversationCueLibrary.liveCuesFor(
+                  event: event,
+                  plan: plan,
+                  activeStep: attendeeMoment.activeStep,
+                ),
+        ),
+      );
+    }
+    if (attendeeMoment.showLiveStepContext) {
+      addCard(_LiveStepContextCard(step: attendeeMoment.activeStep));
+    }
+    // `showPodAssignment` and `showRotationSchedule` are mutually exclusive
+    // with `showLiveReveal` at runtime (different `EventSuccessAttendeeMoment`
+    // kinds), so we render the non-reveal cards here directly and let the
+    // dedicated reveal branch below handle the reveal case.
+    if (attendeeMoment.showPodAssignment) {
+      addCard(
+        _MicroPodCard(
+          event: event,
+          assignment: widget.microPodsOptedOut ? null : widget.assignment,
+          peerProfiles: widget.assignmentPeerProfiles,
+          peersLoading: widget.assignmentPeersLoading,
+          microPodsOptedOut: widget.microPodsOptedOut,
+        ),
+      );
+    }
+    if (attendeeMoment.showRotationSchedule) {
+      addCard(
+        _RotationScheduleCard(
+          event: event,
+          assignment: widget.guidedRotationsOptedOut
+              ? null
+              : widget.rotationAssignment,
+          peerProfiles: widget.rotationPeerProfiles,
+          peersLoading: widget.rotationPeersLoading,
+          guidedRotationsOptedOut: widget.guidedRotationsOptedOut,
+        ),
+      );
+    }
+    if (attendeeMoment.showLiveReveal && revealKind != null) {
+      final isRotations =
+          revealKind == EventSuccessRevealAssignmentKind.rotations;
+      addCard(
+        EventSuccessLiveRevealAttendeeCard(
+          event: event,
+          plan: plan,
+          kind: revealKind,
+          assignment: isRotations
+              ? (widget.guidedRotationsOptedOut
+                    ? null
+                    : widget.rotationAssignment)
+              : (widget.microPodsOptedOut ? null : widget.assignment),
+          peerProfiles: isRotations
+              ? widget.rotationPeerProfiles
+              : widget.assignmentPeerProfiles,
+          peersLoading: isRotations
+              ? widget.rotationPeersLoading
+              : widget.assignmentPeersLoading,
+          optedOut: isRotations
+              ? widget.guidedRotationsOptedOut
+              : widget.microPodsOptedOut,
+          now: referenceNow,
+        ),
+      );
+    }
+    if (attendeeMoment.showWingmanRequest) {
+      addCard(
+        _WingmanRequestSection(
+          event: event,
+          candidates: wingmanCandidates,
+          existingRequest: widget.wingmanRequest,
+        ),
+      );
+    }
+    if (attendeeMoment.showFeedback) {
+      addCard(
+        EventSuccessFeedbackForm(
+          event: event,
+          userProfile: widget.userProfile,
+          existingFeedback: widget.existingFeedback,
+        ),
+      );
+    }
+    if (!attendeeMoment.hasVisibleModule) {
+      addCard(const _NoCompanionActionsCard());
+    }
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
-      appBar: AppBar(
-        title: const Text('Event companion'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          tooltip: 'Back',
-          onPressed: () => context.pop(),
-        ),
-      ),
+      appBar: _companionAppBar(context),
       body: ListView(
         padding: const EdgeInsets.all(CatchSpacing.s5),
-        children: [
-          _CompanionHero(
-            event: event,
-            plan: plan,
-            attended: attended,
-            showSelfCheckIn: showSelfCheckIn,
-          ),
-          gapH16,
-          if (showSelfCheckIn) ...[_SelfCheckInCard(event: event), gapH16],
-          if (showPreCheckInPlanning) ...[
-            _PreCheckInPlanningCard(
-              event: event,
-              microPodsEnabled: runtime.microPodsEnabled,
-              guidedRotationsEnabled: runtime.guidedRotationsEnabled,
-              microPodsOptedOut: widget.microPodsOptedOut,
-              guidedRotationsOptedOut: widget.guidedRotationsOptedOut,
-            ),
-            gapH16,
-          ],
-          if (showCompatibilityQuestionnaire)
-            _CompatibilityQuestionnaireSection(
-              event: event,
-              plan: plan,
-              response: widget.compatibilityResponse,
-            ),
-          if (showPrompt) ...[
-            if (showCompatibilityQuestionnaire) gapH16,
-            EventSuccessPromptCard(
-              title: 'Social prompt',
-              prompt: plan.attendeePromptFor(event),
-            ),
-          ],
-          if (showConversationCues) ...[
-            if (showPrompt || showCompatibilityQuestionnaire) gapH16,
-            EventSuccessConversationCueCard(
-              title: showPostEventOpeners
-                  ? 'Post-match openers'
-                  : 'Conversation cues',
-              subtitle: showPostEventOpeners
-                  ? 'Use one after a mutual match opens.'
-                  : 'Pick one when the room needs an easy next line.',
-              cues: showPostEventOpeners
-                  ? EventSuccessConversationCueLibrary.postEventOpenersFor(
-                      event,
-                    )
-                  : EventSuccessConversationCueLibrary.liveCuesFor(
-                      event: event,
-                      plan: plan,
-                      activeStep: attendeeMoment.activeStep,
-                    ),
-            ),
-          ],
-          if (attendeeMoment.showLiveStepContext) ...[
-            if (showPrompt ||
-                showCompatibilityQuestionnaire ||
-                showConversationCues)
-              gapH16,
-            _LiveStepContextCard(step: attendeeMoment.activeStep),
-          ],
-          if (showPodAssignment) ...[
-            if (showPrompt ||
-                showCompatibilityQuestionnaire ||
-                showConversationCues ||
-                attendeeMoment.showLiveStepContext)
-              gapH16,
-            if (showLiveReveal)
-              EventSuccessLiveRevealAttendeeCard(
-                event: event,
-                plan: plan,
-                kind: EventSuccessRevealAssignmentKind.microPods,
-                assignment: widget.microPodsOptedOut ? null : widget.assignment,
-                peerProfiles: widget.assignmentPeerProfiles,
-                peersLoading: widget.assignmentPeersLoading,
-                optedOut: widget.microPodsOptedOut,
-                now: referenceNow,
-              )
-            else
-              _MicroPodCard(
-                event: event,
-                assignment: widget.microPodsOptedOut ? null : widget.assignment,
-                peerProfiles: widget.assignmentPeerProfiles,
-                peersLoading: widget.assignmentPeersLoading,
-                microPodsOptedOut: widget.microPodsOptedOut,
-              ),
-          ],
-          if (showRotationSchedule) ...[
-            if (showPrompt ||
-                showCompatibilityQuestionnaire ||
-                showConversationCues ||
-                showPodAssignment ||
-                attendeeMoment.showLiveStepContext)
-              gapH16,
-            if (showLiveReveal)
-              EventSuccessLiveRevealAttendeeCard(
-                event: event,
-                plan: plan,
-                kind: EventSuccessRevealAssignmentKind.rotations,
-                assignment: widget.guidedRotationsOptedOut
-                    ? null
-                    : widget.rotationAssignment,
-                peerProfiles: widget.rotationPeerProfiles,
-                peersLoading: widget.rotationPeersLoading,
-                optedOut: widget.guidedRotationsOptedOut,
-                now: referenceNow,
-              )
-            else
-              _RotationScheduleCard(
-                event: event,
-                assignment: widget.guidedRotationsOptedOut
-                    ? null
-                    : widget.rotationAssignment,
-                peerProfiles: widget.rotationPeerProfiles,
-                peersLoading: widget.rotationPeersLoading,
-                guidedRotationsOptedOut: widget.guidedRotationsOptedOut,
-              ),
-          ],
-          if (showLiveReveal && revealKind != null) ...[
-            if (showPrompt ||
-                showCompatibilityQuestionnaire ||
-                showConversationCues ||
-                attendeeMoment.showLiveStepContext)
-              gapH16,
-            EventSuccessLiveRevealAttendeeCard(
-              event: event,
-              plan: plan,
-              kind: revealKind,
-              assignment:
-                  revealKind == EventSuccessRevealAssignmentKind.rotations
-                  ? widget.guidedRotationsOptedOut
-                        ? null
-                        : widget.rotationAssignment
-                  : widget.microPodsOptedOut
-                  ? null
-                  : widget.assignment,
-              peerProfiles:
-                  revealKind == EventSuccessRevealAssignmentKind.rotations
-                  ? widget.rotationPeerProfiles
-                  : widget.assignmentPeerProfiles,
-              peersLoading:
-                  revealKind == EventSuccessRevealAssignmentKind.rotations
-                  ? widget.rotationPeersLoading
-                  : widget.assignmentPeersLoading,
-              optedOut: revealKind == EventSuccessRevealAssignmentKind.rotations
-                  ? widget.guidedRotationsOptedOut
-                  : widget.microPodsOptedOut,
-              now: referenceNow,
-            ),
-          ],
-          if (showWingmanRequest) ...[
-            gapH16,
-            _WingmanRequestSection(
-              event: event,
-              candidates: wingmanCandidates,
-              existingRequest: widget.wingmanRequest,
-            ),
-          ],
-          if (showFeedback) ...[
-            gapH16,
-            EventSuccessFeedbackForm(
-              event: event,
-              userProfile: widget.userProfile,
-              existingFeedback: widget.existingFeedback,
-            ),
-          ],
-          if (!hasVisibleModule) const _NoCompanionActionsCard(),
-        ],
+        children: children,
       ),
     );
   }

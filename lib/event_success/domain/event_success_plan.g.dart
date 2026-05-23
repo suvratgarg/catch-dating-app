@@ -47,9 +47,6 @@ _EventSuccessPlan _$EventSuccessPlanFromJson(
   revealStartedAt: const NullableTimestampConverter().fromJson(
     json['revealStartedAt'] as Timestamp?,
   ),
-  revealEndsAt: const NullableTimestampConverter().fromJson(
-    json['revealEndsAt'] as Timestamp?,
-  ),
   attendeePrompt: json['attendeePrompt'] as String?,
   createdAt: const TimestampConverter().fromJson(
     json['createdAt'] as Timestamp,
@@ -84,9 +81,6 @@ Map<String, dynamic> _$EventSuccessPlanToJson(_EventSuccessPlan instance) =>
       'activeRevealRoundIndex': instance.activeRevealRoundIndex,
       'revealStartedAt': const NullableTimestampConverter().toJson(
         instance.revealStartedAt,
-      ),
-      'revealEndsAt': const NullableTimestampConverter().toJson(
-        instance.revealEndsAt,
       ),
       'attendeePrompt': instance.attendeePrompt,
       'createdAt': const TimestampConverter().toJson(instance.createdAt),

@@ -19,6 +19,32 @@ enum EventSuccessRecommendationLevel {
       this == EventSuccessRecommendationLevel.defaultOn;
 }
 
+enum EventSuccessPhoneAvailability {
+  continuous,
+  plannedPauses,
+  arrivalAndPostEventOnly,
+  hostOnlyLive,
+  noneDuringActivity,
+}
+
+enum EventSuccessRotationSuitability { none, plannedBreaks, continuousRounds }
+
+enum EventSuccessAssignmentAlgorithm {
+  none,
+  pacePods,
+  socialPods,
+  pairRotations,
+  teamBalancer,
+  tableSeating,
+}
+
+enum EventSuccessCompatibilityPolicy {
+  none,
+  socialCohortBalance,
+  mutualInterestOnly,
+  questionnaireClueOnly,
+}
+
 class EventSuccessModuleRecommendation {
   const EventSuccessModuleRecommendation({
     required this.module,
@@ -37,8 +63,14 @@ class EventSuccessModuleRecommendation {
 class EventSuccessActivityProfile {
   const EventSuccessActivityProfile({
     required this.activityKind,
+    required this.formatLabel,
+    required this.interactionModel,
     required this.playbook,
     required this.structureConfig,
+    required this.phoneAvailability,
+    required this.rotationSuitability,
+    required this.assignmentAlgorithm,
+    required this.compatibilityPolicy,
     required this.summary,
     required this.recommendations,
     this.compatibilityAffectsRankingByDefault = false,
@@ -47,14 +79,22 @@ class EventSuccessActivityProfile {
   factory EventSuccessActivityProfile.forActivity(
     ActivityKind activityKind, {
     int? targetAttendeeCount,
+  }) => EventSuccessActivityProfile.forFormat(
+    EventFormatSnapshot.fromActivityKind(activityKind),
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  factory EventSuccessActivityProfile.forFormat(
+    EventFormatSnapshot format, {
+    int? targetAttendeeCount,
   }) {
-    final playbook = _playbookFor(activityKind);
-    final structureConfig = EventSuccessStructureConfig.defaultForActivity(
-      activityKind,
+    final playbook = _playbookForFormat(format);
+    final structureConfig = EventSuccessStructureConfig.defaultForFormat(
+      format,
       targetAttendeeCount: targetAttendeeCount ?? _targetFor(playbook),
     );
-    final levels = _levelsFor(activityKind);
-    final reasons = _reasonsFor(activityKind);
+    final levels = _levelsForFormat(format);
+    final reasons = _reasonsFor(format);
     final recommendations = <EventSuccessModuleRecommendation>[
       for (final module in playbook.modules)
         EventSuccessModuleRecommendation(
@@ -65,19 +105,32 @@ class EventSuccessActivityProfile {
     ];
 
     return EventSuccessActivityProfile(
-      activityKind: activityKind,
+      activityKind: format.activityKind,
+      formatLabel: format.label,
+      interactionModel: format.interactionModel,
       playbook: playbook,
       structureConfig: structureConfig,
-      summary: _summaryFor(activityKind),
+      phoneAvailability: _phoneAvailabilityFor(format),
+      rotationSuitability: _rotationSuitabilityFor(format.interactionModel),
+      assignmentAlgorithm: _assignmentAlgorithmFor(format.interactionModel),
+      compatibilityPolicy: _compatibilityPolicyFor(format),
+      summary: _summaryFor(format),
       recommendations: recommendations,
       compatibilityAffectsRankingByDefault:
-          activityKind == ActivityKind.singlesMixer,
+          _compatibilityPolicyFor(format) ==
+          EventSuccessCompatibilityPolicy.mutualInterestOnly,
     );
   }
 
   final ActivityKind activityKind;
+  final String formatLabel;
+  final EventInteractionModel interactionModel;
   final EventSuccessPlaybook playbook;
   final EventSuccessStructureConfig structureConfig;
+  final EventSuccessPhoneAvailability phoneAvailability;
+  final EventSuccessRotationSuitability rotationSuitability;
+  final EventSuccessAssignmentAlgorithm assignmentAlgorithm;
+  final EventSuccessCompatibilityPolicy compatibilityPolicy;
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;
   final bool compatibilityAffectsRankingByDefault;
@@ -122,17 +175,29 @@ class EventSuccessActivityProfile {
   }
 }
 
-EventSuccessPlaybook _playbookFor(ActivityKind activityKind) {
-  final id = activityKind.defaultPlaybookId;
+EventSuccessPlaybook _playbookForFormat(EventFormatSnapshot format) {
+  final id = format.defaultPlaybookId;
   if (id != null) return EventSuccessPlaybookLibrary.byIdOrDefault(id);
-  return EventSuccessPlaybookLibrary.hostLedSocial;
+  return switch (format.interactionModel) {
+    EventInteractionModel.pacePods => EventSuccessPlaybookLibrary.socialRun,
+    EventInteractionModel.pairedRotations =>
+      EventSuccessPlaybookLibrary.pickleball,
+    EventInteractionModel.teamRotations => EventSuccessPlaybookLibrary.pubQuiz,
+    EventInteractionModel.seatedTable => EventSuccessPlaybookLibrary.dinner,
+    EventInteractionModel.freeFormMixer =>
+      format.activityKind == ActivityKind.singlesMixer
+          ? EventSuccessPlaybookLibrary.algorithmicMixer
+          : EventSuccessPlaybookLibrary.hostLedSocial,
+    EventInteractionModel.hostLedProgram || EventInteractionModel.openFormat =>
+      EventSuccessPlaybookLibrary.hostLedSocial,
+  };
 }
 
 int _targetFor(EventSuccessPlaybook playbook) =>
     ((playbook.capacity.min + playbook.capacity.max) / 2).round();
 
-Map<String, EventSuccessRecommendationLevel> _levelsFor(
-  ActivityKind activityKind,
+Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
+  EventFormatSnapshot format,
 ) {
   final base = <String, EventSuccessRecommendationLevel>{
     EventSuccessModuleCatalog.crowdBalance.id:
@@ -163,7 +228,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsFor(
         EventSuccessRecommendationLevel.defaultOn,
   };
 
-  switch (activityKind.defaultInteractionModel) {
+  switch (format.interactionModel) {
     case EventInteractionModel.pacePods:
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.defaultOn;
@@ -198,7 +263,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsFor(
       base[EventSuccessModuleCatalog.liveReveal.id] =
           EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.compatibilityQuestionnaire.id] =
-          activityKind == ActivityKind.singlesMixer
+          _compatibilityPolicyFor(format) ==
+              EventSuccessCompatibilityPolicy.mutualInterestOnly
           ? EventSuccessRecommendationLevel.defaultOn
           : EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.microPods.id] =
@@ -223,10 +289,89 @@ Map<String, EventSuccessRecommendationLevel> _levelsFor(
           EventSuccessRecommendationLevel.optional;
   }
 
+  for (final moduleId in format.defaultModuleIds) {
+    final level = base[moduleId];
+    if (level != null && level != EventSuccessRecommendationLevel.unsupported) {
+      base[moduleId] = EventSuccessRecommendationLevel.defaultOn;
+    }
+  }
+
   return base;
 }
 
-Map<String, String> _reasonsFor(ActivityKind activityKind) {
+EventSuccessPhoneAvailability _phoneAvailabilityFor(
+  EventFormatSnapshot format,
+) {
+  return switch (format.interactionModel) {
+    EventInteractionModel.pacePods =>
+      EventSuccessPhoneAvailability.arrivalAndPostEventOnly,
+    EventInteractionModel.pairedRotations ||
+    EventInteractionModel.teamRotations ||
+    EventInteractionModel.seatedTable ||
+    EventInteractionModel.freeFormMixer =>
+      EventSuccessPhoneAvailability.plannedPauses,
+    EventInteractionModel.hostLedProgram =>
+      format.activityKind.isMovementHeavy
+          ? EventSuccessPhoneAvailability.hostOnlyLive
+          : EventSuccessPhoneAvailability.plannedPauses,
+    EventInteractionModel.openFormat =>
+      EventSuccessPhoneAvailability.hostOnlyLive,
+  };
+}
+
+EventSuccessRotationSuitability _rotationSuitabilityFor(
+  EventInteractionModel interactionModel,
+) {
+  return switch (interactionModel) {
+    EventInteractionModel.pacePods ||
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessRotationSuitability.none,
+    EventInteractionModel.pairedRotations ||
+    EventInteractionModel.freeFormMixer =>
+      EventSuccessRotationSuitability.continuousRounds,
+    EventInteractionModel.teamRotations || EventInteractionModel.seatedTable =>
+      EventSuccessRotationSuitability.plannedBreaks,
+  };
+}
+
+EventSuccessAssignmentAlgorithm _assignmentAlgorithmFor(
+  EventInteractionModel interactionModel,
+) {
+  return switch (interactionModel) {
+    EventInteractionModel.pacePods => EventSuccessAssignmentAlgorithm.pacePods,
+    EventInteractionModel.pairedRotations =>
+      EventSuccessAssignmentAlgorithm.pairRotations,
+    EventInteractionModel.teamRotations =>
+      EventSuccessAssignmentAlgorithm.teamBalancer,
+    EventInteractionModel.seatedTable =>
+      EventSuccessAssignmentAlgorithm.tableSeating,
+    EventInteractionModel.freeFormMixer =>
+      EventSuccessAssignmentAlgorithm.socialPods,
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessAssignmentAlgorithm.none,
+  };
+}
+
+EventSuccessCompatibilityPolicy _compatibilityPolicyFor(
+  EventFormatSnapshot format,
+) {
+  return switch (format.interactionModel) {
+    EventInteractionModel.freeFormMixer =>
+      format.activityKind == ActivityKind.singlesMixer
+          ? EventSuccessCompatibilityPolicy.mutualInterestOnly
+          : EventSuccessCompatibilityPolicy.questionnaireClueOnly,
+    EventInteractionModel.teamRotations ||
+    EventInteractionModel.seatedTable ||
+    EventInteractionModel.pairedRotations =>
+      EventSuccessCompatibilityPolicy.questionnaireClueOnly,
+    EventInteractionModel.pacePods =>
+      EventSuccessCompatibilityPolicy.socialCohortBalance,
+    EventInteractionModel.hostLedProgram ||
+    EventInteractionModel.openFormat => EventSuccessCompatibilityPolicy.none,
+  };
+}
+
+Map<String, String> _reasonsFor(EventFormatSnapshot format) {
   final common = <String, String>{
     EventSuccessModuleCatalog.crowdBalance.id:
         'Useful before publishing, but it belongs beside booking and roster decisions.',
@@ -248,7 +393,7 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
         'Blocks, reports, visibility, and opt-outs have to apply across every live guide surface.',
   };
 
-  switch (activityKind.defaultInteractionModel) {
+  switch (format.interactionModel) {
     case EventInteractionModel.pacePods:
       return {
         ...common,
@@ -336,8 +481,8 @@ Map<String, String> _reasonsFor(ActivityKind activityKind) {
   }
 }
 
-String _summaryFor(ActivityKind activityKind) {
-  return switch (activityKind.defaultInteractionModel) {
+String _summaryFor(EventFormatSnapshot format) {
+  return switch (format.interactionModel) {
     EventInteractionModel.pacePods =>
       'Keep the moving event primary. Use check-in, light grouping, prompts, and follow-up without turning it into speed dating.',
     EventInteractionModel.pairedRotations =>

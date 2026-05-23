@@ -34,16 +34,17 @@ class _MicroPodCard extends ConsumerWidget {
               children: [
                 Text(
                   microPodsOptedOut
-                      ? 'Micro-pods paused for you'
-                      : assigned?.displayTitle ?? 'Pod assignment pending',
+                      ? 'Starter groups paused for you'
+                      : assigned?.displayTitle ??
+                            'Your starter group will appear here',
                   style: CatchTextStyles.titleM(context),
                 ),
                 gapH4,
                 Text(
                   microPodsOptedOut
-                      ? 'You will not be included when the host generates pods.'
+                      ? 'You won\'t be included when the host runs the generator.'
                       : assigned?.displaySubtitle ??
-                            'The host will publish pods once the roster is ready.',
+                            'The host will publish starter groups once everyone is checked in.',
                   style: CatchTextStyles.bodyS(context),
                 ),
                 if (assigned != null) ...[
@@ -59,7 +60,7 @@ class _MicroPodCard extends ConsumerWidget {
                       ),
                       if (peersLoading)
                         const CatchBadge(
-                          label: 'Loading podmates',
+                          label: 'Loading group members',
                           tone: CatchBadgeTone.neutral,
                           icon: Icons.hourglass_empty_rounded,
                         )
@@ -74,27 +75,20 @@ class _MicroPodCard extends ConsumerWidget {
                   ),
                 ],
                 gapH12,
-                CatchButton(
-                  label: microPodsOptedOut
-                      ? 'Join micro-pods'
-                      : 'Skip micro-pods',
-                  variant: microPodsOptedOut
-                      ? CatchButtonVariant.primary
-                      : CatchButtonVariant.secondary,
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending
-                      ? null
-                      : () =>
-                            EventSuccessController.microPodsOptOutMutation.run(
-                              ref,
-                              (tx) => tx
-                                  .get(eventSuccessControllerProvider.notifier)
-                                  .setMicroPodsOptOut(
-                                    event: event,
-                                    optedOut: !microPodsOptedOut,
-                                  ),
+                _IncludeMeToggle(
+                  label: 'Include me in starter groups',
+                  included: !microPodsOptedOut,
+                  busy: mutation.isPending,
+                  onChanged: (include) =>
+                      EventSuccessController.microPodsOptOutMutation.run(
+                        ref,
+                        (tx) => tx
+                            .get(eventSuccessControllerProvider.notifier)
+                            .setMicroPodsOptOut(
+                              event: event,
+                              optedOut: !include,
                             ),
-                  fullWidth: true,
+                      ),
                 ),
               ],
             ),
@@ -144,23 +138,24 @@ class _RotationScheduleCard extends ConsumerWidget {
               children: [
                 Text(
                   guidedRotationsOptedOut
-                      ? 'Rotations paused for you'
-                      : assigned?.displayTitle ?? 'Rotation schedule pending',
+                      ? 'Timed rotations paused for you'
+                      : assigned?.displayTitle ??
+                            'Your rotation schedule will appear here',
                   style: CatchTextStyles.titleM(context),
                 ),
                 gapH4,
                 Text(
                   guidedRotationsOptedOut
-                      ? 'You will not be included when the host generates timed rotations.'
+                      ? 'You won\'t be included when the host runs the generator.'
                       : assigned?.displaySubtitle ??
-                            'The host will publish timed pairings once the roster is ready.',
+                            'Your timed pairings appear once the host generates rotations.',
                   style: CatchTextStyles.bodyS(context),
                 ),
                 if (assigned != null) ...[
                   gapH10,
                   if (peersLoading)
                     const CatchBadge(
-                      label: 'Loading partners',
+                      label: 'Loading partner names',
                       tone: CatchBadgeTone.neutral,
                       icon: Icons.hourglass_empty_rounded,
                     )
@@ -177,28 +172,21 @@ class _RotationScheduleCard extends ConsumerWidget {
                     ),
                 ],
                 gapH12,
-                CatchButton(
-                  label: guidedRotationsOptedOut
-                      ? 'Join rotations'
-                      : 'Skip rotations',
-                  variant: guidedRotationsOptedOut
-                      ? CatchButtonVariant.primary
-                      : CatchButtonVariant.secondary,
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending
-                      ? null
-                      : () => EventSuccessController
-                            .guidedRotationsOptOutMutation
-                            .run(
-                              ref,
-                              (tx) => tx
-                                  .get(eventSuccessControllerProvider.notifier)
-                                  .setGuidedRotationsOptOut(
-                                    event: event,
-                                    optedOut: !guidedRotationsOptedOut,
-                                  ),
+                _IncludeMeToggle(
+                  label: 'Include me in timed rotations',
+                  included: !guidedRotationsOptedOut,
+                  busy: mutation.isPending,
+                  onChanged: (include) => EventSuccessController
+                      .guidedRotationsOptOutMutation
+                      .run(
+                        ref,
+                        (tx) => tx
+                            .get(eventSuccessControllerProvider.notifier)
+                            .setGuidedRotationsOptOut(
+                              event: event,
+                              optedOut: !include,
                             ),
-                  fullWidth: true,
+                      ),
                 ),
               ],
             ),
@@ -295,31 +283,56 @@ class _LiveStepContextCard extends StatelessWidget {
   }
 }
 
-class _PreCheckInPlanningCard extends ConsumerWidget {
+/// Informational preview of what the host will guide the attendee through
+/// once check-in opens. Opt-out controls live on the at-event cards instead —
+/// asking an attendee to opt out *before* they know what each tool feels like
+/// is presumptuous, and the host doesn't need pre-arrival preferences to
+/// generate assignments.
+class _PreCheckInPlanningCard extends StatelessWidget {
   const _PreCheckInPlanningCard({
-    required this.event,
     required this.microPodsEnabled,
     required this.guidedRotationsEnabled,
-    required this.microPodsOptedOut,
-    required this.guidedRotationsOptedOut,
+    required this.liveRevealEnabled,
+    required this.socialMissionsEnabled,
+    required this.wingmanRequestsEnabled,
   });
 
-  final Event event;
   final bool microPodsEnabled;
   final bool guidedRotationsEnabled;
-  final bool microPodsOptedOut;
-  final bool guidedRotationsOptedOut;
+  final bool liveRevealEnabled;
+  final bool socialMissionsEnabled;
+  final bool wingmanRequestsEnabled;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final microPodsMutation = ref.watch(
-      EventSuccessController.microPodsOptOutMutation,
-    );
-    final rotationsMutation = ref.watch(
-      EventSuccessController.guidedRotationsOptOutMutation,
-    );
-
+    final entries = <_PreviewLine>[
+      if (microPodsEnabled)
+        const _PreviewLine(
+          icon: Icons.groups_2_outlined,
+          text: 'Small starter group when you check in.',
+        ),
+      if (guidedRotationsEnabled)
+        const _PreviewLine(
+          icon: Icons.sync_alt_rounded,
+          text: 'Timed partner rotations during the event.',
+        ),
+      if (liveRevealEnabled)
+        const _PreviewLine(
+          icon: Icons.bolt_rounded,
+          text: 'Synchronized partner reveals as the event unfolds.',
+        ),
+      if (socialMissionsEnabled)
+        const _PreviewLine(
+          icon: Icons.chat_bubble_outline_rounded,
+          text: 'Live conversation prompts from the host.',
+        ),
+      if (wingmanRequestsEnabled)
+        const _PreviewLine(
+          icon: Icons.volunteer_activism_outlined,
+          text: 'You can ask the host for an intro to someone specific.',
+        ),
+    ];
     return CatchSurface(
       borderColor: t.line,
       padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -332,103 +345,79 @@ class _PreCheckInPlanningCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      'Before you arrive',
-                      style: CatchTextStyles.titleM(context),
-                    ),
-                    const CatchBadge(
-                      label: 'Pre-arrival',
-                      tone: CatchBadgeTone.neutral,
-                      icon: Icons.schedule_rounded,
-                    ),
-                  ],
+                Text(
+                  'What we\'ll guide you through',
+                  style: CatchTextStyles.titleM(context),
                 ),
                 gapH4,
                 Text(
-                  'Live partner and pod details unlock after check-in. Set planning preferences now so the host can prepare clean assignments.',
-                  style: CatchTextStyles.bodyS(context),
+                  'Live partner and group details unlock after check-in. Here\'s what to expect at the event:',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
-                gapH12,
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  children: [
-                    if (microPodsEnabled)
-                      CatchButton(
-                        label: microPodsOptedOut
-                            ? 'Join micro-pods'
-                            : 'Skip micro-pods',
-                        size: CatchButtonSize.sm,
-                        variant: microPodsOptedOut
-                            ? CatchButtonVariant.primary
-                            : CatchButtonVariant.secondary,
-                        icon: Icon(
-                          microPodsOptedOut
-                              ? Icons.groups_2_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        isLoading: microPodsMutation.isPending,
-                        onPressed: microPodsMutation.isPending
-                            ? null
-                            : () => EventSuccessController
-                                  .microPodsOptOutMutation
-                                  .run(
-                                    ref,
-                                    (tx) => tx
-                                        .get(
-                                          eventSuccessControllerProvider
-                                              .notifier,
-                                        )
-                                        .setMicroPodsOptOut(
-                                          event: event,
-                                          optedOut: !microPodsOptedOut,
-                                        ),
-                                  ),
-                      ),
-                    if (guidedRotationsEnabled)
-                      CatchButton(
-                        label: guidedRotationsOptedOut
-                            ? 'Join rotations'
-                            : 'Skip rotations',
-                        size: CatchButtonSize.sm,
-                        variant: guidedRotationsOptedOut
-                            ? CatchButtonVariant.primary
-                            : CatchButtonVariant.secondary,
-                        icon: Icon(
-                          guidedRotationsOptedOut
-                              ? Icons.sync_alt_rounded
-                              : Icons.block_outlined,
-                        ),
-                        isLoading: rotationsMutation.isPending,
-                        onPressed: rotationsMutation.isPending
-                            ? null
-                            : () => EventSuccessController
-                                  .guidedRotationsOptOutMutation
-                                  .run(
-                                    ref,
-                                    (tx) => tx
-                                        .get(
-                                          eventSuccessControllerProvider
-                                              .notifier,
-                                        )
-                                        .setGuidedRotationsOptOut(
-                                          event: event,
-                                          optedOut: !guidedRotationsOptedOut,
-                                        ),
-                                  ),
-                      ),
-                  ],
-                ),
+                gapH10,
+                for (final entry in entries) ...[entry, gapH6],
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PreviewLine extends StatelessWidget {
+  const _PreviewLine({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(icon, size: 16, color: t.ink2),
+        ),
+        gapW6,
+        Expanded(
+          child: Text(text, style: CatchTextStyles.bodyS(context)),
+        ),
+      ],
+    );
+  }
+}
+
+/// Small Switch + label used as the per-card opt-in toggle for starter groups
+/// and timed rotations. Replaces the older "Skip" / "Join" verb-flipping
+/// button so the current state is visible at a glance.
+class _IncludeMeToggle extends StatelessWidget {
+  const _IncludeMeToggle({
+    required this.label,
+    required this.included,
+    required this.busy,
+    required this.onChanged,
+  });
+
+  final String label;
+  final bool included;
+  final bool busy;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(label, style: CatchTextStyles.labelL(context)),
+        ),
+        Switch.adaptive(
+          value: included,
+          onChanged: busy ? null : onChanged,
+        ),
+      ],
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
@@ -64,10 +63,22 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     bool enabled = false,
     int? targetAttendeeCount,
     String? attendeePrompt,
+  }) => EventSuccessDefaults.recommendedForFormat(
+    EventFormatSnapshot.fromActivityKind(activityKind),
+    enabled: enabled,
+    targetAttendeeCount: targetAttendeeCount,
+    attendeePrompt: attendeePrompt,
+  );
+
+  factory EventSuccessDefaults.recommendedForFormat(
+    EventFormatSnapshot format, {
+    bool enabled = false,
+    int? targetAttendeeCount,
+    String? attendeePrompt,
   }) {
     return EventSuccessDefaults.fromDraft(
-      EventSuccessHostDraft.fromActivity(
-        activityKind,
+      EventSuccessHostDraft.fromFormat(
+        format,
         targetAttendeeCount: targetAttendeeCount,
       ),
       enabled: enabled,
@@ -107,9 +118,17 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
   EventSuccessDefaults normalizedForActivity(
     ActivityKind activityKind, {
     int? targetAttendeeCount,
+  }) => normalizedForFormat(
+    EventFormatSnapshot.fromActivityKind(activityKind),
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  EventSuccessDefaults normalizedForFormat(
+    EventFormatSnapshot format, {
+    int? targetAttendeeCount,
   }) {
-    final recommended = EventSuccessDefaults.recommendedForActivity(
-      activityKind,
+    final recommended = EventSuccessDefaults.recommendedForFormat(
+      format,
       enabled: enabled,
       targetAttendeeCount: targetAttendeeCount,
       attendeePrompt: attendeePrompt,
@@ -117,8 +136,8 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
     final recommendedDraft = recommended.toDraft(
       targetAttendeeCount: targetAttendeeCount,
     );
-    final profile = EventSuccessActivityProfile.forActivity(
-      activityKind,
+    final profile = EventSuccessActivityProfile.forFormat(
+      format,
       targetAttendeeCount: targetAttendeeCount,
     );
     final currentPlaybook = EventSuccessPlaybookLibrary.byIdOrDefault(
@@ -130,7 +149,8 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         .toSet();
     final useCurrentSelectedIds =
         currentSelectedIds.isNotEmpty &&
-        _playbookMatchesActivity(currentPlaybook, activityKind);
+        currentPlaybook.id == profile.playbook.id;
+    final playbookChanged = currentPlaybook.id != profile.playbook.id;
     final selectedIds = useCurrentSelectedIds
         ? currentSelectedIds
         : recommendedDraft.selectedModuleIds;
@@ -143,9 +163,10 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
         selectedModuleIds: selectedIds,
         structureConfig:
             _shouldUseRecommendedStructure(
-              activityKind,
+              format,
               structureConfig,
               targetAttendeeCount,
+              playbookChanged,
             )
             ? recommendedDraft.structureConfig
             : structureConfig,
@@ -172,8 +193,8 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
 
   EventSuccessPlan toPlanForEvent(Event event, {DateTime? now}) {
     final createdAt = now ?? DateTime.now();
-    final normalized = normalizedForActivity(
-      event.activityKind,
+    final normalized = normalizedForFormat(
+      event.eventFormat,
       targetAttendeeCount: math.max(1, event.capacityLimit),
     );
     return EventSuccessPlan.fromDraft(
@@ -196,22 +217,15 @@ String? _trimToNull(String? value) {
   return normalized;
 }
 
-bool _playbookMatchesActivity(
-  EventSuccessPlaybook playbook,
-  ActivityKind activityKind,
-) {
-  if (playbook.activityType == activityKind) return true;
-  return activityKind.defaultPlaybookId == playbook.id;
-}
-
 bool _shouldUseRecommendedStructure(
-  ActivityKind activityKind,
+  EventFormatSnapshot format,
   EventSuccessStructureConfig structureConfig,
   int? targetAttendeeCount,
+  bool playbookChanged,
 ) {
+  if (playbookChanged) return true;
   if (structureConfig.isLegacyDefault) return true;
   return targetAttendeeCount != null &&
-      activityKind.defaultInteractionModel ==
-          EventInteractionModel.teamRotations &&
+      format.interactionModel == EventInteractionModel.teamRotations &&
       structureConfig.isDeprecatedTeamRotationDefault;
 }

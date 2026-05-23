@@ -57,6 +57,7 @@ class _CompatibilityQuestionnaireSectionState
                 'A few quick questions',
                 style: CatchTextStyles.titleM(context),
               ),
+              const _PrivacyBadge(_PrivacyAudience.catchPrivate),
               CatchBadge(
                 label: rankingOn ? 'Can guide pairings' : 'Clues only',
                 tone: rankingOn

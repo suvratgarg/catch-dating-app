@@ -353,5 +353,44 @@ void main() {
         EventSuccessConversationCueMoment.postEvent,
       );
     });
+
+    test('returns post-event attendee moment only when a surface exists', () {
+      final event = buildEvent();
+      final basePlan = EventSuccessPlan.defaultForEvent(event);
+
+      final withoutSurface =
+          EventSuccessRuntime(
+            plan: basePlan.copyWith(
+              selectedModuleIds: [EventSuccessModuleCatalog.hostScript.id],
+            ),
+            event: event,
+            now: event.endTime.add(const Duration(minutes: 1)),
+          ).attendeeMoment(
+            participationStatus: EventParticipationStatus.attended,
+            checkInOpen: false,
+            eventEnded: true,
+          );
+      final withSurface =
+          EventSuccessRuntime(
+            plan: basePlan.copyWith(
+              selectedModuleIds: [
+                EventSuccessModuleCatalog.contextualOpeners.id,
+                EventSuccessModuleCatalog.decomposedFeedback.id,
+              ],
+              contextualOpenersEnabled: true,
+            ),
+            event: event,
+            now: event.endTime.add(const Duration(minutes: 1)),
+          ).attendeeMoment(
+            participationStatus: EventParticipationStatus.attended,
+            checkInOpen: false,
+            eventEnded: true,
+          );
+
+      expect(withoutSurface.kind, EventSuccessAttendeeMomentKind.none);
+      expect(withSurface.kind, EventSuccessAttendeeMomentKind.postEvent);
+      expect(withSurface.showPostEventOpeners, isTrue);
+      expect(withSurface.showFeedback, isTrue);
+    });
   });
 }

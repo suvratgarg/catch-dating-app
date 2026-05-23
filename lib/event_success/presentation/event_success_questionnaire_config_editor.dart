@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -15,11 +16,17 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.enabled = true,
+    this.useBottomSheetForCustom = false,
   });
 
   final EventSuccessQuestionnaireConfig value;
   final ValueChanged<EventSuccessQuestionnaireConfig> onChanged;
   final bool enabled;
+
+  /// When true, the custom-question builder opens in a modal bottom sheet
+  /// instead of rendering inline. Keeps the host setup screen short while the
+  /// host edits long custom question sets.
+  final bool useBottomSheetForCustom;
 
   @override
   Widget build(BuildContext context) {
@@ -93,16 +100,90 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
         ),
         if (normalized.usesCustom) ...[
           gapH14,
-          _CustomQuestionnaireFields(
-            value: normalized,
-            enabled: enabled,
-            onChanged: onChanged,
-          ),
+          if (useBottomSheetForCustom)
+            CatchButton(
+              label: 'Edit custom questions',
+              icon: const Icon(Icons.edit_note_rounded),
+              variant: CatchButtonVariant.secondary,
+              onPressed: enabled
+                  ? () => _openCustomQuestionnaireSheet(
+                      context,
+                      initial: normalized,
+                      onChanged: onChanged,
+                    )
+                  : null,
+              fullWidth: true,
+            )
+          else
+            _CustomQuestionnaireFields(
+              value: normalized,
+              enabled: enabled,
+              onChanged: onChanged,
+            ),
         ] else ...[
           gapH12,
           _QuestionnairePreview(questions: pack.questions),
         ],
       ],
+    );
+  }
+}
+
+Future<void> _openCustomQuestionnaireSheet(
+  BuildContext context, {
+  required EventSuccessQuestionnaireConfig initial,
+  required ValueChanged<EventSuccessQuestionnaireConfig> onChanged,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (sheetContext) => _CustomQuestionnaireSheet(
+      initialValue: initial,
+      onChanged: onChanged,
+    ),
+  );
+}
+
+class _CustomQuestionnaireSheet extends StatefulWidget {
+  const _CustomQuestionnaireSheet({
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final EventSuccessQuestionnaireConfig initialValue;
+  final ValueChanged<EventSuccessQuestionnaireConfig> onChanged;
+
+  @override
+  State<_CustomQuestionnaireSheet> createState() =>
+      _CustomQuestionnaireSheetState();
+}
+
+class _CustomQuestionnaireSheetState extends State<_CustomQuestionnaireSheet> {
+  late EventSuccessQuestionnaireConfig _value = widget.initialValue;
+
+  void _emit(EventSuccessQuestionnaireConfig next) {
+    setState(() => _value = next);
+    widget.onChanged(next);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.78;
+    return CatchBottomSheetScaffold(
+      title: 'Custom questions',
+      subtitle: 'Edit your event\'s match clue questions.',
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+          child: _CustomQuestionnaireFields(
+            value: _value,
+            enabled: true,
+            onChanged: _emit,
+          ),
+        ),
+      ),
     );
   }
 }

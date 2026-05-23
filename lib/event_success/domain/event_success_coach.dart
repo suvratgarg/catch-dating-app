@@ -170,12 +170,6 @@ class EventSuccessCoach {
       );
     }
 
-    if (scorecard.repeatSignupRate >= 0.35) {
-      strengths.add(
-        'Repeat signup is strong enough to treat this format as a keeper.',
-      );
-    }
-
     return EventSuccessBrief(
       scorecard: scorecard,
       recommendations: _sortRecommendations(recommendations),
@@ -208,7 +202,6 @@ abstract final class EventSuccessSampleScorecards {
     attendeesWhoMetTwoPlusPeople: 19,
     mutualMatchCount: 4,
     chatStartedCount: 3,
-    repeatSignupCount: 10,
     averageWelcomeRating: 4.4,
     averageStructureRating: 4.1,
     safetyIncidentCount: 0,
@@ -224,7 +217,6 @@ abstract final class EventSuccessSampleScorecards {
     attendeesWhoMetTwoPlusPeople: 9,
     mutualMatchCount: 1,
     chatStartedCount: 0,
-    repeatSignupCount: 4,
     averageWelcomeRating: 3.6,
     averageStructureRating: 3.1,
     safetyIncidentCount: 0,
@@ -240,7 +232,6 @@ abstract final class EventSuccessSampleScorecards {
     attendeesWhoMetTwoPlusPeople: 20,
     mutualMatchCount: 4,
     chatStartedCount: 4,
-    repeatSignupCount: 7,
     averageWelcomeRating: 4.0,
     averageStructureRating: 4.0,
     safetyIncidentCount: 1,

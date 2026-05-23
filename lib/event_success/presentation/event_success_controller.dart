@@ -67,16 +67,11 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> startRevealCountdown({
     required String eventId,
     required int roundIndex,
-    required int countdownSeconds,
   }) async {
     requireSignedInUid(ref, action: 'start event reveal countdown');
     await ref
         .read(eventSuccessRepositoryProvider)
-        .startLiveRevealCountdown(
-          eventId: eventId,
-          roundIndex: roundIndex,
-          countdownSeconds: countdownSeconds,
-        );
+        .startLiveRevealCountdown(eventId: eventId, roundIndex: roundIndex);
   }
 
   Future<void> revealRound({

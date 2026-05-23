@@ -17,6 +17,8 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.d
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
@@ -783,6 +785,9 @@ void main() {
               _recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(_noRecommendationCandidates),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+            eventSuccessRepositoryProvider.overrideWithValue(
+              _FakeEventSuccessRepository(),
+            ),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             eventCheckInLocationServiceProvider.overrideWithValue(
               const _FakeEventCheckInLocationService(),
@@ -1385,6 +1390,12 @@ class _FakeEventCheckInLocationService implements EventCheckInLocationService {
   Future<EventCheckInLocation> getCurrentLocation() async {
     return const EventCheckInLocation(latitude: 19.07, longitude: 72.87);
   }
+}
+
+class _FakeEventSuccessRepository extends Fake
+    implements EventSuccessRepository {
+  @override
+  Future<EventSuccessPlan?> fetchPlan(String eventId) async => null;
 }
 
 class _FakeActivityNotificationRepository

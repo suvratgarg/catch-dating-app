@@ -14,6 +14,8 @@ void main() {
           price: '100',
           description: 'Easy morning event',
           activityKind: 'pickleball',
+          customActivityLabel: 'Salsa night',
+          interactionModel: 'pairedRotations',
           paceName: 'easy',
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Near the gate',
@@ -40,6 +42,8 @@ void main() {
         expect(restored.price, '100');
         expect(restored.description, 'Easy morning event');
         expect(restored.activityKind, 'pickleball');
+        expect(restored.customActivityLabel, 'Salsa night');
+        expect(restored.interactionModel, 'pairedRotations');
         expect(restored.paceName, 'easy');
         expect(restored.meetingPoint, 'Bandra Fort');
         expect(restored.locationDetails, 'Near the gate');
@@ -140,6 +144,18 @@ void main() {
           clubId: 'club-1',
           savedAt: DateTime.now(),
           activityKind: 'dinner',
+        );
+        expect(draft.isEmpty, isFalse);
+      });
+
+      test('returns false when a custom event format is set', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'openActivity',
+          customActivityLabel: 'Salsa night',
+          interactionModel: 'pairedRotations',
         );
         expect(draft.isEmpty, isFalse);
       });
@@ -258,6 +274,17 @@ void main() {
           activityKind: 'dinner',
         );
         expect(draft.summary, 'Dinner');
+      });
+
+      test('prefers custom event format labels', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'openActivity',
+          customActivityLabel: 'Salsa night',
+        );
+        expect(draft.summary, 'Salsa night');
       });
     });
 

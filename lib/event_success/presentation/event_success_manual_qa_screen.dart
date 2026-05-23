@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -452,7 +453,7 @@ class _ManualQaSideBySide extends StatelessWidget {
                       plan: data.plan,
                       planIsPersisted: true,
                       roster: data.roster,
-                      feedback: data.feedback,
+                      scorecard: EventSuccessSampleScorecards.strongSocialRun,
                       assignments: data.assignments,
                       rotationAssignments: data.rotationAssignments,
                       rotationParticipantProfiles: data.profiles,
@@ -905,7 +906,6 @@ class _ManualQaFixtures {
           revealStatus: _resolvedRevealStatus,
           activeRevealRoundIndex: _resolvedActiveRevealRoundIndex,
           revealStartedAt: _revealStartedAt,
-          revealEndsAt: _revealEndsAt,
         );
     roster = const EventParticipationRoster(
       bookedIds: [
@@ -1371,16 +1371,6 @@ class _ManualQaFixtures {
     ),
     EventSuccessRevealStatus.revealed => now.subtract(
       const Duration(minutes: 1),
-    ),
-    EventSuccessRevealStatus.idle => null,
-  };
-
-  DateTime? get _revealEndsAt => switch (_resolvedRevealStatus) {
-    EventSuccessRevealStatus.countingDown => now.add(
-      Duration(seconds: scenario.structureConfig.revealCountdownSeconds),
-    ),
-    EventSuccessRevealStatus.revealed => now.subtract(
-      const Duration(seconds: 1),
     ),
     EventSuccessRevealStatus.idle => null,
   };

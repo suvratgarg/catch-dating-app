@@ -16,9 +16,12 @@ class EventDetailsStep extends StatelessWidget {
     required this.photoImageBytes,
     required this.onPickPhoto,
     required this.distanceController,
+    required this.customActivityLabelController,
     required this.descriptionController,
     required this.selectedActivityKind,
     required this.onActivityKindChanged,
+    required this.selectedInteractionModel,
+    required this.onInteractionModelChanged,
     required this.selectedPace,
     required this.onPaceChanged,
   });
@@ -27,9 +30,12 @@ class EventDetailsStep extends StatelessWidget {
   final Uint8List? photoImageBytes;
   final VoidCallback? onPickPhoto;
   final TextEditingController distanceController;
+  final TextEditingController customActivityLabelController;
   final TextEditingController descriptionController;
   final ActivityKind selectedActivityKind;
   final ValueChanged<ActivityKind> onActivityKindChanged;
+  final EventInteractionModel selectedInteractionModel;
+  final ValueChanged<EventInteractionModel> onInteractionModelChanged;
   final PaceLevel? selectedPace;
   final ValueChanged<PaceLevel?> onPaceChanged;
 
@@ -76,6 +82,50 @@ class EventDetailsStep extends StatelessWidget {
                   )
                   .toList(),
             ),
+            if (selectedActivityKind == ActivityKind.openActivity) ...[
+              const SizedBox(height: 20),
+              CatchTextField(
+                key: CreateEventFormKeys.customActivityLabel,
+                label: 'Format name',
+                controller: customActivityLabelController,
+                hintText: 'Salsa night',
+                prefixIcon: const Icon(Icons.event_available_outlined),
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.next,
+                validator: (value) {
+                  final normalized = value?.trim() ?? '';
+                  if (normalized.isEmpty) return 'Required';
+                  if (normalized.length < 3) return 'Too short';
+                  if (normalized.length > 64) return 'Too long';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              const FieldLabel('Format structure'),
+              const SizedBox(height: 8),
+              Wrap(
+                key: CreateEventFormKeys.customInteractionModel,
+                spacing: 8,
+                runSpacing: 8,
+                children: EventInteractionModel.values
+                    .map(
+                      (model) => Semantics(
+                        button: true,
+                        selected: selectedInteractionModel == model,
+                        label: 'Select ${model.label}',
+                        child: GestureDetector(
+                          key: CreateEventFormKeys.interactionModel(model.name),
+                          onTap: () => onInteractionModelChanged(model),
+                          child: VibeTag(
+                            label: model.label,
+                            active: selectedInteractionModel == model,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
             if (selectedActivityKind.isDistanceBased) ...[
               const SizedBox(height: 20),
               CatchTextField(
