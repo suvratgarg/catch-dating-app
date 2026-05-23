@@ -220,6 +220,11 @@ if [[ -n "${VERBOSE_AUTH_DEBUG_LOGS:-}" ]]; then
     "--dart-define=VERBOSE_AUTH_DEBUG_LOGS=${VERBOSE_AUTH_DEBUG_LOGS}"
   )
 fi
+if [[ -n "${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=${DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING}"
+  )
+fi
 if [[ -n "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" ]]; then
   extra_dart_defines+=(
     "--dart-define=USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER}"

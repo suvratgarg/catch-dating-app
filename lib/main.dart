@@ -103,6 +103,7 @@ Future<void> _lockDeviceOrientation() {
 Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _activateFirebaseAppCheck();
+  await _configureFirebaseAuthTestingSettings();
 
   // Enable offline persistence explicitly — defaults differ by platform
   // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
@@ -127,6 +128,20 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   }
 
   return remoteConfigError;
+}
+
+Future<void> _configureFirebaseAuthTestingSettings() async {
+  if (!AppConfig.disableAuthAppVerificationForTesting) return;
+  if (!AppConfig.shouldDisableAuthAppVerificationForTesting) {
+    throw StateError(
+      'DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING is only allowed for '
+      'non-production non-release builds.',
+    );
+  }
+  debugPrint('Firebase Auth app verification disabled for testing.');
+  await FirebaseAuth.instance.setSettings(
+    appVerificationDisabledForTesting: true,
+  );
 }
 
 /// Returns the fetch failure (error, stack) when the initial Remote Config

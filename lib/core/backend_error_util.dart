@@ -324,6 +324,44 @@ AppException _mapAuthException(
   required BackendErrorContext context,
 }) {
   final debugMessage = _firebaseDebugMessage(error, context);
+  if (_isAuthKeychainFailure(error)) {
+    return BackendOperationException(
+      code: error.code,
+      message:
+          'Unable to finish sign-in on this device. Please restart the app and request a new code.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      retryable: true,
+      severity: AppErrorSeverity.error,
+    );
+  }
+  if (_isAuthWebVerificationCancelled(error)) {
+    return BackendOperationException(
+      code: error.code,
+      message: 'Verification was cancelled. Please try again when ready.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      retryable: true,
+    );
+  }
+  if (_isAuthCaptchaVerificationFailure(error)) {
+    return BackendOperationException(
+      code: error.code,
+      message:
+          'Unable to complete the verification check. Please close the verification window and try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      retryable: true,
+      severity: AppErrorSeverity.error,
+    );
+  }
+
   return switch (error.code) {
     'invalid-phone-number' => ValidationException(
       'Please enter a valid phone number.',
@@ -399,6 +437,40 @@ AppException _mapAuthException(
       severity: AppErrorSeverity.error,
     ),
   };
+}
+
+bool _isAuthKeychainFailure(FirebaseAuthException error) {
+  final code = error.code.toLowerCase().replaceAll('_', '-');
+  if (code == 'keychain-error') return true;
+
+  final message = error.message?.toLowerCase() ?? '';
+  return message.contains('keychain') ||
+      message.contains('key chain') ||
+      message.contains('nslocalizedfailurereasonerrorkey') ||
+      message.contains('secitem');
+}
+
+bool _isAuthWebVerificationCancelled(FirebaseAuthException error) {
+  final code = error.code.toLowerCase().replaceAll('_', '-');
+  if (code == 'web-context-canceled' || code == 'web-context-cancelled') {
+    return true;
+  }
+
+  final message = error.message?.toLowerCase() ?? '';
+  return (message.contains('interaction') ||
+          message.contains('verification')) &&
+      (message.contains('cancelled by the user') ||
+          message.contains('canceled by the user'));
+}
+
+bool _isAuthCaptchaVerificationFailure(FirebaseAuthException error) {
+  final code = error.code.toLowerCase().replaceAll('_', '-');
+  if (code == 'captcha-check-failed' || code == 'web-context-already-present') {
+    return true;
+  }
+
+  final message = error.message?.toLowerCase() ?? '';
+  return message.contains('recaptcha') || message.contains('captcha');
 }
 
 AppException _mapAuthLikeFirebaseException(

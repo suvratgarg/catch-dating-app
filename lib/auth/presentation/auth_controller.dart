@@ -50,6 +50,8 @@ class AuthController extends _$AuthController {
   static final sendOtpMutation = Mutation<void>();
   static final verifyOtpMutation = Mutation<void>();
 
+  int? _resendToken;
+
   @override
   AuthScreenState build() => AuthScreenState(
     countryCode: ref.watch(authInitialCountryDialCodeProvider),
@@ -69,13 +71,20 @@ class AuthController extends _$AuthController {
       phoneNumber: normalizedPhoneNumber,
       countryCode: normalizedCountryCode,
     );
+    final phoneNumberForState = AuthInput.phoneNumberForState(
+      phoneNumber: normalizedPhoneNumber,
+      countryCode: normalizedCountryCode,
+    );
+    final forceResendingToken =
+        state.phoneNumber == phoneNumberForState &&
+            state.countryCode == normalizedCountryCode
+        ? _resendToken
+        : null;
+    if (forceResendingToken == null) _resendToken = null;
 
     state = state.copyWith(
       verificationId: null,
-      phoneNumber: AuthInput.phoneNumberForState(
-        phoneNumber: normalizedPhoneNumber,
-        countryCode: normalizedCountryCode,
-      ),
+      phoneNumber: phoneNumberForState,
       countryCode: normalizedCountryCode,
     );
 
@@ -88,8 +97,10 @@ class AuthController extends _$AuthController {
           .read(authRepositoryProvider)
           .verifyPhoneNumber(
             phoneNumber: formatted,
-            codeSent: (verificationId, _) {
+            forceResendingToken: forceResendingToken,
+            codeSent: (verificationId, resendToken) {
               _debugLog('AuthController.sendOtp: codeSent');
+              _resendToken = resendToken;
               state = state.copyWith(
                 verificationId: verificationId,
                 step: AuthStep.otp,
@@ -149,6 +160,7 @@ class AuthController extends _$AuthController {
   }
 
   void reset() {
+    _resendToken = null;
     state = AuthScreenState(
       countryCode: ref.read(authInitialCountryDialCodeProvider),
     );

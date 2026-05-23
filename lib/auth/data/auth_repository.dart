@@ -26,6 +26,7 @@ class AuthRepository {
 
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
+    int? forceResendingToken,
     required void Function(String verificationId, int? resendToken) codeSent,
     required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
@@ -45,6 +46,7 @@ class AuthRepository {
         },
         codeSent: codeSent,
         codeAutoRetrievalTimeout: (_) {},
+        forceResendingToken: forceResendingToken,
       ),
       context: context,
     );

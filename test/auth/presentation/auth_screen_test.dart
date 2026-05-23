@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -180,6 +183,76 @@ void main() {
 
       expect(repository.otpVerificationId, 'verification-id');
       expect(repository.otpSmsCode, '123456');
+    });
+
+    testWidgets('OTP entry ignores duplicate submits while pending', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository()
+        ..signInWithOtpCompleter = Completer<void>()
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) {
+              codeSent('verification-id', 11);
+            };
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await container
+          .read(authControllerProvider.notifier)
+          .sendOtp('9999999999', '+91');
+
+      await pumpAuthScreen(tester, container: container);
+
+      await tester.enterText(find.byKey(AuthFormKeys.otpField), '123456');
+      await tester.pump();
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+
+      expect(repository.signInWithOtpCallCount, 1);
+
+      repository.signInWithOtpCompleter!.complete();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('OTP verification errors settle back into an editable state', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository()
+        ..signInWithOtpError = FirebaseAuthException(
+          code: 'invalid-verification-code',
+        )
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) {
+              codeSent('verification-id', 11);
+            };
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await container
+          .read(authControllerProvider.notifier)
+          .sendOtp('9999999999', '+91');
+
+      await pumpAuthScreen(tester, container: container);
+
+      await tester.enterText(find.byKey(AuthFormKeys.otpField), '123456');
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('That code is invalid. Please try again.'),
+        findsOneWidget,
+      );
+      expect(container.read(AuthController.verifyOtpMutation).isPending, false);
+      expect(tester.takeException(), isNull);
     });
   });
 }

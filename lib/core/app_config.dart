@@ -115,6 +115,15 @@ class AppConfig {
         forceObservabilityCollection: enableObservabilityCollection,
       );
 
+  @visibleForTesting
+  static bool canDisableAuthAppVerificationForTesting({
+    required AppEnvironment environment,
+    required bool releaseMode,
+    required bool requested,
+  }) {
+    return requested && !releaseMode && !environment.isProduction;
+  }
+
   static const bool enableObservabilityCollection = bool.fromEnvironment(
     'ENABLE_OBSERVABILITY_COLLECTION',
     defaultValue: false,
@@ -173,6 +182,18 @@ class AppConfig {
     'VERBOSE_AUTH_DEBUG_LOGS',
     defaultValue: false,
   );
+
+  static const bool disableAuthAppVerificationForTesting = bool.fromEnvironment(
+    'DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING',
+    defaultValue: false,
+  );
+
+  static bool get shouldDisableAuthAppVerificationForTesting =>
+      canDisableAuthAppVerificationForTesting(
+        environment: environment,
+        releaseMode: kReleaseMode,
+        requested: disableAuthAppVerificationForTesting,
+      );
 
   static const bool _eventPolicyLabRequested = bool.fromEnvironment(
     'ENABLE_EVENT_POLICY_LAB',
