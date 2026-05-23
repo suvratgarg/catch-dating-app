@@ -209,7 +209,7 @@ For storage/API migrations such as `swipes` to `profileDecisions`:
    store or distribution channel.
 4. Raise the Remote Config `min_build_*` value for released platforms.
 5. Rerun the migration parity gate, for example:
-   `node tool/validate_profile_decision_migration.mjs --env prod --require-parity`.
+   `node tool/data/validate_profile_decision_migration.mjs --env prod --require-parity`.
 6. Cut over backend triggers or remove legacy write support only after the
    parity gate passes with the force-update gate in place.
 

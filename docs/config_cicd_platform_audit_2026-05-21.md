@@ -116,14 +116,14 @@ already correct — this removes the "analytics looks broken" false alarm.
 ### D1 / D2 — Contracts are the intended SSOT but are not enforced
 
 **Where:** `contracts/` (~72 schema files), `docs/schema_contract_unification_tracker.md`
-(v0.8.6, status active), `tool/check_data_contract.sh`, `tool/generate_schema_contracts.mjs`.
+(v0.8.6, status active), `tool/check_data_contract.sh`, `tool/contracts/generate_schema_contracts.mjs`.
 
 **D1 (open, P1, [large]) — three parallel schema representations.** The same
 document shapes are declared in: (1) `contracts/*.json` JSON-Schema files — the
 *intended* single source of truth, but `contracts/README.md` is `status: draft`;
 (2) hand-written Dart Freezed/json_serializable models in `lib/**/domain/`;
 (3) the generated `functions/src/shared/firestore.ts`, which is generated **from
-the Dart models** (`tool/generate_firestore_types.dart`), not from `contracts/`.
+the Dart models** (`tool/contracts/generate_firestore_types.dart`), not from `contracts/`.
 The contracts README explicitly calls `firestore.ts` "transitional … should not
 be treated as the canonical schema source." So today the Dart models are still
 a source, and `contracts/` is a parallel third copy mid-migration. This is real
@@ -134,7 +134,7 @@ scope for a quick fix.
 
 **D2 (DONE 2026-05-21) — contracts layer now has a CI gate.** Previously
 `tool/check_data_contract.sh` (the full contract gate) ran in **no** GitHub
-workflow; only the older `tool/check_firestore_contract.mjs` was gated, so a
+workflow; only the older `tool/contracts/check_firestore_contract.mjs` was gated, so a
 contract edited without regeneration, or a Dart model changed without a matching
 contract update, passed CI green.
 
@@ -262,11 +262,11 @@ iOS job compiles `AppDelegate.swift`, so a bad import is caught on this PR.
 ### D3 — CI verified only `firestore.ts` freshness (DONE 2026-05-21)
 
 **Where:** `flutter-ci.yml` "Verify Firestore types are in sync" runs
-`dart tool/generate_firestore_types.dart` + `git diff --exit-code` on
+`dart tool/contracts/generate_firestore_types.dart` + `git diff --exit-code` on
 `functions/src/shared/firestore.ts` only.
 
 **Was:** the **contracts→generated** outputs
-(`functions/src/shared/generated/*.ts`, `tool/generated/*`,
+(`functions/src/shared/generated/*.ts`, `tool/contracts/generated/*`,
 `lib/core/schema_contracts/generated/*`) were *not* freshness-checked by any
 workflow, so they could be stale on a green build. **Now** covered by the
 `generate_schema_contracts.mjs --check` step in the new `contracts-ci.yml`

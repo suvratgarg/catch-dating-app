@@ -98,7 +98,7 @@ assignment shapes.
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
-`tool/generated/`.
+`tool/contracts/generated/`.
 
 ## Product Guardrails
 
@@ -260,7 +260,7 @@ pass receipts:
 - `functions/src/eventSuccess/*.test.ts`
 - `functions/src/marketplace/eventSuccessScorecards.test.ts`
 - `functions/test/firestore.rules.test.cjs`
-- `tool/seed_demo_data_schema.test.mjs`
+- `tool/demo/seed_demo_data_schema.test.mjs`
 - `test/core/schema_contracts_generated_test.dart`
 - `docs/audit_registry/passes.jsonl`
 

@@ -84,7 +84,7 @@ deploy_target() {
 
   if [[ "$target" == "functions" ]]; then
     deploy_only="$(
-      node "$repo_root/tool/list_firebase_function_targets.mjs" --csv
+      node "$repo_root/tool/firebase/list_firebase_function_targets.mjs" --csv
     )"
   fi
 

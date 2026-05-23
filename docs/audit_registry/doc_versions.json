@@ -95,7 +95,7 @@
     "version": "2.6.2",
     "updated": "2026-05-22",
     "status": "active",
-    "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
+    "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/audit/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",

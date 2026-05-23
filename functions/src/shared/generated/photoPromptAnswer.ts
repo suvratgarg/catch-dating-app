@@ -1,6 +1,6 @@
 /* eslint-disable */
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Regenerate with: node tool/generate_schema_contracts.mjs
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
  * One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.

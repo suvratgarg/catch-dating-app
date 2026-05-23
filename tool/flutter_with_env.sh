@@ -19,7 +19,7 @@ esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-define_file="$repo_root/tool/dart_defines/$environment.json"
+define_file="$repo_root/tool/env/dart_defines/$environment.json"
 
 if [[ ! -f "$define_file" ]]; then
   echo "Missing dart define file: $define_file"
@@ -150,7 +150,7 @@ elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
 fi
 
 if [[ -n "$maps_platform" ]]; then
-  node "$repo_root/tool/validate_google_maps_config.mjs" \
+  node "$repo_root/tool/firebase/validate_google_maps_config.mjs" \
     --env "$environment" \
     --platform "$maps_platform"
 fi

@@ -95,7 +95,7 @@ run_with_retry 3 30 flutter build ios \
   --flavor prod \
   --build-name="$build_name" \
   --build-number="$build_number" \
-  --dart-define-from-file="$repo_root/tool/dart_defines/prod.json"
+  --dart-define-from-file="$repo_root/tool/env/dart_defines/prod.json"
 
 cd ios
 run_with_retry 3 30 pod install

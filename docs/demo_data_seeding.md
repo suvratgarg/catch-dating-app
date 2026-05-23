@@ -16,7 +16,7 @@ messages, payments, reviews, and notifications to exercise real flows.
 The day-to-day internal CLI is:
 
 ```bash
-node tool/demo_ops.mjs
+node tool/demo/demo_ops.mjs
 ```
 
 It wraps the original world seeder for large scenario writes and owns smaller
@@ -27,7 +27,7 @@ a high-fidelity demo.
 The lower-level world seeder is still available:
 
 ```bash
-node tool/seed_demo_data.mjs
+node tool/demo/seed_demo_data.mjs
 ```
 
 It is deterministic and dry-run-first. Generated documents use stable IDs with a
@@ -94,14 +94,14 @@ explicitly testing the lock collections themselves.
 List commands:
 
 ```bash
-node tool/demo_ops.mjs list-commands
+node tool/demo/demo_ops.mjs list-commands
 ```
 
 The supported commands are:
 
 | Command | Purpose |
 |---|---|
-| `seed-world` | Wrapper around `tool/seed_demo_data.mjs` for full scenario seeds. |
+| `seed-world` | Wrapper around `tool/demo/seed_demo_data.mjs` for full scenario seeds. |
 | `append-user` | Wrapper around append mode for adding new testers without resetting existing testers. |
 | `suvbot-actions` | Print the backend-owned Suvbot action catalog from `functions/src/demoOps/suvbot.ts`. |
 | `suvbot` | Run one Suvbot action for a user from the CLI through the compiled Functions implementation. |
@@ -120,7 +120,7 @@ The supported commands are:
 | `create-refund` | Add a refunded payment-history row for one user/event. |
 | `create-host-account` | Give one real user a host-owned demo club and event. |
 | `create-check-in-event` | Create a near-immediate signed-up event at manual/user coordinates for location-gated check-in. |
-| `scenario-info` | List scenario definitions under `tool/demo_seed/scenarios`. |
+| `scenario-info` | List scenario definitions under `tool/demo/demo_seed/scenarios`. |
 | `list-golden-accounts` | Read the golden account registry JSON. |
 
 All write/delete commands are dry-run-first. Add `--apply` to mutate data.
@@ -163,8 +163,8 @@ unallowlisted phone number, or arbitrary admin commands to beta users.
 Use the same backend code from local tooling:
 
 ```bash
-node tool/demo_ops.mjs suvbot-actions
-node tool/demo_ops.mjs suvbot \
+node tool/demo/demo_ops.mjs suvbot-actions
+node tool/demo/demo_ops.mjs suvbot \
   --env prod \
   --phone +919999999999 \
   --action warmChatState \
@@ -183,7 +183,7 @@ Use this when you want yourself and a friend to appear in each other's chat tab
 so you can dogfood Catch instead of moving the conversation to WhatsApp:
 
 ```bash
-node tool/demo_ops.mjs match-phones \
+node tool/demo/demo_ops.mjs match-phones \
   --env prod \
   --phone-a +919131404263 \
   --phone-b +919870042103 \
@@ -230,7 +230,7 @@ Use this before handing a TestFlight build to an investor, advisor, or beta
 tester who needs the app to feel alive immediately:
 
 ```bash
-node tool/demo_ops.mjs warm-user \
+node tool/demo/demo_ops.mjs warm-user \
   --env prod \
   --phone +919131404263 \
   --apply \
@@ -253,7 +253,7 @@ edge documents so list/detail counts remain consistent.
 Use this for 3-10 real testers who should all be able to chat with each other:
 
 ```bash
-node tool/demo_ops.mjs warm-group \
+node tool/demo/demo_ops.mjs warm-group \
   --env prod \
   --phones +919131404263,+919870042103,+919717473191 \
   --apply \
@@ -270,7 +270,7 @@ Use this when one tester's seeded state is messy but you want to preserve their
 manual onboarding/profile edits:
 
 ```bash
-node tool/demo_ops.mjs reset-user-demo-state \
+node tool/demo/demo_ops.mjs reset-user-demo-state \
   --env prod \
   --phone +919818759929 \
   --apply \
@@ -300,7 +300,7 @@ want to remove those stale event docs plus their relationship edges without
 touching real user profiles:
 
 ```bash
-node tool/demo_ops.mjs cleanup-stale-events \
+node tool/demo/demo_ops.mjs cleanup-stale-events \
   --env prod \
   --apply \
   --allow-prod
@@ -325,7 +325,7 @@ phone. The event starts five minutes after the command events, so the 10-minute
 pre-event check-in window is already open:
 
 ```bash
-node tool/demo_ops.mjs create-check-in-event \
+node tool/demo/demo_ops.mjs create-check-in-event \
   --env prod \
   --phone +919131404263 \
   --lat 28.6129 \
@@ -344,7 +344,7 @@ participation edge for the real tester, schedule locks, and aggregate repairs.
 Before a demo, event:
 
 ```bash
-node tool/demo_ops.mjs validate-demo-state \
+node tool/demo/demo_ops.mjs validate-demo-state \
   --env prod \
   --phones +919131404263,+919870042103
 ```
@@ -360,7 +360,7 @@ schema shape.
 Use this before handing someone a phone or TestFlight login:
 
 ```bash
-node tool/demo_ops.mjs demo-checklist \
+node tool/demo/demo_ops.mjs demo-checklist \
   --env prod \
   --phone +919131404263
 ```
@@ -375,14 +375,14 @@ world:
 
 ```bash
 # Fill a event to capacity with synthetic participants.
-node tool/demo_ops.mjs make-event-full \
+node tool/demo/demo_ops.mjs make-event-full \
   --env prod \
   --event-id demo_beta_2026_run_mumbai_01_01 \
   --apply \
   --allow-prod
 
 # Mark a real tester as attended so recap/swipe flows unlock.
-node tool/demo_ops.mjs mark-attended \
+node tool/demo/demo_ops.mjs mark-attended \
   --env prod \
   --phone +919131404263 \
   --event-id demo_beta_2026_run_mumbai_01_05 \
@@ -390,7 +390,7 @@ node tool/demo_ops.mjs mark-attended \
   --allow-prod
 
 # Promote a waitlisted tester and create the activity item.
-node tool/demo_ops.mjs promote-waitlist \
+node tool/demo/demo_ops.mjs promote-waitlist \
   --env prod \
   --phone +919131404263 \
   --event-id demo_beta_2026_run_mumbai_01_01 \
@@ -398,7 +398,7 @@ node tool/demo_ops.mjs promote-waitlist \
   --allow-prod
 
 # Add a new chat message from one tester to another.
-node tool/demo_ops.mjs create-unread-message \
+node tool/demo/demo_ops.mjs create-unread-message \
   --env prod \
   --from-phone +919870042103 \
   --to-phone +919131404263 \
@@ -407,7 +407,7 @@ node tool/demo_ops.mjs create-unread-message \
   --allow-prod
 
 # Create a refunded payment row.
-node tool/demo_ops.mjs create-refund \
+node tool/demo/demo_ops.mjs create-refund \
   --env prod \
   --phone +919131404263 \
   --event-id demo_beta_2026_run_mumbai_01_02 \
@@ -415,7 +415,7 @@ node tool/demo_ops.mjs create-refund \
   --allow-prod
 
 # Create a host-owned club/event for host tools.
-node tool/demo_ops.mjs create-host-account \
+node tool/demo/demo_ops.mjs create-host-account \
   --env prod \
   --phone +919131404263 \
   --apply \
@@ -428,7 +428,7 @@ aggregate projections after apply.
 
 ## Scenarios And Golden Accounts
 
-Scenario JSON files live under `tool/demo_seed/scenarios`:
+Scenario JSON files live under `tool/demo/demo_seed/scenarios`:
 
 - `investor-demo`
 - `dogfood-group`
@@ -440,23 +440,23 @@ Scenario JSON files live under `tool/demo_seed/scenarios`:
 Inspect them with:
 
 ```bash
-node tool/demo_ops.mjs scenario-info
-node tool/demo_ops.mjs scenario-info --demo-scenario investor-demo
+node tool/demo/demo_ops.mjs scenario-info
+node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
 ```
 
 The golden-account registry template is:
 
 ```bash
-tool/demo_seed/golden_accounts.example.json
+tool/demo/demo_seed/golden_accounts.example.json
 ```
 
 Read it with:
 
 ```bash
-node tool/demo_ops.mjs list-golden-accounts
+node tool/demo/demo_ops.mjs list-golden-accounts
 ```
 
-Create a local, ignored `tool/demo_seed/golden_accounts.json` later when real
+Create a local, ignored `tool/demo/demo_seed/golden_accounts.json` later when real
 TestFlight accounts are assigned to stable roles.
 
 ## Launch Cleanup
@@ -464,7 +464,7 @@ TestFlight accounts are assigned to stable roles.
 Before public launch, run a dry run:
 
 ```bash
-node tool/demo_ops.mjs cleanup-demo-data \
+node tool/demo/demo_ops.mjs cleanup-demo-data \
   --env prod \
   --allow-prod
 ```
@@ -472,7 +472,7 @@ node tool/demo_ops.mjs cleanup-demo-data \
 Then apply only after reviewing the path count:
 
 ```bash
-node tool/demo_ops.mjs cleanup-demo-data \
+node tool/demo/demo_ops.mjs cleanup-demo-data \
   --env prod \
   --apply \
   --allow-prod
@@ -535,7 +535,7 @@ Treat this tooling as product infrastructure:
 List available scenarios:
 
 ```bash
-node tool/seed_demo_data.mjs --list-scenarios
+node tool/demo/seed_demo_data.mjs --list-scenarios
 ```
 
 Current scenarios:
@@ -575,8 +575,8 @@ Emulator events do not need live credentials.
 Always start with a dry run:
 
 ```bash
-node tool/seed_demo_data.mjs --env dev --scenario smoke
-node tool/seed_demo_data.mjs --env dev --scenario beta-full --json
+node tool/demo/seed_demo_data.mjs --env dev --scenario smoke
+node tool/demo/seed_demo_data.mjs --env dev --scenario beta-full --json
 ```
 
 The output shows the target project, scenario, anchor users, document counts, and
@@ -591,7 +591,7 @@ relationships around them.
 Use UIDs:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
   --anchor-users uid1,uid2,uid3 \
@@ -601,7 +601,7 @@ node tool/seed_demo_data.mjs \
 Or use phone numbers exactly as stored in `users.phoneNumber`:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
   --anchor-phones +919999999999,+918888888888 \
@@ -611,10 +611,10 @@ node tool/seed_demo_data.mjs \
 Or use a file:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
-  --anchor-file tool/demo_seed/beta_anchors.txt \
+  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
   --allow-prod
 ```
 
@@ -653,7 +653,7 @@ synthetic profiles.
 For a real write to dev:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env dev \
   --scenario beta-full \
   --anchor-users uid1,uid2 \
@@ -664,28 +664,28 @@ node tool/seed_demo_data.mjs \
 Validate the result:
 
 ```bash
-node tool/validate_firestore_data.mjs --env dev
+node tool/data/validate_firestore_data.mjs --env dev
 ```
 
 If validation reports future events with `attended` participation edges, repair
 those stale edges before testing event detail or swipe flows:
 
 ```bash
-node tool/repair_future_event_attendance.mjs --env dev --apply
-node tool/validate_firestore_data.mjs --env dev
+node tool/data/repair_future_event_attendance.mjs --env dev --apply
+node tool/data/validate_firestore_data.mjs --env dev
 ```
 
 For staging:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env staging \
   --scenario beta-full \
-  --anchor-file tool/demo_seed/beta_anchors.txt \
+  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
   --apply \
   --reset-synthetic
 
-node tool/validate_firestore_data.mjs --env staging
+node tool/data/validate_firestore_data.mjs --env staging
 ```
 
 ## Apply To Current TestFlight/Prod
@@ -693,10 +693,10 @@ node tool/validate_firestore_data.mjs --env staging
 Production writes require `--allow-prod` as an explicit guard:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
-  --anchor-file tool/demo_seed/beta_anchors.txt \
+  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
   --apply \
   --allow-prod \
   --reset-synthetic
@@ -705,7 +705,7 @@ node tool/seed_demo_data.mjs \
 Then validate:
 
 ```bash
-node tool/validate_firestore_data.mjs --env prod
+node tool/data/validate_firestore_data.mjs --env prod
 ```
 
 Use this only while the current production database is still a disposable beta
@@ -717,14 +717,14 @@ Do not use `--reset-synthetic` when you only want to add newly invited testers.
 Resetting deletes and recreates the whole synthetic world, which also recreates
 existing testers' seeded notifications and unread state.
 
-Add the new phone number or UID to `tool/demo_seed/beta_anchors.txt`, then dry
+Add the new phone number or UID to `tool/demo/demo_seed/beta_anchors.txt`, then dry
 event append mode:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
-  --anchor-file tool/demo_seed/beta_anchors.txt \
+  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
   --append-anchors \
   --allow-prod
 ```
@@ -732,10 +732,10 @@ node tool/seed_demo_data.mjs \
 If the dry run shows the expected new anchor count, apply it:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
-  --anchor-file tool/demo_seed/beta_anchors.txt \
+  --anchor-file tool/demo/demo_seed/beta_anchors.txt \
   --append-anchors \
   --apply \
   --allow-prod
@@ -751,7 +751,7 @@ normalization. Any generated swipe, swipe-created match, match message, or match
 notification is skipped unless the effective appended/existing
 `eventParticipations/{eventId_uid}` documents show both users attended that event.
 This keeps the seeded Catches data aligned with the same rule enforced by the
-app and by `tool/validate_firestore_data.mjs`.
+app and by `tool/data/validate_firestore_data.mjs`.
 
 ## Reset Without Re-Seeding
 
@@ -762,7 +762,7 @@ with the same `--seed-prefix` and `--scenario`.
 To remove the docs without recreating them:
 
 ```bash
-node tool/seed_demo_data.mjs \
+node tool/demo/seed_demo_data.mjs \
   --env prod \
   --scenario beta-full \
   --apply \
@@ -781,10 +781,10 @@ With the Firestore emulator:
 
 ```bash
 firebase emulators:exec --only firestore \
-  "node tool/seed_demo_data.mjs --env dev --scenario smoke --emulator --apply --reset-synthetic"
+  "node tool/demo/seed_demo_data.mjs --env dev --scenario smoke --emulator --apply --reset-synthetic"
 
 firebase emulators:exec --only firestore \
-  "node tool/validate_firestore_data.mjs --env dev --emulator"
+  "node tool/data/validate_firestore_data.mjs --env dev --emulator"
 ```
 
 This is useful for checking shape and aggregate integrity before touching live
@@ -807,23 +807,23 @@ Firebase projects.
 ## Recommended Beta Workflow
 
 1. Collect the TestFlight users' Firebase Auth UIDs or phone numbers.
-2. Put them in `tool/demo_seed/beta_anchors.txt`.
+2. Put them in `tool/demo/demo_seed/beta_anchors.txt`.
 3. Dry-run prod:
 
    ```bash
-   node tool/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file tool/demo_seed/beta_anchors.txt --allow-prod
+   node tool/demo/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file tool/demo/demo_seed/beta_anchors.txt --allow-prod
    ```
 
 4. Apply:
 
    ```bash
-   node tool/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file tool/demo_seed/beta_anchors.txt --apply --allow-prod --reset-synthetic
+   node tool/demo/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file tool/demo/demo_seed/beta_anchors.txt --apply --allow-prod --reset-synthetic
    ```
 
 5. Validate:
 
    ```bash
-   node tool/validate_firestore_data.mjs --env prod
+   node tool/data/validate_firestore_data.mjs --env prod
    ```
 
 6. Have each tester relaunch TestFlight and check:
@@ -835,7 +835,7 @@ Firebase projects.
 
 Approved and implemented:
 
-- Full world seeding with `tool/seed_demo_data.mjs`.
+- Full world seeding with `tool/demo/seed_demo_data.mjs`.
 - Append-only tester seeding without resetting existing anchor users.
 - One-command direct matching for two real phone numbers.
 - Optional reciprocal swipe writes for match trigger testing.

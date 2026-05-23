@@ -32,7 +32,7 @@ Current state:
   staging, and production Firebase Android apps. Add Play app-signing
   certificate fingerprints after Play App Signing enrollment.
 - iOS/macOS schemes and build configurations are wired for `dev`, `staging`,
-  and `prod` through `tool/configure_apple_flavors.rb`.
+  and `prod` through `tool/platform/configure_apple_flavors.rb`.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in all three Firebase
@@ -113,8 +113,8 @@ Last consolidated from live environment evidence on 2026-05-21.
 ## Runtime source of truth
 
 - App runtime environment comes from `APP_ENV`.
-- Checked-in defaults live in `tool/dart_defines/dev.json`,
-  `tool/dart_defines/staging.json`, and `tool/dart_defines/prod.json`.
+- Checked-in defaults live in `tool/env/dart_defines/dev.json`,
+  `tool/env/dart_defines/staging.json`, and `tool/env/dart_defines/prod.json`.
 - Native Firebase files are activated by `./tool/use_firebase_environment.sh`.
 - The active root Firebase files are mutable working copies. Validate them with
   `./tool/validate_firebase_environment.sh <env>` before debugging runtime
@@ -160,7 +160,7 @@ Regenerate Apple flavor project files after changing app IDs, labels, or
 Firebase environment mappings:
 
 ```bash
-ruby tool/configure_apple_flavors.rb
+ruby tool/platform/configure_apple_flavors.rb
 ```
 
 Run Firebase CLI commands against a configured alias:
@@ -173,9 +173,9 @@ Run Firebase CLI commands against a configured alias:
 Validate Firestore data before tightening rules or writing migrations:
 
 ```bash
-node tool/validate_firestore_data.mjs --env dev
-node tool/validate_firestore_data.mjs --env staging --json
-node tool/validate_firestore_data.mjs --env dev --emulator
+node tool/data/validate_firestore_data.mjs --env dev
+node tool/data/validate_firestore_data.mjs --env staging --json
+node tool/data/validate_firestore_data.mjs --env dev --emulator
 ```
 
 The validator is read-only. It checks document shape, approximate document
@@ -190,8 +190,8 @@ credentials.
 Delete all review documents and reset derived review aggregates:
 
 ```bash
-node tool/delete_firestore_reviews.mjs --env dev
-node tool/delete_firestore_reviews.mjs --env dev --apply --confirm-delete-all-reviews
+node tool/data/delete_firestore_reviews.mjs --env dev
+node tool/data/delete_firestore_reviews.mjs --env dev --apply --confirm-delete-all-reviews
 ```
 
 The review deletion tool also defaults to dry-run. It maps affected review

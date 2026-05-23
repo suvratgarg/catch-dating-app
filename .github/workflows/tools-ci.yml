@@ -1,0 +1,47 @@
+name: Tools CI
+
+on:
+  pull_request:
+    paths:
+      - "tool/**"
+      - ".github/workflows/tools-ci.yml"
+      - "functions/package-lock.json"
+      - "functions/package.json"
+  push:
+    branches: [main]
+    paths:
+      - "tool/**"
+      - ".github/workflows/tools-ci.yml"
+      - "functions/package-lock.json"
+      - "functions/package.json"
+
+jobs:
+  tools:
+    name: Validate tool manifest and fast checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.9"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: npm --prefix functions ci
+
+      - name: Validate tool manifest
+        run: node tool/run.mjs check --manifest-only
+
+      - name: Run fast tool checks
+        run: node tool/run.mjs check

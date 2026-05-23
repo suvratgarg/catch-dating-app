@@ -16,7 +16,7 @@ status: active
 
 Use this as the app-wide error-management source of truth, migration checklist,
 error catalogue, and remediation map. Re-run
-`dart tool/backend_error_candidates.dart` before backend error work. Before the
+`dart tool/audit/backend_error_candidates.dart` before backend error work. Before the
 next migration pass, add an app-wide scanner for frontend/local/provider error
 surfaces and keep its to-do list in the audit registry rather than copying
 findings into new trackers. Stamp files reviewed against this doc in the audit
@@ -310,7 +310,7 @@ Catch now has one backend error API for expected app-facing failures:
   facades.
 - `AsyncErrorLogger` emits generic backend-operation telemetry through
   `AppAnalytics.logBackendOperationFailed`.
-- `tool/backend_error_candidates.dart` is the scanner for future migration
+- `tool/audit/backend_error_candidates.dart` is the scanner for future migration
   drift.
 
 The old Firestore-specific API was removed from production code:
@@ -325,7 +325,7 @@ The old Firestore-specific API was removed from production code:
 Current scanner proof:
 
 ```sh
-dart tool/backend_error_candidates.dart --json
+dart tool/audit/backend_error_candidates.dart --json
 ```
 
 Latest result: `mustMigrate=0`, `review=0`, `verified=80`,
@@ -348,7 +348,7 @@ Single source of truth for this hard migration:
 | Core wrappers | `lib/core/backend_error_util.dart`, `lib/core/backend_error_message.dart` | Migrated: futures, streams, Auth, Firestore, Functions, Storage, Remote Config, App Check, Messaging, timeout, and unexpected mappings |
 | UI facade | `lib/core/app_error_message.dart`, `lib/core/widgets/mutation_error_util.dart` | Migrated: screens and mutation banners route through `appErrorMessage` / `backendErrorMessage` |
 | Logging/reporting | `lib/exceptions/error_logger.dart`, `lib/analytics/app_analytics.dart`, `lib/main.dart` | Migrated: backend failures carry context into logs and analytics |
-| Candidate scanner | `tool/backend_error_candidates.dart` | Added: repeatable candidate scan with `mustMigrate`, `review`, and `migrated` buckets |
+| Candidate scanner | `tool/audit/backend_error_candidates.dart` | Added: repeatable candidate scan with `mustMigrate`, `review`, and `migrated` buckets |
 | Auth | `lib/auth/data/auth_repository.dart`, `lib/auth/presentation/auth_controller.dart`, `lib/auth/presentation/phone_page.dart`, `lib/auth/presentation/otp_page.dart` | Migrated |
 | Firestore reads/streams/writes | `user_profile`, `public_profile`, `runs`, `run_participation`, `saved_run`, `run_clubs`, `run_club_membership`, `reviews`, `matches`, `chats`, `swipes`, `safety`, `payments`, `notifications`, `onboarding` repositories | Migrated |
 | Callable Functions | Profile edits, run/run-club/review/safety/payment/places callables | Migrated with `BackendService.functions`; payments and run booking retain domain-specific mappers |
@@ -393,7 +393,7 @@ Mapper coverage is now explicit in tests:
   retry actions for retryable errors.
 
 The old flat scanner result `review=153` has been reviewed and classified by
-`tool/backend_error_candidates.dart`:
+`tool/audit/backend_error_candidates.dart`:
 
 | Status | Count | Meaning |
 |---|---:|---|
@@ -719,7 +719,7 @@ Only **1 of ~40 write methods** originally used `withFirestoreErrorContext`. Aft
 
 ### Remaining review-only candidates
 
-`tool/backend_error_candidates.dart` intentionally reports direct Firebase
+`tool/audit/backend_error_candidates.dart` intentionally reports direct Firebase
 calls even when they are already inside `withBackendErrorContext` or
 `withBackendErrorStream`. The invariant is `mustMigrate=0`; `review` entries
 must be inspected when touched and should stay documented here when they are
@@ -1034,7 +1034,7 @@ These locations catch and discard errors without any logging. They represent inv
 | Central error logger | `lib/exceptions/error_logger.dart` |
 | Provider error observer | `lib/exceptions/error_logger.dart:150` (AsyncErrorLogger) |
 | Analytics error events | `lib/analytics/app_analytics.dart` (`logBackendOperationFailed`) |
-| Migration scanner | `tool/backend_error_candidates.dart` |
+| Migration scanner | `tool/audit/backend_error_candidates.dart` |
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
 | Error banner widget | `lib/core/widgets/error_banner.dart` |
