@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -50,7 +51,21 @@ class ClubDetailScreen extends ConsumerWidget {
         mutation: ClubMembershipController.leaveMutation,
         child: MutationErrorSnackbarListener(
           mutation: ClubMembershipController.pushNotificationsMutation,
-          child: child,
+          child: MutationErrorSnackbarListener(
+            mutation: ClubHostManagementController.addHostMutation,
+            child: MutationErrorSnackbarListener(
+              mutation: ClubHostManagementController.removeHostMutation,
+              child: MutationErrorSnackbarListener(
+                mutation:
+                    ClubHostManagementController.transferOwnershipMutation,
+                child: MutationErrorSnackbarListener(
+                  mutation:
+                      ClubHostManagementController.startConversationMutation,
+                  child: child,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,22 +55,6 @@ class ClubHostDefaultsStep extends StatelessWidget {
                     : [...defaults.supportedActivityKinds, activityKind],
               ),
             ),
-          ),
-          gapH20,
-          EventSuccessDefaultsPanel(
-            defaults: defaults.eventSuccessForActivity(
-              defaults.primaryActivityKind,
-            ),
-            activityKind: defaults.primaryActivityKind,
-            onChanged: (eventSuccess) => onChanged(
-              defaults.copyWithEventSuccessForActivity(
-                activityKind: defaults.primaryActivityKind,
-                defaults: eventSuccess,
-              ),
-            ),
-            title: 'Default event success',
-            subtitle:
-                'Apply activity-aware run-of-show defaults automatically when creating new events.',
           ),
         ],
       ),
@@ -219,6 +202,12 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final defaults = widget.defaults;
+    final selectedAdmissionPreset =
+        defaults.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps
+        ? EventAdmissionDefaultPreset.openCapacity
+        : defaults.admissionPreset;
+    final cohortCapsEnabled =
+        defaults.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps;
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
       borderColor: t.line,
@@ -240,36 +229,61 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionDefaultPreset.values)
-                Semantics(
-                  button: true,
-                  selected: defaults.admissionPreset == preset,
-                  label: preset.label,
-                  child: GestureDetector(
-                    onTap: () => _emit(
-                      defaults.copyWith(
-                        admissionPreset: preset,
-                        dynamicPricingEnabled:
-                            preset ==
-                                EventAdmissionDefaultPreset.balancedSingles
-                            ? defaults.dynamicPricingEnabled
-                            : false,
+                if (preset != EventAdmissionDefaultPreset.fixedCohortCaps)
+                  Semantics(
+                    button: true,
+                    selected: selectedAdmissionPreset == preset,
+                    label: preset.label,
+                    child: GestureDetector(
+                      onTap: () => _emit(
+                        defaults.copyWith(
+                          admissionPreset: preset,
+                          dynamicPricingEnabled:
+                              preset ==
+                                  EventAdmissionDefaultPreset.balancedSingles
+                              ? defaults.dynamicPricingEnabled
+                              : false,
+                        ),
+                      ),
+                      child: VibeTag(
+                        label: preset.label,
+                        active: selectedAdmissionPreset == preset,
                       ),
                     ),
-                    child: VibeTag(
-                      label: preset.label,
-                      active: defaults.admissionPreset == preset,
-                    ),
                   ),
-                ),
             ],
           ),
           gapH8,
           Text(
-            defaults.admissionPreset.description,
+            cohortCapsEnabled
+                ? 'Anyone eligible can book until capacity, with optional straight men and straight women caps prefilled.'
+                : selectedAdmissionPreset.description,
             style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
-          if (defaults.admissionPreset ==
-              EventAdmissionDefaultPreset.fixedCohortCaps) ...[
+          if (selectedAdmissionPreset ==
+              EventAdmissionDefaultPreset.openCapacity) ...[
+            gapH12,
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: cohortCapsEnabled,
+              onChanged: (value) => _emit(
+                defaults.copyWith(
+                  admissionPreset: value
+                      ? EventAdmissionDefaultPreset.fixedCohortCaps
+                      : EventAdmissionDefaultPreset.openCapacity,
+                ),
+              ),
+              title: Text(
+                'Cohort caps',
+                style: CatchTextStyles.labelL(context),
+              ),
+              subtitle: Text(
+                'Optionally prefill straight men and straight women caps for open events.',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ),
+          ],
+          if (cohortCapsEnabled) ...[
             gapH18,
             Row(
               children: [
@@ -299,7 +313,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
               ],
             ),
           ],
-          if (defaults.admissionPreset ==
+          if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.balancedSingles) ...[
             gapH12,
             SwitchListTile.adaptive(
@@ -451,7 +465,7 @@ extension on EventAdmissionDefaultPreset {
     EventAdmissionDefaultPreset.openCapacity => 'OPEN',
     EventAdmissionDefaultPreset.inviteOnly => 'INVITE',
     EventAdmissionDefaultPreset.balancedSingles => 'BALANCED',
-    EventAdmissionDefaultPreset.fixedCohortCaps => 'FIXED CAPS',
+    EventAdmissionDefaultPreset.fixedCohortCaps => 'OPEN',
   };
 
   String get description => switch (this) {
@@ -462,7 +476,7 @@ extension on EventAdmissionDefaultPreset {
     EventAdmissionDefaultPreset.balancedSingles =>
       'Straight men and women are kept within one spot of each other.',
     EventAdmissionDefaultPreset.fixedCohortCaps =>
-      'New events start with explicit caps for straight men and straight women.',
+      'New events start open with optional straight men and straight women caps.',
   };
 }
 

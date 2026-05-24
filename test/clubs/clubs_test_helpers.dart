@@ -152,8 +152,14 @@ class FakeClubsRepository implements ClubsRepository {
   String? notificationsClubId;
   String? addedHostClubId;
   String? addedHostUid;
+  String? addedHostPhoneNumber;
   String? removedHostClubId;
   String? removedHostUid;
+  String? transferredOwnershipClubId;
+  String? transferredOwnershipUid;
+  String? startedConversationClubId;
+  String? startedConversationHostUid;
+  String nextHostConversationMatchId = 'host-inquiry-match-id';
   bool? notificationsEnabled;
   Object? createError;
   Object? joinError;
@@ -266,10 +272,12 @@ class FakeClubsRepository implements ClubsRepository {
   @override
   Future<void> addClubHost({
     required String clubId,
-    required String uid,
+    String? uid,
+    String? phoneNumber,
   }) async {
     addedHostClubId = clubId;
     addedHostUid = uid;
+    addedHostPhoneNumber = phoneNumber;
   }
 
   @override
@@ -279,6 +287,25 @@ class FakeClubsRepository implements ClubsRepository {
   }) async {
     removedHostClubId = clubId;
     removedHostUid = uid;
+  }
+
+  @override
+  Future<void> transferClubOwnership({
+    required String clubId,
+    required String uid,
+  }) async {
+    transferredOwnershipClubId = clubId;
+    transferredOwnershipUid = uid;
+  }
+
+  @override
+  Future<String> startClubHostConversation({
+    required String clubId,
+    required String hostUid,
+  }) async {
+    startedConversationClubId = clubId;
+    startedConversationHostUid = hostUid;
+    return nextHostConversationMatchId;
   }
 }
 

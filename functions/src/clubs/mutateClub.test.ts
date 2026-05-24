@@ -236,6 +236,48 @@ test("updateClubHandler updates hosted club profile fields", async () => {
   assert.equal(updated?.instagramHandle, "@indorestriders");
 });
 
+test("updateClubHandler lets co-hosts update only club media fields",
+  async () => {
+    const h = harness({
+      "clubs/club-1": club({
+        hostUserId: "owner-1",
+        ownerUserId: "owner-1",
+        hostUserIds: ["owner-1", "cohost-1"],
+      }),
+    });
+
+    const result = await updateClubHandler(
+      request("cohost-1", {
+        clubId: "club-1",
+        fields: {
+          imageUrl: "https://example.com/cover.jpg",
+          profileImageUrl: "https://example.com/profile.jpg",
+        },
+      }),
+      h.deps
+    );
+
+    assert.deepEqual(result, {updated: true});
+    const updated = h.firestore.get("clubs/club-1");
+    assert.equal(updated?.imageUrl, "https://example.com/cover.jpg");
+    assert.equal(
+      updated?.profileImageUrl,
+      "https://example.com/profile.jpg"
+    );
+
+    await assert.rejects(
+      () => updateClubHandler(
+        request("cohost-1", {
+          clubId: "club-1",
+          fields: {description: "Not allowed."},
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "permission-denied")
+    );
+  }
+);
+
 test("updateClubHandler rejects non-host updates", async () => {
   const h = harness({"clubs/club-1": club()});
 

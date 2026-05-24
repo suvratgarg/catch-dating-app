@@ -39,6 +39,9 @@ test(
       lastMessageSenderId: null,
       unreadCounts: {"user-a": 0, "user-b": 0},
       status: "active",
+      blockedBy: null,
+      blockedAt: null,
+      conversationType: "match",
     });
   }
 );
@@ -118,8 +121,14 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
   );
 
   assert.deepEqual(created, {});
-  assert.deepEqual(updated["matches/user-a_user-b"], {
+  const matchPatch = updated["matches/user-a_user-b"] as Record<
+    string,
+    unknown
+  >;
+  assert.deepEqual(matchPatch, {
     eventIds: {arrayUnion: ["event-2", "event-3"]},
+    conversationType: "match",
+    clubId: matchPatch.clubId,
   });
 });
 

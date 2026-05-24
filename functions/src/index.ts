@@ -27,7 +27,12 @@ export {
   placesAutocomplete,
 } from "./places/placeAutocomplete";
 export {createClub} from "./clubs/createClub";
-export {addClubHost, removeClubHost} from "./clubs/manageClubHosts";
+export {startClubHostConversation} from "./clubs/clubHostConversations";
+export {
+  addClubHost,
+  removeClubHost,
+  transferClubOwnership,
+} from "./clubs/manageClubHosts";
 export {syncClubMemberStats} from "./clubs/syncClubMemberStats";
 export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
 export {

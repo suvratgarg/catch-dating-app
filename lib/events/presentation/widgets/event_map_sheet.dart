@@ -82,7 +82,7 @@ class EventMapSheet extends StatelessWidget {
           CatchButton(
             label: 'View event',
             onPressed: () => context.pushNamed(
-              Routes.dashboardEventDetailScreen.name,
+              Routes.eventDetailScreen.name,
               pathParameters: {
                 'clubId': highlightedEvent.clubId,
                 'eventId': highlightedEvent.id,

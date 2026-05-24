@@ -11,6 +11,76 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'clubs_list_view_model.freezed.dart';
 part 'clubs_list_view_model.g.dart';
 
+const Object _unsetFilterValue = Object();
+
+class ClubBrowseFilterSelection {
+  const ClubBrowseFilterSelection({
+    this.thisWeekOnly = false,
+    this.highRatedOnly = false,
+    this.joinedOnly = false,
+    this.hostedOnly = false,
+    this.activityTag,
+    this.area,
+  });
+
+  final bool thisWeekOnly;
+  final bool highRatedOnly;
+  final bool joinedOnly;
+  final bool hostedOnly;
+  final String? activityTag;
+  final String? area;
+
+  bool get hasActiveFilters =>
+      thisWeekOnly ||
+      highRatedOnly ||
+      joinedOnly ||
+      hostedOnly ||
+      activityTag != null ||
+      area != null;
+
+  ClubBrowseFilterSelection copyWith({
+    bool? thisWeekOnly,
+    bool? highRatedOnly,
+    bool? joinedOnly,
+    bool? hostedOnly,
+    Object? activityTag = _unsetFilterValue,
+    Object? area = _unsetFilterValue,
+  }) {
+    return ClubBrowseFilterSelection(
+      thisWeekOnly: thisWeekOnly ?? this.thisWeekOnly,
+      highRatedOnly: highRatedOnly ?? this.highRatedOnly,
+      joinedOnly: joinedOnly ?? this.joinedOnly,
+      hostedOnly: hostedOnly ?? this.hostedOnly,
+      activityTag: identical(activityTag, _unsetFilterValue)
+          ? this.activityTag
+          : activityTag as String?,
+      area: identical(area, _unsetFilterValue) ? this.area : area as String?,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is ClubBrowseFilterSelection &&
+            other.thisWeekOnly == thisWeekOnly &&
+            other.highRatedOnly == highRatedOnly &&
+            other.joinedOnly == joinedOnly &&
+            other.hostedOnly == hostedOnly &&
+            other.activityTag == activityTag &&
+            other.area == area;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    thisWeekOnly,
+    highRatedOnly,
+    joinedOnly,
+    hostedOnly,
+    activityTag,
+    area,
+  );
+}
+
 @freezed
 abstract class ClubsListViewModel with _$ClubsListViewModel {
   const ClubsListViewModel._();
@@ -66,6 +136,7 @@ class SelectedClubCity extends _$SelectedClubCity {
     if (state != city) {
       state = city;
       ref.read(clubSearchQueryProvider.notifier).clear();
+      ref.read(clubBrowseFiltersProvider.notifier).clearLocalScope();
     }
   }
 
@@ -74,6 +145,7 @@ class SelectedClubCity extends _$SelectedClubCity {
     if (state != city) {
       state = city;
       ref.read(clubSearchQueryProvider.notifier).clear();
+      ref.read(clubBrowseFiltersProvider.notifier).clearLocalScope();
     }
   }
 
@@ -112,6 +184,53 @@ class ClubSearchQuery extends _$ClubSearchQuery {
   void clear() => state = '';
 }
 
+@Riverpod(keepAlive: true)
+class ClubBrowseFilters extends _$ClubBrowseFilters {
+  @override
+  ClubBrowseFilterSelection build() => const ClubBrowseFilterSelection();
+
+  void toggleThisWeekOnly() {
+    state = state.copyWith(thisWeekOnly: !state.thisWeekOnly);
+  }
+
+  void toggleHighRatedOnly() {
+    state = state.copyWith(highRatedOnly: !state.highRatedOnly);
+  }
+
+  void toggleJoinedOnly() {
+    state = state.copyWith(joinedOnly: !state.joinedOnly);
+  }
+
+  void toggleHostedOnly() {
+    state = state.copyWith(hostedOnly: !state.hostedOnly);
+  }
+
+  void toggleActivityTag(String tag) {
+    final next = _normalizeFilterValue(tag);
+    if (next == null) return;
+    state = state.copyWith(
+      activityTag: _sameFilterValue(state.activityTag, next) ? null : next,
+    );
+  }
+
+  void toggleArea(String area) {
+    final next = _normalizeFilterValue(area);
+    if (next == null) return;
+    state = state.copyWith(
+      area: _sameFilterValue(state.area, next) ? null : next,
+    );
+  }
+
+  void clearLocalScope() {
+    if (state.activityTag == null && state.area == null) return;
+    state = state.copyWith(activityTag: null, area: null);
+  }
+
+  void clear() {
+    state = const ClubBrowseFilterSelection();
+  }
+}
+
 /// Algolia swap point: replace this provider's body to use a remote search
 /// index. The VM and screen are not affected.
 ///
@@ -144,6 +263,7 @@ AsyncValue<List<Club>> filteredClubs(Ref ref) {
 @riverpod
 AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
   final filteredAsync = ref.watch(filteredClubsProvider);
+  final browseFilters = ref.watch(clubBrowseFiltersProvider);
 
   if (filteredAsync.isLoading) {
     return const AsyncLoading();
@@ -155,8 +275,8 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
     );
   }
 
-  final clubs = filteredAsync.asData?.value ?? const <Club>[];
-  if (clubs.isEmpty) {
+  final sourceClubs = filteredAsync.asData?.value ?? const <Club>[];
+  if (sourceClubs.isEmpty) {
     return const AsyncData(ClubsListViewModel(joinedClubs: [], allClubs: []));
   }
 
@@ -193,11 +313,17 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
       <String>{};
   final hostedClubIds = uid == null
       ? <String>{}
-      : clubs
+      : sourceClubs
             .where((club) => club.isHostedBy(uid))
             .map((club) => club.id)
             .toSet();
   final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
+  final clubs = applyClubBrowseFilters(
+    clubs: sourceClubs,
+    filters: browseFilters,
+    joinedClubIds: joinedClubIds,
+    hostedClubIds: hostedClubIds,
+  );
 
   return AsyncData(
     ClubsListViewModel.partition(
@@ -240,4 +366,58 @@ bool matchesClubSearchQuery(Club club, String normalizedQuery) {
       club.area.toLowerCase().contains(normalizedQuery) ||
       club.hostName.toLowerCase().contains(normalizedQuery) ||
       club.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
+}
+
+List<Club> applyClubBrowseFilters({
+  required List<Club> clubs,
+  required ClubBrowseFilterSelection filters,
+  required Set<String> joinedClubIds,
+  required Set<String> hostedClubIds,
+  DateTime? now,
+}) {
+  if (!filters.hasActiveFilters) return clubs;
+
+  final referenceNow = now ?? DateTime.now();
+  return clubs
+      .where((club) {
+        if (filters.thisWeekOnly && !_hasEventThisWeek(club, referenceNow)) {
+          return false;
+        }
+        if (filters.highRatedOnly && club.rating < 4.5) {
+          return false;
+        }
+        if (filters.joinedOnly && !joinedClubIds.contains(club.id)) {
+          return false;
+        }
+        if (filters.hostedOnly && !hostedClubIds.contains(club.id)) {
+          return false;
+        }
+        final activityTag = filters.activityTag;
+        if (activityTag != null &&
+            !club.tags.any((tag) => _sameFilterValue(tag, activityTag))) {
+          return false;
+        }
+        final area = filters.area;
+        if (area != null && !_sameFilterValue(club.area, area)) {
+          return false;
+        }
+        return true;
+      })
+      .toList(growable: false);
+}
+
+bool _hasEventThisWeek(Club club, DateTime now) {
+  final nextEventAt = club.nextEventAt;
+  if (nextEventAt == null || nextEventAt.isBefore(now)) return false;
+  return nextEventAt.isBefore(now.add(const Duration(days: 7)));
+}
+
+String? _normalizeFilterValue(String? value) {
+  final normalized = value?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return normalized;
+}
+
+bool _sameFilterValue(String? left, String right) {
+  return left?.trim().toLowerCase() == right.trim().toLowerCase();
 }

@@ -87,16 +87,18 @@ class CreateClubController extends _$CreateClubController {
     final uid = requireSignedInUid(ref, action: 'create a club');
 
     if (existingClub != null) {
-      if (!existingClub.isOwnedBy(uid)) {
-        throw StateError('Only the club owner can edit this club.');
+      if (!existingClub.isHostedBy(uid)) {
+        throw StateError('Only a club host can edit this club.');
       }
 
       var imageUrl = existingClub.imageUrl;
       var profileImageUrl = existingClub.profileImageUrl;
+      final mediaFields = <String, dynamic>{};
       if (coverImage != null) {
         imageUrl = await ref
             .read(imageUploadRepositoryProvider)
             .uploadClubCover(clubId: existingClub.id, image: coverImage);
+        mediaFields['imageUrl'] = imageUrl;
       }
       if (profileImage != null) {
         profileImageUrl = await ref
@@ -105,9 +107,21 @@ class CreateClubController extends _$CreateClubController {
               clubId: existingClub.id,
               image: profileImage,
             );
+        mediaFields['profileImageUrl'] = profileImageUrl;
       }
 
       final clubsRepo = ref.read(clubsRepositoryProvider);
+      if (!existingClub.isOwnedBy(uid)) {
+        if (mediaFields.isEmpty) {
+          throw StateError('Only the club owner can edit club details.');
+        }
+        await clubsRepo.updateClub(
+          clubId: existingClub.id,
+          fields: mediaFields,
+        );
+        return;
+      }
+
       final fields = <String, dynamic>{
         'name': name,
         'description': description,

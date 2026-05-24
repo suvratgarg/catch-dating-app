@@ -22,6 +22,7 @@ class ClubBasicsStep extends StatelessWidget {
     required this.existingProfileImageUrl,
     required this.onPickCover,
     required this.onPickProfileImage,
+    this.detailsEnabled = true,
   });
 
   final GlobalKey<FormState> formKey;
@@ -35,6 +36,7 @@ class ClubBasicsStep extends StatelessWidget {
   final String? existingProfileImageUrl;
   final VoidCallback? onPickCover;
   final VoidCallback? onPickProfileImage;
+  final bool detailsEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class ClubBasicsStep extends StatelessWidget {
               label: 'Club name',
               controller: nameController,
               prefixIcon: const Icon(Icons.group_outlined),
+              enabled: detailsEnabled,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               validator: (value) {
@@ -80,6 +83,7 @@ class ClubBasicsStep extends StatelessWidget {
               label: 'City',
               prefixIcon: const Icon(Icons.location_city_outlined),
               value: selectedCity,
+              enabled: detailsEnabled,
               onChanged: onCityChanged,
               validator: (_) =>
                   selectedCity == null ? 'Please select a city' : null,
@@ -89,6 +93,7 @@ class ClubBasicsStep extends StatelessWidget {
               label: 'Area / neighbourhood',
               controller: areaController,
               prefixIcon: const Icon(Icons.location_on_outlined),
+              enabled: detailsEnabled,
               hintText: 'e.g. Bandra, Koramangala',
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,

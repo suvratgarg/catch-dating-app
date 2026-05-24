@@ -56,7 +56,7 @@ final class SelectedClubCityProvider
   }
 }
 
-String _$selectedClubCityHash() => r'2980a3b5b00d368356b8c5a3277938182926a71e';
+String _$selectedClubCityHash() => r'b07d8dddb07727c5dc0d23addc444111275dfa52';
 
 /// **KeepAlive notifier with internal flag**
 ///
@@ -206,6 +206,60 @@ abstract class _$ClubSearchQuery extends $Notifier<String> {
   }
 }
 
+@ProviderFor(ClubBrowseFilters)
+final clubBrowseFiltersProvider = ClubBrowseFiltersProvider._();
+
+final class ClubBrowseFiltersProvider
+    extends $NotifierProvider<ClubBrowseFilters, ClubBrowseFilterSelection> {
+  ClubBrowseFiltersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'clubBrowseFiltersProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$clubBrowseFiltersHash();
+
+  @$internal
+  @override
+  ClubBrowseFilters create() => ClubBrowseFilters();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ClubBrowseFilterSelection value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ClubBrowseFilterSelection>(value),
+    );
+  }
+}
+
+String _$clubBrowseFiltersHash() => r'76ddd38471b74267ac66c65d008817bb5709a1f1';
+
+abstract class _$ClubBrowseFilters
+    extends $Notifier<ClubBrowseFilterSelection> {
+  ClubBrowseFilterSelection build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<ClubBrowseFilterSelection, ClubBrowseFilterSelection>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ClubBrowseFilterSelection, ClubBrowseFilterSelection>,
+              ClubBrowseFilterSelection,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
 /// Algolia swap point: replace this provider's body to use a remote search
 /// index. The VM and screen are not affected.
 ///
@@ -338,7 +392,7 @@ final class ClubsListViewModelProvider
 }
 
 String _$clubsListViewModelHash() =>
-    r'81f10ce3fb5bb1e72264a9335c96c65391a15864';
+    r'77c1c31e3798d6542606b539a9900a437fea45eb';
 
 /// **Pattern D: View-model provider**
 ///

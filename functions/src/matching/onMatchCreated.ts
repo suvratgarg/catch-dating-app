@@ -47,6 +47,10 @@ export async function onMatchCreatedHandler(
   const {matchId} = event.params;
   const match = event.data?.data() as MatchDoc | undefined;
   if (!match) return;
+  if (match.conversationType && match.conversationType !== "match") {
+    logger.info("Skipping non-match conversation notification", {matchId});
+    return;
+  }
 
   const db = deps.firestore();
   const {user1Id, user2Id} = match;

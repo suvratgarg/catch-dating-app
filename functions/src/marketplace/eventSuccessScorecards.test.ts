@@ -136,5 +136,6 @@ function match(
     lastMessageAt,
     unreadCounts: {},
     status: "active",
+    conversationType: "match",
   };
 }

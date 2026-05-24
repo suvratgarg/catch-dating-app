@@ -191,7 +191,7 @@ class ClubsRepository {
   Future<void> joinClub(String clubId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('joinClub')
-        .call(ClubIdCallableRequest(clubId).toJson()),
+        .call(ClubMembershipCallableRequest(clubId: clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'join club',
@@ -203,7 +203,7 @@ class ClubsRepository {
   Future<void> leaveClub(String clubId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('leaveClub')
-        .call(ClubIdCallableRequest(clubId).toJson()),
+        .call(ClubMembershipCallableRequest(clubId: clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'leave club',
@@ -233,11 +233,18 @@ class ClubsRepository {
 
   Future<void> addClubHost({
     required String clubId,
-    required String uid,
+    String? uid,
+    String? phoneNumber,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('addClubHost')
-        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+        .call(
+          AddClubHostCallableRequest(
+            clubId: clubId,
+            uid: uid,
+            phoneNumber: phoneNumber,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'add club host',
@@ -245,16 +252,59 @@ class ClubsRepository {
     ),
   );
 
-  Future<void> removeClubHost({
+  Future<void> removeClubHost({required String clubId, required String uid}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('removeClubHost')
+            .call(
+              RemoveClubHostCallableRequest(clubId: clubId, uid: uid).toJson(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'remove club host',
+          resource: _collectionPath,
+        ),
+      );
+
+  Future<void> transferClubOwnership({
     required String clubId,
     required String uid,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('removeClubHost')
-        .call(ClubHostCallableRequest(clubId: clubId, uid: uid).toJson()),
+        .httpsCallable('transferClubOwnership')
+        .call(
+          TransferClubOwnershipCallableRequest(
+            clubId: clubId,
+            uid: uid,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'remove club host',
+      action: 'transfer club ownership',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<String> startClubHostConversation({
+    required String clubId,
+    required String hostUid,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('startClubHostConversation')
+          .call(
+            StartClubHostConversationCallableRequest(
+              clubId: clubId,
+              hostUid: hostUid,
+            ).toJson(),
+          );
+      return StartClubHostConversationCallableResponse.fromCallableData(
+        result.data,
+      ).matchId;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'start club host conversation',
       resource: _collectionPath,
     ),
   );

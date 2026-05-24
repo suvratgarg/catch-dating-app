@@ -1,3 +1,16 @@
+// Re-export generated callable request classes for clubs. Generated from
+// contracts/callables/ by tool/contracts/generate_schema_contracts.mjs.
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        AddClubHostCallableRequest,
+        ArchiveClubCallableRequest,
+        ClubMembershipCallableRequest,
+        DeleteClubCallableRequest,
+        RemoveClubHostCallableRequest,
+        SetClubNotificationPreferenceCallableRequest,
+        StartClubHostConversationCallableRequest,
+        TransferClubOwnershipCallableRequest;
+
 final class CreateClubCallableRequest {
   const CreateClubCallableRequest({
     required this.name,
@@ -66,31 +79,21 @@ final class UpdateClubCallableRequest {
   Map<String, Object?> toJson() => {'clubId': clubId, 'fields': fields};
 }
 
-final class ClubIdCallableRequest {
-  const ClubIdCallableRequest(this.clubId);
+final class StartClubHostConversationCallableResponse {
+  const StartClubHostConversationCallableResponse({required this.matchId});
 
-  final String clubId;
+  factory StartClubHostConversationCallableResponse.fromCallableData(
+    Object? data,
+  ) {
+    if (data case final Map<Object?, Object?> map) {
+      final matchId = map['matchId'] as String?;
+      if (matchId != null && matchId.isNotEmpty) {
+        return StartClubHostConversationCallableResponse(matchId: matchId);
+      }
+    }
 
-  Map<String, Object?> toJson() => {'clubId': clubId};
-}
+    throw StateError('startClubHostConversation response was missing matchId.');
+  }
 
-final class SetClubNotificationPreferenceCallableRequest {
-  const SetClubNotificationPreferenceCallableRequest({
-    required this.clubId,
-    required this.enabled,
-  });
-
-  final String clubId;
-  final bool enabled;
-
-  Map<String, Object?> toJson() => {'clubId': clubId, 'enabled': enabled};
-}
-
-final class ClubHostCallableRequest {
-  const ClubHostCallableRequest({required this.clubId, required this.uid});
-
-  final String clubId;
-  final String uid;
-
-  Map<String, Object?> toJson() => {'clubId': clubId, 'uid': uid};
+  final String matchId;
 }
