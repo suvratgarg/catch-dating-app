@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-19T15:31:24.625741+00:00",
-  "total_candidates": 9,
+  "generated_at": "2026-05-24T22:33:11.446345+00:00",
+  "total_candidates": 7,
   "candidates": [
     {
       "match_type": "exact_name_collision",
@@ -37,54 +37,12 @@
         },
         {
           "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
-          "line": 168,
+          "line": 151,
           "signature": "class _PolicyLine extends StatelessWidget {"
         }
       ],
       "suggestion": "Class '_PolicyLine' is defined in 2 files. Extract a single shared implementation and import it.",
       "id": "C-002"
-    },
-    {
-      "match_type": "exact_name_collision",
-      "severity": "high",
-      "name": "_SearchRow",
-      "kind": "class",
-      "is_widget": true,
-      "sites": [
-        {
-          "file": "lib/clubs/presentation/list/widgets/clubs_sliver_header.dart",
-          "line": 69,
-          "signature": "class _SearchRow extends ConsumerWidget {"
-        },
-        {
-          "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
-          "line": 70,
-          "signature": "class _SearchRow extends StatelessWidget {"
-        }
-      ],
-      "suggestion": "Class '_SearchRow' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-003"
-    },
-    {
-      "match_type": "exact_name_collision",
-      "severity": "high",
-      "name": "_TitleRow",
-      "kind": "class",
-      "is_widget": true,
-      "sites": [
-        {
-          "file": "lib/clubs/presentation/list/widgets/clubs_sliver_header.dart",
-          "line": 26,
-          "signature": "class _TitleRow extends ConsumerWidget {"
-        },
-        {
-          "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
-          "line": 22,
-          "signature": "class _TitleRow extends StatelessWidget {"
-        }
-      ],
-      "suggestion": "Class '_TitleRow' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-004"
     },
     {
       "match_type": "exact_name_collision",
@@ -95,12 +53,12 @@
       "sites": [
         {
           "file": "lib/user_profile/domain/profile_prompts.dart",
-          "line": 304,
+          "line": 309,
           "signature": "collapseStackedPromptBlankLines(value).trim();"
         },
         {
           "file": "lib/user_profile/domain/profile_prompts.dart",
-          "line": 307,
+          "line": 312,
           "signature": "collapseStackedPromptBlankLines(value).trim();"
         },
         {
@@ -110,7 +68,7 @@
         }
       ],
       "suggestion": "Same function 'collapseStackedPromptBlankLines' defined in 2 places. Consolidate into one location and import it.",
-      "id": "C-005"
+      "id": "C-003"
     },
     {
       "match_type": "exact_name_collision",
@@ -136,10 +94,10 @@
         }
       ],
       "suggestion": "Same function 'createHealthActivityClient' defined in 3 places. Consolidate into one location and import it.",
-      "id": "C-006"
+      "id": "C-004"
     },
     {
-      "id": "C-007",
+      "id": "C-005",
       "match_type": "inline_color_literals",
       "severity": "medium",
       "name": "Hardcoded Color(0x...) literals",
@@ -147,87 +105,207 @@
       "sites": [
         {
           "file": "lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart",
-          "line": 45,
+          "line": 50,
           "color": "0x40000000",
           "context": "Color(0x40000000),"
         },
         {
           "file": "lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart",
-          "line": 47,
+          "line": 52,
           "color": "0x1A000000",
           "context": "Color(0x1A000000),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 198,
-          "color": "0xFF21433D",
-          "context": "start: const Color(0xFF21433D),"
+          "line": 249,
+          "color": "0xFFFFF6EF",
+          "context": "start: const Color(0xFFFFF6EF),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 199,
-          "color": "0xFF6A3D2A",
-          "context": "end: const Color(0xFF6A3D2A),"
+          "line": 250,
+          "color": "0xFFEAF4EF",
+          "context": "end: const Color(0xFFEAF4EF),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 200,
-          "color": "0xFFE6D8B8",
-          "context": "line: const Color(0xFFE6D8B8).withValues(alpha: 0.20),"
+          "line": 251,
+          "color": "0xFF7C978B",
+          "context": "line: const Color(0xFF7C978B).withValues(alpha: 0.24),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 203,
-          "color": "0xFF243D5A",
-          "context": "start: const Color(0xFF243D5A),"
+          "line": 252,
+          "color": "0xFFFFD9C9",
+          "context": "block: const Color(0xFFFFD9C9).withValues(alpha: 0.56),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 204,
-          "color": "0xFF5B2F4B",
-          "context": "end: const Color(0xFF5B2F4B),"
+          "line": 253,
+          "color": "0xFFFF5A36",
+          "context": "accent: const Color(0xFFFF5A36),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 205,
-          "color": "0xFFD9E7F2",
-          "context": "line: const Color(0xFFD9E7F2).withValues(alpha: 0.20),"
+          "line": 255,
+          "color": "0xFFFFD4C5",
+          "context": "iconBorder: const Color(0xFFFFD4C5),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 208,
-          "color": "0xFF39452D",
-          "context": "start: const Color(0xFF39452D),"
+          "line": 256,
+          "color": "0xFFFF5A36",
+          "context": "icon: const Color(0xFFFF5A36),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 209,
-          "color": "0xFF7A4C32",
-          "context": "end: const Color(0xFF7A4C32),"
+          "line": 257,
+          "color": "0xFF5A4A40",
+          "context": "text: const Color(0xFF5A4A40),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 210,
-          "color": "0xFFF1E3C6",
-          "context": "line: const Color(0xFFF1E3C6).withValues(alpha: 0.20),"
+          "line": 260,
+          "color": "0xFFF4F0FF",
+          "context": "start: const Color(0xFFF4F0FF),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 213,
-          "color": "0xFF2E385A",
-          "context": "start: const Color(0xFF2E385A),"
+          "line": 261,
+          "color": "0xFFEAF4FA",
+          "context": "end: const Color(0xFFEAF4FA),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 214,
-          "color": "0xFF365947",
-          "context": "end: const Color(0xFF365947),"
+          "line": 262,
+          "color": "0xFF7E8FA7",
+          "context": "line: const Color(0xFF7E8FA7).withValues(alpha: 0.25),"
         },
         {
           "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
-          "line": 215,
-          "color": "0xFFE2F0DD",
-          "context": "line: const Color(0xFFE2F0DD).withValues(alpha: 0.20),"
+          "line": 263,
+          "color": "0xFFE4D7FF",
+          "context": "block: const Color(0xFFE4D7FF).withValues(alpha: 0.52),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 264,
+          "color": "0xFF4A7BC5",
+          "context": "accent: const Color(0xFF4A7BC5),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 266,
+          "color": "0xFFD9E0F5",
+          "context": "iconBorder: const Color(0xFFD9E0F5),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 267,
+          "color": "0xFF4A7BC5",
+          "context": "icon: const Color(0xFF4A7BC5),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 268,
+          "color": "0xFF464A5B",
+          "context": "text: const Color(0xFF464A5B),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 271,
+          "color": "0xFFFFF7DE",
+          "context": "start: const Color(0xFFFFF7DE),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 272,
+          "color": "0xFFEFF6E8",
+          "context": "end: const Color(0xFFEFF6E8),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 273,
+          "color": "0xFF969C74",
+          "context": "line: const Color(0xFF969C74).withValues(alpha: 0.25),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 274,
+          "color": "0xFFFFE1A6",
+          "context": "block: const Color(0xFFFFE1A6).withValues(alpha: 0.50),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 275,
+          "color": "0xFFD28A23",
+          "context": "accent: const Color(0xFFD28A23),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 277,
+          "color": "0xFFF1DBA8",
+          "context": "iconBorder: const Color(0xFFF1DBA8),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 278,
+          "color": "0xFFD28A23",
+          "context": "icon: const Color(0xFFD28A23),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 279,
+          "color": "0xFF554D35",
+          "context": "text: const Color(0xFF554D35),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 282,
+          "color": "0xFFEFF8F6",
+          "context": "start: const Color(0xFFEFF8F6),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 283,
+          "color": "0xFFFFF0EA",
+          "context": "end: const Color(0xFFFFF0EA),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 284,
+          "color": "0xFF769D97",
+          "context": "line: const Color(0xFF769D97).withValues(alpha: 0.25),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 285,
+          "color": "0xFFCDEBE5",
+          "context": "block: const Color(0xFFCDEBE5).withValues(alpha: 0.56),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 286,
+          "color": "0xFF218A77",
+          "context": "accent: const Color(0xFF218A77),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 288,
+          "color": "0xFFCBE7E2",
+          "context": "iconBorder: const Color(0xFFCBE7E2),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 289,
+          "color": "0xFF218A77",
+          "context": "icon: const Color(0xFF218A77),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 290,
+          "color": "0xFF38544F",
+          "context": "text: const Color(0xFF38544F),"
         },
         {
           "file": "lib/core/celebration/catch_celebration_screen.dart",
@@ -330,6 +408,216 @@
           "line": 39,
           "color": "0xFFFF6A3F",
           "context": "..color = const Color(0xFFFF6A3F)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+          "line": 149,
+          "color": "0xFFFFB36B",
+          "context": "const Color(0xFFFFB36B).withValues(alpha: alpha),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+          "line": 150,
+          "color": "0xFFFF6F61",
+          "context": "const Color(0xFFFF6F61)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart",
+          "line": 152,
+          "color": "0xFFFFD166",
+          "context": "const Color(0xFFFFD166)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 614,
+          "color": "0xFF123B46",
+          "context": "bg: const Color(0xFF123B46),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 615,
+          "color": "0xFF2F6E64",
+          "context": "mid: const Color(0xFF2F6E64),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 616,
+          "color": "0xFFF5B85B",
+          "context": "accent: const Color(0xFFF5B85B),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 620,
+          "color": "0xFF173A59",
+          "context": "bg: const Color(0xFF173A59),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 621,
+          "color": "0xFF2D7A89",
+          "context": "mid: const Color(0xFF2D7A89),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 622,
+          "color": "0xFFFFC85A",
+          "context": "accent: const Color(0xFFFFC85A),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 626,
+          "color": "0xFF3C2A58",
+          "context": "bg: const Color(0xFF3C2A58),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 627,
+          "color": "0xFFAF5F7E",
+          "context": "mid: const Color(0xFFAF5F7E),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 628,
+          "color": "0xFFFFD166",
+          "context": "accent: const Color(0xFFFFD166),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 632,
+          "color": "0xFF4B244A",
+          "context": "bg: const Color(0xFF4B244A),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 633,
+          "color": "0xFFB9486E",
+          "context": "mid: const Color(0xFFB9486E),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 634,
+          "color": "0xFFFFD166",
+          "context": "accent: const Color(0xFFFFD166),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 640,
+          "color": "0xFF183A37",
+          "context": "bg: const Color(0xFF183A37),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 641,
+          "color": "0xFF4C8D74",
+          "context": "mid: const Color(0xFF4C8D74),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 642,
+          "color": "0xFFFFB36B",
+          "context": "accent: const Color(0xFFFFB36B),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 646,
+          "color": "0xFF23345E",
+          "context": "bg: const Color(0xFF23345E),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 647,
+          "color": "0xFF5D5FEF",
+          "context": "mid: const Color(0xFF5D5FEF),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 648,
+          "color": "0xFF72E0C3",
+          "context": "accent: const Color(0xFF72E0C3),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 653,
+          "color": "0xFF2A245F",
+          "context": "? const Color(0xFF2A245F)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 654,
+          "color": "0xFF251B37",
+          "context": ": const Color(0xFF251B37),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 656,
+          "color": "0xFFAF4D98",
+          "context": "? const Color(0xFFAF4D98)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 657,
+          "color": "0xFF6B3EA3",
+          "context": ": const Color(0xFF6B3EA3),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 659,
+          "color": "0xFFFFD166",
+          "context": "? const Color(0xFFFFD166)"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 660,
+          "color": "0xFF7AE7C7",
+          "context": ": const Color(0xFF7AE7C7),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 664,
+          "color": "0xFF26364F",
+          "context": "bg: const Color(0xFF26364F),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 665,
+          "color": "0xFF8A5C8F",
+          "context": "mid: const Color(0xFF8A5C8F),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 666,
+          "color": "0xFFFFC0A4",
+          "context": "accent: const Color(0xFFFFC0A4),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 670,
+          "color": "0xFF202A44",
+          "context": "bg: const Color(0xFF202A44),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 671,
+          "color": "0xFF5F5B9E",
+          "context": "mid: const Color(0xFF5F5B9E),"
+        },
+        {
+          "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+          "line": 672,
+          "color": "0xFFFFD166",
+          "context": "accent: const Color(0xFFFFD166),"
+        },
+        {
+          "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
+          "line": 134,
+          "color": "0xFF170F24",
+          "context": "const Color(0xFF170F24),"
+        },
+        {
+          "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
+          "line": 135,
+          "color": "0xFF2A1844",
+          "context": "const Color(0xFF2A1844),"
         },
         {
           "file": "lib/events/domain/pace_level_theme.dart",
@@ -443,7 +731,7 @@
       "suggestion": "Move these hardcoded colors into CatchTokens or a theme file so they can be managed centrally."
     },
     {
-      "id": "C-009",
+      "id": "C-007",
       "match_type": "duplicate_date_format",
       "severity": "low",
       "name": "DateFormat('EEE d MMM')",
@@ -463,7 +751,7 @@
       "suggestion": "DateFormat('EEE d MMM') used in 2 files. Consider a shared formatRunDate() utility."
     },
     {
-      "id": "C-010",
+      "id": "C-008",
       "match_type": "duplicate_date_format",
       "severity": "low",
       "name": "DateFormat('EEEE')",
@@ -471,12 +759,12 @@
       "sites": [
         {
           "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-          "line": 46,
+          "line": 45,
           "context": "final day = DateFormat('EEEE').format(DateTime.now());"
         },
         {
           "file": "lib/events/domain/event.dart",
-          "line": 219,
+          "line": 326,
           "context": "final weekday = DateFormat('EEEE').format(startTime);"
         },
         {
