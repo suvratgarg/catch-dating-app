@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
+import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
 import 'package:catch_dating_app/events/presentation/event_location_links.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -32,23 +33,25 @@ class PaymentConfirmationController {
       _links.openExternal(directionsUri(event));
 
   Future<void> inviteFriend(Event event) =>
-      _share.shareText(text: inviteText(event));
+      _share.shareText(text: inviteText(event), subject: inviteSubject(event));
 
-  Future<void> shareReferral(Event event) =>
-      _share.shareText(text: referralText(event));
+  Future<void> shareReferral(Event event) => _share.shareText(
+    text: referralText(event),
+    subject: inviteSubject(event),
+  );
 
   static Uri calendarUri(Event event) => calendarUriForEvent(event);
 
   static Uri directionsUri(Event event) => directionsUriForEvent(event);
 
+  static String inviteSubject(Event event) =>
+      EventInviteShareCopy.subject(event);
+
   static String inviteText(Event event) {
-    return 'Join me for an event! ${event.title} - ${event.locationName}. '
-        'Download Catch: https://catchdates.com';
+    return EventInviteShareCopy.bookingInviteText(event);
   }
 
   static String referralText(Event event) {
-    return 'I just signed up for ${event.title}! '
-        'Join me - download Catch and book an event: '
-        'https://catchdates.com';
+    return EventInviteShareCopy.referralText(event);
   }
 }
