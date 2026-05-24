@@ -13,6 +13,7 @@ import {
   EventDoc,
   EventConstraints,
   EventFormatSnapshot,
+  EventSuccessFormatPrimitives,
   EventMeetingLocation,
 } from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
@@ -62,6 +63,15 @@ import {
   normalizePolicy,
 } from "./eventPolicy";
 import {isClubHost} from "../shared/clubHosts";
+import {
+  effectiveInteractionModelFor,
+  eventSuccessPrimitivesFor,
+  isEventSuccessAssignmentAlgorithm,
+  isEventSuccessCompatibilityPolicy,
+  isEventSuccessPhoneAvailability,
+  isEventSuccessRotationSuitability,
+  ResolvedEventSuccessPrimitives,
+} from "../eventSuccess/formatPrimitives";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -702,8 +712,11 @@ function buildCreateEventSuccessPlanDoc(params: {
   const timestamp = params.serverTimestamp?.() ??
     admin.firestore.FieldValue.serverTimestamp();
   const eventFormat = params.event.eventFormat;
-  const activityKind = eventFormat.activityKind;
-  const interactionModel = eventFormat.interactionModel;
+  const primitives = eventSuccessPrimitivesFor(eventFormat);
+  const interactionModel = effectiveInteractionModelFor(
+    eventFormat.interactionModel,
+    primitives.assignmentAlgorithm
+  );
   const targetAttendeeCount = clampInteger(
     params.event.capacityLimit,
     1,
@@ -713,11 +726,11 @@ function buildCreateEventSuccessPlanDoc(params: {
   const playbookId =
     normalizeString(defaults.playbookId) ??
     normalizeString(eventFormat.defaultPlaybookId) ??
-    defaultEventSuccessPlaybookIdFor(activityKind);
+    defaultEventSuccessPlaybookIdFor(interactionModel, primitives);
   const selectedModuleIds = stableStringList(
     defaults.selectedModuleIds,
     24,
-    defaultEventSuccessModuleIdsFor(interactionModel, activityKind)
+    defaultEventSuccessModuleIdsFor(interactionModel, primitives)
   );
   const wingmanRequestsSelected =
     selectedModuleIds.includes("wingman_requests");
@@ -744,7 +757,8 @@ function buildCreateEventSuccessPlanDoc(params: {
     contextualOpenersEnabled: contextualOpenersSelected,
     compatibilityAffectsRanking:
       compatibilityQuestionnaireSelected &&
-      (defaults.compatibilityAffectsRanking ?? activityKind === "singlesMixer"),
+      (defaults.compatibilityAffectsRanking ??
+        primitives.compatibilityPolicy === "mutualInterestOnly"),
     questionnaireConfig: normalizeEventSuccessQuestionnaireConfig(
       defaults.questionnaireConfig
     ),
@@ -886,28 +900,30 @@ function clampInteger(
 }
 
 /**
- * Maps event activity to a default event-success playbook.
- * @param {string} activityKind Activity kind.
+ * Returns default event-success playbook for resolved format primitives.
+ * @param {string} interactionModel Effective event interaction model.
+ * @param {ResolvedEventSuccessPrimitives} primitives Resolved primitives.
  * @return {string} Playbook id.
  */
 function defaultEventSuccessPlaybookIdFor(
-  activityKind: EventFormatSnapshot["activityKind"]
+  interactionModel: EventFormatSnapshot["interactionModel"],
+  primitives: ResolvedEventSuccessPrimitives
 ): string {
-  switch (activityKind) {
-  case "pickleball":
-  case "padel":
-  case "tennis":
-  case "badminton":
+  switch (interactionModel) {
+  case "pairedRotations":
     return "pickleball_rotations";
-  case "pubQuiz":
+  case "teamRotations":
     return "pub_quiz_team_mixer";
-  case "dinner":
+  case "seatedTable":
     return "dinner_table_mixer";
-  case "singlesMixer":
-    return "algorithmic_mixer_reveal";
-  case "barCrawl":
-  case "openActivity":
+  case "freeFormMixer":
+    return primitives.compatibilityPolicy === "mutualInterestOnly" ?
+      "algorithmic_mixer_reveal" :
+      "host_led_social";
+  case "hostLedProgram":
+  case "openFormat":
     return "host_led_social";
+  case "pacePods":
   default:
     return "social_run_light";
   }
@@ -915,13 +931,13 @@ function defaultEventSuccessPlaybookIdFor(
 
 /**
  * Returns default module ids for an event format.
- * @param {string} interactionModel Event interaction model.
- * @param {string} activityKind Activity kind.
+ * @param {string} interactionModel Effective event interaction model.
+ * @param {ResolvedEventSuccessPrimitives} primitives Resolved primitives.
  * @return {string[]} Default module ids.
  */
 function defaultEventSuccessModuleIdsFor(
   interactionModel: EventFormatSnapshot["interactionModel"],
-  activityKind: EventFormatSnapshot["activityKind"]
+  primitives: ResolvedEventSuccessPrimitives
 ): string[] {
   const base = [
     "qr_check_in",
@@ -941,7 +957,7 @@ function defaultEventSuccessModuleIdsFor(
   case "teamRotations":
     return [...base, "micro_pods", "live_reveal"];
   case "freeFormMixer":
-    return activityKind === "singlesMixer" ?
+    return primitives.compatibilityPolicy === "mutualInterestOnly" ?
       [...base, "guided_rotations", "live_reveal",
         "compatibility_questionnaire"] :
       [...base, "guided_rotations", "live_reveal"];
@@ -950,6 +966,11 @@ function defaultEventSuccessModuleIdsFor(
   }
 }
 
+/**
+ * Resolves optional contract primitives from the event format.
+ * @param {EventFormatSnapshot} eventFormat Persisted event format.
+ * @return {ResolvedEventSuccessPrimitives} Resolved behavior primitives.
+ */
 /**
  * Returns default event-success structure for an event format.
  * @param {string} interactionModel Event interaction model.
@@ -1033,6 +1054,9 @@ function normalizeEventFormat(
   raw?: EventFormatSnapshot | null
 ): EventFormatSnapshot {
   const activityKind = raw?.activityKind ?? "socialRun";
+  const eventSuccessPrimitives = normalizeEventSuccessFormatPrimitives(
+    raw?.eventSuccessPrimitives
+  );
   return {
     version: 1,
     activityKind,
@@ -1044,9 +1068,35 @@ function normalizeEventFormat(
       {defaultPlaybookId: raw.defaultPlaybookId} : {}),
     ...(raw?.defaultModuleIds != null && raw.defaultModuleIds.length > 0 ?
       {defaultModuleIds: raw.defaultModuleIds} : {}),
+    ...(eventSuccessPrimitives != null ?
+      {eventSuccessPrimitives} : {}),
     ...(raw?.activityDetails != null ?
       {activityDetails: raw.activityDetails} : {}),
   };
+}
+
+/**
+ * Normalizes optional event-success primitives embedded in a format snapshot.
+ * @param {EventSuccessFormatPrimitivesPayload=} raw Raw primitive payload.
+ * @return {EventSuccessFormatPrimitivesPayload|null} Persistable primitives.
+ */
+function normalizeEventSuccessFormatPrimitives(
+  raw?: EventSuccessFormatPrimitives
+): EventSuccessFormatPrimitives | null {
+  const normalized: EventSuccessFormatPrimitives = {};
+  if (isEventSuccessPhoneAvailability(raw?.phoneAvailability)) {
+    normalized.phoneAvailability = raw.phoneAvailability;
+  }
+  if (isEventSuccessRotationSuitability(raw?.rotationSuitability)) {
+    normalized.rotationSuitability = raw.rotationSuitability;
+  }
+  if (isEventSuccessAssignmentAlgorithm(raw?.assignmentAlgorithm)) {
+    normalized.assignmentAlgorithm = raw.assignmentAlgorithm;
+  }
+  if (isEventSuccessCompatibilityPolicy(raw?.compatibilityPolicy)) {
+    normalized.compatibilityPolicy = raw.compatibilityPolicy;
+  }
+  return Object.keys(normalized).length > 0 ? normalized : null;
 }
 
 /**

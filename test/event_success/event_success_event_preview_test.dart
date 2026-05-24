@@ -1,5 +1,8 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_event_preview.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +54,35 @@ void main() {
     expect(preview.livePlan.checkedInCount, 2);
     expect(preview.scorecard.bookedCount, 3);
     expect(preview.scorecard.checkedInCount, 2);
+  });
+
+  test('uses format primitives instead of raw open activity in preview', () {
+    final event = buildEvent(
+      capacityLimit: 40,
+      eventFormat: const EventFormatSnapshot(
+        activityKind: ActivityKind.openActivity,
+        interactionModel: EventInteractionModel.openFormat,
+        customActivityLabel: 'Trivia night',
+        eventSuccessPrimitives: {
+          'assignmentAlgorithm': 'teamBalancer',
+          'rotationSuitability': 'plannedBreaks',
+          'compatibilityPolicy': 'questionnaireClueOnly',
+        },
+      ),
+    );
+
+    final preview = EventSuccessEventPreview.fromEvent(event: event);
+
+    expect(preview.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
+    expect(
+      preview.hostDraft.structureConfig.unitKind,
+      EventSuccessUnitKind.teams,
+    );
+    expect(preview.attendeeState.podLabel, 'Team rotations');
+    expect(
+      preview.attendeeState.prompt,
+      'Find someone on your team and ask what brought them here.',
+    );
   });
 
   testWidgets('renders the contextual event preview blocks', (tester) async {

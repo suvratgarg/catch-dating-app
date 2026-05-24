@@ -18,11 +18,26 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {isClubHost} from "../shared/clubHosts";
-import {assertGuidedRotationStrategy} from "./assignmentStrategies";
+import {
+  AssignmentParticipant,
+  assignmentPairKey,
+  OptimizedPair,
+  optimizeEventSuccessAssignments,
+} from "./assignmentOptimizer";
+import {
+  assertPairRotationTopology,
+  resolveRotationIntervalMinutes,
+  rotationRoundCountForDuration,
+} from "./assignmentTopology";
 import {
   CompatibilitySignal,
-  scoreCompatibilityPair,
+  QuestionnaireScoringMode,
 } from "./compatibilityPolicy";
+import {
+  EventSuccessAssignmentAlgorithm,
+  EventSuccessCompatibilityPolicy,
+  eventSuccessPrimitivesFor,
+} from "./formatPrimitives";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -47,6 +62,8 @@ interface EventSuccessPlanDoc {
   compatibilityAffectsRanking?: unknown;
   structureConfig?: {
     unitKind?: unknown;
+    unitSize?: unknown;
+    unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
   };
 }
@@ -67,7 +84,7 @@ interface EventSuccessCompatibilityResponseDoc {
   answerIds?: unknown;
 }
 
-interface RotationParticipant {
+interface RotationParticipant extends AssignmentParticipant {
   uid: string;
   status: typeof ACTIVE_STATUSES[number];
   gender: string;
@@ -137,21 +154,24 @@ export async function generateEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes, compatibilityAffectsRanking} =
+  const {event, rotationIntervalMinutes, questionnaireMode} =
     await loadRotationEventContext(db, eventId, uid);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
       db,
       eventId,
-      compatibilityAffectsRanking
+      questionnaireMode !== "icebreaker"
     );
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
   const rounds = buildRotationRounds({
     participants,
     blockedPairs,
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
-    requireMutualInterest: compatibilityAffectsRanking,
+    questionnaireMode,
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
   });
   const assignments = buildAssignments({
     eventId,
@@ -196,7 +216,7 @@ export async function overrideEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes, compatibilityAffectsRanking} =
+  const {event, rotationIntervalMinutes} =
     await loadRotationEventContext(db, payload.eventId, uid);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(db, payload.eventId, false);
@@ -207,7 +227,6 @@ export async function overrideEventSuccessRotationsHandler(
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
-    requireMutualInterest: compatibilityAffectsRanking,
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
@@ -246,7 +265,7 @@ async function loadRotationEventContext(
 ): Promise<{
   event: EventDoc;
   rotationIntervalMinutes: number;
-  compatibilityAffectsRanking: boolean;
+  questionnaireMode: QuestionnaireScoringMode;
 }> {
   const eventRef = db.collection("events").doc(eventId);
   const planRef = db.collection("eventSuccessPlans").doc(eventId);
@@ -295,16 +314,19 @@ async function loadRotationEventContext(
     throw new HttpsError("failed-precondition",
       "Guided rotations are not enabled for this event.");
   }
-  assertGuidedRotationStrategy(plan);
+  assertPairRotationTopology(plan);
 
   return {
     event,
-    rotationIntervalMinutes: rotationIntervalMinutesForPlan(plan),
-    compatibilityAffectsRanking:
+    rotationIntervalMinutes:
+      resolveRotationIntervalMinutes(plan) ?? ROUND_LENGTH_MINUTES,
+    questionnaireMode:
       moduleSelected(
         plan.selectedModuleIds,
         COMPATIBILITY_QUESTIONNAIRE_MODULE_ID
-      ) && plan.compatibilityAffectsRanking === true,
+      ) && plan.compatibilityAffectsRanking === true ?
+        "light" :
+        "icebreaker",
   };
 }
 
@@ -361,19 +383,6 @@ async function loadEligibleRotationParticipants(
 function moduleSelected(selectedModuleIds: unknown, moduleId: string): boolean {
   return Array.isArray(selectedModuleIds) &&
     selectedModuleIds.includes(moduleId);
-}
-
-/**
- * Reads the saved guided-rotation cadence, falling back to the V1 default.
- * @param {EventSuccessPlanDoc} plan Persisted event-success plan.
- * @return {number} Round length in minutes.
- */
-function rotationIntervalMinutesForPlan(plan: EventSuccessPlanDoc): number {
-  const value = plan.structureConfig?.rotationIntervalMinutes;
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return ROUND_LENGTH_MINUTES;
-  }
-  return Math.max(5, Math.min(180, Math.floor(value)));
 }
 
 /**
@@ -550,9 +559,10 @@ async function fetchBlockedPairs(
  * @param {number} params.eventStartMillis Event start time in millis.
  * @param {number} params.eventEndMillis Event end time in millis.
  * @param {number} params.rotationIntervalMinutes Round length in minutes.
- * @param {boolean} params.requireMutualInterest Whether pairs need mutual
- * interest compatibility.
- * @return {Array<Array<object>>} Pairings by round.
+ * @param {QuestionnaireScoringMode} params.questionnaireMode Answer weighting.
+ * @param {EventSuccessAssignmentAlgorithm} params.assignmentAlgorithm Format.
+ * @param {EventSuccessCompatibilityPolicy} params.compatibilityPolicy Scoring.
+ * @return {RotationRound[]} Pairings by round.
  */
 function buildRotationRounds(params: {
   participants: RotationParticipant[];
@@ -560,62 +570,40 @@ function buildRotationRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
-  requireMutualInterest: boolean;
+  questionnaireMode: QuestionnaireScoringMode;
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
-  const durationMinutes = Math.max(
-    0,
-    Math.floor((params.eventEndMillis - params.eventStartMillis) / 60000)
-  );
-  const requestedRounds = Math.floor(
-    durationMinutes / params.rotationIntervalMinutes
-  );
+  const requestedRounds = rotationRoundCountForDuration({
+    eventStartMillis: params.eventStartMillis,
+    eventEndMillis: params.eventEndMillis,
+    rotationIntervalMinutes: params.rotationIntervalMinutes,
+  });
   const maxRounds = params.participants.length % 2 === 0 ?
     params.participants.length - 1 :
     params.participants.length;
   const roundCount = Math.min(requestedRounds, maxRounds);
-  const seenPairs = new Set<string>();
-  const meetingCounts = new Map(
-    params.participants.map((participant) => [participant.uid, 0])
-  );
-  const breakCounts = new Map(
-    params.participants.map((participant) => [participant.uid, 0])
-  );
-  const rounds: RotationRound[] = [];
-
-  for (let roundIndex = 0; roundIndex < roundCount; roundIndex++) {
-    const usedUids = new Set<string>();
-    const pairs = allCandidatePairs(
-      params.participants,
-      params.blockedPairs,
-      params.requireMutualInterest
-    )
-      .filter((pair) => !seenPairs.has(pairKey(pair.a.uid, pair.b.uid)))
-      .sort((a, b) =>
-        compareRotationPairsForRound(a, b, meetingCounts, breakCounts)
-      );
-    const round: RotationPair[] = [];
-    for (const pair of pairs) {
-      if (usedUids.has(pair.a.uid) || usedUids.has(pair.b.uid)) continue;
-      round.push(pair);
-      usedUids.add(pair.a.uid);
-      usedUids.add(pair.b.uid);
-      seenPairs.add(pairKey(pair.a.uid, pair.b.uid));
-      meetingCounts.set(pair.a.uid, (meetingCounts.get(pair.a.uid) ?? 0) + 1);
-      meetingCounts.set(pair.b.uid, (meetingCounts.get(pair.b.uid) ?? 0) + 1);
-    }
-    if (round.length === 0) break;
-    for (const participant of params.participants) {
-      if (!usedUids.has(participant.uid)) {
-        breakCounts.set(
-          participant.uid,
-          (breakCounts.get(participant.uid) ?? 0) + 1
-        );
-      }
-    }
-    rounds.push({roundIndex, pairs: round});
-  }
-  return rounds;
+  return optimizeEventSuccessAssignments({
+    participants: params.participants,
+    blockedPairs: params.blockedPairs,
+    topology: {
+      unitKind: "pairs",
+      unitSize: 2,
+      groupCount: Math.max(1, Math.floor(params.participants.length / 2)),
+      maxGroupSize: 2,
+      rotationIntervalMinutes: params.rotationIntervalMinutes,
+      rotationsEnabled: true,
+    },
+    assignmentAlgorithm: params.assignmentAlgorithm,
+    compatibilityPolicy: params.compatibilityPolicy,
+    questionnaireMode: params.questionnaireMode,
+    rotationRoundCount: roundCount,
+    allowOrientationFallback: true,
+  }).rotationRounds.map((round) => ({
+    roundIndex: round.roundIndex,
+    pairs: round.pairs.map(toRotationPair),
+  }));
 }
 
 /**
@@ -627,8 +615,6 @@ function buildRotationRounds(params: {
  * @param {number} params.eventStartMillis Event start time in millis.
  * @param {number} params.eventEndMillis Event end time in millis.
  * @param {number} params.rotationIntervalMinutes Round length in minutes.
- * @param {boolean} params.requireMutualInterest Whether pairs need mutual
- * interest compatibility.
  * @return {RotationRound[]} Validated host-authored rounds.
  */
 function buildOverrideRounds(params: {
@@ -638,15 +624,12 @@ function buildOverrideRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
-  requireMutualInterest: boolean;
 }): RotationRound[] {
-  const durationMinutes = Math.max(
-    0,
-    Math.floor((params.eventEndMillis - params.eventStartMillis) / 60000)
-  );
-  const maxRoundCount = Math.floor(
-    durationMinutes / params.rotationIntervalMinutes
-  );
+  const maxRoundCount = rotationRoundCountForDuration({
+    eventStartMillis: params.eventStartMillis,
+    eventEndMillis: params.eventEndMillis,
+    rotationIntervalMinutes: params.rotationIntervalMinutes,
+  });
   const participantsByUid = new Map(
     params.participants.map((participant) => [participant.uid, participant])
   );
@@ -685,15 +668,6 @@ function buildOverrideRounds(params: {
         throw new HttpsError("failed-precondition",
           "Blocked attendees cannot be paired.");
       }
-      const scoredPair = scorePair(
-        participantA,
-        participantB,
-        params.requireMutualInterest
-      );
-      if (params.requireMutualInterest && scoredPair.score <= 0) {
-        throw new HttpsError("failed-precondition",
-          "Dating-coded rotations require mutual interest.");
-      }
       usedInRound.add(pairing.uidA);
       usedInRound.add(pairing.uidB);
       pairs.push({
@@ -717,115 +691,19 @@ function buildOverrideRounds(params: {
 }
 
 /**
- * Builds all allowed participant pairs.
- * @param {RotationParticipant[]} participants Participants.
- * @param {Set<string>} blockedPairs Blocked pair keys.
- * @param {boolean} requireMutualInterest Whether one-way interest is allowed.
- * @return {RotationPair[]} Candidate pairs.
- */
-function allCandidatePairs(
-  participants: RotationParticipant[],
-  blockedPairs: Set<string>,
-  requireMutualInterest: boolean
-): RotationPair[] {
-  const pairs: RotationPair[] = [];
-  for (let i = 0; i < participants.length; i++) {
-    for (let j = i + 1; j < participants.length; j++) {
-      const a = participants[i];
-      const b = participants[j];
-      if (blockedPairs.has(pairKey(a.uid, b.uid))) continue;
-      const pair = scorePair(a, b, requireMutualInterest);
-      if (pair.score > 0) pairs.push(pair);
-    }
-  }
-  return pairs;
-}
-
-/**
- * Scores a pair by mutual gender interest, optionally boosted by event answers.
- * @param {RotationParticipant} a First participant.
- * @param {RotationParticipant} b Second participant.
- * @param {boolean} requireMutualInterest Whether one-way interest is allowed.
+ * Converts optimizer pair metadata into persisted rotation pair shape.
+ * @param {OptimizedPair<RotationParticipant>} pair Optimizer pair.
  * @return {RotationPair} Scored pair.
  */
-function scorePair(
-  a: RotationParticipant,
-  b: RotationParticipant,
-  requireMutualInterest: boolean
+function toRotationPair(
+  pair: OptimizedPair<RotationParticipant>
 ): RotationPair {
-  const scored = scoreCompatibilityPair(a, b, requireMutualInterest);
   return {
-    a,
-    b,
-    score: scored.score,
-    compatibility: scored.compatibility,
+    a: pair.a,
+    b: pair.b,
+    score: pair.score,
+    compatibility: pair.compatibility,
   };
-}
-
-/**
- * Orders candidate pairs for one round using exposure before compatibility.
- * @param {RotationPair} a First candidate pair.
- * @param {RotationPair} b Second candidate pair.
- * @param {Map<string, number>} meetingCounts Meetings by uid.
- * @param {Map<string, number>} breakCounts Breaks by uid.
- * @return {number} Sort comparison.
- */
-function compareRotationPairsForRound(
-  a: RotationPair,
-  b: RotationPair,
-  meetingCounts: Map<string, number>,
-  breakCounts: Map<string, number>
-): number {
-  return pairMinMeetings(a, meetingCounts) -
-    pairMinMeetings(b, meetingCounts) ||
-    b.score - a.score ||
-    pairBreakLoad(b, breakCounts) - pairBreakLoad(a, breakCounts) ||
-    pairLoad(a, meetingCounts) - pairLoad(b, meetingCounts) ||
-    pairKey(a.a.uid, a.b.uid).localeCompare(pairKey(b.a.uid, b.b.uid));
-}
-
-/**
- * Returns the lower exposure count inside a candidate pair.
- * @param {RotationPair} pair Candidate pair.
- * @param {Map<string, number>} meetingCounts Meeting counts by uid.
- * @return {number} Lower meeting count.
- */
-function pairMinMeetings(
-  pair: RotationPair,
-  meetingCounts: Map<string, number>
-): number {
-  return Math.min(
-    meetingCounts.get(pair.a.uid) ?? 0,
-    meetingCounts.get(pair.b.uid) ?? 0
-  );
-}
-
-/**
- * Returns the current total break load for a candidate pair.
- * @param {RotationPair} pair Candidate pair.
- * @param {Map<string, number>} breakCounts Break counts by uid.
- * @return {number} Pair break load.
- */
-function pairBreakLoad(
-  pair: RotationPair,
-  breakCounts: Map<string, number>
-): number {
-  return (breakCounts.get(pair.a.uid) ?? 0) +
-    (breakCounts.get(pair.b.uid) ?? 0);
-}
-
-/**
- * Returns the current total meeting load for a candidate pair.
- * @param {RotationPair} pair Candidate pair.
- * @param {Map<string, number>} meetingCounts Meeting counts by uid.
- * @return {number} Pair load.
- */
-function pairLoad(
-  pair: RotationPair,
-  meetingCounts: Map<string, number>
-): number {
-  return (meetingCounts.get(pair.a.uid) ?? 0) +
-    (meetingCounts.get(pair.b.uid) ?? 0);
 }
 
 /**
@@ -958,7 +836,7 @@ function assignmentId(eventId: string, uid: string): string {
  * @return {string} Pair key.
  */
 function pairKey(uidA: string, uidB: string): string {
-  return [uidA, uidB].sort().join("__");
+  return assignmentPairKey(uidA, uidB);
 }
 
 /**

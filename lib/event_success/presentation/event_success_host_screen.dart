@@ -55,11 +55,13 @@ class EventSuccessHostSection extends ConsumerWidget {
     required this.event,
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
+    this.liveRoster,
   });
 
   final Event event;
   final EventSuccessHostTab initialTab;
   final bool showTabs;
+  final Widget? liveRoster;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -244,6 +246,7 @@ class EventSuccessHostSection extends ConsumerWidget {
       initialTab: initialTab,
       showTabs: showTabs,
       embedded: true,
+      liveRoster: liveRoster,
     );
   }
 }
@@ -265,6 +268,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
     this.embedded = true,
+    this.liveRoster,
     this.fixtureActions,
   });
 
@@ -282,6 +286,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final bool embedded;
+  final Widget? liveRoster;
   final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
@@ -363,6 +368,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         preferences: widget.preferences,
         wingmanRequests: widget.wingmanRequests,
         wingmanProfiles: widget.wingmanProfiles,
+        liveRoster: widget.liveRoster,
         fixtureActions: widget.fixtureActions,
         shrinkWrap: shrinkWrap,
         physics: physics,

@@ -88,13 +88,31 @@ class EventSuccessActivityProfile {
     EventFormatSnapshot format, {
     int? targetAttendeeCount,
   }) {
-    final playbook = _playbookForFormat(format);
-    final structureConfig = EventSuccessStructureConfig.defaultForFormat(
-      format,
-      targetAttendeeCount: targetAttendeeCount ?? _targetFor(playbook),
+    final assignmentAlgorithm = _assignmentAlgorithmFor(format);
+    final interactionModel = _effectiveInteractionModel(
+      format.interactionModel,
+      assignmentAlgorithm,
     );
-    final levels = _levelsForFormat(format);
-    final reasons = _reasonsFor(format);
+    final compatibilityPolicy = _compatibilityPolicyFor(
+      format,
+      interactionModel,
+    );
+    final playbook = _playbookForFormat(
+      format,
+      interactionModel,
+      compatibilityPolicy,
+    );
+    final structureConfig =
+        EventSuccessStructureConfig.defaultForInteractionModel(
+          interactionModel,
+          targetAttendeeCount: targetAttendeeCount ?? _targetFor(playbook),
+        );
+    final levels = _levelsForFormat(
+      format,
+      interactionModel,
+      compatibilityPolicy,
+    );
+    final reasons = _reasonsFor(interactionModel);
     final recommendations = <EventSuccessModuleRecommendation>[
       for (final module in playbook.modules)
         EventSuccessModuleRecommendation(
@@ -107,17 +125,17 @@ class EventSuccessActivityProfile {
     return EventSuccessActivityProfile(
       activityKind: format.activityKind,
       formatLabel: format.label,
-      interactionModel: format.interactionModel,
+      interactionModel: interactionModel,
       playbook: playbook,
       structureConfig: structureConfig,
-      phoneAvailability: _phoneAvailabilityFor(format),
-      rotationSuitability: _rotationSuitabilityFor(format.interactionModel),
-      assignmentAlgorithm: _assignmentAlgorithmFor(format.interactionModel),
-      compatibilityPolicy: _compatibilityPolicyFor(format),
-      summary: _summaryFor(format),
+      phoneAvailability: _phoneAvailabilityFor(format, interactionModel),
+      rotationSuitability: _rotationSuitabilityFor(format),
+      assignmentAlgorithm: assignmentAlgorithm,
+      compatibilityPolicy: compatibilityPolicy,
+      summary: _summaryFor(interactionModel),
       recommendations: recommendations,
       compatibilityAffectsRankingByDefault:
-          _compatibilityPolicyFor(format) ==
+          compatibilityPolicy ==
           EventSuccessCompatibilityPolicy.mutualInterestOnly,
     );
   }
@@ -134,6 +152,24 @@ class EventSuccessActivityProfile {
   final String summary;
   final List<EventSuccessModuleRecommendation> recommendations;
   final bool compatibilityAffectsRankingByDefault;
+
+  String get defaultAttendeePrompt {
+    return switch (interactionModel) {
+      EventInteractionModel.pacePods =>
+        'Find someone running your pace and ask what route they want to try next.',
+      EventInteractionModel.pairedRotations =>
+        'Find your next partner and ask what they are hoping to play next.',
+      EventInteractionModel.teamRotations =>
+        'Find someone on your team and ask what brought them here.',
+      EventInteractionModel.seatedTable =>
+        'Ask someone at your table what made them say yes to tonight.',
+      EventInteractionModel.freeFormMixer =>
+        'Find someone nearby and ask what answer from tonight surprised them.',
+      EventInteractionModel.hostLedProgram ||
+      EventInteractionModel.openFormat =>
+        'Find someone near you and ask what brought them here.',
+    };
+  }
 
   Set<String> get defaultModuleIds => recommendations
       .where((recommendation) => recommendation.selectedByDefault)
@@ -175,17 +211,21 @@ class EventSuccessActivityProfile {
   }
 }
 
-EventSuccessPlaybook _playbookForFormat(EventFormatSnapshot format) {
+EventSuccessPlaybook _playbookForFormat(
+  EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+  EventSuccessCompatibilityPolicy compatibilityPolicy,
+) {
   final id = format.defaultPlaybookId;
   if (id != null) return EventSuccessPlaybookLibrary.byIdOrDefault(id);
-  return switch (format.interactionModel) {
+  return switch (interactionModel) {
     EventInteractionModel.pacePods => EventSuccessPlaybookLibrary.socialRun,
     EventInteractionModel.pairedRotations =>
       EventSuccessPlaybookLibrary.pickleball,
     EventInteractionModel.teamRotations => EventSuccessPlaybookLibrary.pubQuiz,
     EventInteractionModel.seatedTable => EventSuccessPlaybookLibrary.dinner,
     EventInteractionModel.freeFormMixer =>
-      format.activityKind == ActivityKind.singlesMixer
+      compatibilityPolicy == EventSuccessCompatibilityPolicy.mutualInterestOnly
           ? EventSuccessPlaybookLibrary.algorithmicMixer
           : EventSuccessPlaybookLibrary.hostLedSocial,
     EventInteractionModel.hostLedProgram || EventInteractionModel.openFormat =>
@@ -198,6 +238,8 @@ int _targetFor(EventSuccessPlaybook playbook) =>
 
 Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
   EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
+  EventSuccessCompatibilityPolicy compatibilityPolicy,
 ) {
   final base = <String, EventSuccessRecommendationLevel>{
     EventSuccessModuleCatalog.crowdBalance.id:
@@ -230,7 +272,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
         EventSuccessRecommendationLevel.defaultOn,
   };
 
-  switch (format.interactionModel) {
+  switch (interactionModel) {
     case EventInteractionModel.pacePods:
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.defaultOn;
@@ -273,7 +315,7 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.liveReveal.id] =
           EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.compatibilityQuestionnaire.id] =
-          _compatibilityPolicyFor(format) ==
+          compatibilityPolicy ==
               EventSuccessCompatibilityPolicy.mutualInterestOnly
           ? EventSuccessRecommendationLevel.defaultOn
           : EventSuccessRecommendationLevel.recommended;
@@ -311,8 +353,15 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
 
 EventSuccessPhoneAvailability _phoneAvailabilityFor(
   EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
 ) {
-  return switch (format.interactionModel) {
+  final override = _primitiveOverride(
+    format,
+    'phoneAvailability',
+    EventSuccessPhoneAvailability.values,
+  );
+  if (override != null) return override;
+  return switch (interactionModel) {
     EventInteractionModel.pacePods =>
       EventSuccessPhoneAvailability.arrivalAndPostEventOnly,
     EventInteractionModel.pairedRotations ||
@@ -330,8 +379,15 @@ EventSuccessPhoneAvailability _phoneAvailabilityFor(
 }
 
 EventSuccessRotationSuitability _rotationSuitabilityFor(
-  EventInteractionModel interactionModel,
+  EventFormatSnapshot format,
 ) {
+  final override = _primitiveOverride(
+    format,
+    'rotationSuitability',
+    EventSuccessRotationSuitability.values,
+  );
+  if (override != null) return override;
+  final interactionModel = format.interactionModel;
   return switch (interactionModel) {
     EventInteractionModel.pacePods ||
     EventInteractionModel.hostLedProgram ||
@@ -345,8 +401,15 @@ EventSuccessRotationSuitability _rotationSuitabilityFor(
 }
 
 EventSuccessAssignmentAlgorithm _assignmentAlgorithmFor(
-  EventInteractionModel interactionModel,
+  EventFormatSnapshot format,
 ) {
+  final override = _primitiveOverride(
+    format,
+    'assignmentAlgorithm',
+    EventSuccessAssignmentAlgorithm.values,
+  );
+  if (override != null) return override;
+  final interactionModel = format.interactionModel;
   return switch (interactionModel) {
     EventInteractionModel.pacePods => EventSuccessAssignmentAlgorithm.pacePods,
     EventInteractionModel.pairedRotations =>
@@ -364,8 +427,15 @@ EventSuccessAssignmentAlgorithm _assignmentAlgorithmFor(
 
 EventSuccessCompatibilityPolicy _compatibilityPolicyFor(
   EventFormatSnapshot format,
+  EventInteractionModel interactionModel,
 ) {
-  return switch (format.interactionModel) {
+  final override = _primitiveOverride(
+    format,
+    'compatibilityPolicy',
+    EventSuccessCompatibilityPolicy.values,
+  );
+  if (override != null) return override;
+  return switch (interactionModel) {
     EventInteractionModel.freeFormMixer =>
       format.activityKind == ActivityKind.singlesMixer
           ? EventSuccessCompatibilityPolicy.mutualInterestOnly
@@ -381,7 +451,40 @@ EventSuccessCompatibilityPolicy _compatibilityPolicyFor(
   };
 }
 
-Map<String, String> _reasonsFor(EventFormatSnapshot format) {
+EventInteractionModel _effectiveInteractionModel(
+  EventInteractionModel interactionModel,
+  EventSuccessAssignmentAlgorithm assignmentAlgorithm,
+) {
+  final mapped = switch (assignmentAlgorithm) {
+    EventSuccessAssignmentAlgorithm.pacePods => EventInteractionModel.pacePods,
+    EventSuccessAssignmentAlgorithm.pairRotations =>
+      EventInteractionModel.pairedRotations,
+    EventSuccessAssignmentAlgorithm.teamBalancer =>
+      EventInteractionModel.teamRotations,
+    EventSuccessAssignmentAlgorithm.tableSeating =>
+      EventInteractionModel.seatedTable,
+    EventSuccessAssignmentAlgorithm.socialPods =>
+      EventInteractionModel.freeFormMixer,
+    EventSuccessAssignmentAlgorithm.none => null,
+  };
+  return mapped ?? interactionModel;
+}
+
+T? _primitiveOverride<T extends Enum>(
+  EventFormatSnapshot format,
+  String key,
+  List<T> values,
+) {
+  final raw = format.eventSuccessPrimitives[key];
+  if (raw is! String) return null;
+  final normalized = raw.trim();
+  for (final value in values) {
+    if (value.name == normalized) return value;
+  }
+  return null;
+}
+
+Map<String, String> _reasonsFor(EventInteractionModel interactionModel) {
   final common = <String, String>{
     EventSuccessModuleCatalog.crowdBalance.id:
         'Useful before publishing, but it belongs beside booking and roster decisions.',
@@ -405,7 +508,7 @@ Map<String, String> _reasonsFor(EventFormatSnapshot format) {
         'Blocks, reports, visibility, and opt-outs have to apply across every live guide surface.',
   };
 
-  switch (format.interactionModel) {
+  switch (interactionModel) {
     case EventInteractionModel.pacePods:
       return {
         ...common,
@@ -493,8 +596,8 @@ Map<String, String> _reasonsFor(EventFormatSnapshot format) {
   }
 }
 
-String _summaryFor(EventFormatSnapshot format) {
-  return switch (format.interactionModel) {
+String _summaryFor(EventInteractionModel interactionModel) {
+  return switch (interactionModel) {
     EventInteractionModel.pacePods =>
       'Keep the moving event primary. Use check-in, light grouping, prompts, and follow-up without turning it into speed dating.',
     EventInteractionModel.pairedRotations =>

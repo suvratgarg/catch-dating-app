@@ -12,11 +12,25 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {isClubHost} from "../shared/clubHosts";
-import {assertMicroPodStrategy} from "./assignmentStrategies";
-import {scoreCompatibilityPair} from "./compatibilityPolicy";
+import {
+  AssignmentParticipant,
+  assignmentPairKey,
+  optimizeEventSuccessAssignments,
+} from "./assignmentOptimizer";
+import {
+  EventSuccessUnitKind,
+  resolveAssignmentTopology,
+  unitLabel,
+  unitSubtitle,
+} from "./assignmentTopology";
+import {
+  EventSuccessAssignmentAlgorithm,
+  EventSuccessCompatibilityPolicy,
+  eventSuccessPrimitivesFor,
+} from "./formatPrimitives";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
-const DEFAULT_TARGET_POD_SIZE = 5;
+const DEFAULT_TARGET_UNIT_SIZE = 5;
 const MAX_IN_FILTER_VALUES = 30;
 const ACTIVE_STATUSES = ["attended", "signedUp"] as const;
 
@@ -38,6 +52,7 @@ interface EventSuccessPlanDoc {
     unitKind?: unknown;
     unitSize?: unknown;
     unitCount?: unknown;
+    rotationIntervalMinutes?: unknown;
   };
 }
 
@@ -51,7 +66,7 @@ interface EventSuccessPreferenceDoc {
   microPodsOptedOut?: boolean;
 }
 
-interface ActiveParticipant {
+interface ActiveParticipant extends AssignmentParticipant {
   uid: string;
   status: typeof ACTIVE_STATUSES[number];
   gender?: string;
@@ -145,7 +160,6 @@ export async function generateEventSuccessPodsHandler(
     throw new HttpsError("failed-precondition",
       "Micro-pods are not enabled for this event.");
   }
-  assertMicroPodStrategy(plan);
 
   const participationsSnap = await db
     .collection("eventParticipations")
@@ -167,10 +181,26 @@ export async function generateEventSuccessPodsHandler(
   );
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
-  const groups = buildPods(eligibleParticipants, blockedPairs, plan);
+  const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  const groups = buildPods({
+    participants: eligibleParticipants,
+    blockedPairs,
+    plan,
+    assignmentAlgorithm: primitives.assignmentAlgorithm,
+    compatibilityPolicy: primitives.compatibilityPolicy,
+  });
+  const topology = resolveAssignmentTopology(
+    plan,
+    eligibleParticipants.length,
+    {
+      defaultUnitKind: "pods",
+      defaultUnitSize: DEFAULT_TARGET_UNIT_SIZE,
+    }
+  );
   const assignments = buildAssignments({
     eventId,
     clubId: event.clubId,
+    unitKind: topology.unitKind,
     groups,
     now: deps.serverTimestamp(),
   });
@@ -311,133 +341,34 @@ async function hydrateParticipants(
 }
 
 /**
- * Splits active participants into deterministic micro-pods.
- * @param {Array<ActiveParticipant>} participants Active participant list.
- * @param {Set<string>} blockedPairs Undirected blocked pair keys.
- * @param {EventSuccessPlanDoc} plan Persisted event-success plan.
- * @return {Array<Array<ActiveParticipant>>} Pod groups.
+ * Splits active participants into deterministic topology-driven units.
+ * @param {object} params Pod-build inputs.
+ * @return {Array<Array<ActiveParticipant>>} Assignment groups.
  */
-function buildPods(
-  participants: ActiveParticipant[],
-  blockedPairs: Set<string>,
-  plan: EventSuccessPlanDoc
-): ActiveParticipant[][] {
-  if (participants.length === 0) return [];
-  const podCount = groupCountForPlan(plan, participants.length);
-  const groups = Array.from(
-    {length: podCount},
-    () => [] as ActiveParticipant[]
-  );
-  for (const participant of participants) {
-    const candidates = groups
-      .map((group, index) => ({group, index}))
-      .sort((a, b) =>
-        podCandidateScore(participant, a.group, blockedPairs) -
-        podCandidateScore(participant, b.group, blockedPairs) ||
-        a.index - b.index
-      );
-    const safeCandidate = candidates.find(({group}) =>
-      canJoinPod(participant, group, blockedPairs)
-    );
-    if (safeCandidate !== undefined) {
-      safeCandidate.group.push(participant);
-    } else {
-      groups.push([participant]);
+function buildPods(params: {
+  participants: ActiveParticipant[];
+  blockedPairs: Set<string>;
+  plan: EventSuccessPlanDoc;
+  assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
+  compatibilityPolicy: EventSuccessCompatibilityPolicy;
+}): ActiveParticipant[][] {
+  if (params.participants.length === 0) return [];
+  const topology = resolveAssignmentTopology(
+    params.plan,
+    params.participants.length,
+    {
+      defaultUnitKind: "pods",
+      defaultUnitSize: DEFAULT_TARGET_UNIT_SIZE,
     }
-  }
-  return groups.filter((group) => group.length > 0);
-}
-
-/**
- * Scores how suitable a pod is for adding one attendee.
- * @param {ActiveParticipant} participant Candidate attendee.
- * @param {ActiveParticipant[]} group Current group.
- * @param {Set<string>} blockedPairs Undirected blocked pair keys.
- * @return {number} Lower score is better.
- */
-function podCandidateScore(
-  participant: ActiveParticipant,
-  group: ActiveParticipant[],
-  blockedPairs: Set<string>
-): number {
-  if (!canJoinPod(participant, group, blockedPairs)) {
-    return Number.POSITIVE_INFINITY;
-  }
-  return group.length * 100 +
-    sameGenderCount(participant, group) * 10 -
-    socialCompatibilityBonus(participant, group);
-}
-
-/**
- * Counts current pod members with the same known gender.
- * @param {ActiveParticipant} participant Candidate attendee.
- * @param {ActiveParticipant[]} group Current group.
- * @return {number} Same-gender count.
- */
-function sameGenderCount(
-  participant: ActiveParticipant,
-  group: ActiveParticipant[]
-): number {
-  if (participant.gender === undefined) return 0;
-  return group.filter((member) => member.gender === participant.gender).length;
-}
-
-/**
- * Gives a small tie-breaker to socially compatible pod placements.
- * @param {ActiveParticipant} participant Candidate attendee.
- * @param {ActiveParticipant[]} group Current group.
- * @return {number} Compatibility bonus.
- */
-function socialCompatibilityBonus(
-  participant: ActiveParticipant,
-  group: ActiveParticipant[]
-): number {
-  return group.reduce(
-    (sum, member) =>
-      sum + scoreCompatibilityPair(participant, member, false).score,
-    0
   );
-}
-
-/**
- * Resolves the group count from saved structure, falling back to target size.
- * @param {EventSuccessPlanDoc} plan Persisted event-success plan.
- * @param {number} participantCount Eligible participant count.
- * @return {number} Number of groups to seed.
- */
-function groupCountForPlan(
-  plan: EventSuccessPlanDoc,
-  participantCount: number
-): number {
-  if (plan.structureConfig?.unitKind === "wholeGroup") return 1;
-  const configuredCount = boundedInteger(
-    plan.structureConfig?.unitCount,
-    1,
-    200
-  );
-  if (configuredCount !== null) return configuredCount;
-  const targetSize = boundedInteger(
-    plan.structureConfig?.unitSize,
-    2,
-    50
-  ) ?? DEFAULT_TARGET_POD_SIZE;
-  return Math.max(1, Math.ceil(participantCount / targetSize));
-}
-
-/**
- * Returns an integer in range from a possibly-untyped Firestore value.
- * @param {unknown} value Raw numeric value.
- * @param {number} min Minimum accepted value.
- * @param {number} max Maximum accepted value.
- * @return {number|null} Clamped integer or null.
- */
-function boundedInteger(
-  value: unknown,
-  min: number,
-  max: number
-): number | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) return null;
-  return Math.max(min, Math.min(max, Math.floor(value)));
+  return optimizeEventSuccessAssignments({
+    participants: params.participants,
+    blockedPairs: params.blockedPairs,
+    topology,
+    assignmentAlgorithm: params.assignmentAlgorithm,
+    compatibilityPolicy: params.compatibilityPolicy,
+    questionnaireMode: "icebreaker",
+  }).groups.map((group) => group.participants);
 }
 
 /**
@@ -485,30 +416,13 @@ async function fetchBlockedPairs(
 }
 
 /**
- * Returns true when adding a participant will not violate block safety.
- * @param {ActiveParticipant} participant Candidate participant.
- * @param {ActiveParticipant[]} group Current pod members.
- * @param {Set<string>} blockedPairs Undirected blocked pair keys.
- * @return {boolean} Whether the participant can join the pod.
- */
-function canJoinPod(
-  participant: ActiveParticipant,
-  group: ActiveParticipant[],
-  blockedPairs: Set<string>
-): boolean {
-  return group.every((member) =>
-    !blockedPairs.has(blockedPairKey(participant.uid, member.uid))
-  );
-}
-
-/**
  * Builds a deterministic undirected pair key.
  * @param {string} uidA First uid.
  * @param {string} uidB Second uid.
  * @return {string} Pair key.
  */
 function blockedPairKey(uidA: string, uidB: string): string {
-  return [uidA, uidB].sort().join("__");
+  return assignmentPairKey(uidA, uidB);
 }
 
 /**
@@ -538,12 +452,13 @@ function chunk<T>(values: T[], size: number): T[][] {
 function buildAssignments(params: {
   eventId: string;
   clubId: string;
+  unitKind: EventSuccessUnitKind;
   groups: ActiveParticipant[][];
   now: FirebaseFirestore.FieldValue;
 }): Map<string, GeneratedAssignment> {
   const assignments = new Map<string, GeneratedAssignment>();
   params.groups.forEach((group, index) => {
-    const label = podLabel(index);
+    const label = unitLabel(params.unitKind, index);
     const groupUids = group.map((participant) => participant.uid);
     for (const participant of group) {
       const docId = assignmentId(params.eventId, participant.uid);
@@ -554,7 +469,7 @@ function buildAssignments(params: {
         moduleId: MICRO_PODS_MODULE_ID,
         label,
         displayTitle: label,
-        displaySubtitle: podSubtitle(group.length),
+        displaySubtitle: unitSubtitle(params.unitKind, group.length),
         peerUids: groupUids.filter((peerUid) => peerUid !== participant.uid),
         source: "server_v1",
         createdAt: params.now,
@@ -605,25 +520,4 @@ async function writeAssignments(
  */
 function assignmentId(eventId: string, uid: string): string {
   return `${eventId}_${MICRO_PODS_MODULE_ID}_${uid}`;
-}
-
-/**
- * Builds attendee-facing pod size copy.
- * @param {number} groupSize Number of people in the pod.
- * @return {string} Display subtitle.
- */
-function podSubtitle(groupSize: number): string {
-  return `${groupSize} ${groupSize === 1 ? "person" : "people"} ` +
-    "in this event pod.";
-}
-
-/**
- * Builds a compact host and attendee-facing pod label.
- * @param {number} index Zero-based pod index.
- * @return {string} Pod label.
- */
-function podLabel(index: number): string {
-  const base = String.fromCharCode(65 + (index % 26));
-  const suffix = index >= 26 ? `${Math.floor(index / 26) + 1}` : "";
-  return `Pod ${base}${suffix}`;
 }

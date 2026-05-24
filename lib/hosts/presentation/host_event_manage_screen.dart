@@ -312,15 +312,15 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         ),
       ],
       HostEventManageSection.live => [
-        HostEventParticipantsPanel(
-          eventId: event.id,
-          mode: HostEventParticipantsMode.live,
-        ),
-        gapH20,
         EventSuccessHostSection(
           event: event,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
+          liveRoster: HostEventParticipantsPanel(
+            eventId: event.id,
+            mode: HostEventParticipantsMode.live,
+            showSummaryHeader: false,
+          ),
         ),
       ],
       HostEventManageSection.report => [

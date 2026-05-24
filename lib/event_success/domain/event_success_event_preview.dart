@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -36,17 +36,26 @@ class EventSuccessEventPreview {
     DateTime? now,
     EventSuccessPlaybook? playbook,
   }) {
-    final resolvedPlaybook = playbook ?? _playbookForEvent(event);
+    final profile = EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+      targetAttendeeCount: event.capacityLimit,
+    );
+    final resolvedPlaybook = playbook ?? profile.playbook;
     final bookedCount = math.max(roster?.bookedCount ?? 0, event.signedUpCount);
     final checkedInCount = math.max(
       roster?.checkedInCount ?? 0,
       event.attendedCount,
     );
     final referenceNow = now ?? DateTime.now();
-    final hostDraft = EventSuccessHostDraft.fromPlaybook(
-      resolvedPlaybook,
-      targetAttendeeCount: event.capacityLimit,
-    );
+    final hostDraft = playbook == null
+        ? EventSuccessHostDraft.fromFormat(
+            event.eventFormat,
+            targetAttendeeCount: event.capacityLimit,
+          )
+        : EventSuccessHostDraft.fromPlaybook(
+            resolvedPlaybook,
+            targetAttendeeCount: event.capacityLimit,
+          );
     final scorecard = _scorecardFromEvent(
       bookedCount: bookedCount,
       checkedInCount: checkedInCount,
@@ -70,7 +79,7 @@ class EventSuccessEventPreview {
       attendeeState: _attendeeStateFromEvent(
         event: event,
         viewer: viewer,
-        playbook: resolvedPlaybook,
+        profile: profile,
         checkedInCount: checkedInCount,
         now: referenceNow,
       ),
@@ -98,17 +107,6 @@ class EventSuccessEventPreview {
   final List<String> integrationNotes;
 }
 
-EventSuccessPlaybook _playbookForEvent(Event event) {
-  final playbookId = event.eventFormat.defaultPlaybookId;
-  if (playbookId != null) {
-    return EventSuccessPlaybookLibrary.byIdOrDefault(playbookId);
-  }
-  return EventSuccessPlaybookLibrary.forActivity(
-        event.eventFormat.activityKind,
-      ).firstOrNull ??
-      EventSuccessPlaybookLibrary.socialRun;
-}
-
 int _activeStepIndex({
   required EventSuccessPlaybook playbook,
   required Event event,
@@ -129,7 +127,7 @@ int _activeStepIndex({
 EventSuccessAttendeeState _attendeeStateFromEvent({
   required Event event,
   required UserProfile? viewer,
-  required EventSuccessPlaybook playbook,
+  required EventSuccessActivityProfile profile,
   required int checkedInCount,
   required DateTime now,
 }) {
@@ -146,10 +144,8 @@ EventSuccessAttendeeState _attendeeStateFromEvent({
   return EventSuccessAttendeeState(
     eventTitle: event.title,
     attendeeName: firstName,
-    podLabel: _attendeePodLabel(event),
-    prompt: playbook.activityType.isMovementHeavy
-        ? 'Find someone running your pace and ask what route they want to try next.'
-        : 'Find someone on your team and ask what brought them here.',
+    podLabel: _attendeePodLabel(event, profile),
+    prompt: profile.defaultAttendeePrompt,
     wingmanRequestCandidates: const [
       WingmanRequestCandidate(
         displayName: 'Preview attendee',
@@ -161,11 +157,11 @@ EventSuccessAttendeeState _attendeeStateFromEvent({
   );
 }
 
-String _attendeePodLabel(Event event) {
+String _attendeePodLabel(Event event, EventSuccessActivityProfile profile) {
   if (event.eventFormat.isDistanceBased) {
     return '${event.pace.label} pace pod · ${event.distanceKm.toStringAsFixed(1)} km';
   }
-  return event.eventFormat.interactionModel.label;
+  return profile.interactionModel.label;
 }
 
 EventSuccessScorecard _scorecardFromEvent({

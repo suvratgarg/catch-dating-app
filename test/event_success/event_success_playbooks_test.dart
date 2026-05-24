@@ -354,6 +354,82 @@ void main() {
       );
     });
 
+    test(
+      'format primitives translate open custom formats into fixed behavior',
+      () {
+        const format = EventFormatSnapshot(
+          activityKind: ActivityKind.openActivity,
+          interactionModel: EventInteractionModel.openFormat,
+          customActivityLabel: 'Trivia night',
+          eventSuccessPrimitives: {
+            'phoneAvailability': 'plannedPauses',
+            'rotationSuitability': 'plannedBreaks',
+            'assignmentAlgorithm': 'teamBalancer',
+            'compatibilityPolicy': 'questionnaireClueOnly',
+          },
+        );
+
+        final profile = EventSuccessActivityProfile.forFormat(
+          format,
+          targetAttendeeCount: 40,
+        );
+
+        expect(profile.formatLabel, 'Trivia night');
+        expect(profile.interactionModel, EventInteractionModel.teamRotations);
+        expect(
+          profile.phoneAvailability,
+          EventSuccessPhoneAvailability.plannedPauses,
+        );
+        expect(
+          profile.rotationSuitability,
+          EventSuccessRotationSuitability.plannedBreaks,
+        );
+        expect(
+          profile.assignmentAlgorithm,
+          EventSuccessAssignmentAlgorithm.teamBalancer,
+        );
+        expect(
+          profile.compatibilityPolicy,
+          EventSuccessCompatibilityPolicy.questionnaireClueOnly,
+        );
+        expect(profile.playbook.id, EventSuccessPlaybookLibrary.pubQuiz.id);
+        expect(profile.structureConfig.unitKind, EventSuccessUnitKind.teams);
+        expect(
+          profile.defaultModuleIds,
+          contains(EventSuccessModuleCatalog.microPods.id),
+        );
+      },
+    );
+
+    test('mutual-interest primitive makes custom mixers dating-forward', () {
+      const format = EventFormatSnapshot(
+        activityKind: ActivityKind.openActivity,
+        interactionModel: EventInteractionModel.openFormat,
+        customActivityLabel: 'Algorithmic mixer',
+        eventSuccessPrimitives: {
+          'assignmentAlgorithm': 'socialPods',
+          'compatibilityPolicy': 'mutualInterestOnly',
+        },
+      );
+
+      final profile = EventSuccessActivityProfile.forFormat(format);
+
+      expect(profile.interactionModel, EventInteractionModel.freeFormMixer);
+      expect(
+        profile.compatibilityPolicy,
+        EventSuccessCompatibilityPolicy.mutualInterestOnly,
+      );
+      expect(
+        profile.playbook.id,
+        EventSuccessPlaybookLibrary.algorithmicMixer.id,
+      );
+      expect(profile.compatibilityAffectsRankingByDefault, isTrue);
+      expect(
+        profile.defaultModuleIds,
+        contains(EventSuccessModuleCatalog.compatibilityQuestionnaire.id),
+      );
+    });
+
     test('event defaults normalize to the selected activity', () {
       final racketDefaults = EventSuccessDefaults(
         enabled: true,

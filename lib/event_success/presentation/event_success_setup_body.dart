@@ -143,7 +143,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               onChanged: widget.onAttendeePromptChanged,
             ),
             _AttendeePromptPreview(
-              text: _attendeePromptPreview(draft, widget.attendeePrompt),
+              text: _attendeePromptPreview(profile, widget.attendeePrompt),
             ),
           ],
         ),
@@ -907,12 +907,13 @@ String _advancedSubtitle(EventSuccessHostDraft draft) {
   return 'Optional extras you opt into intentionally.';
 }
 
-String _attendeePromptPreview(EventSuccessHostDraft draft, String? typed) {
+String _attendeePromptPreview(
+  EventSuccessActivityProfile profile,
+  String? typed,
+) {
   final configured = typed?.trim();
   if (configured != null && configured.isNotEmpty) return configured;
-  return draft.playbook.activityType.isMovementHeavy
-      ? 'Find someone running your pace and ask what route they want to try next.'
-      : 'Find someone near you and ask what brought them here.';
+  return profile.defaultAttendeePrompt;
 }
 
 String _guideNotesSubtitle(

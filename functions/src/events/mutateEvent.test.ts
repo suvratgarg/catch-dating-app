@@ -574,6 +574,72 @@ test("createEventHandler defaults pub quiz teams from capacity", async () => {
   });
 });
 
+test("createEventHandler uses event-success primitives for custom formats",
+  async () => {
+    const h = harness({"clubs/club-1": club()});
+
+    await createEventHandler(
+      request("host-1", payload({
+        capacityLimit: 40,
+        distanceKm: 0,
+        eventFormat: {
+          version: 1,
+          activityKind: "openActivity",
+          interactionModel: "openFormat",
+          customActivityLabel: "Trivia night",
+          eventSuccessPrimitives: {
+            phoneAvailability: "plannedPauses",
+            rotationSuitability: "plannedBreaks",
+            assignmentAlgorithm: "teamBalancer",
+            compatibilityPolicy: "questionnaireClueOnly",
+          },
+        },
+        eventSuccessDefaults: {
+          enabled: true,
+          hostGoal: "Balance trivia teams.",
+        },
+      })),
+      h.deps
+    );
+
+    const eventDoc = h.firestore.get("events/event-1");
+    const plan = h.firestore.get("eventSuccessPlans/event-1");
+    assert.deepEqual(eventDoc?.eventFormat, {
+      version: 1,
+      activityKind: "openActivity",
+      interactionModel: "openFormat",
+      customActivityLabel: "Trivia night",
+      eventSuccessPrimitives: {
+        phoneAvailability: "plannedPauses",
+        rotationSuitability: "plannedBreaks",
+        assignmentAlgorithm: "teamBalancer",
+        compatibilityPolicy: "questionnaireClueOnly",
+      },
+    });
+    assert.equal(plan?.playbookId, "pub_quiz_team_mixer");
+    assert.deepEqual(plan?.selectedModuleIds, [
+      "contextual_openers",
+      "decomposed_feedback",
+      "host_analytics",
+      "host_script",
+      "live_reveal",
+      "micro_pods",
+      "qr_check_in",
+      "safety_controls",
+      "social_missions",
+      "wingman_requests",
+    ]);
+    assert.deepEqual(plan?.structureConfig, {
+      unitKind: "teams",
+      unitSize: 5,
+      unitCount: null,
+      rotationIntervalMinutes: null,
+      revealCountdownSeconds: 10,
+    });
+    assert.equal(plan?.compatibilityAffectsRanking, false);
+  }
+);
+
 test("createEventHandler rejects orphan-prone event success plan conflicts",
   async () => {
     const h = harness({
