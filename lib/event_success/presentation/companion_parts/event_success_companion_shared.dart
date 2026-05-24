@@ -5,8 +5,9 @@ part of '../event_success_companion_screen.dart';
 /// when the `FLUTTER_TEST` env var is set (the test runner provides it).
 /// Production runs untouched; tests that genuinely want kinetic behaviour
 /// can use `pump(Duration(...))` with explicit time advancement.
-final bool _kStageAnimationsEnabled =
-    !Platform.environment.containsKey('FLUTTER_TEST');
+final bool _kStageAnimationsEnabled = !Platform.environment.containsKey(
+  'FLUTTER_TEST',
+);
 
 class _CompanionStageScaffold extends StatelessWidget {
   const _CompanionStageScaffold({
@@ -816,7 +817,8 @@ class _StageMotifPainter extends CustomPainter {
           final localPhase = (phase + i * 0.057) % 1.0;
           final dx = math.cos(localPhase * twoPi) * 6;
           final dy = math.sin(localPhase * twoPi) * 4;
-          final alpha = 0.10 + 0.14 * (0.5 + 0.5 * math.sin(localPhase * twoPi));
+          final alpha =
+              0.10 + 0.14 * (0.5 + 0.5 * math.sin(localPhase * twoPi));
           canvas.drawCircle(
             Offset(baseX + dx, baseY + dy),
             i.isEven ? 2.5 : 1.4,
@@ -1262,15 +1264,17 @@ class _StageBouncyPressState extends State<_StageBouncyPress>
 
   late final Animation<double> _press = TweenSequence<double>([
     TweenSequenceItem(
-      tween: Tween<double>(begin: 0, end: 1).chain(
-        CurveTween(curve: Curves.easeOut),
-      ),
+      tween: Tween<double>(
+        begin: 0,
+        end: 1,
+      ).chain(CurveTween(curve: Curves.easeOut)),
       weight: 35,
     ),
     TweenSequenceItem(
-      tween: Tween<double>(begin: 1, end: 0).chain(
-        CurveTween(curve: Curves.elasticOut),
-      ),
+      tween: Tween<double>(
+        begin: 1,
+        end: 0,
+      ).chain(CurveTween(curve: Curves.elasticOut)),
       weight: 65,
     ),
   ]).animate(_controller);
@@ -1309,8 +1313,8 @@ class _StageBouncyPressState extends State<_StageBouncyPress>
           // 0 at rest, 1 at deepest press. Mix held-down state into the curve
           // so dragging a finger off-target still releases visually.
           final press = _down ? 1.0 : _press.value;
-          final scale = 1.0 -
-              (1.0 - _StageBouncyPress._minScale) * press.clamp(0.0, 1.0);
+          final scale =
+              1.0 - (1.0 - _StageBouncyPress._minScale) * press.clamp(0.0, 1.0);
           // Glow flare follows press up then decays through the elastic
           // release for a satisfying tail.
           final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
@@ -1464,9 +1468,7 @@ class _ArrivalRingCard extends StatelessWidget {
     final fg = stageTheme.foreground;
     final hasArrivals = checkedInCount > 0;
     final caption = hasArrivals
-        ? (checkedInCount == 1
-              ? 'person here so far'
-              : 'people here so far')
+        ? (checkedInCount == 1 ? 'person here so far' : 'people here so far')
         : 'waiting for the room to fill';
     return SizedBox(
       width: 140,
@@ -1486,13 +1488,10 @@ class _ArrivalRingCard extends StatelessWidget {
               children: [
                 Text(
                   '$checkedInCount',
-                  style: CatchTextStyles.displayM(context, color: fg)
-                      .copyWith(
-                        height: 1.0,
-                        fontFeatures: const [
-                          FontFeature.tabularFigures(),
-                        ],
-                      ),
+                  style: CatchTextStyles.displayM(context, color: fg).copyWith(
+                    height: 1.0,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
                 gapH2,
                 Text(
@@ -1569,9 +1568,7 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
           decoration: BoxDecoration(
             color: t.primarySoft,
             borderRadius: BorderRadius.circular(CatchRadius.pill),
-            border: Border.all(
-              color: t.primary.withValues(alpha: glowAlpha),
-            ),
+            border: Border.all(color: t.primary.withValues(alpha: glowAlpha)),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -1581,11 +1578,7 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.groups_3_outlined,
-                  size: 16,
-                  color: t.primary,
-                ),
+                Icon(Icons.groups_3_outlined, size: 16, color: t.primary),
                 gapW6,
                 Text(
                   count == 1
@@ -1635,8 +1628,8 @@ class _ArrivalRingPainter extends CustomPainter {
       final color = isHighlight
           ? activeAccent.withValues(alpha: 0.92)
           : filled
-              ? accentForeground
-              : dimForeground;
+          ? accentForeground
+          : dimForeground;
       canvas.drawCircle(position, filled ? 3.4 : 2.0, Paint()..color = color);
     }
   }

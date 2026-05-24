@@ -484,6 +484,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       rotationPeersLoading: rotationPeersAsync.isLoading,
       guidedRotationsOptedOut: guidedRotationsOptedOut,
       arrivalMission: activeArrivalMission,
+      now: referenceNow,
       onStartArrivalMission: () async {
         await EventSuccessController.firstHelloStartMutation.run(
           ref,
