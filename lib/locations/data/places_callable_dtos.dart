@@ -1,6 +1,19 @@
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/domain/place.dart';
 
+// Re-export generated callable request classes.
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show PlaceDetailsCallableRequest;
+
+// PlacesAutocompleteCallableRequest is kept hand-written because it flattens a
+// LocationCoordinate? `bias` object into the payload's latitude/longitude
+// fields at serialization time — a domain → DTO convenience the schema does
+// not express. Generated equivalents would require callers to pass latitude
+// and longitude directly. See backlog item CONTRACT-DART-GEN-001.
+//
+// Response decoders below are hand-written; response generation is not yet in
+// scope.
+
 final class PlacesAutocompleteCallableRequest {
   const PlacesAutocompleteCallableRequest({
     required this.input,
@@ -45,21 +58,6 @@ final class PlacesAutocompleteCallableResponse {
   }
 
   final List<PlaceAutocompleteSuggestion> predictions;
-}
-
-final class PlaceDetailsCallableRequest {
-  const PlaceDetailsCallableRequest({
-    required this.placeId,
-    required this.sessionToken,
-  });
-
-  final String placeId;
-  final String sessionToken;
-
-  Map<String, Object?> toJson() => {
-    'placeId': placeId,
-    'sessionToken': sessionToken,
-  };
 }
 
 final class PlaceDetailsCallableResponse {

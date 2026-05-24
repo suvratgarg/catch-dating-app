@@ -1,5 +1,13 @@
 import 'package:catch_dating_app/reviews/domain/review.dart';
 
+// Re-export generated callable request classes for reviews.
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show DeleteEventReviewCallableRequest;
+
+// Hand-written DTOs below carry domain → DTO adapter factories that the
+// generator cannot derive from JSON Schema. They are still validated against
+// the corresponding schemas by test/core/callable_dto_contracts_test.dart.
+
 final class CreateEventReviewCallableRequest {
   const CreateEventReviewCallableRequest({
     required this.clubId,
@@ -54,12 +62,4 @@ final class UpdateEventReviewCallableRequest {
     'rating': rating,
     'comment': comment,
   };
-}
-
-final class ReviewIdCallableRequest {
-  const ReviewIdCallableRequest(this.reviewId);
-
-  final String reviewId;
-
-  Map<String, Object?> toJson() => {'reviewId': reviewId};
 }

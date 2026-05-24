@@ -1,3 +1,16 @@
+// Re-export generated callable request classes for payments.
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show VerifyRazorpayPaymentCallableRequest;
+
+// EventBookingCallableRequest and CreateRazorpayOrderCallableRequest are
+// intentionally kept hand-written: contracts/callables/ has no payload schemas
+// for these callables yet (the verify side does), and the hand-written code
+// normalizes inviteCode via .trim() before serialization. See backlog item
+// CONTRACT-DART-GEN-001 for the path to schema-first generation here.
+//
+// RazorpayOrderCallableResponse and the format-exception type keep their
+// hand-written parsers; response decoding is not yet generated.
+
 final class EventBookingCallableRequest {
   const EventBookingCallableRequest({required this.eventId, this.inviteCode});
 
@@ -58,24 +71,6 @@ final class RazorpayOrderCallableResponse {
   final String orderId;
   final int amountInPaise;
   final String currency;
-}
-
-final class VerifyRazorpayPaymentCallableRequest {
-  const VerifyRazorpayPaymentCallableRequest({
-    required this.paymentId,
-    required this.orderId,
-    required this.signature,
-  });
-
-  final String paymentId;
-  final String orderId;
-  final String signature;
-
-  Map<String, Object?> toJson() => {
-    'paymentId': paymentId,
-    'orderId': orderId,
-    'signature': signature,
-  };
 }
 
 final class RazorpayOrderCallableResponseFormatException implements Exception {
