@@ -1,16 +1,16 @@
 {
   "schemaOwnedExceptions": {
-    "extraFields.UserProfileDoc.profilePhotos": "Transitional Admin SDK facade field. JSON Schema owns the persisted shape; this facade keeps live FirebaseFirestore.Timestamp types for Functions code until the Admin SDK facade is generated from contracts.",
-    "extraFields.PublicProfileDoc.languages": "Transitional Admin SDK facade field. JSON Schema owns public profile fields; the Dart-derived public model still needs this overlay until the old generator is retired.",
-    "extraFields.PublicProfileDoc.profilePhotos": "Transitional Admin SDK facade field. JSON Schema owns the persisted shape; this facade keeps live FirebaseFirestore.Timestamp types for Functions code until the Admin SDK facade is generated from contracts.",
-    "fieldOverrides.UserProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
-    "fieldOverrides.PublicProfileDoc.languages": "Overlay the public-profile language field while the transitional facade is still Dart-derived.",
-    "fieldOverrides.PublicProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
-    "extraFields.EventDoc.eventPolicy": "Transitional Admin SDK facade field. JSON Schema owns events.eventPolicy, while Functions need the hand-written EventPolicyBundleDoc shape until nested schema-derived TypeScript types are generated.",
-    "fieldOverrides.EventDoc.eventPolicy": "Override the Dart-derived loose map type so Functions use the explicit EventPolicyBundleDoc snapshot owned by the events JSON Schema.",
-    "extraInterfaces.ProfilePromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/profile_prompt_answer.schema.json.",
-    "extraInterfaces.PhotoPromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/photo_prompt_answer.schema.json.",
-    "extraInterfaces.ProfilePhoto": "Duplicated only for the transitional Admin SDK facade because generated schema types model serialized fixture timestamps, while Functions need FirebaseFirestore.Timestamp."
+    "extraFields.UserProfileDoc.profilePhotos": "Admin SDK overlay field. JSON Schema owns the persisted shape; this overlay re-projects it with FirebaseFirestore.Timestamp for Functions code that handles live Timestamp values.",
+    "extraFields.PublicProfileDoc.languages": "Admin SDK overlay field. JSON Schema owns the persisted shape; the Dart-derived public projection re-types it with Admin SDK Timestamps.",
+    "extraFields.PublicProfileDoc.profilePhotos": "Admin SDK overlay field. JSON Schema owns the persisted shape; this overlay re-projects it with FirebaseFirestore.Timestamp for Functions code that handles live Timestamp values.",
+    "fieldOverrides.UserProfileDoc.profilePhotos": "Override the Dart-derived nullable type so the Admin SDK overlay uses the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
+    "fieldOverrides.PublicProfileDoc.languages": "Overlay the public-profile language field for the Admin SDK Timestamp projection.",
+    "fieldOverrides.PublicProfileDoc.profilePhotos": "Override the Dart-derived nullable type so the Admin SDK overlay uses the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
+    "extraFields.EventDoc.eventPolicy": "Admin SDK overlay field. JSON Schema owns events.eventPolicy; Functions code reads it through the explicit EventPolicyBundleDoc shape so live Timestamp typing is preserved.",
+    "fieldOverrides.EventDoc.eventPolicy": "Override the Dart-derived loose map type so the Admin SDK overlay uses the explicit EventPolicyBundleDoc snapshot owned by the events JSON Schema.",
+    "extraInterfaces.ProfilePromptAnswer": "Re-declared in the Admin SDK overlay so Functions imports remain consistent. The canonical embedded schema remains contracts/embedded/profile_prompt_answer.schema.json.",
+    "extraInterfaces.PhotoPromptAnswer": "Re-declared in the Admin SDK overlay so Functions imports remain consistent. The canonical embedded schema remains contracts/embedded/photo_prompt_answer.schema.json.",
+    "extraInterfaces.ProfilePhoto": "Re-declared in the Admin SDK overlay because schema-derived types model serialized fixture timestamps, while Admin SDK code needs FirebaseFirestore.Timestamp."
   },
 
   "extraFields": {
@@ -95,7 +95,19 @@
         { "name": "customActivityLabel", "tsType": "string", "optional": true },
         { "name": "defaultPlaybookId", "tsType": "string", "optional": true },
         { "name": "defaultModuleIds", "tsType": "string[]", "optional": true },
+        { "name": "eventSuccessPrimitives", "tsType": "EventSuccessFormatPrimitives", "optional": true },
         { "name": "activityDetails", "tsType": "Record<string, unknown>", "optional": true }
+      ]
+    },
+    {
+      "name": "EventSuccessFormatPrimitives",
+      "collectionPath": "embedded event success format primitives",
+      "comment": "Optional event-success behavior primitives stored inside events/{eventId}.eventFormat for custom or unsupported activity formats.",
+      "fields": [
+        { "name": "phoneAvailability", "tsType": "\"continuous\" | \"plannedPauses\" | \"arrivalAndPostEventOnly\" | \"hostOnlyLive\" | \"noneDuringActivity\"", "optional": true },
+        { "name": "rotationSuitability", "tsType": "\"none\" | \"plannedBreaks\" | \"continuousRounds\"", "optional": true },
+        { "name": "assignmentAlgorithm", "tsType": "\"none\" | \"pacePods\" | \"socialPods\" | \"pairRotations\" | \"teamBalancer\" | \"tableSeating\"", "optional": true },
+        { "name": "compatibilityPolicy", "tsType": "\"none\" | \"socialCohortBalance\" | \"mutualInterestOnly\" | \"questionnaireClueOnly\"", "optional": true }
       ]
     },
     {

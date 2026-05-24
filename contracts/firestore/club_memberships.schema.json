@@ -29,28 +29,36 @@
   ],
   "properties": {
     "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "role": {
-      "$ref": "../shared/event_common.schema.json#/definitions/clubMembershipRole"
+      "$ref": "../shared/event_common.schema.json#/definitions/clubMembershipRole",
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
-      "$ref": "../shared/event_common.schema.json#/definitions/clubMembershipStatus"
+      "$ref": "../shared/event_common.schema.json#/definitions/clubMembershipStatus",
+      "x-catch-ownership": "callable-owned"
     },
     "pushNotificationsEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "joinedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "leftAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "deletedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

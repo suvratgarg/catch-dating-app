@@ -28,20 +28,68 @@
     "updatedAt"
   ],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "requesterUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "status": {"type": "string", "enum": ["active", "withdrawn"]},
-    "hostVisibleConsent": {"type": "boolean", "const": true},
-    "note": {"type": ["string", "null"], "maxLength": 240},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "withdrawn"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostVisibleConsent": {
+      "type": "boolean",
+      "const": true,
+      "x-catch-ownership": "callable-owned"
+    },
+    "note": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

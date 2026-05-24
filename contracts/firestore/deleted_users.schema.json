@@ -9,14 +9,28 @@
   "x-firestore-path": "deletedUsers/{uid}",
   "x-document-id-field": "uid",
   "x-owner": "requestAccountDeletion callable",
-  "required": ["uid", "deletedAt"],
+  "required": [
+    "uid",
+    "deletedAt"
+  ],
   "properties": {
-    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "deletedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "deletedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
     "retainedFor": {
       "type": "array",
-      "items": {"type": "string", "minLength": 1, "maxLength": 80},
-      "uniqueItems": true
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     }
   }
 }

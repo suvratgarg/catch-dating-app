@@ -34,50 +34,70 @@
   ],
   "properties": {
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventParticipationStatus"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventParticipationStatus",
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "signedUpAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "attendedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "cancelledAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "deletedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "genderAtSignup": {
-      "$ref": "../shared/event_common.schema.json#/definitions/genderAtSignup"
+      "$ref": "../shared/event_common.schema.json#/definitions/genderAtSignup",
+      "x-catch-ownership": "callable-owned"
     },
     "cohortAtSignup": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "paymentId": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

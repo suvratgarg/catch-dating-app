@@ -1102,7 +1102,7 @@ service cloud.firestore {
     }
 
     match /eventSuccessAssignments/{assignmentId} {
-      allow read: if isAuthed()
+      allow get: if isAuthed()
         && resource.data.eventId is string
         && resource.data.moduleId is string
         && resource.data.uid is string
@@ -1120,6 +1120,10 @@ service cloud.firestore {
             ])
           )
         );
+      allow list: if isAuthed()
+        && resource.data.eventId is string
+        && resource.data.moduleId is string
+        && isClubHostForEvent(resource.data.eventId);
       allow write: if false;
     }
 

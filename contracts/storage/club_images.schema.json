@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/club_images.schema.json",
+  "title": "ClubImagesStoragePath",
+  "description": "Public club cover/profile images stored at clubs/{clubId}/{fileName}. Writes restricted to host/owner/co-host of the club.",
+  "type": "object",
+  "x-storage-rules-match": "match /clubs/{clubId}/{fileName}",
+  "x-storage-read": "public (any user, authenticated or not)",
+  "x-storage-write": "club hostUserId, ownerUserId, or any uid in hostUserIds",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "clubs",
+  "x-storage-known-consumers": [
+    "lib/clubs/presentation/create/widgets/club_image_picker.dart",
+    "lib/clubs/data/clubs_repository.dart"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "description": "Club document id; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Conventional patterns: cover.{ext}, profile.{ext}, or {kind}_{timestamp}.{ext}"
+    }
+  }
+}

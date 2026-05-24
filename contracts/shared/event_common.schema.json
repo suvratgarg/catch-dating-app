@@ -152,6 +152,59 @@
       "type": "string",
       "enum": ["wholeGroup", "pods", "pairs", "teams", "tables"]
     },
+    "eventSuccessPhoneAvailability": {
+      "type": "string",
+      "enum": [
+        "continuous",
+        "plannedPauses",
+        "arrivalAndPostEventOnly",
+        "hostOnlyLive",
+        "noneDuringActivity"
+      ]
+    },
+    "eventSuccessRotationSuitability": {
+      "type": "string",
+      "enum": ["none", "plannedBreaks", "continuousRounds"]
+    },
+    "eventSuccessAssignmentAlgorithm": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pacePods",
+        "socialPods",
+        "pairRotations",
+        "teamBalancer",
+        "tableSeating"
+      ]
+    },
+    "eventSuccessCompatibilityPolicy": {
+      "type": "string",
+      "enum": [
+        "none",
+        "socialCohortBalance",
+        "mutualInterestOnly",
+        "questionnaireClueOnly"
+      ]
+    },
+    "eventSuccessFormatPrimitives": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.",
+      "properties": {
+        "phoneAvailability": {
+          "$ref": "#/definitions/eventSuccessPhoneAvailability"
+        },
+        "rotationSuitability": {
+          "$ref": "#/definitions/eventSuccessRotationSuitability"
+        },
+        "assignmentAlgorithm": {
+          "$ref": "#/definitions/eventSuccessAssignmentAlgorithm"
+        },
+        "compatibilityPolicy": {
+          "$ref": "#/definitions/eventSuccessCompatibilityPolicy"
+        }
+      }
+    },
     "eventSuccessStructureConfig": {
       "type": "object",
       "additionalProperties": false,
@@ -268,6 +321,9 @@
           "items": {"type": "string", "minLength": 1, "maxLength": 120},
           "maxItems": 30,
           "uniqueItems": true
+        },
+        "eventSuccessPrimitives": {
+          "$ref": "#/definitions/eventSuccessFormatPrimitives"
         },
         "activityDetails": {
           "type": "object",

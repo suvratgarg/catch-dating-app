@@ -134,6 +134,30 @@ export interface CreateEventCallablePayload {
      * @maxItems 30
      */
     defaultModuleIds?: string[];
+    /**
+     * Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.
+     */
+    eventSuccessPrimitives?: {
+      phoneAvailability?:
+        | "continuous"
+        | "plannedPauses"
+        | "arrivalAndPostEventOnly"
+        | "hostOnlyLive"
+        | "noneDuringActivity";
+      rotationSuitability?: "none" | "plannedBreaks" | "continuousRounds";
+      assignmentAlgorithm?:
+        | "none"
+        | "pacePods"
+        | "socialPods"
+        | "pairRotations"
+        | "teamBalancer"
+        | "tableSeating";
+      compatibilityPolicy?:
+        | "none"
+        | "socialCohortBalance"
+        | "mutualInterestOnly"
+        | "questionnaireClueOnly";
+    };
     activityDetails?: {
       [k: string]: unknown;
     };

@@ -31,13 +31,40 @@
     "updatedAt"
   ],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "observerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "targetDisplayName": {"type": "string", "minLength": 1, "maxLength": 80},
-    "targetContext": {"type": "string", "minLength": 1, "maxLength": 160},
-    "question": {"type": "string", "minLength": 1, "maxLength": 160},
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "observerUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetDisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetContext": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "x-catch-ownership": "callable-owned"
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "x-catch-ownership": "callable-owned"
+    },
     "answerOptions": {
       "type": "array",
       "minItems": 2,
@@ -45,23 +72,69 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "label"],
+        "required": [
+          "id",
+          "label"
+        ],
         "properties": {
-          "id": {"type": "string", "minLength": 1, "maxLength": 64},
-          "label": {"type": "string", "minLength": 1, "maxLength": 80}
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
-    "status": {"type": "string", "enum": ["active", "completed", "skipped"]},
-    "selectedAnswerId": {"type": "string", "minLength": 1, "maxLength": 64},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "skipped"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "selectedAnswerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "completedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

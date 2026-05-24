@@ -17,16 +17,23 @@
     "demoOpsId",
     "demoOpsCommand"
   ],
-  "required": ["uid", "eventId", "savedAt"],
+  "required": [
+    "uid",
+    "eventId",
+    "savedAt"
+  ],
   "properties": {
     "uid": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "client-writable"
     },
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "client-writable"
     },
     "savedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "client-writable"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

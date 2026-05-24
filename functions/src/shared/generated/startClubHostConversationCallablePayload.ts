@@ -3,12 +3,9 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by addClubHost.
+ * Callable payload accepted by startClubHostConversation.
  */
-export type AddClubHostCallablePayload = {
+export interface StartClubHostConversationCallablePayload {
   clubId: string;
-  uid?: string;
-  phoneNumber?: string;
-} & {
-  [k: string]: unknown;
-};
+  hostUid: string;
+}

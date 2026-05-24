@@ -20,14 +20,52 @@
     "updatedAt"
   ],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "reporterUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "feedbackId": {"type": "string", "minLength": 3, "maxLength": 256},
-    "source": {"type": "string", "enum": ["event_success_feedback"]},
-    "status": {"type": "string", "enum": ["open", "reviewed", "dismissed"]},
-    "note": {"type": "string", "maxLength": 500},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "reporterUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "feedbackId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 256,
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "event_success_feedback"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "reviewed",
+        "dismissed"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
   }
 }

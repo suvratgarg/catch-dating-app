@@ -29,13 +29,16 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "trigger-owned"
     },
     "age": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/age"
+      "$ref": "../shared/profile_common.schema.json#/definitions/age",
+      "x-catch-ownership": "trigger-owned"
     },
     "gender": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+      "$ref": "../shared/profile_common.schema.json#/definitions/gender",
+      "x-catch-ownership": "trigger-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -74,45 +77,56 @@
       "maxItems": 3,
       "items": {
         "$ref": "../embedded/profile_prompt_answer.schema.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "photoUrls": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
+      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList",
+      "x-catch-ownership": "trigger-owned"
     },
     "photoThumbnailUrls": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
+      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList",
+      "x-catch-ownership": "trigger-owned"
     },
     "photoPrompts": {
       "type": "array",
       "maxItems": 6,
       "items": {
         "$ref": "../embedded/photo_prompt_answer.schema.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "profilePhotos": {
       "type": "array",
       "maxItems": 6,
       "items": {
         "$ref": "../embedded/profile_photo.schema.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "city": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/citySlug"
+      "$ref": "../shared/profile_common.schema.json#/definitions/citySlug",
+      "x-catch-ownership": "trigger-owned"
     },
     "height": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/heightCm"
+      "$ref": "../shared/profile_common.schema.json#/definitions/heightCm",
+      "x-catch-ownership": "trigger-owned"
     },
     "occupation": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "x-catch-ownership": "trigger-owned"
     },
     "company": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString",
+      "x-catch-ownership": "trigger-owned"
     },
     "education": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel"
+      "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel",
+      "x-catch-ownership": "trigger-owned"
     },
     "religion": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/religion"
+      "$ref": "../shared/profile_common.schema.json#/definitions/religion",
+      "x-catch-ownership": "trigger-owned"
     },
     "languages": {
       "type": "array",
@@ -120,31 +134,40 @@
       "uniqueItems": true,
       "items": {
         "$ref": "../shared/profile_common.schema.json#/definitions/language"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "relationshipGoal": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal"
+      "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal",
+      "x-catch-ownership": "trigger-owned"
     },
     "drinking": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit"
+      "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit",
+      "x-catch-ownership": "trigger-owned"
     },
     "smoking": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit"
+      "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit",
+      "x-catch-ownership": "trigger-owned"
     },
     "workout": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency"
+      "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency",
+      "x-catch-ownership": "trigger-owned"
     },
     "diet": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference"
+      "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference",
+      "x-catch-ownership": "trigger-owned"
     },
     "children": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus"
+      "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus",
+      "x-catch-ownership": "trigger-owned"
     },
     "paceMinSecsPerKm": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm",
+      "x-catch-ownership": "trigger-owned"
     },
     "paceMaxSecsPerKm": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm",
+      "x-catch-ownership": "trigger-owned"
     },
     "preferredDistances": {
       "type": "array",
@@ -152,7 +175,8 @@
       "uniqueItems": true,
       "items": {
         "$ref": "../shared/profile_common.schema.json#/definitions/preferredDistance"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "runningReasons": {
       "type": "array",
@@ -160,7 +184,8 @@
       "uniqueItems": true,
       "items": {
         "$ref": "../shared/profile_common.schema.json#/definitions/runReason"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "preferredRunTimes": {
       "type": "array",
@@ -168,11 +193,13 @@
       "uniqueItems": true,
       "items": {
         "$ref": "../shared/profile_common.schema.json#/definitions/preferredRunTime"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "runPreferencesVersion": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     }
   },
   "x-internal-demo-fields": [
@@ -183,6 +210,16 @@
     "demoOpsId",
     "demoOpsCommand"
   ],
-  "x-legacy-tolerated-fields": ["bio"],
-  "x-hidden-fields": ["phoneNumber", "email", "instagramHandle", "latitude", "longitude", "interestedInGenders", "preferences"]
+  "x-legacy-tolerated-fields": [
+    "bio"
+  ],
+  "x-hidden-fields": [
+    "phoneNumber",
+    "email",
+    "instagramHandle",
+    "latitude",
+    "longitude",
+    "interestedInGenders",
+    "preferences"
+  ]
 }

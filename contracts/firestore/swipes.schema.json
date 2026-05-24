@@ -19,15 +19,48 @@
     "demoOpsId",
     "demoOpsCommand"
   ],
-  "required": ["swiperId", "targetId", "eventId", "direction", "createdAt"],
+  "required": [
+    "swiperId",
+    "targetId",
+    "eventId",
+    "direction",
+    "createdAt"
+  ],
   "properties": {
-    "swiperId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "targetId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "direction": {"type": "string", "enum": ["like", "pass"]},
-    "reactionTargetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+    "swiperId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "client-writable"
+    },
+    "targetId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "client-writable"
+    },
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "client-writable"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "like",
+        "pass"
+      ],
+      "x-catch-ownership": "client-writable"
+    },
+    "reactionTargetId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
+    },
     "reactionTargetType": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "enum": [
         "heroPhoto",
         "photo",
@@ -37,17 +70,54 @@
         "details",
         "lifestyle",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
-    "reactionTargetLabel": {"type": ["string", "null"], "maxLength": 80},
-    "reactionTargetPreview": {"type": ["string", "null"], "maxLength": 240},
-    "comment": {"type": ["string", "null"], "maxLength": 240},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "reactionTargetLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
+    },
+    "reactionTargetPreview": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "client-writable"
+    },
+    "comment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "client-writable"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "client-writable"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

@@ -26,34 +26,77 @@
     "paths"
   ],
   "properties": {
-    "seedId": {"type": "string", "minLength": 1, "maxLength": 180},
-    "manifestId": {"type": "string", "minLength": 1, "maxLength": 180},
-    "generatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "seedId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "manifestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "generatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
     "anchorUserIds": {
       "type": "array",
-      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-      "uniqueItems": true
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
     "counts": {
       "type": "object",
-      "additionalProperties": {"type": "integer", "minimum": 0}
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "x-catch-ownership": "server-only"
     },
     "paths": {
       "type": "array",
-      "items": {"type": "string", "minLength": 1, "maxLength": 512},
-      "uniqueItems": true
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
-    "appendMode": {"type": "boolean"},
+    "appendMode": {
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
+    },
     "appendedAnchorUserIds": {
       "type": "array",
-      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-      "uniqueItems": true
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

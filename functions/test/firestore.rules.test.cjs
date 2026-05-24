@@ -2187,6 +2187,33 @@ describe("firestore.rules", () => {
           ),
         ),
       );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventSuccessAssignments"),
+            where("eventId", "==", "event-1"),
+            where("moduleId", "==", "micro_pods"),
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventSuccessAssignments"),
+            where("eventId", "==", "event-1"),
+            where("moduleId", "==", "guided_rotations"),
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "eventSuccessAssignments"),
+            where("eventId", "==", "event-1"),
+            where("moduleId", "==", "micro_pods"),
+          ),
+        ),
+      );
       await assertFails(
         getDoc(
           doc(

@@ -3,12 +3,9 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by addClubHost.
+ * Callable payload accepted by transferClubOwnership.
  */
-export type AddClubHostCallablePayload = {
+export interface TransferClubOwnershipCallablePayload {
   clubId: string;
-  uid?: string;
-  phoneNumber?: string;
-} & {
-  [k: string]: unknown;
-};
+  uid: string;
+}

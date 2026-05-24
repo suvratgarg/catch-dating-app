@@ -62,10 +62,14 @@ The current contract layer covers:
 - `tool/contracts/firestore_ts_overlay.json` makes public profile `languages` optional
   while Dart has a default empty list. The contract keeps it optional because
   the backend projection currently omits empty language arrays.
-- `functions/src/shared/firestore.ts` is still generated from Dart models as a
-  transitional Cloud Functions Admin SDK facade. It should not be treated as the
-  canonical schema source; JSON Schema contracts own persisted field shape and
-  callable payload validation.
+- `functions/src/shared/firestore.ts` is the Admin SDK Timestamp overlay,
+  generated from Dart models. It re-projects each Firestore document with
+  `FirebaseFirestore.Timestamp`-typed fields so Functions code that reads via
+  the Admin SDK does not have to convert at every boundary. JSON Schema is
+  still the canonical source for persisted field shape and callable payload
+  validation; the overlay is intentionally a parallel projection, not a third
+  source of truth. See `docs/data_contracts.md` "Two TypeScript Type Trees By
+  Design" for when to use which.
 
 ## Validation
 

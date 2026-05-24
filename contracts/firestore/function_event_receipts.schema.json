@@ -9,12 +9,38 @@
   "x-firestore-path": "functionEventReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
   "x-owner": "idempotent Firestore trigger handlers",
-  "required": ["handler", "eventId", "matchId", "messageId", "createdAt"],
+  "required": [
+    "handler",
+    "eventId",
+    "matchId",
+    "messageId",
+    "createdAt"
+  ],
   "properties": {
-    "handler": {"type": "string", "enum": ["onMessageCreated"]},
-    "eventId": {"type": "string", "minLength": 1, "maxLength": 240},
-    "matchId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "messageId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+    "handler": {
+      "type": "string",
+      "enum": [
+        "onMessageCreated"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
+    },
+    "matchId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "messageId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
   }
 }

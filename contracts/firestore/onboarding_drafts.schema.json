@@ -9,31 +9,78 @@
   "x-firestore-path": "onboarding_drafts/{uid}",
   "x-document-id-field": "uid",
   "x-owner": "authenticated draft owner",
-  "required": ["step"],
+  "required": [
+    "step"
+  ],
   "properties": {
-    "step": {"type": "integer", "minimum": 0},
-    "draftVersion": {"type": "integer", "minimum": 0},
-    "firstName": {"type": "string", "maxLength": 80},
-    "lastName": {"type": "string", "maxLength": 80},
-    "dateOfBirth": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
-    "phoneNumber": {"type": "string", "maxLength": 32},
-    "countryCode": {"type": "string", "maxLength": 8},
+    "step": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "client-writable"
+    },
+    "draftVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "client-writable"
+    },
+    "firstName": {
+      "type": "string",
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
+    },
+    "lastName": {
+      "type": "string",
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
+    },
+    "dateOfBirth": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "client-writable"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "maxLength": 32,
+      "x-catch-ownership": "client-writable"
+    },
+    "countryCode": {
+      "type": "string",
+      "maxLength": 8,
+      "x-catch-ownership": "client-writable"
+    },
     "gender": {
       "anyOf": [
-        {"$ref": "../shared/profile_common.schema.json#/definitions/gender"},
-        {"type": "null"}
-      ]
+        {
+          "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "interestedInGenders": {
       "type": "array",
-      "items": {"$ref": "../shared/profile_common.schema.json#/definitions/gender"},
-      "uniqueItems": true
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "client-writable"
     },
-    "instagramHandle": {"type": ["string", "null"], "maxLength": 80},
+    "instagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
+    },
     "profilePrompts": {
       "type": "array",
-      "items": {"$ref": "../embedded/profile_prompt_answer.schema.json"},
-      "maxItems": 3
+      "items": {
+        "$ref": "../embedded/profile_prompt_answer.schema.json"
+      },
+      "maxItems": 3,
+      "x-catch-ownership": "client-writable"
     }
   }
 }

@@ -33,15 +33,18 @@
   ],
   "properties": {
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "playbookId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "selectedModuleIds": {
       "type": "array",
@@ -50,68 +53,97 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 120
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "targetAttendeeCount": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "structureConfig": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessStructureConfig"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessStructureConfig",
+      "x-catch-ownership": "callable-owned"
     },
     "hostGoal": {
       "type": "string",
-      "maxLength": 300
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
     },
     "wingmanRequestsEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "contextualOpenersEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "compatibilityAffectsRanking": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "questionnaireConfig": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessQuestionnaireConfig"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventSuccessQuestionnaireConfig",
+      "x-catch-ownership": "callable-owned"
     },
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
-      "enum": ["setup", "live", "complete"]
+      "enum": [
+        "setup",
+        "live",
+        "complete"
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "revealStatus": {
       "type": "string",
-      "enum": ["idle", "countingDown", "revealed"]
+      "enum": [
+        "idle",
+        "countingDown",
+        "revealed"
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "activeRevealRoundIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "revealStartedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "attendeePrompt": {
-      "type": ["string", "null"],
-      "maxLength": 300
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "frozenAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "completedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
