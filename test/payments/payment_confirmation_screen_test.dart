@@ -89,13 +89,16 @@ void main() {
       expect(find.byKey(PaymentConfirmationKeys.directions), findsOneWidget);
       expect(find.text('Get directions'), findsOneWidget);
       expect(find.byKey(PaymentConfirmationKeys.inviteFriend), findsOneWidget);
-      expect(find.text('Invite a friend'), findsOneWidget);
+      expect(find.text('Invite friend'), findsOneWidget);
 
       expect(find.text('HEADS UP'), findsOneWidget);
       expect(find.textContaining('Bring a water bottle'), findsOneWidget);
 
       expect(find.byKey(PaymentConfirmationKeys.referralShare), findsOneWidget);
-      expect(find.text('Bring a friend, event together'), findsOneWidget);
+      expect(
+        find.text('Bring someone you actually want there'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Back to home button pops to root', (tester) async {

@@ -116,7 +116,7 @@ class _QuickActions extends ConsumerWidget {
           child: _ActionTile(
             key: PaymentConfirmationKeys.inviteFriend,
             icon: Icons.ios_share_rounded,
-            label: 'Invite a friend',
+            label: 'Invite friend',
             onTap: () => unawaited(controller.inviteFriend(event)),
           ),
         ),
@@ -209,30 +209,30 @@ class _ReferralBanner extends ConsumerWidget {
       onTap: () => unawaited(controller.shareReferral(event)),
       padding: const EdgeInsets.all(Sizes.p14),
       radius: CatchRadius.md,
-      borderColor: t.line2,
+      borderColor: t.primary.withValues(alpha: 0.24),
       borderWidth: 1.5,
       child: Row(
         children: [
-          const Text('🤝', style: TextStyle(fontSize: 24)),
+          Icon(Icons.group_add_outlined, color: t.primary),
           gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bring a friend, event together',
+                  'Bring someone you actually want there',
                   style: CatchTextStyles.titleS(context),
                 ),
                 gapH2,
                 Text(
-                  'Share the link for a friend discount',
-                  style: CatchTextStyles.bodyS(context),
+                  'The best invites happen while the plan still feels fresh.',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
               ],
             ),
           ),
           Text(
-            'Share →',
+            'Share',
             style: CatchTextStyles.labelL(context, color: t.primary),
           ),
         ],

@@ -1016,6 +1016,100 @@ final class WatchUserEventSuccessWingmanRequestFamily extends $Family
   String toString() => r'watchUserEventSuccessWingmanRequestProvider';
 }
 
+@ProviderFor(watchUserEventSuccessArrivalMission)
+final watchUserEventSuccessArrivalMissionProvider =
+    WatchUserEventSuccessArrivalMissionFamily._();
+
+final class WatchUserEventSuccessArrivalMissionProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventSuccessArrivalMission?>,
+          EventSuccessArrivalMission?,
+          Stream<EventSuccessArrivalMission?>
+        >
+    with
+        $FutureModifier<EventSuccessArrivalMission?>,
+        $StreamProvider<EventSuccessArrivalMission?> {
+  WatchUserEventSuccessArrivalMissionProvider._({
+    required WatchUserEventSuccessArrivalMissionFamily super.from,
+    required ({String eventId, String uid}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchUserEventSuccessArrivalMissionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$watchUserEventSuccessArrivalMissionHash();
+
+  @override
+  String toString() {
+    return r'watchUserEventSuccessArrivalMissionProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventSuccessArrivalMission?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventSuccessArrivalMission?> create(Ref ref) {
+    final argument = this.argument as ({String eventId, String uid});
+    return watchUserEventSuccessArrivalMission(
+      ref,
+      eventId: argument.eventId,
+      uid: argument.uid,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchUserEventSuccessArrivalMissionProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchUserEventSuccessArrivalMissionHash() =>
+    r'ade0b65de027989ac68a5728ca22416d12499d90';
+
+final class WatchUserEventSuccessArrivalMissionFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<EventSuccessArrivalMission?>,
+          ({String eventId, String uid})
+        > {
+  WatchUserEventSuccessArrivalMissionFamily._()
+    : super(
+        retry: null,
+        name: r'watchUserEventSuccessArrivalMissionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchUserEventSuccessArrivalMissionProvider call({
+    required String eventId,
+    required String uid,
+  }) => WatchUserEventSuccessArrivalMissionProvider._(
+    argument: (eventId: eventId, uid: uid),
+    from: this,
+  );
+
+  @override
+  String toString() => r'watchUserEventSuccessArrivalMissionProvider';
+}
+
 @ProviderFor(watchEventSuccessWingmanRequests)
 final watchEventSuccessWingmanRequestsProvider =
     WatchEventSuccessWingmanRequestsFamily._();

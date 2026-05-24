@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.0.3
+version: 1.1.0
 updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
@@ -93,12 +93,21 @@ assignment shapes.
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
 | `eventSuccessCompatibilityResponses/{eventId_uid}` | Attendee-owned compatibility answers. Hosts cannot read individual answers. |
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
+| `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
 `tool/contracts/generated/`.
+
+First Hello check-in is modeled as an optional arrival module with server-owned
+mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
+attendee is signed up, the check-in window is open, the caller is within the
+tighter First Hello venue radius, the module is selected, and a compatible
+checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
+active mission and answer, rechecks location/block state, records only the
+observer's answer on the mission, and marks attendance.
 
 ## Product Guardrails
 
@@ -107,6 +116,9 @@ Schemas live under `contracts/firestore/` and generated outputs under
   or participant activity begins unless product explicitly adds a late-change
   path with attendee notice.
 - Compatibility tools are conversation context, not a promise of chemistry.
+- First Hello check-in is an optional arrival ritual, not a replacement for
+  ordinary attendance. The normal check-in path remains available as a host
+  fallback, QR scan, or self-check-in fallback.
 - Social runs should stay lightweight; structured mixers, racket pairs, dinners,
   and quiz/team formats can carry more live facilitation.
 - Safety/comfort feedback is Catch-private first. Hosts see aggregate coaching,
@@ -130,21 +142,60 @@ step-synced companion moment at a time. Ended attended users see feedback and
 post-event follow-up. Do not reintroduce a stacked attendee dashboard that shows
 every enabled module at once.
 
+First Hello sits between signed-up arrival and attended state. Runtime shows a
+startable First Hello moment when the module is selected, check-in is open, and
+the user is still `signedUp`; after the backend assigns a mission, the same
+moment renders the target and answer options. If First Hello is unavailable, the
+runtime falls back to the normal questionnaire/self-check-in/pre-arrival flow.
+
 Activity recommendations live in
 `lib/event_success/domain/event_success_activity_profile.dart`. Do not add
 activity-specific toggles directly in screens.
+
+## Theatrical Experience Workstream
+
+`docs/event_success_theatrical_experience_tracker.md` is the temporary active
+tracker for making the live event companion and host live mode feel more like a
+playful synchronized ceremony. Keep durable architecture here, but track phase
+status, references, acceptance criteria, and resume notes in that tracker until
+the live ceremony, invite loop, private afterglow recap, and branded audio
+questions close.
+
+Current defaults:
+
+- live ceremony comes first;
+- native haptics and `SystemSound` cues come before a branded audio package;
+- pre-event invites are the strongest shareability primitive;
+- post-event recap artifacts are private-first unless sharing psychology becomes
+  clearer.
+
+Current theatrical implementation state:
+
+- the attendee companion stage redesign, invite loop, and private afterglow
+  recap are implemented for visual review;
+- First Hello check-in is implemented as an optional arrival module with
+  server-owned mission assignment/completion, a synchronized manual QA harness,
+  and a 100m venue radius;
+- QR check-in now has a host QR surface and attendee scanner entry point; the
+  existing GPS self-check-in callable remains the attendance write path;
+- invite sharing now routes through shared event-invite copy across event
+  detail, payment confirmation, and host private-link surfaces;
+- post-event companion follow-up now starts with a private in-app afterglow
+  recap and keeps host reporting aggregate-safe.
 
 ## Manual QA
 
 Use `/dev/event-success-manual-qa` first for visual and state QA. Settings also
 links to it from Development. It renders the production host panel and attendee
-companion side by side from one fixture.
+companion side by side from one synchronized in-memory fixture store.
 
 Check:
 
 - scenario profiles: social run, racket pairs, quiz teams, singles mixer/live
   reveal;
 - host setup/live/report surface switching;
+- optional First Hello arrival mission from host controls through attendee
+  completion and checked-in state;
 - host `Previous`/`Next` run-of-show transitions updating both panes;
 - countdown, reveal now, and reset;
 - pre-arrival attendee state without live prompt/reveal/partner leakage;
@@ -239,6 +290,72 @@ attendee companion. The work was split into four phases; durable outcomes:
   pod/rotation` inner branches inside `showPodAssignment` and
   `showRotationSchedule` are removed (those runtime kinds are mutually
   exclusive with `liveReveal`).
+
+## Phase 5 — Kinetic Companion Immersion
+
+The 2026-05-24 kinetic pass turned the companion stage from a static gradient
+into a perpetually-moving cinematic surface with audio, co-presence, and a
+marquee reveal moment. The vibe is moment-keyed: theatrical for arrival,
+pulse for live event beats, sunrise for afterglow. Architecturally, the
+existing `_CompanionStageTheme.forMoment` carries the palette + motif per
+beat — Phase 5 added motion, audio, and co-presence layers on top of that
+foundation.
+
+- **Animated motifs.** `_StageMotifPainter` now takes a `phase` parameter
+  driven by a 16s Ticker (gated on `Platform.environment['FLUTTER_TEST']`
+  so widget tests don't deadlock `pumpAndSettle`). Orbits rotate, sparks
+  drift with independent sine phases + alpha shimmer, rhythm waves swell
+  and recede, path filaments scroll diagonally, reveal spokes accelerate,
+  afterglow gets a breathing halo.
+- **Idle pulse + touch microinteractions.** `_StagePanel` breathes on a 6s
+  sine border-glow. `_StageGlyph` runs an entry spring tween then a
+  continuous 4s breath modulating scale + accent glow blur. `_StageBouncyPress`
+  + `_StageBouncyChip` give chips and tap targets a 220ms scale-down +
+  elastic spring-back + glow flare instead of Material's ink ripple.
+  Questionnaire and First Hello answer chips now use the kinetic variants.
+- **Audio infrastructure.** `audioplayers ^6.6.0` ships a multi-channel
+  controller in `event_success_live_effects_controller.dart`. One persistent
+  ambient bed player (looped) and one reusable low-latency one-shot player
+  (effects). `EventSuccessAmbientBed` enum (theatrical / pulse / sunrise /
+  silent) is mapped per-moment in `EventSuccessMomentPresentation.forMoment`.
+  Per-kind volume tuning — reveal lands at 0.95, taps at 0.48. Missing
+  assets are caught + memoized so the UI never blocks on the sound designer.
+  Six curated stock sounds to source are documented in
+  `assets/audio/event_success/README.md`.
+- **Reveal cinematic (the marquee).** New `_RevealCinematicOverlay` runs
+  three phases over the full stage when the reveal moment is active:
+  anticipation (vignette darkens 0.18→0.6, 14 gold spokes rotate with
+  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, 72-particle field
+  drifts inward), climax 1.5s (white flash, particle field bursts on a
+  deterministic seed so every viewer sees the same explosion), settle
+  700ms (vignette releases, particles dissipate, sunrise vibe pack takes
+  over). All phases server-anchored to the existing countdown clock so
+  every attendee sees the same beat.
+- **Co-presence layer.** Three surfaces wired off the existing
+  `Event.checkedInCount` (denormalized + maintained by Cloud Functions — no
+  new Firestore listeners): `_LiveArrivalRing` on arrival moments (140×140
+  ring with 24 anonymous dot slots, big tabular numeral in center,
+  scale-pulse on increment), `_LiveOthersInRoomLine` on the questionnaire
+  progress rail (pill with chip pulse on count climb), and a shared
+  anonymous-dot ring inside the reveal cinematic pulsing on the same
+  `tickPhase` clock so every attendee's screen pulses on the *same* shared
+  rhythm during the countdown.
+- **First Hello completion celebration.** When the answer submits, the
+  card overlays a sunrise gradient sweep (triangle-wave alpha to 0.62 over
+  800ms), `guideComplete` haptic + chime fires, and the animation runs in
+  parallel with the network call so the gradient never snaps off
+  mid-animation when the moment transitions.
+- **Afterglow paced reveal.** `_AfterglowBeatGrid` is Stateful: beats slide
+  in from below + fade with a 1.4s stagger between rows. Beats can carry an
+  optional `countValue` (the "X people remembered" beat uses it) — the
+  first run of digits in the value string animates 0→countValue over 600ms
+  on an easeOutCubic curve.
+- **Test-mode animation gate.** All repeating Tickers (motif background,
+  panel pulse, glyph breath, cinematic tick, arrival ring pulse, others-in-
+  room pulse) check `_kStageAnimationsEnabled =
+  !Platform.environment.containsKey('FLUTTER_TEST')` before `.repeat()`.
+  Production runs fully kinetic; widget tests get a static surface and
+  `pumpAndSettle` resolves.
 
 ## Open Product Decisions
 

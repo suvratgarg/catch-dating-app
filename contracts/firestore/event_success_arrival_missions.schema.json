@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_arrival_missions.schema.json",
+  "title": "EventSuccessArrivalMissionDocument",
+  "description": "Server-owned First Hello arrival mission stored at eventSuccessArrivalMissions/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessArrivalMissions",
+  "x-firestore-path": "eventSuccessArrivalMissions/{missionId}",
+  "x-document-id-field": "id",
+  "x-owner": "server-owned; attendee read only for their own mission",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "observerUid",
+    "targetUid",
+    "targetDisplayName",
+    "targetContext",
+    "question",
+    "answerOptions",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "observerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetDisplayName": {"type": "string", "minLength": 1, "maxLength": 80},
+    "targetContext": {"type": "string", "minLength": 1, "maxLength": 160},
+    "question": {"type": "string", "minLength": 1, "maxLength": 160},
+    "answerOptions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "maxLength": 64},
+          "label": {"type": "string", "minLength": 1, "maxLength": 80}
+        }
+      }
+    },
+    "status": {"type": "string", "enum": ["active", "completed", "skipped"]},
+    "selectedAnswerId": {"type": "string", "minLength": 1, "maxLength": 64},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "completedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

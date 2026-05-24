@@ -43,6 +43,36 @@ abstract final class EventSuccessModuleCatalog {
     ],
   );
 
+  static const firstHelloCheckIn = EventSuccessModule(
+    id: 'first_hello_check_in',
+    title: 'First Hello check-in',
+    type: EventSuccessModuleType.firstHelloCheckIn,
+    productLayer: EventSuccessProductLayer.rosterAttendance,
+    stage: EventSuccessStage.arrival,
+    attendeePromise:
+        'A clear arrival mission gives someone permission to start talking.',
+    hostPromise:
+        'Turns location-verified arrival into one guided first interaction before the room gets moving.',
+    enabledByDefault: false,
+    requiresLivePhoneUse: true,
+    recommendedFor: {
+      ActivityKind.pickleball,
+      ActivityKind.pubQuiz,
+      ActivityKind.dinner,
+      ActivityKind.singlesMixer,
+    },
+    setupSteps: [
+      'Verify the attendee is at the venue before assigning a mission.',
+      'Assign one safe target and one short question, then complete check-in.',
+      'Always provide reassignment, skip, and host manual check-in fallbacks.',
+    ],
+    riskControls: [
+      'Do not write peer answers into the target attendee questionnaire.',
+      'Never assign blocked or reported pairs.',
+      'Do not reveal precise live location or individual answers to hosts.',
+    ],
+  );
+
   static const hostScript = EventSuccessModule(
     id: 'host_script',
     title: 'Welcome script',
@@ -254,6 +284,7 @@ abstract final class EventSuccessModuleCatalog {
   static const all = <EventSuccessModule>[
     crowdBalance,
     checkIn,
+    firstHelloCheckIn,
     hostScript,
     microPods,
     socialMissions,
@@ -359,6 +390,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
@@ -451,6 +483,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
       EventSuccessModuleCatalog.guidedRotations,
@@ -530,6 +563,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.microPods,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
@@ -603,6 +637,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
       EventSuccessModuleCatalog.guidedRotations,
@@ -687,6 +722,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
       EventSuccessModuleCatalog.microPods,
@@ -775,6 +811,7 @@ abstract final class EventSuccessPlaybookLibrary {
     modules: [
       EventSuccessModuleCatalog.crowdBalance,
       EventSuccessModuleCatalog.checkIn,
+      EventSuccessModuleCatalog.firstHelloCheckIn,
       EventSuccessModuleCatalog.hostScript,
       EventSuccessModuleCatalog.compatibilityQuestionnaire,
       EventSuccessModuleCatalog.guidedRotations,

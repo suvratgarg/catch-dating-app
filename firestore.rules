@@ -124,6 +124,10 @@ service cloud.firestore {
       return eventId + '_' + uid;
     }
 
+    function eventSuccessArrivalMissionDocId(eventId, uid) {
+      return eventId + '_' + uid;
+    }
+
     function eventSuccessCompatibilityResponseDocId(eventId, uid) {
       return eventId + '_' + uid;
     }
@@ -1079,6 +1083,22 @@ service cloud.firestore {
         && isClubHostForEvent(resource.data.eventId);
       allow create, update: if false;
       allow delete: if false;
+    }
+
+    match /eventSuccessArrivalMissions/{missionId} {
+      allow get: if isAuthed()
+        && resource.data.keys().hasAll(['eventId', 'observerUid'])
+        && resource.data.eventId is string
+        && resource.data.observerUid == request.auth.uid
+        && missionId == eventSuccessArrivalMissionDocId(
+          resource.data.eventId,
+          request.auth.uid
+        )
+        && hasEventParticipationStatus(resource.data.eventId, request.auth.uid, [
+          'signedUp', 'attended'
+        ]);
+      allow list: if false;
+      allow create, update, delete: if false;
     }
 
     match /eventSuccessAssignments/{assignmentId} {

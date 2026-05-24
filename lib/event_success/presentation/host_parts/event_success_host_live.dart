@@ -106,6 +106,7 @@ class _LiveTab extends ConsumerWidget {
         activeStepHas(EventSuccessModuleCatalog.contextualOpeners.id);
 
     Widget attendanceCard() => _LiveAttendanceSummaryCard(
+      event: event,
       bookedCount: livePlan.bookedCount,
       checkedInCount: livePlan.checkedInCount,
       waitlistCount: roster.waitlistedCount,
@@ -218,6 +219,8 @@ class _LiveTab extends ConsumerWidget {
           _ErrorText(error: (completeMutation as MutationError).error),
           gapH16,
         ],
+        _LiveShowtimeConsole(plan: livePlan, event: event),
+        gapH16,
         EventSuccessLiveHostMode(plan: livePlan, showStepList: false),
         gapH16,
         Row(
@@ -228,8 +231,12 @@ class _LiveTab extends ConsumerWidget {
                 variant: CatchButtonVariant.secondary,
                 onPressed: mutation.isPending || plan.activeStepIndex == 0
                     ? null
-                    : fixtureActions?.onPreviousStep ??
-                          () => _setStep(ref, event.id, previousIndex),
+                    : () => _advanceStep(
+                        ref,
+                        event.id,
+                        previousIndex,
+                        fixtureActions?.onPreviousStep,
+                      ),
               ),
             ),
             gapW10,
@@ -240,8 +247,12 @@ class _LiveTab extends ConsumerWidget {
                     mutation.isPending ||
                         plan.activeStepIndex >= livePlan.steps.length - 1
                     ? null
-                    : fixtureActions?.onNextStep ??
-                          () => _setStep(ref, event.id, nextIndex),
+                    : () => _advanceStep(
+                        ref,
+                        event.id,
+                        nextIndex,
+                        fixtureActions?.onNextStep,
+                      ),
               ),
             ),
           ],
@@ -275,17 +286,33 @@ class _LiveTab extends ConsumerWidget {
               completeMutation.isPending,
           onPressed: completeMutation.isPending
               ? null
-              : fixtureActions?.onCompletePlan ??
-                    () => EventSuccessController.completePlanMutation.run(
-                      ref,
-                      (tx) => tx
-                          .get(eventSuccessControllerProvider.notifier)
-                          .completePlan(event.id),
-                    ),
+              : () => _completeGuide(
+                  ref,
+                  event.id,
+                  fixtureActions?.onCompletePlan,
+                ),
           fullWidth: true,
         ),
       ],
     );
+  }
+
+  void _advanceStep(
+    WidgetRef ref,
+    String eventId,
+    int index,
+    VoidCallback? fixtureAction,
+  ) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.stepChange),
+    );
+    if (fixtureAction != null) {
+      fixtureAction();
+      return;
+    }
+    _setStep(ref, eventId, index);
   }
 
   void _setStep(WidgetRef ref, String eventId, int index) {
@@ -294,6 +321,121 @@ class _LiveTab extends ConsumerWidget {
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
           .updateActiveStep(eventId: eventId, activeStepIndex: index),
+    );
+  }
+
+  void _completeGuide(
+    WidgetRef ref,
+    String eventId,
+    VoidCallback? fixtureAction,
+  ) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.guideComplete),
+    );
+    if (fixtureAction != null) {
+      fixtureAction();
+      return;
+    }
+    EventSuccessController.completePlanMutation.run(
+      ref,
+      (tx) =>
+          tx.get(eventSuccessControllerProvider.notifier).completePlan(eventId),
+    );
+  }
+}
+
+class _LiveShowtimeConsole extends StatelessWidget {
+  const _LiveShowtimeConsole({required this.plan, required this.event});
+
+  final EventSuccessLivePlan plan;
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      clipBehavior: Clip.antiAlias,
+      borderWidth: 0,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          t.ink,
+          Color.lerp(t.ink, t.primary, 0.52)!,
+          Color.lerp(t.accent, t.gold, 0.18)!,
+        ],
+      ),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              CatchBadge(
+                label: 'Showtime console',
+                tone: CatchBadgeTone.live,
+                icon: Icons.auto_awesome_rounded,
+                backgroundColor: t.surface.withValues(alpha: 0.14),
+                foregroundColor: t.surface,
+                borderColor: t.surface.withValues(alpha: 0.18),
+              ),
+              CatchBadge(
+                label: 'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
+                tone: CatchBadgeTone.neutral,
+                backgroundColor: t.surface.withValues(alpha: 0.12),
+                foregroundColor: t.surface.withValues(alpha: 0.90),
+                borderColor: t.surface.withValues(alpha: 0.16),
+              ),
+            ],
+          ),
+          gapH14,
+          Text(
+            plan.activeStep.title,
+            style: CatchTextStyles.titleL(context, color: t.surface),
+          ),
+          gapH6,
+          Text(
+            plan.activeStep.hostInstruction,
+            style: CatchTextStyles.bodyS(
+              context,
+              color: t.surface.withValues(alpha: 0.80),
+            ),
+          ),
+          gapH12,
+          Container(
+            padding: const EdgeInsets.all(CatchSpacing.s3),
+            decoration: BoxDecoration(
+              color: t.surface.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              border: Border.all(color: t.surface.withValues(alpha: 0.14)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.phone_iphone_rounded,
+                  size: 18,
+                  color: t.surface.withValues(alpha: 0.82),
+                ),
+                gapW8,
+                Expanded(
+                  child: Text(
+                    'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
+                    style: CatchTextStyles.bodyS(
+                      context,
+                      color: t.surface.withValues(alpha: 0.82),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

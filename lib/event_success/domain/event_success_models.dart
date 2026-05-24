@@ -40,6 +40,7 @@ enum EventSuccessModuleType {
   formatTemplate,
   crowdBalance,
   checkIn,
+  firstHelloCheckIn,
   microPods,
   socialMissions,
   guidedRotations,

@@ -111,6 +111,11 @@ class _HostRevealActions extends ConsumerWidget {
   }
 
   void _start(WidgetRef ref, int roundIndex) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.countdownStart),
+    );
     final fixtureAction = onStartCountdown;
     if (fixtureAction != null) {
       fixtureAction(roundIndex, countdownSeconds);
@@ -125,6 +130,11 @@ class _HostRevealActions extends ConsumerWidget {
   }
 
   void _reveal(WidgetRef ref, int roundIndex) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.assignmentRevealed),
+    );
     final fixtureAction = onRevealRound;
     if (fixtureAction != null) {
       fixtureAction(roundIndex);
@@ -139,6 +149,11 @@ class _HostRevealActions extends ConsumerWidget {
   }
 
   void _reset(WidgetRef ref) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.revealReset),
+    );
     final fixtureAction = onResetReveal;
     if (fixtureAction != null) {
       fixtureAction();

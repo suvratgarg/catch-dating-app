@@ -22,6 +22,7 @@ import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
 import {EventSuccessCompatibilityResponseDocument} from "./eventSuccessCompatibilityResponseDocument";
 import {EventSuccessWingmanRequestDocument} from "./eventSuccessWingmanRequestDocument";
+import {EventSuccessArrivalMissionDocument} from "./eventSuccessArrivalMissionDocument";
 import {EventSuccessAssignmentDocument} from "./eventSuccessAssignmentDocument";
 import {EventSuccessScorecardDocument} from "./eventSuccessScorecardDocument";
 import {EventSafetyReportDocument} from "./eventSafetyReportDocument";
@@ -59,6 +60,8 @@ import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
+import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
+import {CompleteEventSuccessFirstHelloMissionCallablePayload} from "./completeEventSuccessFirstHelloMissionCallablePayload";
 import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallableResponse";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
@@ -98,6 +101,7 @@ import {
   eventSuccessPreferenceDocumentSchema,
   eventSuccessCompatibilityResponseDocumentSchema,
   eventSuccessWingmanRequestDocumentSchema,
+  eventSuccessArrivalMissionDocumentSchema,
   eventSuccessAssignmentDocumentSchema,
   eventSuccessScorecardDocumentSchema,
   eventSafetyReportDocumentSchema,
@@ -135,6 +139,8 @@ import {
   markEventAttendanceCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
+  startEventSuccessFirstHelloMissionCallablePayloadSchema,
+  completeEventSuccessFirstHelloMissionCallablePayloadSchema,
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
@@ -232,6 +238,10 @@ export const validateEventSuccessWingmanRequestDocument:
   ValidateFunction<EventSuccessWingmanRequestDocument> =
     ajv.compile(eventSuccessWingmanRequestDocumentSchema) as
       ValidateFunction<EventSuccessWingmanRequestDocument>;
+export const validateEventSuccessArrivalMissionDocument:
+  ValidateFunction<EventSuccessArrivalMissionDocument> =
+    ajv.compile(eventSuccessArrivalMissionDocumentSchema) as
+      ValidateFunction<EventSuccessArrivalMissionDocument>;
 export const validateEventSuccessAssignmentDocument:
   ValidateFunction<EventSuccessAssignmentDocument> =
     ajv.compile(eventSuccessAssignmentDocumentSchema) as
@@ -380,6 +390,14 @@ export const validateSubmitEventSuccessWingmanRequestCallablePayload:
   ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload> =
     ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema) as
       ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload>;
+export const validateStartEventSuccessFirstHelloMissionCallablePayload:
+  ValidateFunction<StartEventSuccessFirstHelloMissionCallablePayload> =
+    ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema) as
+      ValidateFunction<StartEventSuccessFirstHelloMissionCallablePayload>;
+export const validateCompleteEventSuccessFirstHelloMissionCallablePayload:
+  ValidateFunction<CompleteEventSuccessFirstHelloMissionCallablePayload> =
+    ajv.compile(completeEventSuccessFirstHelloMissionCallablePayloadSchema) as
+      ValidateFunction<CompleteEventSuccessFirstHelloMissionCallablePayload>;
 export const validateMarkEventAttendanceCallableResponse:
   ValidateFunction<MarkEventAttendanceCallableResponse> =
     ajv.compile(markEventAttendanceCallableResponseSchema) as

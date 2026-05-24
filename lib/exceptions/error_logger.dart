@@ -5,6 +5,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/console_crash_reporter.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -228,21 +229,26 @@ base class AsyncErrorLogger extends ProviderObserver {
     Object? newValue,
   ) {
     if (newValue is AsyncError) {
-      final error = newValue.error;
-      if (error is AppException) {
-        _logger.logAppException(error);
-        final backendContext = error.context;
-        if (backendContext != null) {
-          onBackendOperationFailed?.call(
-            context: backendContext,
-            errorCode: error.code,
-            retryable: error.retryable,
-            severity: error.severity,
-          );
-        }
-      } else {
-        _logger.logError(error, newValue.stackTrace);
+      _logObservedError(newValue.error, newValue.stackTrace);
+    } else if (newValue is MutationError) {
+      _logObservedError(newValue.error, newValue.stackTrace);
+    }
+  }
+
+  void _logObservedError(Object error, StackTrace stackTrace) {
+    if (error is AppException) {
+      _logger.logAppException(error);
+      final backendContext = error.context;
+      if (backendContext != null) {
+        onBackendOperationFailed?.call(
+          context: backendContext,
+          errorCode: error.code,
+          retryable: error.retryable,
+          severity: error.severity,
+        );
       }
+    } else {
+      _logger.logError(error, stackTrace);
     }
   }
 }

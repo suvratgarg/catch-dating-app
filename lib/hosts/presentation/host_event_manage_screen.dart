@@ -25,6 +25,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -538,8 +539,12 @@ class _PrivateAccessBody extends ConsumerWidget {
       await ref
           .read(externalShareControllerProvider)
           .shareText(
-            text: 'Join ${event.title} from ${club.name}: $inviteLink',
-            subject: event.title,
+            text: EventInviteShareCopy.hostPrivateInviteText(
+              event: event,
+              clubName: club.name,
+              inviteLink: inviteLink,
+            ),
+            subject: EventInviteShareCopy.subject(event),
             origin: origin,
           );
     } catch (_) {

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -14,6 +16,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -446,6 +449,7 @@ void main() {
     expect(find.text('4 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('1 host-help requests'), findsOneWidget);
+    expect(find.textContaining('Private notes'), findsOneWidget);
     expect(find.text('Working well'), findsOneWidget);
   });
 
@@ -763,7 +767,7 @@ void main() {
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
-    tester.view.physicalSize = const Size(430, 2200);
+    tester.view.physicalSize = const Size(430, 5000);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
@@ -772,7 +776,7 @@ void main() {
       startTime: start,
       endTime: start.add(const Duration(minutes: 30)),
     );
-    final plan = _racketPlan(event);
+    final plan = _racketPlan(event).copyWith(activeStepIndex: 2);
 
     await tester.pumpWidget(
       ProviderScope(
@@ -820,9 +824,78 @@ void main() {
 
     expect(find.text('Synchronized partner reveal'), findsOneWidget);
     expect(find.text('Rotation reveal'), findsOneWidget);
+    expect(find.text('Showtime console'), findsOneWidget);
+    expect(find.textContaining('Attendees at'), findsOneWidget);
     expect(find.text('Create the next room-wide beat'), findsOneWidget);
     expect(find.text('Drop 10s countdown'), findsOneWidget);
     expect(find.text('Reveal now'), findsOneWidget);
+  });
+
+  testWidgets('host live actions dispatch ceremony effects once per tap', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final effects = _FakeEventSuccessLiveEffectsController();
+    var nextPressed = 0;
+    var completePressed = 0;
+    final start = DateTime(2026, 5, 21, 8);
+    final event = _racketEvent(
+      startTime: start,
+      endTime: start.add(const Duration(minutes: 30)),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          eventSuccessLiveEffectsControllerProvider.overrideWithValue(effects),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: _racketPlan(event),
+                  planIsPersisted: true,
+                  roster: const EventParticipationRoster(
+                    bookedIds: ['runner-1', 'runner-2'],
+                    checkedInIds: ['runner-1'],
+                    waitlistedIds: [],
+                  ),
+                  fixtureActions: EventSuccessHostFixtureActions(
+                    onNextStep: () => nextPressed++,
+                    onCompletePlan: () => completePressed++,
+                  ),
+                  initialTab: EventSuccessHostTab.live,
+                  showTabs: false,
+                  embedded: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Next'));
+    await tester.pump();
+    await tester.tap(
+      find.widgetWithText(CatchButton, 'Mark live guide complete'),
+    );
+    await tester.pump();
+
+    expect(nextPressed, 1);
+    expect(completePressed, 1);
+    expect(effects.playedKinds, [
+      EventSuccessLiveEffectKind.stepChange,
+      EventSuccessLiveEffectKind.guideComplete,
+    ]);
   });
 
   testWidgets('host live mode requires generation before rotation edits', (
@@ -1313,6 +1386,150 @@ void main() {
     expect(find.textContaining('Rhea'), findsNothing);
   });
 
+  testWidgets('companion screen shows assigned First Hello mission', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1900);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final start = DateTime(2026, 5, 18, 19);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 2)),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+      selectedModuleIds: [
+        EventSuccessModuleCatalog.checkIn.id,
+        EventSuccessModuleCatalog.firstHelloCheckIn.id,
+        EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+      ],
+    );
+    final mission = EventSuccessArrivalMission(
+      id: eventSuccessArrivalMissionId(eventId: event.id, uid: 'runner-1'),
+      eventId: event.id,
+      clubId: event.clubId,
+      observerUid: 'runner-1',
+      targetUid: 'runner-2',
+      targetDisplayName: 'Arjun',
+      targetContext: 'Look for Arjun near the host table.',
+      question: 'Ask what kind of partner makes an event feel easy to join.',
+      answerOptions: const [
+        EventSuccessArrivalMissionAnswerOption(
+          id: 'warm_intro',
+          label: 'Warm intro',
+        ),
+        EventSuccessArrivalMissionAnswerOption(
+          id: 'playful_energy',
+          label: 'Playful energy',
+        ),
+      ],
+      status: EventSuccessArrivalMissionStatus.active,
+      createdAt: start.subtract(const Duration(minutes: 1)),
+      updatedAt: start.subtract(const Duration(minutes: 1)),
+    );
+    EventSuccessArrivalMission? completedMission;
+    String? completedAnswerId;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionScreen(
+            event: event,
+            plan: plan,
+            userProfile: buildUser(uid: 'runner-1'),
+            participation: buildEventParticipation(
+              event: event,
+              uid: 'runner-1',
+              status: EventParticipationStatus.signedUp,
+            ),
+            wingmanRequestCandidates: const [],
+            arrivalMission: mission,
+            now: start.subtract(const Duration(minutes: 5)),
+            onCompleteArrivalMission: (mission, answerId) async {
+              completedMission = mission;
+              completedAnswerId = answerId;
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Your first arrival mission is live.'), findsOneWidget);
+    expect(find.text('Find Arjun.'), findsOneWidget);
+    expect(
+      find.text('Ask what kind of partner makes an event feel easy to join.'),
+      findsOneWidget,
+    );
+    expect(find.text('A few quick questions'), findsNothing);
+
+    await tester.tap(find.text('Playful energy'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(CatchButton, 'Complete check-in'));
+    await tester.pump();
+
+    expect(completedMission, same(mission));
+    expect(completedAnswerId, 'playful_energy');
+  });
+
+  testWidgets('companion screen can start First Hello before mission exists', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1700);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final start = DateTime(2026, 5, 18, 19);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 2)),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+      selectedModuleIds: [
+        EventSuccessModuleCatalog.checkIn.id,
+        EventSuccessModuleCatalog.firstHelloCheckIn.id,
+      ],
+    );
+    var startCalls = 0;
+    var skipCalls = 0;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionScreen(
+            event: event,
+            plan: plan,
+            userProfile: buildUser(uid: 'runner-1'),
+            participation: buildEventParticipation(
+              event: event,
+              uid: 'runner-1',
+              status: EventParticipationStatus.signedUp,
+            ),
+            wingmanRequestCandidates: const [],
+            now: start.subtract(const Duration(minutes: 5)),
+            onStartArrivalMission: () async => startCalls++,
+            onSkipArrivalMission: () => skipCalls++,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Start your First Hello.'), findsOneWidget);
+    expect(find.text('A few quick questions'), findsNothing);
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Start First Hello'));
+    await tester.pump();
+    await tester.tap(find.widgetWithText(CatchButton, 'Use normal check-in'));
+    await tester.pump();
+
+    expect(startCalls, 1);
+    expect(skipCalls, 1);
+  });
+
   testWidgets('companion screen saves compatibility questionnaire answers', (
     tester,
   ) async {
@@ -1366,19 +1583,23 @@ void main() {
     );
     await tester.pump();
 
+    expect(
+      find.byKey(const ValueKey('eventSuccessCompanionStage')),
+      findsOneWidget,
+    );
     expect(find.text('A few quick questions'), findsOneWidget);
     expect(find.text('Can guide pairings'), findsOneWidget);
 
-    await tester.tap(find.text('A shared activity'));
+    await tester.tap(find.text('Playful competition'));
     await tester.pump();
-    await tester.tap(find.text('Save answers'));
+    await tester.tap(find.text('Save clues'));
     await tester.pumpAndSettle();
 
     final saved = await firestore
         .collection('eventSuccessCompatibilityResponses')
         .doc('event-1_runner-1')
         .get();
-    expect(saved.data()?['answerIds'], ['first_conversation_activity']);
+    expect(saved.data()?['answerIds'], ['event_energy_playful_competition']);
   });
 
   testWidgets('companion route shows unanswered questionnaire after check-in', (
@@ -1566,8 +1787,14 @@ void main() {
 
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Social prompt'), findsNothing);
+      expect(find.text('Private afterglow'), findsOneWidget);
+      expect(find.textContaining('not a public share card'), findsOneWidget);
       expect(find.text('Suggested first-message openers'), findsOneWidget);
       expect(find.textContaining('compare routes'), findsOneWidget);
+      final copyOpener = find.byTooltip('Copy opener').first;
+      await tester.ensureVisible(copyOpener);
+      await tester.pump();
+      expect(copyOpener, findsOneWidget);
 
       await tester.scrollUntilVisible(
         find.text('How did it feel?'),
@@ -1775,7 +2002,10 @@ void main() {
       ),
     );
 
-    expect(find.text('Rotation reveal'), findsOneWidget);
+    expect(find.text('Rotation reveal'), findsWidgets);
+    expect(find.text('Room hold'), findsOneWidget);
+    expect(find.text('The room is holding together.'), findsOneWidget);
+    expect(find.text('No names shown yet'), findsWidgets);
     expect(find.textContaining('Next reveal in'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsNothing);
   });
@@ -1835,8 +2065,74 @@ void main() {
     );
 
     expect(find.text('Revealed'), findsOneWidget);
+    expect(find.text('Unlocked together'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsOneWidget);
     expect(find.textContaining('stronger interest'), findsOneWidget);
+  });
+
+  testWidgets('companion reveal dispatches a single stable reveal effect', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final effects = _FakeEventSuccessLiveEffectsController();
+    final start = DateTime(2026, 5, 18, 7);
+    final event = _racketEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+    );
+    final plan = _racketPlan(event).copyWith(
+      activeStepIndex: 1,
+      revealStatus: EventSuccessRevealStatus.revealed,
+      activeRevealRoundIndex: 0,
+    );
+    final assignment = _rotationAssignment(
+      event: event,
+      uid: 'runner-1',
+      peerUid: 'runner-2',
+      now: start,
+      roundCount: 1,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          eventSuccessLiveEffectsControllerProvider.overrideWithValue(effects),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionScreen(
+            event: event,
+            plan: plan,
+            userProfile: buildUser(uid: 'runner-1'),
+            participation: buildEventParticipation(
+              event: event,
+              uid: 'runner-1',
+              status: EventParticipationStatus.attended,
+            ),
+            wingmanRequestCandidates: const [],
+            rotationAssignment: assignment,
+            rotationPeerProfiles: [
+              buildPublicProfile(
+                uid: 'runner-2',
+                name: 'Rhea',
+                gender: Gender.woman,
+              ),
+            ],
+            now: start.subtract(const Duration(hours: 1)),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(effects.playedKinds, [
+      EventSuccessLiveEffectKind.assignmentRevealed,
+    ]);
   });
 
   testWidgets(
@@ -2383,6 +2679,18 @@ class _WingmanTestFirebaseFunctions extends Fake implements FirebaseFunctions {
       firestore: _firestore,
       requesterUid: requesterUid,
     );
+  }
+}
+
+class _FakeEventSuccessLiveEffectsController
+    extends EventSuccessLiveEffectsController {
+  _FakeEventSuccessLiveEffectsController();
+
+  final List<EventSuccessLiveEffectKind> playedKinds = [];
+
+  @override
+  Future<void> play(EventSuccessLiveEffectKind kind) async {
+    playedKinds.add(kind);
   }
 }
 

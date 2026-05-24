@@ -20,77 +20,52 @@ class _MicroPodCard extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final assigned = assignment;
     final mutation = ref.watch(EventSuccessController.microPodsOptOutMutation);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
+    return _StagePanel(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.groups_2_outlined, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  microPodsOptedOut
-                      ? 'Starter groups paused for you'
-                      : assigned?.displayTitle ??
-                            'Your starter group will appear here',
-                  style: CatchTextStyles.titleM(context),
-                ),
-                gapH4,
-                Text(
-                  microPodsOptedOut
-                      ? 'You won\'t be included when the host runs the generator.'
-                      : assigned?.displaySubtitle ??
-                            'The host will publish starter groups once everyone is checked in.',
-                  style: CatchTextStyles.bodyS(context),
-                ),
-                if (assigned != null) ...[
-                  gapH10,
-                  Wrap(
-                    spacing: CatchSpacing.s2,
-                    runSpacing: CatchSpacing.s2,
-                    children: [
-                      CatchBadge(
-                        label: '${assigned.peerUids.length + 1} people',
-                        tone: CatchBadgeTone.neutral,
-                        icon: Icons.group_outlined,
-                      ),
-                      if (peersLoading)
-                        const CatchBadge(
-                          label: 'Loading group members',
-                          tone: CatchBadgeTone.neutral,
-                          icon: Icons.hourglass_empty_rounded,
-                        )
-                      else
-                        for (final profile in peerProfiles)
-                          CatchBadge(
-                            label: profile.name,
-                            tone: CatchBadgeTone.neutral,
-                            icon: Icons.person_outline_rounded,
-                          ),
-                    ],
+          _StageSectionLabel(
+            icon: Icons.groups_2_outlined,
+            label: 'Starter group',
+            color: t.primary,
+          ),
+          gapH10,
+          Text(
+            microPodsOptedOut
+                ? 'Starter groups paused for you'
+                : assigned?.displayTitle ?? 'Your starter group is forming',
+            style: CatchTextStyles.titleL(context),
+          ),
+          gapH6,
+          Text(
+            microPodsOptedOut
+                ? 'You won\'t be included when the host runs the generator.'
+                : assigned?.displaySubtitle ??
+                      'The host will publish starter groups once everyone is checked in.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          if (assigned != null) ...[
+            gapH14,
+            _PeopleTokenRow(
+              countLabel: '${assigned.peerUids.length + 1} people',
+              loading: peersLoading,
+              loadingLabel: 'Loading group members',
+              profiles: peerProfiles,
+            ),
+          ],
+          gapH14,
+          _StageActionDock(
+            child: _IncludeMeToggle(
+              label: 'Include me in starter groups',
+              included: !microPodsOptedOut,
+              busy: mutation.isPending,
+              onChanged: (include) =>
+                  EventSuccessController.microPodsOptOutMutation.run(
+                    ref,
+                    (tx) => tx
+                        .get(eventSuccessControllerProvider.notifier)
+                        .setMicroPodsOptOut(event: event, optedOut: !include),
                   ),
-                ],
-                gapH12,
-                _IncludeMeToggle(
-                  label: 'Include me in starter groups',
-                  included: !microPodsOptedOut,
-                  busy: mutation.isPending,
-                  onChanged: (include) =>
-                      EventSuccessController.microPodsOptOutMutation.run(
-                        ref,
-                        (tx) => tx
-                            .get(eventSuccessControllerProvider.notifier)
-                            .setMicroPodsOptOut(
-                              event: event,
-                              optedOut: !include,
-                            ),
-                      ),
-                ),
-              ],
             ),
           ),
         ],
@@ -124,71 +99,65 @@ class _RotationScheduleCard extends ConsumerWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
+    return _StagePanel(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.sync_alt_rounded, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  guidedRotationsOptedOut
-                      ? 'Timed rotations paused for you'
-                      : assigned?.displayTitle ??
-                            'Your rotation schedule will appear here',
-                  style: CatchTextStyles.titleM(context),
-                ),
-                gapH4,
-                Text(
-                  guidedRotationsOptedOut
-                      ? 'You won\'t be included when the host runs the generator.'
-                      : assigned?.displaySubtitle ??
-                            'Your timed pairings appear once the host generates rotations.',
-                  style: CatchTextStyles.bodyS(context),
-                ),
-                if (assigned != null) ...[
-                  gapH10,
-                  if (peersLoading)
-                    const CatchBadge(
-                      label: 'Loading partner names',
-                      tone: CatchBadgeTone.neutral,
-                      icon: Icons.hourglass_empty_rounded,
-                    )
-                  else
-                    Column(
-                      children: [
-                        for (final slot in assigned.rotationSlots)
-                          _RotationSlotRow(
-                            slot: slot,
-                            peerName:
-                                profilesByUid[slot.peerUid]?.name ?? 'Partner',
-                          ),
-                      ],
+          _StageSectionLabel(
+            icon: Icons.sync_alt_rounded,
+            label: 'Timed rotations',
+            color: t.primary,
+          ),
+          gapH10,
+          Text(
+            guidedRotationsOptedOut
+                ? 'Timed rotations paused for you'
+                : assigned?.displayTitle ?? 'Your rotation schedule is forming',
+            style: CatchTextStyles.titleL(context),
+          ),
+          gapH6,
+          Text(
+            guidedRotationsOptedOut
+                ? 'You won\'t be included when the host runs the generator.'
+                : assigned?.displaySubtitle ??
+                      'Your timed pairings appear once the host generates rotations.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          if (assigned != null) ...[
+            gapH14,
+            if (peersLoading)
+              const CatchBadge(
+                label: 'Loading partner names',
+                tone: CatchBadgeTone.neutral,
+                icon: Icons.hourglass_empty_rounded,
+              )
+            else
+              Column(
+                children: [
+                  for (final slot in assigned.rotationSlots)
+                    _RotationSlotRow(
+                      slot: slot,
+                      peerName: profilesByUid[slot.peerUid]?.name ?? 'Partner',
                     ),
                 ],
-                gapH12,
-                _IncludeMeToggle(
-                  label: 'Include me in timed rotations',
-                  included: !guidedRotationsOptedOut,
-                  busy: mutation.isPending,
-                  onChanged: (include) => EventSuccessController
-                      .guidedRotationsOptOutMutation
-                      .run(
-                        ref,
-                        (tx) => tx
-                            .get(eventSuccessControllerProvider.notifier)
-                            .setGuidedRotationsOptOut(
-                              event: event,
-                              optedOut: !include,
-                            ),
-                      ),
-                ),
-              ],
+              ),
+          ],
+          gapH14,
+          _StageActionDock(
+            child: _IncludeMeToggle(
+              label: 'Include me in timed rotations',
+              included: !guidedRotationsOptedOut,
+              busy: mutation.isPending,
+              onChanged: (include) =>
+                  EventSuccessController.guidedRotationsOptOutMutation.run(
+                    ref,
+                    (tx) => tx
+                        .get(eventSuccessControllerProvider.notifier)
+                        .setGuidedRotationsOptOut(
+                          event: event,
+                          optedOut: !include,
+                        ),
+                  ),
             ),
           ),
         ],
@@ -205,27 +174,37 @@ class _RotationSlotRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final timeRange =
         '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
         '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-      child: Row(
-        children: [
-          CatchBadge(
-            label: slot.label,
-            tone: _isStrongRotationSignal(slot.compatibility)
-                ? CatchBadgeTone.success
-                : CatchBadgeTone.neutral,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.primarySoft,
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.s3),
+          child: Row(
+            children: [
+              CatchBadge(
+                label: slot.label,
+                tone: _isStrongRotationSignal(slot.compatibility)
+                    ? CatchBadgeTone.success
+                    : CatchBadgeTone.neutral,
+              ),
+              gapW8,
+              Expanded(
+                child: Text(
+                  '$timeRange · $peerName',
+                  style: CatchTextStyles.bodyS(context),
+                ),
+              ),
+            ],
           ),
-          gapW8,
-          Expanded(
-            child: Text(
-              '$timeRange · $peerName',
-              style: CatchTextStyles.bodyS(context),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -240,42 +219,25 @@ class _LiveStepContextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activeStep = step;
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
+    return _StagePanel(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.location_on_outlined, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s2,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      activeStep == null ? 'Event is live' : activeStep.title,
-                      style: CatchTextStyles.titleM(context),
-                    ),
-                    if (activeStep != null)
-                      CatchBadge(
-                        label: activeStep.stage.label,
-                        tone: CatchBadgeTone.neutral,
-                      ),
-                  ],
-                ),
-                gapH4,
-                Text(
-                  activeStep?.attendeeExperience ??
-                      'Follow the host for the next event moment.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-              ],
-            ),
+          _StageSectionLabel(
+            icon: Icons.location_on_outlined,
+            label: activeStep?.stage.label ?? 'Live cue',
+            color: t.primary,
+          ),
+          gapH10,
+          Text(
+            activeStep == null ? 'Event is live' : activeStep.title,
+            style: CatchTextStyles.titleL(context),
+          ),
+          gapH6,
+          Text(
+            activeStep?.attendeeExperience ??
+                'Follow the host for the next event moment.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
         ],
       ),
@@ -284,10 +246,7 @@ class _LiveStepContextCard extends StatelessWidget {
 }
 
 /// Informational preview of what the host will guide the attendee through
-/// once check-in opens. Opt-out controls live on the at-event cards instead —
-/// asking an attendee to opt out *before* they know what each tool feels like
-/// is presumptuous, and the host doesn't need pre-arrival preferences to
-/// generate assignments.
+/// once check-in opens. Opt-out controls live on the at-event cards instead.
 class _PreCheckInPlanningCard extends StatelessWidget {
   const _PreCheckInPlanningCard({
     required this.microPodsEnabled,
@@ -333,32 +292,27 @@ class _PreCheckInPlanningCard extends StatelessWidget {
           text: 'You can ask the host for an intro to someone specific.',
         ),
     ];
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Row(
+    return _StagePanel(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.event_available_outlined, color: t.primary),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'What we\'ll guide you through',
-                  style: CatchTextStyles.titleM(context),
-                ),
-                gapH4,
-                Text(
-                  'Live partner and group details unlock after check-in. Here\'s what to expect at the event:',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-                gapH10,
-                for (final entry in entries) ...[entry, gapH6],
-              ],
-            ),
+          _StageSectionLabel(
+            icon: Icons.event_available_outlined,
+            label: 'Preview',
+            color: t.primary,
           ),
+          gapH10,
+          Text(
+            'What we\'ll guide you through',
+            style: CatchTextStyles.titleL(context),
+          ),
+          gapH6,
+          Text(
+            'Live partner and group details unlock after check-in. Here\'s what to expect at the event:',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          gapH14,
+          for (final entry in entries) ...[entry, gapH8],
         ],
       ),
     );
@@ -382,17 +336,12 @@ class _PreviewLine extends StatelessWidget {
           child: Icon(icon, size: 16, color: t.ink2),
         ),
         gapW6,
-        Expanded(
-          child: Text(text, style: CatchTextStyles.bodyS(context)),
-        ),
+        Expanded(child: Text(text, style: CatchTextStyles.bodyS(context))),
       ],
     );
   }
 }
 
-/// Small Switch + label used as the per-card opt-in toggle for starter groups
-/// and timed rotations. Replaces the older "Skip" / "Join" verb-flipping
-/// button so the current state is visible at a glance.
 class _IncludeMeToggle extends StatelessWidget {
   const _IncludeMeToggle({
     required this.label,
@@ -408,15 +357,16 @@ class _IncludeMeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Row(
       children: [
         Expanded(
-          child: Text(label, style: CatchTextStyles.labelL(context)),
+          child: Text(
+            label,
+            style: CatchTextStyles.labelL(context, color: t.surface),
+          ),
         ),
-        Switch.adaptive(
-          value: included,
-          onChanged: busy ? null : onChanged,
-        ),
+        Switch.adaptive(value: included, onChanged: busy ? null : onChanged),
       ],
     );
   }
@@ -430,34 +380,417 @@ class _SelfCheckInCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mutation = ref.watch(EventBookingController.selfCheckInMutation);
-    return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+    final t = CatchTokens.of(context);
+    return _StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Arrival check-in', style: CatchTextStyles.titleM(context)),
+          _StageSectionLabel(
+            icon: Icons.qr_code_2_rounded,
+            label: 'Arrival',
+            color: t.primary,
+          ),
+          gapH10,
+          Text('Arrival check-in', style: CatchTextStyles.titleL(context)),
           gapH6,
           Text(
             'Confirm you are at the event so post-event follow-up only includes actual attendees.',
-            style: CatchTextStyles.bodyS(context),
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
-          gapH12,
-          CatchButton(
-            label: 'Check in',
-            isLoading: mutation.isPending,
-            onPressed: mutation.isPending
-                ? null
-                : () => EventBookingController.selfCheckInMutation.run(
-                    ref,
-                    (tx) => tx
-                        .get(eventBookingControllerProvider.notifier)
-                        .selfCheckIn(eventId: event.id),
-                  ),
-            fullWidth: true,
+          gapH14,
+          _StageActionDock(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchButton(
+                  label: 'Scan host QR',
+                  icon: const Icon(Icons.qr_code_scanner_rounded),
+                  isLoading: mutation.isPending,
+                  onPressed: mutation.isPending
+                      ? null
+                      : () => _scanHostQr(context, ref),
+                  fullWidth: true,
+                ),
+                gapH8,
+                CatchButton(
+                  label: 'Check in',
+                  variant: CatchButtonVariant.ghost,
+                  isLoading: mutation.isPending,
+                  onPressed: mutation.isPending ? null : () => _checkIn(ref),
+                  fullWidth: true,
+                ),
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _scanHostQr(BuildContext context, WidgetRef ref) async {
+    final matched = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => _EventCheckInQrScannerSheet(eventId: event.id),
+    );
+    if (matched == true && context.mounted) {
+      _checkIn(ref);
+    }
+  }
+
+  void _checkIn(WidgetRef ref) {
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.liveEntry),
+    );
+    EventBookingController.selfCheckInMutation.run(
+      ref,
+      (tx) => tx
+          .get(eventBookingControllerProvider.notifier)
+          .selfCheckIn(eventId: event.id),
+    );
+  }
+}
+
+class _EventCheckInQrScannerSheet extends StatefulWidget {
+  const _EventCheckInQrScannerSheet({required this.eventId});
+
+  final String eventId;
+
+  @override
+  State<_EventCheckInQrScannerSheet> createState() =>
+      _EventCheckInQrScannerSheetState();
+}
+
+class _EventCheckInQrScannerSheetState
+    extends State<_EventCheckInQrScannerSheet> {
+  late final MobileScannerController _controller = MobileScannerController(
+    formats: const [BarcodeFormat.qrCode],
+  );
+  bool _handled = false;
+  String? _errorText;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final height = math.min(MediaQuery.sizeOf(context).height * 0.72, 560.0);
+    return SizedBox(
+      height: height,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s4,
+          CatchSpacing.s4,
+          CatchSpacing.s4,
+          CatchSpacing.s5,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.qr_code_scanner_rounded, color: t.primary),
+                gapW10,
+                Expanded(
+                  child: Text(
+                    'Scan host QR',
+                    style: CatchTextStyles.titleM(context),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  tooltip: 'Close',
+                  onPressed: () => Navigator.of(context).maybePop(false),
+                ),
+              ],
+            ),
+            gapH10,
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    MobileScanner(
+                      controller: _controller,
+                      fit: BoxFit.cover,
+                      onDetect: _handleCapture,
+                    ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: t.primary, width: 3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    if (_errorText != null)
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(CatchSpacing.s3),
+                          color: t.ink.withValues(alpha: 0.84),
+                          child: Text(
+                            _errorText!,
+                            style: CatchTextStyles.bodyS(
+                              context,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            gapH10,
+            Text(
+              'Location still verifies the venue after the QR is scanned.',
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleCapture(BarcodeCapture capture) {
+    if (_handled) return;
+    for (final barcode in capture.barcodes) {
+      final rawValue = barcode.rawValue;
+      if (rawValue == null) continue;
+      final payload = EventCheckInQrPayload.tryParse(rawValue);
+      if (payload == null) {
+        setState(() => _errorText = 'This is not a Catch event QR.');
+        continue;
+      }
+      if (payload.eventId != widget.eventId) {
+        setState(() => _errorText = 'This QR belongs to another event.');
+        continue;
+      }
+      _handled = true;
+      unawaited(HapticFeedback.lightImpact());
+      Navigator.of(context).maybePop(true);
+      return;
+    }
+  }
+}
+
+class _StagePromptCard extends StatelessWidget {
+  const _StagePromptCard({required this.prompt, this.title = 'Social mission'});
+
+  final String prompt;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return _StagePanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StageSectionLabel(
+            icon: Icons.chat_bubble_outline_rounded,
+            label: title,
+            color: t.primary,
+          ),
+          gapH12,
+          Text(
+            prompt,
+            style: CatchTextStyles.titleL(context).copyWith(height: 1.12),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StageConversationCueCard extends StatelessWidget {
+  const _StageConversationCueCard({
+    required this.title,
+    required this.cues,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final List<EventSuccessConversationCue> cues;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cues.isEmpty) return const SizedBox.shrink();
+
+    final t = CatchTokens.of(context);
+    final moment = cues.first.moment;
+    final icon = switch (moment) {
+      EventSuccessConversationCueMoment.live => Icons.forum_outlined,
+      EventSuccessConversationCueMoment.postEvent => Icons.chat_outlined,
+    };
+    return _StagePanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StageSectionLabel(icon: icon, label: title, color: t.primary),
+          if (subtitle != null) ...[
+            gapH8,
+            Text(
+              subtitle!,
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
+          ],
+          gapH14,
+          for (final cue in cues.take(3)) _StageCueLine(cue: cue),
+        ],
+      ),
+    );
+  }
+}
+
+class _StageCueLine extends StatelessWidget {
+  const _StageCueLine({required this.cue});
+
+  final EventSuccessConversationCue cue;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.primarySoft,
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.s3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      cue.title,
+                      style: CatchTextStyles.titleS(context),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip:
+                        cue.moment ==
+                            EventSuccessConversationCueMoment.postEvent
+                        ? 'Copy opener'
+                        : 'Copy cue',
+                    icon: const Icon(Icons.content_copy_rounded, size: 18),
+                    onPressed: () => _copyCue(context, cue),
+                  ),
+                ],
+              ),
+              gapH4,
+              Text(
+                cue.body,
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _copyCue(
+    BuildContext context,
+    EventSuccessConversationCue cue,
+  ) async {
+    await Clipboard.setData(ClipboardData(text: cue.body));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          cue.moment == EventSuccessConversationCueMoment.postEvent
+              ? 'Opener copied.'
+              : 'Cue copied.',
+        ),
+      ),
+    );
+  }
+}
+
+class _StageSectionLabel extends StatelessWidget {
+  const _StageSectionLabel({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: color),
+        gapW6,
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: CatchTextStyles.labelL(context, color: color),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PeopleTokenRow extends StatelessWidget {
+  const _PeopleTokenRow({
+    required this.countLabel,
+    required this.loading,
+    required this.loadingLabel,
+    required this.profiles,
+  });
+
+  final String countLabel;
+  final bool loading;
+  final String loadingLabel;
+  final List<PublicProfile> profiles;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        CatchBadge(
+          label: countLabel,
+          tone: CatchBadgeTone.neutral,
+          icon: Icons.group_outlined,
+        ),
+        if (loading)
+          CatchBadge(
+            label: loadingLabel,
+            tone: CatchBadgeTone.neutral,
+            icon: Icons.hourglass_empty_rounded,
+          )
+        else
+          for (final profile in profiles)
+            CatchBadge(
+              label: profile.name,
+              tone: CatchBadgeTone.neutral,
+              icon: Icons.person_outline_rounded,
+            ),
+      ],
     );
   }
 }

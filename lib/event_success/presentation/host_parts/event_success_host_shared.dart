@@ -204,11 +204,13 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
 
 class _LiveAttendanceSummaryCard extends StatelessWidget {
   const _LiveAttendanceSummaryCard({
+    required this.event,
     required this.bookedCount,
     required this.checkedInCount,
     required this.waitlistCount,
   });
 
+  final Event event;
   final int bookedCount;
   final int checkedInCount;
   final int waitlistCount;
@@ -270,6 +272,62 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
                 icon: Icons.hourglass_empty_rounded,
               ),
             ],
+          ),
+          gapH14,
+          _HostCheckInQrPanel(event: event),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostCheckInQrPanel extends StatelessWidget {
+  const _HostCheckInQrPanel({required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final payload = EventCheckInQrPayload(eventId: event.id).encode();
+    return Container(
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      decoration: BoxDecoration(
+        color: t.raised,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: t.line),
+      ),
+      child: Row(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(CatchSpacing.s2),
+              child: QrImageView(
+                data: payload,
+                version: QrVersions.auto,
+                size: 116,
+                padding: EdgeInsets.zero,
+                backgroundColor: Colors.white,
+              ),
+            ),
+          ),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Host QR', style: CatchTextStyles.titleS(context)),
+                gapH4,
+                Text(
+                  'Attendees can scan this, then location still verifies they are at the venue.',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+              ],
+            ),
           ),
         ],
       ),

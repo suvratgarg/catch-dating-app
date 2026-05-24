@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/complete_event_success_first_hello_mission_payload.schema.json",
+  "title": "CompleteEventSuccessFirstHelloMissionCallablePayload",
+  "description": "Callable payload accepted by completeEventSuccessFirstHelloMission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "answerId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "answerId": {"type": "string", "minLength": 1, "maxLength": 64},
+    "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
+    "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
+  }
+}

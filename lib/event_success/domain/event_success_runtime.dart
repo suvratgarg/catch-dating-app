@@ -11,6 +11,7 @@ enum EventSuccessAttendeeMomentKind {
   none,
   preArrival,
   selfCheckIn,
+  firstHelloCheckIn,
   compatibilityQuestionnaire,
   liveStepContext,
   socialPrompt,
@@ -54,6 +55,9 @@ class EventSuccessAttendeeMoment {
 
   bool get showSelfCheckIn =>
       kind == EventSuccessAttendeeMomentKind.selfCheckIn;
+
+  bool get showFirstHelloCheckIn =>
+      kind == EventSuccessAttendeeMomentKind.firstHelloCheckIn;
 
   bool get showPreCheckInPlanning =>
       kind == EventSuccessAttendeeMomentKind.preArrival ||
@@ -100,6 +104,9 @@ class EventSuccessRuntime {
 
   bool get checkInEnabled =>
       moduleEnabled(EventSuccessModuleCatalog.checkIn.id);
+
+  bool get firstHelloCheckInEnabled =>
+      moduleEnabled(EventSuccessModuleCatalog.firstHelloCheckIn.id);
 
   bool get hostScriptEnabled =>
       moduleEnabled(EventSuccessModuleCatalog.hostScript.id);
@@ -162,6 +169,21 @@ class EventSuccessRuntime {
   bool canShowSelfCheckIn({required bool checkInOpen}) =>
       checkInEnabled && checkInOpen;
 
+  bool canShowFirstHelloCheckIn({
+    required EventParticipationStatus? participationStatus,
+    required bool checkInOpen,
+    required bool eventEnded,
+    required bool arrivalMissionAssigned,
+    bool arrivalMissionStartAvailable = false,
+  }) {
+    return firstHelloCheckInEnabled &&
+        checkInEnabled &&
+        checkInOpen &&
+        !eventEnded &&
+        (arrivalMissionAssigned || arrivalMissionStartAvailable) &&
+        participationStatus == EventParticipationStatus.signedUp;
+  }
+
   bool canShowWingmanRequest({
     required bool attended,
     required bool eventEnded,
@@ -219,6 +241,8 @@ class EventSuccessRuntime {
     required bool checkInOpen,
     required bool eventEnded,
     bool compatibilityResponseSaved = false,
+    bool arrivalMissionAssigned = false,
+    bool arrivalMissionStartAvailable = false,
   }) {
     final lifecycle = _attendeeLifecycle(
       participationStatus: participationStatus,
@@ -248,6 +272,18 @@ class EventSuccessRuntime {
     }
 
     final step = activeRunOfShowStep;
+    if (canShowFirstHelloCheckIn(
+      participationStatus: participationStatus,
+      checkInOpen: checkInOpen,
+      eventEnded: eventEnded,
+      arrivalMissionAssigned: arrivalMissionAssigned,
+      arrivalMissionStartAvailable: arrivalMissionStartAvailable,
+    )) {
+      return EventSuccessAttendeeMoment(
+        kind: EventSuccessAttendeeMomentKind.firstHelloCheckIn,
+        activeStep: step,
+      );
+    }
     if (!compatibilityResponseSaved &&
         canUseCompatibilityQuestionnaire(
           participationStatus: participationStatus,

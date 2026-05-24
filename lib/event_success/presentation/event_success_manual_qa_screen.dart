@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -7,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
@@ -31,8 +34,8 @@ import 'package:flutter/material.dart';
 ///
 /// This renders the production host panel and attendee companion against one
 /// synthetic scenario so host-side state changes can be inspected beside the
-/// attendee experience. Use the top-level QA controls for state changes; the
-/// production action buttons are present for visual review, not write-path QA.
+/// attendee experience. All fixture writes flow through an in-memory store so
+/// host and attendee surfaces stay synchronized without backend persistence.
 class EventSuccessManualQaScreen extends StatefulWidget {
   const EventSuccessManualQaScreen({super.key});
 
@@ -43,33 +46,28 @@ class EventSuccessManualQaScreen extends StatefulWidget {
 
 class _EventSuccessManualQaScreenState
     extends State<EventSuccessManualQaScreen> {
-  _ManualQaScenario _scenario = _ManualQaScenario.racketPairs;
-  EventSuccessHostTab _hostTab = EventSuccessHostTab.setup;
-  int _activeStepIndex = 0;
-  EventSuccessRevealStatus _revealStatus = EventSuccessRevealStatus.idle;
-  int _activeRevealRoundIndex = 0;
-  bool _compatibilityEnabled = true;
-  bool _compatibilityAffectsRanking = true;
-  EventSuccessQuestionnaireConfig _questionnaireConfig =
-      const EventSuccessQuestionnaireConfig.defaultTemplate();
-  bool _microPodsOptedOut = false;
-  bool _guidedRotationsOptedOut = false;
+  _ManualQaStore? _store;
+
+  @override
+  void initState() {
+    super.initState();
+    _store = _ManualQaStore(onChanged: _handleStoreChanged);
+  }
+
+  @override
+  void dispose() {
+    _store?.dispose();
+    super.dispose();
+  }
+
+  void _handleStoreChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    final moment = _momentForHostState();
-    final data = _ManualQaFixtures(
-      scenario: _scenario,
-      moment: moment,
-      activeStepIndex: _activeStepIndex,
-      revealStatus: _revealStatus,
-      activeRevealRoundIndex: _activeRevealRoundIndex,
-      compatibilityEnabled: _compatibilityEnabled,
-      compatibilityAffectsRanking: _compatibilityAffectsRanking,
-      questionnaireConfig: _questionnaireConfig,
-      microPodsOptedOut: _microPodsOptedOut,
-      guidedRotationsOptedOut: _guidedRotationsOptedOut,
-    );
+    final store = _store ??= _ManualQaStore(onChanged: _handleStoreChanged);
+    final data = store.fixtures;
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -87,70 +85,37 @@ class _EventSuccessManualQaScreenState
             _ManualQaHero(data: data),
             gapH16,
             _ManualQaControls(
-              scenario: _scenario,
-              onScenarioChanged: (value) => setState(() {
-                _scenario = value;
-                _activeStepIndex = _defaultActiveStepIndex(
-                  scenario: value,
-                  hostTab: _hostTab,
-                );
-                _resetRevealState();
-                _guidedRotationsOptedOut = false;
-                _microPodsOptedOut = false;
-              }),
+              scenario: store.scenario,
+              onScenarioChanged: store.setScenario,
             ),
             gapH16,
             _ManualQaSideBySide(
-              hostTab: _hostTab,
+              hostTab: store.hostTab,
               data: data,
-              compatibilityEnabled: _compatibilityEnabled,
-              compatibilityAffectsRanking: _compatibilityAffectsRanking,
-              questionnaireConfig: _questionnaireConfig,
-              microPodsOptedOut: _microPodsOptedOut,
-              guidedRotationsOptedOut: _guidedRotationsOptedOut,
-              fixtureActions: _fixtureActions(),
-              onHostTabChanged: _setHostTab,
-              onCompatibilityEnabledChanged: (value) => setState(() {
-                _compatibilityEnabled = value;
-                if (!value) _compatibilityAffectsRanking = false;
-              }),
-              onCompatibilityRankingChanged: (value) =>
-                  setState(() => _compatibilityAffectsRanking = value),
-              onQuestionnaireConfigChanged: (value) =>
-                  setState(() => _questionnaireConfig = value),
-              onMicroPodsOptOutChanged: (value) =>
-                  setState(() => _microPodsOptedOut = value),
-              onGuidedRotationsOptOutChanged: (value) =>
-                  setState(() => _guidedRotationsOptedOut = value),
+              compatibilityEnabled: store.compatibilityEnabled,
+              firstHelloEnabled: store.firstHelloEnabled,
+              firstHelloSkipped: store.firstHelloSkipped,
+              firstHelloCompleted: store.firstHelloCompleted,
+              compatibilityAffectsRanking: store.compatibilityAffectsRanking,
+              questionnaireConfig: store.questionnaireConfig,
+              microPodsOptedOut: store.microPodsOptedOut,
+              guidedRotationsOptedOut: store.guidedRotationsOptedOut,
+              fixtureActions: store.fixtureActions(_showFixtureAction),
+              onHostTabChanged: store.setHostTab,
+              onFirstHelloEnabledChanged: store.setFirstHelloEnabled,
+              onCompatibilityEnabledChanged: store.setCompatibilityEnabled,
+              onCompatibilityRankingChanged:
+                  store.setCompatibilityAffectsRanking,
+              onQuestionnaireConfigChanged: store.setQuestionnaireConfig,
+              onCompatibilityAnswersSaved: store.saveCompatibilityAnswers,
+              onFirstHelloCompleted: store.completeFirstHelloMission,
+              onFirstHelloSkipped: store.skipFirstHelloMission,
+              onMicroPodsOptOutChanged: store.setMicroPodsOptedOut,
+              onGuidedRotationsOptOutChanged: store.setGuidedRotationsOptedOut,
             ),
           ],
         ),
       ),
-    );
-  }
-
-  EventSuccessHostFixtureActions _fixtureActions() {
-    return EventSuccessHostFixtureActions(
-      onSaveSetup: () => _showFixtureAction(
-        'Fixture setup saved. Use a real dev event to verify persistence.',
-      ),
-      onPreviousStep: () => _moveHostStep(-1),
-      onNextStep: () => _moveHostStep(1),
-      onCompletePlan: () => _showFixtureAction(
-        'Fixture plan marked complete. Use Post-event to inspect the report.',
-      ),
-      onGenerateMicroPods: () => _showFixtureAction(
-        'Fixture micro-pods regenerated. Toggle opt-outs to inspect stale-card behavior.',
-      ),
-      onGenerateGuidedRotations: () => _showFixtureAction(
-        'Fixture rotations regenerated. Change event format or ranking signal to inspect variants.',
-      ),
-      onOverrideGuidedRotations: (_) => _showFixtureAction(
-        'Fixture rotation edits accepted. Use a real dev event to verify the callable write path.',
-      ),
-      onStartRevealCountdown: _startRevealCountdown,
-      onRevealRound: _revealRound,
-      onResetReveal: _resetReveal,
     );
   }
 
@@ -159,61 +124,244 @@ class _EventSuccessManualQaScreenState
       SnackBar(content: Text(message, style: CatchTextStyles.bodyS(context))),
     );
   }
+}
 
-  void _moveHostStep(int delta) {
-    setState(() {
-      _hostTab = EventSuccessHostTab.live;
-      _activeStepIndex = _clampActiveStepIndex(_activeStepIndex + delta);
-      if (!_activeStepHasLiveReveal(_activeStepIndex)) _resetRevealState();
-    });
+class _ManualQaStore {
+  _ManualQaStore({required this.onChanged});
+
+  final VoidCallback onChanged;
+
+  _ManualQaScenario scenario = _ManualQaScenario.racketPairs;
+  EventSuccessHostTab hostTab = EventSuccessHostTab.setup;
+  int activeStepIndex = 0;
+  EventSuccessRevealStatus revealStatus = EventSuccessRevealStatus.idle;
+  int activeRevealRoundIndex = 0;
+  bool firstHelloEnabled = false;
+  bool firstHelloSkipped = false;
+  bool firstHelloCompleted = false;
+  bool compatibilityEnabled = true;
+  bool compatibilityAffectsRanking = true;
+  EventSuccessQuestionnaireConfig questionnaireConfig =
+      const EventSuccessQuestionnaireConfig.defaultTemplate();
+  bool microPodsOptedOut = false;
+  bool guidedRotationsOptedOut = false;
+  List<String>? savedCompatibilityAnswerIds;
+  Duration _countdownElapsed = Duration.zero;
+  Timer? _countdownTimer;
+
+  _ManualQaFixtures get fixtures => _ManualQaFixtures(
+    scenario: scenario,
+    moment: _momentForHostState(),
+    activeStepIndex: activeStepIndex,
+    revealStatus: revealStatus,
+    activeRevealRoundIndex: activeRevealRoundIndex,
+    firstHelloEnabled: firstHelloEnabled,
+    firstHelloSkipped: firstHelloSkipped,
+    firstHelloCompleted: firstHelloCompleted,
+    compatibilityEnabled: compatibilityEnabled,
+    compatibilityAffectsRanking: compatibilityAffectsRanking,
+    questionnaireConfig: questionnaireConfig,
+    microPodsOptedOut: microPodsOptedOut,
+    guidedRotationsOptedOut: guidedRotationsOptedOut,
+    savedCompatibilityAnswerIds: savedCompatibilityAnswerIds,
+    countdownElapsed: _effectiveCountdownElapsed,
+  );
+
+  void dispose() {
+    _countdownTimer?.cancel();
   }
 
-  void _setHostTab(EventSuccessHostTab tab) {
-    setState(() {
-      _hostTab = tab;
-      _activeStepIndex = _defaultActiveStepIndex(
-        scenario: _scenario,
-        hostTab: tab,
-      );
-      if (tab != EventSuccessHostTab.live ||
-          !_activeStepHasLiveReveal(_activeStepIndex)) {
-        _resetRevealState();
-      }
-    });
+  void setScenario(_ManualQaScenario value) {
+    if (scenario == value) return;
+    scenario = value;
+    activeStepIndex = _defaultActiveStepIndex(
+      scenario: value,
+      hostTab: hostTab,
+    );
+    _resetRevealState();
+    firstHelloSkipped = false;
+    firstHelloCompleted = false;
+    guidedRotationsOptedOut = false;
+    microPodsOptedOut = false;
+    savedCompatibilityAnswerIds = null;
+    _syncCountdownTimer();
+    _notify();
+  }
+
+  void setHostTab(EventSuccessHostTab tab) {
+    hostTab = tab;
+    activeStepIndex = _defaultActiveStepIndex(scenario: scenario, hostTab: tab);
+    if (tab != EventSuccessHostTab.live ||
+        !_activeStepHasLiveReveal(activeStepIndex)) {
+      _resetRevealState();
+    }
+    _syncCountdownTimer();
+    _notify();
+  }
+
+  void setCompatibilityEnabled(bool value) {
+    if (compatibilityEnabled == value) return;
+    compatibilityEnabled = value;
+    if (!value) {
+      compatibilityAffectsRanking = false;
+      savedCompatibilityAnswerIds = null;
+    }
+    _notify();
+  }
+
+  void setFirstHelloEnabled(bool value) {
+    if (firstHelloEnabled == value) return;
+    firstHelloEnabled = value;
+    firstHelloSkipped = false;
+    firstHelloCompleted = false;
+    _notify();
+  }
+
+  void setCompatibilityAffectsRanking(bool value) {
+    if (!compatibilityEnabled || compatibilityAffectsRanking == value) return;
+    compatibilityAffectsRanking = value;
+    _notify();
+  }
+
+  void setQuestionnaireConfig(EventSuccessQuestionnaireConfig value) {
+    if (questionnaireConfig == value) return;
+    questionnaireConfig = value;
+    savedCompatibilityAnswerIds = null;
+    _notify();
+  }
+
+  Future<void> saveCompatibilityAnswers(List<String> answerIds) async {
+    savedCompatibilityAnswerIds = List.of(answerIds);
+    _notify();
+  }
+
+  Future<void> completeFirstHelloMission(
+    EventSuccessArrivalMission mission,
+    String answerId,
+  ) async {
+    firstHelloCompleted = true;
+    firstHelloSkipped = false;
+    hostTab = EventSuccessHostTab.live;
+    activeStepIndex = _defaultActiveStepIndex(
+      scenario: scenario,
+      hostTab: hostTab,
+    );
+    _notify();
+  }
+
+  void skipFirstHelloMission() {
+    firstHelloSkipped = true;
+    firstHelloCompleted = false;
+    _notify();
+  }
+
+  void setMicroPodsOptedOut(bool value) {
+    if (microPodsOptedOut == value) return;
+    microPodsOptedOut = value;
+    _notify();
+  }
+
+  void setGuidedRotationsOptedOut(bool value) {
+    if (guidedRotationsOptedOut == value) return;
+    guidedRotationsOptedOut = value;
+    _notify();
+  }
+
+  EventSuccessHostFixtureActions fixtureActions(
+    ValueChanged<String> showMessage,
+  ) {
+    return EventSuccessHostFixtureActions(
+      onSaveSetup: () => showMessage(
+        'Fixture setup saved. Use a real dev event to verify persistence.',
+      ),
+      onPreviousStep: () => _moveHostStep(-1),
+      onNextStep: () => _moveHostStep(1),
+      onCompletePlan: () => showMessage(
+        'Fixture plan marked complete. Use Post-event to inspect the report.',
+      ),
+      onGenerateMicroPods: () => showMessage(
+        'Fixture micro-pods regenerated. Toggle opt-outs to inspect stale-card behavior.',
+      ),
+      onGenerateGuidedRotations: () => showMessage(
+        'Fixture rotations regenerated. Change event format or ranking signal to inspect variants.',
+      ),
+      onOverrideGuidedRotations: (_) => showMessage(
+        'Fixture rotation edits accepted. Use a real dev event to verify the callable write path.',
+      ),
+      onStartRevealCountdown: _startRevealCountdown,
+      onRevealRound: _revealRound,
+      onResetReveal: _resetReveal,
+    );
+  }
+
+  void _moveHostStep(int delta) {
+    hostTab = EventSuccessHostTab.live;
+    activeStepIndex = _clampActiveStepIndex(activeStepIndex + delta);
+    if (!_activeStepHasLiveReveal(activeStepIndex)) _resetRevealState();
+    _syncCountdownTimer();
+    _notify();
   }
 
   void _startRevealCountdown(int roundIndex, int _) {
-    setState(() {
-      _hostTab = EventSuccessHostTab.live;
-      _activeStepIndex = _firstRevealStepIndex(_scenario);
-      _revealStatus = EventSuccessRevealStatus.countingDown;
-      _activeRevealRoundIndex = roundIndex;
-    });
+    hostTab = EventSuccessHostTab.live;
+    activeStepIndex = _firstRevealStepIndex(scenario);
+    revealStatus = EventSuccessRevealStatus.countingDown;
+    activeRevealRoundIndex = roundIndex;
+    _countdownElapsed = Duration.zero;
+    _syncCountdownTimer();
+    _notify();
   }
 
   void _revealRound(int roundIndex) {
-    setState(() {
-      _hostTab = EventSuccessHostTab.live;
-      _activeStepIndex = _firstRevealStepIndex(_scenario);
-      _revealStatus = EventSuccessRevealStatus.revealed;
-      _activeRevealRoundIndex = roundIndex;
-    });
+    hostTab = EventSuccessHostTab.live;
+    activeStepIndex = _firstRevealStepIndex(scenario);
+    revealStatus = EventSuccessRevealStatus.revealed;
+    activeRevealRoundIndex = roundIndex;
+    _syncCountdownTimer();
+    _notify();
   }
 
   void _resetReveal() {
-    setState(_resetRevealState);
+    _resetRevealState();
+    _syncCountdownTimer();
+    _notify();
   }
 
   void _resetRevealState() {
-    _revealStatus = EventSuccessRevealStatus.idle;
-    _activeRevealRoundIndex = 0;
+    revealStatus = EventSuccessRevealStatus.idle;
+    activeRevealRoundIndex = 0;
+    _countdownElapsed = Duration.zero;
+  }
+
+  Duration get _effectiveCountdownElapsed =>
+      revealStatus == EventSuccessRevealStatus.countingDown
+      ? _countdownElapsed
+      : Duration.zero;
+
+  void _syncCountdownTimer() {
+    _countdownTimer?.cancel();
+    _countdownTimer = null;
+    if (revealStatus != EventSuccessRevealStatus.countingDown) return;
+    const tick = Duration(milliseconds: 250);
+    _countdownTimer = Timer.periodic(tick, (_) {
+      _countdownElapsed += tick;
+      _notify();
+    });
   }
 
   _ManualQaMoment _momentForHostState() {
-    return switch (_hostTab) {
+    if (firstHelloEnabled && firstHelloCompleted) {
+      return _ManualQaMoment.checkedIn;
+    }
+    if (firstHelloEnabled &&
+        !firstHelloSkipped &&
+        hostTab == EventSuccessHostTab.setup) {
+      return _ManualQaMoment.firstHello;
+    }
+    return switch (hostTab) {
       EventSuccessHostTab.setup => _ManualQaMoment.booked,
       EventSuccessHostTab.report => _ManualQaMoment.postEvent,
-      EventSuccessHostTab.live => switch (_revealStatus) {
+      EventSuccessHostTab.live => switch (revealStatus) {
         EventSuccessRevealStatus.countingDown => _ManualQaMoment.countdown,
         EventSuccessRevealStatus.revealed => _ManualQaMoment.revealed,
         EventSuccessRevealStatus.idle => _ManualQaMoment.checkedIn,
@@ -221,7 +369,7 @@ class _EventSuccessManualQaScreenState
     };
   }
 
-  int _defaultActiveStepIndex({
+  static int _defaultActiveStepIndex({
     required _ManualQaScenario scenario,
     required EventSuccessHostTab hostTab,
   }) {
@@ -231,7 +379,7 @@ class _EventSuccessManualQaScreenState
     };
   }
 
-  int _firstRevealStepIndex(_ManualQaScenario scenario) {
+  static int _firstRevealStepIndex(_ManualQaScenario scenario) {
     final index = scenario.playbook.runOfShow.indexWhere(
       (step) =>
           step.moduleIds.contains(EventSuccessModuleCatalog.liveReveal.id),
@@ -240,18 +388,20 @@ class _EventSuccessManualQaScreenState
   }
 
   int _clampActiveStepIndex(int index) {
-    final lastIndex = _scenario.playbook.runOfShow.length - 1;
+    final lastIndex = scenario.playbook.runOfShow.length - 1;
     return index.clamp(0, lastIndex).toInt();
   }
 
   bool _activeStepHasLiveReveal(int index) {
-    final steps = _scenario.playbook.runOfShow;
+    final steps = scenario.playbook.runOfShow;
     if (steps.isEmpty) return false;
     final clamped = index.clamp(0, steps.length - 1).toInt();
     return steps[clamped].moduleIds.contains(
       EventSuccessModuleCatalog.liveReveal.id,
     );
   }
+
+  void _notify() => onChanged();
 }
 
 class _ManualQaHero extends StatelessWidget {
@@ -377,15 +527,22 @@ class _ManualQaSideBySide extends StatelessWidget {
     required this.hostTab,
     required this.data,
     required this.compatibilityEnabled,
+    required this.firstHelloEnabled,
+    required this.firstHelloSkipped,
+    required this.firstHelloCompleted,
     required this.compatibilityAffectsRanking,
     required this.questionnaireConfig,
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
     required this.fixtureActions,
     required this.onHostTabChanged,
+    required this.onFirstHelloEnabledChanged,
     required this.onCompatibilityEnabledChanged,
     required this.onCompatibilityRankingChanged,
     required this.onQuestionnaireConfigChanged,
+    required this.onCompatibilityAnswersSaved,
+    required this.onFirstHelloCompleted,
+    required this.onFirstHelloSkipped,
     required this.onMicroPodsOptOutChanged,
     required this.onGuidedRotationsOptOutChanged,
   });
@@ -393,16 +550,28 @@ class _ManualQaSideBySide extends StatelessWidget {
   final EventSuccessHostTab hostTab;
   final _ManualQaFixtures data;
   final bool compatibilityEnabled;
+  final bool firstHelloEnabled;
+  final bool firstHelloSkipped;
+  final bool firstHelloCompleted;
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
   final EventSuccessHostFixtureActions fixtureActions;
   final ValueChanged<EventSuccessHostTab> onHostTabChanged;
+  final ValueChanged<bool> onFirstHelloEnabledChanged;
   final ValueChanged<bool> onCompatibilityEnabledChanged;
   final ValueChanged<bool> onCompatibilityRankingChanged;
   final ValueChanged<EventSuccessQuestionnaireConfig>
   onQuestionnaireConfigChanged;
+  final Future<void> Function(List<String> answerIds)
+  onCompatibilityAnswersSaved;
+  final Future<void> Function(
+    EventSuccessArrivalMission mission,
+    String answerId,
+  )
+  onFirstHelloCompleted;
+  final VoidCallback onFirstHelloSkipped;
   final ValueChanged<bool> onMicroPodsOptOutChanged;
   final ValueChanged<bool> onGuidedRotationsOptOutChanged;
 
@@ -436,10 +605,12 @@ class _ManualQaSideBySide extends StatelessWidget {
                   ],
                   controls: _HostQaControls(
                     hostTab: hostTab,
+                    firstHelloEnabled: firstHelloEnabled,
                     compatibilityEnabled: compatibilityEnabled,
                     compatibilityAffectsRanking: compatibilityAffectsRanking,
                     questionnaireConfig: questionnaireConfig,
                     onHostTabChanged: onHostTabChanged,
+                    onFirstHelloEnabledChanged: onFirstHelloEnabledChanged,
                     onCompatibilityEnabledChanged:
                         onCompatibilityEnabledChanged,
                     onCompatibilityRankingChanged:
@@ -485,6 +656,9 @@ class _ManualQaSideBySide extends StatelessWidget {
                   controls: _AttendeeQaControls(
                     microPodsOptedOut: microPodsOptedOut,
                     guidedRotationsOptedOut: guidedRotationsOptedOut,
+                    firstHelloEnabled: firstHelloEnabled,
+                    firstHelloSkipped: firstHelloSkipped,
+                    firstHelloCompleted: firstHelloCompleted,
                     onMicroPodsOptOutChanged: onMicroPodsOptOutChanged,
                     onGuidedRotationsOptOutChanged:
                         onGuidedRotationsOptOutChanged,
@@ -504,7 +678,11 @@ class _ManualQaSideBySide extends StatelessWidget {
                     rotationAssignment: data.viewerRotationAssignment,
                     rotationPeerProfiles: data.rotationPeerProfiles,
                     guidedRotationsOptedOut: guidedRotationsOptedOut,
+                    arrivalMission: data.viewerArrivalMission,
                     now: data.now,
+                    onSaveCompatibilityAnswers: onCompatibilityAnswersSaved,
+                    onCompleteArrivalMission: onFirstHelloCompleted,
+                    onSkipArrivalMission: onFirstHelloSkipped,
                   ),
                 ),
               ),
@@ -598,20 +776,24 @@ class _QaDeviceFrame extends StatelessWidget {
 class _HostQaControls extends StatelessWidget {
   const _HostQaControls({
     required this.hostTab,
+    required this.firstHelloEnabled,
     required this.compatibilityEnabled,
     required this.compatibilityAffectsRanking,
     required this.questionnaireConfig,
     required this.onHostTabChanged,
+    required this.onFirstHelloEnabledChanged,
     required this.onCompatibilityEnabledChanged,
     required this.onCompatibilityRankingChanged,
     required this.onQuestionnaireConfigChanged,
   });
 
   final EventSuccessHostTab hostTab;
+  final bool firstHelloEnabled;
   final bool compatibilityEnabled;
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
   final ValueChanged<EventSuccessHostTab> onHostTabChanged;
+  final ValueChanged<bool> onFirstHelloEnabledChanged;
   final ValueChanged<bool> onCompatibilityEnabledChanged;
   final ValueChanged<bool> onCompatibilityRankingChanged;
   final ValueChanged<EventSuccessQuestionnaireConfig>
@@ -644,6 +826,21 @@ class _HostQaControls extends StatelessWidget {
               value: EventSuccessHostTab.report,
               label: 'Report',
               icon: Icons.insights_outlined,
+            ),
+          ],
+        ),
+        gapH12,
+        _ControlLabel('Arrival ritual'),
+        gapH8,
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            CatchChip(
+              label: 'First Hello',
+              active: firstHelloEnabled,
+              icon: const Icon(Icons.waving_hand_outlined),
+              onTap: () => onFirstHelloEnabledChanged(!firstHelloEnabled),
             ),
           ],
         ),
@@ -686,12 +883,18 @@ class _AttendeeQaControls extends StatelessWidget {
   const _AttendeeQaControls({
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
+    required this.firstHelloEnabled,
+    required this.firstHelloSkipped,
+    required this.firstHelloCompleted,
     required this.onMicroPodsOptOutChanged,
     required this.onGuidedRotationsOptOutChanged,
   });
 
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
+  final bool firstHelloEnabled;
+  final bool firstHelloSkipped;
+  final bool firstHelloCompleted;
   final ValueChanged<bool> onMicroPodsOptOutChanged;
   final ValueChanged<bool> onGuidedRotationsOptOutChanged;
 
@@ -719,6 +922,18 @@ class _AttendeeQaControls extends StatelessWidget {
               onTap: () =>
                   onGuidedRotationsOptOutChanged(!guidedRotationsOptedOut),
             ),
+            if (firstHelloEnabled)
+              CatchBadge(
+                label: firstHelloCompleted
+                    ? 'first hello complete'
+                    : firstHelloSkipped
+                    ? 'first hello skipped'
+                    : 'first hello pending',
+                tone: firstHelloCompleted
+                    ? CatchBadgeTone.success
+                    : CatchBadgeTone.live,
+                icon: Icons.waving_hand_outlined,
+              ),
           ],
         ),
       ],
@@ -841,6 +1056,7 @@ enum _ManualQaScenario {
 
 enum _ManualQaMoment {
   booked,
+  firstHello,
   checkedIn,
   countdown,
   revealed,
@@ -848,6 +1064,7 @@ enum _ManualQaMoment {
 
   String get label => switch (this) {
     _ManualQaMoment.booked => 'Booked',
+    _ManualQaMoment.firstHello => 'First hello',
     _ManualQaMoment.checkedIn => 'Checked in',
     _ManualQaMoment.countdown => 'Countdown',
     _ManualQaMoment.revealed => 'Revealed',
@@ -862,11 +1079,16 @@ class _ManualQaFixtures {
     required this.activeStepIndex,
     required this.revealStatus,
     required this.activeRevealRoundIndex,
+    required this.firstHelloEnabled,
+    required this.firstHelloSkipped,
+    required this.firstHelloCompleted,
     required this.compatibilityEnabled,
     required this.compatibilityAffectsRanking,
     required this.questionnaireConfig,
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
+    required this.savedCompatibilityAnswerIds,
+    required this.countdownElapsed,
   }) {
     playbook = scenario.playbook;
     event = _eventForScenario();
@@ -878,6 +1100,7 @@ class _ManualQaFixtures {
           selectedModuleIds: _selectedModuleIds(
             playbook,
             compatibilityEnabled: compatibilityEnabled,
+            firstHelloEnabled: firstHelloEnabled,
           ),
           structureConfig: scenario.structureConfig,
           compatibilityAffectsRanking:
@@ -900,7 +1123,11 @@ class _ManualQaFixtures {
           attendeePrompt: _attendeePrompt,
           createdAt: _createdAt,
           updatedAt: now,
-          frozenAt: moment == _ManualQaMoment.booked ? null : event.startTime,
+          frozenAt:
+              moment == _ManualQaMoment.booked ||
+                  moment == _ManualQaMoment.firstHello
+              ? null
+              : event.startTime,
           completedAt: moment == _ManualQaMoment.postEvent ? now : null,
         ).copyWith(
           revealStatus: _resolvedRevealStatus,
@@ -943,11 +1170,16 @@ class _ManualQaFixtures {
   final int activeStepIndex;
   final EventSuccessRevealStatus revealStatus;
   final int activeRevealRoundIndex;
+  final bool firstHelloEnabled;
+  final bool firstHelloSkipped;
+  final bool firstHelloCompleted;
   final bool compatibilityEnabled;
   final bool compatibilityAffectsRanking;
   final EventSuccessQuestionnaireConfig questionnaireConfig;
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
+  final List<String>? savedCompatibilityAnswerIds;
+  final Duration countdownElapsed;
 
   static final _baseStart = DateTime(2026, 5, 21, 18);
   static final _createdAt = _baseStart.subtract(const Duration(days: 4));
@@ -966,10 +1198,50 @@ class _ManualQaFixtures {
   late final List<EventSuccessFeedback> feedback;
   late final EventSuccessCompatibilityResponse? compatibilityResponse;
 
+  EventSuccessArrivalMission? get viewerArrivalMission {
+    if (!firstHelloEnabled ||
+        firstHelloSkipped ||
+        firstHelloCompleted ||
+        moment != _ManualQaMoment.firstHello) {
+      return null;
+    }
+    return EventSuccessArrivalMission(
+      id: eventSuccessArrivalMissionId(eventId: event.id, uid: viewer.uid),
+      eventId: event.id,
+      clubId: event.clubId,
+      observerUid: viewer.uid,
+      targetUid: 'runner-2',
+      targetDisplayName: 'Arjun',
+      targetContext:
+          'Look for Arjun near the host table. He is checked in for this fixture.',
+      question: 'Ask what kind of partner makes an event feel easy to join.',
+      answerOptions: const [
+        EventSuccessArrivalMissionAnswerOption(
+          id: 'warm_intro',
+          label: 'Warm intro',
+        ),
+        EventSuccessArrivalMissionAnswerOption(
+          id: 'playful_energy',
+          label: 'Playful energy',
+        ),
+        EventSuccessArrivalMissionAnswerOption(
+          id: 'clear_plan',
+          label: 'Clear plan',
+        ),
+      ],
+      status: EventSuccessArrivalMissionStatus.active,
+      createdAt: now.subtract(const Duration(minutes: 1)),
+      updatedAt: now.subtract(const Duration(minutes: 1)),
+    );
+  }
+
   DateTime get now => switch (moment) {
     _ManualQaMoment.booked => _baseStart.subtract(const Duration(minutes: 25)),
+    _ManualQaMoment.firstHello => _baseStart.subtract(
+      const Duration(minutes: 5),
+    ),
     _ManualQaMoment.checkedIn => _baseStart.add(const Duration(minutes: 5)),
-    _ManualQaMoment.countdown => _baseStart.add(const Duration(minutes: 18)),
+    _ManualQaMoment.countdown => _countdownStartReference.add(countdownElapsed),
     _ManualQaMoment.revealed => _baseStart.add(const Duration(minutes: 24)),
     _ManualQaMoment.postEvent => _baseStart.add(const Duration(hours: 2)),
   };
@@ -1032,7 +1304,9 @@ class _ManualQaFixtures {
   }
 
   EventParticipation _participation() {
-    final attended = moment != _ManualQaMoment.booked;
+    final attended =
+        moment != _ManualQaMoment.booked &&
+        moment != _ManualQaMoment.firstHello;
     return EventParticipation(
       id: eventParticipationId(eventId: event.id, uid: viewer.uid),
       eventId: event.id,
@@ -1259,11 +1533,21 @@ class _ManualQaFixtures {
     )) {
       return null;
     }
-    if (moment == _ManualQaMoment.booked ||
-        moment == _ManualQaMoment.checkedIn ||
-        moment == _ManualQaMoment.postEvent) {
+    if (savedCompatibilityAnswerIds == null &&
+        (moment == _ManualQaMoment.booked ||
+            moment == _ManualQaMoment.firstHello ||
+            moment == _ManualQaMoment.checkedIn ||
+            moment == _ManualQaMoment.postEvent)) {
       return null;
     }
+    final answerIds =
+        savedCompatibilityAnswerIds ??
+        const [
+          'event_energy_playful_competition',
+          'first_conversation_question',
+          'shared_connection_ideas',
+          'after_event_activity',
+        ];
     return EventSuccessCompatibilityResponse(
       id: eventSuccessCompatibilityResponseId(
         eventId: event.id,
@@ -1272,12 +1556,7 @@ class _ManualQaFixtures {
       eventId: event.id,
       clubId: event.clubId,
       uid: viewer.uid,
-      answerIds: const [
-        'event_energy_playful_competition',
-        'first_conversation_question',
-        'shared_connection_ideas',
-        'after_event_activity',
-      ],
+      answerIds: answerIds,
       createdAt: _createdAt,
       updatedAt: now,
     );
@@ -1350,7 +1629,8 @@ class _ManualQaFixtures {
   }
 
   EventSuccessPlanStatus get _planStatus => switch (moment) {
-    _ManualQaMoment.booked => EventSuccessPlanStatus.setup,
+    _ManualQaMoment.booked ||
+    _ManualQaMoment.firstHello => EventSuccessPlanStatus.setup,
     _ManualQaMoment.checkedIn ||
     _ManualQaMoment.countdown ||
     _ManualQaMoment.revealed => EventSuccessPlanStatus.live,
@@ -1366,14 +1646,16 @@ class _ManualQaFixtures {
       moment == _ManualQaMoment.postEvent ? 0 : activeRevealRoundIndex;
 
   DateTime? get _revealStartedAt => switch (_resolvedRevealStatus) {
-    EventSuccessRevealStatus.countingDown => now.subtract(
-      const Duration(seconds: 5),
-    ),
+    EventSuccessRevealStatus.countingDown => _countdownStartReference,
     EventSuccessRevealStatus.revealed => now.subtract(
       const Duration(minutes: 1),
     ),
     EventSuccessRevealStatus.idle => null,
   };
+
+  static final _countdownStartReference = _baseStart.add(
+    const Duration(minutes: 18),
+  );
 
   String get _attendeePrompt => switch (scenario) {
     _ManualQaScenario.socialRun =>
@@ -1390,6 +1672,7 @@ class _ManualQaFixtures {
 Set<String> _selectedModuleIds(
   EventSuccessPlaybook playbook, {
   required bool compatibilityEnabled,
+  required bool firstHelloEnabled,
 }) {
   final profile = EventSuccessActivityProfile.forActivity(
     playbook.activityType,
@@ -1402,6 +1685,12 @@ Set<String> _selectedModuleIds(
         EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
       )) {
     ids.add(EventSuccessModuleCatalog.compatibilityQuestionnaire.id);
+  }
+  if (firstHelloEnabled &&
+      playbook.moduleIds.contains(
+        EventSuccessModuleCatalog.firstHelloCheckIn.id,
+      )) {
+    ids.add(EventSuccessModuleCatalog.firstHelloCheckIn.id);
   }
   return ids;
 }

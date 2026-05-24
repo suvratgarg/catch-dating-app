@@ -4911,6 +4911,207 @@ export const eventSuccessWingmanRequestDocumentSchema = {
   }
 };
 
+export const eventSuccessArrivalMissionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_arrival_missions.schema.json",
+  "title": "EventSuccessArrivalMissionDocument",
+  "description": "Server-owned First Hello arrival mission stored at eventSuccessArrivalMissions/{eventId_uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessArrivalMissions",
+  "x-firestore-path": "eventSuccessArrivalMissions/{missionId}",
+  "x-document-id-field": "id",
+  "x-owner": "server-owned; attendee read only for their own mission",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "observerUid",
+    "targetUid",
+    "targetDisplayName",
+    "targetContext",
+    "question",
+    "answerOptions",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "observerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetDisplayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "targetContext": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "answerOptions": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "skipped"
+      ]
+    },
+    "selectedAnswerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
 export const eventSuccessAssignmentDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_success_assignments.schema.json",
@@ -10398,6 +10599,82 @@ export const submitEventSuccessWingmanRequestCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 240
+    }
+  }
+};
+
+export const startEventSuccessFirstHelloMissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_event_success_first_hello_mission_payload.schema.json",
+  "title": "StartEventSuccessFirstHelloMissionCallablePayload",
+  "description": "Callable payload accepted by startEventSuccessFirstHelloMission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    }
+  }
+};
+
+export const completeEventSuccessFirstHelloMissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/complete_event_success_first_hello_mission_payload.schema.json",
+  "title": "CompleteEventSuccessFirstHelloMissionCallablePayload",
+  "description": "Callable payload accepted by completeEventSuccessFirstHelloMission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "answerId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "answerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
     }
   }
 };
