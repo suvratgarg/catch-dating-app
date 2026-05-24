@@ -234,13 +234,16 @@ void main() {
         findsOneWidget,
       );
       expect(find.textContaining('3 teams'), findsNothing);
-      expect(find.text('Match clue questions'), findsOneWidget);
       expect(
-        find.text('Wingman requests', skipOffstage: false),
+        find.text('Match clue questions', skipOffstage: false),
         findsOneWidget,
       );
       expect(
-        find.text('Post-match openers', skipOffstage: false),
+        find.text('"Help me say hi" requests', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Suggested first-message openers', skipOffstage: false),
         findsOneWidget,
       );
 
@@ -249,6 +252,92 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Rotation cadence', skipOffstage: false), findsNothing);
+    });
+
+    testWidgets('custom event format persists label and structure', (
+      tester,
+    ) async {
+      final fakeEventRepository = FakeEventRepository();
+      await _pumpCreateEventFlow(
+        tester,
+        clubOverride: buildClub().copyWith(
+          hostDefaults: ClubHostDefaults(
+            eventSuccess: EventSuccessDefaults.recommendedForActivity(
+              ActivityKind.openActivity,
+              enabled: true,
+              targetAttendeeCount: 24,
+            ),
+          ),
+        ),
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      await _openCreateEventFlow(tester);
+
+      await _tapActivityKind(tester, 'OPEN ACTIVITY');
+      await _pumpTestAnimation(tester);
+      await _enterCreateEventText(
+        tester,
+        CreateEventFormKeys.customActivityLabel,
+        'Salsa night',
+      );
+      final pairedRotationsChip = find.byKey(
+        CreateEventFormKeys.interactionModel(
+          EventInteractionModel.pairedRotations.name,
+        ),
+        skipOffstage: false,
+      );
+      await tester.ensureVisible(pairedRotationsChip);
+      await tester.tap(pairedRotationsChip);
+      await _enterCreateEventText(
+        tester,
+        CreateEventFormKeys.description,
+        'Beginner-friendly partner rotations.',
+      );
+      await _pumpTestAnimation(tester);
+
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+      await _enterCreateEventText(
+        tester,
+        CreateEventFormKeys.meetingPoint,
+        'Dance studio',
+      );
+      await _pickMapPoint(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await _pickFutureDate(tester);
+      await _acceptInitialTime(tester);
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+
+      await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '24');
+      await _enterCreateEventText(tester, CreateEventFormKeys.price, '0');
+      await _tapPrimaryButton(tester, 'Next');
+      await _pumpTestAnimation(tester);
+      await _tapPrimaryButton(tester, 'Schedule event');
+      await _pumpTestAnimation(tester);
+
+      final created = fakeEventRepository.createdEvent;
+      expect(created, isNotNull);
+      expect(created!.eventFormat.activityKind, ActivityKind.openActivity);
+      expect(created.eventFormat.label, 'Salsa night');
+      expect(
+        created.eventFormat.interactionModel,
+        EventInteractionModel.pairedRotations,
+      );
+      expect(created.eventFormat.defaultPlaybookId, isNull);
+      expect(created.eventFormat.activityDetails['formatSource'], 'custom');
+      expect(created.distanceKm, 0);
+      final defaults = fakeEventRepository.createdEventSuccessDefaults;
+      final structure = defaults?['structureConfig'] as Map<String, Object?>?;
+      expect(defaults, isNotNull);
+      expect(defaults!['playbookId'], 'pickleball_rotations');
+      expect(structure?['unitKind'], 'pairs');
+      expect(defaults['selectedModuleIds'], contains('guided_rotations'));
+      expect(defaults['selectedModuleIds'], contains('live_reveal'));
     });
 
     testWidgets(
@@ -1047,6 +1136,13 @@ Future<void> _tapAdmissionPreset(WidgetTester tester, String presetName) async {
     CreateEventFormKeys.admissionPreset(presetName),
     skipOffstage: false,
   );
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
+  await _pumpTestAnimation(tester);
+}
+
+Future<void> _tapActivityKind(WidgetTester tester, String label) async {
+  final finder = find.text(label, skipOffstage: false);
   await tester.ensureVisible(finder);
   await tester.tap(finder);
   await _pumpTestAnimation(tester);

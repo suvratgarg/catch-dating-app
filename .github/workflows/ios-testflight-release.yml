@@ -79,7 +79,7 @@ jobs:
 
       - name: Verify archived Maps key
         run: |
-          node tool/validate_google_maps_config.mjs \
+          node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
             --ios-built-plist "$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app/Info.plist"
@@ -109,7 +109,7 @@ jobs:
           mkdir -p "$extract_dir"
           ditto -x -k "$ipa_path" "$extract_dir"
 
-          node tool/validate_google_maps_config.mjs \
+          node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
             --ios-built-plist "$extract_dir/Payload/Runner.app/Info.plist"

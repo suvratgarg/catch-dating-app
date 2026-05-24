@@ -10,7 +10,7 @@
  *
  *   1. Caller must be authenticated.
  *   2. Caller must have a signed-up eventParticipation edge.
- *   3. Check-in window: configured in tool/business_rules.json.
+ *   3. Check-in window: configured in tool/contracts/business_rules.json.
  *      Outside this window, only the host can mark attendance.
  *   4. GPS proximity: caller must be within the configured distance of the
  *      meeting point. Events without coordinates skip this check (graceful

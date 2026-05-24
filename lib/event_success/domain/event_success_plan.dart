@@ -46,7 +46,6 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
     EventSuccessRevealStatus revealStatus,
     @Default(0) int activeRevealRoundIndex,
     @NullableTimestampConverter() DateTime? revealStartedAt,
-    @NullableTimestampConverter() DateTime? revealEndsAt,
     String? attendeePrompt,
     @TimestampConverter() required DateTime createdAt,
     @TimestampConverter() required DateTime updatedAt,
@@ -59,8 +58,8 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
 
   factory EventSuccessPlan.defaultForEvent(Event event, {DateTime? now}) {
     final createdAt = now ?? DateTime.now();
-    final draft = EventSuccessHostDraft.fromActivity(
-      event.activityKind,
+    final draft = EventSuccessHostDraft.fromFormat(
+      event.eventFormat,
       targetAttendeeCount: math.max(1, event.capacityLimit),
     );
     return EventSuccessPlan.fromDraft(
@@ -134,6 +133,18 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
 
   bool get liveRevealConfigured =>
       hasModule(EventSuccessModuleCatalog.liveReveal.id);
+
+  /// Reveal end time derived from the server-anchored [revealStartedAt] plus
+  /// the persisted countdown duration. Keeping this derived — rather than a
+  /// stored field written from the host device clock — means every device
+  /// computes the same end time from one server-authoritative anchor.
+  DateTime? get revealEndsAt {
+    final startedAt = revealStartedAt;
+    if (startedAt == null) return null;
+    return startedAt.add(
+      Duration(seconds: structureConfig.revealCountdownSeconds),
+    );
+  }
 
   bool isRevealCountdownRunning(DateTime now) =>
       revealStatus == EventSuccessRevealStatus.countingDown &&
@@ -223,58 +234,9 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
         : 'Find someone near you and ask what brought them here.';
   }
 
-  EventSuccessBrief buildBrief({
-    required Event event,
-    required List<EventSuccessFeedback> feedback,
-    List<EventSuccessAssignment> assignments = const [],
-    List<EventSuccessAssignment> rotationAssignments = const [],
-    List<EventSuccessPreference> preferences = const [],
-    List<EventSuccessWingmanRequest> wingmanRequests = const [],
-  }) {
-    final assignedUids = _assignmentParticipantUids([
-      ...assignments,
-      ...rotationAssignments,
-    ]);
-    final optedOutUids = preferences
-        .where(
-          (preference) =>
-              preference.microPodsOptedOut ||
-              preference.guidedRotationsOptedOut,
-        )
-        .map((preference) => preference.uid)
-        .toSet();
-    final scorecard = EventSuccessScorecard(
-      bookedCount: event.signedUpCount,
-      checkedInCount: event.attendedCount,
-      attendeesWhoMetTwoPlusPeople: feedback
-          .where((item) => item.metNewPeopleCount >= 2)
-          .length,
-      mutualMatchCount: 0,
-      chatStartedCount: 0,
-      repeatSignupCount: 0,
-      averageWelcomeRating: _averageRating(
-        feedback.map((item) => item.welcomeRating),
-      ),
-      averageStructureRating: _averageRating(
-        feedback.map((item) => item.structureRating),
-      ),
-      safetyIncidentCount: feedback.where((item) => item.safetyConcern).length,
-      feedbackResponseCount: feedback.length,
-      assignmentParticipantCount: assignedUids.length,
-      assignmentOptOutCount: optedOutUids.length,
-      wingmanRequestCount: wingmanRequests
-          .where((request) => request.isActive)
-          .length,
-    );
-    return const EventSuccessCoach().analyze(
-      playbook: playbook,
-      scorecard: scorecard,
-    );
-  }
-
   EventSuccessBrief buildBriefFromScorecard({
     required Event event,
-    EventSuccessScorecard? scorecard,
+    required EventSuccessScorecard scorecard,
     List<EventSuccessAssignment> assignments = const [],
     List<EventSuccessAssignment> rotationAssignments = const [],
     List<EventSuccessPreference> preferences = const [],
@@ -292,22 +254,9 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
         )
         .map((preference) => preference.uid)
         .toSet();
-    final baseScorecard =
-        scorecard ??
-        EventSuccessScorecard(
-          bookedCount: event.signedUpCount,
-          checkedInCount: event.attendedCount,
-          attendeesWhoMetTwoPlusPeople: 0,
-          mutualMatchCount: 0,
-          chatStartedCount: 0,
-          repeatSignupCount: 0,
-          averageWelcomeRating: 0,
-          averageStructureRating: 0,
-          safetyIncidentCount: 0,
-        );
     return const EventSuccessCoach().analyze(
       playbook: playbook,
-      scorecard: baseScorecard.copyWith(
+      scorecard: scorecard.copyWith(
         bookedCount: event.signedUpCount,
         checkedInCount: event.attendedCount,
         assignmentParticipantCount: assignedUids.length,
@@ -360,10 +309,4 @@ String eventSuccessFeedbackId({required String eventId, required String uid}) =>
 List<String> _stableModuleIds(Iterable<String> ids) {
   final values = ids.toSet().toList()..sort();
   return List.unmodifiable(values);
-}
-
-double _averageRating(Iterable<int> ratings) {
-  final valid = ratings.where((rating) => rating > 0).toList();
-  if (valid.isEmpty) return 0;
-  return valid.reduce((a, b) => a + b) / valid.length;
 }

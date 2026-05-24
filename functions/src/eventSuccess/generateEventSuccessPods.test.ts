@@ -459,6 +459,46 @@ test("prefers checked-in attendees once a live pod can be formed", async () => {
   );
 });
 
+test("uses profile cohorts as pod balancing tie-breakers", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "pods",
+        unitSize: 2,
+        unitCount: 2,
+      },
+    },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventParticipations/event-1_runner-3": participation("runner-3"),
+    "eventParticipations/event-1_runner-4": participation("runner-4"),
+    "users/runner-1": user("man", ["woman"]),
+    "users/runner-2": user("man", ["woman"]),
+    "users/runner-3": user("woman", ["man"]),
+    "users/runner-4": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 4, podCount: 2});
+  assert.deepEqual(
+    firestore.get("eventSuccessAssignments/event-1_micro_pods_runner-1")
+      ?.peerUids,
+    ["runner-3"]
+  );
+  assert.deepEqual(
+    firestore.get("eventSuccessAssignments/event-1_micro_pods_runner-2")
+      ?.peerUids,
+    ["runner-4"]
+  );
+});
+
 test("rejects non-host pod generation", async () => {
   const {deps} = harness();
 
@@ -489,9 +529,43 @@ test("rejects pod generation when the module is disabled", async () => {
   );
 });
 
+test("rejects micro-pods for pair rotation structures", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+      },
+    },
+  });
+
+  await assert.rejects(
+    () => generateEventSuccessPodsHandler(callableRequest("host-1"), deps),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "guided rotations");
+      return true;
+    }
+  );
+});
+
 function callableRequest(uid: string): CallableRequest<unknown> {
   return {
     auth: {uid},
     data: {eventId: "event-1"},
   } as CallableRequest<unknown>;
+}
+
+function participation(uid: string): FakeData {
+  return {
+    eventId: "event-1",
+    uid,
+    status: "signedUp",
+  };
+}
+
+function user(gender: string, interestedInGenders: string[]): FakeData {
+  return {gender, interestedInGenders};
 }

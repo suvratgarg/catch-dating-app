@@ -1,5 +1,5 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Regenerate with: node tool/generate_schema_contracts.mjs
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names
 
 class SchemaContractDefinition {
@@ -4246,33 +4246,6 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         },
       ],
     },
-    'revealEndsAt': <String, Object?>{
-      'anyOf': <Object?>[
-        <String, Object?>{
-          'type': 'object',
-          'description': 'Serialized Firestore Timestamp fixture shape.',
-          'x-firestore-type': 'timestamp',
-          'additionalProperties': false,
-          'required': <Object?>[
-            '_seconds',
-            '_nanoseconds',
-          ],
-          'properties': <String, Object?>{
-            '_seconds': <String, Object?>{
-              'type': 'integer',
-            },
-            '_nanoseconds': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-              'maximum': 999999999,
-            },
-          },
-        },
-        <String, Object?>{
-          'type': 'null',
-        },
-      ],
-    },
     'attendeePrompt': <String, Object?>{
       'type': <Object?>[
         'string',
@@ -5225,7 +5198,6 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
     'attendeesWhoMetTwoPlusPeople',
     'mutualMatchCount',
     'chatStartedCount',
-    'repeatSignupCount',
     'averageWelcomeRating',
     'averageStructureRating',
     'safetyIncidentCount',
@@ -5263,10 +5235,6 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
       'minimum': 0,
     },
     'chatStartedCount': <String, Object?>{
-      'type': 'integer',
-      'minimum': 0,
-    },
-    'repeatSignupCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
     },

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
@@ -317,6 +318,16 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
           .get(eventBookingControllerProvider.notifier)
           .selfCheckIn(eventId: event.id);
       if (!context.mounted) return;
+      final launchResult = await launchEventSuccessCompanionIfAvailable(
+        context: context,
+        ref: ref,
+        uid: widget.reviewer.uid,
+        event: event,
+      );
+      if (!context.mounted ||
+          launchResult != EventSuccessCompanionLaunchResult.unavailable) {
+        return;
+      }
       await Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<void>(
           fullscreenDialog: true,

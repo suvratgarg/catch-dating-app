@@ -682,7 +682,6 @@ service cloud.firestore {
           'questionnaireConfig',
           'activeStepIndex', 'status',
           'revealStatus', 'activeRevealRoundIndex', 'revealStartedAt',
-          'revealEndsAt',
           'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
           'completedAt'
         ])
@@ -733,7 +732,6 @@ service cloud.firestore {
           )
         )
         && optionalTimestamp(data, 'revealStartedAt')
-        && optionalTimestamp(data, 'revealEndsAt')
         && optionalString(data, 'attendeePrompt')
         && (!hasField(data, 'attendeePrompt') || data.attendeePrompt == null || data.attendeePrompt.size() <= 300)
         && data.createdAt is timestamp
@@ -799,6 +797,96 @@ service cloud.firestore {
             data.customQuestions is list
             && data.customQuestions.size() <= 8
           )
+        );
+    }
+
+    function eventCountPositive(data, field) {
+      return data.keys().hasAny([field])
+        && data[field] is number
+        && data[field] > 0;
+    }
+
+    function eventSuccessSetupBlockedByEvent(eventId) {
+      let eventData = get(/databases/$(database)/documents/events/$(eventId)).data;
+      return eventData.startTime <= request.time
+        || eventCountPositive(eventData, 'bookedCount')
+        || eventCountPositive(eventData, 'waitlistedCount')
+        || eventCountPositive(eventData, 'checkedInCount');
+    }
+
+    function eventSuccessPlanSetupFrozen() {
+      return resource.data.status != 'setup'
+        || (
+          resource.data.keys().hasAny(['frozenAt'])
+          && resource.data.frozenAt != null
+        );
+    }
+
+    function eventSuccessPlanChangedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function eventSuccessPlanImmutableFieldsUnchanged() {
+      return request.resource.data.eventId == resource.data.eventId
+        && request.resource.data.clubId == resource.data.clubId
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    function isEventSuccessPlanCreateAllowed(eventId) {
+      return isValidEventSuccessPlan(eventId, request.resource.data)
+        && !eventSuccessSetupBlockedByEvent(eventId)
+        && request.resource.data.status == 'setup'
+        && request.resource.data.activeStepIndex == 0
+        && (
+          !request.resource.data.keys().hasAny(['revealStatus'])
+          || request.resource.data.revealStatus == 'idle'
+        )
+        && (
+          !request.resource.data.keys().hasAny(['activeRevealRoundIndex'])
+          || request.resource.data.activeRevealRoundIndex == 0
+        )
+        && (
+          !request.resource.data.keys().hasAny(['revealStartedAt'])
+          || request.resource.data.revealStartedAt == null
+        )
+        && (
+          !request.resource.data.keys().hasAny(['frozenAt'])
+          || request.resource.data.frozenAt == null
+        )
+        && (
+          !request.resource.data.keys().hasAny(['completedAt'])
+          || request.resource.data.completedAt == null
+        );
+    }
+
+    function isEventSuccessLiveOnlyUpdate() {
+      return eventSuccessPlanChangedKeys().hasOnly([
+        'activeStepIndex', 'status', 'revealStatus',
+        'activeRevealRoundIndex', 'revealStartedAt',
+        'updatedAt', 'frozenAt', 'completedAt'
+      ]);
+    }
+
+    function isEventSuccessSetupOrLiveUpdate() {
+      return eventSuccessPlanChangedKeys().hasOnly([
+        'playbookId', 'selectedModuleIds', 'targetAttendeeCount',
+        'structureConfig', 'hostGoal', 'wingmanRequestsEnabled',
+        'contextualOpenersEnabled', 'compatibilityAffectsRanking',
+        'questionnaireConfig', 'attendeePrompt',
+        'activeStepIndex', 'status', 'revealStatus',
+        'activeRevealRoundIndex', 'revealStartedAt',
+        'updatedAt', 'frozenAt', 'completedAt'
+      ]);
+    }
+
+    function isEventSuccessPlanUpdateAllowed(eventId) {
+      return isValidEventSuccessPlan(eventId, request.resource.data)
+        && eventSuccessPlanImmutableFieldsUnchanged()
+        && (
+          eventSuccessSetupBlockedByEvent(eventId)
+            || eventSuccessPlanSetupFrozen()
+            ? isEventSuccessLiveOnlyUpdate()
+            : isEventSuccessSetupOrLiveUpdate()
         );
     }
 
@@ -914,9 +1002,12 @@ service cloud.firestore {
 
     match /eventSuccessPlans/{eventId} {
       allow read: if canReadEventSuccess(eventId);
-      allow create, update: if isAuthed()
+      allow create: if isAuthed()
         && isClubHostForEvent(eventId)
-        && isValidEventSuccessPlan(eventId, request.resource.data);
+        && isEventSuccessPlanCreateAllowed(eventId);
+      allow update: if isAuthed()
+        && isClubHostForEvent(eventId)
+        && isEventSuccessPlanUpdateAllowed(eventId);
       allow delete: if false;
     }
 

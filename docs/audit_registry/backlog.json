@@ -263,8 +263,8 @@
       "paths": [
         "docs/backend_operation_catalog.md",
         "docs/data_contracts.md",
-        "tool/firestore_contract.json",
-        "tool/generate_firestore_types.dart",
+        "tool/contracts/firestore_contract.json",
+        "tool/contracts/generate_firestore_types.dart",
         "firestore.rules",
         "functions/test/firestore.rules.test.cjs",
         "functions/src/shared/notifications.ts",
@@ -363,7 +363,7 @@
         "functions/test/firestore.rules.test.cjs",
         "docs/data_contracts.md",
         "docs/backend_operation_catalog.md",
-        "tool/firestore_contract.json",
+        "tool/contracts/firestore_contract.json",
         "lib/runs/data/run_repository.dart",
         "lib/runs/data/saved_run_repository.dart",
         "lib/run_clubs/data/run_clubs_repository.dart",
@@ -380,10 +380,10 @@
       "rules": [
         "FIRESTORE-RULES-TEST-001"
       ],
-      "summary": "`tool/firestore_relationship_migration.mjs` supports dry-run and apply modes for creating relationship docs and copying legacy chat messages. Before running apply on shared beta data, add seeded fixture tests for duplicates, missing docs, deleted users, legacy chats, and count mismatches, and make apply output validate aggregate counts instead of only reporting planned writes.",
+      "summary": "`tool/migrations/firestore_relationship_migration.mjs` supports dry-run and apply modes for creating relationship docs and copying legacy chat messages. Before running apply on shared beta data, add seeded fixture tests for duplicates, missing docs, deleted users, legacy chats, and count mismatches, and make apply output validate aggregate counts instead of only reporting planned writes.",
       "paths": [
-        "tool/firestore_relationship_migration.mjs",
-        "tool/validate_firestore_data.mjs",
+        "tool/migrations/firestore_relationship_migration.mjs",
+        "tool/data/validate_firestore_data.mjs",
         "docs/data_contracts.md"
       ]
     },
@@ -443,7 +443,7 @@
         "ERROR-CATALOG-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, `ErrorBanner.fromError`, and `appErrorDescriptor` / `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. The completion pass classified the old flat scanner `review=153` queue as `review=0`, `verified=80`, `intentional=29`, `fixture=56`, and `migrated=148`. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/backend_error_candidates.dart --json` at `mustMigrate=0` and `review=0`.",
+      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, `ErrorBanner.fromError`, and `appErrorDescriptor` / `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/audit/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. The completion pass classified the old flat scanner `review=153` queue as `review=0`, `verified=80`, `intentional=29`, `fixture=56`, and `migrated=148`. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/audit/backend_error_candidates.dart --json` at `mustMigrate=0` and `review=0`.",
       "paths": [
         "lib/core/widgets/catch_framework_error_view.dart",
         "lib/core/widgets/catch_error_state.dart",
@@ -493,7 +493,7 @@
         "lib/core/widgets/catch_error_snackbar.dart",
         "lib/core/widgets/error_banner.dart",
         "lib/main.dart",
-        "tool/backend_error_candidates.dart"
+        "tool/audit/backend_error_candidates.dart"
       ]
     },
     {
@@ -519,7 +519,7 @@
         "lib/chats/presentation/widgets/message_bubble.dart",
         "functions/src/matching/onMatchCreated.ts",
         "functions/src/matching/onMessageCreated.ts",
-        "tool/seed_demo_data.mjs",
+        "tool/demo/seed_demo_data.mjs",
         "docs/demo_data_seeding.md"
       ]
     },
@@ -536,8 +536,8 @@
       ],
       "summary": "Implemented on 2026-05-09. Run creation and host schedule edits now enforce non-overlapping active runs per run club. User sign-up and waitlist joins now enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional run/participation queries; deterministic per-minute schedule lock docs protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Deploy Functions before relying on this in production, and decide later whether to run a lock backfill for observability even though the query fallback protects existing data.",
       "paths": [
-        "tool/business_rules.json",
-        "tool/generate_business_rules.mjs",
+        "tool/contracts/business_rules.json",
+        "tool/contracts/generate_business_rules.mjs",
         "tool/check_data_contract.sh",
         "lib/core/business_rules.dart",
         "lib/runs/presentation/create_run_screen.dart",
@@ -564,8 +564,8 @@
       ],
       "summary": "Initial generated constants now cover run duration, schedule-lock slot size, self-check-in windows, self-check-in distance, and host attendance windows. Continue consolidating duplicated literals as touched: age bounds, profile text limits, price/capacity/distance limits, report text limits, rate-limit policy exposure, media upload limits, and swipe/match eligibility windows. Do not move purely visual constants into this file; this is for product/business invariants that cross the Flutter and Functions boundary.",
       "paths": [
-        "tool/business_rules.json",
-        "tool/generate_business_rules.mjs",
+        "tool/contracts/business_rules.json",
+        "tool/contracts/generate_business_rules.mjs",
         "lib/core/business_rules.dart",
         "functions/src/shared/businessRules.ts",
         "functions/src/runs/mutateRun.ts",

@@ -54,9 +54,17 @@ class EventSuccessHostDraft {
   factory EventSuccessHostDraft.fromActivity(
     ActivityKind activityKind, {
     int? targetAttendeeCount,
+  }) => EventSuccessHostDraft.fromFormat(
+    EventFormatSnapshot.fromActivityKind(activityKind),
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  factory EventSuccessHostDraft.fromFormat(
+    EventFormatSnapshot format, {
+    int? targetAttendeeCount,
   }) {
-    final profile = EventSuccessActivityProfile.forActivity(
-      activityKind,
+    final profile = EventSuccessActivityProfile.forFormat(
+      format,
       targetAttendeeCount: targetAttendeeCount,
     );
     return EventSuccessHostDraft(
@@ -115,8 +123,14 @@ class EventSuccessHostDraft {
   }
 
   EventSuccessHostDraft normalizeForActivity(ActivityKind activityKind) {
-    final profile = EventSuccessActivityProfile.forActivity(
-      activityKind,
+    return normalizeForFormat(
+      EventFormatSnapshot.fromActivityKind(activityKind),
+    );
+  }
+
+  EventSuccessHostDraft normalizeForFormat(EventFormatSnapshot format) {
+    final profile = EventSuccessActivityProfile.forFormat(
+      format,
       targetAttendeeCount: targetAttendeeCount,
     );
     final compatibleSelectedIds = selectedModuleIds
@@ -129,7 +143,10 @@ class EventSuccessHostDraft {
     return copyWith(
       playbook: profile.playbook,
       selectedModuleIds: selectedIds,
-      structureConfig: structureConfig.isLegacyDefault
+      structureConfig:
+          structureConfig.isLegacyDefault ||
+              (format.interactionModel == EventInteractionModel.teamRotations &&
+                  structureConfig.isDeprecatedTeamRotationDefault)
           ? profile.structureConfig
           : structureConfig,
       compatibilityAffectsRanking:

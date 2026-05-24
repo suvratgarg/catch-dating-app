@@ -20,6 +20,8 @@ abstract class EventDraft with _$EventDraft {
     String? price,
     String? description,
     String? activityKind,
+    String? customActivityLabel,
+    String? interactionModel,
     String? paceName,
     // Where step
     String? meetingPoint,
@@ -67,6 +69,8 @@ extension EventDraftX on EventDraft {
       price == null &&
       description == null &&
       (activityKind == null || activityKind == 'socialRun') &&
+      customActivityLabel == null &&
+      interactionModel == null &&
       paceName == null &&
       meetingPoint == null &&
       locationDetails == null &&
@@ -96,6 +100,8 @@ extension EventDraftX on EventDraft {
       var distPart = '${distance!}km';
       if (paceName != null) distPart += ' $paceName';
       parts.add(distPart);
+    } else if (customActivityLabel != null) {
+      parts.add(customActivityLabel!);
     } else if (activityKind != null && activityKind != 'socialRun') {
       parts.add(_activityLabel(activityKind!));
     } else if (paceName != null) {

@@ -44,14 +44,22 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
   void _submit(String code) {
     if (AuthInput.isCompleteOtpCode(code)) {
-      AuthController.verifyOtpMutation.run(ref, (tx) async {
-        await tx.get(authControllerProvider.notifier).verifyOtp(code);
-      });
+      if (ref.read(AuthController.verifyOtpMutation).isPending) return;
+
+      unawaited(
+        AuthController.verifyOtpMutation
+            .run(ref, (tx) async {
+              await tx.get(authControllerProvider.notifier).verifyOtp(code);
+            })
+            .catchError((Object _) {}),
+      );
     }
   }
 
   void _handleCodeChanged(String value) {
-    AuthController.verifyOtpMutation.reset(ref);
+    if (!ref.read(AuthController.verifyOtpMutation).isPending) {
+      AuthController.verifyOtpMutation.reset(ref);
+    }
     setState(() {});
     if (AuthInput.isCompleteOtpCode(value)) _submit(value);
   }

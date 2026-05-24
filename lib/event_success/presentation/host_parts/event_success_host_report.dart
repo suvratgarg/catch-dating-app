@@ -5,7 +5,6 @@ class _ReportTab extends StatelessWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
-    required this.feedback,
     this.scorecard,
     required this.assignments,
     required this.rotationAssignments,
@@ -19,7 +18,6 @@ class _ReportTab extends StatelessWidget {
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
-  final List<EventSuccessFeedback> feedback;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
   final List<EventSuccessAssignment> rotationAssignments;
@@ -70,23 +68,33 @@ class _ReportTab extends StatelessWidget {
       );
     }
 
-    final brief = scorecard == null
-        ? plan.buildBrief(
-            event: event,
-            feedback: feedback,
-            assignments: assignments,
-            rotationAssignments: rotationAssignments,
-            preferences: preferences,
-            wingmanRequests: wingmanRequests,
-          )
-        : plan.buildBriefFromScorecard(
-            event: event,
-            scorecard: scorecard,
-            assignments: assignments,
-            rotationAssignments: rotationAssignments,
-            preferences: preferences,
-            wingmanRequests: wingmanRequests,
-          );
+    final reportScorecard = scorecard;
+    if (reportScorecard == null) {
+      return ListView(
+        shrinkWrap: shrinkWrap,
+        primary: shrinkWrap ? false : null,
+        physics: physics,
+        padding: padding,
+        children: const [
+          _NoticeCard(
+            icon: Icons.insights_outlined,
+            title: 'Waiting for attendee feedback',
+            body:
+                'The post-event report appears once checked-in attendees '
+                'share feedback. There is no signal to summarize yet.',
+          ),
+        ],
+      );
+    }
+
+    final brief = plan.buildBriefFromScorecard(
+      event: event,
+      scorecard: reportScorecard,
+      assignments: assignments,
+      rotationAssignments: rotationAssignments,
+      preferences: preferences,
+      wingmanRequests: wingmanRequests,
+    );
     final feedbackCount = brief.scorecard.feedbackResponseCount;
 
     return ListView(

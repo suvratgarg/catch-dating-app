@@ -753,7 +753,6 @@ function buildCreateEventSuccessPlanDoc(params: {
     revealStatus: "idle",
     activeRevealRoundIndex: 0,
     revealStartedAt: null,
-    revealEndsAt: null,
     attendeePrompt: normalizeNullableString(defaults.attendeePrompt),
     createdAt: timestamp,
     updatedAt: timestamp,

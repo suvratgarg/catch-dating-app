@@ -18,6 +18,11 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {isClubHost} from "../shared/clubHosts";
+import {assertGuidedRotationStrategy} from "./assignmentStrategies";
+import {
+  CompatibilitySignal,
+  scoreCompatibilityPair,
+} from "./compatibilityPolicy";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -41,6 +46,7 @@ interface EventSuccessPlanDoc {
   selectedModuleIds?: unknown;
   compatibilityAffectsRanking?: unknown;
   structureConfig?: {
+    unitKind?: unknown;
     rotationIntervalMinutes?: unknown;
   };
 }
@@ -73,11 +79,7 @@ interface RotationPair {
   a: RotationParticipant;
   b: RotationParticipant;
   score: number;
-  compatibility: "mutual_interest" |
-    "one_way_interest" |
-    "questionnaire_match" |
-    "social" |
-    "host_override";
+  compatibility: CompatibilitySignal | "host_override";
 }
 
 interface RotationRound {
@@ -149,6 +151,7 @@ export async function generateEventSuccessRotationsHandler(
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
+    requireMutualInterest: compatibilityAffectsRanking,
   });
   const assignments = buildAssignments({
     eventId,
@@ -193,7 +196,7 @@ export async function overrideEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes} =
+  const {event, rotationIntervalMinutes, compatibilityAffectsRanking} =
     await loadRotationEventContext(db, payload.eventId, uid);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(db, payload.eventId, false);
@@ -204,6 +207,7 @@ export async function overrideEventSuccessRotationsHandler(
     eventStartMillis: event.startTime.toMillis(),
     eventEndMillis: event.endTime.toMillis(),
     rotationIntervalMinutes,
+    requireMutualInterest: compatibilityAffectsRanking,
   });
   const assignments = buildAssignments({
     eventId: payload.eventId,
@@ -291,6 +295,7 @@ async function loadRotationEventContext(
     throw new HttpsError("failed-precondition",
       "Guided rotations are not enabled for this event.");
   }
+  assertGuidedRotationStrategy(plan);
 
   return {
     event,
@@ -545,6 +550,8 @@ async function fetchBlockedPairs(
  * @param {number} params.eventStartMillis Event start time in millis.
  * @param {number} params.eventEndMillis Event end time in millis.
  * @param {number} params.rotationIntervalMinutes Round length in minutes.
+ * @param {boolean} params.requireMutualInterest Whether pairs need mutual
+ * interest compatibility.
  * @return {Array<Array<object>>} Pairings by round.
  */
 function buildRotationRounds(params: {
@@ -553,6 +560,7 @@ function buildRotationRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
+  requireMutualInterest: boolean;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const durationMinutes = Math.max(
@@ -577,7 +585,11 @@ function buildRotationRounds(params: {
 
   for (let roundIndex = 0; roundIndex < roundCount; roundIndex++) {
     const usedUids = new Set<string>();
-    const pairs = allCandidatePairs(params.participants, params.blockedPairs)
+    const pairs = allCandidatePairs(
+      params.participants,
+      params.blockedPairs,
+      params.requireMutualInterest
+    )
       .filter((pair) => !seenPairs.has(pairKey(pair.a.uid, pair.b.uid)))
       .sort((a, b) =>
         compareRotationPairsForRound(a, b, meetingCounts, breakCounts)
@@ -615,6 +627,8 @@ function buildRotationRounds(params: {
  * @param {number} params.eventStartMillis Event start time in millis.
  * @param {number} params.eventEndMillis Event end time in millis.
  * @param {number} params.rotationIntervalMinutes Round length in minutes.
+ * @param {boolean} params.requireMutualInterest Whether pairs need mutual
+ * interest compatibility.
  * @return {RotationRound[]} Validated host-authored rounds.
  */
 function buildOverrideRounds(params: {
@@ -624,6 +638,7 @@ function buildOverrideRounds(params: {
   eventStartMillis: number;
   eventEndMillis: number;
   rotationIntervalMinutes: number;
+  requireMutualInterest: boolean;
 }): RotationRound[] {
   const durationMinutes = Math.max(
     0,
@@ -670,6 +685,15 @@ function buildOverrideRounds(params: {
         throw new HttpsError("failed-precondition",
           "Blocked attendees cannot be paired.");
       }
+      const scoredPair = scorePair(
+        participantA,
+        participantB,
+        params.requireMutualInterest
+      );
+      if (params.requireMutualInterest && scoredPair.score <= 0) {
+        throw new HttpsError("failed-precondition",
+          "Dating-coded rotations require mutual interest.");
+      }
       usedInRound.add(pairing.uidA);
       usedInRound.add(pairing.uidB);
       pairs.push({
@@ -696,11 +720,13 @@ function buildOverrideRounds(params: {
  * Builds all allowed participant pairs.
  * @param {RotationParticipant[]} participants Participants.
  * @param {Set<string>} blockedPairs Blocked pair keys.
+ * @param {boolean} requireMutualInterest Whether one-way interest is allowed.
  * @return {RotationPair[]} Candidate pairs.
  */
 function allCandidatePairs(
   participants: RotationParticipant[],
-  blockedPairs: Set<string>
+  blockedPairs: Set<string>,
+  requireMutualInterest: boolean
 ): RotationPair[] {
   const pairs: RotationPair[] = [];
   for (let i = 0; i < participants.length; i++) {
@@ -708,7 +734,7 @@ function allCandidatePairs(
       const a = participants[i];
       const b = participants[j];
       if (blockedPairs.has(pairKey(a.uid, b.uid))) continue;
-      const pair = scorePair(a, b);
+      const pair = scorePair(a, b, requireMutualInterest);
       if (pair.score > 0) pairs.push(pair);
     }
   }
@@ -719,56 +745,21 @@ function allCandidatePairs(
  * Scores a pair by mutual gender interest, optionally boosted by event answers.
  * @param {RotationParticipant} a First participant.
  * @param {RotationParticipant} b Second participant.
+ * @param {boolean} requireMutualInterest Whether one-way interest is allowed.
  * @return {RotationPair} Scored pair.
  */
 function scorePair(
   a: RotationParticipant,
-  b: RotationParticipant
+  b: RotationParticipant,
+  requireMutualInterest: boolean
 ): RotationPair {
-  const aInterested = a.interestedInGenders.includes(b.gender);
-  const bInterested = b.interestedInGenders.includes(a.gender);
-  const baseScore = aInterested && bInterested ?
-    2 :
-    aInterested || bInterested ? 1 : 0;
-  if (baseScore === 0) {
-    return {a, b, score: 0, compatibility: "social"};
-  }
-  const sharedAnswerCount = sharedCompatibilityAnswerCount(a, b);
-  const questionnaireBoost = Math.min(1, sharedAnswerCount * 0.5);
-  if (questionnaireBoost > 0) {
-    return {
-      a,
-      b,
-      score: baseScore + questionnaireBoost,
-      compatibility: "questionnaire_match",
-    };
-  }
+  const scored = scoreCompatibilityPair(a, b, requireMutualInterest);
   return {
     a,
     b,
-    score: baseScore,
-    compatibility: baseScore === 2 ? "mutual_interest" : "one_way_interest",
+    score: scored.score,
+    compatibility: scored.compatibility,
   };
-}
-
-/**
- * Counts shared event-scoped compatibility answers.
- * @param {RotationParticipant} a First participant.
- * @param {RotationParticipant} b Second participant.
- * @return {number} Shared answer count.
- */
-function sharedCompatibilityAnswerCount(
-  a: RotationParticipant,
-  b: RotationParticipant
-): number {
-  if (a.compatibilityAnswerIds.length === 0 ||
-      b.compatibilityAnswerIds.length === 0) {
-    return 0;
-  }
-  const bAnswers = new Set(b.compatibilityAnswerIds);
-  return a.compatibilityAnswerIds.filter((answerId) =>
-    bAnswers.has(answerId)
-  ).length;
 }
 
 /**

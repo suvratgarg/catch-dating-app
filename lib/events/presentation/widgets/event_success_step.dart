@@ -14,9 +14,11 @@ class EventSuccessStep extends StatelessWidget {
     required this.eventSuccessDefaults,
     required this.targetAttendeeCount,
     required this.onEventSuccessDefaultsChanged,
+    this.eventFormat,
   });
 
   final ActivityKind activityKind;
+  final EventFormatSnapshot? eventFormat;
   final EventSuccessDefaults eventSuccessDefaults;
   final int targetAttendeeCount;
   final ValueChanged<EventSuccessDefaults> onEventSuccessDefaultsChanged;
@@ -47,6 +49,7 @@ class EventSuccessStep extends StatelessWidget {
         EventSuccessDefaultsPanel(
           defaults: eventSuccessDefaults,
           activityKind: activityKind,
+          eventFormat: eventFormat,
           targetAttendeeCount: targetAttendeeCount,
           onChanged: onEventSuccessDefaultsChanged,
           title: 'Live event guide',

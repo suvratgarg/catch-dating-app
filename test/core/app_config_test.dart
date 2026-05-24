@@ -244,4 +244,52 @@ void main() {
       },
     );
   });
+
+  group('auth app verification testing bypass', () {
+    test('allows only requested non-production non-release builds', () {
+      expect(
+        AppConfig.canDisableAuthAppVerificationForTesting(
+          environment: AppEnvironment.dev,
+          releaseMode: false,
+          requested: true,
+        ),
+        isTrue,
+      );
+      expect(
+        AppConfig.canDisableAuthAppVerificationForTesting(
+          environment: AppEnvironment.staging,
+          releaseMode: false,
+          requested: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('blocks production, release, and unrequested builds', () {
+      expect(
+        AppConfig.canDisableAuthAppVerificationForTesting(
+          environment: AppEnvironment.prod,
+          releaseMode: false,
+          requested: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.canDisableAuthAppVerificationForTesting(
+          environment: AppEnvironment.dev,
+          releaseMode: true,
+          requested: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.canDisableAuthAppVerificationForTesting(
+          environment: AppEnvironment.dev,
+          releaseMode: false,
+          requested: false,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

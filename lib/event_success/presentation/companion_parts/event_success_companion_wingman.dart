@@ -52,20 +52,16 @@ class _WingmanRequestSectionState
             children: [
               Expanded(
                 child: Text(
-                  'Ask the host to help',
+                  'Ask the host for an intro',
                   style: CatchTextStyles.titleM(context),
                 ),
               ),
-              CatchBadge(
-                label: 'Host visible',
-                tone: CatchBadgeTone.live,
-                icon: Icons.visibility_outlined,
-              ),
+              const _PrivacyBadge(_PrivacyAudience.hostCanSee),
             ],
           ),
           gapH4,
           Text(
-            'Pick someone you would like help getting paired with. The host can see this request; the other person is not notified.',
+            "Tell the host who you'd like to be introduced to. The host can see this request — the other person is not notified.",
             style: CatchTextStyles.bodyS(context),
           ),
           if (requestedTargetUid != null) ...[

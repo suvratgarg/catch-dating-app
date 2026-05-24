@@ -56,7 +56,7 @@ jobs:
         run: flutter test --concurrency=1
 
       - name: Firestore contract check
-        run: node tool/check_firestore_contract.mjs
+        run: node tool/contracts/check_firestore_contract.mjs
 
       - name: Functions lint
         run: npm --prefix functions run lint

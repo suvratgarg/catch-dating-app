@@ -44,9 +44,9 @@
     }
   ],
   "guards": [
-    "tool/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
+    "tool/contracts/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
     "./tool/check_data_contract.sh events the path literal scanner before seed and rules checks.",
-    "tool/validate_profile_decision_migration.mjs compares current and future storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before a primary cutover.",
+    "tool/data/validate_profile_decision_migration.mjs compares current and future storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before a primary cutover.",
     "No live storage rename is allowed until a count-comparison backfill tool exists."
   ]
 }

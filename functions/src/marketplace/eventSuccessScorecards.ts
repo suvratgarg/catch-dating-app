@@ -33,7 +33,6 @@ export interface EventSuccessScorecardDoc {
   attendeesWhoMetTwoPlusPeople: number;
   mutualMatchCount: number;
   chatStartedCount: number;
-  repeatSignupCount: number;
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
@@ -120,7 +119,6 @@ export function buildEventSuccessScorecard(params: {
     mutualMatchCount: matches.length,
     chatStartedCount: matches.filter((match) => match.lastMessageAt != null)
       .length,
-    repeatSignupCount: 0,
     averageWelcomeRating: average(feedback.map((item) => item.welcomeRating)),
     averageStructureRating: average(
       feedback.map((item) => item.structureRating)

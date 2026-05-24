@@ -44,7 +44,11 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   String? otpSmsCode;
   AuthCredential? credential;
   String? verifiedPhoneNumber;
+  int? forceResendingToken;
+  int signInWithOtpCallCount = 0;
   int verifyPhoneNumberCallCount = 0;
+  Object? signInWithOtpError;
+  Completer<void>? signInWithOtpCompleter;
   VerifyPhoneNumberHandler? onVerifyPhoneNumber;
 
   @override
@@ -56,6 +60,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   @override
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
+    int? forceResendingToken,
     required void Function(String verificationId, int? resendToken) codeSent,
     required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
@@ -68,6 +73,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
     );
     verifyPhoneNumberCallCount += 1;
     verifiedPhoneNumber = phoneNumber;
+    this.forceResendingToken = forceResendingToken;
     await onVerifyPhoneNumber?.call(
       verificationCompleted: verificationCompleted,
       verificationFailed: (error) {
@@ -83,6 +89,13 @@ class FakeAuthRepository extends Fake implements AuthRepository {
     required String verificationId,
     required String smsCode,
   }) async {
+    signInWithOtpCallCount += 1;
+    if (signInWithOtpError case final error?) {
+      throw error;
+    }
+    if (signInWithOtpCompleter case final completer?) {
+      await completer.future;
+    }
     otpVerificationId = verificationId;
     otpSmsCode = smsCode;
   }

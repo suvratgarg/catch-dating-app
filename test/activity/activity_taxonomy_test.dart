@@ -56,5 +56,40 @@ void main() {
       expect(snapshot.interactionModel, EventInteractionModel.pairedRotations);
       expect(snapshot.defaultPlaybookId, 'pickleball_rotations');
     });
+
+    test('does not infer a playbook when reading a saved custom format', () {
+      final snapshot = EventFormatSnapshot.fromJson({
+        'version': 1,
+        'activityKind': 'openActivity',
+        'interactionModel': 'teamRotations',
+        'customActivityLabel': 'Trivia night',
+      });
+
+      expect(snapshot.activityKind, ActivityKind.openActivity);
+      expect(snapshot.interactionModel, EventInteractionModel.teamRotations);
+      expect(snapshot.defaultPlaybookId, isNull);
+      expect(snapshot.label, 'Trivia night');
+    });
+
+    test(
+      'builds custom open formats without forcing the open preset playbook',
+      () {
+        final snapshot = EventFormatSnapshot.custom(
+          label: 'Salsa night',
+          interactionModel: EventInteractionModel.pairedRotations,
+          activityDetails: const {'danceStyle': 'salsa'},
+        );
+
+        expect(snapshot.activityKind, ActivityKind.openActivity);
+        expect(snapshot.label, 'Salsa night');
+        expect(
+          snapshot.interactionModel,
+          EventInteractionModel.pairedRotations,
+        );
+        expect(snapshot.defaultPlaybookId, isNull);
+        expect(snapshot.activityDetails['danceStyle'], 'salsa');
+        expect(snapshot.activityDetails['formatSource'], 'custom');
+      },
+    );
   });
 }

@@ -74,7 +74,7 @@ durable owners above or closed in code.
 |---|---|
 | `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
-| `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but console-gated GA4 BigQuery proof, Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
+| `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

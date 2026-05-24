@@ -1,6 +1,6 @@
 /* eslint-disable */
 // GENERATED CODE - DO NOT MODIFY BY HAND.
-// Regenerate with: node tool/generate_schema_contracts.mjs
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
  * Server-owned aggregate event coaching metrics stored at eventSuccessScorecards/{eventId}. Raw attendee feedback remains private.
@@ -14,7 +14,6 @@ export interface EventSuccessScorecardDocument {
   attendeesWhoMetTwoPlusPeople: number;
   mutualMatchCount: number;
   chatStartedCount: number;
-  repeatSignupCount: number;
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;

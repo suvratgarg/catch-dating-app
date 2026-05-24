@@ -5,10 +5,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -58,7 +61,17 @@ void main() {
                     checkedInIds: ['a', 'b'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
+                  scorecard: const EventSuccessScorecard(
+                    bookedCount: 10,
+                    checkedInCount: 6,
+                    attendeesWhoMetTwoPlusPeople: 4,
+                    mutualMatchCount: 2,
+                    chatStartedCount: 1,
+                    averageWelcomeRating: 4.4,
+                    averageStructureRating: 4.1,
+                    safetyIncidentCount: 0,
+                    feedbackResponseCount: 4,
+                  ),
                   embedded: true,
                 ),
               ),
@@ -70,25 +83,32 @@ void main() {
 
     expect(find.text('Setup'), findsWidgets);
     expect(find.text('Target attendees'), findsOneWidget);
-    expect(find.text('Event structure'), findsWidgets);
+    expect(find.text('Group flow'), findsWidgets);
     expect(find.text('Host goal'), findsOneWidget);
     expect(find.text('Attendee prompt'), findsOneWidget);
     expect(find.text('Recommended setup'), findsOneWidget);
-    expect(find.text('Tools'), findsOneWidget);
-    expect(find.text('Delivery moments'), findsOneWidget);
+    expect(find.text('When people arrive'), findsOneWidget);
+    expect(find.text('During the event'), findsOneWidget);
+    expect(find.text('After the event'), findsOneWidget);
+    expect(find.text('Advanced'), findsOneWidget);
     expect(find.text('Save setup'), findsOneWidget);
-    expect(find.text('Default on'), findsNothing);
-    expect(find.text('Wingman requests'), findsNothing);
+    // Foundation lines and stage-card toggles are inline (no disclosure tap).
+    expect(find.text('Check attendees in and confirm groups'), findsOneWidget);
+    expect(find.text('Read a brief welcome script'), findsOneWidget);
+    expect(find.text('Collect quick attendee feedback'), findsOneWidget);
+    expect(find.text('Host coaching summary'), findsOneWidget);
+    expect(find.text('"Help me say hi" requests'), findsWidgets);
+    expect(find.text('Suggested first-message openers'), findsWidgets);
+    expect(
+      find.text('Safety, blocking, and report tools always on.'),
+      findsOneWidget,
+    );
+    // Match clue questions lives inside the collapsed Advanced disclosure.
+    expect(find.text('Match clue questions'), findsNothing);
 
-    await tester.tap(find.text('Tools'));
+    await tester.tap(find.text('Advanced'));
     await tester.pumpAndSettle();
-    expect(find.text('Default on'), findsOneWidget);
-    expect(find.text('Recommended'), findsWidgets);
-
-    await tester.tap(find.text('Delivery moments'));
-    await tester.pumpAndSettle();
-    expect(find.text('Wingman requests'), findsWidgets);
-    expect(find.text('Post-match openers'), findsWidgets);
+    expect(find.text('Match clue questions'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
     await tester.pumpAndSettle();
@@ -99,6 +119,91 @@ void main() {
     await tester.tap(find.text('Report'));
     await tester.pumpAndSettle();
     expect(find.text('Post-event host report'), findsOneWidget);
+  });
+
+  testWidgets('host setup preserves custom format interaction model on save', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 5000);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final firestore = FakeFirebaseFirestore();
+    final format = EventFormatSnapshot.custom(
+      label: 'Salsa night',
+      interactionModel: EventInteractionModel.pairedRotations,
+    );
+    final event = buildEvent(
+      eventFormat: format,
+      capacityLimit: 24,
+      bookedCount: 0,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          eventSuccessRepositoryProvider.overrideWithValue(
+            EventSuccessRepository(firestore),
+          ),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            ref.watch(uidProvider);
+            return MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: EventSuccessHostPanel(
+                      event: event,
+                      plan: plan,
+                      planIsPersisted: true,
+                      roster: EventParticipationRoster.empty(),
+                      embedded: true,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    expect(find.text('Salsa night'), findsWidgets);
+    expect(find.text('Paired rotations'), findsWidgets);
+    expect(find.text('Open activity'), findsNothing);
+    expect(plan.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
+    expect(plan.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+
+    await tester.tap(find.text('Save setup'));
+    await tester.pump();
+    await tester.pump();
+
+    final saved = await EventSuccessRepository(firestore).fetchPlan(event.id);
+    expect(saved, isNotNull);
+    expect(saved!.playbookId, EventSuccessPlaybookLibrary.pickleball.id);
+    expect(
+      saved.selectedModuleIds,
+      contains(EventSuccessModuleCatalog.guidedRotations.id),
+    );
+    expect(
+      saved.selectedModuleIds,
+      contains(EventSuccessModuleCatalog.liveReveal.id),
+    );
+    expect(
+      saved.selectedModuleIds,
+      isNot(contains(EventSuccessModuleCatalog.microPods.id)),
+    );
+    expect(saved.structureConfig.unitKind, EventSuccessUnitKind.pairs);
+    expect(saved.structureConfig.unitSize, 2);
+    expect(saved.structureConfig.rotationIntervalMinutes, 15);
   });
 
   testWidgets('host live mode is unavailable until setup is saved', (
@@ -125,7 +230,6 @@ void main() {
                   plan: plan,
                   planIsPersisted: false,
                   roster: EventParticipationRoster.empty(),
-                  feedback: const [],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
                   embedded: true,
@@ -233,7 +337,6 @@ void main() {
                   plan: plan,
                   planIsPersisted: true,
                   roster: EventParticipationRoster.empty(),
-                  feedback: const [],
                   initialTab: EventSuccessHostTab.report,
                   showTabs: false,
                   embedded: true,
@@ -272,10 +375,17 @@ void main() {
                   plan: plan,
                   planIsPersisted: true,
                   roster: EventParticipationRoster.empty(),
-                  feedback: [
-                    _feedback(event: event, uid: 'runner-1', now: now),
-                    _feedback(event: event, uid: 'runner-2', now: now),
-                  ],
+                  scorecard: const EventSuccessScorecard(
+                    bookedCount: 6,
+                    checkedInCount: 5,
+                    attendeesWhoMetTwoPlusPeople: 2,
+                    mutualMatchCount: 0,
+                    chatStartedCount: 0,
+                    averageWelcomeRating: 5,
+                    averageStructureRating: 4,
+                    safetyIncidentCount: 0,
+                    feedbackResponseCount: 2,
+                  ),
                   assignments: [
                     _assignment(
                       event: event,
@@ -368,7 +478,6 @@ void main() {
                     checkedInIds: ['runner-1'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   assignments: [
                     _assignment(
                       event: event,
@@ -454,7 +563,6 @@ void main() {
                     checkedInIds: ['runner-1'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   assignments: [
                     _assignment(
                       event: event,
@@ -546,7 +654,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   wingmanRequests: [
                     _wingmanRequest(
                       event: event,
@@ -575,7 +682,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Wingman requests'), findsOneWidget);
+    expect(find.text('"Help me say hi" requests'), findsOneWidget);
     expect(find.text('1 active'), findsOneWidget);
     expect(find.text('Arjun'), findsOneWidget);
     expect(find.text('Asked for help meeting Rhea'), findsOneWidget);
@@ -617,7 +724,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: [
                     _rotationAssignment(
                       event: event,
@@ -645,7 +751,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Guided rotations'), findsOneWidget);
+    expect(find.text('Timed partner rotations'), findsOneWidget);
     expect(find.text('2 rounds'), findsOneWidget);
     expect(find.text('2 assigned'), findsOneWidget);
     expect(find.text('2 possible'), findsOneWidget);
@@ -685,7 +791,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: [
                     _rotationAssignment(
                       event: event,
@@ -713,7 +818,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Live reveal'), findsOneWidget);
+    expect(find.text('Synchronized partner reveal'), findsOneWidget);
     expect(find.text('Rotation reveal'), findsOneWidget);
     expect(find.text('Create the next room-wide beat'), findsOneWidget);
     expect(find.text('Drop 10s countdown'), findsOneWidget);
@@ -752,7 +857,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: const [],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
@@ -765,7 +869,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Guided rotations'), findsOneWidget);
+    expect(find.text('Timed partner rotations'), findsOneWidget);
     expect(find.text('0 rounds'), findsOneWidget);
     expect(find.text('Generate rotations'), findsOneWidget);
     expect(find.text('Edit rotations'), findsNothing);
@@ -801,7 +905,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: [
                     _rotationAssignment(
                       event: event,
@@ -864,7 +967,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: [
                     _rotationAssignment(
                       event: event,
@@ -942,7 +1044,6 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  feedback: const [],
                   rotationAssignments: [
                     _rotationAssignment(
                       event: event,
@@ -985,7 +1086,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Guided rotations'), findsOneWidget);
+    expect(find.text('Timed partner rotations'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(
       find.text(
@@ -1059,11 +1160,11 @@ void main() {
       await tester.pump();
 
       await tester.scrollUntilVisible(
-        find.text('Ask the host to help'),
+        find.text('Ask the host for an intro'),
         400,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('Host visible'), findsOneWidget);
+      expect(find.text('Host can see'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
 
       await tester.scrollUntilVisible(
@@ -1138,7 +1239,7 @@ void main() {
       await tester.pump();
 
       await tester.scrollUntilVisible(
-        find.text('Ask the host to help'),
+        find.text('Ask the host for an intro'),
         400,
         scrollable: find.byType(Scrollable).first,
       );
@@ -1200,10 +1301,11 @@ void main() {
       ),
     );
 
-    expect(find.text('Before you arrive'), findsOneWidget);
-    expect(find.text('Pre-arrival'), findsOneWidget);
-    expect(find.text('Skip micro-pods'), findsOneWidget);
-    expect(find.text('Skip rotations'), findsOneWidget);
+    expect(find.text("What we'll guide you through"), findsOneWidget);
+    expect(
+      find.text('Timed partner rotations during the event.'),
+      findsOneWidget,
+    );
     expect(find.text('Social prompt'), findsNothing);
     expect(find.text('Conversation cues'), findsNothing);
     expect(find.text('Rotation reveal'), findsNothing);
@@ -1340,10 +1442,77 @@ void main() {
 
     expect(find.text('A few quick questions'), findsOneWidget);
     expect(find.text('Can guide pairings'), findsOneWidget);
-    expect(
-      find.text('No companion actions are active for this event.'),
-      findsNothing,
+    expect(find.text('The host is running the room'), findsNothing);
+  });
+
+  testWidgets('companion route refreshes when event clock crosses end time', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final firestore = FakeFirebaseFirestore();
+    final clock = StreamController<DateTime>();
+    addTearDown(clock.close);
+    final start = DateTime(2026, 5, 18, 7);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
     );
+    final plan = EventSuccessPlan.defaultForEvent(event);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+          watchEventParticipationProvider(event.id, 'runner-1').overrideWith(
+            (ref) => Stream.value(
+              buildEventParticipation(
+                event: event,
+                uid: 'runner-1',
+                status: EventParticipationStatus.attended,
+              ),
+            ),
+          ),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(plan)),
+          eventSuccessCompanionClockProvider.overrideWith(
+            (ref) => clock.stream,
+          ),
+          eventSuccessRepositoryProvider.overrideWithValue(
+            EventSuccessRepository(firestore),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+            initialEvent: event,
+          ),
+        ),
+      ),
+    );
+
+    clock.add(start.add(const Duration(minutes: 30)));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Suggested first-message openers'), findsNothing);
+
+    clock.add(start.add(const Duration(hours: 2)));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Suggested first-message openers'), findsOneWidget);
+    expect(find.textContaining('compare routes'), findsOneWidget);
   });
 
   testWidgets(
@@ -1397,7 +1566,7 @@ void main() {
 
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Social prompt'), findsNothing);
-      expect(find.text('Post-match openers'), findsOneWidget);
+      expect(find.text('Suggested first-message openers'), findsOneWidget);
       expect(find.textContaining('compare routes'), findsOneWidget);
 
       await tester.scrollUntilVisible(
@@ -1548,7 +1717,7 @@ void main() {
     expect(find.text('1 guided rotation'), findsOneWidget);
     expect(find.text('Round 1'), findsOneWidget);
     expect(find.textContaining('Rhea'), findsOneWidget);
-    expect(find.text('Skip rotations'), findsOneWidget);
+    expect(find.text('Include me in timed rotations'), findsOneWidget);
   });
 
   testWidgets('companion live reveal hides rotation partner until revealed', (
@@ -1569,7 +1738,6 @@ void main() {
       revealStatus: EventSuccessRevealStatus.countingDown,
       activeRevealRoundIndex: 0,
       revealStartedAt: start.subtract(const Duration(seconds: 2)),
-      revealEndsAt: start.add(const Duration(seconds: 8)),
     );
     final assignment = _rotationAssignment(
       event: event,
@@ -1718,14 +1886,12 @@ void main() {
         ),
       );
 
-      expect(find.text('Rotations paused for you'), findsOneWidget);
+      expect(find.text('Timed rotations paused for you'), findsOneWidget);
       expect(
-        find.text(
-          'You will not be included when the host generates timed rotations.',
-        ),
+        find.text("You won't be included when the host runs the generator."),
         findsOneWidget,
       );
-      expect(find.text('Join rotations'), findsOneWidget);
+      expect(find.text('Include me in timed rotations'), findsOneWidget);
       expect(find.text('1 guided rotation'), findsNothing);
     },
   );
@@ -1773,12 +1939,12 @@ void main() {
       ),
     );
 
-    expect(find.text('Micro-pods paused for you'), findsOneWidget);
+    expect(find.text('Starter groups paused for you'), findsOneWidget);
     expect(
-      find.text('You will not be included when the host generates pods.'),
+      find.text("You won't be included when the host runs the generator."),
       findsOneWidget,
     );
-    expect(find.text('Join micro-pods'), findsOneWidget);
+    expect(find.text('Include me in starter groups'), findsOneWidget);
     expect(find.text('Pod A'), findsNothing);
   });
 
@@ -1995,10 +2161,7 @@ void main() {
 
       expect(find.text('Ask host for help'), findsNothing);
       expect(find.text('How did it feel?'), findsNothing);
-      expect(
-        find.text('No companion actions are active for this event.'),
-        findsOneWidget,
-      );
+      expect(find.text('The host is running the room'), findsOneWidget);
     },
   );
 
@@ -2181,25 +2344,6 @@ EventSuccessAssignment _rotationAssignment({
         ),
     ],
     source: source,
-    createdAt: now,
-    updatedAt: now,
-  );
-}
-
-EventSuccessFeedback _feedback({
-  required Event event,
-  required String uid,
-  required DateTime now,
-}) {
-  return EventSuccessFeedback(
-    id: eventSuccessFeedbackId(eventId: event.id, uid: uid),
-    eventId: event.id,
-    clubId: event.clubId,
-    uid: uid,
-    welcomeRating: 5,
-    structureRating: 4,
-    metNewPeopleCount: 3,
-    safetyConcern: false,
     createdAt: now,
     updatedAt: now,
   );

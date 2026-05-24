@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDoc, ClubDoc, BlockDoc} from "../shared/firestore";
+import {EventDoc, ClubDoc, BlockDoc, UserProfileDoc} from "../shared/firestore";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";
@@ -12,6 +12,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {isClubHost} from "../shared/clubHosts";
+import {assertMicroPodStrategy} from "./assignmentStrategies";
+import {scoreCompatibilityPair} from "./compatibilityPolicy";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
 const DEFAULT_TARGET_POD_SIZE = 5;
@@ -52,6 +54,8 @@ interface EventSuccessPreferenceDoc {
 interface ActiveParticipant {
   uid: string;
   status: typeof ACTIVE_STATUSES[number];
+  gender?: string;
+  interestedInGenders: string[];
 }
 
 interface GeneratedAssignment {
@@ -141,6 +145,7 @@ export async function generateEventSuccessPodsHandler(
     throw new HttpsError("failed-precondition",
       "Micro-pods are not enabled for this event.");
   }
+  assertMicroPodStrategy(plan);
 
   const participationsSnap = await db
     .collection("eventParticipations")
@@ -156,7 +161,10 @@ export async function generateEventSuccessPodsHandler(
     )
     .filter((participant) => !optedOutUids.has(participant.uid))
     .sort(compareParticipants);
-  const eligibleParticipants = preferCheckedInParticipants(participants);
+  const eligibleParticipants = await hydrateParticipants(
+    db,
+    preferCheckedInParticipants(participants)
+  );
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const groups = buildPods(eligibleParticipants, blockedPairs, plan);
@@ -200,7 +208,7 @@ function toActiveParticipant(
 ): ActiveParticipant | null {
   if (typeof data.uid !== "string" || data.uid.length === 0) return null;
   if (data.status !== "attended" && data.status !== "signedUp") return null;
-  return {uid: data.uid, status: data.status};
+  return {uid: data.uid, status: data.status, interestedInGenders: []};
 }
 
 /**
@@ -271,6 +279,38 @@ function preferCheckedInParticipants(
 }
 
 /**
+ * Adds optional profile cohort data without dropping active participants.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {ActiveParticipant[]} participants Active participants.
+ * @return {Promise<ActiveParticipant[]>} Hydrated participants.
+ */
+async function hydrateParticipants(
+  db: FirebaseFirestore.Firestore,
+  participants: ActiveParticipant[]
+): Promise<ActiveParticipant[]> {
+  const snaps = await Promise.all(
+    participants.map((participant) =>
+      db.collection("users").doc(participant.uid).get()
+    )
+  );
+  return participants.map((participant, index) => {
+    const profile = snaps[index].data() as Partial<UserProfileDoc> | undefined;
+    if (profile === undefined) return participant;
+    return {
+      ...participant,
+      gender: typeof profile.gender === "string" ?
+        profile.gender :
+        undefined,
+      interestedInGenders: Array.isArray(profile.interestedInGenders) ?
+        profile.interestedInGenders.filter((gender) =>
+          typeof gender === "string"
+        ) :
+        [],
+    };
+  });
+}
+
+/**
  * Splits active participants into deterministic micro-pods.
  * @param {Array<ActiveParticipant>} participants Active participant list.
  * @param {Set<string>} blockedPairs Undirected blocked pair keys.
@@ -291,7 +331,11 @@ function buildPods(
   for (const participant of participants) {
     const candidates = groups
       .map((group, index) => ({group, index}))
-      .sort((a, b) => a.group.length - b.group.length || a.index - b.index);
+      .sort((a, b) =>
+        podCandidateScore(participant, a.group, blockedPairs) -
+        podCandidateScore(participant, b.group, blockedPairs) ||
+        a.index - b.index
+      );
     const safeCandidate = candidates.find(({group}) =>
       canJoinPod(participant, group, blockedPairs)
     );
@@ -302,6 +346,57 @@ function buildPods(
     }
   }
   return groups.filter((group) => group.length > 0);
+}
+
+/**
+ * Scores how suitable a pod is for adding one attendee.
+ * @param {ActiveParticipant} participant Candidate attendee.
+ * @param {ActiveParticipant[]} group Current group.
+ * @param {Set<string>} blockedPairs Undirected blocked pair keys.
+ * @return {number} Lower score is better.
+ */
+function podCandidateScore(
+  participant: ActiveParticipant,
+  group: ActiveParticipant[],
+  blockedPairs: Set<string>
+): number {
+  if (!canJoinPod(participant, group, blockedPairs)) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return group.length * 100 +
+    sameGenderCount(participant, group) * 10 -
+    socialCompatibilityBonus(participant, group);
+}
+
+/**
+ * Counts current pod members with the same known gender.
+ * @param {ActiveParticipant} participant Candidate attendee.
+ * @param {ActiveParticipant[]} group Current group.
+ * @return {number} Same-gender count.
+ */
+function sameGenderCount(
+  participant: ActiveParticipant,
+  group: ActiveParticipant[]
+): number {
+  if (participant.gender === undefined) return 0;
+  return group.filter((member) => member.gender === participant.gender).length;
+}
+
+/**
+ * Gives a small tie-breaker to socially compatible pod placements.
+ * @param {ActiveParticipant} participant Candidate attendee.
+ * @param {ActiveParticipant[]} group Current group.
+ * @return {number} Compatibility bonus.
+ */
+function socialCompatibilityBonus(
+  participant: ActiveParticipant,
+  group: ActiveParticipant[]
+): number {
+  return group.reduce(
+    (sum, member) =>
+      sum + scoreCompatibilityPair(participant, member, false).score,
+    0
+  );
 }
 
 /**

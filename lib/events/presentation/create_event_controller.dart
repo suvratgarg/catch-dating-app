@@ -153,8 +153,8 @@ class CreateEventController extends _$CreateEventController {
       inviteCode: normalizedInviteCode,
       eventSuccessDefaults: eventSuccessDefaults.enabled
           ? eventSuccessDefaults
-                .normalizedForActivity(
-                  event.activityKind,
+                .normalizedForFormat(
+                  event.eventFormat,
                   targetAttendeeCount: event.capacityLimit,
                 )
                 .toJson()

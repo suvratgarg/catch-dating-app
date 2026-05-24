@@ -37,6 +37,59 @@ void main() {
       );
     });
 
+    test('maps auth keychain errors to safe user copy', () {
+      const rawKeychainMessage =
+          'An error occurred when accessing the keychain. The '
+          'NSLocalizedFailureReasonErrorKey field in the NSError.userInfo '
+          'dictionary will contain more information about the error encountered';
+
+      final message = backendErrorMessage(
+        FirebaseAuthException(code: 'unknown', message: rawKeychainMessage),
+      );
+
+      expect(
+        message,
+        'Unable to finish sign-in on this device. Please restart the app and request a new code.',
+      );
+      expect(message, isNot(contains('keychain')));
+      expect(message, isNot(contains('NSLocalizedFailureReasonErrorKey')));
+    });
+
+    test('maps auth captcha errors to safe user copy', () {
+      const rawCaptchaMessage =
+          'Cannot contact reCAPTCHA. Check your connection and try again.';
+
+      final message = backendErrorMessage(
+        FirebaseAuthException(
+          code: 'captcha-check-failed',
+          message: rawCaptchaMessage,
+        ),
+      );
+
+      expect(
+        message,
+        'Unable to complete the verification check. Please close the verification window and try again.',
+      );
+      expect(message, isNot(contains('reCAPTCHA')));
+    });
+
+    test('maps auth web verification cancellation to safe user copy', () {
+      const rawCancelMessage = 'The interaction was cancelled by the user.';
+
+      final message = backendErrorMessage(
+        FirebaseAuthException(
+          code: 'web-context-cancelled',
+          message: rawCancelMessage,
+        ),
+      );
+
+      expect(
+        message,
+        'Verification was cancelled. Please try again when ready.',
+      );
+      expect(message, isNot(contains('interaction')));
+    });
+
     test('returns app exception user copy without debug metadata', () {
       const error = NetworkException(
         'timeout',

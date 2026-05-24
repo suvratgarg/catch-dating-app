@@ -133,29 +133,61 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
     .filter((uid, index, all) => all.indexOf(uid) === index)
     .sort();
 
-  const visibleIds: string[] = [];
-  for (const uid of candidateIds) {
-    const [viewerBlocksCandidate, candidateBlocksViewer] = await Promise.all([
-      db.collection("blocks").doc(blockDocId(viewerUid, uid)).get(),
-      db.collection("blocks").doc(blockDocId(uid, viewerUid)).get(),
-    ]);
-    if (!viewerBlocksCandidate.exists && !candidateBlocksViewer.exists) {
-      visibleIds.push(uid);
-    }
-  }
-
-  const profiles: WingmanCandidateProfile[] = [];
-  for (const uid of visibleIds) {
-    const profileSnap = await db.collection("publicProfiles").doc(uid).get();
-    if (!profileSnap.exists) continue;
-    const profile = requireDoc<PublicProfileDoc>(
-      profileSnap,
-      "PublicProfileDoc"
-    );
-    profiles.push({uid, ...profile});
-  }
+  const blockedUids = await fetchUidsBlockedWithViewer(db, viewerUid);
+  const visibleIds = candidateIds.filter((uid) => !blockedUids.has(uid));
+  const profiles = await fetchCandidateProfiles(db, visibleIds);
 
   return {profiles};
+}
+
+/**
+ * Loads every uid on either side of a block edge with the viewer using two
+ * queries, instead of a per-candidate pair of document reads.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} viewerUid Caller user id.
+ * @return {Promise<Set<string>>} Uids the viewer blocks or is blocked by.
+ */
+async function fetchUidsBlockedWithViewer(
+  db: FirebaseFirestore.Firestore,
+  viewerUid: string
+): Promise<Set<string>> {
+  const [outgoing, incoming] = await Promise.all([
+    db.collection("blocks").where("blockerUserId", "==", viewerUid).get(),
+    db.collection("blocks").where("blockedUserId", "==", viewerUid).get(),
+  ]);
+  const blocked = new Set<string>();
+  for (const doc of outgoing.docs) {
+    const blockedUserId = doc.data()?.blockedUserId;
+    if (typeof blockedUserId === "string") blocked.add(blockedUserId);
+  }
+  for (const doc of incoming.docs) {
+    const blockerUserId = doc.data()?.blockerUserId;
+    if (typeof blockerUserId === "string") blocked.add(blockerUserId);
+  }
+  return blocked;
+}
+
+/**
+ * Loads candidate public profiles with one parallel read per uid, instead of
+ * a sequential per-candidate await.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string[]} uids Visible candidate uids.
+ * @return {Promise<WingmanCandidateProfile[]>} Existing candidate profiles.
+ */
+async function fetchCandidateProfiles(
+  db: FirebaseFirestore.Firestore,
+  uids: string[]
+): Promise<WingmanCandidateProfile[]> {
+  const snaps = await Promise.all(
+    uids.map((uid) => db.collection("publicProfiles").doc(uid).get())
+  );
+  const profiles: WingmanCandidateProfile[] = [];
+  snaps.forEach((snap, index) => {
+    if (!snap.exists) return;
+    const profile = requireDoc<PublicProfileDoc>(snap, "PublicProfileDoc");
+    profiles.push({uid: uids[index], ...profile});
+  });
+  return profiles;
 }
 
 /**

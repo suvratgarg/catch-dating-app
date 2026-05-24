@@ -149,6 +149,127 @@ void main() {
       expect(tooManyRequests.retryable, isTrue);
     });
 
+    test('maps Firebase Auth keychain failures without leaking internals', () {
+      const rawKeychainMessage =
+          'An error occurred when accessing the keychain. The '
+          'NSLocalizedFailureReasonErrorKey field in the NSError.userInfo '
+          'dictionary will contain more information about the error encountered';
+
+      final exactCode = normalizeBackendError(
+        FirebaseAuthException(
+          code: 'keychain-error',
+          message: rawKeychainMessage,
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'verify OTP',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(exactCode, isA<BackendOperationException>());
+      expect(exactCode.retryable, isTrue);
+      expect(exactCode.severity, AppErrorSeverity.error);
+      expect(
+        exactCode.message,
+        'Unable to finish sign-in on this device. Please restart the app and request a new code.',
+      );
+      expect(exactCode.message, isNot(contains('keychain')));
+      expect(
+        exactCode.message,
+        isNot(contains('NSLocalizedFailureReasonErrorKey')),
+      );
+      expect(exactCode.debugMessage, contains(rawKeychainMessage));
+
+      final unknownCode = normalizeBackendError(
+        FirebaseAuthException(code: 'unknown', message: rawKeychainMessage),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'verify OTP',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(unknownCode, isA<BackendOperationException>());
+      expect(unknownCode.message, exactCode.message);
+    });
+
+    test('maps Firebase Auth captcha failures without leaking internals', () {
+      const rawCaptchaMessage =
+          'Cannot contact reCAPTCHA. Check your connection and try again.';
+
+      final exactCode = normalizeBackendError(
+        FirebaseAuthException(
+          code: 'captcha-check-failed',
+          message: rawCaptchaMessage,
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'send verification code',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(exactCode, isA<BackendOperationException>());
+      expect(exactCode.retryable, isTrue);
+      expect(exactCode.severity, AppErrorSeverity.error);
+      expect(
+        exactCode.message,
+        'Unable to complete the verification check. Please close the verification window and try again.',
+      );
+      expect(exactCode.message, isNot(contains('reCAPTCHA')));
+      expect(exactCode.debugMessage, contains(rawCaptchaMessage));
+
+      final messageOnly = normalizeBackendError(
+        FirebaseAuthException(code: 'unknown', message: rawCaptchaMessage),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'send verification code',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(messageOnly, isA<BackendOperationException>());
+      expect(messageOnly.message, exactCode.message);
+    });
+
+    test('maps Firebase Auth web verification cancellation cleanly', () {
+      const rawCancelMessage = 'The interaction was cancelled by the user.';
+
+      final exactCode = normalizeBackendError(
+        FirebaseAuthException(
+          code: 'web-context-cancelled',
+          message: rawCancelMessage,
+        ),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'send verification code',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(exactCode, isA<BackendOperationException>());
+      expect(exactCode.retryable, isTrue);
+      expect(
+        exactCode.message,
+        'Verification was cancelled. Please try again when ready.',
+      );
+      expect(exactCode.message, isNot(contains('interaction')));
+      expect(exactCode.debugMessage, contains(rawCancelMessage));
+
+      final messageOnly = normalizeBackendError(
+        FirebaseAuthException(code: 'unknown', message: rawCancelMessage),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'send verification code',
+          resource: 'phone_auth',
+        ),
+      );
+
+      expect(messageOnly, isA<BackendOperationException>());
+      expect(messageOnly.message, exactCode.message);
+    });
+
     test('maps Firebase Storage failures', () {
       final denied = normalizeBackendError(
         FirebaseException(plugin: 'firebase_storage', code: 'unauthorized'),

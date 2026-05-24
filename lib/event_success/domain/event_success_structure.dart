@@ -80,9 +80,25 @@ class EventSuccessStructureConfig {
   factory EventSuccessStructureConfig.defaultForActivity(
     ActivityKind activityKind, {
     int targetAttendeeCount = 20,
+  }) => EventSuccessStructureConfig.defaultForInteractionModel(
+    activityKind.defaultInteractionModel,
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  factory EventSuccessStructureConfig.defaultForFormat(
+    EventFormatSnapshot format, {
+    int targetAttendeeCount = 20,
+  }) => EventSuccessStructureConfig.defaultForInteractionModel(
+    format.interactionModel,
+    targetAttendeeCount: targetAttendeeCount,
+  );
+
+  factory EventSuccessStructureConfig.defaultForInteractionModel(
+    EventInteractionModel interactionModel, {
+    int targetAttendeeCount = 20,
   }) {
     final safeTarget = targetAttendeeCount.clamp(1, 1000).toInt();
-    return switch (activityKind.defaultInteractionModel) {
+    return switch (interactionModel) {
       EventInteractionModel.pacePods => EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.wholeGroup,
         unitSize: safeTarget,

@@ -32,9 +32,9 @@ ios/Flutter/GoogleMapsKeys.xcconfig
 service-account*.json
 *-service-account.json
 google-application-credentials*.json
-tool/demo_seed/beta_anchors.txt
-tool/demo_seed/beta_anchors.json
-tool/demo_seed/golden_accounts.json
+tool/demo/demo_seed/beta_anchors.txt
+tool/demo/demo_seed/beta_anchors.json
+tool/demo/demo_seed/golden_accounts.json
 
 # Signing keys and provisioning artifacts
 key.properties

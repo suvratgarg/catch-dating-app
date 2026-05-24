@@ -50,6 +50,60 @@ void main() {
       },
     );
 
+    test('uses the previous resend token for repeat OTP requests', () async {
+      var verificationRequestCount = 0;
+      final repository = FakeAuthRepository()
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) {
+              verificationRequestCount += 1;
+              codeSent('verification-id-$verificationRequestCount', 11);
+            };
+      final container = _authControllerContainer(repository);
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+
+      await notifier.sendOtp('9999999999', '+91');
+      expect(repository.forceResendingToken, isNull);
+
+      await notifier.sendOtp('9999999999', '+91');
+      expect(repository.forceResendingToken, 11);
+      expect(
+        container.read(authControllerProvider).verificationId,
+        'verification-id-2',
+      );
+    });
+
+    test(
+      'does not reuse the resend token for a different phone number',
+      () async {
+        final repository = FakeAuthRepository()
+          ..onVerifyPhoneNumber =
+              ({
+                required verificationCompleted,
+                required verificationFailed,
+                required codeSent,
+                required codeAutoRetrievalTimeout,
+              }) {
+                codeSent('verification-id', 11);
+              };
+        final container = _authControllerContainer(repository);
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        final notifier = container.read(authControllerProvider.notifier);
+
+        await notifier.sendOtp('9999999999', '+91');
+        await notifier.sendOtp('8888888888', '+91');
+
+        expect(repository.forceResendingToken, isNull);
+      },
+    );
+
     test(
       'rejects invalid phone numbers before calling Firebase Auth',
       () async {

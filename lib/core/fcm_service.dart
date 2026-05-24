@@ -31,8 +31,20 @@ String? chatRouteFromMessageData(Map<String, Object?> data) {
   return '/chats/$matchId';
 }
 
+String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
+  if (data['type'] != 'eventCompanionReady') return null;
+  final clubId = data['clubId'];
+  final eventId = data['eventId'];
+  if (clubId is! String || clubId.isEmpty) return null;
+  if (eventId is! String || eventId.isEmpty) return null;
+  return '/clubs/$clubId/events/$eventId/companion';
+}
+
+String? routeFromMessageData(Map<String, Object?> data) =>
+    chatRouteFromMessageData(data) ?? eventCompanionRouteFromMessageData(data);
+
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
-  final route = chatRouteFromMessageData(data);
+  final route = routeFromMessageData(data);
   if (route != null) router.go(route);
 }
 

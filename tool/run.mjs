@@ -1,0 +1,226 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import {spawnSync} from "node:child_process";
+import {fromRepo, repoRoot, toolRoot} from "./lib/repo_paths.mjs";
+
+const manifestPath = fromRepo("tool/tools_manifest.json");
+
+const command = process.argv[2] ?? "help";
+const argv = process.argv.slice(3);
+
+if (command === "help" || command === "--help" || command === "-h") {
+  printHelp();
+} else if (command === "list") {
+  listTools(argv);
+} else if (command === "check") {
+  checkTools(argv);
+} else if (command === "run" || command === "exec") {
+  runTool(argv);
+} else {
+  console.error(`Unknown command: ${command}`);
+  printHelp();
+  process.exit(64);
+}
+
+function loadManifest() {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  if (!Array.isArray(manifest.tools)) {
+    throw new Error("tools_manifest.json must contain a tools array.");
+  }
+  return manifest;
+}
+
+function listTools(args) {
+  const {category, json} = parseListArgs(args);
+  const tools = selectTools(loadManifest(), {category});
+
+  if (json) {
+    console.log(JSON.stringify(tools, null, 2));
+    return;
+  }
+
+  const byCategory = new Map();
+  for (const tool of tools) {
+    if (!byCategory.has(tool.category)) byCategory.set(tool.category, []);
+    byCategory.get(tool.category).push(tool);
+  }
+
+  for (const [name, entries] of [...byCategory.entries()].sort()) {
+    console.log(`\n${name}`);
+    for (const tool of entries.sort((a, b) => a.id.localeCompare(b.id))) {
+      console.log(`  ${tool.id.padEnd(42)} ${tool.path}`);
+    }
+  }
+}
+
+function checkTools(args) {
+  const {category, ids, manifestOnly} = parseCheckArgs(args);
+  const manifest = loadManifest();
+  const tools = selectTools(manifest, {category, ids});
+  const errors = validateManifest(manifest);
+
+  if (errors.length > 0) {
+    console.error("Tool manifest validation failed:");
+    for (const error of errors) console.error(`- ${error}`);
+    process.exitCode = 1;
+    return;
+  }
+
+  if (manifestOnly) {
+    console.log("Tool manifest validation passed.");
+    return;
+  }
+
+  for (const tool of tools) {
+    for (const check of tool.checks ?? []) {
+      console.log(`==> ${tool.id}: ${check}`);
+      const result = spawnSync(check, {
+        cwd: repoRoot,
+        shell: true,
+        stdio: "inherit",
+      });
+      if (result.status !== 0) {
+        process.exitCode = result.status ?? 1;
+        return;
+      }
+    }
+  }
+
+  console.log("Tool checks passed.");
+}
+
+function runTool(args) {
+  const id = args[0];
+  if (!id) {
+    console.error("Usage: node tool/run.mjs run <tool-id> [args...]");
+    process.exit(64);
+  }
+
+  const tool = loadManifest().tools.find((entry) => entry.id === id);
+  if (!tool) {
+    console.error(`Unknown tool id: ${id}`);
+    process.exit(64);
+  }
+  if (!tool.command) {
+    console.error(`Tool ${id} does not define a command.`);
+    process.exit(64);
+  }
+
+  const forwarded = args.slice(1).map(shellQuote).join(" ");
+  const commandLine = forwarded ? `${tool.command} ${forwarded}` : tool.command;
+  const result = spawnSync(commandLine, {
+    cwd: repoRoot,
+    shell: true,
+    stdio: "inherit",
+  });
+  process.exit(result.status ?? 1);
+}
+
+function validateManifest(manifest) {
+  const errors = [];
+  const ids = new Set();
+  const paths = new Set();
+
+  for (const tool of manifest.tools) {
+    if (!tool.id) errors.push("Tool entry is missing id.");
+    if (!tool.category) errors.push(`${tool.id ?? "<missing>"} is missing category.`);
+    if (!tool.path) errors.push(`${tool.id ?? "<missing>"} is missing path.`);
+    if (tool.id && ids.has(tool.id)) errors.push(`Duplicate tool id: ${tool.id}`);
+    if (tool.id) ids.add(tool.id);
+    if (tool.path) {
+      paths.add(tool.path);
+      if (!fs.existsSync(fromRepo(tool.path))) {
+        errors.push(`${tool.id}: missing path ${tool.path}`);
+      }
+    }
+  }
+
+  for (const file of discoverManagedScripts()) {
+    const relativePath = path.relative(repoRoot, file);
+    if (!paths.has(relativePath)) {
+      errors.push(`Unmanaged tool script: ${relativePath}`);
+    }
+  }
+
+  return errors;
+}
+
+function discoverManagedScripts() {
+  const files = [];
+  walk(toolRoot, files);
+  return files.filter((file) => {
+    const relativePath = path.relative(repoRoot, file);
+    const ext = path.extname(file);
+    if (![".mjs", ".js", ".dart", ".py", ".rb", ".sh"].includes(ext)) {
+      return false;
+    }
+    if (relativePath.includes("/lib/")) return false;
+    if (relativePath.includes("/contracts/generated/")) return false;
+    if (relativePath.endsWith(".test.mjs")) return false;
+    return true;
+  });
+}
+
+function walk(dir, files) {
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(fullPath, files);
+    else if (entry.isFile()) files.push(fullPath);
+  }
+}
+
+function selectTools(manifest, {category, ids = []} = {}) {
+  return manifest.tools.filter((tool) => {
+    if (category && tool.category !== category) return false;
+    if (ids.length > 0 && !ids.includes(tool.id)) return false;
+    return true;
+  });
+}
+
+function parseListArgs(args) {
+  return {
+    category: valueAfter(args, "--category"),
+    json: args.includes("--json"),
+  };
+}
+
+function parseCheckArgs(args) {
+  const category = valueAfter(args, "--category");
+  const manifestOnly = args.includes("--manifest-only");
+  const ids = args.filter((arg, index) => {
+    if (arg.startsWith("--")) return false;
+    if (args[index - 1] === "--category") return false;
+    return true;
+  });
+  return {category, ids, manifestOnly};
+}
+
+function valueAfter(args, flag) {
+  const index = args.indexOf(flag);
+  if (index === -1) return null;
+  const value = args[index + 1];
+  if (!value || value.startsWith("--")) {
+    throw new Error(`${flag} requires a value.`);
+  }
+  return value;
+}
+
+function shellQuote(value) {
+  return `'${String(value).replaceAll("'", "'\\''")}'`;
+}
+
+function printHelp() {
+  console.log(`Usage: node tool/run.mjs <command>
+
+Commands:
+  list [--category name] [--json]
+  check [--category name] [--manifest-only] [tool-id ...]
+  run <tool-id> [args...]
+
+Examples:
+  node tool/run.mjs list --category data
+  node tool/run.mjs check --manifest-only
+  node tool/run.mjs run demo:ops list-commands
+`);
+}

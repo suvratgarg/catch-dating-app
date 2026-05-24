@@ -1,0 +1,473 @@
+{
+  "version": 1,
+  "updated": "2026-05-24",
+  "tools": [
+    {
+      "id": "tool:runner",
+      "category": "meta",
+      "path": "tool/run.mjs",
+      "command": "node tool/run.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Lists, validates, and dispatches repo tools.",
+      "checks": ["node --check tool/run.mjs"]
+    },
+    {
+      "id": "audit:registry",
+      "category": "audit",
+      "path": "tool/audit_registry.dart",
+      "command": "dart tool/audit_registry.dart",
+      "safety": "local",
+      "status": "active",
+      "description": "Maintains the recursive audit registry.",
+      "checks": ["dart analyze tool/audit_registry.dart"]
+    },
+    {
+      "id": "audit:backend-errors",
+      "category": "audit",
+      "path": "tool/audit/backend_error_candidates.dart",
+      "command": "dart tool/audit/backend_error_candidates.dart",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans backend error handling migration candidates.",
+      "checks": ["dart analyze tool/audit/backend_error_candidates.dart"]
+    },
+    {
+      "id": "audit:definition-catalog",
+      "category": "audit",
+      "path": "tool/audit/definition_catalog.py",
+      "command": "python3 tool/audit/definition_catalog.py",
+      "safety": "local-writes-audit-json",
+      "status": "active",
+      "description": "Builds Dart definition and consolidation candidate catalogs.",
+      "checks": ["python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/audit/definition_catalog.py').read_text())\""]
+    },
+    {
+      "id": "audit:widget-cleanup",
+      "category": "audit",
+      "path": "tool/widget_cleanup_scan.sh",
+      "command": "bash tool/widget_cleanup_scan.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans widget/design-system cleanup candidates.",
+      "checks": ["bash -n tool/widget_cleanup_scan.sh"]
+    },
+    {
+      "id": "contracts:check-all",
+      "category": "contracts",
+      "path": "tool/check_data_contract.sh",
+      "command": "./tool/check_data_contract.sh",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Runs the full data/schema/rules contract gate.",
+      "checks": ["bash -n tool/check_data_contract.sh"]
+    },
+    {
+      "id": "contracts:generate-firestore-types",
+      "category": "contracts",
+      "path": "tool/contracts/generate_firestore_types.dart",
+      "command": "dart tool/contracts/generate_firestore_types.dart",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates Functions Firestore TypeScript interfaces from Dart models.",
+      "checks": ["dart analyze tool/contracts/generate_firestore_types.dart"]
+    },
+    {
+      "id": "contracts:generate-business-rules",
+      "category": "contracts",
+      "path": "tool/contracts/generate_business_rules.mjs",
+      "command": "node tool/contracts/generate_business_rules.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates shared Flutter and Functions business constants.",
+      "checks": ["node --check tool/contracts/generate_business_rules.mjs"]
+    },
+    {
+      "id": "contracts:generate-schemas",
+      "category": "contracts",
+      "path": "tool/contracts/generate_schema_contracts.mjs",
+      "command": "node tool/contracts/generate_schema_contracts.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates schema registries, validators, paths, and Dart schema metadata.",
+      "checks": ["node --check tool/contracts/generate_schema_contracts.mjs"]
+    },
+    {
+      "id": "contracts:validate-schemas",
+      "category": "contracts",
+      "path": "tool/contracts/validate_schema_contracts.mjs",
+      "command": "node tool/contracts/validate_schema_contracts.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates JSON schema source consistency.",
+      "checks": ["node --check tool/contracts/validate_schema_contracts.mjs"]
+    },
+    {
+      "id": "contracts:firestore-contract",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_contract.mjs",
+      "command": "node tool/contracts/check_firestore_contract.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks Firestore contract metadata against rules, schemas, and Functions exports.",
+      "checks": ["node --check tool/contracts/check_firestore_contract.mjs"]
+    },
+    {
+      "id": "contracts:rules-semantics",
+      "category": "contracts",
+      "path": "tool/contracts/check_firestore_rules_semantics.mjs",
+      "command": "node tool/contracts/check_firestore_rules_semantics.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks Firestore rule semantics against schema-owned paths.",
+      "checks": ["node --check tool/contracts/check_firestore_rules_semantics.mjs"]
+    },
+    {
+      "id": "contracts:path-literals",
+      "category": "contracts",
+      "path": "tool/contracts/check_schema_path_literals.mjs",
+      "command": "node tool/contracts/check_schema_path_literals.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Blocks retired raw schema path literals in production code.",
+      "checks": ["node --check tool/contracts/check_schema_path_literals.mjs"]
+    },
+    {
+      "id": "contracts:type-boundaries",
+      "category": "contracts",
+      "path": "tool/contracts/check_schema_type_boundaries.mjs",
+      "command": "node tool/contracts/check_schema_type_boundaries.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks schema/type boundary hygiene.",
+      "checks": ["node --check tool/contracts/check_schema_type_boundaries.mjs"]
+    },
+    {
+      "id": "data:validate",
+      "category": "data",
+      "path": "tool/data/validate_firestore_data.mjs",
+      "command": "node tool/data/validate_firestore_data.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Validates live or emulator Firestore data invariants.",
+      "checks": ["node --check tool/data/validate_firestore_data.mjs"]
+    },
+    {
+      "id": "data:delete-reviews",
+      "category": "data",
+      "path": "tool/data/delete_firestore_reviews.mjs",
+      "command": "node tool/data/delete_firestore_reviews.mjs",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Deletes reviews only with explicit confirmation.",
+      "checks": ["node --check tool/data/delete_firestore_reviews.mjs"]
+    },
+    {
+      "id": "data:repair-public-profiles",
+      "category": "data",
+      "path": "tool/data/recompute_public_profiles.mjs",
+      "command": "node tool/data/recompute_public_profiles.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Repairs public profile projections from user profiles.",
+      "checks": ["node --check tool/data/recompute_public_profiles.mjs", "node --test tool/data/recompute_public_profiles.test.mjs"]
+    },
+    {
+      "id": "data:repair-club-hosts",
+      "category": "data",
+      "path": "tool/data/recompute_club_host_profiles.mjs",
+      "command": "node tool/data/recompute_club_host_profiles.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Repairs denormalized club host identity projections.",
+      "checks": ["node --check tool/data/recompute_club_host_profiles.mjs", "node --test tool/data/recompute_club_host_profiles.test.mjs"]
+    },
+    {
+      "id": "data:repair-review-authors",
+      "category": "data",
+      "path": "tool/data/recompute_review_author_profiles.mjs",
+      "command": "node tool/data/recompute_review_author_profiles.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Repairs denormalized review author names.",
+      "checks": ["node --check tool/data/recompute_review_author_profiles.mjs", "node --test tool/data/recompute_review_author_profiles.test.mjs"]
+    },
+    {
+      "id": "data:repair-club-member-counts",
+      "category": "data",
+      "path": "tool/data/recompute_club_member_counts.mjs",
+      "command": "node tool/data/recompute_club_member_counts.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Repairs club memberCount projections.",
+      "checks": ["node --check tool/data/recompute_club_member_counts.mjs", "node --test tool/data/recompute_club_member_counts.test.mjs"]
+    },
+    {
+      "id": "data:repair-event-aggregates",
+      "category": "data",
+      "path": "tool/data/recompute_event_aggregate_counts.mjs",
+      "command": "node tool/data/recompute_event_aggregate_counts.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Repairs event aggregate counts from participation edges.",
+      "checks": ["node --check tool/data/recompute_event_aggregate_counts.mjs", "node --test tool/data/recompute_event_aggregate_counts.test.mjs"]
+    },
+    {
+      "id": "data:repair-future-attendance",
+      "category": "data",
+      "path": "tool/data/repair_future_event_attendance.mjs",
+      "command": "node tool/data/repair_future_event_attendance.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Downgrades invalid attended edges on future events.",
+      "checks": ["node --check tool/data/repair_future_event_attendance.mjs", "node --test tool/data/repair_future_event_attendance.test.mjs"]
+    },
+    {
+      "id": "data:validate-profile-decision-migration",
+      "category": "data",
+      "path": "tool/data/validate_profile_decision_migration.mjs",
+      "command": "node tool/data/validate_profile_decision_migration.mjs",
+      "safety": "remote-read",
+      "status": "active",
+      "description": "Compares legacy swipes and future profile decision storage.",
+      "checks": ["node --check tool/data/validate_profile_decision_migration.mjs", "node --test tool/data/validate_profile_decision_migration.test.mjs"]
+    },
+    {
+      "id": "data:backfill-profile-decisions",
+      "category": "data",
+      "path": "tool/data/backfill_profile_decisions.mjs",
+      "command": "node tool/data/backfill_profile_decisions.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills profile decision documents from legacy swipe docs.",
+      "checks": ["node --check tool/data/backfill_profile_decisions.mjs", "node --test tool/data/backfill_profile_decisions.test.mjs"]
+    },
+    {
+      "id": "data:backfill-profile-photos",
+      "category": "data",
+      "path": "tool/data/backfill_profile_photos.mjs",
+      "command": "node tool/data/backfill_profile_photos.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills grouped profile photo fields.",
+      "checks": ["node --check tool/data/backfill_profile_photos.mjs", "node --test tool/data/backfill_profile_photos.test.mjs"]
+    },
+    {
+      "id": "data:strip-profile-coordinates",
+      "category": "data",
+      "path": "tool/data/strip_public_profile_coordinates.mjs",
+      "command": "node tool/data/strip_public_profile_coordinates.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Removes public profile coordinate fields.",
+      "checks": ["node --check tool/data/strip_public_profile_coordinates.mjs"]
+    },
+    {
+      "id": "data:profile-projection-parity",
+      "category": "data",
+      "path": "tool/data/profile_projection_parity.test.mjs",
+      "command": "node --test tool/data/profile_projection_parity.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Checks seed and Functions public profile projection parity.",
+      "checks": ["npm --prefix functions run build && node --test tool/data/profile_projection_parity.test.mjs"]
+    },
+    {
+      "id": "demo:ops",
+      "category": "demo",
+      "path": "tool/demo/demo_ops.mjs",
+      "command": "node tool/demo/demo_ops.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Operational wrapper for demo seeding, matching, Suvbot, and demo readiness.",
+      "checks": ["node --check tool/demo/demo_ops.mjs", "node --test tool/demo/demo_ops_core.test.mjs"]
+    },
+    {
+      "id": "demo:ops-core",
+      "category": "demo",
+      "path": "tool/demo/demo_ops_core.mjs",
+      "command": "node --test tool/demo/demo_ops_core.test.mjs",
+      "safety": "local-test",
+      "status": "internal",
+      "description": "Shared planning and Firestore helpers for demo operations.",
+      "checks": ["node --check tool/demo/demo_ops_core.mjs"]
+    },
+    {
+      "id": "demo:schedule-policy",
+      "category": "demo",
+      "path": "tool/demo/demo_schedule_policy.mjs",
+      "command": "node --check tool/demo/demo_schedule_policy.mjs",
+      "safety": "local",
+      "status": "internal",
+      "description": "Shared demo schedule-lock and event timing policy helpers.",
+      "checks": ["node --check tool/demo/demo_schedule_policy.mjs"]
+    },
+    {
+      "id": "demo:seed",
+      "category": "demo",
+      "path": "tool/demo/seed_demo_data.mjs",
+      "command": "node tool/demo/seed_demo_data.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Builds and optionally writes demo seed worlds.",
+      "checks": ["node --check tool/demo/seed_demo_data.mjs", "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"]
+    },
+    {
+      "id": "firebase:project-resolver",
+      "category": "firebase",
+      "path": "tool/firebase/firebase_project_resolver.mjs",
+      "command": "node --test tool/firebase/firebase_project_resolver.test.mjs",
+      "safety": "local-test",
+      "status": "active",
+      "description": "Shared Firebase project resolver compatibility module.",
+      "checks": ["node --test tool/firebase/firebase_project_resolver.test.mjs"]
+    },
+    {
+      "id": "firebase:maps-config",
+      "category": "firebase",
+      "path": "tool/firebase/validate_google_maps_config.mjs",
+      "command": "node tool/firebase/validate_google_maps_config.mjs",
+      "safety": "local-secret-validation",
+      "status": "active",
+      "description": "Validates native/web Google Maps config and optional Places secret wiring.",
+      "checks": ["node --check tool/firebase/validate_google_maps_config.mjs"]
+    },
+    {
+      "id": "firebase:function-targets",
+      "category": "firebase",
+      "path": "tool/firebase/list_firebase_function_targets.mjs",
+      "command": "node tool/firebase/list_firebase_function_targets.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Expands Firebase function deploy target names from Functions exports.",
+      "checks": ["node --check tool/firebase/list_firebase_function_targets.mjs"]
+    },
+    {
+      "id": "firebase:create-config-cities",
+      "category": "firebase",
+      "path": "tool/firebase/create_config_cities.mjs",
+      "command": "node tool/firebase/create_config_cities.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Writes config/cities with dry-run and prod guards.",
+      "checks": ["node --check tool/firebase/create_config_cities.mjs"]
+    },
+    {
+      "id": "env:flutter",
+      "category": "env",
+      "path": "tool/flutter_with_env.sh",
+      "command": "./tool/flutter_with_env.sh",
+      "safety": "local-build-run",
+      "status": "active",
+      "description": "Runs Flutter with active Firebase environment and dart defines.",
+      "checks": ["bash -n tool/flutter_with_env.sh"]
+    },
+    {
+      "id": "env:firebase",
+      "category": "env",
+      "path": "tool/firebase_with_env.sh",
+      "command": "./tool/firebase_with_env.sh",
+      "safety": "remote-firebase",
+      "status": "active",
+      "description": "Runs Firebase CLI against a configured environment alias.",
+      "checks": ["bash -n tool/firebase_with_env.sh"]
+    },
+    {
+      "id": "env:use-firebase",
+      "category": "env",
+      "path": "tool/use_firebase_environment.sh",
+      "command": "./tool/use_firebase_environment.sh",
+      "safety": "local-writes-config",
+      "status": "active",
+      "description": "Copies checked-in Firebase files for the selected environment.",
+      "checks": ["bash -n tool/use_firebase_environment.sh"]
+    },
+    {
+      "id": "env:validate-firebase",
+      "category": "env",
+      "path": "tool/validate_firebase_environment.sh",
+      "command": "./tool/validate_firebase_environment.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks active Firebase files and dart defines match an environment.",
+      "checks": ["bash -n tool/validate_firebase_environment.sh"]
+    },
+    {
+      "id": "firebase:deploy-targets",
+      "category": "firebase",
+      "path": "tool/deploy_firebase_targets.sh",
+      "command": "./tool/deploy_firebase_targets.sh",
+      "safety": "remote-deploy",
+      "status": "active",
+      "description": "Deploys Firebase targets in safe order.",
+      "checks": ["bash -n tool/deploy_firebase_targets.sh"]
+    },
+    {
+      "id": "platform:apple-flavors",
+      "category": "platform",
+      "path": "tool/platform/configure_apple_flavors.rb",
+      "command": "ruby tool/platform/configure_apple_flavors.rb",
+      "safety": "local-writes-xcodeproj",
+      "status": "active",
+      "description": "Configures Apple flavor schemes and Firebase copy phases.",
+      "checks": ["ruby -c tool/platform/configure_apple_flavors.rb"]
+    },
+    {
+      "id": "platform:ios-maps-key",
+      "category": "platform",
+      "path": "tool/write_ios_maps_key_xcconfig.sh",
+      "command": "./tool/write_ios_maps_key_xcconfig.sh",
+      "safety": "local-writes-config",
+      "status": "active",
+      "description": "Writes the iOS Google Maps xcconfig for a selected environment.",
+      "checks": ["bash -n tool/write_ios_maps_key_xcconfig.sh"]
+    },
+    {
+      "id": "migration:relationship-docs",
+      "category": "migrations",
+      "path": "tool/migrations/firestore_relationship_migration.mjs",
+      "command": "node tool/migrations/firestore_relationship_migration.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "watch",
+      "description": "Historical relationship-doc migration for legacy chat messages.",
+      "checks": ["node --check tool/migrations/firestore_relationship_migration.mjs"]
+    },
+    {
+      "id": "migration:runs-to-events",
+      "category": "migrations",
+      "path": "tool/migrations/migrate_run_data_to_events.mjs",
+      "command": "node tool/migrations/migrate_run_data_to_events.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "watch",
+      "description": "Historical run-data to event-data migration.",
+      "checks": ["node --check tool/migrations/migrate_run_data_to_events.mjs"]
+    },
+    {
+      "id": "design:preview-app",
+      "category": "design",
+      "path": "tool/design/design_personality_preview_app.dart",
+      "command": "flutter run -t tool/design/design_personality_preview_app.dart",
+      "safety": "local-ui",
+      "status": "active",
+      "description": "Design personality preview app entrypoint."
+    },
+    {
+      "id": "design:render-personality",
+      "category": "design",
+      "path": "tool/design/render_design_personality_previews.dart",
+      "command": "dart tool/design/render_design_personality_previews.dart",
+      "safety": "local-writes-assets",
+      "status": "active",
+      "description": "Renders design personality previews."
+    },
+    {
+      "id": "design:visual-review",
+      "category": "design",
+      "path": "tool/design/visual_review_app.dart",
+      "command": "flutter run -t tool/design/visual_review_app.dart",
+      "safety": "local-ui",
+      "status": "active",
+      "description": "Visual review app entrypoint."
+    }
+  ]
+}

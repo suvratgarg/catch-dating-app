@@ -64,7 +64,7 @@
     "functions/src/events/selfCheckInAttendance.ts",
     "functions/src/shared/notifications.ts",
     "functions/src/clubs/syncClubNextEvent.ts",
-    "tool/seed_demo_data.mjs"
+    "tool/demo/seed_demo_data.mjs"
   ],
   "rulesAndIndexes": {
     "firestoreRules": "No direct event writes are allowed, so callable validation owns this migration.",

@@ -43,10 +43,21 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('How did it feel?', style: CatchTextStyles.titleM(context)),
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'How did it feel?',
+                    style: CatchTextStyles.titleM(context),
+                  ),
+                  const _PrivacyBadge(_PrivacyAudience.catchPrivate),
+                ],
+              ),
               gapH4,
               Text(
-                'Your answers help Catch improve future events. Safety notes are reviewed privately by Catch.',
+                'Your answers help Catch improve future events. Hosts see aggregated trends; only Catch reviews safety notes.',
                 style: CatchTextStyles.bodyS(context),
               ),
               gapH12,

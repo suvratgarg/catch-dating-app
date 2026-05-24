@@ -97,9 +97,6 @@
     "revealStartedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
     },
-    "revealEndsAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
-    },
     "attendeePrompt": {
       "type": ["string", "null"],
       "maxLength": 300

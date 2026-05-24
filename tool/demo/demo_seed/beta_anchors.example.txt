@@ -1,0 +1,8 @@
+# Copy this file to tool/demo/demo_seed/beta_anchors.txt and replace these examples.
+# Use one Firebase Auth UID or one phone number per line.
+#
+# Firebase Auth UID:
+# abcFirebaseUid123
+#
+# Phone number exactly as stored in users.phoneNumber:
+# +919999999999

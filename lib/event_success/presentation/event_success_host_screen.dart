@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -29,14 +28,12 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -233,7 +230,6 @@ class EventSuccessHostSection extends ConsumerWidget {
       plan: plan,
       planIsPersisted: persistedPlan != null,
       roster: roster,
-      feedback: const <EventSuccessFeedback>[],
       scorecard: scorecard,
       assignments: assignments,
       rotationAssignments: rotationAssignments,
@@ -255,7 +251,6 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.plan,
     required this.planIsPersisted,
     required this.roster,
-    required this.feedback,
     this.scorecard,
     this.assignments = const [],
     this.rotationAssignments = const [],
@@ -273,7 +268,6 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventParticipationRoster roster;
-  final List<EventSuccessFeedback> feedback;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
   final List<EventSuccessAssignment> rotationAssignments;
@@ -374,7 +368,6 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
-        feedback: widget.feedback,
         scorecard: widget.scorecard,
         assignments: widget.assignments,
         rotationAssignments: widget.rotationAssignments,

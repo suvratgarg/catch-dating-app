@@ -120,11 +120,7 @@ class _HostRevealActions extends ConsumerWidget {
       ref,
       (tx) => tx
           .get(eventSuccessControllerProvider.notifier)
-          .startRevealCountdown(
-            eventId: eventId,
-            roundIndex: roundIndex,
-            countdownSeconds: countdownSeconds,
-          ),
+          .startRevealCountdown(eventId: eventId, roundIndex: roundIndex),
     );
   }
 
