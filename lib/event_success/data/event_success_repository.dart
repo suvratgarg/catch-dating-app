@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -28,6 +29,7 @@ class EventSuccessRepository {
   static const _assignmentsPath = 'eventSuccessAssignments';
   static const _preferencesPath = 'eventSuccessPreferences';
   static const _wingmanRequestsPath = 'eventSuccessWingmanRequests';
+  static const _arrivalMissionsPath = 'eventSuccessArrivalMissions';
   static const _compatibilityResponsesPath =
       'eventSuccessCompatibilityResponses';
   static const _scorecardsPath = 'eventSuccessScorecards';
@@ -75,6 +77,14 @@ class EventSuccessRepository {
         toJson: (request) => request.toJson(),
       );
 
+  CollectionReference<EventSuccessArrivalMission> get _arrivalMissionsRef => _db
+      .collection(_arrivalMissionsPath)
+      .withDocumentIdConverter<EventSuccessArrivalMission>(
+        idField: 'id',
+        fromJson: EventSuccessArrivalMission.fromJson,
+        toJson: (mission) => mission.toJson(),
+      );
+
   CollectionReference<EventSuccessCompatibilityResponse>
   get _compatibilityResponsesRef => _db
       .collection(_compatibilityResponsesPath)
@@ -111,6 +121,13 @@ class EventSuccessRepository {
     required String uid,
   }) => _wingmanRequestsRef.doc(
     eventSuccessWingmanRequestId(eventId: eventId, uid: uid),
+  );
+
+  DocumentReference<EventSuccessArrivalMission> _arrivalMissionDoc({
+    required String eventId,
+    required String uid,
+  }) => _arrivalMissionsRef.doc(
+    eventSuccessArrivalMissionId(eventId: eventId, uid: uid),
   );
 
   DocumentReference<EventSuccessCompatibilityResponse>
@@ -383,6 +400,21 @@ class EventSuccessRepository {
     ),
   );
 
+  Stream<EventSuccessArrivalMission?> watchArrivalMissionForUser({
+    required String eventId,
+    required String uid,
+  }) => withBackendErrorStream(
+    () => _arrivalMissionDoc(
+      eventId: eventId,
+      uid: uid,
+    ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'load your First Hello mission',
+      resource: _arrivalMissionsPath,
+    ),
+  );
+
   Stream<List<EventSuccessWingmanRequest>> watchWingmanRequestsForEvent(
     String eventId,
   ) => withBackendErrorStream(
@@ -604,6 +636,54 @@ class EventSuccessRepository {
         ),
       );
 
+  Future<void> startFirstHelloMission({
+    required Event event,
+    required double? latitude,
+    required double? longitude,
+  }) => withBackendErrorContext(
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions.httpsCallable('startEventSuccessFirstHelloMission').call(
+        {'eventId': event.id, 'latitude': ?latitude, 'longitude': ?longitude},
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'start First Hello mission',
+      resource: _arrivalMissionsPath,
+    ),
+  );
+
+  Future<void> completeFirstHelloMission({
+    required Event event,
+    required String answerId,
+    required double? latitude,
+    required double? longitude,
+  }) => withBackendErrorContext(
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions
+          .httpsCallable('completeEventSuccessFirstHelloMission')
+          .call({
+            'eventId': event.id,
+            'answerId': answerId,
+            'latitude': ?latitude,
+            'longitude': ?longitude,
+          });
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'complete First Hello mission',
+      resource: _arrivalMissionsPath,
+    ),
+  );
+
   Future<void> _setPreference({
     required Event event,
     required String uid,
@@ -749,6 +829,15 @@ Stream<EventSuccessWingmanRequest?> watchUserEventSuccessWingmanRequest(
 }) => ref
     .watch(eventSuccessRepositoryProvider)
     .watchWingmanRequestForUser(eventId: eventId, uid: uid);
+
+@riverpod
+Stream<EventSuccessArrivalMission?> watchUserEventSuccessArrivalMission(
+  Ref ref, {
+  required String eventId,
+  required String uid,
+}) => ref
+    .watch(eventSuccessRepositoryProvider)
+    .watchArrivalMissionForUser(eventId: eventId, uid: uid);
 
 @riverpod
 Stream<List<EventSuccessWingmanRequest>> watchEventSuccessWingmanRequests(

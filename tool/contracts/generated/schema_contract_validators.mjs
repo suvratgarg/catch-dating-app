@@ -21,6 +21,7 @@ import {
   eventSuccessPreferenceDocumentSchema,
   eventSuccessCompatibilityResponseDocumentSchema,
   eventSuccessWingmanRequestDocumentSchema,
+  eventSuccessArrivalMissionDocumentSchema,
   eventSuccessAssignmentDocumentSchema,
   eventSuccessScorecardDocumentSchema,
   eventSafetyReportDocumentSchema,
@@ -58,6 +59,8 @@ import {
   markEventAttendanceCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
+  startEventSuccessFirstHelloMissionCallablePayloadSchema,
+  completeEventSuccessFirstHelloMissionCallablePayloadSchema,
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
@@ -107,6 +110,7 @@ export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeed
 export const validateEventSuccessPreferenceDocument = ajv.compile(eventSuccessPreferenceDocumentSchema);
 export const validateEventSuccessCompatibilityResponseDocument = ajv.compile(eventSuccessCompatibilityResponseDocumentSchema);
 export const validateEventSuccessWingmanRequestDocument = ajv.compile(eventSuccessWingmanRequestDocumentSchema);
+export const validateEventSuccessArrivalMissionDocument = ajv.compile(eventSuccessArrivalMissionDocumentSchema);
 export const validateEventSuccessAssignmentDocument = ajv.compile(eventSuccessAssignmentDocumentSchema);
 export const validateEventSuccessScorecardDocument = ajv.compile(eventSuccessScorecardDocumentSchema);
 export const validateEventSafetyReportDocument = ajv.compile(eventSafetyReportDocumentSchema);
@@ -144,6 +148,8 @@ export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayload
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
 export const validateSubmitEventSuccessWingmanRequestCallablePayload = ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema);
+export const validateStartEventSuccessFirstHelloMissionCallablePayload = ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema);
+export const validateCompleteEventSuccessFirstHelloMissionCallablePayload = ajv.compile(completeEventSuccessFirstHelloMissionCallablePayloadSchema);
 export const validateMarkEventAttendanceCallableResponse = ajv.compile(markEventAttendanceCallableResponseSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
 export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);

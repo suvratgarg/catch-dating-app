@@ -112,6 +112,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessWingmanRequestDocument.ts",
   },
   {
+    name: "EventSuccessArrivalMissionDocument",
+    source: "firestore/event_success_arrival_missions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventSuccessArrivalMissionDocument.ts",
+  },
+  {
     name: "EventSuccessAssignmentDocument",
     source: "firestore/event_success_assignments.schema.json",
     typeOutput:
@@ -319,6 +325,22 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "submitEventSuccessWingmanRequestCallablePayload.ts",
+  },
+  {
+    name: "StartEventSuccessFirstHelloMissionCallablePayload",
+    source:
+      "callables/start_event_success_first_hello_mission_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startEventSuccessFirstHelloMissionCallablePayload.ts",
+  },
+  {
+    name: "CompleteEventSuccessFirstHelloMissionCallablePayload",
+    source:
+      "callables/complete_event_success_first_hello_mission_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "completeEventSuccessFirstHelloMissionCallablePayload.ts",
   },
   {
     name: "MarkEventAttendanceCallableResponse",

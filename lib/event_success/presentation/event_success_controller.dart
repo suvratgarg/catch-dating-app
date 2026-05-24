@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,6 +24,8 @@ class EventSuccessController extends _$EventSuccessController {
   static final completePlanMutation = Mutation<void>();
   static final feedbackMutation = Mutation<void>();
   static final compatibilityResponseMutation = Mutation<void>();
+  static final firstHelloStartMutation = Mutation<void>();
+  static final firstHelloCompleteMutation = Mutation<void>();
   static final wingmanRequestMutation = Mutation<void>();
   static final generateMicroPodsMutation = Mutation<void>();
   static final generateGuidedRotationsMutation = Mutation<void>();
@@ -120,6 +124,42 @@ class EventSuccessController extends _$EventSuccessController {
             config: questionnaireConfig,
           ),
           questionnaireConfig: questionnaireConfig,
+        );
+  }
+
+  Future<void> startFirstHelloMission({required Event event}) async {
+    requireSignedInUid(ref, action: 'start First Hello check-in');
+    final position = await ref
+        .read(eventCheckInLocationServiceProvider)
+        .getCurrentLocation();
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .startFirstHelloMission(
+          event: event,
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+  }
+
+  Future<void> completeFirstHelloMission({
+    required Event event,
+    required EventSuccessArrivalMission mission,
+    required String answerId,
+  }) async {
+    requireSignedInUid(ref, action: 'complete First Hello check-in');
+    if (mission.eventId != event.id) {
+      throw StateError('First Hello mission does not belong to this event.');
+    }
+    final position = await ref
+        .read(eventCheckInLocationServiceProvider)
+        .getCurrentLocation();
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .completeFirstHelloMission(
+          event: event,
+          answerId: answerId,
+          latitude: position.latitude,
+          longitude: position.longitude,
         );
   }
 

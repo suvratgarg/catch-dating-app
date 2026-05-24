@@ -10,6 +10,7 @@
     "selfCheckInWindowBeforeMinutes": 10,
     "selfCheckInWindowAfterMinutes": 30,
     "selfCheckInMaxDistanceMeters": 200,
+    "firstHelloMaxDistanceMeters": 100,
     "hostAttendanceWindowBeforeMinutes": 10,
     "hostAttendanceWindowAfterEventHours": 6
   }
