@@ -1,6 +1,6 @@
 {
-  "version": "4.1.1",
-  "updated": "2026-05-22",
+  "version": "4.1.2",
+  "updated": "2026-05-24",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -176,6 +176,19 @@
       ],
       "skip_when": [
         "The task does not touch live event success, event quality, attendee mixing, participant metrics, or post-event coaching strategy"
+      ]
+    },
+    "docs/event_success_theatrical_experience_tracker.md": {
+      "purpose": "Temporary active tracker for Event Success live ceremony polish, invite-loop follow-up, private afterglow recap planning, and branded audio evaluation.",
+      "read_when": [
+        "Planning or implementing Event Success live ceremony polish",
+        "Changing attendee companion moment theatre, host live showtime console, native cues, or reveal ceremony behavior",
+        "Planning Partiful-like invite sharing or private post-event recap artifacts",
+        "Evaluating whether branded audio assets should replace native cues"
+      ],
+      "skip_when": [
+        "Only checking durable event-success contracts; use docs/event_success.md",
+        "No event-success experience, invite, recap, or sensory behavior is touched"
       ]
     },
     "docs/controller_patterns.md": {

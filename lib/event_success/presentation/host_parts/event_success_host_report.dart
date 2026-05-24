@@ -108,7 +108,7 @@ class _ReportTab extends StatelessWidget {
           title:
               '$feedbackCount attendee feedback response${feedbackCount == 1 ? '' : 's'}',
           body:
-              'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests.',
+              'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.',
         ),
         gapH16,
         _HostReportSignalGrid(brief: brief),

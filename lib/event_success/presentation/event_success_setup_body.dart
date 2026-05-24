@@ -148,20 +148,32 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
           ],
         ),
         gapH8,
-        const _StageCard(
+        _StageCard(
           title: 'When people arrive',
-          subtitle: 'Catch handles these automatically.',
+          subtitle:
+              'Check-in stays reliable; optional rituals can start the room.',
           children: [
-            _FoundationLine(
+            const _FoundationLine(
               title: 'Check attendees in and confirm groups',
               subtitle:
                   'Arrival is the source of truth for assignments, feedback, and post-event matching.',
             ),
-            _FoundationLine(
+            const _FoundationLine(
               title: 'Read a brief welcome script',
               subtitle:
                   'A short host opener gives attendees permission to talk.',
             ),
+            for (final recommendation in _stageRecommendations(
+              profile,
+              _SetupLifecycleStage.arrival,
+            ))
+              _RecommendationSwitch(
+                recommendation: recommendation,
+                active: draft.isModuleSelected(recommendation.module.id),
+                onChanged: widget.editable && recommendation.selectable
+                    ? (_) => _emitModuleToggle(draft, recommendation.module.id)
+                    : null,
+              ),
           ],
         ),
         gapH8,
@@ -319,10 +331,8 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
   }
 }
 
-/// Lifecycle stage a module belongs to in the host-facing setup view. The
-/// arrival stage isn't represented here because nothing in it is host-
-/// toggleable today — its card is pure foundation lines.
-enum _SetupLifecycleStage { during, after }
+/// Lifecycle stage a module belongs to in the host-facing setup view.
+enum _SetupLifecycleStage { arrival, during, after }
 
 /// Modules that are "always-on event basics" for the host — surfaced as ✓ lines
 /// in the lifecycle stage cards instead of toggles.
@@ -339,6 +349,7 @@ const Set<String> _foundationModuleIds = {
 /// Modules absent from this map (and not in [_foundationModuleIds]) fall into
 /// the Advanced drawer.
 const Map<String, _SetupLifecycleStage> _lifecycleStageForModule = {
+  'first_hello_check_in': _SetupLifecycleStage.arrival,
   'micro_pods': _SetupLifecycleStage.during,
   'guided_rotations': _SetupLifecycleStage.during,
   'live_reveal': _SetupLifecycleStage.during,

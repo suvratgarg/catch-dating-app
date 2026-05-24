@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.0.3
+version: 1.0.4
 updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
@@ -93,12 +93,21 @@ assignment shapes.
 | `eventSuccessPreferences/{eventId_uid}` | Attendee-owned live-guidance opt-outs. |
 | `eventSuccessCompatibilityResponses/{eventId_uid}` | Attendee-owned compatibility answers. Hosts cannot read individual answers. |
 | `eventSuccessWingmanRequests/{eventId_uid}` | Attendee consent document for host-visible introduction help. Target is not notified by this surface. |
+| `eventSuccessArrivalMissions/{eventId_uid}` | Server-owned First Hello mission. Attendee can read only their own mission; clients cannot create, update, list, or delete. |
 | `eventSuccessAssignments/{eventId_moduleId_uid}` | Server-owned assignment docs for micro-pods/guided rotations. |
 | `eventSuccessScorecards/{eventId}` | Server-owned aggregate coaching scorecard. Host-readable through event-success policy. |
 
 Schemas live under `contracts/firestore/` and generated outputs under
 `functions/src/shared/generated/`, `lib/core/schema_contracts/generated/`, and
 `tool/contracts/generated/`.
+
+First Hello check-in is modeled as an optional arrival module with server-owned
+mission assignment/completion. `startEventSuccessFirstHelloMission` verifies the
+attendee is signed up, the check-in window is open, the caller is within the
+tighter First Hello venue radius, the module is selected, and a compatible
+checked-in target exists. `completeEventSuccessFirstHelloMission` verifies the
+active mission and answer, rechecks location/block state, records only the
+observer's answer on the mission, and marks attendance.
 
 ## Product Guardrails
 
@@ -107,6 +116,9 @@ Schemas live under `contracts/firestore/` and generated outputs under
   or participant activity begins unless product explicitly adds a late-change
   path with attendee notice.
 - Compatibility tools are conversation context, not a promise of chemistry.
+- First Hello check-in is an optional arrival ritual, not a replacement for
+  ordinary attendance. The normal check-in path remains available as a host
+  fallback, QR scan, or self-check-in fallback.
 - Social runs should stay lightweight; structured mixers, racket pairs, dinners,
   and quiz/team formats can carry more live facilitation.
 - Safety/comfort feedback is Catch-private first. Hosts see aggregate coaching,
@@ -130,21 +142,60 @@ step-synced companion moment at a time. Ended attended users see feedback and
 post-event follow-up. Do not reintroduce a stacked attendee dashboard that shows
 every enabled module at once.
 
+First Hello sits between signed-up arrival and attended state. Runtime shows a
+startable First Hello moment when the module is selected, check-in is open, and
+the user is still `signedUp`; after the backend assigns a mission, the same
+moment renders the target and answer options. If First Hello is unavailable, the
+runtime falls back to the normal questionnaire/self-check-in/pre-arrival flow.
+
 Activity recommendations live in
 `lib/event_success/domain/event_success_activity_profile.dart`. Do not add
 activity-specific toggles directly in screens.
+
+## Theatrical Experience Workstream
+
+`docs/event_success_theatrical_experience_tracker.md` is the temporary active
+tracker for making the live event companion and host live mode feel more like a
+playful synchronized ceremony. Keep durable architecture here, but track phase
+status, references, acceptance criteria, and resume notes in that tracker until
+the live ceremony, invite loop, private afterglow recap, and branded audio
+questions close.
+
+Current defaults:
+
+- live ceremony comes first;
+- native haptics and `SystemSound` cues come before a branded audio package;
+- pre-event invites are the strongest shareability primitive;
+- post-event recap artifacts are private-first unless sharing psychology becomes
+  clearer.
+
+Current theatrical implementation state:
+
+- the attendee companion stage redesign, invite loop, and private afterglow
+  recap are implemented for visual review;
+- First Hello check-in is implemented as an optional arrival module with
+  server-owned mission assignment/completion, a synchronized manual QA harness,
+  and a 100m venue radius;
+- QR check-in now has a host QR surface and attendee scanner entry point; the
+  existing GPS self-check-in callable remains the attendance write path;
+- invite sharing now routes through shared event-invite copy across event
+  detail, payment confirmation, and host private-link surfaces;
+- post-event companion follow-up now starts with a private in-app afterglow
+  recap and keeps host reporting aggregate-safe.
 
 ## Manual QA
 
 Use `/dev/event-success-manual-qa` first for visual and state QA. Settings also
 links to it from Development. It renders the production host panel and attendee
-companion side by side from one fixture.
+companion side by side from one synchronized in-memory fixture store.
 
 Check:
 
 - scenario profiles: social run, racket pairs, quiz teams, singles mixer/live
   reveal;
 - host setup/live/report surface switching;
+- optional First Hello arrival mission from host controls through attendee
+  completion and checked-in state;
 - host `Previous`/`Next` run-of-show transitions updating both panes;
 - countdown, reveal now, and reset;
 - pre-arrival attendee state without live prompt/reveal/partner leakage;

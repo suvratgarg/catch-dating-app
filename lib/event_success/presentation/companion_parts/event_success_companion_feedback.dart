@@ -37,9 +37,8 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
     return Consumer(
       builder: (context, ref, _) {
         final mutation = ref.watch(EventSuccessController.feedbackMutation);
-        return CatchSurface(
-          borderColor: CatchTokens.of(context).line,
-          padding: const EdgeInsets.all(CatchSpacing.s4),
+        final t = CatchTokens.of(context);
+        return _StagePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,16 +48,18 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Text(
-                    'How did it feel?',
-                    style: CatchTextStyles.titleM(context),
+                    widget.existingFeedback == null
+                        ? 'How did it feel?'
+                        : 'Your feedback is saved',
+                    style: CatchTextStyles.titleL(context),
                   ),
                   const _PrivacyBadge(_PrivacyAudience.catchPrivate),
                 ],
               ),
               gapH4,
               Text(
-                'Your answers help Catch improve future events. Hosts see aggregated trends; only Catch reviews safety notes.',
-                style: CatchTextStyles.bodyS(context),
+                'This is private-first: hosts see aggregate trends, while private notes and safety concerns stay with Catch.',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
               ),
               gapH12,
               _RatingRow(
@@ -88,20 +89,24 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                   style: CatchTextStyles.bodyS(context),
                 ),
               ),
-              CatchTextField(
-                label: 'Private note to Catch',
-                controller: _noteController,
-                maxLines: 3,
-                inputFormatters: [LengthLimitingTextInputFormatter(500)],
+              _StageSoftBand(
+                child: CatchTextField(
+                  label: 'Private note to Catch',
+                  controller: _noteController,
+                  maxLines: 3,
+                  inputFormatters: [LengthLimitingTextInputFormatter(500)],
+                ),
               ),
               gapH12,
-              CatchButton(
-                label: widget.existingFeedback == null
-                    ? 'Submit feedback'
-                    : 'Update feedback',
-                isLoading: mutation.isPending,
-                onPressed: mutation.isPending ? null : () => _submit(ref),
-                fullWidth: true,
+              _StageActionDock(
+                child: CatchButton(
+                  label: widget.existingFeedback == null
+                      ? 'Submit feedback'
+                      : 'Update feedback',
+                  isLoading: mutation.isPending,
+                  onPressed: mutation.isPending ? null : () => _submit(ref),
+                  fullWidth: true,
+                ),
               ),
             ],
           ),

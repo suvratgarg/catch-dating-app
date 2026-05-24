@@ -5,11 +5,13 @@ class _CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
     required this.event,
     required this.plan,
     required this.response,
+    this.onSaveAnswers,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final EventSuccessCompatibilityResponse? response;
+  final Future<void> Function(List<String> answerIds)? onSaveAnswers;
 
   @override
   ConsumerState<_CompatibilityQuestionnaireSection> createState() =>
@@ -19,6 +21,8 @@ class _CompatibilityQuestionnaireSection extends ConsumerStatefulWidget {
 class _CompatibilityQuestionnaireSectionState
     extends ConsumerState<_CompatibilityQuestionnaireSection> {
   late List<String> _answerIds = _initialAnswerIds;
+  int _activeQuestionIndex = 0;
+  bool _fixtureSavePending = false;
 
   @override
   void didUpdateWidget(covariant _CompatibilityQuestionnaireSection oldWidget) {
@@ -30,6 +34,7 @@ class _CompatibilityQuestionnaireSectionState
           widget.response?.answerIds,
         )) {
       _answerIds = _initialAnswerIds;
+      _activeQuestionIndex = 0;
     }
   }
 
@@ -40,11 +45,18 @@ class _CompatibilityQuestionnaireSectionState
       EventSuccessController.compatibilityResponseMutation,
     );
     final rankingOn = widget.plan.compatibilityAffectsRanking;
+    final questions = EventSuccessCompatibilityQuestionnaire.questionsFor(
+      widget.plan.questionnaireConfig,
+    );
+    final activeQuestion =
+        questions[_activeQuestionIndex.clamp(0, questions.length - 1).toInt()];
+    final answeredQuestionCount = questions
+        .where((question) => _answerForQuestion(question) != null)
+        .length;
     final hasAnswers = _answerIds.isNotEmpty;
     final dirty = !_sameAnswers(_answerIds, widget.response?.answerIds);
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+    final saving = mutation.isPending || _fixtureSavePending;
+    return _StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -55,7 +67,7 @@ class _CompatibilityQuestionnaireSectionState
             children: [
               Text(
                 'A few quick questions',
-                style: CatchTextStyles.titleM(context),
+                style: CatchTextStyles.titleS(context),
               ),
               const _PrivacyBadge(_PrivacyAudience.catchPrivate),
               CatchBadge(
@@ -75,7 +87,7 @@ class _CompatibilityQuestionnaireSectionState
                 ),
             ],
           ),
-          gapH6,
+          gapH10,
           Text(
             rankingOn
                 ? 'Your answers can shape reveal clues and help guide pairings. Hosts never see individual answers.'
@@ -83,32 +95,53 @@ class _CompatibilityQuestionnaireSectionState
             style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
           gapH16,
-          for (final question
-              in EventSuccessCompatibilityQuestionnaire.questionsFor(
-                widget.plan.questionnaireConfig,
-              )) ...[
-            Text(question.prompt, style: CatchTextStyles.titleS(context)),
-            gapH8,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (final option in question.options)
-                  CatchChip(
-                    label: option.label,
-                    active: _answerIds.contains(option.id),
-                    onTap: () => setState(() {
-                      _answerIds = _answersReplacingQuestion(
-                        question: question,
-                        answerId: option.id,
-                      );
-                    }),
+          _QuestionProgressRail(
+            activeIndex: _activeQuestionIndex,
+            answeredCount: answeredQuestionCount,
+            questionCount: questions.length,
+            onSelect: (index) => setState(() => _activeQuestionIndex = index),
+          ),
+          gapH16,
+          AnimatedSwitcher(
+            duration: CatchMotion.base,
+            switchInCurve: CatchMotion.springCurve,
+            switchOutCurve: Curves.easeInCubic,
+            child: KeyedSubtree(
+              key: ValueKey(activeQuestion.id),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    activeQuestion.prompt,
+                    style: CatchTextStyles.titleL(context),
                   ),
-              ],
+                  gapH12,
+                  Wrap(
+                    spacing: CatchSpacing.s2,
+                    runSpacing: CatchSpacing.s2,
+                    children: [
+                      for (final option in activeQuestion.options)
+                        CatchChip(
+                          label: option.label,
+                          active: _answerIds.contains(option.id),
+                          onTap: () => setState(() {
+                            _answerIds = _answersReplacingQuestion(
+                              question: activeQuestion,
+                              answerId: option.id,
+                            );
+                            if (_activeQuestionIndex < questions.length - 1) {
+                              _activeQuestionIndex++;
+                            }
+                          }),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            gapH14,
-          ],
+          ),
           if (mutation.hasError) ...[
+            gapH14,
             Text(
               appErrorMessage(
                 (mutation as MutationError).error,
@@ -118,24 +151,41 @@ class _CompatibilityQuestionnaireSectionState
             ),
             gapH10,
           ],
-          CatchButton(
-            label: widget.response == null ? 'Save answers' : 'Update answers',
-            isLoading: mutation.isPending,
-            onPressed: !hasAnswers || !dirty || mutation.isPending
-                ? null
-                : () =>
-                      EventSuccessController.compatibilityResponseMutation.run(
-                        ref,
-                        (tx) => tx
-                            .get(eventSuccessControllerProvider.notifier)
-                            .saveCompatibilityResponse(
-                              event: widget.event,
-                              answerIds: _answerIds,
-                              questionnaireConfig:
-                                  widget.plan.questionnaireConfig,
-                            ),
-                      ),
-            fullWidth: true,
+          gapH16,
+          _StageActionDock(
+            child: CatchButton(
+              label: widget.response == null ? 'Save clues' : 'Update clues',
+              isLoading: saving,
+              onPressed: !hasAnswers || !dirty || saving
+                  ? null
+                  : () async {
+                      final fixtureSave = widget.onSaveAnswers;
+                      if (fixtureSave != null) {
+                        setState(() => _fixtureSavePending = true);
+                        try {
+                          await fixtureSave(_answerIds);
+                        } finally {
+                          if (mounted) {
+                            setState(() => _fixtureSavePending = false);
+                          }
+                        }
+                        return;
+                      }
+                      await EventSuccessController.compatibilityResponseMutation
+                          .run(
+                            ref,
+                            (tx) => tx
+                                .get(eventSuccessControllerProvider.notifier)
+                                .saveCompatibilityResponse(
+                                  event: widget.event,
+                                  answerIds: _answerIds,
+                                  questionnaireConfig:
+                                      widget.plan.questionnaireConfig,
+                                ),
+                          );
+                    },
+              fullWidth: true,
+            ),
           ),
         ],
       ),
@@ -160,6 +210,77 @@ class _CompatibilityQuestionnaireSectionState
     return EventSuccessCompatibilityQuestionnaire.normalizedAnswerIds(
       next,
       config: widget.plan.questionnaireConfig,
+    );
+  }
+
+  String? _answerForQuestion(EventSuccessCompatibilityQuestion question) {
+    final optionIds = question.options.map((option) => option.id).toSet();
+    for (final answerId in _answerIds) {
+      if (optionIds.contains(answerId)) return answerId;
+    }
+    return null;
+  }
+}
+
+class _QuestionProgressRail extends StatelessWidget {
+  const _QuestionProgressRail({
+    required this.activeIndex,
+    required this.answeredCount,
+    required this.questionCount,
+    required this.onSelect,
+  });
+
+  final int activeIndex;
+  final int answeredCount;
+  final int questionCount;
+  final ValueChanged<int> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            child: LinearProgressIndicator(
+              minHeight: 8,
+              value: questionCount == 0 ? 0 : answeredCount / questionCount,
+              backgroundColor: t.line,
+              valueColor: AlwaysStoppedAnimation<Color>(t.primary),
+            ),
+          ),
+        ),
+        gapW10,
+        for (var index = 0; index < questionCount; index++) ...[
+          InkWell(
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            onTap: () => onSelect(index),
+            child: Container(
+              width: 28,
+              height: 28,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: index == activeIndex
+                    ? t.primary
+                    : index < answeredCount
+                    ? t.primarySoft
+                    : t.surface,
+                border: Border.all(color: t.line),
+              ),
+              child: Text(
+                '${index + 1}',
+                style: CatchTextStyles.labelS(
+                  context,
+                  color: index == activeIndex ? t.surface : t.ink2,
+                ),
+              ),
+            ),
+          ),
+          if (index < questionCount - 1) gapW4,
+        ],
+      ],
     );
   }
 }

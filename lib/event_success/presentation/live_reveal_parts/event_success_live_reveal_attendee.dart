@@ -73,115 +73,118 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
       for (final profile in peerProfiles) profile.uid: profile,
     };
 
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(kind.icon, color: t.primary),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: CatchSpacing.s2,
-                      runSpacing: CatchSpacing.s2,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        CatchBadge(
-                          label: kind.label,
-                          tone: CatchBadgeTone.live,
-                          icon: Icons.bolt_rounded,
-                        ),
-                        if (assigned != null)
-                          CatchBadge(
-                            label: isCountingDown
-                                ? 'Unlocking'
-                                : showAssignment
-                                ? 'Revealed'
-                                : 'Waiting',
-                            tone: showAssignment
-                                ? CatchBadgeTone.success
-                                : isCountingDown
-                                ? CatchBadgeTone.warning
-                                : CatchBadgeTone.neutral,
-                          ),
-                      ],
-                    ),
-                    gapH10,
-                    Text(
-                      _attendeeTitle(
-                        assigned: assigned,
-                        showAssignment: showAssignment,
-                        isCountingDown: isCountingDown,
-                        remainingSeconds: _remainingSeconds(plan, referenceNow),
-                      ),
-                      style: CatchTextStyles.titleM(context),
-                    ),
-                    gapH4,
-                    Text(
-                      _attendeeSubtitle(
-                        assigned: assigned,
-                        showAssignment: showAssignment,
-                        isCountingDown: isCountingDown,
-                      ),
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
-                    ),
-                  ],
+    final revealColor = showAssignment ? t.success : t.primary;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(CatchRadius.sm),
+        border: Border.all(color: revealColor.withValues(alpha: 0.24)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                CatchBadge(
+                  label: kind.label,
+                  tone: CatchBadgeTone.live,
+                  icon: Icons.bolt_rounded,
+                ),
+                if (assigned != null)
+                  CatchBadge(
+                    label: isCountingDown
+                        ? 'Unlocking'
+                        : showAssignment
+                        ? 'Revealed'
+                        : 'Waiting',
+                    tone: showAssignment
+                        ? CatchBadgeTone.success
+                        : isCountingDown
+                        ? CatchBadgeTone.warning
+                        : CatchBadgeTone.neutral,
+                  ),
+              ],
+            ),
+            gapH12,
+            Text(
+              _attendeeTitle(
+                assigned: assigned,
+                showAssignment: showAssignment,
+                isCountingDown: isCountingDown,
+                remainingSeconds: _remainingSeconds(plan, referenceNow),
+              ),
+              style: CatchTextStyles.titleL(context),
+            ),
+            gapH6,
+            Text(
+              _attendeeSubtitle(
+                assigned: assigned,
+                showAssignment: showAssignment,
+                isCountingDown: isCountingDown,
+              ),
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
+            if (assigned != null && !optedOut) ...[
+              gapH16,
+              if (isCountingDown)
+                _AttendeeCountdown(
+                  plan: plan,
+                  now: referenceNow,
+                  kind: kind,
+                  clue: _attendeeClue(assigned, activeRound),
+                )
+              else if (!showAssignment)
+                _WaitingRevealCue(kind: kind)
+              else if (kind == EventSuccessRevealAssignmentKind.rotations)
+                _VisibleRotationSlots(
+                  slots: visibleSlots,
+                  profilesByUid: profilesByUid,
+                  peersLoading: peersLoading,
+                )
+              else
+                _VisiblePodAssignment(
+                  assignment: assigned,
+                  peerProfiles: peerProfiles,
+                  peersLoading: peersLoading,
+                ),
+              if (roundCount > 1) ...[
+                gapH12,
+                _RevealRoundRail(
+                  roundCount: roundCount,
+                  activeRoundIndex: activeRound,
+                  revealedThrough: revealedThrough,
+                  foreground: t.ink,
+                ),
+              ],
+            ],
+            gapH14,
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: t.ink.withValues(alpha: 0.88),
+                borderRadius: BorderRadius.circular(CatchRadius.sm),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(CatchSpacing.s2),
+                child: CatchButton(
+                  label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+                  variant: optedOut
+                      ? CatchButtonVariant.primary
+                      : CatchButtonVariant.secondary,
+                  isLoading: mutation.isPending,
+                  onPressed: mutation.isPending
+                      ? null
+                      : () => _toggleOptOut(ref, optedOut: !optedOut),
+                  fullWidth: true,
                 ),
               ),
-            ],
-          ),
-          if (assigned != null && !optedOut) ...[
-            gapH14,
-            if (isCountingDown)
-              _AttendeeCountdown(
-                plan: plan,
-                now: referenceNow,
-                clue: _attendeeClue(assigned, activeRound),
-              )
-            else if (!showAssignment)
-              _WaitingRevealCue(kind: kind)
-            else if (kind == EventSuccessRevealAssignmentKind.rotations)
-              _VisibleRotationSlots(
-                slots: visibleSlots,
-                profilesByUid: profilesByUid,
-                peersLoading: peersLoading,
-              )
-            else
-              _VisiblePodAssignment(
-                assignment: assigned,
-                peerProfiles: peerProfiles,
-                peersLoading: peersLoading,
-              ),
-            if (roundCount > 1) ...[
-              gapH12,
-              _RevealRoundRail(
-                roundCount: roundCount,
-                activeRoundIndex: activeRound,
-                revealedThrough: revealedThrough,
-                foreground: t.ink,
-              ),
-            ],
+            ),
           ],
-          gapH12,
-          CatchButton(
-            label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-            variant: optedOut
-                ? CatchButtonVariant.primary
-                : CatchButtonVariant.secondary,
-            isLoading: mutation.isPending,
-            onPressed: mutation.isPending
-                ? null
-                : () => _toggleOptOut(ref, optedOut: !optedOut),
-            fullWidth: true,
-          ),
-        ],
+        ),
       ),
     );
   }
