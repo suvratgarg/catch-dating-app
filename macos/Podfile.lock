@@ -3,6 +3,9 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - audioplayers_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - cloud_firestore (6.3.0):
     - Firebase/CoreOnly (~> 12.12.0)
     - Firebase/Firestore (~> 12.12.0)
@@ -286,6 +289,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - audioplayers_darwin (from `Flutter/ephemeral/.symlinks/plugins/audioplayers_darwin/darwin`)
   - cloud_firestore (from `Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos`)
   - cloud_functions (from `Flutter/ephemeral/.symlinks/plugins/cloud_functions/macos`)
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
@@ -347,6 +351,8 @@ SPEC REPOS:
     - PromisesSwift
 
 EXTERNAL SOURCES:
+  audioplayers_darwin:
+    :path: Flutter/ephemeral/.symlinks/plugins/audioplayers_darwin/darwin
   cloud_firestore:
     :path: Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos
   cloud_functions:
@@ -398,6 +404,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  audioplayers_darwin: f15e209a3e856d1a7edcf98dc029f484fead2242
   cloud_firestore: e8817e7e23671a63ad9360ea2749b0da6037887a
   cloud_functions: 1099cd8803bd491766fabffe3e83754e12f65555
   connectivity_plus: 0a976dfd033b59192912fa3c6c7b54aab5093802
