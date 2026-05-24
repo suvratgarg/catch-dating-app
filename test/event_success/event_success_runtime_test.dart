@@ -80,6 +80,92 @@ void main() {
       );
     });
 
+    test('prioritizes assigned First Hello mission during arrival', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.singlesMixer,
+        ),
+      );
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.checkIn.id,
+          EventSuccessModuleCatalog.firstHelloCheckIn.id,
+          EventSuccessModuleCatalog.compatibilityQuestionnaire.id,
+        ],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime.subtract(const Duration(minutes: 5)),
+      );
+
+      expect(
+        runtime
+            .attendeeMoment(
+              participationStatus: EventParticipationStatus.signedUp,
+              checkInOpen: true,
+              eventEnded: false,
+              arrivalMissionAssigned: true,
+            )
+            .kind,
+        EventSuccessAttendeeMomentKind.firstHelloCheckIn,
+      );
+      expect(
+        runtime
+            .attendeeMoment(
+              participationStatus: EventParticipationStatus.signedUp,
+              checkInOpen: true,
+              eventEnded: false,
+              arrivalMissionAssigned: false,
+            )
+            .kind,
+        EventSuccessAttendeeMomentKind.compatibilityQuestionnaire,
+      );
+    });
+
+    test('requires a booked arrival state for First Hello mission', () {
+      final event = buildEvent();
+      final plan = EventSuccessPlan.defaultForEvent(event).copyWith(
+        selectedModuleIds: [
+          EventSuccessModuleCatalog.checkIn.id,
+          EventSuccessModuleCatalog.firstHelloCheckIn.id,
+        ],
+      );
+      final runtime = EventSuccessRuntime(
+        plan: plan,
+        event: event,
+        now: event.startTime,
+      );
+
+      expect(
+        runtime.canShowFirstHelloCheckIn(
+          participationStatus: EventParticipationStatus.signedUp,
+          checkInOpen: true,
+          eventEnded: false,
+          arrivalMissionAssigned: true,
+        ),
+        isTrue,
+      );
+      expect(
+        runtime.canShowFirstHelloCheckIn(
+          participationStatus: EventParticipationStatus.attended,
+          checkInOpen: true,
+          eventEnded: false,
+          arrivalMissionAssigned: true,
+        ),
+        isFalse,
+      );
+      expect(
+        runtime.canShowFirstHelloCheckIn(
+          participationStatus: EventParticipationStatus.signedUp,
+          checkInOpen: false,
+          eventEnded: false,
+          arrivalMissionAssigned: true,
+        ),
+        isFalse,
+      );
+    });
+
     test('prioritizes unanswered questionnaire during check-in arrival', () {
       final event = buildEvent(
         eventFormat: EventFormatSnapshot.fromActivityKind(

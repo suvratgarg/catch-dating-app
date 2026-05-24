@@ -42,9 +42,8 @@ class _WingmanRequestSectionState
         ? null
         : _profileNameForUid(widget.candidates, requestedTargetUid);
 
-    return CatchSurface(
-      borderColor: CatchTokens.of(context).line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+    final t = CatchTokens.of(context);
+    return _StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,7 +52,7 @@ class _WingmanRequestSectionState
               Expanded(
                 child: Text(
                   'Ask the host for an intro',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.titleL(context),
                 ),
               ),
               const _PrivacyBadge(_PrivacyAudience.hostCanSee),
@@ -62,14 +61,11 @@ class _WingmanRequestSectionState
           gapH4,
           Text(
             "Tell the host who you'd like to be introduced to. The host can see this request — the other person is not notified.",
-            style: CatchTextStyles.bodyS(context),
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
           if (requestedTargetUid != null) ...[
             gapH12,
-            CatchSurface(
-              backgroundColor: CatchTokens.of(context).primarySoft,
-              borderWidth: 0,
-              padding: const EdgeInsets.all(CatchSpacing.s3),
+            _StageSoftBand(
               child: Row(
                 children: [
                   Expanded(
@@ -104,11 +100,13 @@ class _WingmanRequestSectionState
             ),
           ],
           gapH12,
-          CatchTextField(
-            label: 'Private note to host',
-            controller: _noteController,
-            maxLines: 2,
-            inputFormatters: [LengthLimitingTextInputFormatter(240)],
+          _StageSoftBand(
+            child: CatchTextField(
+              label: 'Private note to host',
+              controller: _noteController,
+              maxLines: 2,
+              inputFormatters: [LengthLimitingTextInputFormatter(240)],
+            ),
           ),
           gapH12,
           if (widget.candidates.isEmpty)

@@ -52,12 +52,20 @@ void main() {
     final event = buildEvent(meetingPoint: 'Bandra');
 
     expect(
+      PaymentConfirmationController.inviteSubject(event),
+      'Join me at ${event.title}',
+    );
+    expect(
       PaymentConfirmationController.inviteText(event),
-      contains('${event.title} - Bandra'),
+      contains('I just booked this. Come with me?'),
+    );
+    expect(
+      PaymentConfirmationController.inviteText(event),
+      contains('https://catchdates.com'),
     );
     expect(
       PaymentConfirmationController.referralText(event),
-      contains('download Catch'),
+      contains('thought of you'),
     );
   });
 }

@@ -15,15 +15,15 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.1",
-    "updated": "2026-05-22",
+    "version": "4.1.2",
+    "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.0",
-    "updated": "2026-05-22",
+    "version": "4.1.1",
+    "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -78,15 +78,22 @@
   },
   "event_success": {
     "path": "docs/event_success.md",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, participant metrics, or manual QA surfaces."
   },
+  "event_success_theatrical_experience_tracker": {
+    "path": "docs/event_success_theatrical_experience_tracker.md",
+    "version": "0.1.0",
+    "updated": "2026-05-24",
+    "status": "temporary_active",
+    "read_policy": "Read when planning or implementing Event Success live ceremony polish, invite-loop polish, private afterglow recap artifacts, or branded audio follow-ups."
+  },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.0",
-    "updated": "2026-05-22",
+    "version": "4.1.2",
+    "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -141,8 +148,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.101",
-    "updated": "2026-05-22",
+    "version": "2.5.102",
+    "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },

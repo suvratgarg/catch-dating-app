@@ -13,6 +13,7 @@ final class CatchBusinessRules {
   static const eventSelfCheckInWindowBeforeMinutes = 10;
   static const eventSelfCheckInWindowAfterMinutes = 30;
   static const eventSelfCheckInMaxDistanceMeters = 200;
+  static const eventFirstHelloMaxDistanceMeters = 100;
   static const eventHostAttendanceWindowBeforeMinutes = 10;
   static const eventHostAttendanceWindowAfterEventHours = 6;
 }

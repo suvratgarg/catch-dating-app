@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -27,15 +28,18 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/presentation/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 part 'host_parts/event_success_host_shared.dart';
 part 'host_parts/event_success_host_setup.dart';

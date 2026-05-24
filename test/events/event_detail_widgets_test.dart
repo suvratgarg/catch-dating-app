@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
@@ -930,6 +932,63 @@ void main() {
       expect(calendarUri?.host, 'calendar.google.com');
       expect(fakeSavedEventRepository.savedEventId, 'event-1');
       expect(find.text('Home'), findsOneWidget);
+    });
+
+    testWidgets('booked attendee invite card shares a deep event link', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 2600);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      ShareParams? sharedParams;
+      final event = buildEvent(
+        id: 'event-1',
+        clubId: 'club-1',
+        meetingPoint: 'Bandra',
+        startTime: DateTime(2026, 6, 1, 18),
+        endTime: DateTime(2026, 6, 1, 20),
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailBody(
+          event: event,
+          userProfile: buildUser(),
+          clubId: 'club-1',
+          isHost: false,
+          reviews: const [],
+          isAuthenticated: true,
+          isSaved: false,
+          participation: _participation(
+            status: EventParticipationStatus.signedUp,
+          ),
+          inviteCode: 'VIP42',
+          now: DateTime(2026, 5, 25),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+          externalShareLauncherProvider.overrideWithValue((params) async {
+            sharedParams = params;
+          }),
+        ],
+      );
+
+      await _scrollEventDetailUntilVisible(
+        tester,
+        find.text('Bring someone into the room'),
+      );
+      await tester.tap(find.text('Invite a friend'));
+      await tester.pump();
+
+      expect(sharedParams?.subject, 'Join me at ${event.title}');
+      expect(sharedParams?.text, contains(event.title));
+      expect(sharedParams?.text, contains('Bandra'));
+      expect(sharedParams?.text, contains('invite=VIP42'));
     });
 
     testWidgets('saved event button renders selected and unsaves', (

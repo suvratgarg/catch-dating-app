@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 4.1.1
-updated: 2026-05-22
+version: 4.1.2
+updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -75,6 +75,7 @@ durable owners above or closed in code.
 | `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
 | `config_cicd_platform_audit_2026-05-21.md` | Config/CI/CD/platform hardening is mostly closed, but Crashlytics script noise, analytics plist verification, contract-source migration, and Razorpay env guard follow-ups remain. |
+| `event_success_theatrical_experience_tracker.md` | Event Success live ceremony polish is active: native sensory cues, attendee moment theatre, host showtime console, invite-loop follow-up, private afterglow recap planning, and the optional First Hello arrival ritual. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

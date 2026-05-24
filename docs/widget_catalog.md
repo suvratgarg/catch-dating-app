@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.101
-updated: 2026-05-22
+version: 2.5.104
+updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,15 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.104
+
+- Event Success now catalogs the optional First Hello arrival ritual. The
+  manual QA harness can toggle it from the shared host controls and drive the
+  attendee mission through completion without desynchronizing host and attendee
+  state.
+- Added `_FirstHelloCheckInCard` for the attendee companion's server/manual-QA
+  provided arrival mission surface.
 
 ### 2.5.101
 
@@ -1822,7 +1831,7 @@ Generated 2026-05-06.
 | `CreateEventScreen` | `lib/events/presentation/create_event_screen.dart:34` | Multi-step event creation flow for details, location, schedule, and event policy. Seeds policy and event-success defaults from `club.hostDefaults`, supports per-event overrides, manages draft save/restore and local form controllers, and saves optional event-success setup after event creation when enabled. On success renders `CreateEventSuccessScreen`; Manage event routes to canonical Host Manage rather than embedding management in the create flow. |
 | `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, description, capacity, price, admission format, invite code, cohort/age limits, dynamic pricing, and cancellation policy. Schedule and booking-policy edits lock once the event has started or has booking, waitlist, or attendance activity. |
 | `EventMapScreen` | `lib/events/presentation/event_map_screen.dart:18` | Chromeless map route wrapper. Watches `EventMapViewModel`, centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes full-screen `EventPinsMap`, floating `MapOverlayControls`, and `EventMapSheet`. |
-| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:113` | Canonical per-event host workspace. Shows shared host stat chips and switches between lifecycle sections: Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live leads with attendance correction before optional live run-of-show; Report leads with attendance summary before the post-event host report. |
+| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:110` | Canonical per-event host workspace. Shows shared host stat chips and switches between lifecycle sections: Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live leads with attendance correction before optional live run-of-show; Report leads with attendance summary before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
 | `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. |
 
 ### ConsumerWidget
@@ -1833,7 +1842,7 @@ Generated 2026-05-06.
 | `HostEventManageRouteScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:43` | Route-facing host manage entry used from the canonical `/clubs/:clubId/events/:eventId/manage` route plus dashboard, attendance, and event-success aliases. Loads the event and club by id, gates access to the club host, and delegates the loaded state plus optional lifecycle section to `HostEventManageScreen`. |
 | `EventDetailScreen` | `lib/events/presentation/event_detail_screen.dart:17` | Route-facing event detail entry. Fetches `EventDetailViewModel`, renders scaffolded loading/error/not-found states, and delegates the loaded screen to `EventDetailBody` without nesting scaffolds. |
 | `EventLocationMapRouteScreen` | `lib/events/presentation/event_location_map_screen.dart:20` | Route-facing single-event map entry. Reuses `EventDetailViewModel` by `eventId`, renders chromeless load/error/not-found states with floating back controls, and delegates mapped events to `EventLocationMapScreen`. |
-| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:31` | Scrollable event detail body. Composes the title-bearing hero app bar, overview, saved/share/calendar actions, optional saved-plan companion entry, social section, and a non-host bottom CTA. Passes the viewer's `EventParticipation` edge to detail sections so current-viewer state is not inferred from aggregate counts. |
+| `EventDetailBody` | `lib/events/presentation/widgets/event_detail_body.dart:33` | Scrollable event detail body. Composes the title-bearing hero app bar, overview, saved/share/calendar actions, optional saved-plan companion entry, booked-attendee invite card, social section, and a non-host bottom CTA. Passes the viewer's `EventParticipation` edge to detail sections so current-viewer state is not inferred from aggregate counts. |
 | `EventDetailHeroAppBar` | `lib/events/presentation/widgets/event_detail_hero_app_bar.dart:10` | Event detail hero app bar. Uses the shared detail-hero backdrop, keeps title/date/time in the hero, shortens no-photo headers, and owns floating back/share/save/calendar actions. |
 | `EventPhotoHeader` | `lib/events/presentation/widgets/event_photo_header.dart:5` | Visual-only event hero backdrop wrapper. Delegates image/fallback rendering to `CatchDetailHeroBackdrop` and intentionally does not duplicate event title, location, stats, or activity copy. |
 | `EventStatsGrid` | `lib/events/presentation/widgets/event_stats_grid.dart:7` | Event detail stats adapter. Converts event facts into `CatchMetricStrip` items so event stats share the same white rail, dividers, value styling, and responsive truncation as club detail stats. |
@@ -1876,8 +1885,9 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:35` | Dev/staging manual QA harness. Uses Catch primitives and segmented controls to switch event format, host surface, attendee moment, ranking signal, and opt-out states while rendering production host and attendee surfaces side by side from fixture data. |
-| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:243` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode keeps the active guide compact, then groups current-step tools and supporting controls for attendance, wingman requests, reveal clues, conversation cues, assignments, and reveal controls. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
+| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses Catch primitives and segmented controls to switch event format, host surface, First Hello arrival ritual, ranking signal, and opt-out states while rendering production host and attendee surfaces side by side from one synchronized in-memory fixture store. |
+| `_FirstHelloCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart:3` | Attendee companion First Hello mission card. Renders a server/manual-QA-provided target, one short question, private answer chips, completion, and a fallback action without leaking broader attendee data. |
+| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode now opens with a showtime console, keeps the active guide compact, then groups current-step tools and supporting controls for attendance, wingman requests, reveal clues, conversation cues, assignments, and reveal controls. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
 | `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle setup, normalize activity-specific recommendations against an optional target attendee count, and show a preset-review card before advanced controls. Guide notes, match clue questions, structure, and tools are progressively disclosed; questionnaire ownership is separate from tool switches, and wingman/openers are derived from module selection instead of repeated booleans. |
 | `_SetupTab` | `lib/event_success/presentation/host_parts/event_success_host_setup.dart:3` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, module toggles, reveal-clue opt-in, wingman requests, and setup save/ensure mutations. Essentials render first; advanced structure, tool, and delivery controls are progressively disclosed, with multiline guide-note fields and host-facing group/team/table language. |
 
@@ -1885,7 +1895,8 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_CompatibilityQuestionnaireSection` | `lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:3` | Attendee companion quick-question card for event-scoped reveal clues. Uses Catch primitives for chips, badges, surfaces, and save/update actions; communicates whether answers are clues-only or can guide suggested rotations. |
+| `EventSuccessCompanionScreen` | `lib/event_success/presentation/event_success_companion_screen.dart:444` | Attendee companion surface that resolves the runtime-selected live moment into a full-screen stage with moment-specific color, motif, privacy copy, keyed transitions, native live effects, optional First Hello arrival missions, reveal-safe assignment display, and a private post-event afterglow recap. Keeps the single-moment runtime model intact rather than restoring a stacked dashboard. |
+| `_CompatibilityQuestionnaireSection` | `lib/event_success/presentation/companion_parts/event_success_companion_questionnaire.dart:3` | Attendee companion quick-question clue ritual for event-scoped reveal clues. Focuses one question at a time, uses selected answer chips and progress, then saves through the stage action dock while preserving questionnaire privacy language. |
 
 ### ConsumerWidget
 
@@ -1893,16 +1904,17 @@ Generated 2026-05-06.
 |---|---|---|
 | `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:42` | Host Manage section loader for event-success data. It resolves the plan first, synthesizes a default plan until setup is saved, and skips roster/report/assignment/preference/wingman streams while no saved guide exists so Live and Report can render unavailable-guide states immediately. |
 | `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart:3` | Host Live-mode reveal console for structured assignment flows. Shows a kinetic countdown, round queue, assignment clues, and host actions to start countdown, reveal now, or reset reveal state. |
-| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, then shows partners or podmates with opt-out controls intact. |
+| `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, uses a stronger countdown/waiting/unlocked presentation, then shows partners or podmates with opt-out controls intact. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
+| `_PrivateAfterglowRecapCard` | `lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart:3` | Private attendee-only post-event recap artifact. Summarizes the event, opener availability, and optional saved feedback while explicitly avoiding public share pressure or host-visible personal details. |
 | `EventSuccessPromptCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:616` | Shared prompt card used by event-success preview and attendee companion surfaces. |
 | `EventSuccessStructureConfigEditor` | `lib/event_success/presentation/event_success_structure_config_editor.dart:10` | Shared structure editor for host setup and create-event defaults. Keeps internal unit modeling out of copy by exposing flow type, people-per-team/table/pod labels, auto versus fixed counts, and optional cadence/countdown controls supplied by the owning surface. |
-| `EventSuccessConversationCueCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:655` | Shared conversation cue card used by host Live mode and attendee companion surfaces for live prompts and post-match opener suggestions. |
-| `EventSuccessPostEventReport` | `lib/event_success/presentation/event_success_feature_blocks.dart:266` | Shared post-event report surface. Shows report metric pills, `Working well` strengths, and coach recommendation tiles. |
+| `EventSuccessConversationCueCard` | `lib/event_success/presentation/event_success_feature_blocks.dart:655` | Shared conversation cue card used by host Live mode and preview surfaces for live prompts and post-match opener suggestions. The staged attendee companion uses its own copyable cue rows. |
+| `EventSuccessPostEventReport` | `lib/event_success/presentation/event_success_feature_blocks.dart:266` | Shared post-event report surface. Shows report metric pills, `Working well` strengths, and coach recommendation tiles while host-facing report copy stays aggregate and avoids personal attendee intelligence. |
 | `_HostReportSignalGrid` | `lib/event_success/presentation/host_parts/event_success_host_report.dart:114` | Host report signal-quality summary using `EventSuccessMetricPill` and `CatchBadge` primitives for feedback response, assignment coverage, opt-outs, and wingman requests. |
 | `EventSuccessMetricPill` | `lib/event_success/presentation/event_success_feature_blocks.dart:865` | Shared percentage pill for event-success reports and lab/preview metrics. |
 | `EventSuccessRecommendationTile` | `lib/event_success/presentation/event_success_feature_blocks.dart:817` | Shared recommendation tile for post-event reports and the event-success lab coach sample. |
@@ -1937,8 +1949,8 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:22` | Post-payment confirmation route. Loads the run/club context and delegates the success UI to `RunJoinedCelebrationScreen`, adding payment quick actions, heads-up copy, referral share, and the stable Back home key. |
-| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:47` | Thin payment confirmation adapter that composes `RunJoinedCelebrationScreen` with paid-run supplemental children and router actions. |
+| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:22` | Post-payment confirmation route. Loads the event/club context and delegates the success UI to `EventJoinedCelebrationScreen`, adding payment quick actions, heads-up copy, stronger friend-invite sharing, and the stable Back home key. |
+| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:55` | Thin payment confirmation adapter that composes `EventJoinedCelebrationScreen` with paid-event supplemental children and router actions. |
 | `PaymentConfirmationKeys` | `lib/payments/presentation/payment_confirmation_keys.dart:3` | Stable semantic keys for confirmation quick actions, referral share, and sticky back-home CTA. |
 | `PaymentHistoryScreen` | `lib/payments/presentation/payment_history_screen.dart:20` | List of past payment transactions. Watches `watchPaymentsForUserProvider`, renders `_PaymentTile` items, and shows transaction details in `CatchBottomSheetScaffold`. |
 | `_PaymentList` | `lib/payments/presentation/payment_history_screen.dart:42` | The list view of payment tiles. |

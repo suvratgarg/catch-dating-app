@@ -4924,6 +4924,207 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
   },
 };
 
+const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_arrival_missions.schema.json',
+  'title': 'EventSuccessArrivalMissionDocument',
+  'description': 'Server-owned First Hello arrival mission stored at eventSuccessArrivalMissions/{eventId_uid}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessArrivalMissions',
+  'x-firestore-path': 'eventSuccessArrivalMissions/{missionId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'server-owned; attendee read only for their own mission',
+  'x-internal-demo-fields': <Object?>[
+    'synthetic',
+    'seedPrefix',
+    'scenario',
+    'demoOps',
+    'demoOpsId',
+    'demoOpsCommand',
+  ],
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'observerUid',
+    'targetUid',
+    'targetDisplayName',
+    'targetContext',
+    'question',
+    'answerOptions',
+    'status',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'observerUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'targetUid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'targetDisplayName': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+    },
+    'targetContext': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
+    },
+    'question': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
+    },
+    'answerOptions': <String, Object?>{
+      'type': 'array',
+      'minItems': 2,
+      'maxItems': 4,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'id',
+          'label',
+        ],
+        'properties': <String, Object?>{
+          'id': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 64,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+        },
+      },
+    },
+    'status': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'active',
+        'completed',
+        'skipped',
+      ],
+    },
+    'selectedAnswerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 64,
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'completedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'synthetic': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo seed marker used for cleanup and diagnostics.',
+    },
+    'seedPrefix': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed prefix used for cleanup and diagnostics.',
+    },
+    'scenario': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+      'description': 'Internal demo seed scenario name used for cleanup and diagnostics.',
+    },
+    'demoOps': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Internal demo-operations marker used for cleanup and diagnostics.',
+    },
+    'demoOpsId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Internal demo-operations id used for cleanup and diagnostics.',
+    },
+    'demoOpsCommand': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
 const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/event_success_assignments.schema.json',
@@ -10415,6 +10616,82 @@ const schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema = <String, Obj
   },
 };
 
+const schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/start_event_success_first_hello_mission_payload.schema.json',
+  'title': 'StartEventSuccessFirstHelloMissionCallablePayload',
+  'description': 'Callable payload accepted by startEventSuccessFirstHelloMission.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'latitude': <String, Object?>{
+      'type': <Object?>[
+        'number',
+        'null',
+      ],
+      'minimum': -90,
+      'maximum': 90,
+    },
+    'longitude': <String, Object?>{
+      'type': <Object?>[
+        'number',
+        'null',
+      ],
+      'minimum': -180,
+      'maximum': 180,
+    },
+  },
+};
+
+const schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/complete_event_success_first_hello_mission_payload.schema.json',
+  'title': 'CompleteEventSuccessFirstHelloMissionCallablePayload',
+  'description': 'Callable payload accepted by completeEventSuccessFirstHelloMission.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+    'answerId',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'answerId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 64,
+    },
+    'latitude': <String, Object?>{
+      'type': <Object?>[
+        'number',
+        'null',
+      ],
+      'minimum': -90,
+      'maximum': 90,
+    },
+    'longitude': <String, Object?>{
+      'type': <Object?>[
+        'number',
+        'null',
+      ],
+      'minimum': -180,
+      'maximum': 180,
+    },
+  },
+};
+
 const schemaMarkEventAttendanceCallableResponseSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callable_responses/mark_event_attendance_response.schema.json',
@@ -11476,6 +11753,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventSuccessWingmanRequestDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventSuccessArrivalMissionDocument',
+    source: 'firestore/event_success_arrival_missions.schema.json',
+    schema: schemaEventSuccessArrivalMissionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventSuccessAssignmentDocument',
     source: 'firestore/event_success_assignments.schema.json',
     schema: schemaEventSuccessAssignmentDocumentSchema,
@@ -11661,6 +11943,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'StartEventSuccessFirstHelloMissionCallablePayload',
+    source: 'callables/start_event_success_first_hello_mission_payload.schema.json',
+    schema: schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CompleteEventSuccessFirstHelloMissionCallablePayload',
+    source: 'callables/complete_event_success_first_hello_mission_payload.schema.json',
+    schema: schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'MarkEventAttendanceCallableResponse',
     source: 'callable_responses/mark_event_attendance_response.schema.json',
     schema: schemaMarkEventAttendanceCallableResponseSchema,
@@ -11781,6 +12073,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventSuccessPreferenceDocument': schemaEventSuccessPreferenceDocumentSchema,
   'EventSuccessCompatibilityResponseDocument': schemaEventSuccessCompatibilityResponseDocumentSchema,
   'EventSuccessWingmanRequestDocument': schemaEventSuccessWingmanRequestDocumentSchema,
+  'EventSuccessArrivalMissionDocument': schemaEventSuccessArrivalMissionDocumentSchema,
   'EventSuccessAssignmentDocument': schemaEventSuccessAssignmentDocumentSchema,
   'EventSuccessScorecardDocument': schemaEventSuccessScorecardDocumentSchema,
   'EventSafetyReportDocument': schemaEventSafetyReportDocumentSchema,
@@ -11818,6 +12111,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
   'OverrideEventSuccessRotationsCallablePayload': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'SubmitEventSuccessWingmanRequestCallablePayload': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
+  'StartEventSuccessFirstHelloMissionCallablePayload': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'CompleteEventSuccessFirstHelloMissionCallablePayload': schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
   'MarkEventAttendanceCallableResponse': schemaMarkEventAttendanceCallableResponseSchema,
   'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
@@ -11859,6 +12154,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_success_preferences.schema.json': schemaEventSuccessPreferenceDocumentSchema,
   'firestore/event_success_compatibility_responses.schema.json': schemaEventSuccessCompatibilityResponseDocumentSchema,
   'firestore/event_success_wingman_requests.schema.json': schemaEventSuccessWingmanRequestDocumentSchema,
+  'firestore/event_success_arrival_missions.schema.json': schemaEventSuccessArrivalMissionDocumentSchema,
   'firestore/event_success_assignments.schema.json': schemaEventSuccessAssignmentDocumentSchema,
   'firestore/event_success_scorecards.schema.json': schemaEventSuccessScorecardDocumentSchema,
   'firestore/event_safety_reports.schema.json': schemaEventSafetyReportDocumentSchema,
@@ -11896,6 +12192,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
   'callables/override_event_success_rotations_payload.schema.json': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'callables/submit_event_success_wingman_request_payload.schema.json': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
+  'callables/start_event_success_first_hello_mission_payload.schema.json': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
+  'callables/complete_event_success_first_hello_mission_payload.schema.json': schemaCompleteEventSuccessFirstHelloMissionCallablePayloadSchema,
   'callable_responses/mark_event_attendance_response.schema.json': schemaMarkEventAttendanceCallableResponseSchema,
   'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,

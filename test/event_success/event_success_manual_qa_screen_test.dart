@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,7 @@ void main() {
     );
     await tester.pump();
 
+    expect(find.text('Showtime console'), findsOneWidget);
     expect(
       find.textContaining('Step 1/4: Check in and skill confirm'),
       findsWidgets,
@@ -120,10 +122,127 @@ void main() {
     await _tapHostButton(tester, 'Drop 15s countdown');
 
     expect(find.text('countingDown'), findsWidgets);
+    expect(find.text('Next reveal in 15s'), findsWidgets);
+
+    await tester.pump(const Duration(seconds: 2));
+
+    expect(find.text('Next reveal in 13s'), findsWidgets);
 
     await _tapHostButton(tester, 'Reveal now');
 
     expect(find.text('revealed'), findsWidgets);
+    expect(find.text('Sign in required'), findsNothing);
+
+    await tester.tap(find.text('Rotations opt-out'));
+    await tester.pump();
+
+    expect(find.text('rotations opted out'), findsOneWidget);
+    expect(find.text('Rotations paused for you'), findsWidgets);
+  });
+
+  testWidgets('manual QA saves attendee questionnaire through fixture store', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 2200);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const EventSuccessManualQaScreen(),
+        ),
+      ),
+    );
+
+    final companion = find.byType(EventSuccessCompanionScreen);
+    final playfulOption = find.descendant(
+      of: companion,
+      matching: find.text('Playful competition'),
+    );
+    await tester.ensureVisible(playfulOption);
+    await tester.pump();
+    await tester.tap(playfulOption);
+    await tester.pump();
+
+    final saveButton = find.descendant(
+      of: companion,
+      matching: find.widgetWithText(CatchButton, 'Save clues'),
+    );
+    await tester.ensureVisible(saveButton);
+    await tester.pump();
+    await tester.tap(saveButton);
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: companion,
+        matching: find.text('A few quick questions'),
+      ),
+      findsNothing,
+    );
+    expect(saveButton, findsNothing);
+    expect(find.text('Sign in required'), findsNothing);
+  });
+
+  testWidgets('manual QA keeps First Hello mission in sync', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(1200, 2400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const EventSuccessManualQaScreen(),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('First Hello'));
+    await tester.pumpAndSettle();
+
+    final companion = find.byType(EventSuccessCompanionScreen);
+    expect(
+      find.descendant(of: companion, matching: find.text('Find Arjun.')),
+      findsOneWidget,
+    );
+    expect(find.text('first hello pending'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: companion,
+        matching: find.text('A few quick questions'),
+      ),
+      findsNothing,
+    );
+
+    final answer = find.descendant(
+      of: companion,
+      matching: find.text('Playful energy'),
+    );
+    await tester.ensureVisible(answer);
+    await tester.pump();
+    await tester.tap(answer);
+    await tester.pump();
+
+    final completeButton = find.descendant(
+      of: companion,
+      matching: find.widgetWithText(CatchButton, 'Complete check-in'),
+    );
+    await tester.ensureVisible(completeButton);
+    await tester.pump();
+    await tester.tap(completeButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text('first hello complete'), findsOneWidget);
+    expect(
+      find.descendant(of: companion, matching: find.text('Find Arjun.')),
+      findsNothing,
+    );
+    expect(find.text('Live host mode'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 

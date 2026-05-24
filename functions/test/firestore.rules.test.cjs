@@ -349,6 +349,28 @@ function eventSuccessWingmanRequest(overrides = {}) {
   };
 }
 
+function eventSuccessArrivalMission(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    observerUid: "runner-1",
+    targetUid: "runner-2",
+    targetDisplayName: "Rhea",
+    targetContext: "They are checked in and ready for the same room.",
+    question: "Ask them: what made this event sound fun?",
+    answerOptions: [
+      {id: "people", label: "The people"},
+      {id: "activity", label: "The activity"},
+      {id: "venue", label: "The venue"},
+      {id: "friend", label: "A friend"},
+    ],
+    status: "active",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
 function eventReviewId(eventId, reviewerUserId) {
   return `${eventId}~${reviewerUserId}`;
 }
@@ -2041,6 +2063,92 @@ describe("firestore.rules", () => {
             "event-1_runner-2",
           ),
           eventSuccessWingmanRequest(),
+        ),
+      );
+    });
+
+    it("keeps First Hello arrival missions server-owned and attendee-private", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({uid: "runner-2", status: "attended"}),
+      );
+      await seed(
+        ["eventSuccessArrivalMissions", "event-1_runner-1"],
+        eventSuccessArrivalMission(),
+      );
+
+      await assertSucceeds(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("runner-2"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("host-1"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-1",
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "eventSuccessArrivalMissions"),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-1",
+          ),
+          eventSuccessArrivalMission(),
+        ),
+      );
+      await assertFails(
+        updateDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-1",
+          ),
+          {status: "completed", updatedAt: serverTimestamp()},
+        ),
+      );
+      await seed(
+        ["eventSuccessArrivalMissions", "event-1_runner-2"],
+        eventSuccessArrivalMission({observerUid: "runner-2"}),
+      );
+      await assertFails(
+        getDoc(
+          doc(
+            authedDb("runner-1"),
+            "eventSuccessArrivalMissions",
+            "event-1_runner-2",
+          ),
         ),
       );
     });

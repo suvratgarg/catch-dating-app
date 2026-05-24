@@ -22,6 +22,7 @@ const requiredNumbers = [
   ["eventAttendance.selfCheckInWindowBeforeMinutes", eventAttendance.selfCheckInWindowBeforeMinutes],
   ["eventAttendance.selfCheckInWindowAfterMinutes", eventAttendance.selfCheckInWindowAfterMinutes],
   ["eventAttendance.selfCheckInMaxDistanceMeters", eventAttendance.selfCheckInMaxDistanceMeters],
+  ["eventAttendance.firstHelloMaxDistanceMeters", eventAttendance.firstHelloMaxDistanceMeters],
   ["eventAttendance.hostAttendanceWindowBeforeMinutes", eventAttendance.hostAttendanceWindowBeforeMinutes],
   ["eventAttendance.hostAttendanceWindowAfterEventHours", eventAttendance.hostAttendanceWindowAfterEventHours],
 ];
@@ -64,6 +65,7 @@ const dart = `${header}final class CatchBusinessRules {
   static const eventSelfCheckInWindowBeforeMinutes = ${eventAttendance.selfCheckInWindowBeforeMinutes};
   static const eventSelfCheckInWindowAfterMinutes = ${eventAttendance.selfCheckInWindowAfterMinutes};
   static const eventSelfCheckInMaxDistanceMeters = ${eventAttendance.selfCheckInMaxDistanceMeters};
+  static const eventFirstHelloMaxDistanceMeters = ${eventAttendance.firstHelloMaxDistanceMeters};
   static const eventHostAttendanceWindowBeforeMinutes = ${eventAttendance.hostAttendanceWindowBeforeMinutes};
   static const eventHostAttendanceWindowAfterEventHours = ${eventAttendance.hostAttendanceWindowAfterEventHours};
 }
@@ -78,6 +80,7 @@ export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES = ${eventScheduling.scheduleLockSl
 export const EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES = ${eventAttendance.selfCheckInWindowBeforeMinutes};
 export const EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES = ${eventAttendance.selfCheckInWindowAfterMinutes};
 export const EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS = ${eventAttendance.selfCheckInMaxDistanceMeters};
+export const EVENT_FIRST_HELLO_MAX_DISTANCE_METERS = ${eventAttendance.firstHelloMaxDistanceMeters};
 export const EVENT_HOST_ATTENDANCE_WINDOW_BEFORE_MINUTES = ${eventAttendance.hostAttendanceWindowBeforeMinutes};
 export const EVENT_HOST_ATTENDANCE_WINDOW_AFTER_EVENT_HOURS = ${eventAttendance.hostAttendanceWindowAfterEventHours};
 `;

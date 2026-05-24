@@ -4,6 +4,8 @@
 	<dict>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Catch uses your location to find nearby run clubs and show distance to other runners.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Catch uses the camera to scan host QR codes for event check-in.</string>
 		<key>NSHealthShareUsageDescription</key>
 		<string>Catch uses read-only access to your running workouts to show your weekly running distance on the dashboard.</string>
 		<key>NSHealthUpdateUsageDescription</key>

@@ -106,6 +106,48 @@ void main() {
       expect(runDraft.questionnaireConfig.pack.title, 'Balanced');
     });
 
+    test('First Hello is an optional arrival module across playbooks', () {
+      for (final playbook in EventSuccessPlaybookLibrary.all) {
+        expect(
+          playbook.moduleIds,
+          contains(EventSuccessModuleCatalog.firstHelloCheckIn.id),
+          reason: '${playbook.id} should expose First Hello as a module',
+        );
+      }
+
+      final socialRunDraft = EventSuccessHostDraft.fromPlaybook(
+        EventSuccessPlaybookLibrary.socialRun,
+      );
+      final mixerProfile = EventSuccessActivityProfile.forActivity(
+        ActivityKind.singlesMixer,
+      );
+
+      expect(
+        EventSuccessModuleCatalog.firstHelloCheckIn.productLayer,
+        EventSuccessProductLayer.rosterAttendance,
+      );
+      expect(
+        socialRunDraft.selectedModuleIds,
+        isNot(contains(EventSuccessModuleCatalog.firstHelloCheckIn.id)),
+      );
+      expect(
+        mixerProfile.isSelectable(
+          EventSuccessModuleCatalog.firstHelloCheckIn.id,
+        ),
+        isTrue,
+      );
+      expect(
+        mixerProfile.defaultModuleIds,
+        isNot(contains(EventSuccessModuleCatalog.firstHelloCheckIn.id)),
+      );
+      expect(
+        mixerProfile
+            .recommendationFor(EventSuccessModuleCatalog.firstHelloCheckIn.id)
+            ?.reason,
+        contains('location-verified first hello'),
+      );
+    });
+
     test('module lookup throws for unknown module ids', () {
       expect(
         EventSuccessModuleCatalog.byId(

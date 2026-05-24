@@ -204,6 +204,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
         EventSuccessRecommendationLevel.recommended,
     EventSuccessModuleCatalog.checkIn.id:
         EventSuccessRecommendationLevel.defaultOn,
+    EventSuccessModuleCatalog.firstHelloCheckIn.id:
+        EventSuccessRecommendationLevel.optional,
     EventSuccessModuleCatalog.hostScript.id:
         EventSuccessRecommendationLevel.defaultOn,
     EventSuccessModuleCatalog.microPods.id:
@@ -237,6 +239,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.liveReveal.id] =
           EventSuccessRecommendationLevel.discouraged;
     case EventInteractionModel.pairedRotations:
+      base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
+          EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.liveReveal.id] =
@@ -244,6 +248,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.unsupported;
     case EventInteractionModel.teamRotations:
+      base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
+          EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.liveReveal.id] =
@@ -251,6 +257,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.discouraged;
     case EventInteractionModel.seatedTable:
+      base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
+          EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.liveReveal.id] =
@@ -258,6 +266,8 @@ Map<String, EventSuccessRecommendationLevel> _levelsForFormat(
       base[EventSuccessModuleCatalog.microPods.id] =
           EventSuccessRecommendationLevel.discouraged;
     case EventInteractionModel.freeFormMixer:
+      base[EventSuccessModuleCatalog.firstHelloCheckIn.id] =
+          EventSuccessRecommendationLevel.recommended;
       base[EventSuccessModuleCatalog.guidedRotations.id] =
           EventSuccessRecommendationLevel.defaultOn;
       base[EventSuccessModuleCatalog.liveReveal.id] =
@@ -377,6 +387,8 @@ Map<String, String> _reasonsFor(EventFormatSnapshot format) {
         'Useful before publishing, but it belongs beside booking and roster decisions.',
     EventSuccessModuleCatalog.checkIn.id:
         'Arrival state is the source of truth for assignments, host help, feedback, and post-event matching.',
+    EventSuccessModuleCatalog.firstHelloCheckIn.id:
+        'A location-verified first hello turns arrival into permission to start one conversation.',
     EventSuccessModuleCatalog.hostScript.id:
         'A short host script gives attendees permission to talk without making the host improvise.',
     EventSuccessModuleCatalog.socialMissions.id:

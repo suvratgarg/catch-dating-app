@@ -70,6 +70,9 @@ dependencies:
   google_maps_flutter: ^2.17.0
   http: ^1.6.0
   health: ^13.3.1
+  mobile_scanner: ^7.2.0
+  qr_flutter: ^4.1.0
+  audioplayers: ^6.6.0
 
 
 dev_dependencies:
@@ -134,6 +137,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/branding/catch_icon.png
+    - assets/audio/event_success/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

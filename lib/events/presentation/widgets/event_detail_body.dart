@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
@@ -69,6 +70,11 @@ class EventDetailBody extends ConsumerWidget {
     final calendar = ref.watch(eventCalendarControllerProvider);
     final now = this.now ?? DateTime.now();
     final Widget? bottomNavigationBar;
+    void shareEvent(BuildContext buttonContext) => unawaited(
+      onShareEvent != null
+          ? onShareEvent!(buttonContext, event)
+          : _shareEvent(buttonContext, event, share, inviteCode),
+    );
 
     if (isAuthenticated) {
       ref.listen(EventBookingController.bookMutation, (prev, next) {
@@ -115,11 +121,7 @@ class EventDetailBody extends ConsumerWidget {
             isSaved: isSaved,
             savePending: saveMutation.isPending,
             onBack: () => Navigator.of(context).pop(),
-            onShare: (buttonContext) => unawaited(
-              onShareEvent != null
-                  ? onShareEvent!(buttonContext, event)
-                  : _shareEvent(buttonContext, event, share, inviteCode),
-            ),
+            onShare: shareEvent,
             showAddToCalendar: _canAddEventToCalendar(
               event: event,
               participation: participation,
@@ -163,6 +165,15 @@ class EventDetailBody extends ConsumerWidget {
                   const SizedBox(height: 20),
                   _EventCompanionEntry(event: event, clubId: clubId),
                 ],
+                if (_canShowInviteLoop(
+                  event: event,
+                  participation: participation,
+                  isHost: isHost,
+                  now: now,
+                )) ...[
+                  const SizedBox(height: 20),
+                  _EventInviteLoopCard(event: event, onShare: shareEvent),
+                ],
                 const SizedBox(height: 24),
                 Divider(color: t.line, height: 1),
                 const SizedBox(height: 24),
@@ -182,6 +193,67 @@ class EventDetailBody extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: bottomNavigationBar,
+    );
+  }
+}
+
+bool _canShowInviteLoop({
+  required Event event,
+  required EventParticipation? participation,
+  required bool isHost,
+  required DateTime now,
+}) {
+  if (isHost || event.isCancelled || !event.startTime.isAfter(now)) {
+    return false;
+  }
+  return participation?.status == EventParticipationStatus.signedUp;
+}
+
+class _EventInviteLoopCard extends StatelessWidget {
+  const _EventInviteLoopCard({required this.event, required this.onShare});
+
+  final Event event;
+  final ValueChanged<BuildContext> onShare;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.primary.withValues(alpha: 0.24),
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.ios_share_rounded, color: t.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bring someone into the room',
+                  style: CatchTextStyles.titleM(context),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Your spot is booked. Invite a friend who would make this event better.',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+                const SizedBox(height: 12),
+                Builder(
+                  builder: (buttonContext) => CatchButton(
+                    label: 'Invite a friend',
+                    variant: CatchButtonVariant.secondary,
+                    icon: const Icon(Icons.send_rounded),
+                    onPressed: () => onShare(buttonContext),
+                    fullWidth: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -310,17 +382,13 @@ Future<void> _shareEvent(
 ) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final uri = AppDeepLinks.event(
-    clubId: event.clubId,
-    eventId: event.id,
-    inviteCode: inviteCode,
-  );
-
   try {
     await share.shareText(
-      text:
-          'Join me for ${event.title} at ${event.locationName}: ${uri.toString()}',
-      subject: event.title,
+      text: EventInviteShareCopy.eventDetailInviteText(
+        event,
+        inviteCode: inviteCode,
+      ),
+      subject: EventInviteShareCopy.subject(event),
       origin: origin,
     );
   } on Object catch (error, stackTrace) {
