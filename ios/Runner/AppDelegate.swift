@@ -1,4 +1,6 @@
 import Flutter
+import EventKit
+import EventKitUI
 import FirebaseAuth
 import GoogleMaps
 import UIKit
@@ -84,5 +86,172 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    guard let registrar = engineBridge.pluginRegistry.registrar(
+      forPlugin: "NativeCalendarPlugin"
+    ) else {
+      NSLog("[Catch] NativeCalendarPlugin registrar unavailable")
+      return
+    }
+    NativeCalendarPlugin.register(with: registrar)
+  }
+}
+
+private final class NativeCalendarPlugin: NSObject, FlutterPlugin {
+  private static let channelName = "catch/calendar"
+
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let channel = FlutterMethodChannel(
+      name: channelName,
+      binaryMessenger: registrar.messenger()
+    )
+    let instance = NativeCalendarPlugin()
+    registrar.addMethodCallDelegate(instance, channel: channel)
+  }
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard call.method == "addToCalendar" else {
+      result(FlutterMethodNotImplemented)
+      return
+    }
+
+    guard let arguments = call.arguments as? [String: Any] else {
+      result(false)
+      return
+    }
+
+    addToCalendar(arguments: arguments, result: result)
+  }
+
+  private func addToCalendar(arguments: [String: Any], result: @escaping FlutterResult) {
+    guard
+      let title = arguments["title"] as? String,
+      let startMillis = arguments["startTimeMillis"] as? NSNumber,
+      let endMillis = arguments["endTimeMillis"] as? NSNumber
+    else {
+      result(false)
+      return
+    }
+
+    let eventStore = EKEventStore()
+    let event = EKEvent(eventStore: eventStore)
+    event.title = title
+    event.notes = arguments["description"] as? String
+    event.location = arguments["location"] as? String
+    event.startDate = Date(timeIntervalSince1970: startMillis.doubleValue / 1000)
+    event.endDate = Date(timeIntervalSince1970: endMillis.doubleValue / 1000)
+
+    presentEventEditorWhenAuthorized(
+      event: event,
+      eventStore: eventStore,
+      result: result
+    )
+  }
+
+  private func presentEventEditorWhenAuthorized(
+    event: EKEvent,
+    eventStore: EKEventStore,
+    result: @escaping FlutterResult
+  ) {
+    let status = EKEventStore.authorizationStatus(for: .event)
+
+    if #available(iOS 17.0, *) {
+      switch status {
+      case .fullAccess, .writeOnly, .authorized:
+        presentEventEditor(event: event, eventStore: eventStore, result: result)
+      case .notDetermined:
+        eventStore.requestWriteOnlyAccessToEvents { granted, _ in
+          DispatchQueue.main.async {
+            guard granted else {
+              result(false)
+              return
+            }
+            self.presentEventEditor(
+              event: event,
+              eventStore: eventStore,
+              result: result
+            )
+          }
+        }
+      case .denied, .restricted:
+        result(false)
+      @unknown default:
+        result(false)
+      }
+    } else {
+      if status == .authorized {
+        presentEventEditor(event: event, eventStore: eventStore, result: result)
+      } else if status == .notDetermined {
+        eventStore.requestAccess(to: .event) { granted, _ in
+          DispatchQueue.main.async {
+            guard granted else {
+              result(false)
+              return
+            }
+            self.presentEventEditor(
+              event: event,
+              eventStore: eventStore,
+              result: result
+            )
+          }
+        }
+      } else {
+        result(false)
+      }
+    }
+  }
+
+  private func presentEventEditor(
+    event: EKEvent,
+    eventStore: EKEventStore,
+    result: @escaping FlutterResult
+  ) {
+    guard Thread.isMainThread else {
+      DispatchQueue.main.async {
+        self.presentEventEditor(
+          event: event,
+          eventStore: eventStore,
+          result: result
+        )
+      }
+      return
+    }
+
+    guard let presentingController = topViewController() else {
+      result(false)
+      return
+    }
+
+    let editor = EKEventEditViewController()
+    editor.event = event
+    editor.eventStore = eventStore
+    editor.editViewDelegate = self
+    editor.modalPresentationStyle = .fullScreen
+
+    presentingController.present(editor, animated: true) {
+      result(true)
+    }
+  }
+
+  private func topViewController() -> UIViewController? {
+    let root = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }?
+      .rootViewController
+
+    var top = root
+    while let presented = top?.presentedViewController {
+      top = presented
+    }
+    return top
+  }
+}
+
+extension NativeCalendarPlugin: EKEventEditViewDelegate {
+  func eventEditViewController(
+    _ controller: EKEventEditViewController,
+    didCompleteWith action: EKEventEditViewAction
+  ) {
+    controller.dismiss(animated: true)
   }
 }

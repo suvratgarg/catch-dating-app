@@ -11,6 +11,7 @@ part 'payment_confirmation_controller.g.dart';
 @Riverpod(keepAlive: true)
 PaymentConfirmationController paymentConfirmationController(Ref ref) {
   return PaymentConfirmationController(
+    calendar: ref.watch(eventCalendarControllerProvider),
     links: ref.watch(externalLinkControllerProvider),
     share: ref.watch(externalShareControllerProvider),
   );
@@ -18,16 +19,18 @@ PaymentConfirmationController paymentConfirmationController(Ref ref) {
 
 class PaymentConfirmationController {
   const PaymentConfirmationController({
+    required EventCalendarController calendar,
     required ExternalLinkController links,
     required ExternalShareController share,
-  }) : _links = links,
+  }) : _calendar = calendar,
+       _links = links,
        _share = share;
 
+  final EventCalendarController _calendar;
   final ExternalLinkController _links;
   final ExternalShareController _share;
 
-  Future<bool> addToCalendar(Event event) =>
-      _links.openExternal(calendarUri(event));
+  Future<bool> addToCalendar(Event event) => _calendar.addToCalendar(event);
 
   Future<bool> openDirections(Event event) =>
       _links.openExternal(directionsUri(event));
@@ -40,7 +43,8 @@ class PaymentConfirmationController {
     subject: inviteSubject(event),
   );
 
-  static Uri calendarUri(Event event) => calendarUriForEvent(event);
+  static CalendarEventPayload calendarEvent(Event event) =>
+      calendarEventPayloadForEvent(event);
 
   static Uri directionsUri(Event event) => directionsUriForEvent(event);
 

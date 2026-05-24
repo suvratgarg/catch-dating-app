@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart';
 
 void main() {
-  test('builds a calendar URI from event details', () {
+  test('builds a native calendar event from event details', () {
     final event = buildEvent(
       meetingPoint: 'Marine Drive',
       locationDetails: 'South entrance',
@@ -12,15 +12,14 @@ void main() {
       endTime: DateTime.utc(2026, 5, 5, 19, 30),
     );
 
-    final uri = PaymentConfirmationController.calendarUri(event);
+    final calendarEvent = PaymentConfirmationController.calendarEvent(event);
 
-    expect(uri.host, 'calendar.google.com');
-    expect(uri.queryParameters['action'], 'TEMPLATE');
-    expect(uri.queryParameters['text'], 'Tuesday Evening Event');
-    expect(uri.queryParameters['dates'], '20260505T183000Z/20260505T193000Z');
-    expect(uri.queryParameters['location'], 'Marine Drive, South entrance');
-    expect(uri.queryParameters['details'], contains('Catch event'));
-    expect(uri.queryParameters['details'], contains('5km · Easy'));
+    expect(calendarEvent.title, 'Tuesday Evening Event');
+    expect(calendarEvent.startTime, DateTime.utc(2026, 5, 5, 18, 30));
+    expect(calendarEvent.endTime, DateTime.utc(2026, 5, 5, 19, 30));
+    expect(calendarEvent.location, 'Marine Drive, South entrance');
+    expect(calendarEvent.description, contains('Catch event'));
+    expect(calendarEvent.description, contains('5km · Easy'));
   });
 
   test('builds directions URI from coordinates when available', () {
