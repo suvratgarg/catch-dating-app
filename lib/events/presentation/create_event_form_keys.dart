@@ -24,6 +24,7 @@ abstract final class CreateEventFormKeys {
   static const maxMen = ValueKey('create-event-max-men-field');
   static const maxWomen = ValueKey('create-event-max-women-field');
   static const inviteCode = ValueKey('create-event-invite-code-field');
+  static const cohortCapsToggle = ValueKey('create-event-cohort-caps-toggle');
   static const dynamicPricingToggle = ValueKey(
     'create-event-dynamic-pricing-toggle',
   );

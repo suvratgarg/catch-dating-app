@@ -12,23 +12,23 @@ import 'package:flutter/services.dart';
 enum EventAdmissionPreset {
   openCapacity,
   inviteOnly,
+  requestToJoin,
   balancedSingles,
-  fixedCohortCaps,
 }
 
 extension EventAdmissionPresetX on EventAdmissionPreset {
   String get label => switch (this) {
     EventAdmissionPreset.openCapacity => 'OPEN',
     EventAdmissionPreset.inviteOnly => 'INVITE',
+    EventAdmissionPreset.requestToJoin => 'REQUEST',
     EventAdmissionPreset.balancedSingles => 'BALANCED',
-    EventAdmissionPreset.fixedCohortCaps => 'FIXED CAPS',
   };
 
   String get title => switch (this) {
     EventAdmissionPreset.openCapacity => 'Open capacity',
     EventAdmissionPreset.inviteOnly => 'Invite only',
+    EventAdmissionPreset.requestToJoin => 'Request to join',
     EventAdmissionPreset.balancedSingles => 'Balanced singles',
-    EventAdmissionPreset.fixedCohortCaps => 'Fixed cohort caps',
   };
 
   String get description => switch (this) {
@@ -36,10 +36,10 @@ extension EventAdmissionPresetX on EventAdmissionPreset {
       'Anyone eligible can book until the event reaches capacity.',
     EventAdmissionPreset.inviteOnly =>
       'Only people with the invite code or private link can book. Waitlist is off by default.',
+    EventAdmissionPreset.requestToJoin =>
+      'People request a spot first. The host reviews their public profile before confirming who gets in.',
     EventAdmissionPreset.balancedSingles =>
       'Straight men and women are kept within one spot of each other. Queer, open, non-binary, and other attendees can book within total capacity.',
-    EventAdmissionPreset.fixedCohortCaps =>
-      'Set explicit caps for straight men and straight women. Other cohorts are not forced into those caps.',
   };
 }
 
@@ -59,6 +59,8 @@ class EventPolicyStep extends StatelessWidget {
     required this.maxWomenController,
     required this.admissionPreset,
     required this.onAdmissionPresetChanged,
+    required this.cohortCapsEnabled,
+    required this.onCohortCapsEnabledChanged,
     required this.dynamicPricingEnabled,
     required this.onDynamicPricingChanged,
     required this.cancellationPolicyId,
@@ -78,6 +80,8 @@ class EventPolicyStep extends StatelessWidget {
   final TextEditingController maxWomenController;
   final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
+  final bool cohortCapsEnabled;
+  final ValueChanged<bool> onCohortCapsEnabledChanged;
   final bool dynamicPricingEnabled;
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
@@ -250,42 +254,98 @@ class EventPolicyStep extends StatelessWidget {
               ),
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.fixedCohortCaps) ...[
+          if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             const SizedBox(height: 20),
-            const FieldLabel('Cohort caps'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: CatchTextField(
-                    key: CreateEventFormKeys.maxMen,
-                    label: 'Max straight men',
-                    isOptional: true,
-                    controller: maxMenController,
-                    hintText: 'Max men',
-                    prefixIcon: const Icon(Icons.male_outlined),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textInputAction: TextInputAction.next,
-                    validator: _positiveOptionalValidator,
+            CatchSurface(
+              padding: const EdgeInsets.all(12),
+              tone: CatchSurfaceTone.surface,
+              radius: CatchRadius.md,
+              borderColor: t.line,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SwitchListTile.adaptive(
+                    key: CreateEventFormKeys.cohortCapsToggle,
+                    contentPadding: EdgeInsets.zero,
+                    value: cohortCapsEnabled,
+                    onChanged: onCohortCapsEnabledChanged,
+                    title: Text(
+                      'Cohort caps',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                    subtitle: Text(
+                      'Optionally cap straight men and straight women without making this a separate admission format.',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CatchTextField(
-                    key: CreateEventFormKeys.maxWomen,
-                    label: 'Max straight women',
-                    isOptional: true,
-                    controller: maxWomenController,
-                    hintText: 'Max women',
-                    prefixIcon: const Icon(Icons.female_outlined),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textInputAction: TextInputAction.next,
-                    validator: _positiveOptionalValidator,
+                  if (cohortCapsEnabled) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CatchTextField(
+                            key: CreateEventFormKeys.maxMen,
+                            label: 'Max straight men',
+                            isOptional: true,
+                            controller: maxMenController,
+                            hintText: 'Max men',
+                            prefixIcon: const Icon(Icons.male_outlined),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textInputAction: TextInputAction.next,
+                            validator: cohortCapsEnabled
+                                ? _positiveOptionalValidator
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: CatchTextField(
+                            key: CreateEventFormKeys.maxWomen,
+                            label: 'Max straight women',
+                            isOptional: true,
+                            controller: maxWomenController,
+                            hintText: 'Max women',
+                            prefixIcon: const Icon(Icons.female_outlined),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textInputAction: TextInputAction.next,
+                            validator: cohortCapsEnabled
+                                ? _positiveOptionalValidator
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+          if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
+            const SizedBox(height: 20),
+            CatchSurface(
+              padding: const EdgeInsets.all(12),
+              tone: CatchSurfaceTone.surface,
+              radius: CatchRadius.md,
+              borderColor: t.line,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.how_to_reg_outlined, color: t.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[

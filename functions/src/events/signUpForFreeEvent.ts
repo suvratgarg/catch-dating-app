@@ -34,7 +34,7 @@ interface SignUpForFreeEventDeps {
     eventId: string,
     userId: string,
     paymentId?: string,
-    options?: {hasValidInvite?: boolean}
+    options?: {hasValidInvite?: boolean; hasHostApproval?: boolean}
   ) => Promise<void>;
 }
 

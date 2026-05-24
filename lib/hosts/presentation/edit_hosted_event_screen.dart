@@ -152,6 +152,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   String? _meetingLocationPlaceId;
   late PaceLevel _selectedPace;
   late EventAdmissionPreset _selectedAdmissionPreset;
+  late bool _cohortCapsEnabled;
   late bool _dynamicPricingEnabled;
   late EventCancellationPolicyId _selectedCancellationPolicyId;
   bool _loadedPrivateAccess = false;
@@ -228,6 +229,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     _maxWomenController.text = event.constraints.maxWomen?.toString() ?? '';
     final policy = event.effectiveEventPolicy;
     _selectedAdmissionPreset = _admissionPresetFor(policy);
+    _cohortCapsEnabled = policy.usesFixedCohortCaps;
     _dynamicPricingEnabled = policy.usesDemandPricing;
     final demandRules = policy.pricingPolicy.demandPricingRules;
     final demandRule = demandRules.isEmpty ? null : demandRules.first;
@@ -478,7 +480,13 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                     if (preset != EventAdmissionPreset.balancedSingles) {
                       _dynamicPricingEnabled = false;
                     }
+                    if (preset != EventAdmissionPreset.openCapacity) {
+                      _cohortCapsEnabled = false;
+                    }
                   }),
+                  cohortCapsEnabled: _cohortCapsEnabled,
+                  onCohortCapsEnabledChanged: (value) =>
+                      setState(() => _cohortCapsEnabled = value),
                   dynamicPricingEnabled: _dynamicPricingEnabled,
                   onDynamicPricingChanged: (value) => setState(() {
                     _dynamicPricingEnabled = value;
@@ -630,13 +638,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final includePolicy = !_policyLocked;
     final eventPolicyDefaults = includePolicy ? _eventPolicyDefaults : null;
     final eventPolicy = includePolicy
-        ? eventPolicyDefaults!.toEventPolicyBundle(
-            capacityLimit: int.parse(_capacityController.text.trim()),
-            basePriceInPaise: _currencyControllerValueInMinorUnits(
-              _priceController,
-            )!,
-            inviteCodeHint: _inviteCodeHint,
-          )
+        ? _eventPolicyForDefaults(eventPolicyDefaults!)
         : widget.event.eventPolicy;
 
     final nextEvent = widget.event.copyWith(
@@ -686,6 +688,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
   EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
     admissionPreset: _admissionDefaultPresetFromSelected(
       _selectedAdmissionPreset,
+      cohortCapsEnabled: _cohortCapsEnabled,
     ),
     minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
     maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
@@ -700,6 +703,25 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     ),
     cancellationPolicyId: _selectedCancellationPolicyId,
   );
+
+  EventPolicyBundle _eventPolicyForDefaults(EventPolicyDefaults defaults) {
+    final capacityLimit = int.parse(_capacityController.text.trim());
+    final basePriceInPaise = _currencyControllerValueInMinorUnits(
+      _priceController,
+    )!;
+    if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
+      return EventPolicyBundle.requestToJoinEvent(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: basePriceInPaise,
+        cancellationPolicy: defaults.cancellationPolicy,
+      );
+    }
+    return defaults.toEventPolicyBundle(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      inviteCodeHint: _inviteCodeHint,
+    );
+  }
 
   String? get _inviteCodeHint {
     final code = _inviteCodeController.text.trim();
@@ -794,6 +816,8 @@ class _EditablePolicyCard extends StatelessWidget {
     required this.dynamicPricingMaxController,
     required this.admissionPreset,
     required this.onAdmissionPresetChanged,
+    required this.cohortCapsEnabled,
+    required this.onCohortCapsEnabledChanged,
     required this.dynamicPricingEnabled,
     required this.onDynamicPricingChanged,
     required this.cancellationPolicyId,
@@ -813,6 +837,8 @@ class _EditablePolicyCard extends StatelessWidget {
   final TextEditingController dynamicPricingMaxController;
   final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
+  final bool cohortCapsEnabled;
+  final ValueChanged<bool> onCohortCapsEnabledChanged;
   final bool dynamicPricingEnabled;
   final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
@@ -909,32 +935,55 @@ class _EditablePolicyCard extends StatelessWidget {
                   : null,
             ),
           ],
-          if (admissionPreset == EventAdmissionPreset.fixedCohortCaps) ...[
-            gapH16,
-            Row(
-              children: [
-                Expanded(
-                  child: CatchTextField(
-                    label: 'Max straight men',
-                    isOptional: true,
-                    controller: maxMenController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: _positiveOptionalValidator,
+          if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
+            gapH12,
+            SwitchListTile.adaptive(
+              contentPadding: EdgeInsets.zero,
+              value: cohortCapsEnabled,
+              onChanged: onCohortCapsEnabledChanged,
+              title: Text(
+                'Cohort caps',
+                style: CatchTextStyles.labelL(context),
+              ),
+              subtitle: Text(
+                'Optionally cap straight men and straight women without making this a separate admission format.',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ),
+            if (cohortCapsEnabled) ...[
+              gapH12,
+              Row(
+                children: [
+                  Expanded(
+                    child: CatchTextField(
+                      label: 'Max straight men',
+                      isOptional: true,
+                      controller: maxMenController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: _positiveOptionalValidator,
+                    ),
                   ),
-                ),
-                gapW12,
-                Expanded(
-                  child: CatchTextField(
-                    label: 'Max straight women',
-                    isOptional: true,
-                    controller: maxWomenController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: _positiveOptionalValidator,
+                  gapW12,
+                  Expanded(
+                    child: CatchTextField(
+                      label: 'Max straight women',
+                      isOptional: true,
+                      controller: maxWomenController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      validator: _positiveOptionalValidator,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ],
+          ],
+          if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
+            gapH12,
+            Text(
+              'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
@@ -1239,22 +1288,28 @@ String? _trimToNull(String value) {
 
 EventAdmissionPreset _admissionPresetFor(EventPolicyBundle policy) {
   if (policy.usesInviteOnly) return EventAdmissionPreset.inviteOnly;
+  if (policy.admissionPolicy.manualApprovalRequired) {
+    return EventAdmissionPreset.requestToJoin;
+  }
   if (policy.usesBalancedRatio) return EventAdmissionPreset.balancedSingles;
-  if (policy.usesFixedCohortCaps) return EventAdmissionPreset.fixedCohortCaps;
   return EventAdmissionPreset.openCapacity;
 }
 
 EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
-  EventAdmissionPreset preset,
-) {
+  EventAdmissionPreset preset, {
+  required bool cohortCapsEnabled,
+}) {
+  if (preset == EventAdmissionPreset.openCapacity && cohortCapsEnabled) {
+    return EventAdmissionDefaultPreset.fixedCohortCaps;
+  }
   return switch (preset) {
     EventAdmissionPreset.openCapacity =>
       EventAdmissionDefaultPreset.openCapacity,
     EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
+    EventAdmissionPreset.requestToJoin =>
+      EventAdmissionDefaultPreset.openCapacity,
     EventAdmissionPreset.balancedSingles =>
       EventAdmissionDefaultPreset.balancedSingles,
-    EventAdmissionPreset.fixedCohortCaps =>
-      EventAdmissionDefaultPreset.fixedCohortCaps,
   };
 }
 

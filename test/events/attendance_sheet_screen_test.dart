@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -152,6 +153,51 @@ void main() {
 
     expect(fakeEventRepository.markedAttendanceEventId, isNull);
     expect(fakeEventRepository.markedAttendanceUserId, isNull);
+  });
+
+  testWidgets('participants setup mode labels manual approvals as requests', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      id: 'request-event',
+      eventPolicy: EventPolicyBundle.requestToJoinEvent(
+        capacityLimit: 12,
+        basePriceInPaise: 0,
+      ),
+    );
+    final fakePublicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [buildPublicProfile(uid: 'runner-2', name: 'Meera')];
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(event.id).overrideWith(
+          (ref) => Stream.value([
+            buildEventParticipation(
+              event: event,
+              uid: 'runner-2',
+              status: EventParticipationStatus.waitlisted,
+            ),
+          ]),
+        ),
+        publicProfileRepositoryProvider.overrideWith(
+          (ref) => fakePublicProfileRepository,
+        ),
+      ],
+      signedInUid: 'host-1',
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.text('Requests'), findsOneWidget);
+    expect(find.text('REQUEST'), findsOneWidget);
+    expect(find.text('Requested'), findsOneWidget);
   });
 }
 

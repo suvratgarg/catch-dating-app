@@ -5,7 +5,9 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -669,6 +671,90 @@ void main() {
       expect(find.text('Open event success'), findsNothing);
     });
 
+    testWidgets('host manage live embeds the editable roster in live now', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 2200);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final participationRepository = FakeEventParticipationRepository();
+      final publicProfiles = FakePublicProfileRepository()
+        ..profiles = [
+          buildPublicProfile(uid: 'runner-1', name: 'Harsh'),
+          buildPublicProfile(uid: 'runner-2', name: 'Manan'),
+        ];
+      final event = buildEvent(
+        id: 'event-live-roster',
+        bookedCount: 2,
+        checkedInCount: 1,
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+      participationRepository.eventParticipations[event.id] = [
+        buildEventParticipation(
+          event: event,
+          uid: 'runner-1',
+          status: EventParticipationStatus.attended,
+        ),
+        buildEventParticipation(event: event, uid: 'runner-2'),
+      ];
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+      ).copyWith(status: EventSuccessPlanStatus.live);
+
+      await pumpEventsTestApp(
+        tester,
+        HostEventManageScreen(
+          club: buildClub(hostUserId: 'host-1'),
+          event: event,
+          onBackToSuccess: () {},
+          initialSection: HostEventManageSection.live,
+        ),
+        overrides: [
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
+          eventParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+          publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(plan)),
+          watchEventSuccessAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessRotationAssignmentsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessPreferencesProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+          watchEventSuccessWingmanRequestsProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(const [])),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+      await _pumpTestAnimation(tester);
+
+      expect(find.text('Live now'), findsOneWidget);
+      expect(find.text('Editable roster'), findsOneWidget);
+      expect(find.text('Harsh'), findsOneWidget);
+      expect(find.text('Manan'), findsOneWidget);
+      expect(find.text('Host check-in QR'), findsOneWidget);
+      expect(find.text('Live attendance'), findsNothing);
+      expect(
+        find.textContaining('Tap a booked participant to toggle check-in'),
+        findsNothing,
+      );
+      expect(find.text('Arrival check-in'), findsNothing);
+    });
+
     testWidgets('host manage labels demand pricing revenue as base estimate', (
       tester,
     ) async {
@@ -1078,7 +1164,15 @@ Future<void> _submitValidEvent(WidgetTester tester) async {
 
   await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
   await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
-  await _tapAdmissionPreset(tester, 'fixedCohortCaps');
+  final cohortCapsToggle = find.byKey(
+    CreateEventFormKeys.cohortCapsToggle,
+    skipOffstage: false,
+  );
+  await tester.ensureVisible(cohortCapsToggle);
+  await tester.pump();
+  final cohortCapsTile = tester.widget<SwitchListTile>(cohortCapsToggle);
+  cohortCapsTile.onChanged?.call(true);
+  await _pumpTestAnimation(tester);
   await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
   await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
   await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
@@ -1129,16 +1223,6 @@ Future<void> _enterCreateEventText(
   await tester.ensureVisible(field);
   await tester.pump();
   await tester.enterText(field, text);
-}
-
-Future<void> _tapAdmissionPreset(WidgetTester tester, String presetName) async {
-  final finder = find.byKey(
-    CreateEventFormKeys.admissionPreset(presetName),
-    skipOffstage: false,
-  );
-  await tester.ensureVisible(finder);
-  await tester.tap(finder);
-  await _pumpTestAnimation(tester);
 }
 
 Future<void> _tapActivityKind(WidgetTester tester, String label) async {

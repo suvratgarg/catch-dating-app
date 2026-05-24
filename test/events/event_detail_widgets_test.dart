@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -13,6 +12,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
@@ -25,7 +25,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../clubs/clubs_test_helpers.dart' show FakeClubsRepository;
 import '../test_pump_helpers.dart';
@@ -485,6 +484,72 @@ void main() {
       expect(fakeEventRepository.leftWaitlistUserId, 'runner-9');
     });
 
+    testWidgets('request-only events use request and withdraw copy', (
+      tester,
+    ) async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          uidProvider.overrideWith((ref) => Stream.value('runner-9')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      final event = buildEvent(
+        eventPolicy: EventPolicyBundle.requestToJoinEvent(
+          capacityLimit: 12,
+          basePriceInPaise: 0,
+        ),
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: ListView(
+                children: [
+                  EventDetailCta(
+                    event: event,
+                    clubId: 'club1',
+                    userProfile: buildUser(uid: 'runner-9'),
+                    participation: null,
+                  ),
+                  EventDetailCta(
+                    event: event,
+                    clubId: 'club1',
+                    userProfile: buildUser(uid: 'runner-9'),
+                    participation: _participation(
+                      uid: 'runner-9',
+                      status: EventParticipationStatus.waitlisted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('Request to join'));
+      await tester.pump();
+
+      expect(find.text('Withdraw request'), findsOneWidget);
+      expect(fakeEventRepository.joinedWaitlistEventId, 'event-1');
+    });
+
     testWidgets('renders attended and past states', (tester) async {
       final pastStart = DateTime.now().subtract(const Duration(hours: 2));
 
@@ -865,8 +930,9 @@ void main() {
       tester,
     ) async {
       final fakeSavedEventRepository = FakeSavedEventRepository();
+      final event = buildEvent();
       var sharedEventId = '';
-      Uri? calendarUri;
+      CalendarEventPayload? calendarEvent;
 
       await tester.pumpWidget(
         ProviderScope(
@@ -881,11 +947,8 @@ void main() {
             watchEventSuccessPlanProvider(
               'event-1',
             ).overrideWith((ref) => Stream.value(null)),
-            externalUrlLauncherProvider.overrideWithValue((
-              uri, {
-              LaunchMode mode = LaunchMode.platformDefault,
-            }) async {
-              calendarUri = uri;
+            nativeCalendarLauncherProvider.overrideWithValue((event) async {
+              calendarEvent = event;
               return true;
             }),
           ],
@@ -896,7 +959,7 @@ void main() {
               '/': (context) =>
                   const Scaffold(body: Center(child: Text('Home'))),
               '/detail': (context) => EventDetailBody(
-                event: buildEvent(),
+                event: event,
                 userProfile: buildUser(),
                 clubId: 'club-1',
                 isHost: false,
@@ -929,7 +992,7 @@ void main() {
       await _pumpUntilFound(tester, find.text('Home'));
 
       expect(sharedEventId, 'event-1');
-      expect(calendarUri?.host, 'calendar.google.com');
+      expect(calendarEvent?.title, event.title);
       expect(fakeSavedEventRepository.savedEventId, 'event-1');
       expect(find.text('Home'), findsOneWidget);
     });

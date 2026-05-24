@@ -57,7 +57,7 @@ export async function signUpUserForEvent(
   eventId: string,
   userId: string,
   paymentId?: string,
-  options: {hasValidInvite?: boolean} = {}
+  options: {hasValidInvite?: boolean; hasHostApproval?: boolean} = {}
 ): Promise<void> {
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
@@ -153,6 +153,7 @@ export async function signUpUserForEvent(
       cohortId,
       roster: {...rosterFromEvent(event), totalBooked: currentBookedCount},
       hasValidInvite: options.hasValidInvite,
+      hasHostApproval: options.hasHostApproval,
     });
 
     await claimUserEventScheduleInTransaction(tx, db, {
