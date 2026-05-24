@@ -1,6 +1,6 @@
 part of '../event_success_companion_screen.dart';
 
-class _FirstHelloCheckInCard extends StatefulWidget {
+class _FirstHelloCheckInCard extends ConsumerStatefulWidget {
   const _FirstHelloCheckInCard({
     required this.mission,
     required this.onStart,
@@ -18,13 +18,33 @@ class _FirstHelloCheckInCard extends StatefulWidget {
   final VoidCallback? onSkip;
 
   @override
-  State<_FirstHelloCheckInCard> createState() => _FirstHelloCheckInCardState();
+  ConsumerState<_FirstHelloCheckInCard> createState() =>
+      _FirstHelloCheckInCardState();
 }
 
-class _FirstHelloCheckInCardState extends State<_FirstHelloCheckInCard> {
+class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
+    with SingleTickerProviderStateMixin {
   String? _answerId;
   bool _starting = false;
   bool _saving = false;
+  bool _celebrating = false;
+
+  late final AnimationController _celebration;
+
+  @override
+  void initState() {
+    super.initState();
+    _celebration = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _celebration.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +125,51 @@ class _FirstHelloCheckInCardState extends State<_FirstHelloCheckInCard> {
     }
 
     final selectedAnswerId = _answerId;
-    return _StagePanel(
-      child: Column(
+    return Stack(
+      children: [
+        _StagePanel(
+          child: _missionEditor(context, mission, selectedAnswerId, t),
+        ),
+        if (_celebrating)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: AnimatedBuilder(
+                animation: _celebration,
+                builder: (context, _) {
+                  final v = _celebration.value;
+                  // Triangle wave: alpha rises 0→peak then falls back to 0.
+                  final alpha = (v < 0.5 ? v * 2 : (1 - v) * 2) * 0.62;
+                  return DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(CatchRadius.sm),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFFFFB36B).withValues(alpha: alpha),
+                          const Color(0xFFFF6F61)
+                              .withValues(alpha: alpha * 0.85),
+                          const Color(0xFFFFD166)
+                              .withValues(alpha: alpha * 0.5),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _missionEditor(
+    BuildContext context,
+    EventSuccessArrivalMission mission,
+    String? selectedAnswerId,
+    CatchTokens t,
+  ) {
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Wrap(
@@ -158,7 +221,7 @@ class _FirstHelloCheckInCardState extends State<_FirstHelloCheckInCard> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final option in mission.answerOptions)
-                CatchChip(
+                _StageBouncyChip(
                   label: option.label,
                   active: selectedAnswerId == option.id,
                   onTap: _saving
@@ -201,7 +264,6 @@ class _FirstHelloCheckInCardState extends State<_FirstHelloCheckInCard> {
             ),
           ),
         ],
-      ),
     );
   }
 
@@ -220,11 +282,35 @@ class _FirstHelloCheckInCardState extends State<_FirstHelloCheckInCard> {
     final mission = widget.mission;
     final onComplete = widget.onComplete;
     if (mission == null || onComplete == null) return;
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _celebrating = true;
+    });
+    // Layer haptic + chime first so the user feels the celebration land
+    // before the gradient sweep finishes.
+    unawaited(
+      ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .play(EventSuccessLiveEffectKind.guideComplete),
+    );
+    final celebrationFuture = _kStageAnimationsEnabled
+        ? _celebration.forward(from: 0)
+        : Future<void>.value();
     try {
-      await onComplete(mission, answerId);
+      // Run the celebration animation in parallel with the network call.
+      // Both must complete before we hand off to the next moment, otherwise
+      // the gradient sweep snaps off mid-animation when the moment changes.
+      await Future.wait([
+        celebrationFuture,
+        onComplete(mission, answerId),
+      ]);
     } finally {
-      if (mounted) setState(() => _saving = false);
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _celebrating = false;
+        });
+      }
     }
   }
 }

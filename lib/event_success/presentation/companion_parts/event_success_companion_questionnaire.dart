@@ -101,6 +101,12 @@ class _CompatibilityQuestionnaireSectionState
             questionCount: questions.length,
             onSelect: (index) => setState(() => _activeQuestionIndex = index),
           ),
+          if ((widget.event.checkedInCount ?? 0) > 0) ...[
+            gapH8,
+            _LiveOthersInRoomLine(
+              checkedInCount: widget.event.checkedInCount ?? 0,
+            ),
+          ],
           gapH16,
           AnimatedSwitcher(
             duration: CatchMotion.base,
@@ -121,7 +127,7 @@ class _CompatibilityQuestionnaireSectionState
                     runSpacing: CatchSpacing.s2,
                     children: [
                       for (final option in activeQuestion.options)
-                        CatchChip(
+                        _StageBouncyChip(
                           label: option.label,
                           active: _answerIds.contains(option.id),
                           onTap: () => setState(() {

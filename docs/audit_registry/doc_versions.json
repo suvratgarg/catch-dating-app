@@ -78,7 +78,7 @@
   },
   "event_success": {
     "path": "docs/event_success.md",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "updated": "2026-05-24",
     "status": "active",
     "read_policy": "Read before deleting, moving, wiring, auditing, or QA-ing lib/event_success, event-success Firestore collections, Functions, scorecards, participant metrics, or manual QA surfaces."

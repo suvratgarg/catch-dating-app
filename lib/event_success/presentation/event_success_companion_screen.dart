@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -8,7 +9,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -46,6 +46,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 part 'companion_parts/event_success_companion_shared.dart';
+part 'companion_parts/event_success_companion_reveal_cinematic.dart';
 part 'companion_parts/event_success_companion_questionnaire.dart';
 part 'companion_parts/event_success_companion_arrival_mission.dart';
 part 'companion_parts/event_success_companion_live_cards.dart';
@@ -821,6 +822,8 @@ class _EventSuccessCompanionScreenState
       showSelfCheckIn: attendeeMoment.showSelfCheckIn,
       eventEnded: eventEnded,
       momentKey: transitionKey('stage'),
+      momentKind: attendeeMoment.kind,
+      referenceNow: referenceNow,
       content: _CompanionMomentStageContent(children: momentContents),
     );
   }
@@ -829,8 +832,6 @@ class _EventSuccessCompanionScreenState
     EventSuccessAttendeeMoment moment,
     EventSuccessMomentPresentation presentation,
   ) {
-    final effect = presentation.effectKind;
-    if (effect == null) return;
     final key =
         '${widget.event.id}:${moment.kind.name}:${widget.plan.activeStepIndex}:'
         '${widget.plan.revealStatus.name}:${widget.plan.activeRevealRoundIndex}:'
@@ -838,9 +839,17 @@ class _EventSuccessCompanionScreenState
         '${moment.activeStep?.title ?? 'no-step'}';
     if (_lastEffectKey == key) return;
     _lastEffectKey = key;
+    final effect = presentation.effectKind;
+    final bed = presentation.ambientBed;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(eventSuccessLiveEffectsControllerProvider).play(effect);
+      final controller = ref.read(eventSuccessLiveEffectsControllerProvider);
+      // Switch the ambient bed first so the one-shot lands over the new
+      // soundscape, not the previous moment's bed.
+      unawaited(controller.playAmbientBed(bed));
+      if (effect != null) {
+        unawaited(controller.play(effect));
+      }
     });
   }
 }

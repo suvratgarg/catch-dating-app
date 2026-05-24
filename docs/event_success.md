@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.0.4
+version: 1.1.0
 updated: 2026-05-24
 owner: recursive_audit_loop
 status: active
@@ -290,6 +290,72 @@ attendee companion. The work was split into four phases; durable outcomes:
   pod/rotation` inner branches inside `showPodAssignment` and
   `showRotationSchedule` are removed (those runtime kinds are mutually
   exclusive with `liveReveal`).
+
+## Phase 5 — Kinetic Companion Immersion
+
+The 2026-05-24 kinetic pass turned the companion stage from a static gradient
+into a perpetually-moving cinematic surface with audio, co-presence, and a
+marquee reveal moment. The vibe is moment-keyed: theatrical for arrival,
+pulse for live event beats, sunrise for afterglow. Architecturally, the
+existing `_CompanionStageTheme.forMoment` carries the palette + motif per
+beat — Phase 5 added motion, audio, and co-presence layers on top of that
+foundation.
+
+- **Animated motifs.** `_StageMotifPainter` now takes a `phase` parameter
+  driven by a 16s Ticker (gated on `Platform.environment['FLUTTER_TEST']`
+  so widget tests don't deadlock `pumpAndSettle`). Orbits rotate, sparks
+  drift with independent sine phases + alpha shimmer, rhythm waves swell
+  and recede, path filaments scroll diagonally, reveal spokes accelerate,
+  afterglow gets a breathing halo.
+- **Idle pulse + touch microinteractions.** `_StagePanel` breathes on a 6s
+  sine border-glow. `_StageGlyph` runs an entry spring tween then a
+  continuous 4s breath modulating scale + accent glow blur. `_StageBouncyPress`
+  + `_StageBouncyChip` give chips and tap targets a 220ms scale-down +
+  elastic spring-back + glow flare instead of Material's ink ripple.
+  Questionnaire and First Hello answer chips now use the kinetic variants.
+- **Audio infrastructure.** `audioplayers ^6.6.0` ships a multi-channel
+  controller in `event_success_live_effects_controller.dart`. One persistent
+  ambient bed player (looped) and one reusable low-latency one-shot player
+  (effects). `EventSuccessAmbientBed` enum (theatrical / pulse / sunrise /
+  silent) is mapped per-moment in `EventSuccessMomentPresentation.forMoment`.
+  Per-kind volume tuning — reveal lands at 0.95, taps at 0.48. Missing
+  assets are caught + memoized so the UI never blocks on the sound designer.
+  Six curated stock sounds to source are documented in
+  `assets/audio/event_success/README.md`.
+- **Reveal cinematic (the marquee).** New `_RevealCinematicOverlay` runs
+  three phases over the full stage when the reveal moment is active:
+  anticipation (vignette darkens 0.18→0.6, 14 gold spokes rotate with
+  acceleration `pow(anticipation, 1.4) × 2π × 1.8`, 72-particle field
+  drifts inward), climax 1.5s (white flash, particle field bursts on a
+  deterministic seed so every viewer sees the same explosion), settle
+  700ms (vignette releases, particles dissipate, sunrise vibe pack takes
+  over). All phases server-anchored to the existing countdown clock so
+  every attendee sees the same beat.
+- **Co-presence layer.** Three surfaces wired off the existing
+  `Event.checkedInCount` (denormalized + maintained by Cloud Functions — no
+  new Firestore listeners): `_LiveArrivalRing` on arrival moments (140×140
+  ring with 24 anonymous dot slots, big tabular numeral in center,
+  scale-pulse on increment), `_LiveOthersInRoomLine` on the questionnaire
+  progress rail (pill with chip pulse on count climb), and a shared
+  anonymous-dot ring inside the reveal cinematic pulsing on the same
+  `tickPhase` clock so every attendee's screen pulses on the *same* shared
+  rhythm during the countdown.
+- **First Hello completion celebration.** When the answer submits, the
+  card overlays a sunrise gradient sweep (triangle-wave alpha to 0.62 over
+  800ms), `guideComplete` haptic + chime fires, and the animation runs in
+  parallel with the network call so the gradient never snaps off
+  mid-animation when the moment transitions.
+- **Afterglow paced reveal.** `_AfterglowBeatGrid` is Stateful: beats slide
+  in from below + fade with a 1.4s stagger between rows. Beats can carry an
+  optional `countValue` (the "X people remembered" beat uses it) — the
+  first run of digits in the value string animates 0→countValue over 600ms
+  on an easeOutCubic curve.
+- **Test-mode animation gate.** All repeating Tickers (motif background,
+  panel pulse, glyph breath, cinematic tick, arrival ring pulse, others-in-
+  room pulse) check `_kStageAnimationsEnabled =
+  !Platform.environment.containsKey('FLUTTER_TEST')` before `.repeat()`.
+  Production runs fully kinetic; widget tests get a static surface and
+  `pumpAndSettle` resolves.
 
 ## Open Product Decisions
 

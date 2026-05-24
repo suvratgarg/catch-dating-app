@@ -1,5 +1,13 @@
 part of '../event_success_companion_screen.dart';
 
+/// Repeating Tickers schedule frames forever, which deadlocks Flutter's
+/// `pumpAndSettle` in widget tests. We auto-disable continuous animations
+/// when the `FLUTTER_TEST` env var is set (the test runner provides it).
+/// Production runs untouched; tests that genuinely want kinetic behaviour
+/// can use `pump(Duration(...))` with explicit time advancement.
+final bool _kStageAnimationsEnabled =
+    !Platform.environment.containsKey('FLUTTER_TEST');
+
 class _CompanionStageScaffold extends StatelessWidget {
   const _CompanionStageScaffold({
     required this.event,
@@ -10,6 +18,8 @@ class _CompanionStageScaffold extends StatelessWidget {
     required this.showSelfCheckIn,
     required this.eventEnded,
     required this.momentKey,
+    required this.momentKind,
+    required this.referenceNow,
     required this.content,
   });
 
@@ -21,6 +31,8 @@ class _CompanionStageScaffold extends StatelessWidget {
   final bool showSelfCheckIn;
   final bool eventEnded;
   final String momentKey;
+  final EventSuccessAttendeeMomentKind momentKind;
+  final DateTime referenceNow;
   final Widget content;
 
   @override
@@ -36,13 +48,22 @@ class _CompanionStageScaffold extends StatelessWidget {
           children: [
             Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(
-                  painter: _StageMotifPainter(
-                    accent: stageTheme.accent,
-                    foreground: stageTheme.foreground,
-                    motif: stageTheme.motif,
-                  ),
+                child: _AnimatedStageMotifBackground(
+                  accent: stageTheme.accent,
+                  foreground: stageTheme.foreground,
+                  motif: stageTheme.motif,
                 ),
+              ),
+            ),
+            // Sits between motif background and content. Renders nothing
+            // when not in the reveal moment, so other beats are untouched.
+            Positioned.fill(
+              child: _RevealCinematicOverlay(
+                plan: plan,
+                referenceNow: referenceNow,
+                momentKind: momentKind,
+                stageTheme: stageTheme,
+                checkedInCount: event.checkedInCount ?? 0,
               ),
             ),
             SafeArea(
@@ -69,6 +90,7 @@ class _CompanionStageScaffold extends StatelessWidget {
                           showSelfCheckIn: showSelfCheckIn,
                           eventEnded: eventEnded,
                           momentKey: momentKey,
+                          momentKind: momentKind,
                           content: content,
                         ),
                       ),
@@ -94,6 +116,7 @@ class _CompanionMomentStage extends StatelessWidget {
     required this.showSelfCheckIn,
     required this.eventEnded,
     required this.momentKey,
+    required this.momentKind,
     required this.content,
   });
 
@@ -105,7 +128,18 @@ class _CompanionMomentStage extends StatelessWidget {
   final bool showSelfCheckIn;
   final bool eventEnded;
   final String momentKey;
+  final EventSuccessAttendeeMomentKind momentKind;
   final Widget content;
+
+  /// Co-presence ring is meaningful only while the room is still gathering.
+  /// During the live event itself, the room composition is already known and
+  /// the ring just clutters the stage.
+  bool get _showArrivalRing => switch (momentKind) {
+    EventSuccessAttendeeMomentKind.preArrival ||
+    EventSuccessAttendeeMomentKind.selfCheckIn ||
+    EventSuccessAttendeeMomentKind.firstHelloCheckIn => true,
+    _ => false,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -124,8 +158,18 @@ class _CompanionMomentStage extends StatelessWidget {
           eventEnded: eventEnded,
         ),
         gapH32,
-        _StageGlyph(stageTheme: stageTheme, icon: presentation.icon),
-        gapH18,
+        if (_showArrivalRing) ...[
+          Center(
+            child: _LiveArrivalRing(
+              checkedInCount: event.checkedInCount ?? 0,
+              stageTheme: stageTheme,
+            ),
+          ),
+          gapH18,
+        ] else ...[
+          _StageGlyph(stageTheme: stageTheme, icon: presentation.icon),
+          gapH18,
+        ],
         AnimatedSwitcher(
           duration: CatchMotion.slow,
           switchInCurve: CatchMotion.standardCurve,
@@ -295,39 +339,87 @@ class _CompanionHero extends StatelessWidget {
   }
 }
 
-class _StageGlyph extends StatelessWidget {
+/// Animates a one-shot entry on first build, then breathes the glyph
+/// continuously so the hero element never reads as static between moments.
+class _StageGlyph extends StatefulWidget {
   const _StageGlyph({required this.stageTheme, required this.icon});
 
   final _CompanionStageTheme stageTheme;
   final IconData icon;
 
   @override
+  State<_StageGlyph> createState() => _StageGlyphState();
+}
+
+class _StageGlyphState extends State<_StageGlyph>
+    with TickerProviderStateMixin {
+  late final AnimationController _entryController = AnimationController(
+    duration: CatchMotion.slow,
+    vsync: this,
+  );
+  late final AnimationController _breathController = AnimationController(
+    duration: const Duration(seconds: 4),
+    vsync: this,
+  );
+
+  late final Animation<double> _entry = CurvedAnimation(
+    parent: _entryController,
+    curve: CatchMotion.springCurve,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    // Entry is one-shot — safe to always run. Breath repeats and would
+    // deadlock pumpAndSettle, so gate it on the test guard.
+    _entryController.forward();
+    if (_kStageAnimationsEnabled) {
+      _breathController.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _entryController.dispose();
+    _breathController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: CatchMotion.slow,
-      curve: CatchMotion.springCurve,
-      builder: (context, value, child) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_entry, _breathController]),
+      builder: (context, _) {
+        final entryValue = _entry.value;
+        // Smooth 0-1 sine-shaped breath so the glyph never reads as static.
+        final breath = 0.5 - 0.5 * math.cos(_breathController.value * math.pi);
+        final scale = (0.92 + entryValue * 0.08) + (breath * 0.02);
+        final glow = 24 + (breath * 16);
+        final glowAlpha = 0.20 + (breath * 0.12);
         return Transform.scale(
-          scale: 0.92 + (value * 0.08),
+          scale: scale,
           child: Container(
             width: 88,
             height: 88,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: stageTheme.foreground.withValues(alpha: 0.12),
+              color: widget.stageTheme.foreground.withValues(alpha: 0.12),
               border: Border.all(
-                color: stageTheme.foreground.withValues(alpha: 0.18),
+                color: widget.stageTheme.foreground.withValues(alpha: 0.18),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: stageTheme.accent.withValues(alpha: 0.24),
-                  blurRadius: 32,
+                  color: widget.stageTheme.accent.withValues(alpha: glowAlpha),
+                  blurRadius: glow,
                   spreadRadius: 2,
                 ),
               ],
             ),
-            child: Icon(icon, size: 40, color: stageTheme.foreground),
+            child: Icon(
+              widget.icon,
+              size: 40,
+              color: widget.stageTheme.foreground,
+            ),
           ),
         );
       },
@@ -396,23 +488,57 @@ class _CompanionMomentStageContent extends StatelessWidget {
   }
 }
 
-class _StagePanel extends StatelessWidget {
+/// Ambient stage card. The border alpha breathes on a 6s sine so the surface
+/// never reads as static — even when no content is changing.
+class _StagePanel extends StatefulWidget {
   const _StagePanel({required this.child});
 
   final Widget child;
 
   @override
+  State<_StagePanel> createState() => _StagePanelState();
+}
+
+class _StagePanelState extends State<_StagePanel>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _breath = AnimationController(
+    duration: const Duration(seconds: 6),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (_kStageAnimationsEnabled) _breath.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _breath.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface.withValues(alpha: 0.90),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: t.surface.withValues(alpha: 0.26)),
-      ),
+    return AnimatedBuilder(
+      animation: _breath,
+      builder: (context, child) {
+        final breath = 0.5 - 0.5 * math.cos(_breath.value * math.pi);
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.surface.withValues(alpha: 0.90),
+            borderRadius: BorderRadius.circular(CatchRadius.sm),
+            border: Border.all(
+              color: t.surface.withValues(alpha: 0.22 + breath * 0.12),
+            ),
+          ),
+          child: child,
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s4),
-        child: child,
+        child: widget.child,
       ),
     );
   }
@@ -573,8 +699,12 @@ class _CompanionStageTheme {
 
 enum _StageMotif { path, gate, spark, rhythm, orbit, reveal, signal, afterglow }
 
-class _StageMotifPainter extends CustomPainter {
-  const _StageMotifPainter({
+/// Drives a continuous `phase` (0→1, looping) into [_StageMotifPainter] so the
+/// stage background is perpetually alive — orbits rotate, sparks drift, rhythm
+/// waves breathe, paths scroll. Loop period is intentionally long (16s) so
+/// motion reads as ambient, not busy.
+class _AnimatedStageMotifBackground extends StatefulWidget {
+  const _AnimatedStageMotifBackground({
     required this.accent,
     required this.foreground,
     required this.motif,
@@ -583,6 +713,67 @@ class _StageMotifPainter extends CustomPainter {
   final Color accent;
   final Color foreground;
   final _StageMotif motif;
+
+  @override
+  State<_AnimatedStageMotifBackground> createState() =>
+      _AnimatedStageMotifBackgroundState();
+}
+
+class _AnimatedStageMotifBackgroundState
+    extends State<_AnimatedStageMotifBackground>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 16),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (_kStageAnimationsEnabled) _controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return CustomPaint(
+            painter: _StageMotifPainter(
+              accent: widget.accent,
+              foreground: widget.foreground,
+              motif: widget.motif,
+              phase: _controller.value,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _StageMotifPainter extends CustomPainter {
+  const _StageMotifPainter({
+    required this.accent,
+    required this.foreground,
+    required this.motif,
+    required this.phase,
+  });
+
+  final Color accent;
+  final Color foreground;
+  final _StageMotif motif;
+
+  /// 0→1, loops every animation cycle. Used per-motif to drive rotation,
+  /// drift, and pulse so the surface is never static.
+  final double phase;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -595,11 +786,20 @@ class _StageMotifPainter extends CustomPainter {
       ..strokeWidth = 2.2
       ..color = accent.withValues(alpha: 0.34);
 
+    final twoPi = math.pi * 2;
+    // Two phase rotations let secondary motion lead/lag the primary, giving
+    // the surface depth without doubling the Ticker rate.
+    final phaseA = phase * twoPi;
+    final phaseB = (phase * twoPi * 0.6) + (math.pi / 3);
+
     switch (motif) {
       case _StageMotif.path:
       case _StageMotif.gate:
+        // Diagonal filaments scroll along their length so the room reads as
+        // moving forward instead of stationary.
         for (var i = 0; i < 5; i++) {
-          final top = size.height * (0.18 + i * 0.12);
+          final scroll = (phase + i * 0.18) % 1.0;
+          final top = size.height * (0.18 + i * 0.12) + scroll * 18 - 9;
           canvas.drawLine(
             Offset(size.width * -0.08, top),
             Offset(size.width * 1.06, top + size.height * 0.18),
@@ -608,44 +808,69 @@ class _StageMotifPainter extends CustomPainter {
         }
       case _StageMotif.spark:
       case _StageMotif.signal:
+        // Sparks pulse alpha and drift along a slow loop. Each spark has its
+        // own phase offset so the field shimmers rather than blinks in unison.
         for (var i = 0; i < 18; i++) {
-          final x = size.width * (((i * 37) % 100) / 100);
-          final y = size.height * (((i * 61) % 100) / 100);
+          final baseX = size.width * (((i * 37) % 100) / 100);
+          final baseY = size.height * (((i * 61) % 100) / 100);
+          final localPhase = (phase + i * 0.057) % 1.0;
+          final dx = math.cos(localPhase * twoPi) * 6;
+          final dy = math.sin(localPhase * twoPi) * 4;
+          final alpha = 0.10 + 0.14 * (0.5 + 0.5 * math.sin(localPhase * twoPi));
           canvas.drawCircle(
-            Offset(x, y),
+            Offset(baseX + dx, baseY + dy),
             i.isEven ? 2.5 : 1.4,
             Paint()
               ..color = (i.isEven ? accent : foreground).withValues(
-                alpha: 0.16,
+                alpha: alpha,
               ),
           );
         }
       case _StageMotif.rhythm:
+        // Rhythm waves phase-shift so the curves swell and recede — like the
+        // room is breathing in time.
         final path = Path();
+        final swell = math.sin(phaseA) * 12;
         for (var i = 0; i < 4; i++) {
           final y = size.height * (0.28 + i * 0.14);
+          final lead = math.sin(phaseA + i * 0.7) * 24;
           path
             ..moveTo(0, y)
             ..cubicTo(
               size.width * 0.24,
-              y - 54,
+              y - 54 + lead,
               size.width * 0.56,
-              y + 54,
+              y + 54 + swell,
               size.width,
-              y,
+              y - lead * 0.4,
             );
         }
         canvas.drawPath(path, paint);
       case _StageMotif.orbit:
       case _StageMotif.reveal:
       case _StageMotif.afterglow:
+        // Orbits and reveal radii rotate counter-pulse so the eye sees depth.
+        // Ring thicknesses subtly pulse to read as "alive."
         final center = Offset(size.width * 0.72, size.height * 0.28);
+        canvas.save();
+        canvas.translate(center.dx, center.dy);
+        canvas.rotate(phaseA * 0.35);
         for (var i = 0; i < 5; i++) {
-          canvas.drawCircle(center, 72 + i * 46, i == 2 ? accentPaint : paint);
+          final radius = 72 + i * 46;
+          final pulse = 1.0 + 0.02 * math.sin(phaseB + i * 0.7);
+          canvas.drawCircle(
+            Offset.zero,
+            radius * pulse,
+            i == 2 ? accentPaint : paint,
+          );
         }
+        canvas.restore();
         if (motif == _StageMotif.reveal) {
+          // Radial spokes accelerate on the second half of the loop, hinting
+          // at the anticipation feel the cinematic reveal will land on.
+          final accel = 0.6 + 0.6 * math.sin(phaseA * 0.5).abs();
           for (var i = 0; i < 10; i++) {
-            final angle = (math.pi * 2 / 10) * i;
+            final angle = (twoPi / 10) * i + phaseA * accel * 0.4;
             final start = Offset(
               center.dx + math.cos(angle) * 48,
               center.dy + math.sin(angle) * 48,
@@ -657,6 +882,16 @@ class _StageMotifPainter extends CustomPainter {
             canvas.drawLine(start, end, accentPaint);
           }
         }
+        if (motif == _StageMotif.afterglow) {
+          // Afterglow gets a soft inner halo that breathes slowly, signaling
+          // the night winding down rather than ramping up.
+          final haloAlpha = 0.06 + 0.04 * math.sin(phaseA * 0.5);
+          canvas.drawCircle(
+            center,
+            120,
+            Paint()..color = accent.withValues(alpha: haloAlpha),
+          );
+        }
     }
   }
 
@@ -664,7 +899,8 @@ class _StageMotifPainter extends CustomPainter {
   bool shouldRepaint(covariant _StageMotifPainter oldDelegate) =>
       oldDelegate.accent != accent ||
       oldDelegate.foreground != foreground ||
-      oldDelegate.motif != motif;
+      oldDelegate.motif != motif ||
+      oldDelegate.phase != phase;
 }
 
 class EventSuccessMomentPresentation {
@@ -676,6 +912,7 @@ class EventSuccessMomentPresentation {
     required this.icon,
     required this.badgeTone,
     this.effectKind,
+    this.ambientBed = EventSuccessAmbientBed.theatrical,
   });
 
   final String badgeLabel;
@@ -685,6 +922,7 @@ class EventSuccessMomentPresentation {
   final IconData icon;
   final CatchBadgeTone badgeTone;
   final EventSuccessLiveEffectKind? effectKind;
+  final EventSuccessAmbientBed ambientBed;
 
   static EventSuccessMomentPresentation forMoment({
     required Event event,
@@ -706,6 +944,7 @@ class EventSuccessMomentPresentation {
         icon: Icons.event_available_outlined,
         badgeTone: CatchBadgeTone.live,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
+        ambientBed: EventSuccessAmbientBed.theatrical,
       ),
       EventSuccessAttendeeMomentKind.selfCheckIn =>
         EventSuccessMomentPresentation(
@@ -718,6 +957,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.qr_code_2_rounded,
           badgeTone: CatchBadgeTone.warning,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
+          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn =>
         const EventSuccessMomentPresentation(
@@ -730,6 +970,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.waving_hand_outlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
+          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire =>
         const EventSuccessMomentPresentation(
@@ -741,6 +982,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.tune_rounded,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
+          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.liveStepContext =>
         EventSuccessMomentPresentation(
@@ -754,6 +996,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.location_on_outlined,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
+          ambientBed: EventSuccessAmbientBed.pulse,
         ),
       EventSuccessAttendeeMomentKind.socialPrompt =>
         EventSuccessMomentPresentation(
@@ -767,6 +1010,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.chat_bubble_outline_rounded,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
+          ambientBed: EventSuccessAmbientBed.pulse,
         ),
       EventSuccessAttendeeMomentKind.conversationCues =>
         EventSuccessMomentPresentation(
@@ -780,6 +1024,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.forum_outlined,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
+          ambientBed: EventSuccessAmbientBed.pulse,
         ),
       EventSuccessAttendeeMomentKind.assignment => EventSuccessMomentPresentation(
         badgeLabel: 'Your next group',
@@ -790,6 +1035,7 @@ class EventSuccessMomentPresentation {
         icon: Icons.groups_2_outlined,
         badgeTone: CatchBadgeTone.success,
         effectKind: EventSuccessLiveEffectKind.stepChange,
+        ambientBed: EventSuccessAmbientBed.pulse,
       ),
       EventSuccessAttendeeMomentKind.liveReveal => EventSuccessMomentPresentation(
         badgeLabel: 'Shared reveal',
@@ -801,6 +1047,9 @@ class EventSuccessMomentPresentation {
         icon: Icons.bolt_rounded,
         badgeTone: CatchBadgeTone.live,
         effectKind: _revealHeroEffect(plan),
+        // Cinematic owns the soundscape during anticipation/climax; the bed
+        // resumes from the next moment's vibe.
+        ambientBed: EventSuccessAmbientBed.silent,
       ),
       EventSuccessAttendeeMomentKind.wingmanRequest =>
         const EventSuccessMomentPresentation(
@@ -813,6 +1062,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.volunteer_activism_outlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.stepChange,
+          ambientBed: EventSuccessAmbientBed.pulse,
         ),
       EventSuccessAttendeeMomentKind.postEvent =>
         const EventSuccessMomentPresentation(
@@ -825,6 +1075,7 @@ class EventSuccessMomentPresentation {
           icon: Icons.nightlight_round,
           badgeTone: CatchBadgeTone.success,
           effectKind: EventSuccessLiveEffectKind.guideComplete,
+          ambientBed: EventSuccessAmbientBed.sunrise,
         ),
       EventSuccessAttendeeMomentKind.none => EventSuccessMomentPresentation(
         badgeLabel: eventEnded
@@ -845,6 +1096,9 @@ class EventSuccessMomentPresentation {
         icon: Icons.event_outlined,
         badgeTone: CatchBadgeTone.neutral,
         effectKind: attended ? EventSuccessLiveEffectKind.liveEntry : null,
+        ambientBed: eventEnded
+            ? EventSuccessAmbientBed.sunrise
+            : EventSuccessAmbientBed.theatrical,
       ),
     };
   }
@@ -972,6 +1226,427 @@ class _PrivacyBadge extends StatelessWidget {
       ),
     };
   }
+}
+
+/// Gives the wrapped widget a kinetic press response: scale down on tap-down,
+/// brief glow flare, then a spring-back to rest. Drop-in replacement for
+/// InkWell-style affordances on the stage where Material's ink ripple feels
+/// out of place against the gradient + motif backdrop.
+class _StageBouncyPress extends StatefulWidget {
+  const _StageBouncyPress({
+    required this.child,
+    required this.onTap,
+    this.glowColor,
+    this.borderRadius,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final Color? glowColor;
+  final BorderRadius? borderRadius;
+
+  /// How deep the press depresses. 1.0 = no scale, 0 = scale to zero.
+  /// Tuned for chips and small CTAs; keep static for now.
+  static const double _minScale = 0.94;
+
+  @override
+  State<_StageBouncyPress> createState() => _StageBouncyPressState();
+}
+
+class _StageBouncyPressState extends State<_StageBouncyPress>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 220),
+    vsync: this,
+  );
+
+  late final Animation<double> _press = TweenSequence<double>([
+    TweenSequenceItem(
+      tween: Tween<double>(begin: 0, end: 1).chain(
+        CurveTween(curve: Curves.easeOut),
+      ),
+      weight: 35,
+    ),
+    TweenSequenceItem(
+      tween: Tween<double>(begin: 1, end: 0).chain(
+        CurveTween(curve: Curves.elasticOut),
+      ),
+      weight: 65,
+    ),
+  ]).animate(_controller);
+
+  bool _down = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _runPress() {
+    _controller.forward(from: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final glow = widget.glowColor ?? t.primary;
+    final enabled = widget.onTap != null;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+      onTapCancel: enabled ? () => setState(() => _down = false) : null,
+      onTap: enabled
+          ? () {
+              setState(() => _down = false);
+              _runPress();
+              widget.onTap?.call();
+            }
+          : null,
+      child: AnimatedBuilder(
+        animation: _press,
+        builder: (context, child) {
+          // 0 at rest, 1 at deepest press. Mix held-down state into the curve
+          // so dragging a finger off-target still releases visually.
+          final press = _down ? 1.0 : _press.value;
+          final scale = 1.0 -
+              (1.0 - _StageBouncyPress._minScale) * press.clamp(0.0, 1.0);
+          // Glow flare follows press up then decays through the elastic
+          // release for a satisfying tail.
+          final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
+          return Transform.scale(
+            scale: scale,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: widget.borderRadius,
+                boxShadow: [
+                  if (flare > 0.04)
+                    BoxShadow(
+                      color: glow.withValues(alpha: 0.36 * flare),
+                      blurRadius: 22 * flare,
+                      spreadRadius: 1.5 * flare,
+                    ),
+                ],
+              ),
+              child: child,
+            ),
+          );
+        },
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+/// Stage-native chip that mirrors `CatchChip`'s active/inactive styling but
+/// uses [_StageBouncyPress] for tactile feedback instead of Material ink.
+class _StageBouncyChip extends StatelessWidget {
+  const _StageBouncyChip({
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool active;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final background = active ? t.ink : t.surface;
+    final foreground = active ? t.surface : t.ink;
+    final border = active ? Colors.transparent : t.line2;
+    final radius = BorderRadius.circular(CatchRadius.pill);
+    return _StageBouncyPress(
+      onTap: onTap,
+      glowColor: t.primary,
+      borderRadius: radius,
+      child: AnimatedContainer(
+        duration: CatchMotion.fast,
+        curve: CatchMotion.standardCurve,
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: radius,
+          border: Border.all(color: border),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.titleS(context, color: foreground),
+        ),
+      ),
+    );
+  }
+}
+
+/// Live co-presence ring shown on arrival-class moments. Reads
+/// `Event.checkedInCount` (denormalized + maintained by Cloud Functions, so
+/// it updates in real time via the existing event listener — no separate
+/// Firestore reads). Renders anonymous dots around a center count, with a
+/// brief scale-pulse when the count climbs.
+class _LiveArrivalRing extends StatefulWidget {
+  const _LiveArrivalRing({
+    required this.checkedInCount,
+    required this.stageTheme,
+  });
+
+  final int checkedInCount;
+  final _CompanionStageTheme stageTheme;
+
+  @override
+  State<_LiveArrivalRing> createState() => _LiveArrivalRingState();
+}
+
+class _LiveArrivalRingState extends State<_LiveArrivalRing>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    duration: const Duration(milliseconds: 700),
+    vsync: this,
+  );
+
+  int _lastCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastCount = widget.checkedInCount;
+  }
+
+  @override
+  void didUpdateWidget(covariant _LiveArrivalRing oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.checkedInCount > _lastCount && _kStageAnimationsEnabled) {
+      _pulse.forward(from: 0);
+    }
+    _lastCount = widget.checkedInCount;
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.stageTheme;
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (context, child) {
+        // 0 at rest → 1 at peak. Sine-shaped curve gives a soft "heartbeat"
+        // when a new check-in arrives.
+        final pulse = math.sin(_pulse.value * math.pi);
+        final scale = 1.0 + pulse * 0.08;
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: _ArrivalRingCard(
+        checkedInCount: widget.checkedInCount,
+        stageTheme: theme,
+      ),
+    );
+  }
+}
+
+class _ArrivalRingCard extends StatelessWidget {
+  const _ArrivalRingCard({
+    required this.checkedInCount,
+    required this.stageTheme,
+  });
+
+  final int checkedInCount;
+  final _CompanionStageTheme stageTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = stageTheme.foreground;
+    final hasArrivals = checkedInCount > 0;
+    final caption = hasArrivals
+        ? (checkedInCount == 1
+              ? 'person here so far'
+              : 'people here so far')
+        : 'waiting for the room to fill';
+    return SizedBox(
+      width: 140,
+      height: 140,
+      child: CustomPaint(
+        painter: _ArrivalRingPainter(
+          dotCount: math.min(checkedInCount, 24),
+          activeAccent: stageTheme.accent,
+          dimForeground: fg.withValues(alpha: 0.18),
+          accentForeground: fg.withValues(alpha: 0.72),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$checkedInCount',
+                  style: CatchTextStyles.displayM(context, color: fg)
+                      .copyWith(
+                        height: 1.0,
+                        fontFeatures: const [
+                          FontFeature.tabularFigures(),
+                        ],
+                      ),
+                ),
+                gapH2,
+                Text(
+                  caption,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.labelS(
+                    context,
+                    color: fg.withValues(alpha: 0.78),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Compact co-presence indicator. Tells the attendee they're not in here
+/// alone, with a brief alpha-pulse the moment the count climbs. Used on
+/// solo-feeling surfaces (questionnaire, eventually First Hello / wingman).
+class _LiveOthersInRoomLine extends StatefulWidget {
+  const _LiveOthersInRoomLine({required this.checkedInCount});
+
+  final int checkedInCount;
+
+  @override
+  State<_LiveOthersInRoomLine> createState() => _LiveOthersInRoomLineState();
+}
+
+class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = AnimationController(
+    duration: const Duration(milliseconds: 700),
+    vsync: this,
+  );
+
+  int _lastCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastCount = widget.checkedInCount;
+  }
+
+  @override
+  void didUpdateWidget(covariant _LiveOthersInRoomLine oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.checkedInCount > _lastCount && _kStageAnimationsEnabled) {
+      _pulse.forward(from: 0);
+    }
+    _lastCount = widget.checkedInCount;
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final count = widget.checkedInCount;
+    // Anonymous-dot icon track: visualises co-presence without exposing
+    // anyone's identity.
+    return AnimatedBuilder(
+      animation: _pulse,
+      builder: (context, _) {
+        final pulse = math.sin(_pulse.value * math.pi);
+        final glowAlpha = 0.18 + pulse * 0.22;
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.primarySoft,
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            border: Border.all(
+              color: t.primary.withValues(alpha: glowAlpha),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CatchSpacing.s3,
+              vertical: CatchSpacing.s2,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.groups_3_outlined,
+                  size: 16,
+                  color: t.primary,
+                ),
+                gapW6,
+                Text(
+                  count == 1
+                      ? '1 person is checked in alongside you'
+                      : '$count people in the room with you',
+                  style: CatchTextStyles.labelL(context, color: t.ink),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ArrivalRingPainter extends CustomPainter {
+  const _ArrivalRingPainter({
+    required this.dotCount,
+    required this.activeAccent,
+    required this.dimForeground,
+    required this.accentForeground,
+  });
+
+  final int dotCount;
+  final Color activeAccent;
+  final Color dimForeground;
+  final Color accentForeground;
+
+  // Always paint 24 dot slots so the ring shape reads even with few
+  // arrivals — filled dots represent attendees, dim dots represent slots
+  // still empty.
+  static const int _slotCount = 24;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = math.min(size.width, size.height) * 0.42;
+    for (var i = 0; i < _slotCount; i++) {
+      final angle = (math.pi * 2 / _slotCount) * i - math.pi / 2;
+      final position = Offset(
+        center.dx + math.cos(angle) * radius,
+        center.dy + math.sin(angle) * radius,
+      );
+      final filled = i < dotCount;
+      final isHighlight = filled && (i % 6 == 0);
+      final color = isHighlight
+          ? activeAccent.withValues(alpha: 0.92)
+          : filled
+              ? accentForeground
+              : dimForeground;
+      canvas.drawCircle(position, filled ? 3.4 : 2.0, Paint()..color = color);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ArrivalRingPainter oldDelegate) =>
+      oldDelegate.dotCount != dotCount ||
+      oldDelegate.activeAccent != activeAccent ||
+      oldDelegate.dimForeground != dimForeground ||
+      oldDelegate.accentForeground != accentForeground;
 }
 
 class _NoCompanionActionsCard extends StatelessWidget {
