@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.108
+version: 2.5.116
 updated: 2026-05-25
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,93 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.116
+
+- Host Manage participation filters now render as one compact four-item strip
+  instead of a two-row nested surface grid; filter labels keep larger count
+  text and drop the secondary meta copy.
+- Roster search rows no longer carry trailing non-action badges such as
+  Roster, Live, or Export.
+- The Event Success Live Now console no longer repeats a checked-in progress
+  meter when Host Manage already embeds the editable check-in roster below it.
+
+### 2.5.115
+
+- Host Manage Report now exports real CSV files through the shared
+  `ExternalShareController` seam instead of disabled placeholder buttons.
+- Revenue CSV exports one row per roster/customer record plus summary rows for
+  estimated active revenue, no-shows, and cancellations. Amount columns are
+  explicitly marked as event-price estimates when only roster-visible
+  participation/payment-id data is available.
+- Ops CSV is justified as an operational ledger for attendance reconciliation:
+  roster status, check-in status, approval state, arrival order, timestamps,
+  cohort/gender-at-signup, and payment-id context.
+
+### 2.5.114
+
+- Host Manage keeps the Setup / Live / Report segmented lifecycle control at
+  the top of the body and removes the duplicated booked/waitlist/revenue stat
+  strip.
+- `HostEventParticipantsPanel` now owns the participant counts as compact
+  filter tiles for each lifecycle: Setup filters All, Booked,
+  Requests-or-Waitlist, and Slots; Live filters All, Due, In, and
+  Requests-or-Waitlist; Report filters All, Attended, No-show, and Waitlist.
+- Live and Report participation surfaces now use the same dense table shell for
+  filtered empty, zero, loading, and error states instead of separate summary
+  cards above the roster.
+
+### 2.5.113
+
+- `EventSuccessManualQaScreen` now embeds the canonical
+  `HostEventManageScreen` as its host pane with fixture-backed provider
+  overrides, so Setup, Live, Report, and participation table changes are tested
+  through the same host controls used in production instead of a duplicate QA
+  host fixture.
+
+### 2.5.112
+
+- Added `CatchBottomDock`, `CatchIconTile`, `CatchStatusDot`, and
+  `CatchPageDots` so bottom action docks, icon badges, tiny status markers, and
+  carousel/page indicators use shared primitives instead of local decorated
+  shells.
+- `CatchSurface` now accepts a custom border radius, allowing shaped surfaces
+  such as chat bubbles to keep their silhouette while still inheriting shared
+  surface behavior.
+- Widget cleanup scanning now covers typography regressions, spacing gaps,
+  low-level spacing helper drift, raw app-facing `TextStyle`, and reviewed
+  surface exceptions for media, chart, Event Success stage, and animation
+  surfaces.
+
+### 2.5.111
+
+- `HostEventParticipantsPanel` now keeps true zero-participant states inside
+  the lifecycle-specific board/table surfaces instead of rendering a standalone
+  empty block above Host Manage setup content. Loading, event-not-found, and
+  data-load errors remain branded outer states because the lifecycle board
+  cannot be built until the event context is available.
+
+### 2.5.110
+
+- Catch typography now exposes expressive semantic roles for hero, screen
+  headline, form question, card title, section title, body lead, supporting
+  copy, kicker/status labels, chat messages, profile answers, and tabular stats.
+- Material fallback text, menus, snackbars, buttons, inputs, chips, badges,
+  rows, empty states, and profile/event/event-success surfaces now use semantic
+  text roles instead of ad hoc `bodyS`, `bodyM`, or `titleS` calls.
+- App-facing raw text, raw Material button, raw text input, and nonzero
+  letter-spacing typography scanner findings are cleared for this pass.
+
+### 2.5.109
+
+- `HostEventParticipantsPanel` now renders lifecycle-specific participation
+  boards instead of a single card-list roster: Setup focuses profile/request
+  review, Live focuses dense check-in operations, and Report focuses
+  attendance/payment reconciliation with export placeholders.
+- `AttendanceSheetViewModel` now exposes the visible participation records by
+  user id so roster rows can render timestamps, payment presence, and active
+  participation status without presentation widgets reaching around the view
+  model.
 
 ### 2.5.108
 
@@ -516,9 +603,9 @@ a feature section here only when auditing that feature's widget surface.
   errors or extra controls keep the roomier panel spacing.
 - `RunHypeAvatarStack` now reads `PublicProfile.primaryPhotoThumbnailUrl`, so
   existing profiles with full photos render blurred imagery while thumbnail
-  backfills are still catching up. Demo seed data must still write
-  `photoThumbnailUrls` so tiny social-proof avatars do not depend on full-size
-  images in normal dev fixtures.
+  backfills are still catching up. Demo seed data must write
+  `profilePhotos.thumbnailUrl` so tiny social-proof avatars do not depend on
+  full-size images in normal dev fixtures.
 
 ### 2.5.56
 
@@ -608,8 +695,9 @@ a feature section here only when auditing that feature's widget surface.
 - `RunHypeAvatarStack` owns the run participant thumbnail row used by Dashboard
   upcoming-run cards and Run detail. It selects recent signed-up/attended
   `runParticipations`, filters toward the viewer's interested-in genders, reads
-  `publicProfiles`, and prefers `photoThumbnailUrls` so tiny hype avatars do
-  not load full profile photos once profile thumbnail backfill is complete.
+  `publicProfiles`, and prefers `profilePhotos.thumbnailUrl` so tiny hype
+  avatars do not load full profile photos once profile thumbnail backfill is
+  complete.
 - Chat and match celebration avatars should use non-obscured `PersonAvatar`
   with `PublicProfile.primaryPhotoThumbnailUrl`.
 
@@ -1594,7 +1682,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `HostEventAttendancePanel` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:19` | Shared host attendance panel. Watches `AttendanceSheetViewModel`, renders loading/error/empty states, profile-backed attendee rows, and attendance toggle mutations for Host Manage and the attendance route alias. |
+| `HostEventAttendancePanel` | `lib/hosts/presentation/widgets/host_event_attendance_panel.dart:31` | Shared host attendance panel. Watches `AttendanceSheetViewModel`, renders loading/error/event-not-found outer states, and delegates zero-participant, filtered-empty, profile-backed roster rows, and attendance toggle mutations to the lifecycle-specific Host Manage board/table surfaces. Lifecycle participation counts are compact filter tiles, not a separate stat strip, so Setup, Live, and Report each expose the statuses hosts need without repeating top-level metrics. Report mode exports Revenue and Ops CSV files through shared external sharing; revenue uses roster-visible payment ids plus event-price estimates until a backend host payment-report callable exposes actual settled/refunded amounts. |
 
 ---
 
@@ -1817,7 +1905,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:14` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` and legacy compatibility arrays stay synchronized. |
+| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:14` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose an optional catalog photo prompt, supports guarded deletion, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` stay synchronized. |
 
 ### StatelessWidget
 
@@ -1891,7 +1979,7 @@ Generated 2026-05-06.
 | `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, description, capacity, price, admission format, invite code, cohort/age limits, dynamic pricing, and cancellation policy. Schedule and booking-policy edits lock once the event has started or has booking, waitlist, or attendance activity. |
 | `EventMapScreen` | `lib/events/presentation/event_map_screen.dart:18` | Compatibility route wrapper for the reusable event map body. It provides the standalone scaffold and floating back controls while delegating map content to `EventMapView`. |
 | `EventMapView` | `lib/events/presentation/event_map_screen.dart:37` | Reusable full-screen event map body. Watches `EventMapViewModel`, centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes `EventPinsMap`, map empty states, optional overlay controls, and `EventMapSheet`. Used by the standalone event map route and Clubs map mode. |
-| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:110` | Canonical per-event host workspace. Shows shared host stat chips and switches between lifecycle sections: Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live embeds the editable roster inside the event-success Live now flow so check-in status, current stage, QR check-in, and next-step navigation read as one operational surface; Report leads with attendance summary before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
+| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:108` | Canonical per-event host workspace. Keeps the Setup / Live / Report segmented lifecycle control directly under the app bar title and lets the participation panel own roster counts as filter tiles instead of repeating booked, waitlist, and revenue stat cards. Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live embeds the editable roster inside the event-success Live now flow so check-in status, current stage, QR check-in, and next-step navigation read as one operational surface; Report leads with the filtered event-report table before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
 | `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. |
 
 ### ConsumerWidget
@@ -1945,7 +2033,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses Catch primitives and segmented controls to switch event format, host surface, First Hello arrival ritual, ranking signal, and opt-out states while rendering production host and attendee surfaces side by side from one synchronized in-memory fixture store. |
+| `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses Catch primitives to switch fixture event format and attendee opt-out states while rendering the canonical `HostEventManageScreen` beside the production attendee companion from one synchronized in-memory fixture store. The host pane overrides the exact Host Manage providers for event, roster, profile, event-success, and attendance-table state so Setup, Live, Report, and participation table changes stay covered without a duplicate host QA fixture. |
 | `_FirstHelloCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart:3` | Attendee companion First Hello mission card. Renders a server/manual-QA-provided target, one short question, private answer chips, completion, and a fallback action without leaking broader attendee data. |
 | `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode opens with one Live now console that combines the active stage, progress, attendee-facing state, optional embedded editable roster, current-step controls, and previous/next navigation before lower-priority supporting controls for wingman requests, reveal clues, conversation cues, assignments, and reveal controls. When Host Manage embeds the roster, the arrival control becomes a QR-only card instead of repeating attendance totals already shown by Live now plus the roster. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
 | `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle setup, normalize activity-specific recommendations against an optional target attendee count, and show a preset-review card before advanced controls. Guide notes, match clue questions, structure, and tools are progressively disclosed; questionnaire ownership is separate from tool switches, and wingman/openers are derived from module selection instead of repeated booleans. |

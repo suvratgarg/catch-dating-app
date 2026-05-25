@@ -257,7 +257,7 @@ Open modeling questions:
 | --- | --- | --- | --- |
 | P0 | Replace swipe deck/card UI with cardless structured profile surface | Implemented; needs device QA | `ProfileSurface` is shared by Catches, Preview, and Public Profile. Production visual QA is still needed on device. |
 | P0 | Add Hinge-style floating pass X after removing swipe gestures | Implemented; needs device QA | Catches uses `CatchesPassButton` in the lower-left. Exact visual inset/elevation still needs device QA. |
-| P0 | Update demo data to seed `profilePrompts`, `photoPrompts`, and `preferredRunTimes` | Implemented | `tool/demo/seed_demo_data.mjs` now builds profile prompts, photo prompts, and preferred run times from generated catalogs and validates seeded docs. |
+| P0 | Update demo data to seed `profilePrompts`, `profilePhotos.prompt`, and preferred run times | Implemented | `tool/demo/seed_demo_data.mjs` now builds profile prompts, photo prompt selections inside grouped profile photos, and preferred run times from generated catalogs and validates seeded docs. |
 | P1 | Add one-shot legacy profile prompt backfill/repair tooling | Implemented | `tool/data/recompute_public_profiles.mjs` and schema-contract repair docs cover stale public-profile projection repair, including legacy `bio` cleanup. |
 | P1 | Implement mode-based reaction controls in the shared renderer | Implemented locally | Catches enables like/comment controls; Preview/Public Profile use the same renderer with controls disabled. |
 | P1 | Add prompt-picker UX for profile prompts and photo captions | Partially implemented | Photo prompt/caption editing is implemented in `ProfilePhotoEditorScreen`. Profile prompt selection still uses the fixed default prompt set in onboarding/edit profile. |
