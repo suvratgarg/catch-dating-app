@@ -93,7 +93,7 @@
       "area": "contracts,repositories",
       "priority": "low",
       "rules": ["CODEGEN-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "First migration pass complete. tool/contracts/generate_schema_contracts.mjs now emits 31 typed Dart callable request classes from contracts/callables/ (and the update_user_profile patch) to lib/core/schema_contracts/generated/callable_request_dtos.g.dart. Each emitted class has named-parameter ctor, typed fields, and a toJson() validated against its source schema by test/core/callable_dto_contracts_test.dart. Feature-level *_callable_dtos.dart files now re-export the generated classes for stable import paths; hand-written classes only remain for the cases below. Remaining hand-written DTOs and why: (a) UpdateUserProfileCallableRequest — accepts arbitrary Map<String, dynamic> with recursive Firestore Timestamp → millis conversion the generator can't synthesize; (b) CreateClubCallableRequest, UpdateClubCallableRequest — hostDefaults / patch shape have nested-typed objects that should get typed nested classes rather than Map<String, Object?>; (c) CreateEventCallableRequest, UpdateEventCallableRequest, plus the nested EventDetailsCallableDto + EventConstraintsCallableDto — fromEvent/fromDomain adapter factories that walk the Event domain object and convert DateTime → millis; (d) PlacesAutocompleteCallableRequest — flattens LocationCoordinate? bias into latitude/longitude during serialization; (e) EventBookingCallableRequest, CreateRazorpayOrderCallableRequest — no payload schemas in contracts/callables/ yet (only the verify side has one); (f) response classes and RazorpayOrderCallableResponseFormatException — response decoders are not yet in the generator's scope. Next step (when picked up): add contracts/callables/{event_booking,create_razorpay_order}_payload.schema.json, emit typed nested classes for nested objects, and add a Timestamp-aware emit mode for the patch and create-event paths.",
+      "summary": "First migration pass complete. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ to lib/core/schema_contracts/generated/callable_request_dtos.g.dart, with toJson() parity guarded by test/core/callable_dto_contracts_test.dart. Feature-level *_callable_dtos.dart files re-export generated classes when the generator can preserve the required wire shape. Hand-written DTOs remain only where they add behavior the current generator cannot synthesize: UpdateUserProfileCallableRequest wraps the hand-written UpdateUserProfilePatch and converts Firestore Timestamp/DateTime values to millis; EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode even though dedicated payload schemas now exist; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias into latitude/longitude; feature-local create/update event and club wrappers keep domain adapters and typed nested DTOs while the generated equivalents still use Map<String, Object?> for nested objects/patch fields; response decoders remain hand-written by design. UpdateUserProfilePatch and UpdateClubPatch are hand-written, schema-parity-tested bridge classes pending direct patch generation. Next generator work: emit typed patch classes, typed nested objects, and adapter-friendly request DTOs so those feature-local wrappers can shrink to adapters only.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
         "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
@@ -104,9 +104,120 @@
         "lib/safety/data/safety_callable_dtos.dart",
         "lib/locations/data/places_callable_dtos.dart",
         "lib/user_profile/data/user_profile_callable_dtos.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "lib/clubs/domain/update_club_patch.dart",
         "test/core/callable_dto_contracts_test.dart",
+        "test/core/update_user_profile_patch_test.dart",
+        "test/core/update_club_patch_test.dart",
         "contracts/callables/",
         "contracts/patches/update_user_profile.schema.json"
+      ]
+    },
+    {
+      "id": "CONTRACT-DART-GEN-002",
+      "title": "Generate Dart freezed domain classes from contracts/firestore/",
+      "status": "queued",
+      "area": "contracts,domain",
+      "priority": "low",
+      "rules": ["CODEGEN-001"],
+      "summary": "32 freezed domain classes in lib/**/domain/ hand-mirror their JSON Schemas. test/core/domain_fixture_parity_test.dart catches Class.fromJson(fixture) failures but the classes themselves remain parallel sources — a schema field added today produces no Dart compile error. Build a generator that emits json_serializable annotations, @TimestampConverter, Dart enum types, and equality semantics, one Dart file per schema. Hand-written derived getters (Event.distanceMiles, Club.isOwnedBy, etc.) move to extension files. Done when no hand-written *.dart exists for the 32 covered classes (only _$Foo parts) and adding a schema field auto-extends the Dart class without manual edits. Multi-day epic; revisit when the team has bandwidth for a clean sweep.",
+      "paths": [
+        "tool/contracts/generate_schema_contracts.mjs",
+        "contracts/firestore/",
+        "lib/events/domain/event.dart",
+        "lib/clubs/domain/club.dart",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/public_profile/domain/public_profile.dart",
+        "lib/matches/domain/match.dart",
+        "lib/chats/domain/chat_message.dart",
+        "lib/swipes/domain/swipe.dart",
+        "test/core/domain_fixture_parity_test.dart"
+      ]
+    },
+    {
+      "id": "FIRESTORE-OVERLAY-RETIRE-001",
+      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
+      "status": "queued",
+      "area": "contracts,functions",
+      "priority": "low",
+      "rules": ["CODEGEN-001"],
+      "summary": "functions/src/shared/firestore.ts is intentionally a parallel TS tree where x-firestore-type:timestamp fields are typed as FirebaseFirestore.Timestamp (vs the schema-derived {_seconds,_nanoseconds} shape). Long-term cleanup: extend tool/contracts/generate_schema_contracts.mjs to emit a Timestamp-typed variant per document (e.g. functions/src/shared/generated/admin/*.ts), migrate all 38 Functions imports from ../shared/firestore to the new path, then delete firestore.ts + firestore_ts_overlay.json + tool/contracts/generate_firestore_types.dart and drop the corresponding gate step from tool/check_data_contract.sh. Bounded marginal value; the boundary is documented in docs/data_contracts.md \"Two TypeScript Type Trees By Design\" and works today.",
+      "paths": [
+        "tool/contracts/generate_schema_contracts.mjs",
+        "tool/contracts/generate_firestore_types.dart",
+        "tool/contracts/firestore_ts_overlay.json",
+        "functions/src/shared/firestore.ts",
+        "tool/check_data_contract.sh",
+        "docs/data_contracts.md"
+      ]
+    },
+    {
+      "id": "STORAGE-UPLOAD-CONFORMANCE-001",
+      "title": "Enforce contracts/storage size + content-type limits client-side",
+      "status": "queued",
+      "area": "image_uploads,contracts",
+      "priority": "medium",
+      "rules": ["EXTERNAL-SIDE-EFFECT-001"],
+      "summary": "contracts/storage/*.schema.json declares x-storage-content-type-pattern and x-storage-max-bytes for every upload path, but lib/image_uploads/data/image_upload_repository.dart uploadWithMetadata calls readAsBytes() then putData() with no preflight (lines 99-120). Storage rules reject oversize uploads server-side, but the client wastes bandwidth + delivers a generic error. Add a preflight to upload/uploadWithMetadata that (a) maps the storagePath prefix to its schema (users/{uid}/photos/ → contracts/storage/profile_photos.schema.json, etc.), (b) checks bytes.length against x-storage-max-bytes, (c) checks the derived contentType against x-storage-content-type-pattern, (d) throws a StorageUploadPreflightException with the failed constraint so UI can render a precise error. Cover all six current helpers: uploadUserPhoto, uploadUserProfilePhoto, uploadClubCover, uploadClubProfileImage, uploadEventPhoto, uploadChatImage. Done when negative unit tests (oversize file + wrong content type) for each helper read the limit from the schema rather than hard-coded constants.",
+      "paths": [
+        "lib/image_uploads/data/image_upload_repository.dart",
+        "lib/exceptions/app_exception.dart",
+        "contracts/storage/",
+        "test/image_uploads/"
+      ]
+    },
+    {
+      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
+      "title": "Retire legacy profile photo arrays after app-version floor clears",
+      "status": "queued",
+      "area": "user_profile,public_profile,migrations",
+      "priority": "medium",
+      "rules": ["FIRESTORE-RULES-TEST-001"],
+      "summary": "contracts/migrations/profile_photos_storage.json is at currentPhase: new_primary_live_backfilled (applied dev+prod 2026-05-16) with the final retire_legacy_arrays phase pending. Older client versions still need photoUrls/photoThumbnailUrls/photoPrompts to render profile photos. When the supported-version floor clears: drop the array fields from contracts/firestore/users.schema.json and contracts/firestore/public_profiles.schema.json, remove them from lib/user_profile/domain/user_profile.dart, lib/public_profile/domain/public_profile.dart, and lib/user_profile/domain/update_user_profile_patch.dart, drop the projection writes in functions/src/profiles/syncPublicProfile.ts and functions/src/profiles/updateUserProfile.ts, run a backfill that strips the legacy fields from existing documents in dev → staging → prod, and mark retire_legacy_arrays: complete in the migration JSON. Done when grep photoUrls contracts/firestore/{users,public_profiles}.schema.json is empty and live users/ docs in prod no longer carry these fields (validated by tool/data/validate_firestore_data.mjs).",
+      "paths": [
+        "contracts/migrations/profile_photos_storage.json",
+        "contracts/firestore/users.schema.json",
+        "contracts/firestore/public_profiles.schema.json",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/public_profile/domain/public_profile.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "functions/src/profiles/syncPublicProfile.ts",
+        "functions/src/profiles/updateUserProfile.ts",
+        "tool/data/validate_firestore_data.mjs"
+      ]
+    },
+    {
+      "id": "SWIPES-RENAME-CONTINUE-001",
+      "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
+      "status": "in_progress",
+      "area": "swipes,firestore,migrations",
+      "priority": "medium",
+      "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
+      "summary": "contracts/migrations/swipes_to_profile_decisions.json is currently at dual_write (active) with observe and dual_read complete and backfill verified_noop_2026_05_15. Remaining staged phases: new_primary (read/write profileDecisions as canonical), freeze_old (block new writes to swipes/), retire_old (drop the swipes/ collection from rules/seeds/tests). Each phase needs both a Functions deploy and a Dart client release so coordinated rollout matters. Validate with tool/data/validate_profile_decision_migration.mjs at each phase. Done when (a) Dart, Functions, and Firestore rules reference profileDecisions only, (b) the validator reports zero drift across dev/staging/prod, (c) no regression in matching behavior vs the pre-migration baseline.",
+      "paths": [
+        "contracts/migrations/swipes_to_profile_decisions.json",
+        "tool/data/validate_profile_decision_migration.mjs",
+        "tool/data/backfill_profile_decisions.mjs",
+        "firestore.rules",
+        "lib/swipes/data/swipe_repository.dart",
+        "functions/src/matching/onSwipeCreated.ts"
+      ]
+    },
+    {
+      "id": "PROFILE-RUN-FIELDS-MIGRATE-001",
+      "title": "Migrate run-specific profile fields to activity-generic shape",
+      "status": "queued",
+      "area": "user_profile,onboarding,swipes",
+      "priority": "low",
+      "rules": ["CONTROLLER-BOUNDARY-001"],
+      "summary": "paceMinSecsPerKm, paceMaxSecsPerKm, preferredDistances, runningReasons, preferredRunTimes, and runPreferencesVersion live directly on users/{uid} despite the product spanning many activity kinds (pickleball, padel, tennis, yoga, dinner, mixers). The shape locks the profile to running. Needs a product design decision on shape — nest under runningPreferences, introduce per-activity preference objects, or keep these as the universal movement preferences with a generic layer alongside. Then: add the new shape to contracts/firestore/users.schema.json, write a backfill in tool/data/ that copies legacy → new (keep legacy readable for one client-version cycle), migrate UserProfile + UpdateUserProfilePatch, and update filters, onboarding pace step, profile detail, and match cards. Done when the new shape is live, all UI surfaces work for non-running activities without showing pace fields, and the legacy fields are read-only for back-compat.",
+      "paths": [
+        "contracts/firestore/users.schema.json",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "lib/onboarding/presentation/onboarding_controller.dart",
+        "lib/swipes/presentation/filters_controller.dart",
+        "tool/data/"
       ]
     },
     {
