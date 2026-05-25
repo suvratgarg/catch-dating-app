@@ -1,6 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {ClubMembershipDoc} from "../shared/firestore";
+import {ClubMembershipDoc} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubMemberStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;

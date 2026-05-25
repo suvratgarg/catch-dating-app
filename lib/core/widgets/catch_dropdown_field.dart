@@ -94,7 +94,7 @@ class _CatchDropdownFieldState<T extends Labelled>
               const SizedBox(height: CatchSpacing.s1),
               Text(
                 field.errorText!,
-                style: CatchTextStyles.bodyS(context, color: t.danger),
+                style: CatchTextStyles.supporting(context, color: t.danger),
               ),
             ],
           ],

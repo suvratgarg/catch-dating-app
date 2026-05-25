@@ -9,7 +9,7 @@ import {
   ProfilePhoto,
   ClubMembershipDoc,
   EventParticipationDoc,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -84,9 +84,6 @@ export async function requestAccountDeletionHandler(
     gender: "other",
     phoneNumber: "",
     profileComplete: false,
-    photoUrls: [],
-    photoThumbnailUrls: [],
-    photoPrompts: [],
     profilePhotos: [],
     city: admin.firestore.FieldValue.delete(),
     interestedInGenders: [],
@@ -104,11 +101,22 @@ export async function requestAccountDeletionHandler(
     workout: admin.firestore.FieldValue.delete(),
     diet: admin.firestore.FieldValue.delete(),
     children: admin.firestore.FieldValue.delete(),
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: [],
-    runningReasons: [],
-    preferredRunTimes: [],
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: [],
+        runningReasons: [],
+        preferredRunTimes: [],
+        version: 1,
+      },
+    },
+    paceMinSecsPerKm: admin.firestore.FieldValue.delete(),
+    paceMaxSecsPerKm: admin.firestore.FieldValue.delete(),
+    preferredDistances: admin.firestore.FieldValue.delete(),
+    runningReasons: admin.firestore.FieldValue.delete(),
+    preferredRunTimes: admin.firestore.FieldValue.delete(),
+    runPreferencesVersion: admin.firestore.FieldValue.delete(),
     fcmToken: admin.firestore.FieldValue.delete(),
   }, {merge: true});
 
@@ -494,21 +502,9 @@ function profilePhotoDeletionStoragePaths(
     addUrl(photo.thumbnailUrl);
   }
 
-  for (const url of stringArray(user.photoUrls)) addUrl(url);
-  for (const url of stringArray(user.photoThumbnailUrls)) addUrl(url);
   return [...paths];
 }
 
-/**
- * Coerces a Firestore field into a string array.
- * @param {unknown} value Unknown Firestore field value.
- * @return {string[]} String items only.
- */
-function stringArray(value: unknown): string[] {
-  return Array.isArray(value) ?
-    value.filter((item): item is string => typeof item === "string") :
-    [];
-}
 
 /**
  * Deletes Firebase Storage objects represented by object paths.

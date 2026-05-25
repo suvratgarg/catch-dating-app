@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
@@ -45,7 +47,7 @@ class WhenStep extends StatelessWidget {
         ),
         children: [
           const FieldLabel('Date'),
-          const SizedBox(height: 8),
+          gapH8,
           PickerTile(
             key: CreateEventFormKeys.datePicker,
             icon: Icons.calendar_today_outlined,
@@ -61,14 +63,17 @@ class WhenStep extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: Text(
                       field.errorText!,
-                      style: TextStyle(fontSize: 12, color: t.primary),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.primary,
+                      ),
                     ),
                   )
                 : const SizedBox.shrink(),
           ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Start time'),
-          const SizedBox(height: 8),
+          gapH8,
           PickerTile(
             key: CreateEventFormKeys.timePicker,
             icon: Icons.schedule_outlined,
@@ -86,7 +91,10 @@ class WhenStep extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 4, left: 4),
                     child: Text(
                       field.errorText!,
-                      style: TextStyle(fontSize: 12, color: t.primary),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: t.primary,
+                      ),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -96,12 +104,12 @@ class WhenStep extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4, left: 4),
               child: Text(
                 scheduleErrorText!,
-                style: TextStyle(fontSize: 12, color: t.primary),
+                style: CatchTextStyles.supporting(context, color: t.primary),
               ),
             ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Duration'),
-          const SizedBox(height: 8),
+          gapH8,
           CatchNumberStepper(
             value: durationMinutes,
             onDecrease: onDecreaseDuration,

@@ -330,7 +330,7 @@ class _CompanionHero extends StatelessWidget {
         gapH4,
         Text(
           '${plan.playbook.title} · ${event.locationName}',
-          style: CatchTextStyles.bodyS(
+          style: CatchTextStyles.supporting(
             context,
             color: fg.withValues(alpha: 0.72),
           ),
@@ -457,7 +457,7 @@ class _StagePrivacyLine extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: CatchTextStyles.bodyS(
+              style: CatchTextStyles.supporting(
                 context,
                 color: stageTheme.foreground.withValues(alpha: 0.82),
               ),
@@ -1240,12 +1240,14 @@ class _StageBouncyPress extends StatefulWidget {
     required this.onTap,
     this.glowColor,
     this.borderRadius,
+    this.semanticLabel,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final Color? glowColor;
   final BorderRadius? borderRadius;
+  final String? semanticLabel;
 
   /// How deep the press depresses. 1.0 = no scale, 0 = scale to zero.
   /// Tuned for chips and small CTAs; keep static for now.
@@ -1296,47 +1298,53 @@ class _StageBouncyPressState extends State<_StageBouncyPress>
     final t = CatchTokens.of(context);
     final glow = widget.glowColor ?? t.primary;
     final enabled = widget.onTap != null;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: enabled ? (_) => setState(() => _down = true) : null,
-      onTapCancel: enabled ? () => setState(() => _down = false) : null,
-      onTap: enabled
-          ? () {
-              setState(() => _down = false);
-              _runPress();
-              widget.onTap?.call();
-            }
-          : null,
-      child: AnimatedBuilder(
-        animation: _press,
-        builder: (context, child) {
-          // 0 at rest, 1 at deepest press. Mix held-down state into the curve
-          // so dragging a finger off-target still releases visually.
-          final press = _down ? 1.0 : _press.value;
-          final scale =
-              1.0 - (1.0 - _StageBouncyPress._minScale) * press.clamp(0.0, 1.0);
-          // Glow flare follows press up then decays through the elastic
-          // release for a satisfying tail.
-          final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
-          return Transform.scale(
-            scale: scale,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: widget.borderRadius,
-                boxShadow: [
-                  if (flare > 0.04)
-                    BoxShadow(
-                      color: glow.withValues(alpha: 0.36 * flare),
-                      blurRadius: 22 * flare,
-                      spreadRadius: 1.5 * flare,
-                    ),
-                ],
+    return Semantics(
+      button: enabled,
+      enabled: enabled,
+      label: widget.semanticLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+        onTapCancel: enabled ? () => setState(() => _down = false) : null,
+        onTap: enabled
+            ? () {
+                setState(() => _down = false);
+                _runPress();
+                widget.onTap?.call();
+              }
+            : null,
+        child: AnimatedBuilder(
+          animation: _press,
+          builder: (context, child) {
+            // 0 at rest, 1 at deepest press. Mix held-down state into the curve
+            // so dragging a finger off-target still releases visually.
+            final press = _down ? 1.0 : _press.value;
+            final scale =
+                1.0 -
+                (1.0 - _StageBouncyPress._minScale) * press.clamp(0.0, 1.0);
+            // Glow flare follows press up then decays through the elastic
+            // release for a satisfying tail.
+            final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
+            return Transform.scale(
+              scale: scale,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: widget.borderRadius,
+                  boxShadow: [
+                    if (flare > 0.04)
+                      BoxShadow(
+                        color: glow.withValues(alpha: 0.36 * flare),
+                        blurRadius: 22 * flare,
+                        spreadRadius: 1.5 * flare,
+                      ),
+                  ],
+                ),
+                child: child,
               ),
-              child: child,
-            ),
-          );
-        },
-        child: widget.child,
+            );
+          },
+          child: widget.child,
+        ),
       ),
     );
   }
@@ -1366,6 +1374,7 @@ class _StageBouncyChip extends StatelessWidget {
       onTap: onTap,
       glowColor: t.primary,
       borderRadius: radius,
+      semanticLabel: label,
       child: AnimatedContainer(
         duration: CatchMotion.fast,
         curve: CatchMotion.standardCurve,
@@ -1379,7 +1388,7 @@ class _StageBouncyChip extends StatelessWidget {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.titleS(context, color: foreground),
+          style: CatchTextStyles.sectionTitle(context, color: foreground),
         ),
       ),
     );
@@ -1660,12 +1669,12 @@ class _NoCompanionActionsCard extends StatelessWidget {
               children: [
                 Text(
                   'The host is running the room',
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH4,
                 Text(
                   'Your next prompt or partner reveal will show up here.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),

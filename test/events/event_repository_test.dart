@@ -317,7 +317,6 @@ void main() {
             'meetingLocation': meetingLocation.toJson(),
             'startingPointLat': event.startingPointLat,
             'startingPointLng': event.startingPointLng,
-            'locationDetails': event.locationDetails,
             'photoUrl': event.photoUrl,
             'eventFormat': event.eventFormat.toJson(),
             'distanceKm': event.distanceKm,
@@ -413,10 +412,22 @@ void main() {
     });
 
     test('leaveWaitlist calls the matching Cloud Function', () async {
-      await repository.leaveWaitlist(eventId: 'event-1', userId: 'runner-1');
+      await repository.leaveWaitlist(eventId: 'event-1');
 
       expect(functions.callables['leaveEventWaitlist']!.calls, [
         {'eventId': 'event-1'},
+      ]);
+    });
+
+    test('decideJoinRequest calls the matching Cloud Function', () async {
+      await repository.decideJoinRequest(
+        eventId: 'event-9',
+        userId: 'runner-2',
+        decision: 'approve',
+      );
+
+      expect(functions.callables['decideEventJoinRequest']!.calls, [
+        {'eventId': 'event-9', 'userId': 'runner-2', 'decision': 'approve'},
       ]);
     });
 

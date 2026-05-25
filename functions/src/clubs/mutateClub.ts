@@ -4,7 +4,7 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {ClubDoc} from "../shared/firestore";
+import {ClubDoc} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {ArchiveClubCallablePayload} from
   "../shared/generated/archiveClubCallablePayload";

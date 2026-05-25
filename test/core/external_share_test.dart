@@ -17,4 +17,25 @@ void main() {
       expect(sharedParams?.subject, 'Subject');
     },
   );
+
+  test('shareCsvFile forwards a named csv file to share launcher', () async {
+    ShareParams? sharedParams;
+    final controller = ExternalShareController((params) async {
+      sharedParams = params;
+    });
+
+    await controller.shareCsvFile(
+      csv: 'name,amount\nAsha,400\n',
+      fileName: 'revenue.csv',
+      subject: 'Revenue',
+    );
+
+    expect(sharedParams?.subject, 'Revenue');
+    expect(sharedParams?.fileNameOverrides, ['revenue.csv']);
+    expect(sharedParams?.files, hasLength(1));
+    expect(
+      await sharedParams!.files!.single.readAsString(),
+      'name,amount\nAsha,400\n',
+    );
+  });
 }

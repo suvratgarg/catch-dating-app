@@ -54,6 +54,15 @@ void main() {
           answer: 'A real answer for $promptId.',
         ),
     ];
+    List<ProfilePhoto> completePhotos() => [
+      for (final position in [0, 1])
+        ProfilePhoto.uploaded(
+          position: position,
+          url: 'https://example.test/$position.jpg',
+          storagePath: 'users/user-1/photos/${position}_test.jpg',
+          now: DateTime(2026, 5, 17),
+        ),
+    ];
 
     test('booking-ready identity does not require photos or prompts', () {
       final user = buildUser(
@@ -76,10 +85,7 @@ void main() {
     test('social-ready profile requires completion, photos, and prompts', () {
       final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
         profilePrompts: completePrompts(),
-        photoUrls: const [
-          'https://example.test/one.jpg',
-          'https://example.test/two.jpg',
-        ],
+        profilePhotos: completePhotos(),
       );
       final withoutPrompt = user.copyWith(
         profilePrompts: completePrompts().take(2).toList(),
@@ -92,18 +98,21 @@ void main() {
     test('run preferences are separate from social readiness', () {
       final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
         profilePrompts: completePrompts(),
-        photoUrls: const [
-          'https://example.test/one.jpg',
-          'https://example.test/two.jpg',
-        ],
-        runPreferencesVersion: 0,
+        profilePhotos: completePhotos(),
+        activityPreferences: const ActivityPreferences(),
       );
 
       expect(user.hasSocialReadyProfile, isTrue);
       expect(user.hasCurrentRunPreferences, isFalse);
       expect(
         user
-            .copyWith(runPreferencesVersion: currentRunPreferencesVersion)
+            .copyWith(
+              activityPreferences: const ActivityPreferences(
+                running: RunningPreferences(
+                  version: currentRunPreferencesVersion,
+                ),
+              ),
+            )
             .hasCurrentRunPreferences,
         isTrue,
       );
@@ -239,10 +248,18 @@ void main() {
     'profile photo thumbnail getters prefer tiny URLs with full-photo fallback',
     () {
       final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
-        photoUrls: const ['https://example.test/full.jpg'],
-        photoThumbnailUrls: const ['https://example.test/thumb.jpg'],
+        profilePhotos: [
+          ProfilePhoto.uploaded(
+            position: 0,
+            url: 'https://example.test/full.jpg',
+            storagePath: 'users/user-1/photos/0_test.jpg',
+            now: DateTime(2026, 5, 17),
+          ).copyWith(thumbnailUrl: 'https://example.test/thumb.jpg'),
+        ],
       );
-      final fullOnly = user.copyWith(photoThumbnailUrls: const []);
+      final fullOnly = user.copyWith(
+        profilePhotos: [user.profilePhotos.single.copyWith(thumbnailUrl: '')],
+      );
       final publicProfile = publicProfileFromUserProfile(user);
 
       expect(user.primaryPhotoThumbnailUrl, 'https://example.test/thumb.jpg');

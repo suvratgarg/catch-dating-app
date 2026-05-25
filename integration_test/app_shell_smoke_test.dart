@@ -61,6 +61,7 @@ import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -1323,7 +1324,7 @@ void main() {
   ) async {
     final user = event_helpers
         .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
-        .copyWith(profileComplete: false, photoUrls: const []);
+        .copyWith(profileComplete: false, profilePhotos: const []);
 
     await _pumpCatchApp(
       tester,
@@ -1959,11 +1960,11 @@ class _FakeUserProfileRepository implements UserProfileRepository {
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update profile',
   }) async {
     updatedUid = uid;
-    updatedFields = Map<String, dynamic>.from(fields);
+    updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
   }
 
   @override

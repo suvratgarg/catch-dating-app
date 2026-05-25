@@ -201,10 +201,7 @@ class _NotificationBellButton extends StatelessWidget {
         isLabelVisible: unreadCount > 0,
         label: Text(
           badgeLabel,
-          style: CatchTextStyles.labelS(
-            context,
-            color: t.primaryInk,
-          ).copyWith(fontSize: 10, height: 1),
+          style: CatchTextStyles.statusLabel(context, color: t.primaryInk),
         ),
         backgroundColor: t.primary,
         alignment: Alignment.topRight,

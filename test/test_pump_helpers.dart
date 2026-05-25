@@ -1,4 +1,13 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+Finder findPrimaryScrollable() => find.byType(Scrollable).first;
+
+Finder findFirstByTooltip(String tooltip) => find.byTooltip(tooltip).first;
+
+Finder findLastByTooltip(String tooltip) => find.byTooltip(tooltip).last;
+
+Finder findLastText(String text) => find.text(text).last;
 
 /// Advances widget tests through route, sheet, dialog, and provider-delivery
 /// frames used by existing feature harnesses.
@@ -7,6 +16,12 @@ import 'package:flutter_test/flutter_test.dart';
 /// when the action is semantically a sheet, route, wizard, or mutation update.
 Future<void> pumpFeatureUi(WidgetTester tester) async {
   await tester.pumpAndSettle();
+}
+
+/// Advances a known animation/clock interval while keeping raw duration pumps
+/// out of individual feature tests.
+Future<void> pumpFeatureUiFor(WidgetTester tester, Duration duration) async {
+  await tester.pump(duration);
 }
 
 /// Lets provider streams, callback futures, and test doubles deliver queued

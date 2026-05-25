@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -20,7 +21,7 @@ class ProfileEditController extends _$ProfileEditController {
   @override
   void build() {}
 
-  Future<void> saveFields(Map<String, dynamic> fields) {
+  Future<void> saveFields(UpdateUserProfilePatch patch) {
     final uid = requireSignedInUid(ref, action: 'save profile edits');
     final nextSave = _pendingSave
         .catchError((Object error, StackTrace stack) {
@@ -41,7 +42,7 @@ class ProfileEditController extends _$ProfileEditController {
         .then((_) {
           return ref
               .read(userProfileRepositoryProvider)
-              .updateUserProfile(uid: uid, fields: fields);
+              .updateUserProfile(uid: uid, patch: patch);
         });
     _pendingSave = nextSave.catchError((Object error, StackTrace stack) {
       ref

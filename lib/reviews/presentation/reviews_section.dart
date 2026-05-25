@@ -193,7 +193,7 @@ class ReviewsPreviewSection extends StatelessWidget {
               gapW4,
               Text(
                 '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ],
@@ -220,9 +220,9 @@ class ReviewsPreviewSection extends StatelessWidget {
                 ? const EdgeInsets.all(CatchSpacing.s4)
                 : const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
             titleStyle: compactEmptyState
-                ? CatchTextStyles.titleS(context)
+                ? CatchTextStyles.sectionTitle(context)
                 : CatchTextStyles.titleM(context),
-            messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
+            messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
           )
         else ...[
           for (var i = 0; i < previewReviews.length; i++) ...[
@@ -269,7 +269,7 @@ class ReviewCard extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(Sizes.p14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -308,7 +308,7 @@ class ReviewCard extends StatelessWidget {
             gapH6,
             Text(
               review.comment,
-              style: CatchTextStyles.bodyM(context, color: t.ink2),
+              style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
           ],
         ],

@@ -56,7 +56,7 @@ class CatchFrameworkErrorView extends StatelessWidget {
                       Text(
                         'This screen hit a temporary app error. Please go back '
                         'or try again in a moment.',
-                        style: CatchTextStyles.bodyM(
+                        style: CatchTextStyles.bodyLead(
                           context,
                           color: tokens.ink2,
                         ),

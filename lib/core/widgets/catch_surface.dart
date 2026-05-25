@@ -17,6 +17,7 @@ class CatchSurface extends StatelessWidget {
     this.width,
     this.height,
     this.radius = CatchRadius.lg,
+    this.borderRadius,
     this.borderColor,
     this.borderWidth = 1,
     this.backgroundColor,
@@ -35,6 +36,7 @@ class CatchSurface extends StatelessWidget {
   final double? width;
   final double? height;
   final double radius;
+  final BorderRadius? borderRadius;
   final Color? borderColor;
   final double borderWidth;
   final Color? backgroundColor;
@@ -47,7 +49,7 @@ class CatchSurface extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(radius);
+    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(radius);
     final foreground = Padding(
       padding: padding ?? EdgeInsets.zero,
       child: child,
@@ -55,7 +57,7 @@ class CatchSurface extends StatelessWidget {
     final borderDecoration = borderColor == null || borderWidth <= 0
         ? null
         : BoxDecoration(
-            borderRadius: borderRadius,
+            borderRadius: effectiveBorderRadius,
             border: Border.all(color: borderColor!, width: borderWidth),
           );
     final decorated = AnimatedContainer(
@@ -68,7 +70,7 @@ class CatchSurface extends StatelessWidget {
       decoration: BoxDecoration(
         color: gradient == null ? backgroundColor ?? _color(t) : null,
         gradient: gradient,
-        borderRadius: borderRadius,
+        borderRadius: effectiveBorderRadius,
         boxShadow: boxShadow ?? _shadows,
       ),
       foregroundDecoration: borderDecoration,
@@ -78,7 +80,7 @@ class CatchSurface extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
-                borderRadius: borderRadius,
+                borderRadius: effectiveBorderRadius,
                 child: foreground,
               ),
             ),

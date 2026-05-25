@@ -90,7 +90,7 @@ class HostClubManagementPanel extends StatelessWidget {
                 gapH4,
                 Text(
                   'Manage this club, publish events, and track upcoming demand.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH12,
                 Row(
@@ -131,7 +131,7 @@ class HostClubManagementPanel extends StatelessWidget {
                   gapH8,
                   Text(
                     'Base estimate uses starting prices; demand-priced bookings may settle higher.',
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
                 gapH12,

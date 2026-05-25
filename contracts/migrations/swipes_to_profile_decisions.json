@@ -1,11 +1,12 @@
 {
   "schemaVersion": 1,
   "logicalName": "profileDecision",
-  "currentStoragePath": "swipes/{userId}/outgoing/{targetId}",
+  "legacyStoragePath": "swipes/{userId}/outgoing/{targetId}",
+  "currentStoragePath": "profileDecisions/{userId}/outgoing/{targetId}",
   "candidatePrimaryStoragePath": "profileDecisions/{userId}/outgoing/{targetId}",
   "selectedFutureName": "profileDecisions",
-  "currentPhase": "dual_write",
-  "reason": "The UI has moved from generic swiping to contextual profile decisions, but the persisted collection remains swipes until a dual-read, dual-write, and backfill migration is worth the operational risk.",
+  "currentPhase": "retire_old_local",
+  "reason": "The UI has moved from generic swiping to contextual profile decisions. The persisted collection is now profileDecisions after the dual-read, dual-write, backfill, and local retire-old phases.",
   "phases": [
     {
       "id": "observe",
@@ -19,8 +20,8 @@
     },
     {
       "id": "dual_write",
-      "status": "active",
-      "description": "Client and backend writes mirror new decisions into both storage paths with idempotent writes."
+      "status": "complete",
+      "description": "Client and backend writes mirrored new decisions into both storage paths with idempotent writes."
     },
     {
       "id": "backfill",
@@ -29,24 +30,24 @@
     },
     {
       "id": "new_primary",
-      "status": "pending",
-      "description": "profileDecisions becomes the primary read/write path while swipes remains a fallback read path."
+      "status": "complete",
+      "description": "profileDecisions is the primary read/write path."
     },
     {
       "id": "freeze_old",
-      "status": "pending",
-      "description": "New writes to swipes stop after parity checks prove profileDecisions has complete data."
+      "status": "complete_local",
+      "description": "Local client, Functions, rules, demo tooling, and contract metadata no longer create new swipes documents."
     },
     {
       "id": "retire_old",
-      "status": "pending",
-      "description": "Remove swipes fallback reads and delete old data only after explicit production approval."
+      "status": "complete_local_cleanup_pending",
+      "description": "Local swipes fallback reads and rules are removed. Old live swipes data cleanup still requires explicit environment approval after validation."
     }
   ],
   "guards": [
     "tool/contracts/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
     "./tool/check_data_contract.sh events the path literal scanner before seed and rules checks.",
-    "tool/data/validate_profile_decision_migration.mjs compares current and future storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before a primary cutover.",
-    "No live storage rename is allowed until a count-comparison backfill tool exists."
+    "tool/data/validate_profile_decision_migration.mjs compares legacy and current storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before live cleanup.",
+    "Old swipes data deletion remains a separate destructive remote operation."
   ]
 }

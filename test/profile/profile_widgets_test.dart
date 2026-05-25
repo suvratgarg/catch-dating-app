@@ -9,11 +9,13 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
@@ -64,6 +66,7 @@ Future<void> _pumpEditableProfileTab(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+        errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
         userProfileRepositoryProvider.overrideWithValue(repository),
       ],
       child: _ProfileEditProviderPrimer(
@@ -615,7 +618,7 @@ void main() {
 
     final context = tester.element(find.byType(ProfileInlineTextValue));
     final t = CatchTokens.of(context);
-    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
     final painter = TextPainter(
       text: TextSpan(text: controller.text, style: style),
       textDirection: TextDirection.ltr,
@@ -666,7 +669,7 @@ void main() {
 
     final context = tester.element(find.byType(ProfileInlineTextValue));
     final t = CatchTokens.of(context);
-    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
     final painter = TextPainter(
       text: TextSpan(text: controller.text, style: style),
       textDirection: TextDirection.ltr,
@@ -719,12 +722,7 @@ void main() {
   testWidgets(
     'ProfileTab hides running details until run preferences are set',
     (tester) async {
-      final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0)
-          .copyWith(
-            preferredDistances: const [],
-            runningReasons: const [],
-            preferredRunTimes: const [],
-          );
+      final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0);
       await _pumpProfileTab(tester, user);
 
       expect(find.text('Running details'), findsNothing);
@@ -862,7 +860,7 @@ void main() {
 
     await tester.tap(promptTile);
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 80));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 80));
 
     expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
     expect(
@@ -1490,8 +1488,16 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {
-      'paceMinSecsPerKm': 310,
-      'paceMaxSecsPerKm': 370,
+      'activityPreferences': {
+        'running': {
+          'paceMinSecsPerKm': 310,
+          'paceMaxSecsPerKm': 370,
+          'preferredDistances': <String>[],
+          'runningReasons': <String>[],
+          'preferredRunTimes': <String>[],
+          'version': 1,
+        },
+      },
     });
     expect(find.byType(RangeSlider), findsNothing);
   });
@@ -1580,14 +1586,27 @@ class FakeProfileEditUserProfileRepository extends Fake
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update_profile',
   }) async {
     updatedUid = uid;
-    updatedFields = Map<String, dynamic>.from(fields);
+    updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
     final error = updateError;
     if (error != null) throw error;
     final completer = updateCompleter;
     if (completer != null) await completer.future;
   }
+}
+
+class _SilentErrorLogger extends ErrorLogger {
+  _SilentErrorLogger() : super(crashReporter: null, shouldReportErrors: false);
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }

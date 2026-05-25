@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -18,7 +19,6 @@ class FakePhotoUserProfileRepository extends Fake
   FakePhotoUserProfileRepository(this.currentUser);
 
   UserProfile currentUser;
-  final updatedPhotoUrls = <List<String>>[];
   final updatedProfilePhotos = <List<ProfilePhoto>>[];
 
   @override
@@ -29,18 +29,10 @@ class FakePhotoUserProfileRepository extends Fake
   Future<void> updateProfilePhotos({
     required String uid,
     required List<ProfilePhoto> profilePhotos,
-    required List<String> photoUrls,
   }) async {
     updatedProfilePhotos.add(List<ProfilePhoto>.from(profilePhotos));
-    updatedPhotoUrls.add(List<String>.from(photoUrls));
     currentUser = currentUser.copyWith(
       profilePhotos: List<ProfilePhoto>.from(profilePhotos),
-      photoUrls: List<String>.from(photoUrls),
-      photoThumbnailUrls: profilePhotoThumbnailUrls(profilePhotos),
-      photoPrompts: [
-        for (final photo in profilePhotos)
-          if (photo.prompt != null) photo.prompt!,
-      ],
     );
   }
 }
@@ -194,14 +186,21 @@ void main() {
 
       await Future.wait([firstUpload, secondUpload]);
 
-      expect(userProfileRepository.updatedPhotoUrls, [
-        ['https://img.example/old-0.jpg', 'https://img.example/new-1.jpg'],
+      expect(
+        userProfileRepository.updatedProfilePhotos
+            .map((photos) => photos.map((photo) => photo.url).toList())
+            .toList(),
+        [
+          ['https://img.example/old-0.jpg', 'https://img.example/new-1.jpg'],
+          ['https://img.example/new-0.jpg', 'https://img.example/new-1.jpg'],
+        ],
+      );
+      expect(
+        userProfileRepository.currentUser.effectiveProfilePhotos.map(
+          (photo) => photo.url,
+        ),
         ['https://img.example/new-0.jpg', 'https://img.example/new-1.jpg'],
-      ]);
-      expect(userProfileRepository.currentUser.photoUrls, [
-        'https://img.example/new-0.jpg',
-        'https://img.example/new-1.jpg',
-      ]);
+      );
       expect(
         container.read(photoUploadControllerProvider).loadingIndices,
         isEmpty,
@@ -257,7 +256,7 @@ void main() {
       container.read(photoUploadControllerProvider).loadingIndices,
       isEmpty,
     );
-    expect(userProfileRepository.updatedPhotoUrls, isEmpty);
+    expect(userProfileRepository.updatedProfilePhotos, isEmpty);
   });
 
   test('completes safely if the provider is disposed mid-upload', () async {
@@ -347,10 +346,6 @@ void main() {
       ]);
       expect(updatedPhotos.map((photo) => photo.position), [0, 1]);
       expect(updatedPhotos.last.prompt?.photoIndex, 1);
-      expect(userProfileRepository.updatedPhotoUrls.single, [
-        'https://img.example/0.jpg',
-        'https://img.example/2.jpg',
-      ]);
     },
   );
 
@@ -366,6 +361,7 @@ void main() {
         userProfileRepositoryProvider.overrideWith(
           (ref) => userProfileRepository,
         ),
+        errorLoggerProvider.overrideWithValue(_SilentErrorLogger()),
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
       ],
     );
@@ -469,4 +465,17 @@ void main() {
       );
     },
   );
+}
+
+class _SilentErrorLogger extends ErrorLogger {
+  _SilentErrorLogger() : super(crashReporter: null, shouldReportErrors: false);
+
+  @override
+  void log({
+    required LogLevel level,
+    required String message,
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, String>? context,
+  }) {}
 }

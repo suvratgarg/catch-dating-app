@@ -128,19 +128,17 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 32),
+          gapH32,
           Text(
             'Enter the code',
-            style: CatchTextStyles.titleL(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
+            style: CatchTextStyles.formQuestion(context, color: t.ink),
           ),
-          const SizedBox(height: 8),
+          gapH8,
           Text(
             'Sent to $displayPhoneNumber',
-            style: CatchTextStyles.bodyM(context, color: t.ink2),
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
           ),
-          const SizedBox(height: 40),
+          gapH40,
           CatchOtpCodeField(
             inputKey: AuthFormKeys.otpField,
             controller: _otpController,
@@ -196,7 +194,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ),
           ),
           const Spacer(),
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );

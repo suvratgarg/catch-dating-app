@@ -40,7 +40,10 @@ class _ProfileTitle extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text('Profile', style: CatchTextStyles.displayL(context)),
+              child: Text(
+                'Profile',
+                style: CatchTextStyles.screenHeadline(context),
+              ),
             ),
             const SizedBox(width: CatchSpacing.s2),
             const _SettingsButton(),

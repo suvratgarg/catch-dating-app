@@ -30,27 +30,19 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   const harness = createAccountDeletionHarness({
     seed: {
       "users/runner-1": {
-        photoUrls: [
-          "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
-            "users%2Frunner-1%2Fphotos%2F0_123.jpg?alt=media&token=abc",
-        ],
-        photoThumbnailUrls: [
-          "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
-            "users%2Frunner-1%2Fthumbnails%2F0_123.jpg?alt=media&token=abc",
-        ],
         profilePhotos: [{
           id: "grouped-photo",
           url:
             "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
-            "profilePhotos%2Frunner-1%2Fphotos%2Fgrouped.jpg" +
+            "users%2Frunner-1%2Fphotos%2Fgrouped.jpg" +
             "?alt=media&token=abc",
           thumbnailUrl:
             "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
-            "profilePhotos%2Frunner-1%2Fphotos%2Fgrouped_thumb.jpg" +
+            "users%2Frunner-1%2FphotoThumbnails%2Fgrouped.jpg" +
             "?alt=media&token=abc",
-          storagePath: "profilePhotos/runner-1/photos/grouped.jpg",
+          storagePath: "users/runner-1/photos/grouped.jpg",
           thumbnailStoragePath:
-            "profilePhotos/runner-1/photos/grouped_thumb.jpg",
+            "users/runner-1/photoThumbnails/grouped.jpg",
           position: 0,
         }],
         name: "Asha Runner",
@@ -59,9 +51,16 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         ),
         phoneNumber: "+919876543210",
         languages: ["english"],
-        paceMinSecsPerKm: 300,
-        preferredDistances: ["tenK"],
-        runningReasons: ["community"],
+        activityPreferences: {
+          running: {
+            paceMinSecsPerKm: 300,
+            paceMaxSecsPerKm: 420,
+            preferredDistances: ["tenK"],
+            runningReasons: ["community"],
+            preferredRunTimes: ["morning"],
+            version: 1,
+          },
+        },
       },
       "clubMemberships/club-1_runner-1": {
         clubId: "club-1",
@@ -78,11 +77,11 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         genderAtSignup: "woman",
       },
       "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
-      "swipes/runner-1/outgoing/runner-2": {
+      "profileDecisions/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
         targetId: "runner-2",
       },
-      "swipes/runner-2/outgoing/runner-1": {
+      "profileDecisions/runner-2/outgoing/runner-1": {
         swiperId: "runner-2",
         targetId: "runner-1",
       },
@@ -131,14 +130,17 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     0
   );
   assert.equal(data.phoneNumber, "");
-  assert.deepEqual(data.photoUrls, []);
-  assert.deepEqual(data.photoThumbnailUrls, []);
   assert.deepEqual(data.profilePhotos, []);
-  assert.deepEqual(data.preferredDistances, []);
-  assert.deepEqual(data.runningReasons, []);
-  assert.deepEqual(data.preferredRunTimes, []);
-  assert.equal(data.paceMinSecsPerKm, 300);
-  assert.equal(data.paceMaxSecsPerKm, 420);
+  assert.deepEqual(data.activityPreferences, {
+    running: {
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: [],
+      runningReasons: [],
+      preferredRunTimes: [],
+      version: 1,
+    },
+  });
 
   for (const field of [
     "city",
@@ -153,6 +155,12 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     "workout",
     "diet",
     "children",
+    "paceMinSecsPerKm",
+    "paceMaxSecsPerKm",
+    "preferredDistances",
+    "runningReasons",
+    "preferredRunTimes",
+    "runPreferencesVersion",
     "fcmToken",
   ]) {
     assert.equal(hasOwn(data, field), true);
@@ -187,10 +195,14 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
     harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
   );
   assert.ok(
-    harness.deletedPublicDocs.includes("swipes/runner-1/outgoing/runner-2")
+    harness.deletedPublicDocs.includes(
+      "profileDecisions/runner-1/outgoing/runner-2"
+    )
   );
   assert.ok(
-    harness.deletedPublicDocs.includes("swipes/runner-2/outgoing/runner-1")
+    harness.deletedPublicDocs.includes(
+      "profileDecisions/runner-2/outgoing/runner-1"
+    )
   );
   assert.ok(
     harness.setWrites.some((write) =>
@@ -224,10 +236,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);
   assert.deepEqual(harness.deletedStorageFiles, [
-    "profilePhotos/runner-1/photos/grouped.jpg",
-    "profilePhotos/runner-1/photos/grouped_thumb.jpg",
-    "users/runner-1/photos/0_123.jpg",
-    "users/runner-1/thumbnails/0_123.jpg",
+    "users/runner-1/photos/grouped.jpg",
+    "users/runner-1/photoThumbnails/grouped.jpg",
   ]);
   assert.equal(harness.commits, 1);
 });
@@ -237,10 +247,14 @@ test("requestAccountDeletionHandler rate limits before destructive work",
     const harness = createAccountDeletionHarness({
       seed: {
         "users/runner-1": {
-          photoUrls: [
-            "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
-              "users%2Frunner-1%2Fphotos%2F0_123.jpg?alt=media&token=abc",
-          ],
+          profilePhotos: [{
+            id: "photo-1",
+            url: "https://example.com/photo.jpg",
+            thumbnailUrl: "https://example.com/thumb.jpg",
+            storagePath: "users/runner-1/photos/0_123.jpg",
+            thumbnailStoragePath: "users/runner-1/photoThumbnails/0_123.jpg",
+            position: 0,
+          }],
         },
       },
       now: {kind: "serverTimestamp"},

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
@@ -56,12 +57,14 @@ class EventSuccessHostSection extends ConsumerWidget {
     this.initialTab = EventSuccessHostTab.setup,
     this.showTabs = true,
     this.liveRoster,
+    this.fixtureActions,
   });
 
   final Event event;
   final EventSuccessHostTab initialTab;
   final bool showTabs;
   final Widget? liveRoster;
+  final EventSuccessHostFixtureActions? fixtureActions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,6 +105,19 @@ class EventSuccessHostSection extends ConsumerWidget {
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessAssignmentsProvider(event.id))
         : const AsyncData(<EventSuccessAssignment>[]);
+    final assignmentsPreview =
+        assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
+    final assignmentParticipantUidsKey = eventSuccessPeerUidsKey(
+      _rotationParticipantUids(assignmentsPreview),
+    );
+    final AsyncValue<List<PublicProfile>> assignmentParticipantProfilesAsync =
+        shouldLoadAssignments && assignmentParticipantUidsKey.isNotEmpty
+        ? ref.watch(
+            eventSuccessAssignmentPeerProfilesProvider(
+              assignmentParticipantUidsKey,
+            ),
+          )
+        : const AsyncData(<PublicProfile>[]);
     final AsyncValue<List<EventSuccessAssignment>> rotationAssignmentsAsync =
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessRotationAssignmentsProvider(event.id))
@@ -144,7 +160,9 @@ class EventSuccessHostSection extends ConsumerWidget {
     if (rosterAsync.isLoading ||
         scorecardAsync.isLoading ||
         assignmentsAsync.isLoading ||
+        assignmentParticipantProfilesAsync.isLoading ||
         rotationAssignmentsAsync.isLoading ||
+        rotationParticipantProfilesAsync.isLoading ||
         preferencesAsync.isLoading ||
         wingmanRequestsAsync.isLoading ||
         wingmanProfilesAsync.isLoading) {
@@ -175,6 +193,28 @@ class EventSuccessHostSection extends ConsumerWidget {
         context: AppErrorContext.event,
         onRetry: () => ref.invalidate(
           watchEventSuccessRotationAssignmentsProvider(event.id),
+        ),
+      );
+    }
+    if (assignmentParticipantProfilesAsync.hasError) {
+      return CatchInlineErrorState.fromError(
+        assignmentParticipantProfilesAsync.error!,
+        context: AppErrorContext.profile,
+        onRetry: () => ref.invalidate(
+          eventSuccessAssignmentPeerProfilesProvider(
+            assignmentParticipantUidsKey,
+          ),
+        ),
+      );
+    }
+    if (rotationParticipantProfilesAsync.hasError) {
+      return CatchInlineErrorState.fromError(
+        rotationParticipantProfilesAsync.error!,
+        context: AppErrorContext.profile,
+        onRetry: () => ref.invalidate(
+          eventSuccessAssignmentPeerProfilesProvider(
+            rotationParticipantUidsKey,
+          ),
         ),
       );
     }
@@ -217,6 +257,9 @@ class EventSuccessHostSection extends ConsumerWidget {
     final scorecard = scorecardAsync.asData?.value;
     final assignments =
         assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
+    final assignmentParticipantProfiles =
+        assignmentParticipantProfilesAsync.asData?.value ??
+        const <PublicProfile>[];
     final rotationAssignments =
         rotationAssignmentsAsync.asData?.value ??
         const <EventSuccessAssignment>[];
@@ -238,6 +281,7 @@ class EventSuccessHostSection extends ConsumerWidget {
       roster: roster,
       scorecard: scorecard,
       assignments: assignments,
+      assignmentParticipantProfiles: assignmentParticipantProfiles,
       rotationAssignments: rotationAssignments,
       rotationParticipantProfiles: rotationParticipantProfiles,
       preferences: preferences,
@@ -247,6 +291,7 @@ class EventSuccessHostSection extends ConsumerWidget {
       showTabs: showTabs,
       embedded: true,
       liveRoster: liveRoster,
+      fixtureActions: fixtureActions,
     );
   }
 }
@@ -260,6 +305,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     required this.roster,
     this.scorecard,
     this.assignments = const [],
+    this.assignmentParticipantProfiles = const [],
     this.rotationAssignments = const [],
     this.rotationParticipantProfiles = const [],
     this.preferences = const [],
@@ -278,6 +324,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventParticipationRoster roster;
   final EventSuccessScorecard? scorecard;
   final List<EventSuccessAssignment> assignments;
+  final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
@@ -363,6 +410,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         planIsPersisted: widget.planIsPersisted,
         roster: widget.roster,
         assignments: widget.assignments,
+        assignmentParticipantProfiles: widget.assignmentParticipantProfiles,
         rotationAssignments: widget.rotationAssignments,
         rotationParticipantProfiles: widget.rotationParticipantProfiles,
         preferences: widget.preferences,
@@ -398,6 +446,7 @@ class EventSuccessHostFixtureActions {
     this.onNextStep,
     this.onCompletePlan,
     this.onGenerateMicroPods,
+    this.onOverrideGroupAssignments,
     this.onGenerateGuidedRotations,
     this.onOverrideGuidedRotations,
     this.onStartRevealCountdown,
@@ -410,6 +459,8 @@ class EventSuccessHostFixtureActions {
   final VoidCallback? onNextStep;
   final VoidCallback? onCompletePlan;
   final VoidCallback? onGenerateMicroPods;
+  final ValueChanged<List<EventSuccessGroupOverrideRound>>?
+  onOverrideGroupAssignments;
   final VoidCallback? onGenerateGuidedRotations;
   final ValueChanged<List<EventSuccessRotationOverrideRound>>?
   onOverrideGuidedRotations;

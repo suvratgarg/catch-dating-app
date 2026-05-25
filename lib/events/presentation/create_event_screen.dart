@@ -5,6 +5,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
@@ -647,7 +649,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(wasUpdate ? 'Draft updated' : 'Draft saved'),
+        content: Text(
+          wasUpdate ? 'Draft updated' : 'Draft saved',
+          style: CatchTextStyles.labelL(
+            context,
+            color: CatchTokens.of(context).bg,
+          ),
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -881,7 +889,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
               totalSteps: _stepSpecs.length,
               onBack: _back,
             ),
-            const SizedBox(height: 4),
+            gapH4,
             Expanded(
               child: PageView(
                 controller: _pageController,

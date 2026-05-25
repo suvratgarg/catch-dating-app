@@ -112,7 +112,7 @@ class ProfileInfoSection extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(
               left: grouped ? CatchSpacing.s1 : 0,
-              bottom: Sizes.p2,
+              bottom: CatchSpacing.micro2,
             ),
             child: Text(title!, style: CatchTextStyles.labelL(context)),
           ),

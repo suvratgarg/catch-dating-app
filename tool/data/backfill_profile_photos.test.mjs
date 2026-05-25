@@ -13,16 +13,8 @@ const projection = {
     age: 30,
     gender: user.gender,
     profilePrompts: user.profilePrompts,
-    photoUrls: user.photoUrls,
-    photoThumbnailUrls: user.photoThumbnailUrls,
-    photoPrompts: user.photoPrompts,
     profilePhotos: user.profilePhotos,
-    paceMinSecsPerKm: user.paceMinSecsPerKm,
-    paceMaxSecsPerKm: user.paceMaxSecsPerKm,
-    preferredDistances: user.preferredDistances,
-    runningReasons: user.runningReasons,
-    preferredRunTimes: user.preferredRunTimes,
-    runPreferencesVersion: user.runPreferencesVersion,
+    activityPreferences: user.activityPreferences,
   }),
 };
 
@@ -109,12 +101,16 @@ function validUserProfile(overrides = {}) {
     photoUrls: [],
     photoThumbnailUrls: [],
     photoPrompts: [],
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: ["fiveK"],
-    runningReasons: ["fitness"],
-    preferredRunTimes: ["morning"],
-    runPreferencesVersion: 1,
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: ["fiveK"],
+        runningReasons: ["fitness"],
+        preferredRunTimes: ["morning"],
+        version: 1,
+      },
+    },
     ...overrides,
   };
 }

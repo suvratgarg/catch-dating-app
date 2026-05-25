@@ -58,6 +58,10 @@ scan_tappables() {
     local line_text
     line_text="$(sed -n "${line}p" "$file")"
 
+    if grep -Eq 'Container\(color:' <<<"$line_text"; then
+      continue
+    fi
+
     # The scan is looking for unresolved custom tap targets. Built-in text
     # buttons, icon buttons with tooltips, and tappables already wrapped in
     # Semantics/Tooltip are considered reviewed for this triage pass.
@@ -398,17 +402,33 @@ scan_raw_surface_containers() {
   local output=""
   while IFS=: read -r file line _; do
     [[ -z "$file" || -z "$line" ]] && continue
-    local start=$((line > 2 ? line - 2 : 1))
+    if [[ "$file" == lib/event_success/presentation/companion_parts/* ||
+      "$file" == lib/event_success/presentation/live_reveal_parts/* ]]; then
+      continue
+    fi
+    local start=$((line > 12 ? line - 12 : 1))
     local end=$((line + 18))
     local context
     context="$(sed -n "${start},${end}p" "$file")"
     local line_text
     line_text="$(sed -n "${line}p" "$file")"
 
+    if grep -Eq 'Container\(color:' <<<"$line_text"; then
+      continue
+    fi
+    if grep -Eq 'LinearGradient|CustomPaint|Image\.|Image\(|BoxFit\.|StackFit\.expand|FractionallySizedBox|photoPlaceholder|t\.heroGrad|profile-inline-underline' <<<"$context"; then
+      continue
+    fi
+    if grep -Eq 'Positioned\(' <<<"$context" &&
+      grep -Eq 'shape: BoxShape\.circle' <<<"$context"; then
+      continue
+    fi
+
     # Layout-only containers and animation-only shells are often legitimate.
     # Flag local shells that own fill/border/radius/shadow decoration, because
     # those are the cases most likely to drift from CatchSurface/tokens.
-    if grep -Eq 'decoration: BoxDecoration\(|color: CatchTokens|color: t\.|borderRadius:|Border\.all|boxShadow:' <<<"$context" &&
+    if grep -Eq 'decoration: BoxDecoration\(' <<<"$context" &&
+      grep -Eq 'gradient:|borderRadius:|Border\.all|boxShadow:|shape:' <<<"$context" &&
       ! grep -Eq 'CatchSurface\(' <<<"$context"; then
       output+="${file}:${line}:${line_text}"$'\n'
     fi
@@ -471,13 +491,79 @@ scan_unstyled_text() {
   printf '%s\n' "$output" | sed -n "1,${max_lines}p"
 }
 
+scan_low_level_typography_roles() {
+  echo
+  echo "==> App-facing low-level typography role candidates"
+  local output
+  output="$(rg -n \
+    "${common_globs[@]}" \
+    'CatchTextStyles\.(bodyS|bodyM|titleS)\(' \
+    lib/core/widgets lib/*/presentation || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
+scan_nonzero_letter_spacing() {
+  echo
+  echo "==> Nonzero letter-spacing candidates"
+  local output
+  output="$(rg -n \
+    "${common_globs[@]}" \
+    'letterSpacing:\s*(-?[1-9][0-9]*(\.[0-9]+)?|-?0\.[0-9]*[1-9][0-9]*)' \
+    lib/core/widgets lib/core/theme lib/*/presentation || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
+scan_raw_text_styles() {
+  echo
+  echo "==> Raw app-facing TextStyle candidates"
+  local output
+  output="$(rg -n \
+    "${common_globs[@]}" \
+    '(^|[^A-Za-z])TextStyle\(' \
+    lib/core/widgets lib/*/presentation \
+    --glob '!lib/core/widgets/catch_otp_code_field.dart' \
+    --glob '!lib/core/widgets/catch_top_bar.dart' || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
 echo "Widget cleanup candidate scan"
 echo "This is a triage aid, not a failing lint. Review matches before editing."
 echo "Limit output with WIDGET_CLEANUP_SCAN_MAX_LINES=<n>."
 
 scan "Brittle widget-test timing and missed-tap patterns" \
   'pumpAndSettle\(|pump\(const Duration|warnIfMissed: false' \
-  test
+  test \
+  --glob '!test/test_pump_helpers.dart'
 
 scan "Async unit-test flush candidates" \
   'Future<void>\.delayed\(Duration\.zero\)' \
@@ -485,11 +571,15 @@ scan "Async unit-test flush candidates" \
 
 scan "Brittle positional widget finders" \
   'find\.[A-Za-z]+\([^)]*\)\.(at|first|last)|Scrollable\.first|ListView\.first' \
-  test
+  test \
+  --glob '!test/test_pump_helpers.dart'
 
 scan "Presentation widgets reaching directly into repository providers" \
   'ref\.(read|watch)\([^)]*RepositoryProvider' \
-  lib/core/presentation lib/*/presentation
+  lib/core/presentation lib/*/presentation \
+  --glob '!**/*_provider.dart' \
+  --glob '!**/*_actions.dart' \
+  --glob '!**/*_lookup.dart'
 
 scan "Feature widgets prop-drilling CatchTokens" \
   'final CatchTokens tokens|required this\.tokens|this\.tokens' \
@@ -522,6 +612,12 @@ scan_literal_sized_box_spacing
 scan_raw_surface_containers
 
 scan_unstyled_text
+
+scan_low_level_typography_roles
+
+scan_nonzero_letter_spacing
+
+scan_raw_text_styles
 
 scan "Legacy 4-point spacing migration candidates" \
   'Sizes\.p(4|8|12|16|20|24|32|40|48|64)\b' \

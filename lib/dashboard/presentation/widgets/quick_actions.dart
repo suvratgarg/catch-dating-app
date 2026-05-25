@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -81,14 +82,14 @@ class _QuickActionTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: QuickActions._iconBoxSize,
-            height: QuickActions._iconBoxSize,
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.sm),
-            ),
-            child: Icon(action.icon, color: t.primary, size: 18),
+          CatchIconTile(
+            icon: action.icon,
+            iconColor: t.primary,
+            backgroundColor: t.primarySoft,
+            borderColor: Colors.transparent,
+            size: QuickActions._iconBoxSize,
+            iconSize: 18,
+            radius: CatchRadius.sm,
           ),
           gapH8,
           Text(

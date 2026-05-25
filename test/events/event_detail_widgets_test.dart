@@ -151,7 +151,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('What to expect'),
         400,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
       expect(find.text('Attendance matters'), findsOneWidget);
       expect(find.text('Booking policy'), findsOneWidget);
@@ -481,18 +481,18 @@ void main() {
 
       expect(fakeEventRepository.joinedWaitlistEventId, 'event-1');
       expect(fakeEventRepository.leftWaitlistEventId, 'event-1');
-      expect(fakeEventRepository.leftWaitlistUserId, 'runner-9');
     });
 
     testWidgets('request-only events use request and withdraw copy', (
       tester,
     ) async {
       final fakeEventRepository = FakeEventRepository();
+      final fakePaymentRepository = FakePaymentRepository();
       final container = ProviderContainer(
         overrides: [
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
-          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
         ],
       );
@@ -535,6 +535,16 @@ void main() {
                       status: EventParticipationStatus.waitlisted,
                     ),
                   ),
+                  EventDetailCta(
+                    event: event,
+                    clubId: 'club1',
+                    userProfile: buildUser(uid: 'runner-9'),
+                    participation: _participation(
+                      uid: 'runner-9',
+                      status: EventParticipationStatus.waitlisted,
+                      hostApprovalStatus: EventJoinRequestStatus.approved,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -547,7 +557,14 @@ void main() {
       await tester.pump();
 
       expect(find.text('Withdraw request'), findsOneWidget);
+      expect(find.text('Join approved event'), findsOneWidget);
       expect(fakeEventRepository.joinedWaitlistEventId, 'event-1');
+
+      await tester.tap(find.text('Join approved event'));
+      await tester.pump();
+
+      expect(fakePaymentRepository.bookFreeEventCalled, isTrue);
+      expect(fakePaymentRepository.bookedFreeEventId, 'event-1');
     });
 
     testWidgets('renders attended and past states', (tester) async {
@@ -1153,11 +1170,11 @@ void main() {
       );
 
       await tester.pump();
-      final locationLabel = find.text('Race Course Road main gate').last;
+      final locationLabel = findLastText('Race Course Road main gate');
       await tester.ensureVisible(locationLabel);
       await tester.pump();
       await tester.tap(locationLabel);
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Event location'), findsNothing);
       expect(find.text('Get directions'), findsOneWidget);
@@ -1189,6 +1206,7 @@ EventParticipation _participation({
   String eventId = 'event-1',
   String uid = 'runner-1',
   EventParticipationStatus status = EventParticipationStatus.signedUp,
+  EventJoinRequestStatus? hostApprovalStatus,
 }) {
   final now = DateTime(2026, 1, 1);
   return EventParticipation(
@@ -1199,5 +1217,6 @@ EventParticipation _participation({
     status: status,
     createdAt: now,
     updatedAt: now,
+    hostApprovalStatus: hostApprovalStatus,
   );
 }

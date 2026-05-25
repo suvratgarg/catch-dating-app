@@ -52,16 +52,16 @@ class CatchSectionCard extends StatelessWidget {
                         if (title != null)
                           Text(
                             title!,
-                            style: CatchTextStyles.labelL(
+                            style: CatchTextStyles.sectionTitle(
                               context,
-                              color: t.ink2,
+                              color: t.ink,
                             ),
                           ),
                         if (subtitle != null) ...[
                           if (title != null) gapH4,
                           Text(
                             subtitle!,
-                            style: CatchTextStyles.bodyS(
+                            style: CatchTextStyles.supporting(
                               context,
                               color: t.ink2,
                             ),
@@ -75,7 +75,7 @@ class CatchSectionCard extends StatelessWidget {
                 if (trailing != null) ...[
                   gapW12,
                   DefaultTextStyle.merge(
-                    style: CatchTextStyles.titleS(context, color: t.ink),
+                    style: CatchTextStyles.sectionTitle(context, color: t.ink),
                     child: trailing!,
                   ),
                 ],

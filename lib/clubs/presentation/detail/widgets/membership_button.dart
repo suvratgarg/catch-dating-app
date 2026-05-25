@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,7 +41,7 @@ class MembershipButton extends ConsumerWidget {
               fullWidth: true,
             ),
           ),
-          const SizedBox(width: 10),
+          gapW10,
           _ClubBellButton(
             enabled: pushNotificationsEnabled,
             isLoading: isPushMutating,
@@ -100,39 +102,21 @@ class _ClubBellButton extends StatelessWidget {
       label: enabled
           ? 'Disable club push notifications'
           : 'Enable club push notifications',
-      child: SizedBox.square(
-        dimension: 52,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: background,
-            shape: BoxShape.circle,
-            border: Border.all(color: colorScheme.outlineVariant),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: isLoading ? null : onPressed,
-              child: Center(
-                child: isLoading
-                    ? SizedBox.square(
-                        dimension: 18,
-                        child: CatchLoadingIndicator(
-                          strokeWidth: 2,
-                          color: foreground,
-                        ),
-                      )
-                    : Icon(
-                        enabled
-                            ? Icons.notifications_active_rounded
-                            : Icons.notifications_none_rounded,
-                        color: foreground,
-                      ),
+      child: IconBtn(
+        size: 52,
+        background: background,
+        onTap: isLoading ? null : onPressed,
+        child: isLoading
+            ? SizedBox.square(
+                dimension: 18,
+                child: CatchLoadingIndicator(strokeWidth: 2, color: foreground),
+              )
+            : Icon(
+                enabled
+                    ? Icons.notifications_active_rounded
+                    : Icons.notifications_none_rounded,
+                color: foreground,
               ),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -64,7 +64,7 @@ class _OptionalBadge extends StatelessWidget {
       ),
       child: Text(
         'Optional',
-        style: CatchTextStyles.bodyS(
+        style: CatchTextStyles.supporting(
           context,
           color: color,
         ).copyWith(fontWeight: FontWeight.w600),

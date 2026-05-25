@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
@@ -58,9 +60,9 @@ class EventDetailsStep extends StatelessWidget {
               photoImageBytes: photoImageBytes,
               onTap: onPickPhoto,
             ),
-            const SizedBox(height: 20),
+            gapH20,
             const FieldLabel('Activity type'),
-            const SizedBox(height: 8),
+            gapH8,
             Wrap(
               key: CreateEventFormKeys.activityType,
               spacing: 8,
@@ -83,7 +85,7 @@ class EventDetailsStep extends StatelessWidget {
                   .toList(),
             ),
             if (selectedActivityKind == ActivityKind.openActivity) ...[
-              const SizedBox(height: 20),
+              gapH20,
               CatchTextField(
                 key: CreateEventFormKeys.customActivityLabel,
                 label: 'Format name',
@@ -100,9 +102,9 @@ class EventDetailsStep extends StatelessWidget {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              gapH20,
               const FieldLabel('Format structure'),
-              const SizedBox(height: 8),
+              gapH8,
               Wrap(
                 key: CreateEventFormKeys.customInteractionModel,
                 spacing: 8,
@@ -127,7 +129,7 @@ class EventDetailsStep extends StatelessWidget {
               ),
             ],
             if (selectedActivityKind.isDistanceBased) ...[
-              const SizedBox(height: 20),
+              gapH20,
               CatchTextField(
                 key: CreateEventFormKeys.distance,
                 label: 'Distance (km)',
@@ -149,9 +151,9 @@ class EventDetailsStep extends StatelessWidget {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              gapH20,
               const FieldLabel('Pace level'),
-              const SizedBox(height: 8),
+              gapH8,
               FormField<PaceLevel>(
                 initialValue: selectedPace,
                 validator: (v) => v == null ? 'Select a pace' : null,
@@ -187,14 +189,17 @@ class EventDetailsStep extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 6, left: 4),
                         child: Text(
                           field.errorText!,
-                          style: TextStyle(fontSize: 12, color: t.primary),
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.primary,
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
             ],
-            const SizedBox(height: 20),
+            gapH20,
             CatchTextField(
               key: CreateEventFormKeys.description,
               label: 'Description',

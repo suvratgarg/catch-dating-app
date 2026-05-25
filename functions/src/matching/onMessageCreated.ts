@@ -6,7 +6,7 @@ import {
   ChatMessageDoc,
   MatchDoc,
   PublicProfileDoc,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 import {
   allowsPushPreference,
   sendFcmNotification,

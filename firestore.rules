@@ -209,7 +209,7 @@ service cloud.firestore {
 	          'instagramHandle', 'phoneNumber', 'countryCode', 'dateOfBirth',
           'gender', 'profileComplete',
           // Photos
-          'photoUrls', 'photoThumbnailUrls', 'photoPrompts', 'profilePhotos',
+          'profilePhotos',
           // Location
           'city',
           'latitude',
@@ -224,10 +224,8 @@ service cloud.firestore {
           'relationshipGoal',
           // Lifestyle
           'drinking', 'smoking', 'workout', 'diet', 'children',
-          // Running
-          'paceMinSecsPerKm', 'paceMaxSecsPerKm',
-          'preferredDistances', 'runningReasons', 'preferredRunTimes',
-          'runPreferencesVersion',
+          // Activity preferences
+          'activityPreferences',
           // Notification / discovery preferences
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
@@ -243,11 +241,9 @@ service cloud.firestore {
           'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
           'gender', 'profileComplete', 'profilePrompts',
           'firstName', 'lastName',
-          'photoUrls', 'photoThumbnailUrls', 'photoPrompts',
+          'profilePhotos',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
-          'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
-          'preferredDistances', 'runningReasons', 'preferredRunTimes',
-          'runPreferencesVersion',
+          'languages', 'activityPreferences',
           'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap'
@@ -271,13 +267,8 @@ service cloud.firestore {
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
         && data.profileComplete is bool
         // Photos
-        && data.photoUrls is list
-        && data.photoUrls.size() <= 6
-        && data.photoThumbnailUrls is list
-        && data.photoThumbnailUrls.size() <= 6
-        && data.photoPrompts is list
-        && data.photoPrompts.size() <= 6
-        && optionalListMax(data, 'profilePhotos', 6)
+        && data.profilePhotos is list
+        && data.profilePhotos.size() <= 6
         // Location
         && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
         && optionalNumber(data, 'latitude')
@@ -326,19 +317,8 @@ service cloud.firestore {
         && optionalIn(data, 'children', [
           'dontHave', 'haveWantMore', 'haveNoMore', 'wantSomeday', 'dontWant'
         ])
-        // Running
-        && data.paceMinSecsPerKm is number
-        && data.paceMinSecsPerKm > 0
-        && data.paceMaxSecsPerKm is number
-        && data.paceMaxSecsPerKm > 0
-        && data.preferredDistances is list
-        && data.preferredDistances.size() <= 12
-        && data.runningReasons is list
-        && data.runningReasons.size() <= 12
-        && data.preferredRunTimes is list
-        && data.preferredRunTimes.size() <= 8
-        && data.runPreferencesVersion is number
-        && data.runPreferencesVersion >= 0
+        // Activity preferences
+        && hasValidActivityPreferences(data.activityPreferences)
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool
@@ -351,6 +331,34 @@ service cloud.firestore {
         && optionalString(data, 'fcmToken')
         && optionalBool(data, 'deleted')
         && optionalTimestamp(data, 'deletedAt');
+    }
+
+    function hasValidActivityPreferences(preferences) {
+      return preferences is map
+        && preferences.keys().hasOnly(['running'])
+        && preferences.running is map
+        && preferences.running.keys().hasOnly([
+          'paceMinSecsPerKm', 'paceMaxSecsPerKm',
+          'preferredDistances', 'runningReasons', 'preferredRunTimes',
+          'version'
+        ])
+        && preferences.running.keys().hasAll([
+          'paceMinSecsPerKm', 'paceMaxSecsPerKm',
+          'preferredDistances', 'runningReasons', 'preferredRunTimes',
+          'version'
+        ])
+        && preferences.running.paceMinSecsPerKm is number
+        && preferences.running.paceMinSecsPerKm > 0
+        && preferences.running.paceMaxSecsPerKm is number
+        && preferences.running.paceMaxSecsPerKm > 0
+        && preferences.running.preferredDistances is list
+        && preferences.running.preferredDistances.size() <= 12
+        && preferences.running.runningReasons is list
+        && preferences.running.runningReasons.size() <= 12
+        && preferences.running.preferredRunTimes is list
+        && preferences.running.preferredRunTimes.size() <= 8
+        && preferences.running.version is number
+        && preferences.running.version >= 0;
     }
 
     function isValidUserCreate(uid) {
@@ -1169,14 +1177,8 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ── Profile decisions / legacy swipes ───────────────────────────────────
-    // Each user owns their outgoing decisions subcollection. `swipes` remains
-    // the primary trigger path while `profileDecisions` mirrors new writes.
-    match /swipes/{userId}/outgoing/{targetId} {
-      allow read: if request.auth.uid == userId;
-      allow create: if hasValidSwipeCreate(userId, targetId);
-    }
-
+    // ── Profile decisions ───────────────────────────────────────────────────
+    // Each user owns their outgoing decisions subcollection.
     match /profileDecisions/{userId}/outgoing/{targetId} {
       allow read: if request.auth.uid == userId;
       allow create: if hasValidSwipeCreate(userId, targetId);

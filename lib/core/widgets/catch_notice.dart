@@ -251,7 +251,7 @@ class CatchNotice extends StatelessWidget {
                       notice.message!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyS(
+                      style: CatchTextStyles.supporting(
                         context,
                         color: palette.secondary,
                       ),

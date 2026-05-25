@@ -105,7 +105,12 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: AppBar(title: const Text('Event success preview')),
+      appBar: AppBar(
+        title: Text(
+          'Event success preview',
+          style: CatchTextStyles.titleL(context),
+        ),
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -258,7 +263,7 @@ class _IntegrationNotesCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     note,
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ),
               ],

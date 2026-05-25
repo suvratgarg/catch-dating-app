@@ -265,8 +265,15 @@ function createPaymentsFirestore(paymentDoc: {
   ref: {set: (data: Record<string, unknown>) => Promise<void>};
 }): FirebaseFirestore.Firestore {
   return {
-    collection: () => ({
-      doc: () => paymentDoc.ref,
+    collection: (path: string) => ({
+      doc: () => path === "payments" ?
+        paymentDoc.ref :
+        ({
+          get: async () => ({
+            exists: false,
+            data: () => undefined,
+          }),
+        }),
     }),
   } as unknown as FirebaseFirestore.Firestore;
 }

@@ -31,6 +31,8 @@ class EventBookingController extends _$EventBookingController {
   static final cancelMutation = Mutation<void>();
   static final joinWaitlistMutation = Mutation<void>();
   static final leaveWaitlistMutation = Mutation<void>();
+  static final approveJoinRequestMutation = Mutation<void>();
+  static final declineJoinRequestMutation = Mutation<void>();
   static final markAttendanceMutation = Mutation<void>();
   static final selfCheckInMutation = Mutation<void>();
   static final hostCancelEventMutation = Mutation<void>();
@@ -134,10 +136,39 @@ class EventBookingController extends _$EventBookingController {
 
   /// Removes the user from the waitlist.
   Future<void> leaveWaitlist({required Event event}) async {
-    final uid = _requireSignedIn(action: 'leave a waitlist');
+    _requireSignedIn(action: 'leave a waitlist');
+    await ref.read(eventRepositoryProvider).leaveWaitlist(eventId: event.id);
+  }
+
+  /// Approves a request-to-join participation. Free approved requests are
+  /// booked by the backend; paid approved requests can complete payment.
+  Future<void> approveJoinRequest({
+    required String eventId,
+    required String userId,
+  }) async {
+    _requireSignedIn(action: 'approve a join request');
     await ref
         .read(eventRepositoryProvider)
-        .leaveWaitlist(eventId: event.id, userId: uid);
+        .decideJoinRequest(
+          eventId: eventId,
+          userId: userId,
+          decision: 'approve',
+        );
+  }
+
+  /// Declines a request-to-join participation.
+  Future<void> declineJoinRequest({
+    required String eventId,
+    required String userId,
+  }) async {
+    _requireSignedIn(action: 'decline a join request');
+    await ref
+        .read(eventRepositoryProvider)
+        .decideJoinRequest(
+          eventId: eventId,
+          userId: userId,
+          decision: 'decline',
+        );
   }
 
   /// Toggles attendance for a single user on an event.

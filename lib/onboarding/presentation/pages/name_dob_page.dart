@@ -105,9 +105,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 32),
+            gapH32,
             const OnboardingStepHeader(title: 'What\'s your name?'),
-            const SizedBox(height: 32),
+            gapH32,
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -164,14 +164,14 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               helperTone: CatchTextFieldSupportTone.success,
               validator: validateRequiredPhoneNumber,
             ),
-            const SizedBox(height: 40),
+            gapH40,
             CatchButton(
               label: 'Continue',
               onPressed: _submit,
               fullWidth: true,
               size: CatchButtonSize.lg,
             ),
-            const SizedBox(height: 32),
+            gapH32,
           ],
         ),
       ),

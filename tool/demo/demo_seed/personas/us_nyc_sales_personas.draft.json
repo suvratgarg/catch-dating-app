@@ -1,0 +1,2300 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nyc-sales-personas-v1",
+  "label": "U.S. New York sales persona draft v1",
+  "photoActivityTaxonomyId": "sales-demo-photo-activity-taxonomy-v1",
+  "photoCompositionIndexId": "sales-demo-photo-composition-index-v1",
+  "compositionCohortIds": ["hostSalesPilot"],
+  "market": {
+    "countryCode": "US",
+    "citySlug": "new-york",
+    "cityLabel": "New York"
+  },
+  "qualityGate": {
+    "minimumPhotosPerPersona": 4,
+    "maximumPhotosPerPersona": 6,
+    "publishedAssetRequired": false
+  },
+  "personas": [
+    {
+      "id": "nyc_maya_shah_001",
+      "firstName": "Maya",
+      "lastName": "Shah",
+      "displayName": "Maya Shah",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-02-11",
+      "heightCm": 160,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Product designer",
+      "company": "Independent",
+      "demographicBrief": "South Asian American woman in her late twenties, NYC-based, polished and athletic without looking staged.",
+      "appearanceContinuityBrief": "Petite athletic build, warm brown skin, dark shoulder-length hair, expressive brown eyes, natural makeup, consistent face across all images.",
+      "personalityBrief": "Warm, detail-oriented, socially confident, and more interested in thoughtful conversation than performative fitness.",
+      "marketFitBrief": "Fits a New York social event crowd around Williamsburg, West Side Highway, gallery nights, and post-event coffee.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A small group, clean timing, and a cortado while everyone is still glowing from the conversation."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Convincing the group to try the bakery I saved three weeks ago."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I make plans that actually happen and I bring an extra hair tie."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/01-hero-portrait.jpg",
+          "scene": "Clear solo street portrait on the West Side Highway with soft daylight, tailored casual jacket, relaxed smile.",
+          "generationPrompt": "Photorealistic synthetic South Asian American woman, late twenties, 160 cm petite athletic build, dark shoulder-length hair, warm brown skin, natural makeup, dating app ready solo street portrait, West Side Highway morning light, no brand logos, no text.",
+          "continuityNotes": "Keep the same petite height, face shape, hair length, and warm brown skin tone across the set."
+        },
+        {
+          "id": "sidewalk_coffee",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/02-sidewalk-coffee.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/02-sidewalk-coffee.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/02-sidewalk-coffee.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/02-sidewalk-coffee.jpg",
+          "scene": "Casual coffee outside a bright Brooklyn cafe, ponytail, light jacket, natural candid energy.",
+          "generationPrompt": "Same synthetic woman as hero portrait, petite South Asian American woman, late twenties, holding iced coffee outside a Brooklyn cafe, natural candid dating app image, realistic street background, no logos, no text.",
+          "continuityNotes": "Same face, hair color, body proportions, and understated style; different outfit but visibly same person."
+        },
+        {
+          "id": "gallery_opening",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "gallery",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/03-gallery-opening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/03-gallery-opening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/03-gallery-opening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/03-gallery-opening.jpg",
+          "scene": "Evening gallery opening, simple black dress, warm indoor light, composed smile, visible full-body scale.",
+          "generationPrompt": "Same synthetic South Asian American woman, petite 160 cm build, dark shoulder-length hair, elegant but approachable gallery opening photo, warm indoor light, full-body framing, no logos, no text.",
+          "continuityNotes": "Height should read petite next to furniture and people in the background."
+        },
+        {
+          "id": "weekend_market",
+          "position": 3,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/04-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/04-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/04-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/04-riverside-run.jpg",
+          "scene": "Casual riverside run candid, ponytail, light running layer, relaxed smile rather than race intensity.",
+          "generationPrompt": "Same synthetic woman as previous images, South Asian American, late twenties, petite athletic build, casual riverside run candid in New York, ponytail, light running layer, relaxed smile, dating app quality, no logos, no text.",
+          "continuityNotes": "Same person, same skin tone, same petite proportions; running should read as one hobby, not the entire identity."
+        }
+      ]
+    },
+    {
+      "id": "nyc_jordan_ellis_002",
+      "firstName": "Jordan",
+      "lastName": "Ellis",
+      "displayName": "Jordan Ellis",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1994-09-04",
+      "heightCm": 183,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Startup operator",
+      "company": "Founders Office",
+      "demographicBrief": "Black American man in his early thirties, tall and athletic, relaxed confidence rather than model stiffness.",
+      "appearanceContinuityBrief": "Tall lean build, deep brown skin, close-cropped hair, trimmed beard, bright smile, consistent face across images.",
+      "personalityBrief": "Easy host energy, funny without dominating the group, and reliable about showing up early.",
+      "marketFitBrief": "Belongs in a Brooklyn/Manhattan founder, dinner, and activity-club social scene.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A steady loop, a little friendly trash talk, and one great breakfast spot after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding the table with the best people-watching and ordering for the group."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am punctual, I listen closely, and I never leave anyone alone at the back."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_track",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "rooftop_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/01-hero-track.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/01-hero-track.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/01-hero-track.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/01-hero-track.jpg",
+          "scene": "Rooftop solo portrait in clean casual layers, city background, confident but approachable.",
+          "generationPrompt": "Photorealistic synthetic Black American man, early thirties, 183 cm tall lean athletic build, close-cropped hair, trimmed beard, warm smile, rooftop solo portrait with New York city background, natural light, dating app ready, no logos, no text.",
+          "continuityNotes": "Keep tall proportions, beard shape, hair length, and face consistent across all images."
+        },
+        {
+          "id": "bridge_walk",
+          "position": 1,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "group_walk",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/02-bridge-walk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/02-bridge-walk.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/02-bridge-walk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/02-bridge-walk.jpg",
+          "scene": "Candid bridge walk moment, laughing with two blurred friends in the background.",
+          "generationPrompt": "Same synthetic Black American man, tall lean build, city bridge walk, laughing candidly, background friends blurred and non-identifiable, New York social energy, photorealistic, no logos, no text.",
+          "continuityNotes": "Same beard, face, tall build, and relaxed smile; background people should not look like profile subjects."
+        },
+        {
+          "id": "dinner_window",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "restaurant",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/03-dinner-window.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/03-dinner-window.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/03-dinner-window.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/03-dinner-window.jpg",
+          "scene": "Low-key dinner by a restaurant window, neat overshirt, direct eye contact, warm interior light.",
+          "generationPrompt": "Same synthetic man, Black American, early thirties, tall, close-cropped hair, trimmed beard, restaurant window dinner portrait, smart casual overshirt, warm light, dating profile quality, no logos, no text.",
+          "continuityNotes": "Keep face and proportions identical; style should feel polished but realistic."
+        },
+        {
+          "id": "weekend_basketball",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "basketball",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/04-weekend-basketball.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/04-weekend-basketball.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/04-weekend-basketball.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/04-weekend-basketball.jpg",
+          "scene": "Outdoor basketball court after a casual game, relaxed streetwear, friendly smile.",
+          "generationPrompt": "Same synthetic Black American man, tall athletic build, outdoor NYC basketball court, casual streetwear, friendly candid smile, late afternoon light, photorealistic, no logos, no text.",
+          "continuityNotes": "Same face, beard, height, and athletic build; not overly posed."
+        }
+      ]
+    },
+    {
+      "id": "nyc_sofia_martinez_003",
+      "firstName": "Sofia",
+      "lastName": "Martinez",
+      "displayName": "Sofia Martinez",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1998-06-18",
+      "heightCm": 165,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Brand strategist",
+      "company": "Studio West",
+      "demographicBrief": "Latina woman in her late twenties, city-polished, expressive, athletic, and warm.",
+      "appearanceContinuityBrief": "Medium height, olive skin, long dark wavy hair, strong brows, bright smile, consistent features across all photos.",
+      "personalityBrief": "Playful, observant, and good at making strangers feel included quickly.",
+      "marketFitBrief": "Works for downtown creative events, activity socials, and premium host demos.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A scenic plan where nobody is trying too hard but everyone is a little proud after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Taking one chaotic group photo and then finding tacos."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I ask follow-up questions and remember the answer."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_pier",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "waterfront_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/01-hero-pier.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/01-hero-pier.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/01-hero-pier.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/01-hero-pier.jpg",
+          "scene": "Pier-side solo portrait, sunrise, simple fitted tank and light overshirt, relaxed confident smile.",
+          "generationPrompt": "Photorealistic synthetic Latina woman, late twenties, 165 cm athletic build, olive skin, long dark wavy hair, strong brows, bright smile, NYC pier solo portrait at sunrise, dating app ready, no logos, no text.",
+          "continuityNotes": "Same long wavy hair, olive skin, smile, and 165 cm proportions across photos."
+        },
+        {
+          "id": "pickleball_court",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "pickleball",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/02-pickleball-court.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/02-pickleball-court.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/02-pickleball-court.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/02-pickleball-court.jpg",
+          "scene": "Outdoor pickleball court candid, athletic dress, paddle in hand, candid laugh.",
+          "generationPrompt": "Same synthetic Latina woman, late twenties, outdoor pickleball court candid, athletic dress, paddle in hand, laughing naturally, realistic social sports setting, no readable text, no logos.",
+          "continuityNotes": "Same person and hair, with relaxed active-lifestyle energy."
+        },
+        {
+          "id": "rooftop_dinner",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "rooftop_dinner",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/03-rooftop-dinner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/03-rooftop-dinner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/03-rooftop-dinner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/03-rooftop-dinner.jpg",
+          "scene": "Rooftop dinner candid, simple gold earrings, black top, city lights behind.",
+          "generationPrompt": "Same synthetic Latina woman, long dark wavy hair, rooftop dinner in New York, black top, simple gold earrings, warm city night background, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same face, brows, smile, and hair texture."
+        },
+        {
+          "id": "bookstore_weekend",
+          "position": 3,
+          "promptId": "captionThis",
+          "categoryId": "everydayCandid",
+          "activityId": "bookstore",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/04-bookstore-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/04-bookstore-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/04-bookstore-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/04-bookstore-weekend.jpg",
+          "scene": "Independent bookstore aisle, oversized sweater, holding two books with an amused expression.",
+          "generationPrompt": "Same synthetic Latina woman, late twenties, independent bookstore candid, oversized sweater, holding two books, amused expression, natural indoor light, photorealistic, no readable titles, no logos.",
+          "continuityNotes": "Keep same face and hair; avoid making the person look younger than late twenties."
+        }
+      ]
+    },
+    {
+      "id": "nyc_ethan_brooks_004",
+      "firstName": "Ethan",
+      "lastName": "Brooks",
+      "displayName": "Ethan Brooks",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1993-12-03",
+      "heightCm": 188,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Software engineer",
+      "company": "Northstar",
+      "demographicBrief": "White American man in his early thirties, tall, outdoorsy but city-presentable.",
+      "appearanceContinuityBrief": "Tall build, light skin, sandy brown hair, light stubble, blue eyes, easy smile, consistent face across photos.",
+      "personalityBrief": "Low-key, dry sense of humor, makes careful plans but does not make them feel rigid.",
+      "marketFitBrief": "Works for premium U.S. demos with a tech, outdoor, and city social crossover.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A bridge walk, a good view, and someone who will debate the best bagel on the way back."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Stretching for exactly two minutes and calling it mobility."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am calm under pressure and weirdly good at finding the practical answer."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_bridge",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/01-hero-bridge.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/01-hero-bridge.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/01-hero-bridge.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/01-hero-bridge.jpg",
+          "scene": "Tall solo portrait leaning on a bridge railing, breathable casual long sleeve, clean natural light.",
+          "generationPrompt": "Photorealistic synthetic white American man, early thirties, 188 cm tall build, sandy brown hair, light stubble, blue eyes, relaxed smile, NYC bridge solo portrait, dating app quality, no logos, no text.",
+          "continuityNotes": "Height should read tall; keep sandy hair, stubble, eye color, and facial structure consistent."
+        },
+        {
+          "id": "trail_overlook",
+          "position": 1,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/02-morning-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/02-morning-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/02-morning-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/02-morning-run.jpg",
+          "scene": "Easy morning run candid near a bridge path, sandy hair, relaxed expression, not a race photo.",
+          "generationPrompt": "Same synthetic white American man, tall, sandy hair, light stubble, easy morning run candid near a New York bridge path, relaxed expression, realistic outdoor background, dating app quality, no brand logos, no readable text.",
+          "continuityNotes": "Same face and tall build; running should feel casual and lifestyle-oriented, not performance-first."
+        },
+        {
+          "id": "kitchen_cooking",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "everydayCandid",
+          "activityId": "cooking",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/03-kitchen-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/03-kitchen-cooking.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/03-kitchen-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/03-kitchen-cooking.jpg",
+          "scene": "Cooking in a small apartment kitchen, rolled sleeves, relaxed half-smile.",
+          "generationPrompt": "Same synthetic man, tall white American, early thirties, sandy hair and light stubble, cooking in a small New York apartment kitchen, rolled sleeves, warm candid light, photorealistic, no logos, no text.",
+          "continuityNotes": "Same person and eye color; apartment should feel realistic, not luxury-stock."
+        },
+        {
+          "id": "museum_steps",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "museum",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/04-museum-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/04-museum-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/04-museum-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/04-museum-steps.jpg",
+          "scene": "Museum steps on a weekend afternoon, casual jacket, full-body scale, friendly expression.",
+          "generationPrompt": "Same synthetic white American man, 188 cm tall, museum steps weekend portrait, casual jacket, full-body framing, friendly expression, photorealistic, no logos, no text.",
+          "continuityNotes": "Make the person visibly tall relative to steps and railings; same face and hair."
+        }
+      ]
+    },
+    {
+      "id": "nyc_aisha_williams_005",
+      "firstName": "Aisha",
+      "lastName": "Williams",
+      "displayName": "Aisha Williams",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1995-04-22",
+      "heightCm": 170,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Emergency nurse",
+      "company": "Mount Sinai",
+      "demographicBrief": "Black American woman around thirty, composed, fit, and naturally magnetic.",
+      "appearanceContinuityBrief": "Athletic 170 cm build, deep brown skin, shoulder-length natural curls, strong cheekbones, calm smile.",
+      "personalityBrief": "Grounded, quick-witted, direct in a kind way, and good at reading a room.",
+      "marketFitBrief": "Works well for high-trust host demos where attendee quality and warmth matter.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Good conversation, a plan that feels easy, and brunch where nobody talks about work for ten minutes."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Checking on everyone, then pretending I do not want fries."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I can be decisive without making it a personality."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_park",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "park_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/01-hero-park.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/01-hero-park.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/01-hero-park.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/01-hero-park.jpg",
+          "scene": "Central Park solo portrait near a path curve, confident posture, clean black top and light jacket.",
+          "generationPrompt": "Photorealistic synthetic Black American woman, around thirty, 170 cm athletic build, deep brown skin, shoulder-length natural curls, strong cheekbones, calm smile, Central Park solo portrait, dating app ready, no logos, no text.",
+          "continuityNotes": "Keep curls, cheekbones, height, and athletic build consistent across the set."
+        },
+        {
+          "id": "friends_brunch",
+          "position": 1,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/02-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/02-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/02-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/02-friends-brunch.jpg",
+          "scene": "Friends brunch table moment with two non-identifiable friends partly out of focus, Aisha in clear focus.",
+          "generationPrompt": "Same synthetic Black American woman, athletic build, natural curls, brunch candid with two blurred friends, she is the clear subject, bright smile, realistic NYC restaurant background, no logos, no text.",
+          "continuityNotes": "Same subject only; background friends should be indistinct and not reusable as personas."
+        },
+        {
+          "id": "night_shift_coffee",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/03-night-shift-coffee.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/03-night-shift-coffee.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/03-night-shift-coffee.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/03-night-shift-coffee.jpg",
+          "scene": "Coffee shop after shift, sweater, relaxed tired smile, soft window light.",
+          "generationPrompt": "Same synthetic woman, Black American emergency nurse off duty, shoulder-length natural curls, coffee shop portrait after work, sweater, soft window light, attractive realistic dating app image, no logos, no text.",
+          "continuityNotes": "Keep age around thirty; do not add medical uniform or hospital identifiers."
+        },
+        {
+          "id": "saturday_jazz",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "jazz_bar",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/04-saturday-jazz.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/04-saturday-jazz.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/04-saturday-jazz.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/04-saturday-jazz.jpg",
+          "scene": "Small jazz bar table, low warm light, simple blouse, composed smile.",
+          "generationPrompt": "Same synthetic Black American woman, around thirty, natural curls, small jazz bar candid, simple blouse, warm low light, calm magnetic expression, photorealistic, no logos, no text.",
+          "continuityNotes": "Same curls, facial features, and composed expression; avoid glamour-shot overprocessing."
+        }
+      ]
+    },
+    {
+      "id": "nyc_daniel_kim_006",
+      "firstName": "Daniel",
+      "lastName": "Kim",
+      "displayName": "Daniel Kim",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-08-15",
+      "heightCm": 176,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Architect",
+      "company": "Line Studio",
+      "demographicBrief": "Korean American man in his early thirties, refined, athletic, and understated.",
+      "appearanceContinuityBrief": "Medium height, lean build, light-medium skin, black hair with a neat side part, clean-shaven, thoughtful smile.",
+      "personalityBrief": "Observant, design-minded, dryly funny, and comfortable in quieter one-on-one moments.",
+      "marketFitBrief": "Strong fit for design, culture, food, and activity-adjacent social events in Manhattan and Brooklyn.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A plan with good architecture, room to talk, and a coffee shop with real chairs."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Taking a photo of a building detail nobody else noticed."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am quietly competitive about showing up for people."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_esplanade",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "waterfront_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/01-hero-esplanade.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/01-hero-esplanade.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/01-hero-esplanade.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/01-hero-esplanade.jpg",
+          "scene": "East River esplanade solo portrait, clean navy overshirt, thoughtful smile.",
+          "generationPrompt": "Photorealistic synthetic Korean American man, early thirties, 176 cm lean build, light-medium skin, black hair neat side part, clean-shaven, East River esplanade solo portrait, dating app ready, no logos, no text.",
+          "continuityNotes": "Keep hair part, clean-shaven face, medium height, and lean build consistent."
+        },
+        {
+          "id": "group_walk_steps",
+          "position": 1,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "group_walk",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/02-group-walk-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/02-group-walk-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/02-group-walk-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/02-group-walk-steps.jpg",
+          "scene": "Sitting on park steps after a casual group walk, relaxed with one blurred friend beside him.",
+          "generationPrompt": "Same synthetic Korean American man, lean build, sitting on park steps after a casual group walk, one blurred friend partly visible, relaxed smile, realistic NYC background, no logos, no text.",
+          "continuityNotes": "Same face and hair; background friend must be secondary and non-identifiable."
+        },
+        {
+          "id": "studio_model",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "architecture_studio",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/03-studio-model.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/03-studio-model.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/03-studio-model.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/03-studio-model.jpg",
+          "scene": "Architecture studio table with a small model, rolled sleeves, natural overhead light.",
+          "generationPrompt": "Same synthetic Korean American man, architect in studio, table with small physical model, rolled sleeves, thoughtful expression, natural overhead light, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same clean-shaven face, black hair, and lean proportions."
+        },
+        {
+          "id": "dumpling_weekend",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "dumplings",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/04-dumpling-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/04-dumpling-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/04-dumpling-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/04-dumpling-weekend.jpg",
+          "scene": "Casual weekend lunch at a small dumpling spot, soft smile, simple sweater.",
+          "generationPrompt": "Same synthetic Korean American man, early thirties, casual dumpling restaurant lunch, simple sweater, soft smile, photorealistic, no readable menus, no logos, no text.",
+          "continuityNotes": "Same person and styling; keep it candid and grounded."
+        }
+      ]
+    },
+    {
+      "id": "nyc_priya_desai_007",
+      "firstName": "Priya",
+      "lastName": "Desai",
+      "displayName": "Priya Desai",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1999-01-27",
+      "heightCm": 157,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Venture associate",
+      "company": "Seedline",
+      "demographicBrief": "South Asian American woman in her late twenties, shorter height, stylish, athletic, and energetic.",
+      "appearanceContinuityBrief": "Shorter 157 cm build, medium brown skin, long dark hair often tied back, almond-shaped eyes, bright animated expression.",
+      "personalityBrief": "Fast-talking in a fun way, ambitious, emotionally perceptive, and always finding the next good plan.",
+      "marketFitBrief": "Fits founder, finance, and creative-professional host demos in New York.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A sunrise loop before the inbox gets loud and a group that actually stays for coffee."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Pitching a second breakfast like it is a board memo."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I make people feel invited without making it a production."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_sunrise",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "waterfront_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/01-hero-sunrise.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/01-hero-sunrise.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/01-hero-sunrise.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/01-hero-sunrise.jpg",
+          "scene": "Sunrise waterfront solo portrait, ponytail, cropped jacket, bright expression.",
+          "generationPrompt": "Photorealistic synthetic South Asian American woman, late twenties, 157 cm shorter athletic build, medium brown skin, long dark hair tied back, almond-shaped eyes, bright animated expression, NYC waterfront sunrise solo portrait, no logos, no text.",
+          "continuityNotes": "Make height read short/petite; keep same face, hair, and animated smile."
+        },
+        {
+          "id": "coffee_sidewalk",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/02-coffee-sidewalk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/02-coffee-sidewalk.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/02-coffee-sidewalk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/02-coffee-sidewalk.jpg",
+          "scene": "Standing outside a sidewalk coffee window, laughing mid-conversation.",
+          "generationPrompt": "Same synthetic South Asian American woman, shorter 157 cm build, long dark hair tied back, standing at NYC sidewalk coffee window, laughing mid conversation, candid realistic dating profile image, no logos, no text.",
+          "continuityNotes": "Same petite scale and facial features; coffee window should not show readable brand text."
+        },
+        {
+          "id": "work_event",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "professional_event",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/03-work-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/03-work-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/03-work-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/03-work-event.jpg",
+          "scene": "Professional networking event candid, blazer over simple top, confident but approachable.",
+          "generationPrompt": "Same synthetic South Asian American woman, petite, professional networking event candid, blazer, confident approachable smile, warm event lighting, photorealistic, no name tags readable, no logos, no text.",
+          "continuityNotes": "Same person and height; avoid corporate stock-photo stiffness."
+        },
+        {
+          "id": "park_picnic",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_picnic",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/04-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/04-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/04-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/04-park-picnic.jpg",
+          "scene": "Park picnic blanket with two friends blurred, Priya in focus, sunlit and relaxed.",
+          "generationPrompt": "Same synthetic South Asian American woman, petite, park picnic with two blurred friends in background, she is in clear focus, relaxed bright smile, photorealistic, no logos, no text.",
+          "continuityNotes": "Keep same face and petite proportions; background friends should not become profile-quality subjects."
+        }
+      ]
+    },
+    {
+      "id": "nyc_marcus_chen_008",
+      "firstName": "Marcus",
+      "lastName": "Chen",
+      "displayName": "Marcus Chen",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1996-10-09",
+      "heightCm": 180,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Music producer",
+      "company": "Independent",
+      "demographicBrief": "Chinese and Black American man in his late twenties, creative, fit, and easygoing.",
+      "appearanceContinuityBrief": "180 cm athletic build, medium brown skin, short curly black hair, clean jawline, expressive dark eyes, relaxed smile.",
+      "personalityBrief": "Playful, emotionally aware, great with group energy, and comfortable being a little spontaneous.",
+      "marketFitBrief": "Adds creative nightlife, music, and active-social crossover energy to the NYC sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Skyline views, a playlist swap, and no one pretending the plan needs to be complicated."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making a shared playlist before everyone forgets the good songs."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I can keep the energy light without dodging the real conversation."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_waterfront",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "waterfront_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/01-hero-waterfront.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/01-hero-waterfront.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/01-hero-waterfront.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/01-hero-waterfront.jpg",
+          "scene": "Waterfront solo portrait with skyline behind, black tee and overshirt, relaxed smile.",
+          "generationPrompt": "Photorealistic synthetic Chinese and Black American man, late twenties, 180 cm athletic build, medium brown skin, short curly black hair, clean jawline, expressive dark eyes, waterfront NYC solo portrait with skyline, dating app ready, no logos, no text.",
+          "continuityNotes": "Keep mixed-race features, short curls, skin tone, and 180 cm athletic build consistent."
+        },
+        {
+          "id": "pickleball_court",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "pickleball",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/02-pickleball-court.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/02-pickleball-court.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/02-pickleball-court.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/02-pickleball-court.jpg",
+          "scene": "Outdoor pickleball court candid, paddle in one hand, earbuds around neck, amused smile.",
+          "generationPrompt": "Same synthetic Chinese and Black American man, late twenties, outdoor pickleball court candid, paddle in one hand, earbuds around neck, amused smile, realistic active social setting, no readable text, no logos.",
+          "continuityNotes": "Same face, hair, and build; activity should feel casual and social."
+        },
+        {
+          "id": "studio_booth",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "music_studio",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/03-studio-booth.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/03-studio-booth.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/03-studio-booth.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/03-studio-booth.jpg",
+          "scene": "Small music studio with headphones and keyboard, soft practical light, focused expression.",
+          "generationPrompt": "Same synthetic mixed Chinese and Black American man, music producer in small studio, headphones and keyboard, soft practical light, focused but approachable expression, photorealistic, no logos, no text.",
+          "continuityNotes": "Same short curls, skin tone, and facial structure; avoid celebrity resemblance."
+        },
+        {
+          "id": "rooftop_sunset",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "rooftop_dinner",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/04-rooftop-sunset.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/04-rooftop-sunset.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/04-rooftop-sunset.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/04-rooftop-sunset.jpg",
+          "scene": "Rooftop sunset with simple tee and overshirt, city view, relaxed half-smile.",
+          "generationPrompt": "Same synthetic Chinese and Black American man, late twenties, rooftop sunset in New York, simple tee and overshirt, relaxed half-smile, city view, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same face and proportions; keep image polished but not artificial."
+        }
+      ]
+    },
+    {
+      "id": "nyc_chloe_bennett_009",
+      "firstName": "Chloe",
+      "lastName": "Bennett",
+      "displayName": "Chloe Bennett",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-11-30",
+      "heightCm": 168,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Interior designer",
+      "company": "Borough Studio",
+      "demographicBrief": "White American woman in her late twenties, polished, creative, and approachable.",
+      "appearanceContinuityBrief": "168 cm slim build, fair skin, collarbone-length blonde hair, green eyes, soft smile, consistent face across photos.",
+      "personalityBrief": "Warm, observant, aesthetic-minded, and good at making a dinner table feel easy.",
+      "marketFitBrief": "Fits design-forward New York social events, rooftop dinners, cafe hangs, and friend-of-a-friend host demos.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A scenic loop, one good playlist, and a coffee spot with outdoor chairs after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Rearranging the table so everyone can actually hear each other."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I notice the quiet person and pull them into the conversation."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_brownstone",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/01-hero-brownstone.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/01-hero-brownstone.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/01-hero-brownstone.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/01-hero-brownstone.jpg",
+          "scene": "Brownstone street solo portrait, cream knit and dark jeans, soft morning light, relaxed direct smile.",
+          "generationPrompt": "Photorealistic synthetic white American woman, late twenties, 168 cm slim build, fair skin, collarbone-length blonde hair, green eyes, attractive natural dating app solo portrait on a Brooklyn brownstone street, soft morning light, no logos, no text.",
+          "continuityNotes": "Keep blonde collarbone-length hair, green eyes, slim 168 cm proportions, and soft smile consistent."
+        },
+        {
+          "id": "sidewalk_cappuccino",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/02-sidewalk-cappuccino.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/02-sidewalk-cappuccino.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/02-sidewalk-cappuccino.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/02-sidewalk-cappuccino.jpg",
+          "scene": "Sidewalk cappuccino at a small cafe, white tee under blazer, candid laugh.",
+          "generationPrompt": "Same synthetic white American woman, blonde collarbone-length hair, sidewalk cafe cappuccino candid in New York, white tee and blazer, attractive natural smile, realistic dating profile image, no readable brand text, no logos.",
+          "continuityNotes": "Same face, hair, and height; cafe should feel real and local, not stock."
+        },
+        {
+          "id": "rooftop_table",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "rooftop_dinner",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/03-rooftop-table.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/03-rooftop-table.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/03-rooftop-table.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/03-rooftop-table.jpg",
+          "scene": "Rooftop dinner table at blue hour, linen shirt, city lights behind, composed smile.",
+          "generationPrompt": "Same synthetic white American woman, late twenties, rooftop dinner in New York at blue hour, linen shirt, city lights behind, polished but candid dating app photo, no logos, no text.",
+          "continuityNotes": "Same green eyes, face shape, and blonde hair; keep lighting flattering but realistic."
+        },
+        {
+          "id": "friends_brunch_corner",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/04-friends-brunch-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/04-friends-brunch-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/04-friends-brunch-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/04-friends-brunch-corner.jpg",
+          "scene": "Corner booth brunch with two friends slightly out of focus, Chloe clearly in focus and laughing.",
+          "generationPrompt": "Same synthetic white American woman, brunch table candid with two blurred friends, she is the unmistakable subject, laughing naturally, warm restaurant light, photorealistic, no logos, no text.",
+          "continuityNotes": "Background friends should be secondary and non-identifiable; Chloe remains the clear profile owner."
+        }
+      ]
+    },
+    {
+      "id": "nyc_noah_patel_010",
+      "firstName": "Noah",
+      "lastName": "Patel",
+      "displayName": "Noah Patel",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1995-07-16",
+      "heightCm": 181,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Product manager",
+      "company": "Ledger Labs",
+      "demographicBrief": "Indian American man around thirty, confident, tidy, athletic, and socially relaxed.",
+      "appearanceContinuityBrief": "181 cm lean build, medium brown skin, thick black hair, trimmed stubble, dark eyes, easy smile.",
+      "personalityBrief": "Curious, organized, a little competitive in a fun way, and good at keeping plans moving.",
+      "marketFitBrief": "Works for startup, pickleball, dinner, and premium host-demo attendee rosters.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A good route, an on-time start, and a group that turns coffee into a second event."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making the reservation nobody believed we could get."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I confirm the plan and still leave room for spontaneity."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_soho",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/01-hero-soho.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/01-hero-soho.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/01-hero-soho.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/01-hero-soho.jpg",
+          "scene": "SoHo solo portrait in clean casual overshirt, direct smile, soft overcast light.",
+          "generationPrompt": "Photorealistic synthetic Indian American man, around thirty, 181 cm lean build, medium brown skin, thick black hair, trimmed stubble, dark eyes, attractive dating app solo portrait on a SoHo street, no logos, no text.",
+          "continuityNotes": "Keep stubble, thick hair, dark eyes, and lean 181 cm build consistent."
+        },
+        {
+          "id": "pickleball_after_point",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "pickleball",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/02-pickleball-after-point.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/02-pickleball-after-point.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/02-pickleball-after-point.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/02-pickleball-after-point.jpg",
+          "scene": "Outdoor pickleball court after a point, paddle down, amused smile, relaxed athletic outfit.",
+          "generationPrompt": "Same synthetic Indian American man, outdoor pickleball court candid, paddle in hand, relaxed athletic outfit, amused smile, social sports energy, photorealistic, no brand logos, no text.",
+          "continuityNotes": "Same face, hair, stubble, and lean build; make activity casual, not tournament-like."
+        },
+        {
+          "id": "restaurant_counter",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "restaurant",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/03-restaurant-counter.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/03-restaurant-counter.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/03-restaurant-counter.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/03-restaurant-counter.jpg",
+          "scene": "Restaurant counter dinner, navy sweater, half-smile, warm light and shallow depth of field.",
+          "generationPrompt": "Same synthetic Indian American man, restaurant counter dinner portrait, navy sweater, warm light, attractive candid dating app image, no readable menus, no logos, no text.",
+          "continuityNotes": "Same person and proportions; keep the setting intimate and realistic."
+        },
+        {
+          "id": "founder_event",
+          "position": 3,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "professional_event",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/04-founder-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/04-founder-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/04-founder-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/04-founder-event.jpg",
+          "scene": "Candid at a small founder event, blazer over tee, talking with one blurred person off-frame.",
+          "generationPrompt": "Same synthetic Indian American man, candid at a small New York founder event, blazer over tee, talking naturally with one blurred person off-frame, warm practical lighting, photorealistic, no name tags readable, no logos.",
+          "continuityNotes": "Avoid corporate headshot stiffness; same face and tidy style."
+        }
+      ]
+    },
+    {
+      "id": "nyc_olivia_nguyen_011",
+      "firstName": "Olivia",
+      "lastName": "Nguyen",
+      "displayName": "Olivia Nguyen",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1996-05-08",
+      "heightCm": 162,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "UX researcher",
+      "company": "Atlas Health",
+      "demographicBrief": "Vietnamese American woman around thirty, petite, expressive, smart, and quietly playful.",
+      "appearanceContinuityBrief": "162 cm petite build, light-medium skin, long straight black hair, dark eyes, dimpled smile, consistent face across photos.",
+      "personalityBrief": "Thoughtful, funny once she warms up, and very good at asking the one question everyone wanted to ask.",
+      "marketFitBrief": "Belongs in cafe, gallery, market, and active-social NYC demos without feeling like a fitness persona.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route with a view, an easy pace, and somebody who notices the weird storefronts."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding the market stall with the longest line and deciding it is research."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I remember tiny details and use them for good."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_chinatown",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/01-hero-chinatown.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/01-hero-chinatown.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/01-hero-chinatown.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/01-hero-chinatown.jpg",
+          "scene": "Chinatown side street solo portrait, cropped cardigan, dimpled smile, natural daylight.",
+          "generationPrompt": "Photorealistic synthetic Vietnamese American woman, around thirty, 162 cm petite build, light-medium skin, long straight black hair, dark eyes, dimpled smile, attractive dating app solo portrait on a New York side street, no readable signs, no logos, no text.",
+          "continuityNotes": "Keep petite scale, long straight black hair, dimples, and soft facial features consistent."
+        },
+        {
+          "id": "weekend_market",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "everydayCandid",
+          "activityId": "weekend_market",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/02-weekend-market.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/02-weekend-market.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/02-weekend-market.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/02-weekend-market.jpg",
+          "scene": "Weekend market candid with tote bag and flowers, looking back toward camera with amused smile.",
+          "generationPrompt": "Same synthetic Vietnamese American woman, petite, weekend market candid in New York, tote bag and flowers, looking back toward camera, amused smile, photorealistic, no readable vendor text, no logos.",
+          "continuityNotes": "Same face and long black hair; keep the market busy but not distracting."
+        },
+        {
+          "id": "gallery_wall",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "gallery",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/03-gallery-wall.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/03-gallery-wall.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/03-gallery-wall.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/03-gallery-wall.jpg",
+          "scene": "Gallery wall candid, black midi dress, thoughtful smile, soft indoor lighting.",
+          "generationPrompt": "Same synthetic Vietnamese American woman, gallery opening candid, black midi dress, thoughtful smile, soft indoor lighting, attractive realistic dating app photo, no readable wall text, no logos.",
+          "continuityNotes": "Same dimples, hair, and petite build; avoid making her look younger than late twenties."
+        },
+        {
+          "id": "easy_riverside_run",
+          "position": 3,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/04-easy-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/04-easy-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/04-easy-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/04-easy-riverside-run.jpg",
+          "scene": "Easy riverside run candid, ponytail, light windbreaker, relaxed pace and smile.",
+          "generationPrompt": "Same synthetic Vietnamese American woman, petite build, easy riverside run candid in New York, ponytail, light windbreaker, relaxed pace and smile, dating app quality, no logos, no text.",
+          "continuityNotes": "Running is one lifestyle photo only; same person, petite height, and facial features."
+        }
+      ]
+    },
+    {
+      "id": "nyc_caleb_johnson_012",
+      "firstName": "Caleb",
+      "lastName": "Johnson",
+      "displayName": "Caleb Johnson",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1993-03-19",
+      "heightCm": 186,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Civil rights attorney",
+      "company": "Public Counsel",
+      "demographicBrief": "Black American man in his early thirties, tall, composed, warm, and intelligent.",
+      "appearanceContinuityBrief": "186 cm broad-shouldered build, deep brown skin, shaved head, short beard, calm eyes, warm smile.",
+      "personalityBrief": "Thoughtful, funny in a dry way, protective of group energy, and great at making plans feel grounded.",
+      "marketFitBrief": "Strong for host demos where attendee quality, trust, and conversational depth need to show immediately.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Good weather, nobody getting dropped, and a cafe where the conversation keeps going."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Debriefing over coffee like the group just solved a case."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I can disagree kindly and still keep the table laughing."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_courthouse_steps",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/01-hero-courthouse-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/01-hero-courthouse-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/01-hero-courthouse-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/01-hero-courthouse-steps.jpg",
+          "scene": "Stone steps solo portrait, navy overcoat, calm direct smile, natural afternoon light.",
+          "generationPrompt": "Photorealistic synthetic Black American man, early thirties, 186 cm broad-shouldered build, deep brown skin, shaved head, short beard, calm eyes, attractive dating app solo portrait on stone steps in New York, no logos, no text.",
+          "continuityNotes": "Keep shaved head, short beard, tall broad build, and calm expression consistent."
+        },
+        {
+          "id": "coffee_booth",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/02-coffee-booth.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/02-coffee-booth.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/02-coffee-booth.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/02-coffee-booth.jpg",
+          "scene": "Coffee booth candid, sweater, one hand around mug, warm amused smile.",
+          "generationPrompt": "Same synthetic Black American man, tall broad build, coffee booth candid in New York, sweater, one hand around mug, warm amused smile, photorealistic dating profile image, no logos, no text.",
+          "continuityNotes": "Same face, beard, and broad shoulders; keep the image intimate but not staged."
+        },
+        {
+          "id": "park_picnic",
+          "position": 2,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_picnic",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/03-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/03-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/03-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/03-park-picnic.jpg",
+          "scene": "Park picnic with two friends blurred in the background, Caleb seated in clear focus, laughing.",
+          "generationPrompt": "Same synthetic Black American man, park picnic candid with two blurred friends, he is clearly in focus, laughing naturally, realistic New York park setting, no logos, no text.",
+          "continuityNotes": "Background people must stay secondary and non-identifiable; Caleb remains unmistakable."
+        },
+        {
+          "id": "jazz_corner",
+          "position": 3,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "jazz_bar",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/04-jazz-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/04-jazz-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/04-jazz-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/04-jazz-corner.jpg",
+          "scene": "Small jazz bar corner table, black button-down, warm low light, composed smile.",
+          "generationPrompt": "Same synthetic Black American man, small New York jazz bar corner table, black button-down, warm low light, composed attractive smile, photorealistic, no logos, no text.",
+          "continuityNotes": "Same shaved head, beard, and calm eyes; avoid overprocessed nightlife styling."
+        }
+      ]
+    },
+    {
+      "id": "nyc_emma_rodriguez_013",
+      "firstName": "Emma",
+      "lastName": "Rodriguez",
+      "displayName": "Emma Rodriguez",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1994-12-12",
+      "heightCm": 166,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Sous chef",
+      "company": "Private restaurant group",
+      "demographicBrief": "Puerto Rican and white Latina woman in her early thirties, expressive, stylish, warm, and active.",
+      "appearanceContinuityBrief": "166 cm curvy athletic build, olive skin, auburn-brown wavy hair, hazel eyes, big smile.",
+      "personalityBrief": "Generous, direct, funny, and always the person who knows where the group should eat next.",
+      "marketFitBrief": "Adds restaurant, cooking, and active city-social texture to the NYC host sales world.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route that ends near something actually delicious."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Ordering one extra plate because someone will absolutely want it."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I feed people and I say what I mean kindly."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_west_village",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/01-hero-west-village.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/01-hero-west-village.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/01-hero-west-village.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/01-hero-west-village.jpg",
+          "scene": "West Village solo portrait, auburn waves, fitted black jacket, open smile.",
+          "generationPrompt": "Photorealistic synthetic Puerto Rican and white Latina woman, early thirties, 166 cm curvy athletic build, olive skin, auburn-brown wavy hair, hazel eyes, big smile, attractive West Village solo portrait, no logos, no text.",
+          "continuityNotes": "Keep auburn wavy hair, hazel eyes, olive skin, and curvy athletic build consistent."
+        },
+        {
+          "id": "restaurant_bar",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "restaurant",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/02-restaurant-bar.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/02-restaurant-bar.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/02-restaurant-bar.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/02-restaurant-bar.jpg",
+          "scene": "Restaurant bar candid after service, sleeves rolled, relaxed confident smile.",
+          "generationPrompt": "Same synthetic Latina woman, restaurant bar candid after service, sleeves rolled, relaxed confident smile, warm practical light, photorealistic dating app image, no logos, no readable menus, no text.",
+          "continuityNotes": "Same face and hair; avoid visible restaurant branding or chef whites."
+        },
+        {
+          "id": "home_cooking",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "everydayCandid",
+          "activityId": "cooking",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/03-home-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/03-home-cooking.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/03-home-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/03-home-cooking.jpg",
+          "scene": "Cooking at home in a realistic apartment kitchen, laughing while plating food.",
+          "generationPrompt": "Same synthetic Latina woman, cooking at home in a realistic New York apartment kitchen, laughing while plating food, warm candid light, attractive realistic dating profile photo, no logos, no text.",
+          "continuityNotes": "Same auburn waves and curvy athletic build; kitchen should feel lived-in and believable."
+        },
+        {
+          "id": "public_tennis",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "tennis",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/04-public-tennis.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/04-public-tennis.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/04-public-tennis.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/04-public-tennis.jpg",
+          "scene": "Public tennis court candid, racquet tucked under arm, relaxed smile after a casual hit.",
+          "generationPrompt": "Same synthetic Latina woman, public tennis court candid in New York, racquet tucked under arm, relaxed smile after casual play, athletic but approachable, photorealistic, no logos, no text.",
+          "continuityNotes": "Same person and body proportions; activity should read as casual weekend lifestyle."
+        }
+      ]
+    },
+    {
+      "id": "nyc_liam_oconnor_014",
+      "firstName": "Liam",
+      "lastName": "O'Connor",
+      "displayName": "Liam O'Connor",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-01-24",
+      "heightCm": 184,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Physical therapist",
+      "company": "Union Square PT",
+      "demographicBrief": "Irish American man in his mid-thirties, tall, fit, kind, and grounded.",
+      "appearanceContinuityBrief": "184 cm athletic build, light skin with freckles, short dark blond hair, blue-gray eyes, light stubble, easy grin.",
+      "personalityBrief": "Patient, direct, outdoorsy without being intense, and good at making people feel capable.",
+      "marketFitBrief": "Useful for host demos that need credible active-lifestyle attendees without making the product running-only.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A steady pace, no ego, and breakfast where everyone can sit down."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Claiming I will stretch later and then actually doing it."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I notice when someone needs the pace to change."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_park_path",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "park_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/01-hero-park-path.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/01-hero-park-path.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/01-hero-park-path.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/01-hero-park-path.jpg",
+          "scene": "Park path solo portrait, light jacket, hands in pockets, open grin.",
+          "generationPrompt": "Photorealistic synthetic Irish American man, mid-thirties, 184 cm athletic build, light skin with freckles, short dark blond hair, blue-gray eyes, light stubble, attractive park path solo portrait in New York, no logos, no text.",
+          "continuityNotes": "Keep freckles, dark blond hair, light stubble, blue-gray eyes, and athletic build consistent."
+        },
+        {
+          "id": "morning_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/02-morning-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/02-morning-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/02-morning-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/02-morning-run.jpg",
+          "scene": "Morning park run candid, easy stride, lightweight layer, relaxed expression.",
+          "generationPrompt": "Same synthetic Irish American man, athletic build, morning park run candid in New York, easy stride, lightweight running layer, relaxed expression, dating app quality, no brand logos, no text.",
+          "continuityNotes": "Same person and tall build; running should feel social and low-pressure."
+        },
+        {
+          "id": "prospect_park_day",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "travelOutdoor",
+          "activityId": "park_day",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/03-prospect-park-day.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/03-prospect-park-day.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/03-prospect-park-day.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/03-prospect-park-day.jpg",
+          "scene": "Prospect Park blanket afternoon, casual hoodie, laughing at something off-camera.",
+          "generationPrompt": "Same synthetic Irish American man, Prospect Park day candid, casual hoodie, laughing at something off camera, natural afternoon light, photorealistic, no logos, no text.",
+          "continuityNotes": "Same freckles, hair, stubble, and athletic proportions."
+        },
+        {
+          "id": "brunch_corner",
+          "position": 3,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/04-brunch-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/04-brunch-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/04-brunch-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/04-brunch-corner.jpg",
+          "scene": "Brunch corner table, flannel over tee, looking up from menu with easy grin.",
+          "generationPrompt": "Same synthetic Irish American man, brunch corner table in New York, flannel over tee, looking up from menu with easy grin, attractive realistic dating app image, no readable menu text, no logos.",
+          "continuityNotes": "Same face and body proportions; keep it casual and unforced."
+        }
+      ]
+    },
+    {
+      "id": "nyc_nia_okafor_015",
+      "firstName": "Nia",
+      "lastName": "Okafor",
+      "displayName": "Nia Okafor",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1998-09-05",
+      "heightCm": 172,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Climate policy analyst",
+      "company": "Civic Futures",
+      "demographicBrief": "Nigerian American woman in her late twenties, tall, stylish, composed, and intellectually warm.",
+      "appearanceContinuityBrief": "172 cm tall slim build, rich dark skin, long box braids, almond eyes, high cheekbones, luminous smile.",
+      "personalityBrief": "Thoughtful, socially graceful, quietly ambitious, and excellent at turning a group into a real conversation.",
+      "marketFitBrief": "Adds policy, culture, friends, and polished host-demo texture to the NYC sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route with trees, a little city noise, and people who can talk about anything."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Convincing everyone the museum cafe is better than it looks."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am calm in chaos and very serious about good questions."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_museum_block",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/01-hero-museum-block.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/01-hero-museum-block.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/01-hero-museum-block.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/01-hero-museum-block.jpg",
+          "scene": "Museum block solo portrait, long coat, box braids, composed smile, full-body scale.",
+          "generationPrompt": "Photorealistic synthetic Nigerian American woman, late twenties, 172 cm tall slim build, rich dark skin, long box braids, almond eyes, high cheekbones, luminous smile, attractive New York museum block solo portrait, no logos, no text.",
+          "continuityNotes": "Keep long box braids, high cheekbones, tall slim proportions, and warm expression consistent."
+        },
+        {
+          "id": "policy_event",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "professional_event",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/02-policy-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/02-policy-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/02-policy-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/02-policy-event.jpg",
+          "scene": "Small policy event candid, emerald blouse, listening with a half-smile, warm room light.",
+          "generationPrompt": "Same synthetic Nigerian American woman, small policy event candid in New York, emerald blouse, listening with half-smile, warm room light, photorealistic dating app quality, no name tags readable, no logos.",
+          "continuityNotes": "Same braids, face, and tall posture; avoid conference-stock styling."
+        },
+        {
+          "id": "friends_brunch",
+          "position": 2,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/03-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/03-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/03-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/03-friends-brunch.jpg",
+          "scene": "Friends brunch with two blurred friends, Nia centered in focus, laughing naturally.",
+          "generationPrompt": "Same synthetic Nigerian American woman, friends brunch candid, two blurred friends secondary, she is centered and in focus, laughing naturally, realistic New York restaurant, no logos, no text.",
+          "continuityNotes": "Background friends must not compete with the profile subject; same person and braids."
+        },
+        {
+          "id": "museum_afternoon",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "museum",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/04-museum-afternoon.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/04-museum-afternoon.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/04-museum-afternoon.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/04-museum-afternoon.jpg",
+          "scene": "Museum afternoon candid, standing near sculpture, thoughtful smile and simple dress.",
+          "generationPrompt": "Same synthetic Nigerian American woman, museum afternoon candid near sculpture, simple dress, thoughtful smile, soft indoor light, attractive realistic dating profile photo, no readable labels, no logos.",
+          "continuityNotes": "Same tall build, braids, and facial features; keep the museum setting subtle."
+        }
+      ]
+    },
+    {
+      "id": "nyc_arjun_mehta_016",
+      "firstName": "Arjun",
+      "lastName": "Mehta",
+      "displayName": "Arjun Mehta",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1997-04-03",
+      "heightCm": 178,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Data scientist",
+      "company": "TransitAI",
+      "demographicBrief": "South Asian American man in his late twenties, lean, thoughtful, attractive, and quietly funny.",
+      "appearanceContinuityBrief": "178 cm lean build, warm brown skin, wavy black hair, clean-shaven face, dark eyes, reserved smile.",
+      "personalityBrief": "Analytical without being stiff, playful with close friends, and excellent at low-key weekend plans.",
+      "marketFitBrief": "Adds coffee, pickleball, bookstore, and tech-professional balance to the host sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route with one good skyline view and no debate about splitting the pace."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Quietly finding the best table and pretending it was luck."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I listen first and then say the thing everyone was thinking."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_east_village",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/01-hero-east-village.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/01-hero-east-village.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/01-hero-east-village.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/01-hero-east-village.jpg",
+          "scene": "East Village solo portrait, olive overshirt, reserved smile, soft afternoon light.",
+          "generationPrompt": "Photorealistic synthetic South Asian American man, late twenties, 178 cm lean build, warm brown skin, wavy black hair, clean-shaven face, dark eyes, attractive East Village solo portrait, dating app quality, no logos, no text.",
+          "continuityNotes": "Keep clean-shaven face, wavy black hair, dark eyes, and lean 178 cm build consistent."
+        },
+        {
+          "id": "pickleball_candid",
+          "position": 1,
+          "promptId": "weekendEnergy",
+          "categoryId": "activeLifestyle",
+          "activityId": "pickleball",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/02-pickleball-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/02-pickleball-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/02-pickleball-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/02-pickleball-candid.jpg",
+          "scene": "Pickleball court candid between games, paddle tucked under arm, laughing at a friend off-camera.",
+          "generationPrompt": "Same synthetic South Asian American man, pickleball court candid between games, paddle tucked under arm, laughing at a friend off camera, social active lifestyle, photorealistic, no logos, no text.",
+          "continuityNotes": "Same face and build; activity should feel casual and approachable."
+        },
+        {
+          "id": "coffee_laptop_closed",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/03-coffee-laptop-closed.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/03-coffee-laptop-closed.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/03-coffee-laptop-closed.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/03-coffee-laptop-closed.jpg",
+          "scene": "Coffee shop table with laptop closed, looking up with an amused half-smile.",
+          "generationPrompt": "Same synthetic South Asian American man, coffee shop table with laptop closed, looking up with amused half-smile, warm natural light, realistic dating profile image, no brand logos, no readable text.",
+          "continuityNotes": "Same person and hair; laptop should be incidental, not a work headshot."
+        },
+        {
+          "id": "bookstore_stack",
+          "position": 3,
+          "promptId": "captionThis",
+          "categoryId": "everydayCandid",
+          "activityId": "bookstore",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/04-bookstore-stack.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/04-bookstore-stack.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/04-bookstore-stack.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/04-bookstore-stack.jpg",
+          "scene": "Independent bookstore aisle, holding a small stack of books, shy smile.",
+          "generationPrompt": "Same synthetic South Asian American man, independent bookstore aisle, holding small stack of books, shy smile, natural indoor light, photorealistic, no readable book titles, no logos.",
+          "continuityNotes": "Keep same clean-shaven face, hair, and reserved warmth."
+        }
+      ]
+    },
+    {
+      "id": "nyc_grace_liu_017",
+      "firstName": "Grace",
+      "lastName": "Liu",
+      "displayName": "Grace Liu",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1995-10-14",
+      "heightCm": 164,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Art curator",
+      "company": "Independent",
+      "demographicBrief": "Chinese American woman around thirty, refined, warm, visually fluent, and socially confident.",
+      "appearanceContinuityBrief": "164 cm slim build, fair-light skin, sleek black bob, dark eyes, delicate features, composed smile.",
+      "personalityBrief": "Curious, culturally tuned-in, quietly funny, and good at turning a casual plan into something memorable.",
+      "marketFitBrief": "Adds gallery, food, and city-exploration texture to New York host demos.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route with a weird public sculpture and someone who will humor my detours."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding dumplings and explaining why the lighting is good."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am decisive about plans and gentle about people."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_gallery_block",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/01-hero-gallery-block.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/01-hero-gallery-block.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/01-hero-gallery-block.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/01-hero-gallery-block.jpg",
+          "scene": "Chelsea gallery block solo portrait, sleek bob, black coat, composed smile.",
+          "generationPrompt": "Photorealistic synthetic Chinese American woman, around thirty, 164 cm slim build, fair-light skin, sleek black bob, dark eyes, delicate features, composed smile, attractive Chelsea gallery block solo portrait, no logos, no text.",
+          "continuityNotes": "Keep sleek bob, delicate features, dark eyes, and 164 cm slim proportions consistent."
+        },
+        {
+          "id": "gallery_opening",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "gallery",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/02-gallery-opening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/02-gallery-opening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/02-gallery-opening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/02-gallery-opening.jpg",
+          "scene": "Gallery opening candid, silk blouse, looking toward an artwork with a small smile.",
+          "generationPrompt": "Same synthetic Chinese American woman, gallery opening candid, silk blouse, looking toward artwork with a small smile, warm indoor light, photorealistic dating app quality, no readable wall text, no logos.",
+          "continuityNotes": "Same bob and facial structure; keep the art secondary and non-branded."
+        },
+        {
+          "id": "dumpling_counter",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "socialDining",
+          "activityId": "dumplings",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/03-dumpling-counter.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/03-dumpling-counter.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/03-dumpling-counter.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/03-dumpling-counter.jpg",
+          "scene": "Casual dumpling counter lunch, cardigan, looking up from chopsticks with an amused smile.",
+          "generationPrompt": "Same synthetic Chinese American woman, casual dumpling counter lunch in New York, cardigan, looking up with amused smile, realistic candid dating photo, no readable menu text, no logos.",
+          "continuityNotes": "Same person, bob, and slim build; keep restaurant setting grounded."
+        },
+        {
+          "id": "city_steps",
+          "position": 3,
+          "promptId": "captionThis",
+          "categoryId": "travelOutdoor",
+          "activityId": "city_steps",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/04-city-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/04-city-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/04-city-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/04-city-steps.jpg",
+          "scene": "City steps after a weekend walk, trench coat, full-body framing, relaxed smile.",
+          "generationPrompt": "Same synthetic Chinese American woman, city steps weekend walk, trench coat, full-body framing, relaxed smile, photorealistic New York dating profile image, no logos, no text.",
+          "continuityNotes": "Same height and slim proportions should read clearly in the full-body frame."
+        }
+      ]
+    },
+    {
+      "id": "nyc_miles_anderson_018",
+      "firstName": "Miles",
+      "lastName": "Anderson",
+      "displayName": "Miles Anderson",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1996-02-20",
+      "heightCm": 182,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Documentary filmmaker",
+      "company": "Freelance",
+      "demographicBrief": "Black and white mixed American man in his late twenties, creative, warm, and quietly charismatic.",
+      "appearanceContinuityBrief": "182 cm lean build, light brown skin, loose dark curls, short beard, hazel-brown eyes, relaxed smile.",
+      "personalityBrief": "Observant, playful, emotionally intelligent, and good at making strangers comfortable on camera and off.",
+      "marketFitBrief": "Adds creative work, rooftop, and group-social variety to the NYC sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Golden-hour light, a route with a story, and no one checking their phone after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Asking one too many questions because everyone is more interesting than they think."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I can make plans feel easy without disappearing into them."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_fort_greene",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "park_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/01-hero-fort-greene.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/01-hero-fort-greene.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/01-hero-fort-greene.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/01-hero-fort-greene.jpg",
+          "scene": "Fort Greene park solo portrait, loose curls, denim jacket, relaxed half-smile.",
+          "generationPrompt": "Photorealistic synthetic Black and white mixed American man, late twenties, 182 cm lean build, light brown skin, loose dark curls, short beard, hazel-brown eyes, attractive Fort Greene park solo portrait, no logos, no text.",
+          "continuityNotes": "Keep loose curls, short beard, hazel-brown eyes, and lean 182 cm build consistent."
+        },
+        {
+          "id": "studio_edit",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "music_studio",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/02-studio-edit.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/02-studio-edit.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/02-studio-edit.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/02-studio-edit.jpg",
+          "scene": "Small audio-editing studio with headphones and monitor glow, focused expression.",
+          "generationPrompt": "Same synthetic mixed-race American man, small audio editing studio, headphones and subtle monitor glow, focused approachable expression, photorealistic creative dating profile image, no logos, no readable screen text.",
+          "continuityNotes": "Same face, curls, and beard; studio should feel independent, not celebrity."
+        },
+        {
+          "id": "rooftop_film_night",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "rooftop_dinner",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/03-rooftop-film-night.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/03-rooftop-film-night.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/03-rooftop-film-night.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/03-rooftop-film-night.jpg",
+          "scene": "Rooftop film night table, city lights behind, black tee and overshirt, candid smile.",
+          "generationPrompt": "Same synthetic mixed-race American man, rooftop film night table in New York, city lights behind, black tee and overshirt, candid smile, photorealistic, no logos, no text.",
+          "continuityNotes": "Same curls, beard, and proportions; keep light warm and believable."
+        },
+        {
+          "id": "group_walk_candid",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "group_walk",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/04-group-walk-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/04-group-walk-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/04-group-walk-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/04-group-walk-candid.jpg",
+          "scene": "Casual group walk candid with two friends blurred, Miles in clear focus laughing.",
+          "generationPrompt": "Same synthetic mixed-race American man, casual New York group walk candid, two friends blurred and secondary, he is in clear focus laughing, natural daylight, no logos, no text.",
+          "continuityNotes": "Friends are background only; Miles remains the profile subject."
+        }
+      ]
+    },
+    {
+      "id": "nyc_hannah_cohen_019",
+      "firstName": "Hannah",
+      "lastName": "Cohen",
+      "displayName": "Hannah Cohen",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1993-08-11",
+      "heightCm": 169,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Pediatric resident",
+      "company": "NYU Langone",
+      "demographicBrief": "Jewish American woman in her early thirties, bright, composed, kind, and athletic.",
+      "appearanceContinuityBrief": "169 cm fit build, fair skin, dark curly shoulder-length hair, brown eyes, warm expressive smile.",
+      "personalityBrief": "Practical, affectionate, funny under pressure, and always checking whether everyone ate.",
+      "marketFitBrief": "Adds high-trust medical-professional energy plus running, coffee, and picnic social proof.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Early enough that the city is quiet, late enough that coffee is open."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Asking three follow-ups and then ordering pancakes for the table."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I am steady when plans change."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_union_square",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/01-hero-union-square.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/01-hero-union-square.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/01-hero-union-square.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/01-hero-union-square.jpg",
+          "scene": "Union Square solo portrait, dark curls, denim jacket, warm open smile.",
+          "generationPrompt": "Photorealistic synthetic Jewish American woman, early thirties, 169 cm fit build, fair skin, dark curly shoulder-length hair, brown eyes, warm expressive smile, attractive Union Square solo portrait, no logos, no text.",
+          "continuityNotes": "Keep dark curls, brown eyes, fit build, and warm smile consistent across photos."
+        },
+        {
+          "id": "easy_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/02-easy-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/02-easy-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/02-easy-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/02-easy-run.jpg",
+          "scene": "Easy morning run along a tree-lined path, ponytail, light vest, relaxed smile.",
+          "generationPrompt": "Same synthetic Jewish American woman, easy morning run along a tree-lined New York path, ponytail, light running vest, relaxed smile, realistic dating app lifestyle photo, no logos, no text.",
+          "continuityNotes": "Running should be casual and social; same face, curls, and build."
+        },
+        {
+          "id": "coffee_window",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/03-coffee-window.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/03-coffee-window.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/03-coffee-window.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/03-coffee-window.jpg",
+          "scene": "Coffee window after shift, sweater, curls loose, tired but bright smile.",
+          "generationPrompt": "Same synthetic Jewish American woman, coffee window candid after work, sweater, dark curls loose, tired but bright smile, attractive realistic dating app photo, no hospital identifiers, no logos, no text.",
+          "continuityNotes": "Do not add scrubs or medical branding; same person and age."
+        },
+        {
+          "id": "park_picnic",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_picnic",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/04-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/04-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/04-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/04-park-picnic.jpg",
+          "scene": "Park picnic blanket with two friends blurred, Hannah pouring sparkling water, candid laugh.",
+          "generationPrompt": "Same synthetic Jewish American woman, park picnic with two blurred friends, pouring sparkling water, candid laugh, natural daylight, photorealistic, no logos, no text.",
+          "continuityNotes": "Hannah is the clear subject; friends should be soft and secondary."
+        }
+      ]
+    },
+    {
+      "id": "nyc_andre_baptiste_020",
+      "firstName": "Andre",
+      "lastName": "Baptiste",
+      "displayName": "Andre Baptiste",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1994-06-02",
+      "heightCm": 185,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Finance operations lead",
+      "company": "HarborPay",
+      "demographicBrief": "Haitian American man in his early thirties, tall, sharp, athletic, and relaxed.",
+      "appearanceContinuityBrief": "185 cm athletic build, dark brown skin, close fade haircut, clean-shaven face, strong jaw, bright smile.",
+      "personalityBrief": "Reliable, funny in a low-key way, competitive about games, and always checking that the plan is actually practical.",
+      "marketFitBrief": "Adds finance, rooftop, neighborhood, and running lifestyle coverage to the NYC host sales demo.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A clean route, a little friendly pressure, and the best breakfast within ten blocks."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Quietly becoming the person with the reservation plan."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I can handle logistics without making them everyone else's problem."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_financial_district",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/01-hero-financial-district.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/01-hero-financial-district.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/01-hero-financial-district.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/01-hero-financial-district.jpg",
+          "scene": "Financial District solo portrait, black knit polo, tall posture, bright smile.",
+          "generationPrompt": "Photorealistic synthetic Haitian American man, early thirties, 185 cm athletic build, dark brown skin, close fade haircut, clean-shaven face, strong jaw, bright smile, attractive New York solo portrait, no logos, no text.",
+          "continuityNotes": "Keep close fade, clean-shaven face, strong jaw, dark brown skin, and tall athletic build consistent."
+        },
+        {
+          "id": "rooftop_dinner",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "rooftop_dinner",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/02-rooftop-dinner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/02-rooftop-dinner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/02-rooftop-dinner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/02-rooftop-dinner.jpg",
+          "scene": "Rooftop dinner, linen overshirt, city lights, relaxed confident smile.",
+          "generationPrompt": "Same synthetic Haitian American man, rooftop dinner in New York, linen overshirt, city lights, relaxed confident smile, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same face, skin tone, and athletic build; keep nightlife polished but natural."
+        },
+        {
+          "id": "neighborhood_candid",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "everydayCandid",
+          "activityId": "neighborhood_candid",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/03-neighborhood-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/03-neighborhood-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/03-neighborhood-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/03-neighborhood-candid.jpg",
+          "scene": "Neighborhood stoop candid, hoodie under coat, laughing at someone off-camera.",
+          "generationPrompt": "Same synthetic Haitian American man, neighborhood stoop candid in New York, hoodie under coat, laughing at someone off camera, realistic casual dating profile image, no logos, no text.",
+          "continuityNotes": "Same close fade, clean-shaven face, and tall proportions."
+        },
+        {
+          "id": "riverside_run",
+          "position": 3,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/04-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/04-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/04-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/04-riverside-run.jpg",
+          "scene": "Riverside run candid, relaxed stride, dark running layer, easy smile.",
+          "generationPrompt": "Same synthetic Haitian American man, riverside run candid in New York, relaxed stride, dark running layer, easy smile, attractive realistic active lifestyle photo, no logos, no text.",
+          "continuityNotes": "Running is one hobby image only; same face and tall athletic build."
+        }
+      ]
+    },
+    {
+      "id": "nyc_isabella_romano_021",
+      "firstName": "Isabella",
+      "lastName": "Romano",
+      "displayName": "Isabella Romano",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1999-02-07",
+      "heightCm": 158,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Fashion buyer",
+      "company": "Mercer & Lane",
+      "demographicBrief": "Italian American woman in her late twenties, petite, stylish, social, and expressive.",
+      "appearanceContinuityBrief": "158 cm petite build, olive-fair skin, long chestnut hair, brown eyes, sharp brows, animated smile.",
+      "personalityBrief": "Fast-moving, warm, opinionated about restaurants, and great at making plans feel glamorous without being precious.",
+      "marketFitBrief": "Adds fashion, gallery, brunch, and professional-event variety to the New York persona library.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A cute route, comfortable shoes, and a group photo where everyone looks good."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making the table split appetizers because commitment is healthy."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I hype people up and I am honest about the outfit."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_nolita",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/01-hero-nolita.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/01-hero-nolita.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/01-hero-nolita.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/01-hero-nolita.jpg",
+          "scene": "Nolita solo portrait, petite frame, chestnut hair, tailored cropped jacket, animated smile.",
+          "generationPrompt": "Photorealistic synthetic Italian American woman, late twenties, 158 cm petite build, olive-fair skin, long chestnut hair, brown eyes, sharp brows, animated smile, attractive Nolita solo portrait, no logos, no text.",
+          "continuityNotes": "Keep petite scale, chestnut hair, sharp brows, brown eyes, and animated expression consistent."
+        },
+        {
+          "id": "gallery_mirror",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "cultureNightlife",
+          "activityId": "gallery",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/02-gallery-mirror.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/02-gallery-mirror.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/02-gallery-mirror.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/02-gallery-mirror.jpg",
+          "scene": "Gallery mirror installation, black dress, looking back at camera with playful smile.",
+          "generationPrompt": "Same synthetic Italian American woman, gallery mirror installation, black dress, looking back at camera with playful smile, warm indoor light, photorealistic, no readable wall text, no logos.",
+          "continuityNotes": "Same petite height and chestnut hair; do not create distorted or duplicated faces in mirror."
+        },
+        {
+          "id": "friends_brunch",
+          "position": 2,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/03-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/03-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/03-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/03-friends-brunch.jpg",
+          "scene": "Friends brunch toast, two friends blurred, Isabella in focus with bright smile.",
+          "generationPrompt": "Same synthetic Italian American woman, friends brunch toast, two friends blurred and secondary, she is in clear focus with bright smile, realistic New York restaurant, no logos, no text.",
+          "continuityNotes": "Background friends should not look like profile subjects; Isabella remains unmistakable."
+        },
+        {
+          "id": "buying_event",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "creativeWork",
+          "activityId": "professional_event",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/04-buying-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/04-buying-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/04-buying-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/04-buying-event.jpg",
+          "scene": "Fashion buying event candid, blazer over slip dress, laughing with someone just out of frame.",
+          "generationPrompt": "Same synthetic Italian American woman, fashion buying event candid, blazer over slip dress, laughing with someone just out of frame, stylish but natural, photorealistic, no logos, no readable badges.",
+          "continuityNotes": "Same face and petite proportions; avoid runway or celebrity styling."
+        }
+      ]
+    },
+    {
+      "id": "nyc_samir_khan_022",
+      "firstName": "Samir",
+      "lastName": "Khan",
+      "displayName": "Samir Khan",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1995-12-18",
+      "heightCm": 177,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Urban planner",
+      "company": "CityWorks",
+      "demographicBrief": "Pakistani American man around thirty, thoughtful, polished, outdoors-curious, and warm.",
+      "appearanceContinuityBrief": "177 cm average-lean build, medium brown skin, thick dark hair, short beard, dark eyes, gentle smile.",
+      "personalityBrief": "Civic-minded, funny in a quiet way, very good at routes, and happiest when a plan has good food nearby.",
+      "marketFitBrief": "Adds city-planning, travel/outdoor, coffee, and running variety to New York demos.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A smart route, one excellent view, and the feeling that the city is on our side."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Pointing out a street redesign nobody asked about but everyone ends up debating."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I make maps for people, literally and emotionally."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_brooklyn_heights",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "waterfront_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/01-hero-brooklyn-heights.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/01-hero-brooklyn-heights.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/01-hero-brooklyn-heights.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/01-hero-brooklyn-heights.jpg",
+          "scene": "Brooklyn Heights waterfront solo portrait, wool overshirt, gentle smile, skyline behind.",
+          "generationPrompt": "Photorealistic synthetic Pakistani American man, around thirty, 177 cm average-lean build, medium brown skin, thick dark hair, short beard, dark eyes, gentle smile, attractive Brooklyn Heights waterfront solo portrait, no logos, no text.",
+          "continuityNotes": "Keep short beard, thick dark hair, gentle smile, and 177 cm average-lean build consistent."
+        },
+        {
+          "id": "bridge_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "categoryId": "activeLifestyle",
+          "activityId": "running",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/02-bridge-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/02-bridge-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/02-bridge-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/02-bridge-run.jpg",
+          "scene": "Easy bridge run candid, light running jacket, relaxed expression, city morning light.",
+          "generationPrompt": "Same synthetic Pakistani American man, easy bridge run candid in New York, light running jacket, relaxed expression, city morning light, photorealistic dating app quality, no logos, no text.",
+          "continuityNotes": "Same face, beard, and build; keep running low-key and lifestyle-oriented."
+        },
+        {
+          "id": "coffee_map",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "coffee",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/03-coffee-map.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/03-coffee-map.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/03-coffee-map.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/03-coffee-map.jpg",
+          "scene": "Coffee shop table with a small notebook map sketch, looking up with a smile.",
+          "generationPrompt": "Same synthetic Pakistani American man, coffee shop table with small notebook map sketch, looking up with a smile, warm natural light, realistic dating profile image, no readable text, no logos.",
+          "continuityNotes": "Same person and beard; map sketch should be abstract and not readable."
+        },
+        {
+          "id": "hudson_day_trip",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "travelOutdoor",
+          "activityId": "day_trip",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/04-hudson-day-trip.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/04-hudson-day-trip.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/04-hudson-day-trip.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/04-hudson-day-trip.jpg",
+          "scene": "Hudson Valley day-trip overlook, casual jacket, relaxed smile, natural landscape behind.",
+          "generationPrompt": "Same synthetic Pakistani American man, Hudson Valley day-trip overlook, casual jacket, relaxed smile, natural landscape behind, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same face and average-lean proportions; keep the image plausible as a weekend photo."
+        }
+      ]
+    },
+    {
+      "id": "nyc_taylor_reed_023",
+      "firstName": "Taylor",
+      "lastName": "Reed",
+      "displayName": "Taylor Reed",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-06-26",
+      "heightCm": 174,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Creative director",
+      "company": "Noon House",
+      "demographicBrief": "Black American woman in her late twenties, tall, elegant, creative, and charismatic.",
+      "appearanceContinuityBrief": "174 cm tall slim build, deep brown skin, close-cropped natural hair, almond eyes, sculpted cheekbones, confident smile.",
+      "personalityBrief": "High taste without being cold, funny in a sharp way, and good at making a room feel more interesting.",
+      "marketFitBrief": "Adds creative leadership, music-studio, group-social, and culture coverage to the host sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A city route with good light and people who can keep a conversation moving."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding the corner table and turning strangers into a group chat."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I know when to lead and when to let things breathe."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_dumbo",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/01-hero-dumbo.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/01-hero-dumbo.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/01-hero-dumbo.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/01-hero-dumbo.jpg",
+          "scene": "DUMBO solo portrait, close-cropped hair, structured coat, confident smile.",
+          "generationPrompt": "Photorealistic synthetic Black American woman, late twenties, 174 cm tall slim build, deep brown skin, close-cropped natural hair, almond eyes, sculpted cheekbones, confident smile, attractive DUMBO solo portrait, no logos, no text.",
+          "continuityNotes": "Keep close-cropped hair, sculpted cheekbones, tall slim build, and confident smile consistent."
+        },
+        {
+          "id": "friends_brunch",
+          "position": 1,
+          "promptId": "favoritePeople",
+          "categoryId": "friendsGroup",
+          "activityId": "friends_brunch",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/02-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/02-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/02-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/02-friends-brunch.jpg",
+          "scene": "Friends brunch at a long table, two friends blurred, Taylor in focus laughing.",
+          "generationPrompt": "Same synthetic Black American woman, friends brunch at a long table, two friends blurred and secondary, she is in clear focus laughing, warm restaurant light, photorealistic, no logos, no text.",
+          "continuityNotes": "Taylor remains unmistakably the profile subject; background friends are non-identifiable."
+        },
+        {
+          "id": "studio_session",
+          "position": 2,
+          "promptId": "notRunning",
+          "categoryId": "creativeWork",
+          "activityId": "music_studio",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/03-studio-session.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/03-studio-session.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/03-studio-session.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/03-studio-session.jpg",
+          "scene": "Small music studio session, headphones on table, Taylor reviewing notes with a half-smile.",
+          "generationPrompt": "Same synthetic Black American woman, small music studio session, headphones on table, reviewing notes with a half-smile, creative director energy, photorealistic dating profile image, no readable text, no logos.",
+          "continuityNotes": "Same close-cropped hair, face, and tall posture; avoid celebrity or album-cover styling."
+        },
+        {
+          "id": "museum_evening",
+          "position": 3,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "museum",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/04-museum-evening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/04-museum-evening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/04-museum-evening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/04-museum-evening.jpg",
+          "scene": "Museum evening event, structured black dress, warm light, confident relaxed smile.",
+          "generationPrompt": "Same synthetic Black American woman, museum evening event, structured black dress, warm light, confident relaxed smile, attractive realistic dating app photo, no readable labels, no logos.",
+          "continuityNotes": "Same person and proportions; keep event polished but candid."
+        }
+      ]
+    },
+    {
+      "id": "nyc_victor_alvarez_024",
+      "firstName": "Victor",
+      "lastName": "Alvarez",
+      "displayName": "Victor Alvarez",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-09-29",
+      "heightCm": 179,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Restaurant general manager",
+      "company": "East River Hospitality",
+      "demographicBrief": "Dominican American man in his early thirties, warm, handsome, socially fluent, and polished.",
+      "appearanceContinuityBrief": "179 cm sturdy athletic build, medium tan skin, short black curls, trimmed beard, dark eyes, broad smile.",
+      "personalityBrief": "Generous, direct, excellent with logistics, and usually the person who knows everyone by name.",
+      "marketFitBrief": "Adds restaurant, nightlife, and weekend city-walk realism to the host sales catalog.",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route that ends where the coffee is strong and the staff knows someone."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making sure nobody leaves hungry."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "I handle the details and still make it feel easy."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_lower_east_side",
+          "position": 0,
+          "promptId": "captionThis",
+          "categoryId": "clearSoloPortrait",
+          "activityId": "street_portrait",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/01-hero-lower-east-side.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/01-hero-lower-east-side.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/01-hero-lower-east-side.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/01-hero-lower-east-side.jpg",
+          "scene": "Lower East Side solo portrait, short curls, trimmed beard, camp collar shirt, broad smile.",
+          "generationPrompt": "Photorealistic synthetic Dominican American man, early thirties, 179 cm sturdy athletic build, medium tan skin, short black curls, trimmed beard, dark eyes, broad smile, attractive Lower East Side solo portrait, no logos, no text.",
+          "continuityNotes": "Keep short curls, trimmed beard, dark eyes, tan skin, and sturdy athletic build consistent."
+        },
+        {
+          "id": "restaurant_service",
+          "position": 1,
+          "promptId": "notRunning",
+          "categoryId": "socialDining",
+          "activityId": "restaurant",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/02-restaurant-service.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/02-restaurant-service.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/02-restaurant-service.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/02-restaurant-service.jpg",
+          "scene": "Restaurant service candid near a host stand, sleeves rolled, warm smile, no visible branding.",
+          "generationPrompt": "Same synthetic Dominican American man, restaurant service candid near a host stand, sleeves rolled, warm smile, polished but realistic, no visible branding, no readable menus, no logos.",
+          "continuityNotes": "Same face and beard; restaurant context should be social and dateable, not a corporate promo."
+        },
+        {
+          "id": "jazz_bar",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "categoryId": "cultureNightlife",
+          "activityId": "jazz_bar",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/03-jazz-bar.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/03-jazz-bar.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/03-jazz-bar.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/03-jazz-bar.jpg",
+          "scene": "Jazz bar table, dark green shirt, relaxed half-smile, low warm light.",
+          "generationPrompt": "Same synthetic Dominican American man, small New York jazz bar table, dark green shirt, relaxed half-smile, low warm light, photorealistic dating app image, no logos, no text.",
+          "continuityNotes": "Same short curls, beard, and broad smile; avoid nightclub-staged look."
+        },
+        {
+          "id": "city_steps_weekend",
+          "position": 3,
+          "promptId": "captionThis",
+          "categoryId": "travelOutdoor",
+          "activityId": "city_steps",
+          "assetStatus": "planned",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/04-city-steps-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/04-city-steps-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/04-city-steps-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/04-city-steps-weekend.jpg",
+          "scene": "Weekend city steps walk, casual jacket, full-body framing, broad natural smile.",
+          "generationPrompt": "Same synthetic Dominican American man, weekend city steps walk in New York, casual jacket, full-body framing, broad natural smile, attractive realistic dating profile photo, no logos, no text.",
+          "continuityNotes": "Same build and face; keep the outdoor setting relaxed and believable."
+        }
+      ]
+    }
+  ]
+}

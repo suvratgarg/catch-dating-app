@@ -11,6 +11,8 @@ import 'package:catch_dating_app/clubs/presentation/create/widgets/club_details_
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -229,7 +231,13 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(_restoredDraft ? 'Draft updated' : 'Draft saved'),
+        content: Text(
+          _restoredDraft ? 'Draft updated' : 'Draft saved',
+          style: CatchTextStyles.labelL(
+            context,
+            color: CatchTokens.of(context).bg,
+          ),
+        ),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -307,7 +315,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               totalSteps: activeSteps.length,
               onBack: _back,
             ),
-            const SizedBox(height: 4),
+            gapH4,
             Expanded(
               child: PageView(
                 controller: _pageController,

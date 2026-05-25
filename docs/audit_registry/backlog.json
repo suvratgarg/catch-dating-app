@@ -1,6 +1,6 @@
 {
-  "version": "2.6.5",
-  "updated": "2026-05-22",
+  "version": "2.6.13",
+  "updated": "2026-05-25",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -89,30 +89,145 @@
     {
       "id": "CONTRACT-DART-GEN-001",
       "title": "Generate Dart CallableRequest classes from contracts/",
-      "status": "partially_complete",
+      "status": "watch",
       "area": "contracts,repositories",
       "priority": "low",
       "rules": ["CODEGEN-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "First migration pass complete. tool/contracts/generate_schema_contracts.mjs now emits 31 typed Dart callable request classes from contracts/callables/ (and the update_user_profile patch) to lib/core/schema_contracts/generated/callable_request_dtos.g.dart. Each emitted class has named-parameter ctor, typed fields, and a toJson() validated against its source schema by test/core/callable_dto_contracts_test.dart. Feature-level *_callable_dtos.dart files now re-export the generated classes for stable import paths; hand-written classes only remain for the cases below. Remaining hand-written DTOs and why: (a) UpdateUserProfileCallableRequest — accepts arbitrary Map<String, dynamic> with recursive Firestore Timestamp → millis conversion the generator can't synthesize; (b) CreateClubCallableRequest, UpdateClubCallableRequest — hostDefaults / patch shape have nested-typed objects that should get typed nested classes rather than Map<String, Object?>; (c) CreateEventCallableRequest, UpdateEventCallableRequest, plus the nested EventDetailsCallableDto + EventConstraintsCallableDto — fromEvent/fromDomain adapter factories that walk the Event domain object and convert DateTime → millis; (d) PlacesAutocompleteCallableRequest — flattens LocationCoordinate? bias into latitude/longitude during serialization; (e) EventBookingCallableRequest, CreateRazorpayOrderCallableRequest — no payload schemas in contracts/callables/ yet (only the verify side has one); (f) response classes and RazorpayOrderCallableResponseFormatException — response decoders are not yet in the generator's scope. Next step (when picked up): add contracts/callables/{event_booking,create_razorpay_order}_payload.schema.json, emit typed nested classes for nested objects, and add a Timestamp-aware emit mode for the patch and create-event paths.",
+      "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. The generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, and typed ClubHostDefaults serialization. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, UpdateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code through feature-local re-exports. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: UpdateUserProfileCallableRequest wraps the generated UpdateUserProfilePatch; EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; update callable fields remain dynamic patch maps; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
         "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
         "lib/clubs/data/club_callable_dtos.dart",
         "lib/events/data/event_callable_dtos.dart",
+        "lib/events/data/event_callable_adapters.dart",
         "lib/payments/data/payment_callable_dtos.dart",
         "lib/reviews/data/review_callable_dtos.dart",
+        "lib/reviews/data/review_callable_adapters.dart",
         "lib/safety/data/safety_callable_dtos.dart",
         "lib/locations/data/places_callable_dtos.dart",
         "lib/user_profile/data/user_profile_callable_dtos.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "lib/clubs/domain/update_club_patch.dart",
         "test/core/callable_dto_contracts_test.dart",
+        "test/core/update_user_profile_patch_test.dart",
+        "test/core/update_club_patch_test.dart",
         "contracts/callables/",
         "contracts/patches/update_user_profile.schema.json"
       ]
     },
     {
+      "id": "CONTRACT-DART-GEN-002",
+      "title": "Generate Dart freezed domain classes from contracts/firestore/",
+      "status": "watch",
+      "area": "contracts,domain",
+      "priority": "low",
+      "rules": ["CODEGEN-001"],
+      "summary": "32 freezed domain classes in lib/**/domain/ hand-mirror their JSON Schemas. test/core/domain_fixture_parity_test.dart catches Class.fromJson(fixture) failures but the classes themselves remain parallel sources — a schema field added today produces no Dart compile error. Build a generator that emits json_serializable annotations, @TimestampConverter, Dart enum types, and equality semantics, one Dart file per schema. Hand-written derived getters (Event.distanceMiles, Club.isOwnedBy, etc.) move to extension files. Done when no hand-written *.dart exists for the 32 covered classes (only _$Foo parts) and adding a schema field auto-extends the Dart class without manual edits. Multi-day epic; revisit when the team has bandwidth for a clean sweep.",
+      "paths": [
+        "tool/contracts/generate_schema_contracts.mjs",
+        "contracts/firestore/",
+        "lib/events/domain/event.dart",
+        "lib/clubs/domain/club.dart",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/public_profile/domain/public_profile.dart",
+        "lib/matches/domain/match.dart",
+        "lib/chats/domain/chat_message.dart",
+        "lib/swipes/domain/swipe.dart",
+        "test/core/domain_fixture_parity_test.dart"
+      ]
+    },
+    {
+      "id": "FIRESTORE-OVERLAY-RETIRE-001",
+      "title": "Retire functions/src/shared/firestore.ts Admin SDK Timestamp overlay",
+      "status": "queued",
+      "area": "contracts,functions",
+      "priority": "low",
+      "rules": ["CODEGEN-001"],
+      "summary": "Implemented 2026-05-25. The Dart-derived Functions overlay is retired: tool/contracts/generate_schema_contracts.mjs now emits functions/src/shared/generated/firestoreAdminTypes.ts as the schema-derived Admin SDK Timestamp projection, all Functions imports moved from ../shared/firestore to ../shared/generated/firestoreAdminTypes, functions/src/shared/firestore.ts was deleted, and the old Dart generator plus firestore_ts_overlay.json were removed. tool/check_data_contract.sh now relies on the schema generator check, and check_schema_type_boundaries.mjs guards against reintroducing the deleted overlay or legacy imports. Keep on watch when adding Firestore schemas or Admin SDK document type imports.",
+      "paths": [
+        "tool/contracts/generate_schema_contracts.mjs",
+        "functions/src/shared/generated/firestoreAdminTypes.ts",
+        "tool/contracts/check_firestore_contract.mjs",
+        "tool/contracts/check_schema_type_boundaries.mjs",
+        "tool/check_data_contract.sh",
+        "functions/package.json",
+        "docs/data_contracts.md",
+        "functions/README.md"
+      ]
+    },
+    {
+      "id": "STORAGE-UPLOAD-CONFORMANCE-001",
+      "title": "Enforce contracts/storage size + content-type limits client-side",
+      "status": "watch",
+      "area": "image_uploads,contracts",
+      "priority": "medium",
+      "rules": ["EXTERNAL-SIDE-EFFECT-001"],
+      "summary": "Implemented 2026-05-25. ImageUploadRepository now preflights all six client upload helpers (uploadUserPhoto, uploadUserProfilePhoto, uploadClubCover, uploadClubProfileImage, uploadEventPhoto, uploadChatImage) against mirrored contracts/storage content-type and max-byte rules before calling Storage putData. Oversize and non-image failures throw StorageUploadPreflightException with the failed constraint and storage contract resource. uploadEventPhoto now writes under the event_images contract path clubs/{clubId}/events/{eventId}/{fileName}. test/image_uploads/image_upload_repository_test.dart covers valid uploads plus oversize and wrong-content-type rejections for every helper, reading x-storage-max-bytes and x-storage-content-type-pattern from the storage schema files rather than hard-coded test constants. Keep on watch when adding new storage schemas or upload helpers.",
+      "paths": [
+        "lib/image_uploads/data/image_upload_repository.dart",
+        "lib/exceptions/app_exception.dart",
+        "contracts/storage/",
+        "test/image_uploads/"
+      ]
+    },
+    {
+      "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
+      "title": "Retire legacy profile photo arrays after app-version floor clears",
+      "status": "implemented_needs_remote_apply",
+      "area": "user_profile,public_profile,migrations",
+      "priority": "medium",
+      "rules": ["FIRESTORE-RULES-TEST-001"],
+      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. contracts/migrations/profile_photos_storage.json is at currentPhase: retire_legacy_arrays_local. contracts/firestore/users.schema.json, public_profiles.schema.json, update_user_profile.schema.json, Firestore rules, Dart profile/public-profile models, profile upload/update paths, Functions projection/update/moderation/deletion paths, and validators now treat profilePhotos as the canonical field and no longer write photoUrls/photoThumbnailUrls/photoPrompts. tool/data/retire_legacy_profile_fields.mjs owns dry-run-first dev -> staging -> prod cleanup; remote document cleanup is still pending explicit environment apply.",
+      "paths": [
+        "contracts/migrations/profile_photos_storage.json",
+        "contracts/firestore/users.schema.json",
+        "contracts/firestore/public_profiles.schema.json",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/public_profile/domain/public_profile.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "functions/src/profiles/syncPublicProfile.ts",
+        "functions/src/profiles/updateUserProfile.ts",
+        "tool/data/validate_firestore_data.mjs"
+      ]
+    },
+    {
+      "id": "SWIPES-RENAME-CONTINUE-001",
+      "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
+      "status": "implemented_needs_remote_cleanup",
+      "area": "swipes,firestore,migrations",
+      "priority": "medium",
+      "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
+      "summary": "Implemented locally 2026-05-25. contracts/migrations/swipes_to_profile_decisions.json is at currentPhase: retire_old_local. Dart SwipeRepository, Functions onSwipeCreated trigger metadata/tests, Firestore rules, direct-write contracts, demo/reset tooling, and relationship cleanup tests now use profileDecisions/{uid}/outgoing/{targetId}; swipes/ remains only in legacy migration/backfill validators and historical docs. Remote cleanup of any old swipes data remains a separate destructive environment operation after validation with tool/data/validate_profile_decision_migration.mjs.",
+      "paths": [
+        "contracts/migrations/swipes_to_profile_decisions.json",
+        "tool/data/validate_profile_decision_migration.mjs",
+        "tool/data/backfill_profile_decisions.mjs",
+        "firestore.rules",
+        "lib/swipes/data/swipe_repository.dart",
+        "functions/src/matching/onSwipeCreated.ts"
+      ]
+    },
+    {
+      "id": "PROFILE-RUN-FIELDS-MIGRATE-001",
+      "title": "Migrate run-specific profile fields to activity-generic shape",
+      "status": "implemented_needs_remote_apply",
+      "area": "user_profile,onboarding,swipes",
+      "priority": "low",
+      "rules": ["CONTROLLER-BOUNDARY-001"],
+      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. contracts/embedded/activity_preferences.schema.json defines the nested object; users/publicProfiles schemas, UpdateUserProfilePatch, Firestore rules, Dart UserProfile/PublicProfile models, onboarding/profile edit writes, Functions profile projection/update/readiness paths, validators, fixtures, demo data, and tests now use activityPreferences.running. Dart fromJson retains legacy root-field tolerance. tool/data/retire_legacy_profile_fields.mjs can backfill nested running preferences and delete root pace/preferred/runPreferencesVersion fields per environment; remote cleanup is pending explicit apply.",
+      "paths": [
+        "contracts/firestore/users.schema.json",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
+        "lib/onboarding/presentation/onboarding_controller.dart",
+        "lib/swipes/presentation/filters_controller.dart",
+        "tool/data/"
+      ]
+    },
+    {
       "id": "CALLABLE-DTO-001",
       "title": "Introduce typed Dart DTOs for callable Function boundaries",
-      "status": "in_progress",
+      "status": "watch",
       "area": "repositories,functions",
       "priority": "high",
       "rules": [
@@ -121,14 +236,16 @@
         "FIRESTORE-RULES-TEST-001",
         "CODEGEN-001"
       ],
-      "summary": "Replace high-friction ad hoc callable maps and response casts with feature-local Dart DTOs. Events, clubs, payments, reviews, safety, places, and user-profile callables now have feature-local Dart DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. The remaining drift is that Dart request classes are still hand-written rather than generated from contracts/callables/ — see CONTRACT-DART-GEN-001 for the generation work.",
+      "summary": "Replace high-friction ad hoc callable maps and response casts with feature-local Dart DTOs. Events, clubs, payments, reviews, safety, places, and user-profile callables now have feature-local Dart DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. Profile inline editors pass typed UpdateUserProfilePatch objects through ProfileEditController instead of constructing ad hoc field maps; the Razorpay order / free-event signup Functions handlers validate against their dedicated generated payload schemas instead of the generic EventIdCallablePayload helper; and SuvbotRepository tests validate both requestSuvbotDemoOperation payloads and listSuvbotDemoActions responses against generated schemas. Most request wrapper classes now come from lib/core/schema_contracts/generated/callable_request_dtos.g.dart and feature-local files re-export them; create-event and create-club generated requests own typed nested/domain object serialization. Hand-written code remains only where it adds boundary behavior the generator intentionally does not synthesize, such as invite-code normalization, location-bias flattening, and UpdateUserProfileCallableRequest.fromPatch. Keep on watch when adding new callable schemas.",
       "paths": [
         "lib/events/data/event_repository.dart",
         "lib/events/data/event_callable_dtos.dart",
+        "lib/events/data/event_callable_adapters.dart",
         "lib/clubs/data/club_callable_dtos.dart",
         "lib/payments/data/payment_repository.dart",
         "lib/payments/data/payment_callable_dtos.dart",
         "lib/reviews/data/review_callable_dtos.dart",
+        "lib/reviews/data/review_callable_adapters.dart",
         "lib/safety/data/safety_callable_dtos.dart",
         "lib/user_profile/data/user_profile_callable_dtos.dart",
         "lib/locations/data/places_callable_dtos.dart",
@@ -173,7 +290,7 @@
         "CONTROLLER-BOUNDARY-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "Shared profile validation now covers name, required display name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Onboarding initializes `displayName` from first name and explains that first name starts the public display name while last name stays private. Edit profile exposes `Display name` as the first editable About field and keeps identity fields (date of birth and gender) readonly. Public profile rendering prefers `displayName`, then first name, then legacy full-name first token, so last name is not shown publicly. Profile inline editors now save before collapsing and show mutation loading/error feedback. All nullable single-choice edit fields have no-selected-chip coverage when empty; domain decode preserves omitted optional enum fields as null; `ChipField` has a direct empty single-select rendering test; immediate-save single-choice editors show a visible saving state; and failed single-choice saves clear optimistic pending selection before showing inline error. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
+      "summary": "Shared profile validation now covers name, required display name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Onboarding initializes `displayName` from first name and explains that first name starts the public display name while last name stays private. Edit profile exposes `Display name` as the first editable About field and keeps identity fields (date of birth and gender) readonly. Public profile rendering prefers `displayName`, then first name, then legacy full-name first token, so last name is not shown publicly. Profile inline editors now save before collapsing and show mutation loading/error feedback, and their save boundary is typed with UpdateUserProfilePatch instead of ad hoc field maps. All nullable single-choice edit fields have no-selected-chip coverage when empty; domain decode preserves omitted optional enum fields as null; `ChipField` has a direct empty single-select rendering test; immediate-save single-choice editors show a visible saving state; failed single-choice saves clear optimistic pending selection before showing inline error; and expected save-failure widget tests override a silent ErrorLogger so caught fake repository failures do not clutter CI output with stack traces. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
       "paths": [
         "lib/onboarding/presentation/onboarding_screen.dart",
         "lib/onboarding/presentation/onboarding_controller.dart",
@@ -190,7 +307,7 @@
         "lib/public_profile/domain/public_profile.dart",
         "functions/src/profiles/syncPublicProfile.ts",
         "functions/src/profiles/updateUserProfile.ts",
-        "functions/src/shared/firestore.ts",
+        "functions/src/shared/generated/firestoreAdminTypes.ts",
         "firestore.rules",
         "functions/test/firestore.rules.test.cjs",
         "test/profile/profile_widgets_test.dart",
@@ -292,7 +409,7 @@
         "docs/backend_operation_catalog.md",
         "docs/data_contracts.md",
         "tool/contracts/firestore_contract.json",
-        "tool/contracts/generate_firestore_types.dart",
+        "tool/contracts/generate_schema_contracts.mjs",
         "firestore.rules",
         "functions/test/firestore.rules.test.cjs",
         "functions/src/shared/notifications.ts",

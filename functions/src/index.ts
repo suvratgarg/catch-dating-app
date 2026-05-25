@@ -13,6 +13,7 @@ export {
   joinEventWaitlist,
   leaveEventWaitlist,
 } from "./events/joinEventWaitlist";
+export {decideEventJoinRequest} from "./events/decideEventJoinRequest";
 export {markEventAttendance} from "./events/markEventAttendance";
 export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
 export {
@@ -53,6 +54,7 @@ export {
 } from "./marketplace/eventSuccessScorecards";
 export {
   generateEventSuccessPods,
+  overrideEventSuccessGroups,
 } from "./eventSuccess/generateEventSuccessPods";
 export {
   generateEventSuccessRotations,

@@ -272,12 +272,12 @@ class _TargetAttendeeControl extends StatelessWidget {
               children: [
                 Text(
                   'Target attendees',
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH2,
                 Text(
                   'Recommended range: $recommendedMin-$recommendedMax',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -316,7 +316,7 @@ class _ReadinessIssues extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Before launch', style: CatchTextStyles.titleS(context)),
+          Text('Before launch', style: CatchTextStyles.sectionTitle(context)),
           gapH6,
           for (final issue in issues)
             Padding(
@@ -329,7 +329,7 @@ class _ReadinessIssues extends StatelessWidget {
                   Expanded(
                     child: Text(
                       issue,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                 ],
@@ -364,7 +364,10 @@ class _SetupSectionTitle extends StatelessWidget {
       children: [
         Text(title, style: CatchTextStyles.titleL(context)),
         gapH4,
-        Text(subtitle, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+        Text(
+          subtitle,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
       ],
     );
   }
@@ -383,7 +386,7 @@ class _UnsavedChangesPill extends StatelessWidget {
         gapW6,
         Text(
           'Unsaved changes',
-          style: CatchTextStyles.bodyS(context, color: t.warning),
+          style: CatchTextStyles.supporting(context, color: t.warning),
         ),
       ],
     );
@@ -416,11 +419,11 @@ class _NoticeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.titleS(context)),
+                Text(title, style: CatchTextStyles.sectionTitle(context)),
                 gapH4,
                 Text(
                   body,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -440,7 +443,7 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       appErrorMessage(error, context: AppErrorContext.event),
-      style: CatchTextStyles.bodyS(
+      style: CatchTextStyles.supporting(
         context,
         color: CatchTokens.of(context).danger,
       ),

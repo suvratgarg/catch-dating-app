@@ -67,7 +67,7 @@ class _CompatibilityQuestionnaireSectionState
             children: [
               Text(
                 'A few quick questions',
-                style: CatchTextStyles.titleS(context),
+                style: CatchTextStyles.sectionTitle(context),
               ),
               const _PrivacyBadge(_PrivacyAudience.catchPrivate),
               CatchBadge(
@@ -92,7 +92,7 @@ class _CompatibilityQuestionnaireSectionState
             rankingOn
                 ? 'Your answers can shape reveal clues and help guide pairings. Hosts never see individual answers.'
                 : 'Your answers can shape reveal clues. Hosts never see individual answers, and this event will not use them for pairings.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
           _QuestionProgressRail(
@@ -153,7 +153,7 @@ class _CompatibilityQuestionnaireSectionState
                 (mutation as MutationError).error,
                 context: AppErrorContext.event,
               ),
-              style: CatchTextStyles.bodyS(context, color: t.danger),
+              style: CatchTextStyles.supporting(context, color: t.danger),
             ),
             gapH10,
           ],
@@ -259,27 +259,35 @@ class _QuestionProgressRail extends StatelessWidget {
         ),
         gapW10,
         for (var index = 0; index < questionCount; index++) ...[
-          InkWell(
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            onTap: () => onSelect(index),
-            child: Container(
-              width: 28,
-              height: 28,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: index == activeIndex
-                    ? t.primary
-                    : index < answeredCount
-                    ? t.primarySoft
-                    : t.surface,
-                border: Border.all(color: t.line),
-              ),
-              child: Text(
-                '${index + 1}',
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: index == activeIndex ? t.surface : t.ink2,
+          Tooltip(
+            message: 'Question ${index + 1}',
+            child: Semantics(
+              button: true,
+              selected: index == activeIndex,
+              label: 'Question ${index + 1}',
+              child: InkWell(
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                onTap: () => onSelect(index),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: index == activeIndex
+                        ? t.primary
+                        : index < answeredCount
+                        ? t.primarySoft
+                        : t.surface,
+                    border: Border.all(color: t.line),
+                  ),
+                  child: Text(
+                    '${index + 1}',
+                    style: CatchTextStyles.labelS(
+                      context,
+                      color: index == activeIndex ? t.surface : t.ink2,
+                    ),
+                  ),
                 ),
               ),
             ),

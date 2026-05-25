@@ -5,76 +5,55 @@ import {fileURLToPath} from "node:url";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
-const contractRoot = path.join(repoRoot, "contracts");
 const overlayPath = path.join(toolDir, "firestore_ts_overlay.json");
-const firestoreFacadePath = path.join(
+const legacyFirestoreFacadePath = path.join(
   repoRoot,
   "functions/src/shared/firestore.ts"
 );
+const firestoreAdminTypesPath = path.join(
+  repoRoot,
+  "functions/src/shared/generated/firestoreAdminTypes.ts"
+);
 
-const overlay = readJson(overlayPath);
-const schemaTitles = loadSchemaTitles(contractRoot);
-const exceptions = overlay.schemaOwnedExceptions ?? {};
 const errors = [];
-const requiredExceptionKeys = new Set();
 
-for (const [interfaceName, fields] of Object.entries(
-  overlay.extraFields ?? {}
-)) {
-  for (const field of fields) {
-    if (!field || typeof field !== "object") continue;
-    if (isFieldOverride(interfaceName, field.name)) {
-      requiredExceptionKeys.add(`extraFields.${interfaceName}.${field.name}`);
-    }
-  }
-}
-
-for (const [interfaceName, fields] of Object.entries(
-  overlay.fieldOverrides ?? {}
-)) {
-  for (const fieldName of fields) {
-    requiredExceptionKeys.add(`fieldOverrides.${interfaceName}.${fieldName}`);
-  }
-}
-
-for (const extraInterface of overlay.extraInterfaces ?? []) {
-  if (!extraInterface || typeof extraInterface !== "object") continue;
-  const name = extraInterface.name;
-  if (schemaTitles.has(name)) {
-    requiredExceptionKeys.add(`extraInterfaces.${name}`);
-  }
-}
-
-for (const key of requiredExceptionKeys) {
-  const reason = exceptions[key];
-  if (typeof reason !== "string" || reason.trim().length < 20) {
-    errors.push(
-      `firestore_ts_overlay.json schema-owned exception ${key} needs a ` +
-        "specific reason."
-    );
-  }
-}
-
-for (const key of Object.keys(exceptions)) {
-  if (!requiredExceptionKeys.has(key)) {
-    errors.push(
-      `firestore_ts_overlay.json schemaOwnedExceptions contains unused key ${key}`
-    );
-  }
-}
-
-const facade = fs.readFileSync(firestoreFacadePath, "utf8");
-const facadeLower = facade.toLowerCase();
-// The preamble must position this file as a parallel projection of JSON
-// Schema-owned shape, not as the canonical source. Either phrasing works.
-if (
-  !facadeLower.includes("admin sdk timestamp overlay") &&
-  !facadeLower.includes("transitional")
-) {
+if (fs.existsSync(overlayPath)) {
   errors.push(
-    "functions/src/shared/firestore.ts must describe itself as an Admin SDK " +
-      "Timestamp overlay (or transitional facade) so new code does not treat " +
-      "it as canonical schema truth."
+    "tool/contracts/firestore_ts_overlay.json should not exist; Admin SDK " +
+      "types now come from generate_schema_contracts.mjs."
+  );
+}
+
+if (fs.existsSync(legacyFirestoreFacadePath)) {
+  errors.push(
+    "functions/src/shared/firestore.ts should not exist; import " +
+      "schema-derived Admin SDK types from " +
+      "functions/src/shared/generated/firestoreAdminTypes.ts."
+  );
+}
+
+if (!fs.existsSync(firestoreAdminTypesPath)) {
+  errors.push(
+    "functions/src/shared/generated/firestoreAdminTypes.ts is missing."
+  );
+} else {
+  const source = fs.readFileSync(firestoreAdminTypesPath, "utf8");
+  const sourceLower = source.toLowerCase();
+  if (
+    !sourceLower.includes("schema-derived admin sdk firestore document types") ||
+    !source.includes("FirebaseFirestore.Timestamp")
+  ) {
+    errors.push(
+      "firestoreAdminTypes.ts must describe itself as the schema-derived " +
+        "Admin SDK Timestamp projection."
+    );
+  }
+}
+
+if (hasLegacyFirestoreImports()) {
+  errors.push(
+    "Functions code still imports ../shared/firestore; use " +
+      "../shared/generated/firestoreAdminTypes instead."
   );
 }
 
@@ -86,20 +65,19 @@ if (errors.length > 0) {
 
 console.log("Schema/type boundary check passed.");
 
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
-
-function loadSchemaTitles(root) {
-  const titles = new Set();
-  for (const filePath of walk(root)) {
-    if (!filePath.endsWith(".schema.json")) continue;
-    const schema = readJson(filePath);
-    if (typeof schema.title === "string" && schema.title.length > 0) {
-      titles.add(schema.title);
+function hasLegacyFirestoreImports() {
+  const srcRoot = path.join(repoRoot, "functions/src");
+  if (!fs.existsSync(srcRoot)) return false;
+  for (const filePath of walk(srcRoot)) {
+    if (!filePath.endsWith(".ts")) continue;
+    const relativePath = path.relative(repoRoot, filePath);
+    if (relativePath === "functions/src/shared/generated/firestoreAdminTypes.ts") {
+      continue;
     }
+    const source = fs.readFileSync(filePath, "utf8");
+    if (source.includes("../shared/firestore")) return true;
   }
-  return titles;
+  return false;
 }
 
 function* walk(dir) {
@@ -108,9 +86,4 @@ function* walk(dir) {
     if (entry.isDirectory()) yield* walk(childPath);
     else if (entry.isFile()) yield childPath;
   }
-}
-
-function isFieldOverride(interfaceName, fieldName) {
-  const overrides = overlay.fieldOverrides?.[interfaceName] ?? [];
-  return overrides.includes(fieldName);
 }

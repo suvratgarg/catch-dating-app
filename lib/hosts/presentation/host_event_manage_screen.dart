@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -26,7 +25,6 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -114,12 +112,16 @@ class HostEventManageScreen extends ConsumerStatefulWidget {
     required this.event,
     required this.onBackToSuccess,
     this.initialSection = HostEventManageSection.setup,
+    this.onSectionChanged,
+    this.eventSuccessFixtureActions,
   });
 
   final Club club;
   final Event event;
   final VoidCallback onBackToSuccess;
   final HostEventManageSection initialSection;
+  final ValueChanged<HostEventManageSection>? onSectionChanged;
+  final EventSuccessHostFixtureActions? eventSuccessFixtureActions;
 
   @override
   ConsumerState<HostEventManageScreen> createState() =>
@@ -147,19 +149,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       watchEventParticipationRosterProvider(event.id),
     );
     final roster = rosterAsync.asData?.value;
-    final bookedCount = math.max(roster?.bookedCount ?? 0, event.signedUpCount);
-    final checkedInCount = math.max(
-      roster?.checkedInCount ?? 0,
-      event.attendedCount,
-    );
-    final waitlistCount = math.max(
-      roster?.waitlistedCount ?? 0,
-      event.waitlistCount,
-    );
-    final baseRevenueEstimate = bookedCount * widget.event.priceInPaise;
-    final usesDemandPricing = event.effectiveEventPolicy.usesDemandPricing;
     final hasKnownActivity =
-        bookedCount > 0 || checkedInCount > 0 || waitlistCount > 0;
+        (roster?.bookedCount ?? event.signedUpCount) > 0 ||
+        (roster?.checkedInCount ?? event.attendedCount) > 0 ||
+        (roster?.waitlistedCount ?? event.waitlistCount) > 0;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -190,11 +183,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                     children: [
                       Text(
                         'HOST MANAGE',
-                        style: CatchTextStyles.labelM(context, color: t.ink3)
-                            .copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.2,
-                            ),
+                        style: CatchTextStyles.kicker(context, color: t.ink3),
                       ),
                       Text(event.title, style: CatchTextStyles.titleL(context)),
                     ],
@@ -203,6 +192,14 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               ],
             ),
             gapH18,
+            _HostManageSectionPicker(
+              selectedSection: _selectedSection,
+              onChanged: (section) {
+                setState(() => _selectedSection = section);
+                widget.onSectionChanged?.call(section);
+              },
+            ),
+            gapH20,
             if (event.isFull) ...[
               CatchSurface(
                 padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -222,52 +219,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               ),
               gapH12,
             ],
-            Row(
-              children: [
-                Expanded(
-                  child: HostStatChip(
-                    icon: Icons.check_circle_outline_rounded,
-                    value: '$bookedCount/${event.capacityLimit}',
-                    label: 'Booked',
-                  ),
-                ),
-                gapW8,
-                Expanded(
-                  child: HostStatChip(
-                    icon: Icons.access_time_rounded,
-                    value: '$waitlistCount',
-                    label: 'Waitlist',
-                  ),
-                ),
-                gapW8,
-                Expanded(
-                  child: HostStatChip(
-                    icon: Icons.payments_rounded,
-                    value: baseRevenueEstimate > 0
-                        ? EventFormatters.priceInPaise(
-                            baseRevenueEstimate,
-                            currencyCode: event.currency,
-                          )
-                        : '-',
-                    label: usesDemandPricing ? 'Base est.' : 'Revenue',
-                  ),
-                ),
-              ],
-            ),
-            if (usesDemandPricing) ...[
-              gapH8,
-              Text(
-                'Base estimate uses the starting price. Demand-priced bookings may settle higher.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
-              ),
-            ],
-            gapH20,
-            _HostManageSectionPicker(
-              selectedSection: _selectedSection,
-              onChanged: (section) =>
-                  setState(() => _selectedSection = section),
-            ),
-            gapH20,
             ..._selectedSectionChildren(
               club: club,
               event: event,
@@ -303,6 +254,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           event: event,
           initialTab: EventSuccessHostTab.setup,
           showTabs: false,
+          fixtureActions: widget.eventSuccessFixtureActions,
         ),
         gapH20,
         _HostEventActionsCard(
@@ -316,6 +268,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           event: event,
           initialTab: EventSuccessHostTab.live,
           showTabs: false,
+          fixtureActions: widget.eventSuccessFixtureActions,
           liveRoster: HostEventParticipantsPanel(
             eventId: event.id,
             mode: HostEventParticipantsMode.live,
@@ -333,6 +286,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           event: event,
           initialTab: EventSuccessHostTab.report,
           showTabs: false,
+          fixtureActions: widget.eventSuccessFixtureActions,
         ),
       ],
     };
@@ -407,7 +361,7 @@ class _HostPrivateAccessCard extends ConsumerWidget {
             gapW12,
             Text(
               'Loading invite access...',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
         ),
@@ -487,7 +441,7 @@ class _PrivateAccessBody extends ConsumerWidget {
                       inviteCode == null || inviteCode.isEmpty
                           ? 'This event requires an invite, but no host-readable access code was found.'
                           : 'This event can stay listed; only people with this code or private link can book.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -607,7 +561,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                       event.isCancelled
                           ? 'This event has already been cancelled.'
                           : 'Use cancel for published events that should leave schedules but keep attendee, payment, and history records. Delete is only for unused events created by mistake.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -660,7 +614,7 @@ class _HostEventActionsCard extends ConsumerWidget {
           if (hasKnownActivity)
             Text(
               'Delete unused event is unavailable once an event has bookings, waitlist, attendance, payments, or reviews. Cancel the published event instead.',
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             )
           else
             CatchButton(
@@ -822,7 +776,10 @@ class _HostEventSummaryRow extends StatelessWidget {
           children: [
             Icon(icon, color: t.ink2, size: 18),
             gapW10,
-            Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+            Text(
+              label,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
             gapW16,
             Expanded(
               child: Text(

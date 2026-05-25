@@ -6,6 +6,85 @@ part of 'user_profile.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+_RunningPreferences _$RunningPreferencesFromJson(
+  Map<String, dynamic> json,
+) => _RunningPreferences(
+  paceMinSecsPerKm:
+      (json['paceMinSecsPerKm'] as num?)?.toInt() ?? defaultPaceMinSecsPerKm,
+  paceMaxSecsPerKm:
+      (json['paceMaxSecsPerKm'] as num?)?.toInt() ?? defaultPaceMaxSecsPerKm,
+  preferredDistances:
+      (json['preferredDistances'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$PreferredDistanceEnumMap, e))
+          .toList() ??
+      const [],
+  runningReasons:
+      (json['runningReasons'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
+          .toList() ??
+      const [],
+  preferredRunTimes:
+      (json['preferredRunTimes'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$PreferredRunTimeEnumMap, e))
+          .toList() ??
+      const [],
+  version: (json['version'] as num?)?.toInt() ?? 0,
+);
+
+Map<String, dynamic> _$RunningPreferencesToJson(_RunningPreferences instance) =>
+    <String, dynamic>{
+      'paceMinSecsPerKm': instance.paceMinSecsPerKm,
+      'paceMaxSecsPerKm': instance.paceMaxSecsPerKm,
+      'preferredDistances': instance.preferredDistances
+          .map((e) => _$PreferredDistanceEnumMap[e]!)
+          .toList(),
+      'runningReasons': instance.runningReasons
+          .map((e) => _$RunReasonEnumMap[e]!)
+          .toList(),
+      'preferredRunTimes': instance.preferredRunTimes
+          .map((e) => _$PreferredRunTimeEnumMap[e]!)
+          .toList(),
+      'version': instance.version,
+    };
+
+const _$PreferredDistanceEnumMap = {
+  PreferredDistance.fiveK: 'fiveK',
+  PreferredDistance.tenK: 'tenK',
+  PreferredDistance.halfMarathon: 'halfMarathon',
+  PreferredDistance.marathon: 'marathon',
+};
+
+const _$RunReasonEnumMap = {
+  RunReason.fitness: 'fitness',
+  RunReason.community: 'community',
+  RunReason.mindfulness: 'mindfulness',
+  RunReason.challenge: 'challenge',
+  RunReason.weightLoss: 'weightLoss',
+  RunReason.raceTraining: 'raceTraining',
+  RunReason.social: 'social',
+};
+
+const _$PreferredRunTimeEnumMap = {
+  PreferredRunTime.earlyMorning: 'earlyMorning',
+  PreferredRunTime.morning: 'morning',
+  PreferredRunTime.afternoon: 'afternoon',
+  PreferredRunTime.evening: 'evening',
+  PreferredRunTime.night: 'night',
+};
+
+_ActivityPreferences _$ActivityPreferencesFromJson(Map<String, dynamic> json) =>
+    _ActivityPreferences(
+      running: json['running'] == null
+          ? const RunningPreferences()
+          : RunningPreferences.fromJson(
+              json['running'] as Map<String, dynamic>,
+            ),
+    );
+
+Map<String, dynamic> _$ActivityPreferencesToJson(
+  _ActivityPreferences instance,
+) => <String, dynamic>{'running': instance.running.toJson()};
+
 _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   uid: json['uid'] as String,
   name: json['name'] as String,
@@ -24,19 +103,6 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   profilePrompts:
       (json['profilePrompts'] as List<dynamic>?)
           ?.map((e) => ProfilePromptAnswer.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  photoUrls:
-      (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-      const [],
-  photoThumbnailUrls:
-      (json['photoThumbnailUrls'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  photoPrompts:
-      (json['photoPrompts'] as List<dynamic>?)
-          ?.map((e) => PhotoPromptAnswer.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
   profilePhotos:
@@ -74,26 +140,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   workout: $enumDecodeNullable(_$WorkoutFrequencyEnumMap, json['workout']),
   diet: $enumDecodeNullable(_$DietaryPreferenceEnumMap, json['diet']),
   children: $enumDecodeNullable(_$ChildrenStatusEnumMap, json['children']),
-  paceMinSecsPerKm:
-      (json['paceMinSecsPerKm'] as num?)?.toInt() ?? defaultPaceMinSecsPerKm,
-  paceMaxSecsPerKm:
-      (json['paceMaxSecsPerKm'] as num?)?.toInt() ?? defaultPaceMaxSecsPerKm,
-  preferredDistances:
-      (json['preferredDistances'] as List<dynamic>?)
-          ?.map((e) => $enumDecode(_$PreferredDistanceEnumMap, e))
-          .toList() ??
-      const [],
-  runningReasons:
-      (json['runningReasons'] as List<dynamic>?)
-          ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
-          .toList() ??
-      const [],
-  preferredRunTimes:
-      (json['preferredRunTimes'] as List<dynamic>?)
-          ?.map((e) => $enumDecode(_$PreferredRunTimeEnumMap, e))
-          .toList() ??
-      const [],
-  runPreferencesVersion: (json['runPreferencesVersion'] as num?)?.toInt() ?? 0,
+  activityPreferences: json['activityPreferences'] == null
+      ? const ActivityPreferences()
+      : ActivityPreferences.fromJson(
+          json['activityPreferences'] as Map<String, dynamic>,
+        ),
   prefsNewCatches: json['prefsNewCatches'] as bool? ?? true,
   prefsMessages: json['prefsMessages'] as bool? ?? true,
   prefsEventReminders: json['prefsEventReminders'] as bool? ?? true,
@@ -118,9 +169,6 @@ Map<String, dynamic> _$UserProfileToJson(
   'email': instance.email,
   'instagramHandle': instance.instagramHandle,
   'profilePrompts': instance.profilePrompts.map((e) => e.toJson()).toList(),
-  'photoUrls': instance.photoUrls,
-  'photoThumbnailUrls': instance.photoThumbnailUrls,
-  'photoPrompts': instance.photoPrompts.map((e) => e.toJson()).toList(),
   'profilePhotos': instance.profilePhotos.map((e) => e.toJson()).toList(),
   'city': instance.city,
   'latitude': instance.latitude,
@@ -142,18 +190,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'workout': _$WorkoutFrequencyEnumMap[instance.workout],
   'diet': _$DietaryPreferenceEnumMap[instance.diet],
   'children': _$ChildrenStatusEnumMap[instance.children],
-  'paceMinSecsPerKm': instance.paceMinSecsPerKm,
-  'paceMaxSecsPerKm': instance.paceMaxSecsPerKm,
-  'preferredDistances': instance.preferredDistances
-      .map((e) => _$PreferredDistanceEnumMap[e]!)
-      .toList(),
-  'runningReasons': instance.runningReasons
-      .map((e) => _$RunReasonEnumMap[e]!)
-      .toList(),
-  'preferredRunTimes': instance.preferredRunTimes
-      .map((e) => _$PreferredRunTimeEnumMap[e]!)
-      .toList(),
-  'runPreferencesVersion': instance.runPreferencesVersion,
+  'activityPreferences': instance.activityPreferences.toJson(),
   'prefsNewCatches': instance.prefsNewCatches,
   'prefsMessages': instance.prefsMessages,
   'prefsEventReminders': instance.prefsEventReminders,
@@ -247,29 +284,4 @@ const _$ChildrenStatusEnumMap = {
   ChildrenStatus.haveNoMore: 'haveNoMore',
   ChildrenStatus.wantSomeday: 'wantSomeday',
   ChildrenStatus.dontWant: 'dontWant',
-};
-
-const _$PreferredDistanceEnumMap = {
-  PreferredDistance.fiveK: 'fiveK',
-  PreferredDistance.tenK: 'tenK',
-  PreferredDistance.halfMarathon: 'halfMarathon',
-  PreferredDistance.marathon: 'marathon',
-};
-
-const _$RunReasonEnumMap = {
-  RunReason.fitness: 'fitness',
-  RunReason.community: 'community',
-  RunReason.mindfulness: 'mindfulness',
-  RunReason.challenge: 'challenge',
-  RunReason.weightLoss: 'weightLoss',
-  RunReason.raceTraining: 'raceTraining',
-  RunReason.social: 'social',
-};
-
-const _$PreferredRunTimeEnumMap = {
-  PreferredRunTime.earlyMorning: 'earlyMorning',
-  PreferredRunTime.morning: 'morning',
-  PreferredRunTime.afternoon: 'afternoon',
-  PreferredRunTime.evening: 'evening',
-  PreferredRunTime.night: 'night',
 };

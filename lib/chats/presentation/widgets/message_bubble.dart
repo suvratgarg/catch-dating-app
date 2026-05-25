@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -36,77 +37,79 @@ class MessageBubble extends StatelessWidget {
         children: [
           if (!isMe) gapW4,
           Flexible(
-            child: Container(
+            child: ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: (MediaQuery.of(context).size.width * 0.72).clamp(
                   0,
                   480,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: Sizes.p14,
-                vertical: Sizes.p10,
-              ),
-              decoration: BoxDecoration(
-                color: isMe ? t.primary : t.raised,
+              child: CatchSurface(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.micro14,
+                  vertical: CatchSpacing.micro10,
+                ),
+                backgroundColor: isMe ? t.primary : t.raised,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(CatchRadius.lg),
                   topRight: const Radius.circular(CatchRadius.lg),
                   bottomLeft: Radius.circular(isMe ? CatchRadius.lg : 4),
                   bottomRight: Radius.circular(isMe ? 4 : CatchRadius.lg),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: isMe
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  if (imageUrl != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: Sizes.p6),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(CatchRadius.md),
-                        child: Image.network(
-                          imageUrl!,
-                          width: 200,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                          loadingBuilder: (_, child, progress) {
-                            if (progress == null) return child;
-                            return SizedBox(
-                              width: 200,
-                              height: 150,
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  value: progress.expectedTotalBytes != null
-                                      ? progress.cumulativeBytesLoaded /
-                                            progress.expectedTotalBytes!
-                                      : null,
-                                  strokeWidth: 2,
+                child: Column(
+                  crossAxisAlignment: isMe
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    if (imageUrl != null)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: CatchSpacing.micro6,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(CatchRadius.md),
+                          child: Image.network(
+                            imageUrl!,
+                            width: 200,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                            loadingBuilder: (_, child, progress) {
+                              if (progress == null) return child;
+                              return SizedBox(
+                                width: 200,
+                                height: 150,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: progress.expectedTotalBytes != null
+                                        ? progress.cumulativeBytesLoaded /
+                                              progress.expectedTotalBytes!
+                                        : null,
+                                    strokeWidth: 2,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  if (text.isNotEmpty)
+                    if (text.isNotEmpty)
+                      Text(
+                        text,
+                        style: CatchTextStyles.chatMessage(
+                          context,
+                          color: isMe ? t.primaryInk : t.ink,
+                        ),
+                      ),
+                    gapH2,
                     Text(
-                      text,
-                      style: CatchTextStyles.bodyM(
+                      timeStr,
+                      style: CatchTextStyles.statusLabel(
                         context,
-                        color: isMe ? t.primaryInk : t.ink,
+                        color: isMe ? t.primaryInk.withAlpha(180) : t.ink2,
                       ),
                     ),
-                  gapH2,
-                  Text(
-                    timeStr,
-                    style: CatchTextStyles.bodyS(
-                      context,
-                      color: isMe ? t.primaryInk.withAlpha(180) : t.ink2,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

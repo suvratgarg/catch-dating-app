@@ -85,17 +85,17 @@ class _DirectoryCard extends StatelessWidget {
                 children: [
                   Text(
                     club.name,
-                    style: CatchTextStyles.titleL(context),
+                    style: CatchTextStyles.cardTitle(context),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  gapH2,
                   Text(
                     _clubSummaryLabel(club),
-                    style: CatchTextStyles.bodyS(context),
+                    style: CatchTextStyles.supporting(context),
                   ),
                   if (visibleTags.isNotEmpty) ...[
-                    const SizedBox(height: 10),
+                    gapH10,
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
@@ -110,7 +110,7 @@ class _DirectoryCard extends StatelessWidget {
                     ),
                   ],
                   if (_hasMetadataPills(club)) ...[
-                    const SizedBox(height: 10),
+                    gapH10,
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -131,22 +131,25 @@ class _DirectoryCard extends StatelessWidget {
                       ],
                     ),
                   ],
-                  const SizedBox(height: 10),
+                  gapH10,
                   Container(height: 1, color: t.line),
-                  const SizedBox(height: 10),
+                  gapH10,
                   Row(
                     children: [
                       _HostAvatar(club: club),
-                      const SizedBox(width: 6),
+                      gapW6,
                       Expanded(
                         child: Text(
                           club.hostName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      gapW10,
                       _MembershipButton(
                         clubId: club.id,
                         isJoined: isJoined,
@@ -203,30 +206,26 @@ class _ClubMetaPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: t.line),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 13, color: iconColor ?? t.ink2),
-            const SizedBox(width: 4),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 220),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelS(context, color: t.ink2),
-              ),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: t.raised,
+      borderColor: t.line,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: iconColor ?? t.ink2),
+          gapW4,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 220),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.labelS(context, color: t.ink2),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -328,25 +327,21 @@ class _RatingBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.75)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.star_rounded, size: 13, color: t.gold),
-            const SizedBox(width: 2),
-            Text(
-              rating.toStringAsFixed(1),
-              style: CatchTextStyles.labelS(context, color: t.ink),
-            ),
-          ],
-        ),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: Colors.white.withValues(alpha: 0.94),
+      borderColor: Colors.white.withValues(alpha: 0.75),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.star_rounded, size: 13, color: t.gold),
+          gapW2,
+          Text(
+            rating.toStringAsFixed(1),
+            style: CatchTextStyles.labelS(context, color: t.ink),
+          ),
+        ],
       ),
     );
   }
@@ -374,11 +369,10 @@ class _HostAvatar extends StatelessWidget {
       backgroundColor: t.line,
       child: Text(
         club.hostName.isNotEmpty ? club.hostName[0].toUpperCase() : '?',
-        style: TextStyle(
-          fontSize: 8,
-          fontWeight: FontWeight.w600,
+        style: CatchTextStyles.statusLabel(
+          context,
           color: t.ink2,
-        ),
+        ).copyWith(fontSize: 8),
       ),
     );
   }

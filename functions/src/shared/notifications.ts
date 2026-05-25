@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {EventDoc} from "./firestore";
+import {EventDoc} from "./generated/firestoreAdminTypes";
 
 export interface FcmParams {
   token: string;

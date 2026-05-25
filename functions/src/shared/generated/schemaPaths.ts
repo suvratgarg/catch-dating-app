@@ -5,11 +5,11 @@
 export const schemaProfileDecisionLogicalName =
   "profileDecision";
 export const schemaProfileDecisionPathTemplate =
-  "swipes/{userId}/outgoing/{targetId}";
+  "profileDecisions/{userId}/outgoing/{targetId}";
 export const schemaProfileDecisionTriggerPath =
-  "swipes/{swiperId}/outgoing/{targetId}";
+  "profileDecisions/{swiperId}/outgoing/{targetId}";
 export const schemaProfileDecisionCollectionPath =
-  "swipes";
+  "profileDecisions";
 export const schemaProfileDecisionOutgoingSubcollectionPath =
   "outgoing";
 export const schemaProfileDecisionFuturePathTemplate =

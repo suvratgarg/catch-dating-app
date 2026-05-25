@@ -47,7 +47,7 @@ test("seed document validation accepts valid profile and event docs", () => {
     userEventScheduleLocks: 0,
     savedEvents: 1,
     payments: 0,
-    swipes: 0,
+    profileDecisions: 0,
     matches: 0,
     chatMessages: 0,
     reviews: 0,
@@ -143,7 +143,7 @@ test("seed decision validation rejects stale reaction target types", () => {
     () => validateSeedDocuments({
       docs: [
         {
-          path: "swipes/runner-1/outgoing/runner-2",
+          path: "profileDecisions/runner-1/outgoing/runner-2",
           data: {
             synthetic: true,
             seedPrefix: "demo_test",
@@ -158,7 +158,7 @@ test("seed decision validation rejects stale reaction target types", () => {
         },
       ],
     }),
-    /swipes\/runner-1\/outgoing\/runner-2 failed schema validation/
+    /profileDecisions\/runner-1\/outgoing\/runner-2 failed schema validation/
   );
 });
 
@@ -166,7 +166,10 @@ test("seed document validation accepts valid social and payment docs", () => {
   const result = validateSeedDocuments({
     docs: [
       {path: "payments/pay-1", data: validPaymentDoc()},
-      {path: "swipes/runner-1/outgoing/runner-2", data: validSwipeDoc()},
+      {
+        path: "profileDecisions/runner-1/outgoing/runner-2",
+        data: validSwipeDoc(),
+      },
       {path: "matches/runner-1_runner-2", data: validMatchDoc()},
       {
         path: "matches/runner-1_runner-2/messages/message-1",
@@ -181,7 +184,7 @@ test("seed document validation accepts valid social and payment docs", () => {
   });
 
   assert.equal(result.payments, 1);
-  assert.equal(result.swipes, 1);
+  assert.equal(result.profileDecisions, 1);
   assert.equal(result.matches, 1);
   assert.equal(result.chatMessages, 1);
   assert.equal(result.reviews, 1);
@@ -399,9 +402,6 @@ function validUserProfileDoc() {
     profileComplete: true,
     email: "runner.one@example.test",
     profilePrompts: [validProfilePromptAnswer()],
-    photoUrls: ["https://example.test/runner-one.jpg"],
-    photoThumbnailUrls: ["https://example.test/runner-one-thumb.jpg"],
-    photoPrompts: [validPhotoPromptAnswer()],
     profilePhotos: validProfilePhotos(),
     city: "mumbai",
     latitude: 19.076,
@@ -421,12 +421,7 @@ function validUserProfileDoc() {
     workout: "often",
     diet: "omnivore",
     children: "dontHave",
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: ["fiveK", "tenK"],
-    runningReasons: ["fitness", "social"],
-    preferredRunTimes: ["morning"],
-    runPreferencesVersion: 1,
+    activityPreferences: validActivityPreferences(),
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,
@@ -446,9 +441,6 @@ function validPublicProfileDoc() {
     age: ageFromIso(dateOfBirthIso),
     gender: "woman",
     profilePrompts: [validProfilePromptAnswer()],
-    photoUrls: ["https://example.test/runner-one.jpg"],
-    photoThumbnailUrls: ["https://example.test/runner-one-thumb.jpg"],
-    photoPrompts: [validPhotoPromptAnswer()],
     profilePhotos: validProfilePhotos(),
     city: "mumbai",
     height: 168,
@@ -463,12 +455,7 @@ function validPublicProfileDoc() {
     workout: "often",
     diet: "omnivore",
     children: "dontHave",
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: ["fiveK", "tenK"],
-    runningReasons: ["fitness", "social"],
-    preferredRunTimes: ["morning"],
-    runPreferencesVersion: 1,
+    activityPreferences: validActivityPreferences(),
   };
 }
 
@@ -848,6 +835,19 @@ function validProfilePhotos() {
     createdAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
     updatedAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
   }];
+}
+
+function validActivityPreferences() {
+  return {
+    running: {
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: ["fiveK", "tenK"],
+      runningReasons: ["fitness", "social"],
+      preferredRunTimes: ["morning"],
+      version: 1,
+    },
+  };
 }
 
 function fakeTimestamp(iso) {

@@ -120,7 +120,11 @@ test("buildPublicProfileRepairPlan warns and skips invalid projections",
     const badProjection = {
       publicProfileFromUserProfileDoc: () => ({
         ...validPublicProfile({name: "Runner One", age: 30}),
-        photoThumbnailUrls: ["not a url"],
+        profilePhotos: [{
+          ...validPublicProfile({name: "Runner One", age: 30})
+            .profilePhotos[0],
+          thumbnailUrl: "not a url",
+        }],
       }),
     };
 
@@ -130,7 +134,7 @@ test("buildPublicProfileRepairPlan warns and skips invalid projections",
     assert.deepEqual(plan.summary.warnings, [
       "users/runner-1 projected an invalid public profile: " +
       "publicProfiles/runner-1 failed schema validation: " +
-      "/photoThumbnailUrls/0 must match format \"uri\"",
+      "/profilePhotos/0/thumbnailUrl must match format \"uri\"",
     ]);
   }
 );
@@ -145,25 +149,46 @@ function validPublicProfile({name, age}) {
       prompt: "A perfect event with me looks like...",
       answer: "Easy kilometres.",
     }],
-    photoUrls: ["https://example.test/full.jpg"],
-    photoThumbnailUrls: ["https://example.test/thumb.jpg"],
-    photoPrompts: [{
-      photoIndex: 0,
-      promptId: "proofIRun",
-      prompt: "Proof I actually event",
-      caption: "Race morning.",
+    profilePhotos: [{
+      id: "photo-1",
+      url: "https://example.test/full.jpg",
+      thumbnailUrl: "https://example.test/thumb.jpg",
+      storagePath: "users/runner/photos/photo-1.jpg",
+      thumbnailStoragePath: "users/runner/photoThumbnails/photo-1.jpg",
+      prompt: {
+        photoIndex: 0,
+        promptId: "proofIRun",
+        prompt: "Proof I actually event",
+        caption: "Race morning.",
+      },
+      moderation: null,
+      position: 0,
+      createdAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
+      updatedAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
     }],
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: ["fiveK"],
-    runningReasons: ["fitness"],
-    preferredRunTimes: ["morning"],
-    runPreferencesVersion: 1,
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: ["fiveK"],
+        runningReasons: ["fitness"],
+        preferredRunTimes: ["morning"],
+        version: 1,
+      },
+    },
+  };
+}
+
+function fakeTimestamp(iso) {
+  const date = new Date(iso);
+  return {
+    toDate: () => date,
+    toMillis: () => date.getTime(),
   };
 }
 
 function fakeFirestore(initialData) {
-  const data = structuredClone(initialData);
+  const data = cloneFakeData(initialData);
   return {
     collection: (collectionName) => ({
       get: async () => {
@@ -171,7 +196,7 @@ function fakeFirestore(initialData) {
         const docs = Object.entries(collection).map(([id, value]) => ({
           id,
           ref: {path: `${collectionName}/${id}`},
-          data: () => structuredClone(value),
+          data: () => cloneFakeData(value),
         }));
         return {size: docs.length, docs};
       },
@@ -200,7 +225,7 @@ function fakeFirestore(initialData) {
 function setDoc(data, docPath, value) {
   const [collectionName, docId] = docPath.split("/");
   data[collectionName] ??= {};
-  data[collectionName][docId] = structuredClone(value);
+  data[collectionName][docId] = cloneFakeData(value);
 }
 
 function deleteDoc(data, docPath) {
@@ -211,5 +236,17 @@ function deleteDoc(data, docPath) {
 function getDoc(data, docPath) {
   const [collectionName, docId] = docPath.split("/");
   const value = data[collectionName]?.[docId];
-  return value === undefined ? undefined : structuredClone(value);
+  return value === undefined ? undefined : cloneFakeData(value);
+}
+
+function cloneFakeData(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneFakeData(item));
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [key, cloneFakeData(child)])
+    );
+  }
+  return value;
 }

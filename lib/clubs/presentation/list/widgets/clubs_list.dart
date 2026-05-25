@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.d
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -163,25 +164,25 @@ class _ClubDirectorySkeletonCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CatchSkeleton.text(width: 180),
-                const SizedBox(height: 8),
+                gapH8,
                 CatchSkeleton.text(width: 132),
-                const SizedBox(height: 12),
+                gapH12,
                 Row(
                   children: [
                     CatchSkeleton.card(width: 72, height: 24),
-                    const SizedBox(width: 8),
+                    gapW8,
                     CatchSkeleton.card(width: 96, height: 24),
                   ],
                 ),
-                const SizedBox(height: 12),
+                gapH12,
                 Container(height: 1, color: t.line),
-                const SizedBox(height: 12),
+                gapH12,
                 Row(
                   children: [
                     CatchSkeleton.circle(size: 18),
-                    const SizedBox(width: 8),
+                    gapW8,
                     Expanded(child: CatchSkeleton.text(width: 140)),
-                    const SizedBox(width: 12),
+                    gapW12,
                     CatchSkeleton.card(width: 70, height: 36),
                   ],
                 ),

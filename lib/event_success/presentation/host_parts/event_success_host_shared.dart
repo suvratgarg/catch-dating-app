@@ -131,7 +131,7 @@ class _HostActivitySummary extends StatelessWidget {
           gapH8,
           Text(
             profile.summary,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),
@@ -191,7 +191,7 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
                   rankingOn
                       ? 'Suggested pairings can use shared answers as one light input after interest, safety, and attendee opt-out checks.'
                       : 'Answers can still shape reveal clues, but suggested pairings will not use them.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -236,14 +236,14 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
               ),
               Text(
                 '$checkedInCount / $bookedCount',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),
           gapH8,
           Text(
             'Attendance decides who can use assignments, wingman requests, and post-event feedback.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           Wrap(
@@ -290,29 +290,24 @@ class _HostCheckInQrPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final payload = EventCheckInQrPayload(eventId: event.id).encode();
-    return Container(
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.raised,
+      borderColor: t.line,
       padding: const EdgeInsets.all(CatchSpacing.s3),
-      decoration: BoxDecoration(
-        color: t.raised,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: t.line),
-      ),
       child: Row(
         children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(CatchSpacing.s2),
-              child: QrImageView(
-                data: payload,
-                version: QrVersions.auto,
-                size: 116,
-                padding: EdgeInsets.zero,
-                backgroundColor: Colors.white,
-              ),
+          CatchSurface(
+            radius: CatchRadius.sm,
+            backgroundColor: Colors.white,
+            borderWidth: 0,
+            padding: const EdgeInsets.all(CatchSpacing.s2),
+            child: QrImageView(
+              data: payload,
+              version: QrVersions.auto,
+              size: 116,
+              padding: EdgeInsets.zero,
+              backgroundColor: Colors.white,
             ),
           ),
           gapW12,
@@ -320,11 +315,11 @@ class _HostCheckInQrPanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Host QR', style: CatchTextStyles.titleS(context)),
+                Text('Host QR', style: CatchTextStyles.sectionTitle(context)),
                 gapH4,
                 Text(
                   'Attendees can scan this, then location still verifies they are at the venue.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -383,13 +378,13 @@ class _WingmanRequestsHostCard extends StatelessWidget {
             rotationsEnabled
                 ? 'Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.'
                 : 'Attendees explicitly asked the host for help. Use this as live facilitation context.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           if (activeRequests.isEmpty)
             Text(
               'No host-help requests yet.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             )
           else
             for (final request in activeRequests)
@@ -447,7 +442,7 @@ class _WingmanRequestHostRow extends StatelessWidget {
             ),
             child: Text(
               request.note!,
-              style: CatchTextStyles.bodyS(
+              style: CatchTextStyles.supporting(
                 context,
                 color: CatchTokens.of(context).ink2,
               ),

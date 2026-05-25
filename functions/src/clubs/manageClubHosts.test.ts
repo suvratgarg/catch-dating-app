@@ -229,8 +229,7 @@ function user(overrides: FakeData = {}): FakeData {
     profileComplete: true,
     name: "Co Host",
     displayName: "Co Host",
-    photoUrls: [],
-    photoThumbnailUrls: [],
+    profilePhotos: [],
     ...overrides,
   };
 }

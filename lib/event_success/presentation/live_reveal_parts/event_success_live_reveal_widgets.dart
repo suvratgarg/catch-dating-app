@@ -70,7 +70,7 @@ class _RevealHostCopy extends StatelessWidget {
         gapH6,
         Text(
           body,
-          style: CatchTextStyles.bodyS(
+          style: CatchTextStyles.supporting(
             context,
             color: t.surface.withValues(alpha: 0.78),
           ),
@@ -204,7 +204,7 @@ class _AttendeeCountdown extends StatelessWidget {
                   Text(
                     'Everyone gets this ${kind.assignmentNoun} at the same time. No names shown yet.',
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.bodyM(
+                    style: CatchTextStyles.bodyLead(
                       context,
                       color: Colors.white.withValues(alpha: 0.78),
                     ),
@@ -481,12 +481,15 @@ class _CountdownCuePill extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: CatchTextStyles.titleS(context, color: Colors.white),
+                    style: CatchTextStyles.sectionTitle(
+                      context,
+                      color: Colors.white,
+                    ),
                   ),
                   gapH2,
                   Text(
                     body,
-                    style: CatchTextStyles.bodyS(
+                    style: CatchTextStyles.supporting(
                       context,
                       color: Colors.white.withValues(alpha: 0.72),
                     ),
@@ -687,12 +690,12 @@ class _WaitingRevealCue extends StatelessWidget {
                 children: [
                   Text(
                     'The room is holding for the reveal.',
-                    style: CatchTextStyles.titleS(context),
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
                   gapH2,
                   Text(
                     'The host controls the ${kind.assignmentNoun} unlock from live mode.',
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
               ),
@@ -782,6 +785,38 @@ class _VisibleRotationSlots extends StatelessWidget {
   }
 }
 
+class _VisibleGroupRotationSlots extends StatelessWidget {
+  const _VisibleGroupRotationSlots({
+    required this.slots,
+    required this.profilesByUid,
+    required this.peersLoading,
+  });
+
+  final List<EventSuccessGroupRotationSlot> slots;
+  final Map<String, PublicProfile> profilesByUid;
+  final bool peersLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    if (peersLoading) {
+      return const CatchBadge(
+        label: 'Loading group members',
+        tone: CatchBadgeTone.neutral,
+        icon: Icons.hourglass_empty_rounded,
+      );
+    }
+    return _AssignmentUnlockedShell(
+      title: 'Unlocked together',
+      child: Column(
+        children: [
+          for (final slot in slots)
+            _RevealGroupSlotRow(slot: slot, profilesByUid: profilesByUid),
+        ],
+      ),
+    );
+  }
+}
+
 class _AssignmentUnlockedShell extends StatelessWidget {
   const _AssignmentUnlockedShell({required this.title, required this.child});
 
@@ -809,6 +844,87 @@ class _AssignmentUnlockedShell extends StatelessWidget {
           gapH10,
           child,
         ],
+      ),
+    );
+  }
+}
+
+class _RevealGroupSlotRow extends StatelessWidget {
+  const _RevealGroupSlotRow({required this.slot, required this.profilesByUid});
+
+  final EventSuccessGroupRotationSlot slot;
+  final Map<String, PublicProfile> profilesByUid;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final timeRange =
+        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
+        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final peerNames = slot.peerUids
+        .map((uid) => profilesByUid[uid]?.name)
+        .whereType<String>()
+        .toList(growable: false);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      child: CatchSurface(
+        tone: CatchSurfaceTone.raised,
+        borderColor: t.line,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                CatchBadge(
+                  label: slot.label,
+                  tone: _isStrongCompatibilitySignal(slot.compatibility)
+                      ? CatchBadgeTone.success
+                      : CatchBadgeTone.neutral,
+                ),
+                CatchBadge(
+                  label: slot.unitLabel,
+                  tone: CatchBadgeTone.neutral,
+                  icon: Icons.table_restaurant_outlined,
+                ),
+              ],
+            ),
+            gapH8,
+            Text(timeRange, style: CatchTextStyles.sectionTitle(context)),
+            gapH4,
+            Text(
+              _compatibilityExplanation(slot.compatibility),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+            gapH10,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchBadge(
+                  label: '${slot.peerUids.length + 1} people',
+                  tone: CatchBadgeTone.neutral,
+                  icon: Icons.group_outlined,
+                ),
+                for (final name in peerNames)
+                  CatchBadge(
+                    label: name,
+                    tone: CatchBadgeTone.neutral,
+                    icon: Icons.person_outline_rounded,
+                  ),
+                if (peerNames.isEmpty)
+                  const CatchBadge(
+                    label: 'Names loading',
+                    tone: CatchBadgeTone.neutral,
+                    icon: Icons.hourglass_empty_rounded,
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -847,12 +963,12 @@ class _RevealSlotRow extends StatelessWidget {
                 children: [
                   Text(
                     '$timeRange · $peerName',
-                    style: CatchTextStyles.titleS(context),
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
                   gapH2,
                   Text(
                     _compatibilityExplanation(slot.compatibility),
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
               ),

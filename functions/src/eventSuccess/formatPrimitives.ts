@@ -1,7 +1,7 @@
 import {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 
 export type EventSuccessAssignmentAlgorithm = NonNullable<
   EventSuccessFormatPrimitives["assignmentAlgorithm"]

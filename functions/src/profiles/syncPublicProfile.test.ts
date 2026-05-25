@@ -47,7 +47,7 @@ class FakeFirestore {
 
   get(path: string): FakeData | undefined {
     const data = this.docs[path];
-    return data === undefined ? undefined : structuredClone(data);
+    return data === undefined ? undefined : cloneFakeData(data);
   }
 
   set(path: string, data: FakeData, options?: {merge: boolean}) {
@@ -92,11 +92,24 @@ function queryRef(
         )
         .map(([path, data]) => ({
           ref: new FakeDocRef(firestore, path),
-          data: () => structuredClone(data),
+          data: () => cloneFakeData(data),
         }));
       return {empty: docs.length === 0, docs};
     },
   };
+}
+
+function cloneFakeData<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneFakeData(item)) as T;
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .map(([key, child]) => [key, cloneFakeData(child)])
+    ) as T;
+  }
+  return value;
 }
 
 function timestamp(date: Date) {
@@ -117,23 +130,46 @@ function completeUser(overrides: FakeData = {}): FakeData {
       prompt: `Prompt ${promptId}`,
       answer: `Answer ${promptId}`,
     })),
-    photoPrompts: [],
     gender: "woman",
     interestedInGenders: ["man"],
-    photoUrls: [
-      "https://example.test/full-1.jpg",
-      "https://example.test/full-2.jpg",
-    ],
-    photoThumbnailUrls: [
-      "https://example.test/thumb-1.jpg",
-      "https://example.test/thumb-2.jpg",
-    ],
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: [],
-    runningReasons: [],
+    profilePhotos: profilePhotos(),
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: [],
+        runningReasons: [],
+        preferredRunTimes: [],
+        version: 1,
+      },
+    },
     ...overrides,
   };
+}
+
+function profilePhotos(thumbnailUrl = "https://example.test/thumb-1.jpg") {
+  return [
+    {
+      id: "photo-1",
+      url: "https://example.test/full-1.jpg",
+      thumbnailUrl,
+      storagePath: "users/host-1/photos/1.jpg",
+      thumbnailStoragePath: "users/host-1/photoThumbnails/1.jpg",
+      position: 0,
+      createdAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
+      updatedAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
+    },
+    {
+      id: "photo-2",
+      url: "https://example.test/full-2.jpg",
+      thumbnailUrl: "https://example.test/thumb-2.jpg",
+      storagePath: "users/host-1/photos/2.jpg",
+      thumbnailStoragePath: "users/host-1/photoThumbnails/2.jpg",
+      position: 1,
+      createdAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
+      updatedAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
+    },
+  ];
 }
 
 test("syncUserProfileProjectionsHandler syncs public profile and clubs",
@@ -166,7 +202,7 @@ test("syncUserProfileProjectionsHandler syncs public profile and clubs",
       "host-1",
       completeUser({
         displayName: "Asha Updated",
-        photoThumbnailUrls: ["https://example.test/new-thumb.jpg"],
+        profilePhotos: profilePhotos("https://example.test/new-thumb.jpg"),
       }) as never,
       {firestore: () => firestore as never}
     );
@@ -212,8 +248,6 @@ test("syncUserProfileProjectionsHandler deletes profiles below social-ready",
       "host-1",
       completeUser({
         profileComplete: false,
-        photoUrls: ["https://example.test/full-1.jpg"],
-        photoThumbnailUrls: ["https://example.test/thumb-1.jpg"],
       }) as never,
       {firestore: () => firestore as never}
     );

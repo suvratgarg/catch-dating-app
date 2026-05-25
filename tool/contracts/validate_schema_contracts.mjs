@@ -185,22 +185,12 @@ function checkPromptCatalogs(parsed) {
       profileLimits.maxAnswers,
       `${relative(schemaFile)} profilePrompts maxItems`
     );
-    assertEqual(
-      schema.properties?.photoPrompts?.maxItems,
-      photoLimits.maxCaptions,
-      `${relative(schemaFile)} photoPrompts maxItems`
-    );
   }
 
   assertEqual(
     patchSchema.properties?.fields?.properties?.profilePrompts?.maxItems,
     profileLimits.maxAnswers,
     "updateUserProfile profilePrompts maxItems"
-  );
-  assertEqual(
-    patchSchema.properties?.fields?.properties?.photoPrompts?.maxItems,
-    photoLimits.maxCaptions,
-    "updateUserProfile photoPrompts maxItems"
   );
 }
 

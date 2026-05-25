@@ -14,8 +14,12 @@ enum EventParticipationStatus {
   deleted,
 }
 
+enum EventJoinRequestStatus { pending, approved, declined }
+
 @freezed
 abstract class EventParticipation with _$EventParticipation {
+  const EventParticipation._();
+
   const factory EventParticipation({
     @JsonKey(includeToJson: false) required String id,
     required String eventId,
@@ -32,10 +36,16 @@ abstract class EventParticipation with _$EventParticipation {
     @JsonKey(unknownEnumValue: null) Gender? genderAtSignup,
     String? cohortAtSignup,
     String? paymentId,
+    @JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,
+    @NullableTimestampConverter() DateTime? hostApprovalDecidedAt,
+    String? hostApprovalDecidedBy,
   }) = _EventParticipation;
 
   factory EventParticipation.fromJson(Map<String, dynamic> json) =>
       _$EventParticipationFromJson(json);
+
+  bool get hasHostApproval =>
+      hostApprovalStatus == EventJoinRequestStatus.approved;
 }
 
 String eventParticipationId({required String eventId, required String uid}) =>

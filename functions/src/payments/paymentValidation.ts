@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {PaymentStatus, EventDoc} from "../shared/firestore";
+import {PaymentStatus, EventDoc} from "../shared/generated/firestoreAdminTypes";
 import {razorpayCurrency} from "./razorpay";
 
 interface RazorpayOrderNotes {

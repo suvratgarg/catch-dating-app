@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -162,7 +163,7 @@ class EventDetailBody extends ConsumerWidget {
                   participation: participation,
                   isHost: isHost,
                 )) ...[
-                  const SizedBox(height: 20),
+                  gapH20,
                   _EventCompanionEntry(event: event, clubId: clubId),
                 ],
                 if (_canShowInviteLoop(
@@ -171,12 +172,12 @@ class EventDetailBody extends ConsumerWidget {
                   isHost: isHost,
                   now: now,
                 )) ...[
-                  const SizedBox(height: 20),
+                  gapH20,
                   _EventInviteLoopCard(event: event, onShare: shareEvent),
                 ],
-                const SizedBox(height: 24),
+                gapH24,
                 Divider(color: t.line, height: 1),
-                const SizedBox(height: 24),
+                gapH24,
                 EventDetailSocialSection(
                   event: event,
                   clubId: clubId,
@@ -186,7 +187,7 @@ class EventDetailBody extends ConsumerWidget {
                   participation: participation,
                   now: now,
                 ),
-                const SizedBox(height: 16),
+                gapH16,
               ],
             ),
           ),
@@ -225,21 +226,21 @@ class _EventInviteLoopCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.ios_share_rounded, color: t.primary),
-          const SizedBox(width: 12),
+          gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Bring someone into the room',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
-                const SizedBox(height: 4),
+                gapH4,
                 Text(
                   'Your spot is booked. Invite a friend who would make this event better.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
-                const SizedBox(height: 12),
+                gapH12,
                 Builder(
                   builder: (buttonContext) => CatchButton(
                     label: 'Invite a friend',
@@ -307,18 +308,21 @@ class _EventCompanionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.auto_awesome_outlined, color: t.primary),
-          const SizedBox(width: 12),
+          gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Event companion', style: CatchTextStyles.titleM(context)),
-                const SizedBox(height: 4),
+                Text(
+                  'Event companion',
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
+                gapH4,
                 Text(
                   'Check in, see your social prompt, and handle private follow-up after the event.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
-                const SizedBox(height: 12),
+                gapH12,
                 CatchButton(
                   label: 'Open companion',
                   variant: CatchButtonVariant.secondary,

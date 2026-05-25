@@ -196,7 +196,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 (errorMutation as MutationError).error,
                 context: AppErrorContext.event,
               ),
-              style: CatchTextStyles.bodyS(context, color: t.surface),
+              style: CatchTextStyles.supporting(context, color: t.surface),
             ),
           ],
           gapH16,

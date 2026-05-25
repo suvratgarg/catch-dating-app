@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -119,7 +120,7 @@ class ActivitySection extends ConsumerWidget {
               iconStyle: CatchEmptyStateIconStyle.plain,
               iconSize: 34,
               titleStyle: CatchTextStyles.titleL(context),
-              messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
+              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
         ] else ...[
           if (upcomingEvents.isNotEmpty) ...[
@@ -217,7 +218,7 @@ class _UpcomingEventTile extends StatelessWidget {
                   event.locationName,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleS(context, color: t.ink),
+                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
                 ),
                 gapH4,
                 Text(
@@ -225,7 +226,7 @@ class _UpcomingEventTile extends StatelessWidget {
                   '${event.compactTimeRangeLabel}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH8,
                 Wrap(
@@ -262,29 +263,25 @@ class _EventDatePill extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.primarySoft.withValues(alpha: 0.64),
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: t.primary.withValues(alpha: 0.16)),
-      ),
-      child: SizedBox(
-        width: 52,
-        height: 58,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              EventFormatters.shortMonth(date).toUpperCase(),
-              style: CatchTextStyles.labelS(context, color: t.primary),
-            ),
-            gapH2,
-            Text(
-              '${date.day}',
-              style: CatchTextStyles.titleL(context, color: t.ink),
-            ),
-          ],
-        ),
+    return CatchSurface(
+      width: 52,
+      height: 58,
+      radius: CatchRadius.md,
+      backgroundColor: t.primarySoft.withValues(alpha: 0.64),
+      borderColor: t.primary.withValues(alpha: 0.16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            EventFormatters.shortMonth(date).toUpperCase(),
+            style: CatchTextStyles.labelS(context, color: t.primary),
+          ),
+          gapH2,
+          Text(
+            '${date.day}',
+            style: CatchTextStyles.titleL(context, color: t.ink),
+          ),
+        ],
       ),
     );
   }
@@ -329,8 +326,11 @@ class _NotificationTile extends StatelessWidget {
                           item.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.titleS(context, color: t.ink)
-                              .copyWith(
+                          style:
+                              CatchTextStyles.sectionTitle(
+                                context,
+                                color: t.ink,
+                              ).copyWith(
                                 fontWeight: item.isUnread
                                     ? FontWeight.w700
                                     : FontWeight.w600,
@@ -340,7 +340,10 @@ class _NotificationTile extends StatelessWidget {
                       gapW8,
                       Text(
                         item.timeLabel,
-                        style: CatchTextStyles.bodyS(context, color: t.ink3),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink3,
+                        ),
                       ),
                     ],
                   ),
@@ -349,7 +352,7 @@ class _NotificationTile extends StatelessWidget {
                     item.subtitle,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                   gapH8,
                   Wrap(
@@ -389,16 +392,11 @@ class _NotificationIconChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: visual.background,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: visual.border),
-      ),
-      child: SizedBox.square(
-        dimension: 42,
-        child: Icon(visual.icon, color: visual.accent, size: 21),
-      ),
+    return CatchIconTile(
+      icon: visual.icon,
+      iconColor: visual.accent,
+      backgroundColor: visual.background,
+      borderColor: visual.border,
     );
   }
 }
@@ -643,6 +641,9 @@ class _ActivityStateLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Text(message, style: CatchTextStyles.bodyS(context, color: t.ink2));
+    return Text(
+      message,
+      style: CatchTextStyles.supporting(context, color: t.ink2),
+    );
   }
 }

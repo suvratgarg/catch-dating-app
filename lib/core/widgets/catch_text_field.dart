@@ -229,7 +229,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
               prefixText: widget.prefixText,
               prefixStyle: _textStyle(context, color: t.ink2),
               suffixText: widget.suffixText,
-              suffixStyle: CatchTextStyles.bodyM(context, color: t.ink2),
+              suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
               prefixIconConstraints: _iconConstraints,
               prefixIcon: widget.prefixIcon == null
                   ? null
@@ -275,7 +275,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
               const SizedBox(height: CatchSpacing.s1),
               Text(
                 supportText,
-                style: CatchTextStyles.bodyS(
+                style: CatchTextStyles.supporting(
                   context,
                   color: hasError ? t.danger : _supportColor(t),
                 ),
@@ -337,7 +337,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
 
   TextStyle _textStyle(BuildContext context, {required Color color}) {
     return widget.size == CatchTextFieldSize.floating
-        ? CatchTextStyles.bodyM(context, color: color)
+        ? CatchTextStyles.bodyLead(context, color: color)
         : CatchTextStyles.bodyL(context, color: color);
   }
 

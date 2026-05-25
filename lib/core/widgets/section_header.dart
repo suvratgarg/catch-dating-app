@@ -27,11 +27,8 @@ class SectionHeader extends StatelessWidget {
     final style =
         titleStyle ??
         (heavy
-            ? CatchTextStyles.labelL(
-                context,
-                color: t.ink2,
-              ).copyWith(fontWeight: FontWeight.w700)
-            : CatchTextStyles.labelL(context, color: t.ink2));
+            ? CatchTextStyles.cardTitle(context, color: t.ink)
+            : CatchTextStyles.sectionTitle(context, color: t.ink));
     return Padding(
       padding: padding,
       child: Row(

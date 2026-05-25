@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -58,7 +59,7 @@ class _NewMatchAvatar extends StatelessWidget {
                   borderWidth: 2,
                   borderColor: CatchTokens.of(context).primary,
                 ),
-                const SizedBox(height: 6),
+                gapH6,
                 Text(
                   preview.displayName,
                   style: CatchTextStyles.labelS(context),

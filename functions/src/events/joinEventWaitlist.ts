@@ -1,6 +1,9 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDoc, UserProfileDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -156,6 +159,15 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       genderAtSignup: user.gender,
       cohortAtSignup,
     }), {merge: true});
+    tx.set(participationRef, policy.admission.manualApprovalRequired ? {
+      hostApprovalStatus: "pending",
+      hostApprovalDecidedAt: null,
+      hostApprovalDecidedBy: null,
+    } : {
+      hostApprovalStatus: admin.firestore.FieldValue.delete(),
+      hostApprovalDecidedAt: admin.firestore.FieldValue.delete(),
+      hostApprovalDecidedBy: admin.firestore.FieldValue.delete(),
+    }, {merge: true});
   });
 
   return {waitlisted: true};

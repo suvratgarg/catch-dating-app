@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
@@ -100,17 +102,14 @@ class PhotoSlot extends StatelessWidget {
                       Positioned(
                         bottom: 6,
                         right: 6,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: t.surface.withValues(alpha: 0.85),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.edit_outlined,
-                            size: 14,
-                            color: t.ink,
-                          ),
+                        child: CatchIconTile(
+                          icon: Icons.edit_outlined,
+                          iconColor: t.ink,
+                          backgroundColor: t.surface.withValues(alpha: 0.85),
+                          borderColor: Colors.transparent,
+                          size: 22,
+                          iconSize: 14,
+                          radius: CatchRadius.pill,
                         ),
                       ),
                     if (!isLoading &&
@@ -121,25 +120,22 @@ class PhotoSlot extends StatelessWidget {
                         left: 6,
                         right: 34,
                         bottom: 6,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.58),
-                            borderRadius: BorderRadius.circular(CatchRadius.sm),
+                        child: CatchSurface(
+                          radius: CatchRadius.sm,
+                          backgroundColor: Colors.black.withValues(alpha: 0.58),
+                          borderWidth: 0,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 4,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 4,
+                          child: Text(
+                            prompt!.displayPrompt,
+                            style: CatchTextStyles.labelS(
+                              context,
+                              color: Colors.white,
                             ),
-                            child: Text(
-                              prompt!.displayPrompt,
-                              style: CatchTextStyles.labelS(
-                                context,
-                                color: Colors.white,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),
@@ -182,14 +178,12 @@ class PhotoSlot extends StatelessWidget {
                   ),
                 ),
               IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: borderRadius,
-                    border: Border.all(
-                      color: isReorderTarget ? t.primary : t.line,
-                      width: isReorderTarget ? 2 : 1,
-                    ),
-                  ),
+                child: CatchSurface(
+                  borderRadius: borderRadius,
+                  backgroundColor: Colors.transparent,
+                  borderColor: isReorderTarget ? t.primary : t.line,
+                  borderWidth: isReorderTarget ? 2 : 1,
+                  child: const SizedBox.expand(),
                 ),
               ),
             ],

@@ -120,7 +120,7 @@ class ClubHeroAppBar extends StatelessWidget {
                           '${club.area}, ${cityLabel(club.location)}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.bodyS(
+                          style: CatchTextStyles.supporting(
                             context,
                             color: Colors.white.withValues(alpha: 0.82),
                           ),

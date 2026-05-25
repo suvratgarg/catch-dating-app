@@ -409,8 +409,10 @@ Files:
 
 Behavior:
 
-- Photos upload to Firebase Storage and then update `users/{uid}.photoUrls`.
-- Public profile photo URLs are mirrored by a Cloud Function once the user profile is complete.
+- Photos upload to Firebase Storage and then update grouped
+  `users/{uid}.profilePhotos`.
+- Public profile photos are mirrored by a Cloud Function once the user profile
+  is complete.
 - Profile screen has two tabs:
   - editable profile view
   - public preview view
@@ -469,7 +471,8 @@ Private user data:
 
 - `users/{uid}`
   - source of truth for onboarding/profile
-  - includes dating prefs, running prefs, `joinedClubIds`, `photoUrls`, optional `fcmToken`
+  - includes dating prefs, `activityPreferences.running`, grouped
+    `profilePhotos`, optional `fcmToken`
   - optional `latitude`/`longitude` for proximity features (collected once via device GPS)
 
 Public user projection:
@@ -499,10 +502,10 @@ Payments:
   - written by backend
   - used for history and refunds
 
-Swipes:
+Profile decisions:
 
-- `swipes/{userId}/outgoing/{targetId}`
-  - one outgoing swipe doc per target user
+- `profileDecisions/{userId}/outgoing/{targetId}`
+  - one outgoing profile-decision doc per target user
 
 Matches:
 
@@ -518,12 +521,13 @@ Reviews:
 
 - `reviews/{reviewId}`
 
-The generated TypeScript mirror of the Firestore schema is:
+Generated TypeScript Firestore types are:
 
-- [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
+- Serialized schema document types under [`functions/src/shared/generated/`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/)
+- Admin SDK Timestamp types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/firestoreAdminTypes.ts)
 
-If you change a Dart model that a Cloud Function reads or writes, event
-`dart tool/contracts/generate_firestore_types.dart` and commit the generated TS mirror.
+If you change a Firestore schema that a Cloud Function reads or writes, run
+`node tool/contracts/generate_schema_contracts.mjs` and commit the generated TS output.
 
 ## 8. Backend contract
 
@@ -826,7 +830,7 @@ Files involved:
 
 - Dart model: [`lib/clubs/domain/club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/domain/club.dart)
 - Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
-- TS types: [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
+- TS types: [`functions/src/shared/generated/firestoreAdminTypes.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/generated/firestoreAdminTypes.ts)
 - Ownership contract: [`tool/contracts/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/contracts/firestore_contract.json)
 - Rules tests: [`functions/test/firestore.rules.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/firestore.rules.test.cjs)
 - Combined checker: [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
@@ -940,9 +944,9 @@ When working in this repo:
 
 1. Read this file.
 2. Read the feature’s `domain`, `data`, and `presentation` files together.
-3. If a change touches a model used by Cloud Functions, update Dart, run
-   `dart tool/contracts/generate_firestore_types.dart`, and commit
-   `functions/src/shared/firestore.ts`.
+3. If a change touches a schema used by Cloud Functions, update `contracts/`,
+   run `node tool/contracts/generate_schema_contracts.mjs`, and commit the
+   generated TS/Dart contract output.
 4. If a change touches rules-sensitive documents, check `firestore.rules` immediately.
 5. Run `build_runner` after annotation/model changes.
 6. Prefer updating repository/controller layers instead of pushing Firebase calls directly into widgets.

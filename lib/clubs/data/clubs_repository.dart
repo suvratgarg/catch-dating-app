@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -151,7 +152,7 @@ class ClubsRepository {
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
-              hostDefaults: hostDefaults?.toJson(),
+              hostDefaults: hostDefaults,
             ).toJson(),
           );
       return CreateClubCallableResponse.fromCallableData(result.data).clubId;
@@ -163,16 +164,18 @@ class ClubsRepository {
     ),
   );
 
-  /// Updates only the fields present in [fields] via the `updateClub`
-  /// callable.
+  /// Updates only the fields present in [patch] via the `updateClub` callable.
   Future<void> updateClub({
     required String clubId,
-    required Map<String, dynamic> fields,
+    required UpdateClubPatch patch,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateClub')
         .call(
-          UpdateClubCallableRequest(clubId: clubId, fields: fields).toJson(),
+          UpdateClubCallableRequest(
+            clubId: clubId,
+            fields: patch.toFieldsJson(),
+          ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,

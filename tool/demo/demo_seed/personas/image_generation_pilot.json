@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nyc-sales-persona-image-pilot-v1",
+  "label": "U.S. NYC sales persona image generation pilot",
+  "personaCatalogId": "us-nyc-sales-personas-v1",
+  "provider": "openai",
+  "api": "image-api",
+  "model": "gpt-image-2",
+  "fallbackModel": "gpt-image-1.5",
+  "size": "1024x1536",
+  "quality": "high",
+  "imageFormat": "jpeg",
+  "referenceStrategy": "hero-only",
+  "pilotPersonaIds": [
+    "nyc_maya_shah_001",
+    "nyc_jordan_ellis_002",
+    "nyc_sofia_martinez_003"
+  ],
+  "reviewCriteria": [
+    "The person is clearly an adult and looks consistent across all photos.",
+    "The photo feels like a real dating-app profile image, not a stock ad, fashion campaign, or fitness-only profile.",
+    "Name, gender, ethnicity, age, height, body type, and activity context remain plausible.",
+    "No logos, readable text, watermarks, celebrity resemblance, distorted hands, duplicated faces, or ambiguous profile owner.",
+    "The photo set includes normal social, cultural, food, active, and portrait variety without skewing toward running."
+  ]
+}

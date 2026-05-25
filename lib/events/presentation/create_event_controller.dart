@@ -157,7 +157,6 @@ class CreateEventController extends _$CreateEventController {
                   event.eventFormat,
                   targetAttendeeCount: event.capacityLimit,
                 )
-                .toJson()
           : null,
     );
     return event;

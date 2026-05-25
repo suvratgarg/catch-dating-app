@@ -42,7 +42,7 @@ class EventSuccessStep extends StatelessWidget {
           borderWidth: 0,
           child: Text(
             'Prepare the host guide for this event. You can adjust it again before Live mode starts.',
-            style: CatchTextStyles.bodyS(context, color: t.primary),
+            style: CatchTextStyles.supporting(context, color: t.primary),
           ),
         ),
         gapH20,

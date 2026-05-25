@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -231,10 +232,6 @@ void main() {
           'location': 'mumbai',
           'area': 'Bandra',
           'imageUrl': 'https://example.com/cover.jpg',
-          'profileImageUrl': null,
-          'instagramHandle': null,
-          'phoneNumber': null,
-          'email': null,
         },
       ]);
     });
@@ -272,7 +269,7 @@ void main() {
     test('updateClub delegates field patches to the callable', () async {
       await repository.updateClub(
         clubId: 'club-1',
-        fields: {'name': 'New Name', 'area': 'New Area'},
+        patch: UpdateClubPatch(name: 'New Name', area: 'New Area'),
       );
 
       final callable =
@@ -290,7 +287,7 @@ void main() {
       () async {
         await repository.updateClub(
           clubId: 'club-1',
-          fields: {'imageUrl': 'https://example.com/updated.jpg'},
+          patch: UpdateClubPatch(imageUrl: 'https://example.com/updated.jpg'),
         );
 
         final callable =

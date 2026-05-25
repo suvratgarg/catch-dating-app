@@ -874,10 +874,10 @@ void main() {
       );
 
       await tester.tap(find.text('Show error'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       await tester.tap(find.text('Try again'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(retryCount, 1);
     },

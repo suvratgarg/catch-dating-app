@@ -61,11 +61,11 @@ class CatchRangeSlider extends StatelessWidget {
             children: [
               Text(
                 minLabel ?? '',
-                style: CatchTextStyles.bodyS(context, color: t.ink3),
+                style: CatchTextStyles.supporting(context, color: t.ink3),
               ),
               Text(
                 maxLabel ?? '',
-                style: CatchTextStyles.bodyS(context, color: t.ink3),
+                style: CatchTextStyles.supporting(context, color: t.ink3),
               ),
             ],
           ),

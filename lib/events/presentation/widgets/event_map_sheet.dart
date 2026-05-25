@@ -29,7 +29,7 @@ class EventMapSheet extends StatelessWidget {
     final highlightedEvent = highlightedItem.event;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       elevation: CatchSurfaceElevation.overlay,
       borderColor: CatchTokens.of(context).line,
       child: Column(

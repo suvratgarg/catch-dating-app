@@ -5,7 +5,7 @@
 import {SwipeDocument} from "./swipeDocument";
 
 /**
- * Client-owned Firestore create operation for the current swipes/{userId}/outgoing/{targetId} storage path.
+ * Client-owned Firestore create operation for the current profileDecisions/{userId}/outgoing/{targetId} storage path.
  */
 export interface CreateProfileDecisionClientWrite {
   path: {

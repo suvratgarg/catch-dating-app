@@ -1,6 +1,9 @@
 /* eslint-disable require-jsdoc */
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc, UserProfileDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
@@ -498,4 +501,19 @@ function cancellationWindow(policyId: EventCancellationPolicyId): {
       creditPercent: 50,
     };
   }
+}
+
+/**
+ * Returns whether a participation edge carries host approval for a manual
+ * request-to-join event.
+ * @param {unknown} participation Event participation data.
+ * @return {boolean} Whether the request was approved by a host.
+ */
+export function hasHostApprovedJoinRequest(
+  participation: unknown
+): boolean {
+  return typeof participation === "object" &&
+    participation !== null &&
+    (participation as {hostApprovalStatus?: unknown})
+      .hostApprovalStatus === "approved";
 }

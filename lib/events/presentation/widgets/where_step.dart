@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
@@ -37,7 +38,7 @@ class WhereStep extends StatelessWidget {
         ),
         children: [
           const FieldLabel('Meeting location'),
-          const SizedBox(height: 8),
+          gapH8,
           FormField<LocationCoordinate>(
             key: ValueKey(startingPoint),
             validator: (_) =>
@@ -52,19 +53,19 @@ class WhereStep extends StatelessWidget {
                   onTap: onPickLocation,
                 ),
                 if (field.hasError) ...[
-                  const SizedBox(height: 8),
+                  gapH8,
                   Text(
                     field.errorText!,
-                    style: TextStyle(
+                    style: CatchTextStyles.supporting(
+                      context,
                       color: Theme.of(context).colorScheme.error,
-                      fontSize: 12,
                     ),
                   ),
                 ],
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          gapH16,
           CatchTextField(
             key: CreateEventFormKeys.meetingPoint,
             label: 'Location name',
@@ -84,7 +85,7 @@ class WhereStep extends StatelessWidget {
                   : null;
             },
           ),
-          const SizedBox(height: 20),
+          gapH20,
           CatchTextField(
             key: CreateEventFormKeys.locationDetails,
             label: 'Extra directions',

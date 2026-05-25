@@ -2,9 +2,9 @@
   "parameters": {
     "min_version": {
       "defaultValue": {
-        "value": "0.0.0"
+        "value": "1.0.1"
       },
-      "description": "Oldest marketing version allowed to continue when platform-specific build gates are unset."
+      "description": "Oldest marketing version allowed to continue when platform-specific build gates are unset. Raised to 1.0.1 for the profilePhotos-only storage cutover."
     },
     "min_build_android": {
       "defaultValue": {
@@ -41,6 +41,12 @@
         "value": ""
       },
       "description": "App Store URL used by the force-update screen once the listing is public."
+    },
+    "enable_launch_access_gate": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "description": "Enables the in-app launch access application gate. Keep false until routing is explicitly wired to the access flow."
     }
   }
 }

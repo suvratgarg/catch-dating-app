@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -6,15 +11,16 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendanc
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../test_pump_helpers.dart';
 import 'events_test_helpers.dart';
 
 void main() {
-  testWidgets('shows an empty state when no runners have signed up', (
+  testWidgets('live mode keeps an empty roster inside the check-in board', (
     tester,
   ) async {
-    final event = buildEvent(bookedCount: 1);
+    final event = buildEvent();
 
     await pumpEventsTestApp(
       tester,
@@ -28,11 +34,215 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('No attendees yet'), findsOneWidget);
+    expect(find.text('Check-in board'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Due'), findsOneWidget);
+    expect(find.text('In'), findsOneWidget);
+    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('No attendees yet'), findsNothing);
     expect(
-      find.text('No one has signed up for this event yet.'),
+      find.text('Signed-up participants will appear here when they book.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('setup mode keeps an empty roster inside the table', (
+    tester,
+  ) async {
+    final event = buildEvent();
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(
+          event.id,
+        ).overrideWith((ref) => Stream.value(const [])),
+      ],
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.text('Participation'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Booked'), findsOneWidget);
+    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('Slots'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Signal'), findsOneWidget);
+    expect(find.text('Host action'), findsOneWidget);
+    expect(find.text('No participants yet'), findsOneWidget);
+    expect(
+      find.text('Booked and waitlisted people will appear here.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('report mode keeps an empty roster inside the table', (
+    tester,
+  ) async {
+    final event = buildEvent();
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.report,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(
+          event.id,
+        ).overrideWith((ref) => Stream.value(const [])),
+      ],
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.text('Event report'), findsOneWidget);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Attended'), findsOneWidget);
+    expect(find.text('No-show'), findsOneWidget);
+    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Attendance'), findsOneWidget);
+    expect(find.text('Payment'), findsOneWidget);
+    expect(find.text('No participants yet'), findsOneWidget);
+    expect(
+      find.text(
+        'Attendance and waitlist history will appear here once people sign up.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('report export buttons share revenue and ops CSV files', (
+    tester,
+  ) async {
+    final event = buildEvent(
+      id: 'report-export-event',
+      startTime: DateTime(2026, 5, 25, 18),
+      priceInPaise: 40000,
+    );
+    final participationRepository = FakeEventParticipationRepository();
+    final publicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [
+        buildPublicProfile(uid: 'runner-1', name: 'Asha'),
+        buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
+        buildPublicProfile(uid: 'runner-3', name: 'Meera'),
+      ];
+    participationRepository.eventParticipations[event.id] = [
+      buildEventParticipation(
+        event: event,
+        uid: 'runner-1',
+        status: EventParticipationStatus.attended,
+        paymentId: 'pay_1',
+      ),
+      buildEventParticipation(
+        event: event,
+        uid: 'runner-2',
+        paymentId: 'pay_2',
+      ),
+      buildEventParticipation(
+        event: event,
+        uid: 'runner-3',
+        status: EventParticipationStatus.cancelled,
+        paymentId: 'pay_3',
+      ),
+    ];
+    final shares = <ShareParams>[];
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.report,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        eventParticipationRepositoryProvider.overrideWith(
+          (ref) => participationRepository,
+        ),
+        publicProfileRepositoryProvider.overrideWith(
+          (ref) => publicProfileRepository,
+        ),
+        externalShareLauncherProvider.overrideWithValue((params) async {
+          shares.add(params);
+        }),
+      ],
+    );
+    await _settleAttendanceSheet(tester);
+
+    await tester.tap(find.text('Revenue CSV'));
+    await _settleAttendanceSheet(tester);
+
+    expect(shares.single.fileNameOverrides, [
+      'monday-evening-event-2026-05-25-revenue.csv',
+    ]);
+    final revenueCsv = await shares.single.files!.single.readAsString();
+    expect(revenueCsv, contains('TOTAL_ESTIMATED_ACTIVE_REVENUE'));
+    expect(revenueCsv, contains('Asha,runner-1,attended,checked_in'));
+    expect(revenueCsv, contains('Meera,runner-3,cancelled,cancelled'));
+
+    await tester.tap(find.text('Ops CSV'));
+    await _settleAttendanceSheet(tester);
+
+    expect(shares.last.fileNameOverrides, [
+      'monday-evening-event-2026-05-25-ops.csv',
+    ]);
+    final opsCsv = await shares.last.files!.single.readAsString();
+    expect(opsCsv, contains('arrival_order'));
+    expect(opsCsv, contains('Kabir,runner-2,signedUp,not_checked_in'));
+  });
+
+  testWidgets('shows branded loading while attendance data loads', (
+    tester,
+  ) async {
+    final event = buildEvent();
+    final participations = StreamController<List<EventParticipation>>();
+    addTearDown(participations.close);
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(
+          event.id,
+        ).overrideWith((ref) => participations.stream),
+      ],
+    );
+
+    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+  });
+
+  testWidgets('shows branded error when attendance data fails', (tester) async {
+    final event = buildEvent();
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(event.id).overrideWith(
+          (ref) => Stream<List<EventParticipation>>.error(Exception('failed')),
+        ),
+      ],
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.byType(CatchInlineErrorState), findsOneWidget);
   });
 
   testWidgets('renders attendee profiles and toggles attendance', (
@@ -87,15 +297,20 @@ void main() {
       'runner-2',
       'runner-3',
     ]);
-    expect(find.text('1 / 2 checked in'), findsOneWidget);
+    expect(find.text('Check-in board'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Host action'), findsOneWidget);
     expect(find.text('Asha'), findsOneWidget);
     expect(find.text('Kabir'), findsOneWidget);
     expect(find.text('Meera'), findsOneWidget);
-    expect(find.text('NOT CHECKED IN'), findsOneWidget);
-    expect(find.text('CHECKED IN'), findsOneWidget);
-    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('Due'), findsWidgets);
+    expect(find.text('In'), findsWidgets);
+    expect(find.text('Waitlist'), findsOneWidget);
+    expect(find.text('Check in'), findsOneWidget);
+    expect(find.text('Undo'), findsOneWidget);
 
-    await tester.tap(find.text('Asha'));
+    await tester.tap(find.text('Check in'));
     await tester.pump();
 
     expect(fakeEventRepository.markedAttendanceEventId, 'attendance-event');
@@ -142,11 +357,12 @@ void main() {
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Participants'), findsOneWidget);
+    expect(find.text('Participation'), findsOneWidget);
     expect(find.text('Asha'), findsOneWidget);
     expect(find.text('Meera'), findsOneWidget);
-    expect(find.text('BOOKED'), findsOneWidget);
-    expect(find.text('WAITLIST'), findsOneWidget);
+    expect(find.text('Booked'), findsWidgets);
+    expect(find.text('Wait'), findsOneWidget);
+    expect(find.text('Profile'), findsWidgets);
 
     await tester.tap(find.text('Asha'));
     await tester.pump();
@@ -165,6 +381,7 @@ void main() {
         basePriceInPaise: 0,
       ),
     );
+    final fakeEventRepository = FakeEventRepository();
     final fakePublicProfileRepository = FakePublicProfileRepository()
       ..profiles = [buildPublicProfile(uid: 'runner-2', name: 'Meera')];
 
@@ -190,14 +407,29 @@ void main() {
         publicProfileRepositoryProvider.overrideWith(
           (ref) => fakePublicProfileRepository,
         ),
+        eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
       ],
       signedInUid: 'host-1',
     );
     await _settleAttendanceSheet(tester);
 
-    expect(find.text('Requests'), findsOneWidget);
-    expect(find.text('REQUEST'), findsOneWidget);
-    expect(find.text('Requested'), findsOneWidget);
+    expect(find.text('Requests'), findsWidgets);
+    expect(find.text('Request'), findsOneWidget);
+    expect(find.text('View profile'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Approve request'));
+    await tester.pump();
+
+    expect(fakeEventRepository.decidedJoinRequestEventId, 'request-event');
+    expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-2');
+    expect(fakeEventRepository.decidedJoinRequestDecision, 'approve');
+
+    await tester.tap(find.byTooltip('Decline request'));
+    await tester.pump();
+
+    expect(fakeEventRepository.decidedJoinRequestEventId, 'request-event');
+    expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-2');
+    expect(fakeEventRepository.decidedJoinRequestDecision, 'decline');
   });
 }
 

@@ -104,9 +104,7 @@ function userProfile(overrides = {}) {
     dateOfBirth: Timestamp.fromDate(new Date("1998-01-01T00:00:00.000Z")),
     gender: "woman",
     profileComplete: true,
-    photoUrls: [],
-    photoThumbnailUrls: [],
-    photoPrompts: [],
+    profilePhotos: [],
     city: "mumbai",
     latitude: null,
     longitude: null,
@@ -125,12 +123,7 @@ function userProfile(overrides = {}) {
     workout: null,
     diet: null,
     children: null,
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: [],
-    runningReasons: [],
-    preferredRunTimes: [],
-    runPreferencesVersion: 1,
+    activityPreferences: activityPreferences(),
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,
@@ -139,6 +132,20 @@ function userProfile(overrides = {}) {
     prefsWeeklyDigest: false,
     prefsShowOnMap: true,
     ...overrides,
+  };
+}
+
+function activityPreferences(overrides = {}) {
+  return {
+    running: {
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: [],
+      runningReasons: [],
+      preferredRunTimes: [],
+      version: 1,
+      ...overrides,
+    },
   };
 }
 
@@ -815,14 +822,12 @@ describe("firestore.rules", () => {
       );
       await assertSucceeds(
         setDoc(
-          doc(authedDb("runner-2"), "users", "runner-2"),
-          userProfile({photoUrls: values(6, "https://example.test/photo")}),
-        ),
-      );
-      await assertSucceeds(
-        setDoc(
           doc(authedDb("runner-3"), "users", "runner-3"),
-          userProfile({preferredRunTimes: values(8, "morning")}),
+          userProfile({
+            activityPreferences: activityPreferences({
+              preferredRunTimes: values(8, "morning"),
+            }),
+          }),
         ),
       );
 
@@ -834,14 +839,12 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-5"), "users", "runner-5"),
-          userProfile({photoUrls: values(7, "https://example.test/photo")}),
-        ),
-      );
-      await assertFails(
-        setDoc(
           doc(authedDb("runner-6"), "users", "runner-6"),
-          userProfile({preferredRunTimes: values(9, "morning")}),
+          userProfile({
+            activityPreferences: activityPreferences({
+              preferredRunTimes: values(9, "morning"),
+            }),
+          }),
         ),
       );
     });
@@ -1210,12 +1213,6 @@ describe("firestore.rules", () => {
 
       await assertSucceeds(
         setDoc(
-          doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-2"),
-          swipe(),
-        ),
-      );
-      await assertSucceeds(
-        setDoc(
           doc(
             authedDb("runner-1"),
             "profileDecisions",
@@ -1239,7 +1236,7 @@ describe("firestore.rules", () => {
         setDoc(
           doc(
             authedDb("runner-1"),
-            "swipes",
+            "profileDecisions",
             "runner-1",
             "outgoing",
             "runner-2-reaction",
@@ -1267,7 +1264,7 @@ describe("firestore.rules", () => {
         setDoc(
           doc(
             authedDb("runner-1"),
-            "swipes",
+            "profileDecisions",
             "runner-1",
             "outgoing",
             "runner-2-compatibility",
@@ -1307,7 +1304,7 @@ describe("firestore.rules", () => {
 
       const swipeRef = doc(
         authedDb("runner-1"),
-        "swipes",
+        "profileDecisions",
         "runner-1",
         "outgoing",
         "runner-2",
@@ -1358,19 +1355,19 @@ describe("firestore.rules", () => {
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-1"),
+          doc(authedDb("runner-1"), "profileDecisions", "runner-1", "outgoing", "runner-1"),
           swipe({targetId: "runner-1"}),
         ),
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-3"),
+          doc(authedDb("runner-1"), "profileDecisions", "runner-1", "outgoing", "runner-3"),
           swipe({targetId: "runner-3"}),
         ),
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-2"),
+          doc(authedDb("runner-1"), "profileDecisions", "runner-1", "outgoing", "runner-2"),
           swipe({eventId: "event-2"}),
         ),
       );
@@ -1381,7 +1378,7 @@ describe("firestore.rules", () => {
       });
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-2"),
+          doc(authedDb("runner-1"), "profileDecisions", "runner-1", "outgoing", "runner-2"),
           swipe(),
         ),
       );

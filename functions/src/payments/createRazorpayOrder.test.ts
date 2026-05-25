@@ -4,7 +4,7 @@ import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {createRazorpayOrderHandler} from "./createRazorpayOrder";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 
 function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
   return {
@@ -249,6 +249,62 @@ test("createRazorpayOrderHandler enforces invite-only paid access",
   }
 );
 
+test("createRazorpayOrderHandler honors approved request access", async () => {
+  await assert.rejects(
+    createRazorpayOrderHandler(
+      buildRequest({
+        data: {eventId: "event-1"},
+        auth: {uid: "runner-1"},
+      }),
+      {
+        firestore: () => createEventFirestore(
+          buildEventDoc({eventPolicy: manualApprovalPolicy()}),
+          []
+        ),
+        createClient: failOnClientUse,
+        now: () => 0,
+      }
+    ),
+    isHttpsError(
+      "failed-precondition",
+      "Request to join this event before booking."
+    )
+  );
+
+  let capturedPayload: Record<string, unknown> | undefined;
+  await createRazorpayOrderHandler(
+    buildRequest({
+      data: {eventId: "event-1"},
+      auth: {uid: "runner-1"},
+    }),
+    {
+      firestore: () => createEventFirestore(
+        buildEventDoc({eventPolicy: manualApprovalPolicy()}),
+        [{
+          uid: "runner-1",
+          status: "waitlisted",
+          hostApprovalStatus: "approved",
+        }]
+      ),
+      createClient: () => ({
+        orders: {
+          create: async (payload: Record<string, unknown>) => {
+            capturedPayload = payload;
+            return {
+              id: "order_request",
+              amount: payload.amount,
+              currency: "INR",
+            };
+          },
+        },
+      }) as unknown as Razorpay,
+      now: () => 321,
+    }
+  );
+
+  assert.equal(capturedPayload?.amount, 25000);
+});
+
 test(
   "createRazorpayOrderHandler rejects policy-blocked cohorts before payment",
   async () => {
@@ -332,7 +388,11 @@ function buildRequest({
 
 function createEventFirestore(
   event: EventDoc | null,
-  participations: Array<{uid: string; status: string}> = [],
+  participations: Array<{
+    uid: string;
+    status: string;
+    hostApprovalStatus?: string;
+  }> = [],
   eventPrivateAccess: Record<string, Record<string, unknown>> = {}
 ): FirebaseFirestore.Firestore {
   return {
@@ -460,6 +520,34 @@ function inviteOnlyPolicy(): NonNullable<EventDoc["eventPolicy"]> {
         mode: "inviteCode",
         inviteCodeHint: "CA...HI",
         privateLinkEnabled: true,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise: 25000,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+}
+
+function manualApprovalPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+  return {
+    version: 1,
+    admission: {
+      format: "manualApproval",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: true,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
       },
       cohortCapacityLimits: {},
       balancedRatioPolicy: null,

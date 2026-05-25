@@ -20,19 +20,12 @@
     "profileComplete",
     "email",
     "profilePrompts",
-    "photoUrls",
-    "photoThumbnailUrls",
-    "photoPrompts",
+    "profilePhotos",
     "interestedInGenders",
     "minAgePreference",
     "maxAgePreference",
     "languages",
-    "paceMinSecsPerKm",
-    "paceMaxSecsPerKm",
-    "preferredDistances",
-    "runningReasons",
-    "preferredRunTimes",
-    "runPreferencesVersion",
+    "activityPreferences",
     "prefsNewCatches",
     "prefsMessages",
     "prefsEventReminders",
@@ -155,22 +148,6 @@
       },
       "x-catch-ownership": "client-writable"
     },
-    "photoUrls": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList",
-      "x-catch-ownership": "client-writable"
-    },
-    "photoThumbnailUrls": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList",
-      "x-catch-ownership": "client-writable"
-    },
-    "photoPrompts": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "$ref": "../embedded/photo_prompt_answer.schema.json"
-      },
-      "x-catch-ownership": "client-writable"
-    },
     "profilePhotos": {
       "type": "array",
       "maxItems": 6,
@@ -266,44 +243,8 @@
       "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus",
       "x-catch-ownership": "client-writable"
     },
-    "paceMinSecsPerKm": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm",
-      "x-catch-ownership": "client-writable"
-    },
-    "paceMaxSecsPerKm": {
-      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm",
-      "x-catch-ownership": "client-writable"
-    },
-    "preferredDistances": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "../shared/profile_common.schema.json#/definitions/preferredDistance"
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "runningReasons": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "../shared/profile_common.schema.json#/definitions/runReason"
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "preferredRunTimes": {
-      "type": "array",
-      "maxItems": 8,
-      "uniqueItems": true,
-      "items": {
-        "$ref": "../shared/profile_common.schema.json#/definitions/preferredRunTime"
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "runPreferencesVersion": {
-      "type": "integer",
-      "minimum": 0,
+    "activityPreferences": {
+      "$ref": "../embedded/activity_preferences.schema.json",
       "x-catch-ownership": "client-writable"
     },
     "prefsNewCatches": {

@@ -63,7 +63,7 @@ class EventMapTile extends StatelessWidget {
               gapH4,
               Text(
                 data.clubName!,
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -71,14 +71,14 @@ class EventMapTile extends StatelessWidget {
             gapH8,
             Text(
               '${data.dateLabel} · ${data.compactTimeRangeLabel}',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             gapH4,
             Text(
               '${data.activitySummaryLabel} · ${data.priceLabel}',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

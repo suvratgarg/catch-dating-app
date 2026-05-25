@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show RequestSuvbotDemoOperationCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -37,25 +39,37 @@ final class SuvbotActionItem {
     throw StateError('Suvbot action response was malformed.');
   }
 
-  static List<SuvbotActionItem> listFromCallableData(Object? data) {
-    if (data case final Map<Object?, Object?> map) {
-      final actions = map['actions'];
-      if (actions is List<Object?>) {
-        return actions
-            .map(SuvbotActionItem.fromCallableData)
-            .toList(growable: false);
-      }
-    }
-
-    return const [];
-  }
-
   final String id;
   final String label;
   final String description;
   final String icon;
   final bool destructive;
   final bool requiresText;
+}
+
+/// Typed response for `listSuvbotDemoActions`.
+///
+/// Validated by `test/core/callable_dto_contracts_test.dart` against
+/// `contracts/callable_responses/list_suvbot_demo_actions_response.schema.json`.
+final class ListSuvbotDemoActionsCallableResponse {
+  const ListSuvbotDemoActionsCallableResponse({required this.actions});
+
+  factory ListSuvbotDemoActionsCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final actions = map['actions'];
+      if (actions is List<Object?>) {
+        return ListSuvbotDemoActionsCallableResponse(
+          actions: actions
+              .map(SuvbotActionItem.fromCallableData)
+              .toList(growable: false),
+        );
+      }
+    }
+
+    throw StateError('listSuvbotDemoActions response was malformed.');
+  }
+
+  final List<SuvbotActionItem> actions;
 }
 
 class SuvbotRepository {
@@ -68,7 +82,9 @@ class SuvbotRepository {
       final result = await _functions
           .httpsCallable('listSuvbotDemoActions')
           .call<Object?>();
-      return SuvbotActionItem.listFromCallableData(result.data);
+      return ListSuvbotDemoActionsCallableResponse.fromCallableData(
+        result.data,
+      ).actions;
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -79,13 +95,14 @@ class SuvbotRepository {
 
   Future<void> requestAction({required String actionId, String? text}) =>
       withBackendErrorContext(
-        () {
-          final payload = <String, Object?>{'action': actionId};
-          if (text != null) payload['text'] = text;
-          return _functions
-              .httpsCallable('requestSuvbotDemoOperation')
-              .call<Object?>(payload);
-        },
+        () => _functions
+            .httpsCallable('requestSuvbotDemoOperation')
+            .call<Object?>(
+              RequestSuvbotDemoOperationCallableRequest(
+                action: actionId,
+                text: text,
+              ).toJson(),
+            ),
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'ask Suvbot',

@@ -71,7 +71,7 @@ class CatchErrorState extends StatelessWidget {
         gapH8,
         Text(
           message,
-          style: CatchTextStyles.bodyM(context, color: t.ink2),
+          style: CatchTextStyles.bodyLead(context, color: t.ink2),
           textAlign: TextAlign.center,
         ),
         if (onRetry != null || secondaryAction != null) ...[

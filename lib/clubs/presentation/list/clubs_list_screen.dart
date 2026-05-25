@@ -118,7 +118,7 @@ class _ClubsEventMapOverlay extends StatelessWidget {
                       'Pins show upcoming runs',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),

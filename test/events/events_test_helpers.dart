@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -16,6 +17,7 @@ import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart'
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +95,8 @@ EventParticipation buildEventParticipation({
   DateTime? createdAt,
   Gender? genderAtSignup,
   String? cohortAtSignup,
+  EventJoinRequestStatus? hostApprovalStatus,
+  String? paymentId,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
   return EventParticipation(
@@ -118,6 +122,8 @@ EventParticipation buildEventParticipation({
     deletedAt: status == EventParticipationStatus.deleted ? timestamp : null,
     genderAtSignup: genderAtSignup,
     cohortAtSignup: cohortAtSignup,
+    paymentId: paymentId,
+    hostApprovalStatus: hostApprovalStatus,
   );
 }
 
@@ -154,8 +160,8 @@ UserProfile buildUser({
     phoneNumber: phoneNumber,
     profileComplete: true,
     interestedInGenders: interestedInGenders,
-    photoUrls: photoUrls,
-    runPreferencesVersion: runPreferencesVersion,
+    profilePhotos: _profilePhotosFromUrls(uid: uid, photoUrls: photoUrls),
+    activityPreferences: _activityPreferences(version: runPreferencesVersion),
   );
 }
 
@@ -222,9 +228,28 @@ PublicProfile buildPublicProfile({
         profilePrompts ??
         normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
-    photoUrls: photoUrls,
-    runPreferencesVersion: runPreferencesVersion,
+    profilePhotos: _profilePhotosFromUrls(uid: uid, photoUrls: photoUrls),
+    activityPreferences: _activityPreferences(version: runPreferencesVersion),
   );
+}
+
+ActivityPreferences _activityPreferences({required int version}) {
+  return ActivityPreferences(running: RunningPreferences(version: version));
+}
+
+List<ProfilePhoto> _profilePhotosFromUrls({
+  required String uid,
+  required List<String> photoUrls,
+}) {
+  return [
+    for (final indexed in photoUrls.indexed)
+      ProfilePhoto.uploaded(
+        position: indexed.$1,
+        url: indexed.$2,
+        storagePath: 'test-profiles/$uid/${indexed.$1}.jpg',
+        now: DateTime(2026, 1, 1),
+      ),
+  ];
 }
 
 Future<void> pumpEventsTestApp(
@@ -274,6 +299,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? updateEventError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
+  Object? decideJoinRequestError;
   Object? markAttendanceError;
   String? cancelledEventId;
   String? hostCancelledEventId;
@@ -284,14 +310,16 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? updatedEventInviteCode;
   String? joinedWaitlistEventId;
   String? joinedWaitlistInviteCode;
+  String? decidedJoinRequestEventId;
+  String? decidedJoinRequestUserId;
+  String? decidedJoinRequestDecision;
   String? createdEventInviteCode;
   String? leftWaitlistEventId;
-  String? leftWaitlistUserId;
   String? markedAttendanceEventId;
   String? markedAttendanceUserId;
   String? selfCheckedInEventId;
   Event? fetchedEvent;
-  Map<String, Object?>? createdEventSuccessDefaults;
+  EventSuccessDefaults? createdEventSuccessDefaults;
   final Map<String, Event?> watchedEvents = {};
   final Map<String, List<Event>> clubEvents = {};
   final Map<String, List<Event>> attendedEvents = {};
@@ -307,7 +335,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Future<void> createEvent({
     required Event event,
     String? inviteCode,
-    Map<String, Object?>? eventSuccessDefaults,
+    EventSuccessDefaults? eventSuccessDefaults,
   }) async {
     if (createError != null) {
       throw createError!;
@@ -397,15 +425,25 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<void> leaveWaitlist({
-    required String eventId,
-    required String userId,
-  }) async {
+  Future<void> leaveWaitlist({required String eventId}) async {
     if (leaveWaitlistError != null) {
       throw leaveWaitlistError!;
     }
     leftWaitlistEventId = eventId;
-    leftWaitlistUserId = userId;
+  }
+
+  @override
+  Future<void> decideJoinRequest({
+    required String eventId,
+    required String userId,
+    required String decision,
+  }) async {
+    if (decideJoinRequestError != null) {
+      throw decideJoinRequestError!;
+    }
+    decidedJoinRequestEventId = eventId;
+    decidedJoinRequestUserId = userId;
+    decidedJoinRequestDecision = decision;
   }
 
   @override
@@ -438,6 +476,14 @@ class FakeEventParticipationRepository extends Fake
 
   @override
   Future<List<EventParticipation>> fetchParticipationsForEvent({
+    required String eventId,
+  }) async {
+    lastFetchedEventId = eventId;
+    return eventParticipations[eventId] ?? const [];
+  }
+
+  @override
+  Future<List<EventParticipation>> fetchHostReportParticipationsForEvent({
     required String eventId,
   }) async {
     lastFetchedEventId = eventId;

@@ -48,8 +48,8 @@ class EventTileMetaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final style = emphasize
-        ? CatchTextStyles.labelM(context, color: t.ink)
-        : CatchTextStyles.bodyS(context, color: t.ink2);
+        ? CatchTextStyles.statusLabel(context, color: t.ink)
+        : CatchTextStyles.supporting(context, color: t.ink2);
 
     return Row(
       crossAxisAlignment: maxLines == 1

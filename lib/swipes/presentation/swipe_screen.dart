@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -214,30 +215,26 @@ class _CatchesTopOverlay extends StatelessWidget {
               gapW10,
               Expanded(
                 child: Center(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: t.surface.withValues(alpha: 0.84),
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      border: Border.all(color: t.line.withValues(alpha: 0.72)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.10),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                  child: CatchSurface(
+                    radius: CatchRadius.pill,
+                    backgroundColor: t.surface.withValues(alpha: 0.84),
+                    borderColor: t.line.withValues(alpha: 0.72),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.s4,
+                      vertical: CatchSpacing.s2,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: CatchSpacing.s4,
-                        vertical: CatchSpacing.s2,
-                      ),
-                      child: Text(
-                        'Catches · $remainingCount left',
-                        style: CatchTextStyles.labelM(context, color: t.ink),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    child: Text(
+                      'Catches · $remainingCount left',
+                      style: CatchTextStyles.labelM(context, color: t.ink),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),

@@ -1,6 +1,6 @@
 {
-  "version": "4.1.2",
-  "updated": "2026-05-24",
+  "version": "4.1.6",
+  "updated": "2026-05-25",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -233,7 +233,7 @@
         "Changing Firestore rules",
         "Changing Functions mutation boundaries",
         "Changing shared data contracts or schema-source tooling",
-        "Changing Dart-to-TypeScript Firestore type generation",
+        "Changing schema-generated Firestore TypeScript type generation",
         "Changing callable validation schemas",
         "Changing prompt catalogs or profile prompts",
         "Changing seed validation or demo seed document builders",
@@ -324,6 +324,32 @@
         "No location, map, or coordinate behavior is touched"
       ]
     },
+    "docs/marketing_landing_page_research.md": {
+      "purpose": "Reference-site research, corrected product-positioning brief, rejected run-only preview note, content inventory, visual direction, asset requirements, and app-theme implications for the Catch marketing website.",
+      "read_when": [
+        "Redesigning the Catch marketing site",
+        "Changing launch landing-page copy or imagery",
+        "Choosing brand palette, typography, or visual direction that should inform the app",
+        "Reviewing competitor or alternative landing-page patterns for hosts, dating, or event software",
+        "Checking why the first isolated preview was rejected"
+      ],
+      "skip_when": [
+        "Only syncing existing app screenshots through the media manifest",
+        "Only changing backend waitlist storage or form submission behavior"
+      ]
+    },
+    "docs/marketing_landing_page_tracker.md": {
+      "purpose": "Temporary active tracker for the marketing landing-page research, rejected isolated preview, corrected preview, production rewrite, and app visual-direction follow-up.",
+      "read_when": [
+        "Checking what remains before the website rewrite",
+        "Finding reference screenshot status",
+        "Confirming whether production website files should be edited yet",
+        "Checking whether a preview is approved, rejected, or pending"
+      ],
+      "skip_when": [
+        "The marketing rewrite has shipped and this tracker has been folded into durable docs"
+      ]
+    },
     "docs/demo_data_seeding.md": {
       "purpose": "Demo data seeding, warm accounts, manual matching, reset/cleanup, demo ops, and validation workflow.",
       "read_when": [
@@ -334,6 +360,42 @@
       ],
       "skip_when": [
         "No demo data, demo ops, or synthetic state is touched"
+      ]
+    },
+    "docs/sales_demo_seed_tracker.md": {
+      "purpose": "Temporary active tracker for sales-grade synthetic supply, host-demo readiness, canonical persona assets, market packs, event policy coverage, and demo migration.",
+      "read_when": [
+        "Changing high-fidelity demo personas or host demo seed quality",
+        "Checking sales-demo acceptance criteria",
+        "Planning image generation, persona catalog migration, or demo-surface reuse",
+        "Reviewing remaining work before a host sales demo"
+      ],
+      "skip_when": [
+        "No sales-demo synthetic data, persona assets, or host-demo flow is touched"
+      ]
+    },
+    "docs/sales_demo_persona_cohorts.md": {
+      "purpose": "Cohort scope, New York and India persona-library decisions, roster reuse policy, and city overlay rules for sales-grade synthetic users.",
+      "read_when": [
+        "Changing synthetic persona cohort size or market coverage",
+        "Planning New York or India demo audiences",
+        "Choosing roster overlap and reuse rules",
+        "Adding city overlays for synthetic demo events"
+      ],
+      "skip_when": [
+        "Only command syntax or non-persona demo seeding behavior is touched"
+      ]
+    },
+    "docs/sales_demo_image_generation_runbook.md": {
+      "purpose": "Mechanical ChatGPT-web image generation, review, local organization, UID-owned Storage upload, and post-upload validation workflow.",
+      "read_when": [
+        "Generating or reviewing synthetic persona images",
+        "Downloading, renaming, or normalizing ChatGPT web outputs",
+        "Uploading persona images to Firebase Storage",
+        "Validating profile photo URLs and thumbnails before live seed writes"
+      ],
+      "skip_when": [
+        "No synthetic persona image assets are being generated, uploaded, or published"
       ]
     }
   }

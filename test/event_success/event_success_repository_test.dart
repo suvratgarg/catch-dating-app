@@ -276,6 +276,17 @@ void main() {
           displayTitle: 'Pod A',
           displaySubtitle: '4 people in this event pod.',
           peerUids: const ['runner-2', 'runner-3', 'runner-4'],
+          groupRotationSlots: [
+            EventSuccessGroupRotationSlot(
+              roundIndex: 0,
+              label: 'Round 1',
+              unitLabel: 'Table A',
+              startsAt: now,
+              endsAt: now.add(const Duration(minutes: 20)),
+              peerUids: const ['runner-2', 'runner-3'],
+              compatibility: 'mixed',
+            ),
+          ],
           source: 'server_v1',
           createdAt: now,
           updatedAt: now,
@@ -291,6 +302,8 @@ void main() {
 
         expect(saved?.displayTitle, 'Pod A');
         expect(saved?.peerUids, ['runner-2', 'runner-3', 'runner-4']);
+        expect(saved?.groupRotationSlots.single.unitLabel, 'Table A');
+        expect(saved?.allPeerUids, ['runner-2', 'runner-3', 'runner-4']);
       },
     );
 
@@ -380,6 +393,43 @@ void main() {
         ]);
       },
     );
+
+    test('calls group override callable with group payload', () async {
+      await repository.overrideGroupAssignments(
+        eventId: 'event-1',
+        rounds: const [
+          EventSuccessGroupOverrideRound(
+            roundIndex: 0,
+            groups: [
+              EventSuccessGroupOverrideUnit(
+                label: 'Table A',
+                participantUids: ['runner-1', 'runner-2', 'runner-3'],
+              ),
+            ],
+          ),
+        ],
+      );
+
+      final callable =
+          functions.httpsCallable('overrideEventSuccessGroups')
+              as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'eventId': 'event-1',
+          'rounds': [
+            {
+              'roundIndex': 0,
+              'groups': [
+                {
+                  'label': 'Table A',
+                  'participantUids': ['runner-1', 'runner-2', 'runner-3'],
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    });
 
     test('fetches wingman request candidates through callable', () async {
       final profile = buildPublicProfile(

@@ -47,7 +47,10 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ],
         ),
         gapH8,
-        Text(value.unitKind.setupHint, style: CatchTextStyles.bodyS(context)),
+        Text(
+          value.unitKind.setupHint,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH12,
         Text('Flow type', style: CatchTextStyles.labelL(context)),
         gapH8,
@@ -145,7 +148,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                             value.unitKind.supportsUnitCount
                                 ? 'Auto: about $estimatedUnitCount ${value.unitKind.label.toLowerCase()} from $targetAttendeeCount target attendees.'
                                 : 'One shared group for the full event.',
-                            style: CatchTextStyles.bodyS(
+                            style: CatchTextStyles.supporting(
                               context,
                               color: t.ink2,
                             ),
@@ -177,7 +180,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           gapH8,
           Text(
             'Structure is locked once attendance or waitlist activity exists.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ],
@@ -239,7 +242,7 @@ class _StructureNumberField extends StatelessWidget {
       children: [
         Text(label, style: CatchTextStyles.labelL(context)),
         gapH4,
-        Text(detail, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+        Text(detail, style: CatchTextStyles.supporting(context, color: t.ink2)),
         gapH8,
         child,
       ],

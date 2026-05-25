@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,12 +94,13 @@ class CreateClubController extends _$CreateClubController {
 
       var imageUrl = existingClub.imageUrl;
       var profileImageUrl = existingClub.profileImageUrl;
-      final mediaFields = <String, dynamic>{};
+      String? uploadedImageUrl;
+      String? uploadedProfileImageUrl;
       if (coverImage != null) {
         imageUrl = await ref
             .read(imageUploadRepositoryProvider)
             .uploadClubCover(clubId: existingClub.id, image: coverImage);
-        mediaFields['imageUrl'] = imageUrl;
+        uploadedImageUrl = imageUrl;
       }
       if (profileImage != null) {
         profileImageUrl = await ref
@@ -107,34 +109,43 @@ class CreateClubController extends _$CreateClubController {
               clubId: existingClub.id,
               image: profileImage,
             );
-        mediaFields['profileImageUrl'] = profileImageUrl;
+        uploadedProfileImageUrl = profileImageUrl;
       }
 
       final clubsRepo = ref.read(clubsRepositoryProvider);
       if (!existingClub.isOwnedBy(uid)) {
-        if (mediaFields.isEmpty) {
+        if (uploadedImageUrl == null && uploadedProfileImageUrl == null) {
           throw StateError('Only the club owner can edit club details.');
+        }
+        final patch = <String, Object?>{};
+        if (uploadedImageUrl != null) {
+          patch['imageUrl'] = uploadedImageUrl;
+        }
+        if (uploadedProfileImageUrl != null) {
+          patch['profileImageUrl'] = uploadedProfileImageUrl;
         }
         await clubsRepo.updateClub(
           clubId: existingClub.id,
-          fields: mediaFields,
+          patch: UpdateClubPatch.raw(patch),
         );
         return;
       }
 
-      final fields = <String, dynamic>{
-        'name': name,
-        'description': description,
-        'location': location,
-        'area': area,
-        'imageUrl': imageUrl,
-        'profileImageUrl': profileImageUrl,
-        'hostDefaults': hostDefaults.toJson(),
-        'instagramHandle': instagramHandle,
-        'phoneNumber': phoneNumber,
-        'email': email,
-      };
-      await clubsRepo.updateClub(clubId: existingClub.id, fields: fields);
+      await clubsRepo.updateClub(
+        clubId: existingClub.id,
+        patch: UpdateClubPatch(
+          name: name,
+          description: description,
+          location: location,
+          area: area,
+          imageUrl: imageUrl,
+          profileImageUrl: profileImageUrl,
+          hostDefaults: hostDefaults,
+          instagramHandle: instagramHandle,
+          phoneNumber: phoneNumber,
+          email: email,
+        ),
+      );
       return;
     }
 
@@ -154,19 +165,30 @@ class CreateClubController extends _$CreateClubController {
       hostDefaults: hostDefaults,
     );
 
-    final mediaFields = <String, dynamic>{};
+    String? uploadedCover;
+    String? uploadedProfile;
     if (coverImage != null) {
-      mediaFields['imageUrl'] = await ref
+      uploadedCover = await ref
           .read(imageUploadRepositoryProvider)
           .uploadClubCover(clubId: createdClubId, image: coverImage);
     }
     if (profileImage != null) {
-      mediaFields['profileImageUrl'] = await ref
+      uploadedProfile = await ref
           .read(imageUploadRepositoryProvider)
           .uploadClubProfileImage(clubId: createdClubId, image: profileImage);
     }
-    if (mediaFields.isNotEmpty) {
-      await clubsRepo.updateClub(clubId: createdClubId, fields: mediaFields);
+    if (uploadedCover != null || uploadedProfile != null) {
+      final patch = <String, Object?>{};
+      if (uploadedCover != null) {
+        patch['imageUrl'] = uploadedCover;
+      }
+      if (uploadedProfile != null) {
+        patch['profileImageUrl'] = uploadedProfile;
+      }
+      await clubsRepo.updateClub(
+        clubId: createdClubId,
+        patch: UpdateClubPatch.raw(patch),
+      );
     }
   }
 }

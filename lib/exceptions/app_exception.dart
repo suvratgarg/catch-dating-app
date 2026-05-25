@@ -312,6 +312,19 @@ class StorageException extends AppException {
        );
 }
 
+class StorageUploadPreflightException extends StorageException {
+  const StorageUploadPreflightException({
+    required this.constraint,
+    required String message,
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super(message, code: 'storage-upload-preflight-$constraint');
+
+  final String constraint;
+}
+
 // ── External Actions ─────────────────────────────────────────────────────────
 
 class ExternalActionException extends AppException {

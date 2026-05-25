@@ -1,6 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;

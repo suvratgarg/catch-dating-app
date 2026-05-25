@@ -76,7 +76,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
             gapH6,
             Text(
               'We will confirm you are at the venue, then give you one person and one tiny question. Complete it to check in.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
             gapH14,
             _StageSoftBand(
@@ -88,7 +88,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                   Expanded(
                     child: Text(
                       'This is a private prompt. It is designed to make the first conversation easier, not to put your answers on display.',
-                      style: CatchTextStyles.titleS(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                   ),
                 ],
@@ -147,10 +147,12 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                         end: Alignment.bottomRight,
                         colors: [
                           const Color(0xFFFFB36B).withValues(alpha: alpha),
-                          const Color(0xFFFF6F61)
-                              .withValues(alpha: alpha * 0.85),
-                          const Color(0xFFFFD166)
-                              .withValues(alpha: alpha * 0.5),
+                          const Color(
+                            0xFFFF6F61,
+                          ).withValues(alpha: alpha * 0.85),
+                          const Color(
+                            0xFFFFD166,
+                          ).withValues(alpha: alpha * 0.5),
                         ],
                       ),
                     ),
@@ -170,100 +172,96 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
     CatchTokens t,
   ) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            crossAxisAlignment: WrapCrossAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            _StageSectionLabel(
+              icon: Icons.waving_hand_outlined,
+              label: 'First Hello',
+              color: t.primary,
+            ),
+            const _PrivacyBadge(_PrivacyAudience.catchPrivate),
+          ],
+        ),
+        gapH12,
+        Text(
+          'Find ${mission.targetDisplayName}.',
+          style: CatchTextStyles.displayS(context).copyWith(height: 1.04),
+        ),
+        gapH6,
+        Text(
+          mission.targetContext,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        gapH14,
+        _StageSoftBand(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _StageSectionLabel(
-                icon: Icons.waving_hand_outlined,
-                label: 'First Hello',
-                color: t.primary,
+              Icon(Icons.question_answer_outlined, size: 18, color: t.primary),
+              gapW8,
+              Expanded(
+                child: Text(
+                  mission.question,
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
               ),
-              const _PrivacyBadge(_PrivacyAudience.catchPrivate),
             ],
           ),
-          gapH12,
-          Text(
-            'Find ${mission.targetDisplayName}.',
-            style: CatchTextStyles.displayS(context).copyWith(height: 1.04),
-          ),
-          gapH6,
-          Text(
-            mission.targetContext,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
-          gapH14,
-          _StageSoftBand(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.question_answer_outlined,
-                  size: 18,
-                  color: t.primary,
-                ),
-                gapW8,
-                Expanded(
-                  child: Text(
-                    mission.question,
-                    style: CatchTextStyles.titleS(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          gapH14,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
+        ),
+        gapH14,
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            for (final option in mission.answerOptions)
+              _StageBouncyChip(
+                label: option.label,
+                active: selectedAnswerId == option.id,
+                onTap: _saving
+                    ? null
+                    : () => setState(() => _answerId = option.id),
+              ),
+          ],
+        ),
+        gapH14,
+        Text(
+          'Complete this tiny mission to check in. If the room is crowded or the person is late, use the fallback.',
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        gapH14,
+        _StageActionDock(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final option in mission.answerOptions)
-                _StageBouncyChip(
-                  label: option.label,
-                  active: selectedAnswerId == option.id,
-                  onTap: _saving
-                      ? null
-                      : () => setState(() => _answerId = option.id),
-                ),
+              CatchButton(
+                label: 'Complete check-in',
+                icon: const Icon(Icons.check_rounded),
+                isLoading: _saving,
+                onPressed:
+                    selectedAnswerId == null ||
+                        _saving ||
+                        widget.onComplete == null
+                    ? null
+                    : () => _complete(selectedAnswerId),
+                fullWidth: true,
+              ),
+              gapH8,
+              CatchButton(
+                label: 'Can\'t find them',
+                variant: CatchButtonVariant.ghost,
+                icon: const Icon(Icons.swap_horiz_rounded),
+                onPressed: _saving ? null : widget.onSkip,
+                fullWidth: true,
+              ),
             ],
           ),
-          gapH14,
-          Text(
-            'Complete this tiny mission to check in. If the room is crowded or the person is late, use the fallback.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
-          gapH14,
-          _StageActionDock(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchButton(
-                  label: 'Complete check-in',
-                  icon: const Icon(Icons.check_rounded),
-                  isLoading: _saving,
-                  onPressed:
-                      selectedAnswerId == null ||
-                          _saving ||
-                          widget.onComplete == null
-                      ? null
-                      : () => _complete(selectedAnswerId),
-                  fullWidth: true,
-                ),
-                gapH8,
-                CatchButton(
-                  label: 'Can\'t find them',
-                  variant: CatchButtonVariant.ghost,
-                  icon: const Icon(Icons.swap_horiz_rounded),
-                  onPressed: _saving ? null : widget.onSkip,
-                  fullWidth: true,
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
+      ],
     );
   }
 
@@ -300,10 +298,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
       // Run the celebration animation in parallel with the network call.
       // Both must complete before we hand off to the next moment, otherwise
       // the gradient sweep snaps off mid-animation when the moment changes.
-      await Future.wait([
-        celebrationFuture,
-        onComplete(mission, answerId),
-      ]);
+      await Future.wait([celebrationFuture, onComplete(mission, answerId)]);
     } finally {
       if (mounted) {
         setState(() {

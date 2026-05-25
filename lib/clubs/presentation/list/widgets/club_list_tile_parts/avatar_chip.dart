@@ -28,19 +28,17 @@ class _AvatarChip extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(CatchRadius.md),
-                    child: Container(
-                      width: 76,
-                      height: 76,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: t.line2, width: 1.5),
-                      ),
-                      child: _ClubImage(
-                        club: club,
-                        preferProfileImage: true,
-                        showFallbackFooterLabel: false,
-                      ),
+                  CatchSurface(
+                    width: 76,
+                    height: 76,
+                    radius: CatchRadius.md,
+                    borderColor: t.line2,
+                    borderWidth: 1.5,
+                    clipBehavior: Clip.antiAlias,
+                    child: _ClubImage(
+                      club: club,
+                      preferProfileImage: true,
+                      showFallbackFooterLabel: false,
                     ),
                   ),
                   if (showLiveBadge)

@@ -54,7 +54,7 @@ final class SettingsControllerProvider
 }
 
 String _$settingsControllerHash() =>
-    r'3d2f5616c191cbab50445e32b00e55b0a6ecdeee';
+    r'0e0214d3fb02b81a495cc2c1091137da2facfd5c';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

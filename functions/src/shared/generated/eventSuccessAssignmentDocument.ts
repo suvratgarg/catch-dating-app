@@ -45,6 +45,39 @@ export interface EventSuccessAssignmentDocument {
       | "social"
       | "host_override";
   }[];
+  /**
+   * @maxItems 24
+   */
+  groupRotationSlots?: {
+    roundIndex: number;
+    label: string;
+    unitLabel: string;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    startsAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    endsAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * @maxItems 20
+     */
+    peerUids: string[];
+    compatibility:
+      | "mutual_interest"
+      | "one_way_interest"
+      | "questionnaire_match"
+      | "social"
+      | "mixed"
+      | "host_override";
+  }[];
   source: "server_v1" | "host_override_v1" | "server";
   /**
    * Serialized Firestore Timestamp fixture shape.

@@ -7,6 +7,7 @@ class _LiveTab extends ConsumerWidget {
     required this.planIsPersisted,
     required this.roster,
     required this.assignments,
+    required this.assignmentParticipantProfiles,
     required this.rotationAssignments,
     required this.rotationParticipantProfiles,
     required this.preferences,
@@ -24,6 +25,7 @@ class _LiveTab extends ConsumerWidget {
   final bool planIsPersisted;
   final EventParticipationRoster roster;
   final List<EventSuccessAssignment> assignments;
+  final List<PublicProfile> assignmentParticipantProfiles;
   final List<EventSuccessAssignment> rotationAssignments;
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
@@ -158,10 +160,13 @@ class _LiveTab extends ConsumerWidget {
     );
 
     Widget microPodsCard() => _MicroPodsHostCard(
+      event: event,
       eventId: event.id,
       assignments: assignments,
+      participantProfiles: assignmentParticipantProfiles,
       preferences: preferences,
       onGenerate: fixtureActions?.onGenerateMicroPods,
+      onOverride: fixtureActions?.onOverrideGroupAssignments,
     );
 
     Widget rotationsCard() => _RotationsHostCard(
@@ -416,12 +421,6 @@ class _LiveNowConsole extends StatelessWidget {
               ),
               gapH14,
               _LiveNowProgressMeter(
-                label: 'Checked in',
-                detail: '${plan.checkedInCount}/${plan.bookedCount}',
-                value: plan.checkInProgress,
-              ),
-              gapH10,
-              _LiveNowProgressMeter(
                 label: 'Run of show',
                 detail: '${plan.activeStepIndex + 1}/${plan.steps.length}',
                 value: plan.runOfShowProgress,
@@ -434,7 +433,7 @@ class _LiveNowConsole extends StatelessWidget {
               gapH6,
               Text(
                 plan.activeStep.hostInstruction,
-                style: CatchTextStyles.bodyM(
+                style: CatchTextStyles.bodyLead(
                   context,
                   color: t.surface.withValues(alpha: 0.84),
                 ),
@@ -457,7 +456,7 @@ class _LiveNowConsole extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
-                        style: CatchTextStyles.bodyS(
+                        style: CatchTextStyles.supporting(
                           context,
                           color: t.surface.withValues(alpha: 0.82),
                         ),
@@ -523,7 +522,7 @@ class _LiveCheckInQrCard extends StatelessWidget {
           gapH8,
           Text(
             'Use this for new arrivals; use the editable roster above for manual fixes.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           _HostCheckInQrPanel(event: event),
@@ -556,7 +555,7 @@ class _LiveNowProgressMeter extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: CatchTextStyles.titleS(context, color: foreground),
+                style: CatchTextStyles.sectionTitle(context, color: foreground),
               ),
             ),
             Text(
@@ -639,7 +638,10 @@ class _LiveSectionHeader extends StatelessWidget {
       children: [
         Text(title, style: CatchTextStyles.titleM(context)),
         gapH4,
-        Text(subtitle, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+        Text(
+          subtitle,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
       ],
     );
   }

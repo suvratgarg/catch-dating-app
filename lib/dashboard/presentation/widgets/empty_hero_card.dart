@@ -33,26 +33,20 @@ class EmptyHeroCard extends StatelessWidget {
             children: [
               Text(
                 '● NO EVENTS BOOKED',
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: Colors.white,
-                ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.4),
+                style: CatchTextStyles.kicker(context, color: Colors.white),
               ),
               gapH10,
               Text(
                 'Your catches unlock\nafter your first event.',
-                style: CatchTextStyles.displayL(
+                style: CatchTextStyles.heroHeadline(
                   context,
                   color: Colors.white,
-                ).copyWith(letterSpacing: -0.52, height: 1.1),
+                ),
               ),
               gapH8,
               Text(
                 "Book a group event. Show up. Meet people.\nThen we'll hand you the roster.",
-                style: CatchTextStyles.bodyS(
-                  context,
-                  color: Colors.white,
-                ).copyWith(height: 1.5),
+                style: CatchTextStyles.supporting(context, color: Colors.white),
               ),
               gapH16,
               CatchButton(

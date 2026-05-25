@@ -7,7 +7,7 @@ import {
   Gender,
   PublicProfileDoc,
   UserProfileDoc,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";

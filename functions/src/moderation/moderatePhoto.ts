@@ -15,7 +15,7 @@
  *   **Block (very likely)** — High-confidence detection of explicit or
  *   violent content. The image is deleted from Storage, a moderation flag
  *   is written with status `"pending"`, and (for profile photos) the
- *   photo URL is removed from the user's `photoUrls` array.
+ *   photo object is removed from the user's `profilePhotos` array.
  *
  * ## Storage paths moderated
  *
@@ -41,7 +41,7 @@ import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import * as vision from "@google-cloud/vision";
-import type {ModerationFlagDoc} from "../shared/firestore";
+import type {ModerationFlagDoc} from "../shared/generated/firestoreAdminTypes";
 
 // ── Client ─────────────────────────────────────────────────────────────────
 
@@ -95,20 +95,6 @@ function uidFromPath(filePath: string): string | null {
   const parts = filePath.split("/");
   if (parts[0] === "users" && parts[1]) return parts[1];
   return null;
-}
-
-/**
- * Extracts the slot index from `users/{uid}/photos/{index}_...`.
- * @param {string} filePath The Storage object path.
- * @return {number|null} The profile photo slot index, or null.
- */
-function profilePhotoIndexFromPath(filePath: string): number | null {
-  const parts = filePath.split("/");
-  if (parts[0] !== "users" || parts[2] !== "photos" || !parts[3]) {
-    return null;
-  }
-  const index = Number.parseInt(parts[3].split("_")[0], 10);
-  return Number.isInteger(index) && index >= 0 ? index : null;
 }
 
 /**
@@ -186,23 +172,6 @@ function numericPosition(photo: Record<string, unknown>): number {
 }
 
 /**
- * Derives compatibility URL arrays from grouped profile photos.
- * @param {unknown[]} profilePhotos Stored grouped photo records.
- * @param {"url" | "thumbnailUrl"} field URL field to read.
- * @return {string[]} Ordered URL list.
- */
-function urlsFromGroupedProfilePhotos(
-  profilePhotos: unknown[],
-  field: "url" | "thumbnailUrl"
-): string[] {
-  return profilePhotos
-    .filter(isRecord)
-    .sort((a, b) => numericPosition(a) - numericPosition(b))
-    .map((photo) => photo[field])
-    .filter((url): url is string => typeof url === "string");
-}
-
-/**
  * Derives the generated thumbnail path for a source profile photo path.
  * @param {string} filePath Source profile photo Storage path.
  * @return {string | null} Thumbnail path, or null for non-profile paths.
@@ -231,8 +200,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Storage finalize handler that events SafeSearch on every uploaded image.
  *
  * When a photo is blocked (VERY_LIKELY explicit/violent), this handler
- * deletes the Storage object and removes the URL from the user's
- * `photoUrls` array so the client does not show a broken reference.
+ * deletes the Storage object and removes the grouped photo record so the
+ * client does not show a broken reference.
  */
 export const moderatePhotoOnUpload = onObjectFinalized(
   async (event) => {
@@ -308,59 +277,24 @@ export const moderatePhotoOnUpload = onObjectFinalized(
             []),
         ]);
 
-        // Remove the URL from the user's photoUrls if it's a profile photo.
+        // Remove the grouped profile photo if it's a profile photo.
         if (isProfilePhoto) {
           const uid = uidFromPath(filePath);
           if (uid) {
             const userRef = admin.firestore().collection("users").doc(uid);
-            const photoIndex = profilePhotoIndexFromPath(filePath);
             await admin.firestore().runTransaction(async (tx) => {
               const userSnap = await tx.get(userRef);
               if (!userSnap.exists) return;
               const data = userSnap.data() ?? {};
-              const photoUrls = Array.isArray(data.photoUrls) ?
-                data.photoUrls.filter(
-                  (url): url is string => typeof url === "string"
-                ) :
-                [];
-              const rawThumbnailUrls = data.photoThumbnailUrls;
-              const photoThumbnailUrls = Array.isArray(rawThumbnailUrls) ?
-                rawThumbnailUrls.filter(
-                  (url): url is string => typeof url === "string"
-                ) :
-                [];
-              const updatedPhotoUrls = photoUrls.filter(
-                (url) => !downloadUrlContainsPath(url, filePath)
-              );
-              const updatedThumbnailUrls = [...photoThumbnailUrls];
-              if (
-                photoIndex !== null &&
-                photoIndex < updatedThumbnailUrls.length
-              ) {
-                updatedThumbnailUrls.splice(photoIndex, 1);
-              }
               const profilePhotos = removeBlockedProfilePhoto({
                 profilePhotos: data.profilePhotos,
                 filePath,
               });
               if (profilePhotos) {
                 tx.update(userRef, {
-                  photoUrls: urlsFromGroupedProfilePhotos(
-                    profilePhotos,
-                    "url"
-                  ),
-                  photoThumbnailUrls: urlsFromGroupedProfilePhotos(
-                    profilePhotos,
-                    "thumbnailUrl"
-                  ),
                   profilePhotos,
                 });
-                return;
               }
-              tx.update(userRef, {
-                photoUrls: updatedPhotoUrls,
-                photoThumbnailUrls: updatedThumbnailUrls,
-              });
             });
           }
         }

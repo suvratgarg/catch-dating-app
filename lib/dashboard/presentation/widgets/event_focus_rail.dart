@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -364,31 +365,11 @@ class _EventFocusPageIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Center(
-      child: Semantics(
-        label: 'Event ${selectedIndex + 1} of $itemCount',
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          spacing: CatchSpacing.s1,
-          runSpacing: CatchSpacing.s1,
-          children: [
-            for (var index = 0; index < itemCount; index += 1)
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutCubic,
-                width: index == selectedIndex ? 22 : 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: index == selectedIndex
-                      ? t.primary
-                      : t.line2.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-          ],
-        ),
+      child: CatchPageDots(
+        selectedIndex: selectedIndex,
+        itemCount: itemCount,
+        semanticLabel: 'Event ${selectedIndex + 1} of $itemCount',
       ),
     );
   }
@@ -440,7 +421,7 @@ class _EventFocusCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(Sizes.p18),
+            padding: const EdgeInsets.all(CatchSpacing.micro18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -496,7 +477,7 @@ class _EventFocusCard extends StatelessWidget {
                     item.clubName!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelM(context, color: t.ink2),
+                    style: CatchTextStyles.kicker(context, color: t.ink2),
                   ),
                 ],
                 gapH12,
@@ -594,7 +575,7 @@ class _EventFocusMetaLine extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ),
       ],

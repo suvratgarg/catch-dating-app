@@ -2,6 +2,8 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show CatchRadius, CatchSpacing;
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
@@ -70,33 +72,29 @@ class _ConfidenceSignalPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = ProfileCardPalette.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: palette.accentSoft,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: palette.accent.withValues(alpha: 0.22)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(_confidenceIcon(signal.kind), size: 14, color: palette.accent),
-            gapW6,
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 190),
-              child: Text(
-                signal.label,
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: palette.textPrimary,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: palette.accentSoft,
+      borderColor: palette.accent.withValues(alpha: 0.22),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_confidenceIcon(signal.kind), size: 14, color: palette.accent),
+          gapW6,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 190),
+            child: Text(
+              signal.label,
+              style: CatchTextStyles.labelL(
+                context,
+                color: palette.textPrimary,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -114,29 +112,23 @@ class _CompatibilityReasonRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: palette.surfaceRaised,
-            shape: BoxShape.circle,
-            border: Border.all(color: palette.chipBorder),
-          ),
-          child: SizedBox.square(
-            dimension: 26,
-            child: Icon(
-              _compatibilityIcon(reason.kind),
-              size: 14,
-              color: palette.textSecondary,
-            ),
-          ),
+        CatchIconTile(
+          icon: _compatibilityIcon(reason.kind),
+          iconColor: palette.textSecondary,
+          backgroundColor: palette.surfaceRaised,
+          borderColor: palette.chipBorder,
+          size: 26,
+          iconSize: 14,
+          radius: CatchRadius.pill,
         ),
         gapW10,
         Expanded(
           child: Text(
             reason.label,
-            style: CatchTextStyles.bodyM(
+            style: CatchTextStyles.bodyLead(
               context,
               color: palette.textPrimary,
-            ).copyWith(height: 1.34),
+            ),
           ),
         ),
       ],

@@ -2,7 +2,7 @@ import {CallableRequest, onCall, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {MarkEventAttendanceCallablePayload} from
   "../shared/generated/markEventAttendanceCallablePayload";

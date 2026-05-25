@@ -16,6 +16,12 @@ class EventParticipationRepository {
 
   static const _collectionPath = 'eventParticipations';
   static const _rosterVisibleStatuses = ['signedUp', 'waitlisted', 'attended'];
+  static const _hostReportStatuses = [
+    'signedUp',
+    'waitlisted',
+    'attended',
+    'cancelled',
+  ];
 
   final FirebaseFirestore _db;
 
@@ -69,6 +75,23 @@ class EventParticipationRepository {
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'fetch event participations',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<List<EventParticipation>> fetchHostReportParticipationsForEvent({
+    required String eventId,
+  }) => withBackendErrorContext(
+    () async {
+      final snap = await _participationsRef
+          .where('eventId', isEqualTo: eventId)
+          .where('status', whereIn: _hostReportStatuses)
+          .get();
+      return snap.docs.map((doc) => doc.data()).toList();
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch host event report participations',
       resource: _collectionPath,
     ),
   );

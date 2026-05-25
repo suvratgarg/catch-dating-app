@@ -39,6 +39,21 @@ void main() {
           'compatibility': 'mutual_interest',
         },
       ],
+      'groupRotationSlots': [
+        <String, Object?>{
+          'roundIndex': 1,
+          'label': 'Round 2',
+          'unitLabel': 'Table B',
+          'startsAt': Timestamp.fromDate(
+            createdAt.add(const Duration(minutes: 15)),
+          ),
+          'endsAt': Timestamp.fromDate(
+            createdAt.add(const Duration(minutes: 30)),
+          ),
+          'peerUids': ['runner-3', 'runner-4'],
+          'compatibility': 'mixed',
+        },
+      ],
       'source': 'server_v1',
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(createdAt),
@@ -48,6 +63,12 @@ void main() {
     expect(assignment.peerUids, ['runner-2', 'runner-3', 'runner-4']);
     expect(assignment.rotationSlots.single.peerUid, 'runner-2');
     expect(assignment.rotationSlots.single.compatibility, 'mutual_interest');
+    expect(assignment.groupRotationSlots.single.unitLabel, 'Table B');
+    expect(assignment.allPeerUids, ['runner-2', 'runner-3', 'runner-4']);
     expect(assignment.toJson(), isNot(contains('id')));
+    expect(
+      assignment.toJson()['groupRotationSlots'],
+      isA<List<Object?>>().having((slots) => slots.length, 'length', 1),
+    );
   });
 }

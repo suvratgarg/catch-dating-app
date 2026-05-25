@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,13 +29,12 @@ class WelcomePage extends ConsumerWidget {
                   children: [
                     Text(
                       'CATCH',
-                      style: CatchTextStyles.labelM(context).copyWith(
+                      style: CatchTextStyles.kicker(
+                        context,
                         color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    gapH12,
                     Image.asset(
                       'assets/branding/catch_icon.png',
                       width: 52,
@@ -44,24 +44,21 @@ class WelcomePage extends ConsumerWidget {
                     const Spacer(),
                     Text(
                       'Love arrives\nat mile\nthree.',
-                      style: CatchTextStyles.displayXL(context).copyWith(
+                      style: CatchTextStyles.heroImpact(
+                        context,
                         color: Colors.white,
-                        fontSize: 48,
-                        fontWeight: FontWeight.w800,
-                        height: 0.95,
-                        letterSpacing: 0,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    gapH16,
                     Text(
                       'Meet someone on a group event. Swipe on people you '
                       'actually ran with - not strangers 30 miles away.',
-                      style: CatchTextStyles.bodyM(context).copyWith(
+                      style: CatchTextStyles.bodyLead(
+                        context,
                         color: Colors.white.withValues(alpha: 0.88),
-                        height: 1.35,
                       ),
                     ),
-                    const SizedBox(height: 26),
+                    gapH24,
                     CatchButton(
                       label: 'Browse clubs',
                       onPressed: () => context.go('/clubs'),
@@ -69,7 +66,7 @@ class WelcomePage extends ConsumerWidget {
                       size: CatchButtonSize.lg,
                       fullWidth: true,
                     ),
-                    const SizedBox(height: 12),
+                    gapH12,
                     CatchButton(
                       label: 'Continue with phone',
                       onPressed: () => context.go(_authLocation(context)),

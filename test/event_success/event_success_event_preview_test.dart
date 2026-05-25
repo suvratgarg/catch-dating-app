@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
-    show buildEvent, buildClub, buildUser;
+    show buildClub, buildEvent, buildUser;
+import '../test_pump_helpers.dart';
 
 void main() {
   test('maps a real event into the Social Event Lite preview context', () {
@@ -120,21 +121,21 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Live host mode'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Live host mode'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Attendee companion'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Attendee companion'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Post-event host report'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Post-event host report'), findsOneWidget);
   });

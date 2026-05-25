@@ -8,22 +8,22 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.6.5",
-    "updated": "2026-05-22",
+    "version": "2.6.13",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up; historical detail lives in passes.jsonl/files.jsonl."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.2",
-    "updated": "2026-05-24",
+    "version": "4.1.6",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.1",
-    "updated": "2026-05-24",
+    "version": "4.1.5",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -92,8 +92,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.2",
-    "updated": "2026-05-24",
+    "version": "4.1.5",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -106,8 +106,8 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.1.0",
-    "updated": "2026-05-22",
+    "version": "1.1.2",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
@@ -120,7 +120,7 @@
   },
   "project_context": {
     "path": "PROJECT_CONTEXT.md",
-    "version": "2.1.5",
+    "version": "2.1.6",
     "updated": "2026-05-22",
     "status": "active",
     "read_policy": "Use as the high-level repo map; prefer audit registry and focused docs for pass-specific rules."
@@ -148,8 +148,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.102",
-    "updated": "2026-05-24",
+    "version": "2.5.116",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -181,6 +181,27 @@
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
   },
+  "marketing_app_media_pipeline": {
+    "path": "docs/marketing_app_media_pipeline.md",
+    "version": "1.0.0",
+    "updated": "2026-05-25",
+    "status": "active",
+    "read_policy": "Read before changing website screenshot slots, marketing capture manifests, host vertical media, or app-derived marketing asset sync checks."
+  },
+  "marketing_landing_page_research": {
+    "path": "docs/marketing_landing_page_research.md",
+    "version": "0.2.0",
+    "updated": "2026-05-25",
+    "status": "active",
+    "read_policy": "Read before redesigning the Catch marketing site, changing launch landing-page content, selecting website imagery, or applying website-derived brand direction to the app theme; this doc supersedes the rejected run-only preview."
+  },
+  "marketing_landing_page_tracker": {
+    "path": "docs/marketing_landing_page_tracker.md",
+    "version": "0.2.0",
+    "updated": "2026-05-25",
+    "status": "temporary_active",
+    "read_policy": "Use while the marketing landing-page research, rejected isolated preview, corrected preview, production rewrite, and app visual-direction follow-up remain open."
+  },
   "location_stack": {
     "path": "docs/location_stack_plan.md",
     "version": "1.1.1",
@@ -190,9 +211,30 @@
   },
   "demo_data_seeding": {
     "path": "docs/demo_data_seeding.md",
-    "version": "1.1.0",
-    "updated": "2026-05-12",
+    "version": "1.2.8",
+    "updated": "2026-05-25",
     "status": "active",
     "read_policy": "Read before changing demo seeding, demo ops, warm accounts, beta data cleanup, or demo validation."
+  },
+  "sales_demo_persona_cohorts": {
+    "path": "docs/sales_demo_persona_cohorts.md",
+    "version": "0.1.0",
+    "updated": "2026-05-25",
+    "status": "active",
+    "read_policy": "Read before changing synthetic persona cohort size, market coverage, NYC/India persona scope, batch waves, roster reuse, or city overlay policy."
+  },
+  "sales_demo_image_generation_runbook": {
+    "path": "docs/sales_demo_image_generation_runbook.md",
+    "version": "0.1.0",
+    "updated": "2026-05-25",
+    "status": "active",
+    "read_policy": "Read before generating, reviewing, downloading, normalizing, uploading, or publishing synthetic persona images for sales-grade demo data."
+  },
+  "sales_demo_seed_tracker": {
+    "path": "docs/sales_demo_seed_tracker.md",
+    "version": "0.1.8",
+    "updated": "2026-05-25",
+    "status": "active",
+    "read_policy": "Read before changing sales-grade synthetic personas, host demo seed quality, image generation pilots, persona catalog migration, or high-fidelity demo acceptance criteria."
   }
 }

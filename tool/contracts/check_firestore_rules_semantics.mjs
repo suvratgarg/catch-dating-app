@@ -44,15 +44,9 @@ function checkUserProfileRules() {
   });
 
   checkListMax(body, "profilePrompts", schema);
-  checkListMax(body, "photoUrls", schema);
-  checkListMax(body, "photoThumbnailUrls", schema);
-  checkListMax(body, "photoPrompts", schema);
   checkListMax(body, "profilePhotos", schema);
   checkListMax(body, "interestedInGenders", schema);
   checkListMax(body, "languages", schema);
-  checkListMax(body, "preferredDistances", schema);
-  checkListMax(body, "runningReasons", schema);
-  checkListMax(body, "preferredRunTimes", schema);
 
   checkNumericBounds(body, "minAgePreference", schema);
   checkNumericBounds(body, "maxAgePreference", schema);

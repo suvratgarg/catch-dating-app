@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "logicalName": "profilePhoto",
-  "currentPhase": "new_primary_live_backfilled",
-  "reason": "Profile photos are currently represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape is easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and future per-photo analytics because every consumer must keep indexes aligned.",
-  "currentShape": {
+  "currentPhase": "retire_legacy_arrays_local",
+  "reason": "Profile photos were historically represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape was easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and per-photo analytics because every consumer had to keep indexes aligned.",
+  "legacyShape": {
     "userProfileFields": [
       "users/{uid}.photoUrls",
       "users/{uid}.photoThumbnailUrls",
@@ -17,7 +17,7 @@
     "storagePathPattern": "users/{uid}/photos/{photoIndex}_{timestamp}.{ext}",
     "thumbnailPathPattern": "users/{uid}/photoThumbnails/{sourceName}.jpg"
   },
-  "candidateShape": {
+  "currentShape": {
     "field": "profilePhotos",
     "contract": "contracts/embedded/profile_photo.schema.json",
     "description": "A stable ordered array of photo objects on users/{uid} and projected publicProfiles/{uid}.",
@@ -85,8 +85,8 @@
     },
     {
       "id": "retire_legacy_arrays",
-      "status": "pending",
-      "description": "Remove photoUrls, photoThumbnailUrls, and photoPrompts only after app versions that require the old arrays are no longer supported."
+      "status": "complete_local",
+      "description": "Remote Config min_version is 1.0.1. Local contracts, Dart models, Functions projections, rules, validators, and demo/data tooling now treat profilePhotos as the only canonical profile photo field. Live document cleanup remains dry-run-first through tool/data/retire_legacy_profile_fields.mjs."
     }
   ],
   "knownConsumers": [
@@ -130,6 +130,12 @@
       "groupedPhotoUsersAfter": 86,
       "repairsAfter": 0,
       "warningsAfter": 0
+    },
+    "retireLegacyArrays": {
+      "localCutoverAt": "2026-05-25",
+      "remoteConfigMinVersion": "1.0.1",
+      "cleanupTool": "tool/data/retire_legacy_profile_fields.mjs",
+      "remoteDataCleanup": "pending explicit environment apply"
     }
   }
 }

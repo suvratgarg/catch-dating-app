@@ -82,6 +82,14 @@
         }
       },
       {
+        "source": "/host",
+        "destination": "/host/index.html"
+      },
+      {
+        "source": "/host/**",
+        "destination": "/host/index.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

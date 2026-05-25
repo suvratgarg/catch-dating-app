@@ -194,8 +194,21 @@ function user(overrides: FakeData = {}): FakeData {
     countryCode: "+91",
     profileComplete: false,
     interestedInGenders: ["woman"],
-    runPreferencesVersion: 1,
+    activityPreferences: runningPreferences({version: 1}),
     ...overrides,
+  };
+}
+
+function runningPreferences(overrides: FakeData = {}): FakeData {
+  return {
+    running: {
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: [],
+      runningReasons: [],
+      preferredRunTimes: [],
+      ...overrides,
+    },
   };
 }
 
@@ -299,7 +312,9 @@ test("signUpUserForEvent rejects booking-incomplete profiles", async () => {
 test("signUpUserForEvent requires run preferences for run events", async () => {
   const db = firestore({
     "events/event-1": event(),
-    "users/runner-1": user({runPreferencesVersion: 0}),
+    "users/runner-1": user({
+      activityPreferences: runningPreferences({version: 0}),
+    }),
   });
 
   await assert.rejects(
@@ -321,7 +336,9 @@ test("signUpUserForEvent does not require run preferences for dinner events",
           interactionModel: "seatedTable",
         },
       }),
-      "users/runner-1": user({runPreferencesVersion: 0}),
+      "users/runner-1": user({
+        activityPreferences: runningPreferences({version: 0}),
+      }),
     });
 
     await signUpUserForEvent(db, "event-1", "runner-1");

@@ -107,7 +107,12 @@ class PublicProfileScreen extends ConsumerWidget {
       if (previous?.isPending == true && current.isSuccess) {
         if (profile != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${profile.name} has been blocked.')),
+            SnackBar(
+              content: Text(
+                '${profile.name} has been blocked.',
+                style: CatchTextStyles.labelL(context, color: t.bg),
+              ),
+            ),
           );
         }
         Navigator.of(context).maybePop();
@@ -116,9 +121,14 @@ class PublicProfileScreen extends ConsumerWidget {
 
     ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Report submitted.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Report submitted.',
+              style: CatchTextStyles.labelL(context, color: t.bg),
+            ),
+          ),
+        );
       }
     });
 
@@ -174,7 +184,7 @@ class PublicProfileScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(CatchSpacing.s6),
                 child: Text(
                   'Unable to load this profile.',
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
+                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -186,7 +196,7 @@ class PublicProfileScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(CatchSpacing.s6),
                     child: Text(
                       'This profile is unavailable.',
-                      style: CatchTextStyles.bodyM(context, color: t.ink2),
+                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
                       textAlign: TextAlign.center,
                     ),
                   ),

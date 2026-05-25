@@ -5,41 +5,67 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 
+ActivityPreferences runningPrefs({
+  int paceMinSecsPerKm = defaultPaceMinSecsPerKm,
+  int paceMaxSecsPerKm = defaultPaceMaxSecsPerKm,
+  List<PreferredDistance> preferredDistances = const [],
+  List<RunReason> runningReasons = const [],
+  List<PreferredRunTime> preferredRunTimes = const [],
+}) {
+  return ActivityPreferences(
+    running: RunningPreferences(
+      paceMinSecsPerKm: paceMinSecsPerKm,
+      paceMaxSecsPerKm: paceMaxSecsPerKm,
+      preferredDistances: preferredDistances,
+      runningReasons: runningReasons,
+      preferredRunTimes: preferredRunTimes,
+      version: currentRunPreferencesVersion,
+    ),
+  );
+}
+
 void main() {
   group('profileQualitySummary', () {
     test('scores strong public profiles and omits suggestions', () {
-      final profile =
-          buildPublicProfile(
-            photoUrls: const ['1.jpg', '2.jpg', '3.jpg'],
-            profilePrompts: [
-              for (final promptId in defaultProfilePromptIds)
-                profilePromptAnswerFor(
-                  definition: profilePromptDefinition(promptId),
-                  answer: 'A specific answer for $promptId.',
-                ),
-            ],
-          ).copyWith(
-            photoPrompts: const [
-              PhotoPromptAnswer(
-                photoIndex: 0,
-                promptId: 'proofIRun',
-                prompt: 'Proof I actually event',
-                caption: 'Morning miles.',
-              ),
-              PhotoPromptAnswer(
-                photoIndex: 1,
-                promptId: 'finishLine',
-                prompt: 'After the finish line',
-                caption: 'Coffee stop.',
-              ),
-            ],
-            relationshipGoal: RelationshipGoal.relationship,
-            preferredDistances: const [PreferredDistance.fiveK],
-            runningReasons: const [RunReason.community],
-            preferredRunTimes: const [PreferredRunTime.morning],
-            occupation: 'Designer',
-            workout: WorkoutFrequency.often,
-          );
+      final base = buildPublicProfile(
+        photoUrls: const ['1.jpg', '2.jpg', '3.jpg'],
+        profilePrompts: [
+          for (final promptId in defaultProfilePromptIds)
+            profilePromptAnswerFor(
+              definition: profilePromptDefinition(promptId),
+              answer: 'A specific answer for $promptId.',
+            ),
+        ],
+      );
+      final profile = base.copyWith(
+        profilePhotos: [
+          base.profilePhotos[0].copyWith(
+            prompt: const PhotoPromptAnswer(
+              photoIndex: 0,
+              promptId: 'proofIRun',
+              prompt: 'Proof I actually event',
+              caption: 'Morning miles.',
+            ),
+          ),
+          base.profilePhotos[1].copyWith(
+            prompt: const PhotoPromptAnswer(
+              photoIndex: 1,
+              promptId: 'finishLine',
+              prompt: 'After the finish line',
+              caption: 'Coffee stop.',
+            ),
+          ),
+          base.profilePhotos[2],
+        ],
+        relationshipGoal: RelationshipGoal.relationship,
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.fiveK],
+          runningReasons: const [RunReason.community],
+          preferredRunTimes: const [PreferredRunTime.morning],
+        ),
+        occupation: 'Designer',
+        workout: WorkoutFrequency.often,
+      );
 
       final summary = profileQualitySummary(profile);
 
@@ -63,10 +89,12 @@ void main() {
   group('emotionalRunTagsForProfile', () {
     test('turns running preferences into emotional tags', () {
       final profile = buildPublicProfile().copyWith(
-        preferredDistances: const [PreferredDistance.halfMarathon],
-        runningReasons: const [RunReason.mindfulness, RunReason.social],
-        paceMinSecsPerKm: 390,
-        paceMaxSecsPerKm: 480,
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.halfMarathon],
+          runningReasons: const [RunReason.mindfulness, RunReason.social],
+          paceMinSecsPerKm: 390,
+          paceMaxSecsPerKm: 480,
+        ),
       );
 
       final tags = emotionalRunTagsForProfile(profile);
@@ -82,10 +110,12 @@ void main() {
 
     test('turns preferred event times into emotional tags', () {
       final profile = buildPublicProfile().copyWith(
-        preferredRunTimes: const [
-          PreferredRunTime.earlyMorning,
-          PreferredRunTime.evening,
-        ],
+        activityPreferences: runningPrefs(
+          preferredRunTimes: const [
+            PreferredRunTime.earlyMorning,
+            PreferredRunTime.evening,
+          ],
+        ),
       );
 
       final tags = emotionalRunTagsForProfile(profile);
@@ -101,16 +131,20 @@ void main() {
     test('ranks shared event and concrete overlaps', () {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.community],
-        preferredRunTimes: const [PreferredRunTime.morning],
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.fiveK],
+          runningReasons: const [RunReason.community],
+          preferredRunTimes: const [PreferredRunTime.morning],
+        ),
         languages: const [Language.english, Language.hindi],
       );
       final target = buildPublicProfile().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.community],
-        preferredRunTimes: const [PreferredRunTime.earlyMorning],
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.fiveK],
+          runningReasons: const [RunReason.community],
+          preferredRunTimes: const [PreferredRunTime.earlyMorning],
+        ),
         languages: const [Language.english],
       );
 
@@ -131,16 +165,20 @@ void main() {
       'uses shared time-of-day preferences when higher signals are absent',
       () {
         final viewer = buildUser().copyWith(
-          preferredRunTimes: const [
-            PreferredRunTime.morning,
-            PreferredRunTime.evening,
-          ],
+          activityPreferences: runningPrefs(
+            preferredRunTimes: const [
+              PreferredRunTime.morning,
+              PreferredRunTime.evening,
+            ],
+          ),
         );
         final target = buildPublicProfile().copyWith(
-          preferredRunTimes: const [
-            PreferredRunTime.earlyMorning,
-            PreferredRunTime.night,
-          ],
+          activityPreferences: runningPrefs(
+            preferredRunTimes: const [
+              PreferredRunTime.earlyMorning,
+              PreferredRunTime.night,
+            ],
+          ),
         );
 
         final reasons = compatibilityReasonsForProfile(

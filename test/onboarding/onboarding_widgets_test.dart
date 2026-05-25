@@ -230,7 +230,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(
-                buildUser(uid: 'runner-1').copyWith(photoUrls: const []),
+                buildUser(uid: 'runner-1').copyWith(profilePhotos: const []),
               ),
             ),
           ],
@@ -264,7 +264,7 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
-              buildUser(uid: 'runner-1').copyWith(photoUrls: const []),
+              buildUser(uid: 'runner-1').copyWith(profilePhotos: const []),
             ),
           ),
         ],
@@ -337,7 +337,14 @@ void main() {
             (ref) => Stream.value(
               buildUser(
                 uid: 'runner-1',
-              ).copyWith(preferredRunTimes: const [PreferredRunTime.morning]),
+              ).copyWith(
+                activityPreferences: const ActivityPreferences(
+                  running: RunningPreferences(
+                    preferredRunTimes: [PreferredRunTime.morning],
+                    version: currentRunPreferencesVersion,
+                  ),
+                ),
+              ),
             ),
           ),
         ],

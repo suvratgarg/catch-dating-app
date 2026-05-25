@@ -5,53 +5,13 @@ export 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         AddClubHostCallableRequest,
         ArchiveClubCallableRequest,
         ClubMembershipCallableRequest,
+        CreateClubCallableRequest,
         DeleteClubCallableRequest,
         RemoveClubHostCallableRequest,
         SetClubNotificationPreferenceCallableRequest,
         StartClubHostConversationCallableRequest,
-        TransferClubOwnershipCallableRequest;
-
-final class CreateClubCallableRequest {
-  const CreateClubCallableRequest({
-    required this.name,
-    required this.description,
-    required this.location,
-    required this.area,
-    this.clubId,
-    this.imageUrl,
-    this.profileImageUrl,
-    this.instagramHandle,
-    this.phoneNumber,
-    this.email,
-    this.hostDefaults,
-  });
-
-  final String? clubId;
-  final String name;
-  final String description;
-  final String location;
-  final String area;
-  final String? imageUrl;
-  final String? profileImageUrl;
-  final String? instagramHandle;
-  final String? phoneNumber;
-  final String? email;
-  final Map<String, Object?>? hostDefaults;
-
-  Map<String, Object?> toJson() => {
-    if (clubId != null) 'clubId': clubId,
-    'name': name,
-    'description': description,
-    'location': location,
-    'area': area,
-    'imageUrl': imageUrl,
-    'profileImageUrl': profileImageUrl,
-    'instagramHandle': instagramHandle,
-    'phoneNumber': phoneNumber,
-    'email': email,
-    'hostDefaults': ?hostDefaults,
-  };
-}
+        TransferClubOwnershipCallableRequest,
+        UpdateClubCallableRequest;
 
 final class CreateClubCallableResponse {
   const CreateClubCallableResponse({required this.clubId});
@@ -68,15 +28,6 @@ final class CreateClubCallableResponse {
   }
 
   final String clubId;
-}
-
-final class UpdateClubCallableRequest {
-  const UpdateClubCallableRequest({required this.clubId, required this.fields});
-
-  final String clubId;
-  final Map<String, dynamic> fields;
-
-  Map<String, Object?> toJson() => {'clubId': clubId, 'fields': fields};
 }
 
 final class StartClubHostConversationCallableResponse {

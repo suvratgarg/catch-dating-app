@@ -23,6 +23,7 @@ node tool/run.mjs run demo:ops --help
 - `firebase/`: Firebase project/config helper scripts.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - `migrations/`: historical one-time migrations kept for auditability.
+- `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
 
 ## Stable Root Entrypoints

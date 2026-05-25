@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -144,10 +145,10 @@ class EventLocationMapScreen extends ConsumerWidget {
                               ),
                               if (event.locationNotes != null &&
                                   event.locationNotes!.isNotEmpty) ...[
-                                const SizedBox(height: 2),
+                                gapH2,
                                 Text(
                                   event.locationNotes!,
-                                  style: CatchTextStyles.bodyS(
+                                  style: CatchTextStyles.supporting(
                                     context,
                                     color: t.ink2,
                                   ),

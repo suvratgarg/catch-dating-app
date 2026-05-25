@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -63,18 +64,13 @@ class _CreateClubButton extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
+                CatchSurface(
                   width: 76,
                   height: 76,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(CatchRadius.md),
-                    border: Border.all(
-                      color: t.line2,
-                      width: 1.5,
-                      style: BorderStyle.solid,
-                    ),
-                    color: t.raised,
-                  ),
+                  radius: CatchRadius.md,
+                  backgroundColor: t.raised,
+                  borderColor: t.line2,
+                  borderWidth: 1.5,
                   child: Icon(Icons.add_rounded, size: 24, color: t.ink2),
                 ),
                 gapH6,

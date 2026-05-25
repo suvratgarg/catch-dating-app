@@ -42,7 +42,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
           gapH4,
           Text(
             'A small recap for you, not a public share card.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
           _AfterglowBeatGrid(
@@ -84,7 +84,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Only you see this recap. Hosts get aggregate coaching, never your private notes or individual opener choices.',
-                    style: CatchTextStyles.bodyS(context, color: t.ink),
+                    style: CatchTextStyles.supporting(context, color: t.ink),
                   ),
                 ),
               ],
@@ -231,12 +231,12 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
                         children: [
                           Text(
                             beat.label,
-                            style: CatchTextStyles.titleS(context),
+                            style: CatchTextStyles.sectionTitle(context),
                           ),
                           gapH2,
                           Text(
                             _animatedValueString(beat),
-                            style: CatchTextStyles.bodyS(
+                            style: CatchTextStyles.supporting(
                               context,
                               color: t.ink2,
                             ),

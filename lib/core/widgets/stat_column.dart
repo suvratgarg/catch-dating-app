@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -31,10 +32,7 @@ class StatColumn extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: align,
       children: [
-        if (icon != null) ...[
-          Icon(icon, color: t.primary, size: 18),
-          const SizedBox(height: 6),
-        ],
+        if (icon != null) ...[Icon(icon, color: t.primary, size: 18), gapH6],
         if (value != null)
           Text(
             value!,
@@ -45,10 +43,10 @@ class StatColumn extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: center ? TextAlign.center : null,
           ),
-        const SizedBox(height: 2),
+        gapH2,
         Text(
           label,
-          style: CatchTextStyles.bodyS(context, color: labelColor),
+          style: CatchTextStyles.supporting(context, color: labelColor),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: center ? TextAlign.center : null,

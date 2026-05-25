@@ -48,10 +48,7 @@ class AttendedEventTile extends StatelessWidget {
               children: [
                 Text(
                   'OPEN CATCH WINDOW',
-                  style: CatchTextStyles.labelM(
-                    context,
-                    color: t.primary,
-                  ).copyWith(fontWeight: FontWeight.w700),
+                  style: CatchTextStyles.kicker(context, color: t.primary),
                 ),
                 gapH4,
                 Text(
@@ -63,7 +60,7 @@ class AttendedEventTile extends StatelessWidget {
                 gapH4,
                 Text(
                   '$dateStr · ${event.attendedCount} runners checked in',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

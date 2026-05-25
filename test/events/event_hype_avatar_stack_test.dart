@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,8 +125,14 @@ void main() {
         'age': 28,
         'bio': 'Here to event.',
         'gender': Gender.woman.name,
-        'photoUrls': ['https://full.test/runner-1.jpg'],
-        'photoThumbnailUrls': <String>[],
+        'profilePhotos': [
+          ProfilePhoto.uploaded(
+            position: 0,
+            url: 'https://full.test/runner-1.jpg',
+            storagePath: 'publicProfiles/runner-1/photos/photo-0.jpg',
+            now: now,
+          ).copyWith(thumbnailUrl: '').toJson(),
+        ],
         'paceMinSecsPerKm': 300,
         'paceMaxSecsPerKm': 420,
       });
@@ -182,8 +189,13 @@ Future<void> _seedPublicProfile(
     'age': 28,
     'bio': 'Here to event.',
     'gender': gender.name,
-    'photoUrls': [fullUrl],
-    'photoThumbnailUrls': [thumbnailUrl],
+    'profilePhotos': [
+      ProfilePhoto.uploaded(
+        position: 0,
+        url: fullUrl,
+        storagePath: 'publicProfiles/$uid/photos/photo-0.jpg',
+      ).copyWith(thumbnailUrl: thumbnailUrl).toJson(),
+    ],
     'paceMinSecsPerKm': 300,
     'paceMaxSecsPerKm': 420,
   });

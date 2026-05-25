@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class CatchStartupLoadingScreen extends StatelessWidget {
                 height: 96,
                 semanticLabel: 'Catch',
               ),
-              const SizedBox(height: 28),
+              gapH28,
               const SizedBox.square(
                 dimension: 28,
                 child: CatchLoadingIndicator(

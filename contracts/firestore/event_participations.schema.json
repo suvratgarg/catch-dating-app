@@ -99,6 +99,33 @@
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "hostApprovalStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "pending",
+        "approved",
+        "declined",
+        null
+      ],
+      "description": "Manual-approval request state for request-to-join events. Null for regular waitlist edges.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

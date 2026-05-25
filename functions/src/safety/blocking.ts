@@ -3,7 +3,7 @@ import {onCall, CallableRequest, HttpsError} from
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {BlockDoc, MatchDoc} from "../shared/firestore";
+import {BlockDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";

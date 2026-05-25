@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
@@ -23,7 +24,7 @@ class RequirementsRow extends StatelessWidget {
           'Requirements',
           style: CatchTextStyles.labelL(context, color: t.ink2),
         ),
-        const SizedBox(height: 8),
+        gapH8,
         Wrap(
           spacing: 6,
           runSpacing: 6,

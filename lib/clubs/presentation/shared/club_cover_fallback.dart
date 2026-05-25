@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class ClubCoverFallback extends StatelessWidget {
@@ -38,20 +41,14 @@ class ClubCoverFallback extends StatelessWidget {
           CustomPaint(painter: _ClubCoverPatternPainter(palette)),
           Align(
             alignment: Alignment.center,
-            child: Container(
-              width: compact ? 42 : 62,
-              height: compact ? 42 : 62,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: palette.iconFill,
-                borderRadius: BorderRadius.circular(compact ? 16 : 22),
-                border: Border.all(color: palette.iconBorder, width: 1.2),
-              ),
-              child: Icon(
-                Icons.location_on_rounded,
-                size: compact ? 23 : 32,
-                color: palette.icon,
-              ),
+            child: CatchIconTile(
+              icon: Icons.location_on_rounded,
+              iconColor: palette.icon,
+              backgroundColor: palette.iconFill,
+              borderColor: palette.iconBorder,
+              size: compact ? 42 : 62,
+              iconSize: compact ? 23 : 32,
+              radius: compact ? 16 : 22,
             ),
           ),
           DecoratedBox(
@@ -107,18 +104,16 @@ class _CoverChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Container(
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: Colors.white.withValues(alpha: 0.72),
+      borderColor: Colors.white.withValues(alpha: 0.62),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.62)),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14, color: t.primary),
-          const SizedBox(width: 4),
+          gapW4,
           Text(label, style: CatchTextStyles.labelS(context, color: t.ink2)),
         ],
       ),

@@ -38,7 +38,7 @@ class ProfileSectionCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: CatchTextStyles.labelL(
+            style: CatchTextStyles.kicker(
               context,
               color: palette.textSecondary,
             ),

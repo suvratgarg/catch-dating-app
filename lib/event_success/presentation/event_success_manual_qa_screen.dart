@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -22,13 +24,20 @@ import 'package:catch_dating_app/event_success/domain/event_success_structure.da
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
+import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Dev/staging-only manual QA harness for the live event-success loop.
 ///
@@ -92,26 +101,19 @@ class _EventSuccessManualQaScreenState
             _ManualQaSideBySide(
               hostTab: store.hostTab,
               data: data,
-              compatibilityEnabled: store.compatibilityEnabled,
               firstHelloEnabled: store.firstHelloEnabled,
               firstHelloSkipped: store.firstHelloSkipped,
               firstHelloCompleted: store.firstHelloCompleted,
-              compatibilityAffectsRanking: store.compatibilityAffectsRanking,
-              questionnaireConfig: store.questionnaireConfig,
               microPodsOptedOut: store.microPodsOptedOut,
               guidedRotationsOptedOut: store.guidedRotationsOptedOut,
               fixtureActions: store.fixtureActions(_showFixtureAction),
-              onHostTabChanged: store.setHostTab,
-              onFirstHelloEnabledChanged: store.setFirstHelloEnabled,
-              onCompatibilityEnabledChanged: store.setCompatibilityEnabled,
-              onCompatibilityRankingChanged:
-                  store.setCompatibilityAffectsRanking,
-              onQuestionnaireConfigChanged: store.setQuestionnaireConfig,
+              onHostSectionChanged: store.setHostSection,
               onCompatibilityAnswersSaved: store.saveCompatibilityAnswers,
               onFirstHelloCompleted: store.completeFirstHelloMission,
               onFirstHelloSkipped: store.skipFirstHelloMission,
               onMicroPodsOptOutChanged: store.setMicroPodsOptedOut,
               onGuidedRotationsOptOutChanged: store.setGuidedRotationsOptedOut,
+              onToggleAttendance: store.toggleAttendance,
             ),
           ],
         ),
@@ -121,7 +123,9 @@ class _EventSuccessManualQaScreenState
 
   void _showFixtureAction(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message, style: CatchTextStyles.bodyS(context))),
+      SnackBar(
+        content: Text(message, style: CatchTextStyles.supporting(context)),
+      ),
     );
   }
 }
@@ -146,6 +150,7 @@ class _ManualQaStore {
   bool microPodsOptedOut = false;
   bool guidedRotationsOptedOut = false;
   List<String>? savedCompatibilityAnswerIds;
+  Set<String>? checkedInOverride;
   Duration _countdownElapsed = Duration.zero;
   Timer? _countdownTimer;
 
@@ -164,6 +169,7 @@ class _ManualQaStore {
     microPodsOptedOut: microPodsOptedOut,
     guidedRotationsOptedOut: guidedRotationsOptedOut,
     savedCompatibilityAnswerIds: savedCompatibilityAnswerIds,
+    checkedInOverride: checkedInOverride,
     countdownElapsed: _effectiveCountdownElapsed,
   );
 
@@ -184,6 +190,7 @@ class _ManualQaStore {
     guidedRotationsOptedOut = false;
     microPodsOptedOut = false;
     savedCompatibilityAnswerIds = null;
+    checkedInOverride = null;
     _syncCountdownTimer();
     _notify();
   }
@@ -197,6 +204,10 @@ class _ManualQaStore {
     }
     _syncCountdownTimer();
     _notify();
+  }
+
+  void setHostSection(HostEventManageSection section) {
+    setHostTab(section.eventSuccessTab);
   }
 
   void setCompatibilityEnabled(bool value) {
@@ -265,6 +276,18 @@ class _ManualQaStore {
     if (guidedRotationsOptedOut == value) return;
     guidedRotationsOptedOut = value;
     _notify();
+  }
+
+  bool toggleAttendance(String uid) {
+    hostTab = EventSuccessHostTab.live;
+    final checkedInIds =
+        checkedInOverride ?? _ManualQaFixtures.defaultCheckedInIds.toSet();
+    final next = checkedInIds.toSet();
+    final isAttended = !next.remove(uid);
+    if (isAttended) next.add(uid);
+    checkedInOverride = next;
+    _notify();
+    return isAttended;
   }
 
   EventSuccessHostFixtureActions fixtureActions(
@@ -526,44 +549,30 @@ class _ManualQaSideBySide extends StatelessWidget {
   const _ManualQaSideBySide({
     required this.hostTab,
     required this.data,
-    required this.compatibilityEnabled,
     required this.firstHelloEnabled,
     required this.firstHelloSkipped,
     required this.firstHelloCompleted,
-    required this.compatibilityAffectsRanking,
-    required this.questionnaireConfig,
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
     required this.fixtureActions,
-    required this.onHostTabChanged,
-    required this.onFirstHelloEnabledChanged,
-    required this.onCompatibilityEnabledChanged,
-    required this.onCompatibilityRankingChanged,
-    required this.onQuestionnaireConfigChanged,
+    required this.onHostSectionChanged,
     required this.onCompatibilityAnswersSaved,
     required this.onFirstHelloCompleted,
     required this.onFirstHelloSkipped,
     required this.onMicroPodsOptOutChanged,
     required this.onGuidedRotationsOptOutChanged,
+    required this.onToggleAttendance,
   });
 
   final EventSuccessHostTab hostTab;
   final _ManualQaFixtures data;
-  final bool compatibilityEnabled;
   final bool firstHelloEnabled;
   final bool firstHelloSkipped;
   final bool firstHelloCompleted;
-  final bool compatibilityAffectsRanking;
-  final EventSuccessQuestionnaireConfig questionnaireConfig;
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
   final EventSuccessHostFixtureActions fixtureActions;
-  final ValueChanged<EventSuccessHostTab> onHostTabChanged;
-  final ValueChanged<bool> onFirstHelloEnabledChanged;
-  final ValueChanged<bool> onCompatibilityEnabledChanged;
-  final ValueChanged<bool> onCompatibilityRankingChanged;
-  final ValueChanged<EventSuccessQuestionnaireConfig>
-  onQuestionnaireConfigChanged;
+  final ValueChanged<HostEventManageSection> onHostSectionChanged;
   final Future<void> Function(List<String> answerIds)
   onCompatibilityAnswersSaved;
   final Future<void> Function(
@@ -574,6 +583,7 @@ class _ManualQaSideBySide extends StatelessWidget {
   final VoidCallback onFirstHelloSkipped;
   final ValueChanged<bool> onMicroPodsOptOutChanged;
   final ValueChanged<bool> onGuidedRotationsOptOutChanged;
+  final bool Function(String uid) onToggleAttendance;
 
   @override
   Widget build(BuildContext context) {
@@ -594,48 +604,23 @@ class _ManualQaSideBySide extends StatelessWidget {
               SizedBox(
                 width: paneWidth,
                 child: _QaDeviceFrame(
-                  title: 'Host config and controls',
+                  title: 'Host Manage',
                   subtitle:
-                      '${data.plan.structureConfig.unitKind.label}, ${data.plan.structureConfig.unitSize} per ${data.plan.structureConfig.unitKind.singularLabel} · ${data.activeStepLabel}',
+                      'Production host workspace · ${data.activeStepLabel}',
                   badges: [
                     data.hostTabBadge(hostTab),
                     data.activeStepProgress,
+                    '${data.roster.bookedCount} booked',
+                    '${data.roster.checkedInCount} checked in',
                     '${data.assignments.length} pod cards',
                     '${data.rotationAssignments.length} rotation cards',
                   ],
-                  controls: _HostQaControls(
-                    hostTab: hostTab,
-                    firstHelloEnabled: firstHelloEnabled,
-                    compatibilityEnabled: compatibilityEnabled,
-                    compatibilityAffectsRanking: compatibilityAffectsRanking,
-                    questionnaireConfig: questionnaireConfig,
-                    onHostTabChanged: onHostTabChanged,
-                    onFirstHelloEnabledChanged: onFirstHelloEnabledChanged,
-                    onCompatibilityEnabledChanged:
-                        onCompatibilityEnabledChanged,
-                    onCompatibilityRankingChanged:
-                        onCompatibilityRankingChanged,
-                    onQuestionnaireConfigChanged: onQuestionnaireConfigChanged,
-                  ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(CatchSpacing.s4),
-                    child: EventSuccessHostPanel(
-                      event: data.event,
-                      plan: data.plan,
-                      planIsPersisted: true,
-                      roster: data.roster,
-                      scorecard: EventSuccessSampleScorecards.strongSocialRun,
-                      assignments: data.assignments,
-                      rotationAssignments: data.rotationAssignments,
-                      rotationParticipantProfiles: data.profiles,
-                      preferences: data.preferences,
-                      wingmanRequests: data.wingmanRequests,
-                      wingmanProfiles: data.profiles,
-                      initialTab: hostTab,
-                      showTabs: false,
-                      embedded: true,
-                      fixtureActions: fixtureActions,
-                    ),
+                  child: _ManualQaHostManagePane(
+                    data: data,
+                    selectedTab: hostTab,
+                    fixtureActions: fixtureActions,
+                    onSectionChanged: onHostSectionChanged,
+                    onToggleAttendance: onToggleAttendance,
                   ),
                 ),
               ),
@@ -736,7 +721,7 @@ class _QaDeviceFrame extends StatelessWidget {
                 gapH4,
                 Text(
                   subtitle,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH10,
                 Wrap(
@@ -773,108 +758,36 @@ class _QaDeviceFrame extends StatelessWidget {
   }
 }
 
-class _HostQaControls extends StatelessWidget {
-  const _HostQaControls({
-    required this.hostTab,
-    required this.firstHelloEnabled,
-    required this.compatibilityEnabled,
-    required this.compatibilityAffectsRanking,
-    required this.questionnaireConfig,
-    required this.onHostTabChanged,
-    required this.onFirstHelloEnabledChanged,
-    required this.onCompatibilityEnabledChanged,
-    required this.onCompatibilityRankingChanged,
-    required this.onQuestionnaireConfigChanged,
+class _ManualQaHostManagePane extends StatelessWidget {
+  const _ManualQaHostManagePane({
+    required this.data,
+    required this.selectedTab,
+    required this.fixtureActions,
+    required this.onSectionChanged,
+    required this.onToggleAttendance,
   });
 
-  final EventSuccessHostTab hostTab;
-  final bool firstHelloEnabled;
-  final bool compatibilityEnabled;
-  final bool compatibilityAffectsRanking;
-  final EventSuccessQuestionnaireConfig questionnaireConfig;
-  final ValueChanged<EventSuccessHostTab> onHostTabChanged;
-  final ValueChanged<bool> onFirstHelloEnabledChanged;
-  final ValueChanged<bool> onCompatibilityEnabledChanged;
-  final ValueChanged<bool> onCompatibilityRankingChanged;
-  final ValueChanged<EventSuccessQuestionnaireConfig>
-  onQuestionnaireConfigChanged;
+  final _ManualQaFixtures data;
+  final EventSuccessHostTab selectedTab;
+  final EventSuccessHostFixtureActions fixtureActions;
+  final ValueChanged<HostEventManageSection> onSectionChanged;
+  final bool Function(String uid) onToggleAttendance;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _ControlLabel('Host surface'),
-        gapH8,
-        CatchSegmentedControl<EventSuccessHostTab>(
-          selected: hostTab,
-          expanded: true,
-          style: CatchSegmentedControlStyle.surface,
-          onChanged: onHostTabChanged,
-          segments: const [
-            CatchSegment(
-              value: EventSuccessHostTab.setup,
-              label: 'Setup',
-              icon: Icons.tune_rounded,
-            ),
-            CatchSegment(
-              value: EventSuccessHostTab.live,
-              label: 'Live',
-              icon: Icons.play_circle_outline_rounded,
-            ),
-            CatchSegment(
-              value: EventSuccessHostTab.report,
-              label: 'Report',
-              icon: Icons.insights_outlined,
-            ),
-          ],
-        ),
-        gapH12,
-        _ControlLabel('Arrival ritual'),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchChip(
-              label: 'First Hello',
-              active: firstHelloEnabled,
-              icon: const Icon(Icons.waving_hand_outlined),
-              onTap: () => onFirstHelloEnabledChanged(!firstHelloEnabled),
-            ),
-          ],
-        ),
-        gapH12,
-        _ControlLabel('Compatibility layer'),
-        gapH8,
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchChip(
-              label: 'Questionnaire',
-              active: compatibilityEnabled,
-              icon: const Icon(Icons.quiz_outlined),
-              onTap: () => onCompatibilityEnabledChanged(!compatibilityEnabled),
-            ),
-            CatchChip(
-              label: 'Pairing signal',
-              active: compatibilityEnabled && compatibilityAffectsRanking,
-              enabled: compatibilityEnabled,
-              icon: const Icon(Icons.auto_awesome_rounded),
-              onTap: () =>
-                  onCompatibilityRankingChanged(!compatibilityAffectsRanking),
-            ),
-          ],
-        ),
-        if (compatibilityEnabled) ...[
-          gapH12,
-          EventSuccessQuestionnaireConfigEditor(
-            value: questionnaireConfig,
-            onChanged: onQuestionnaireConfigChanged,
-          ),
-        ],
-      ],
+    return ProviderScope(
+      key: ValueKey(data.hostManageScopeKey),
+      overrides: data.hostManageProviderOverrides(
+        onToggleAttendance: onToggleAttendance,
+      ),
+      child: HostEventManageScreen(
+        club: data.club,
+        event: data.event,
+        onBackToSuccess: () {},
+        initialSection: selectedTab.hostManageSection,
+        onSectionChanged: onSectionChanged,
+        eventSuccessFixtureActions: fixtureActions,
+      ),
     );
   }
 }
@@ -1088,10 +1001,12 @@ class _ManualQaFixtures {
     required this.microPodsOptedOut,
     required this.guidedRotationsOptedOut,
     required this.savedCompatibilityAnswerIds,
+    required this.checkedInOverride,
     required this.countdownElapsed,
   }) {
     playbook = scenario.playbook;
     event = _eventForScenario();
+    club = _clubForScenario();
     final draft =
         EventSuccessHostDraft.fromPlaybook(
           playbook,
@@ -1134,28 +1049,16 @@ class _ManualQaFixtures {
           activeRevealRoundIndex: _resolvedActiveRevealRoundIndex,
           revealStartedAt: _revealStartedAt,
         );
-    roster = const EventParticipationRoster(
-      bookedIds: [
-        'runner-1',
-        'runner-2',
-        'runner-3',
-        'runner-4',
-        'runner-5',
-        'runner-6',
-        'runner-7',
-        'runner-8',
-      ],
-      checkedInIds: [
-        'runner-1',
-        'runner-2',
-        'runner-3',
-        'runner-4',
-        'runner-5',
-      ],
-      waitlistedIds: ['runner-9'],
+    roster = EventParticipationRoster(
+      bookedIds: defaultBookedIds,
+      checkedInIds: _checkedInIds,
+      waitlistedIds: defaultWaitlistedIds,
     );
     viewer = _userProfile();
     profiles = _publicProfiles();
+    participations = _participations();
+    attendanceViewModel = _attendanceViewModel();
+    attendeeProfileRows = _attendeeProfileRows();
     participation = _participation();
     assignments = _microPodAssignments();
     rotationAssignments = _rotationAssignments();
@@ -1179,15 +1082,50 @@ class _ManualQaFixtures {
   final bool microPodsOptedOut;
   final bool guidedRotationsOptedOut;
   final List<String>? savedCompatibilityAnswerIds;
+  final Set<String>? checkedInOverride;
   final Duration countdownElapsed;
 
-  static final _baseStart = DateTime(2026, 5, 21, 18);
-  static final _createdAt = _baseStart.subtract(const Duration(days: 4));
+  static final _clockNow = DateTime.now();
+  static final _createdAt = _clockNow.subtract(const Duration(days: 4));
+  static const hostUid = 'manual-qa-host';
+  static const defaultBookedIds = [
+    'runner-1',
+    'runner-2',
+    'runner-3',
+    'runner-4',
+    'runner-5',
+    'runner-6',
+    'runner-7',
+    'runner-8',
+  ];
+  static const defaultCheckedInIds = [
+    'runner-1',
+    'runner-2',
+    'runner-3',
+    'runner-4',
+    'runner-5',
+  ];
+  static const defaultWaitlistedIds = ['runner-9'];
+  static const defaultProfileIds = [
+    'runner-1',
+    'runner-2',
+    'runner-3',
+    'runner-4',
+    'runner-5',
+    'runner-6',
+    'runner-7',
+    'runner-8',
+    'runner-9',
+  ];
 
   late final EventSuccessPlaybook playbook;
   late final Event event;
+  late final Club club;
   late final EventSuccessPlan plan;
   late final EventParticipationRoster roster;
+  late final List<EventParticipation> participations;
+  late final AttendanceSheetViewModel attendanceViewModel;
+  late final Map<String, (String, String?)> attendeeProfileRows;
   late final UserProfile viewer;
   late final List<PublicProfile> profiles;
   late final EventParticipation participation;
@@ -1235,15 +1173,26 @@ class _ManualQaFixtures {
     );
   }
 
+  DateTime get _eventStart => switch (moment) {
+    _ManualQaMoment.booked => _clockNow.add(const Duration(minutes: 25)),
+    _ManualQaMoment.firstHello => _clockNow.add(const Duration(minutes: 5)),
+    _ManualQaMoment.checkedIn => _clockNow.subtract(const Duration(minutes: 5)),
+    _ManualQaMoment.countdown => _clockNow.subtract(
+      const Duration(minutes: 18),
+    ),
+    _ManualQaMoment.revealed => _clockNow.subtract(const Duration(minutes: 24)),
+    _ManualQaMoment.postEvent => _clockNow.subtract(const Duration(hours: 2)),
+  };
+
   DateTime get now => switch (moment) {
-    _ManualQaMoment.booked => _baseStart.subtract(const Duration(minutes: 25)),
-    _ManualQaMoment.firstHello => _baseStart.subtract(
+    _ManualQaMoment.booked => _eventStart.subtract(const Duration(minutes: 25)),
+    _ManualQaMoment.firstHello => _eventStart.subtract(
       const Duration(minutes: 5),
     ),
-    _ManualQaMoment.checkedIn => _baseStart.add(const Duration(minutes: 5)),
+    _ManualQaMoment.checkedIn => _eventStart.add(const Duration(minutes: 5)),
     _ManualQaMoment.countdown => _countdownStartReference.add(countdownElapsed),
-    _ManualQaMoment.revealed => _baseStart.add(const Duration(minutes: 24)),
-    _ManualQaMoment.postEvent => _baseStart.add(const Duration(hours: 2)),
+    _ManualQaMoment.revealed => _eventStart.add(const Duration(minutes: 24)),
+    _ManualQaMoment.postEvent => _eventStart.add(const Duration(hours: 2)),
   };
 
   EventSuccessAssignment? get viewerAssignment => assignments
@@ -1255,10 +1204,10 @@ class _ManualQaFixtures {
       .firstOrNull;
 
   List<PublicProfile> get assignmentPeerProfiles =>
-      _profilesFor(viewerAssignment?.peerUids ?? const []);
+      _profilesFor(viewerAssignment?.allPeerUids ?? const []);
 
   List<PublicProfile> get rotationPeerProfiles =>
-      _profilesFor(viewerRotationAssignment?.peerUids ?? const []);
+      _profilesFor(viewerRotationAssignment?.allPeerUids ?? const []);
 
   EventSuccessWingmanRequest? get viewerWingmanRequest => wingmanRequests
       .where((request) => request.requesterUid == viewer.uid)
@@ -1283,12 +1232,102 @@ class _ManualQaFixtures {
     EventSuccessHostTab.report => 'Report',
   };
 
+  String get hostManageScopeKey =>
+      '${scenario.name}:${moment.name}:$activeStepIndex:'
+      '${roster.checkedInIds.join(',')}:${roster.waitlistedIds.join(',')}:'
+      '${revealStatus.name}:$activeRevealRoundIndex';
+
+  // ignore: strict_top_level_inference, inference preserves Riverpod's private override type.
+  hostManageProviderOverrides({
+    required bool Function(String uid) onToggleAttendance,
+  }) {
+    final assignmentParticipantUids = _assignmentParticipantUids(assignments);
+    final assignmentParticipantKey = eventSuccessPeerUidsKey(
+      assignmentParticipantUids,
+    );
+    final rotationParticipantUids = _assignmentParticipantUids(
+      rotationAssignments,
+    );
+    final rotationParticipantKey = eventSuccessPeerUidsKey(
+      rotationParticipantUids,
+    );
+    final wingmanProfileUids = _wingmanProfileUids(wingmanRequests);
+    final wingmanProfileKey = eventSuccessPeerUidsKey(wingmanProfileUids);
+
+    return [
+      uidProvider.overrideWith((ref) => Stream.value(hostUid)),
+      eventRepositoryProvider.overrideWith(
+        (ref) => _ManualQaEventRepository(
+          event: event,
+          onToggleAttendance: onToggleAttendance,
+        ),
+      ),
+      publicProfileRepositoryProvider.overrideWith(
+        (ref) => _ManualQaPublicProfileRepository(profiles),
+      ),
+      watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+      watchEventPrivateAccessProvider(
+        event.id,
+      ).overrideWith((ref) => Stream<EventPrivateAccess?>.value(null)),
+      watchEventParticipationsForEventProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(participations)),
+      attendanceSheetViewModelProvider(
+        event.id,
+      ).overrideWithValue(AsyncData(attendanceViewModel)),
+      attendeeProfilesProvider(
+        attendanceViewModel.profileIds,
+      ).overrideWith((ref) async => attendeeProfileRows),
+      watchEventParticipationRosterProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(roster)),
+      watchEventSuccessPlanProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(plan)),
+      watchEventSuccessScorecardProvider(event.id).overrideWith(
+        (ref) => Stream.value(EventSuccessSampleScorecards.strongSocialRun),
+      ),
+      watchEventSuccessAssignmentsProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(assignments)),
+      if (assignmentParticipantKey.isNotEmpty)
+        eventSuccessAssignmentPeerProfilesProvider(
+          assignmentParticipantKey,
+        ).overrideWith((ref) async => _profilesFor(assignmentParticipantUids)),
+      watchEventSuccessRotationAssignmentsProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(rotationAssignments)),
+      if (rotationParticipantKey.isNotEmpty &&
+          rotationParticipantKey != assignmentParticipantKey)
+        eventSuccessAssignmentPeerProfilesProvider(
+          rotationParticipantKey,
+        ).overrideWith((ref) async => _profilesFor(rotationParticipantUids)),
+      watchEventSuccessPreferencesProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(preferences)),
+      watchEventSuccessWingmanRequestsProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(wingmanRequests)),
+      if (wingmanProfileKey.isNotEmpty &&
+          wingmanProfileKey != assignmentParticipantKey &&
+          wingmanProfileKey != rotationParticipantKey)
+        eventSuccessAssignmentPeerProfilesProvider(
+          wingmanProfileKey,
+        ).overrideWith((ref) async => _profilesFor(wingmanProfileUids)),
+    ];
+  }
+
+  List<String> get _checkedInIds =>
+      (checkedInOverride ?? defaultCheckedInIds.toSet()).toList(
+        growable: false,
+      );
+
   Event _eventForScenario() {
     return Event(
       id: 'event-success-manual-qa',
       clubId: 'club-event-success-manual-qa',
-      startTime: _baseStart,
-      endTime: _baseStart.add(const Duration(minutes: 90)),
+      startTime: _eventStart,
+      endTime: _eventStart.add(const Duration(minutes: 90)),
       meetingPoint: scenario.meetingPoint,
       eventFormat: EventFormatSnapshot.fromActivityKind(scenario.activityKind),
       distanceKm: scenario.activityKind.isDistanceBased ? 5 : 0,
@@ -1297,30 +1336,108 @@ class _ManualQaFixtures {
       description: 'Manual QA fixture for event-success host and attendee UI.',
       priceInPaise: 0,
       bookedCount: 8,
-      checkedInCount: 5,
+      checkedInCount: _checkedInIds.length,
       waitlistedCount: 1,
       genderCounts: const {'man': 4, 'woman': 4},
     );
   }
 
+  Club _clubForScenario() {
+    return Club(
+      id: event.clubId,
+      name: 'Manual QA Club',
+      description: 'Fixture club for Host Manage and attendee QA.',
+      location: 'Bengaluru',
+      area: scenario.meetingPoint,
+      hostUserId: hostUid,
+      hostName: 'Catch QA Host',
+      hostUserIds: const [hostUid],
+      createdAt: _createdAt,
+    );
+  }
+
+  List<EventParticipation> _participations() {
+    final profilesByUid = {
+      for (final profile in profiles) profile.uid: profile,
+    };
+    return [
+      for (final uid in roster.bookedIds)
+        _participationFor(
+          uid: uid,
+          status: roster.checkedInIds.contains(uid)
+              ? EventParticipationStatus.attended
+              : EventParticipationStatus.signedUp,
+          gender: profilesByUid[uid]?.gender,
+        ),
+      for (final uid in roster.waitlistedIds)
+        _participationFor(
+          uid: uid,
+          status: EventParticipationStatus.waitlisted,
+          gender: profilesByUid[uid]?.gender,
+        ),
+    ];
+  }
+
+  AttendanceSheetViewModel _attendanceViewModel() {
+    return AttendanceSheetViewModel(
+      event: event,
+      attendeeIds: roster.bookedIds,
+      attendedIds: Set.unmodifiable(roster.checkedInIds),
+      waitlistedIds: roster.waitlistedIds,
+      profileIds: defaultProfileIds,
+      participationsByUid: Map.unmodifiable({
+        for (final participation in participations)
+          participation.uid: participation,
+      }),
+    );
+  }
+
+  Map<String, (String, String?)> _attendeeProfileRows() {
+    return {
+      for (final profile in profiles)
+        profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
+    };
+  }
+
   EventParticipation _participation() {
-    final attended =
-        moment != _ManualQaMoment.booked &&
-        moment != _ManualQaMoment.firstHello;
-    return EventParticipation(
-      id: eventParticipationId(eventId: event.id, uid: viewer.uid),
-      eventId: event.id,
-      clubId: event.clubId,
+    final attended = roster.checkedInIds.contains(viewer.uid);
+    return _participationFor(
       uid: viewer.uid,
       status: attended
           ? EventParticipationStatus.attended
           : EventParticipationStatus.signedUp,
+      gender: viewer.gender,
+    );
+  }
+
+  EventParticipation _participationFor({
+    required String uid,
+    required EventParticipationStatus status,
+    required Gender? gender,
+  }) {
+    return EventParticipation(
+      id: eventParticipationId(eventId: event.id, uid: uid),
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: uid,
+      status: status,
       createdAt: _createdAt,
       updatedAt: now,
-      signedUpAt: _createdAt,
-      attendedAt: attended ? event.startTime : null,
-      genderAtSignup: viewer.gender,
-      cohortAtSignup: 'womenInterestedInMen',
+      signedUpAt:
+          status == EventParticipationStatus.signedUp ||
+              status == EventParticipationStatus.attended
+          ? _createdAt
+          : null,
+      attendedAt: status == EventParticipationStatus.attended
+          ? event.startTime
+          : null,
+      waitlistedAt: status == EventParticipationStatus.waitlisted
+          ? _createdAt
+          : null,
+      genderAtSignup: gender,
+      cohortAtSignup: gender == Gender.woman
+          ? 'womenInterestedInMen'
+          : 'menInterestedInWomen',
     );
   }
 
@@ -1576,15 +1693,28 @@ class _ManualQaFixtures {
       city: 'Bengaluru',
       occupation: 'Product designer',
       relationshipGoal: RelationshipGoal.relationship,
-      preferredDistances: const [PreferredDistance.fiveK],
-      runningReasons: const [RunReason.social],
-      preferredRunTimes: const [PreferredRunTime.evening],
-      runPreferencesVersion: currentRunPreferencesVersion,
+      activityPreferences: ActivityPreferences(
+        running: RunningPreferences(
+          preferredDistances: [PreferredDistance.fiveK],
+          runningReasons: [RunReason.social],
+          preferredRunTimes: [PreferredRunTime.evening],
+          version: currentRunPreferencesVersion,
+        ),
+      ),
     );
   }
 
   List<PublicProfile> _publicProfiles() {
     return const [
+      PublicProfile(
+        uid: 'runner-1',
+        name: 'Maya',
+        age: 28,
+        gender: Gender.woman,
+        city: 'Bengaluru',
+        occupation: 'Product designer',
+        relationshipGoal: RelationshipGoal.relationship,
+      ),
       PublicProfile(
         uid: 'runner-2',
         name: 'Arjun',
@@ -1617,6 +1747,38 @@ class _ManualQaFixtures {
         gender: Gender.man,
         city: 'Bengaluru',
         occupation: 'Engineer',
+      ),
+      PublicProfile(
+        uid: 'runner-6',
+        name: 'Ira',
+        age: 27,
+        gender: Gender.woman,
+        city: 'Bengaluru',
+        occupation: 'Consultant',
+      ),
+      PublicProfile(
+        uid: 'runner-7',
+        name: 'Dev',
+        age: 29,
+        gender: Gender.man,
+        city: 'Bengaluru',
+        occupation: 'Product manager',
+      ),
+      PublicProfile(
+        uid: 'runner-8',
+        name: 'Tara',
+        age: 26,
+        gender: Gender.woman,
+        city: 'Bengaluru',
+        occupation: 'Writer',
+      ),
+      PublicProfile(
+        uid: 'runner-9',
+        name: 'Vihaan',
+        age: 33,
+        gender: Gender.man,
+        city: 'Bengaluru',
+        occupation: 'Analyst',
       ),
     ];
   }
@@ -1653,9 +1815,8 @@ class _ManualQaFixtures {
     EventSuccessRevealStatus.idle => null,
   };
 
-  static final _countdownStartReference = _baseStart.add(
-    const Duration(minutes: 18),
-  );
+  DateTime get _countdownStartReference =>
+      _eventStart.add(const Duration(minutes: 18));
 
   String get _attendeePrompt => switch (scenario) {
     _ManualQaScenario.socialRun =>
@@ -1667,6 +1828,103 @@ class _ManualQaFixtures {
     _ManualQaScenario.singlesMixer =>
       'Ask your next match what kind of event night they secretly love.',
   };
+}
+
+class _ManualQaEventRepository implements EventRepository {
+  const _ManualQaEventRepository({
+    required this.event,
+    required this.onToggleAttendance,
+  });
+
+  final Event event;
+  final bool Function(String uid) onToggleAttendance;
+
+  @override
+  Future<Event?> fetchEvent(String id) async => id == event.id ? event : null;
+
+  @override
+  Stream<Event?> watchEvent(String id) =>
+      Stream.value(id == event.id ? event : null);
+
+  @override
+  Stream<EventPrivateAccess?> watchPrivateAccess(String eventId) =>
+      Stream.value(null);
+
+  @override
+  Future<bool> markAttendance({
+    required String eventId,
+    required String userId,
+  }) async {
+    if (eventId != event.id) return false;
+    return onToggleAttendance(userId);
+  }
+
+  @override
+  Future<void> cancelEvent({required String eventId, String? reason}) async {}
+
+  @override
+  Future<void> deleteEvent({required String eventId}) async {}
+
+  @override
+  Future<void> updateEventDetails({
+    required Event event,
+    bool includePolicy = false,
+    String? inviteCode,
+  }) async {}
+
+  @override
+  Future<void> decideJoinRequest({
+    required String eventId,
+    required String userId,
+    required String decision,
+  }) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _ManualQaPublicProfileRepository implements PublicProfileRepository {
+  _ManualQaPublicProfileRepository(List<PublicProfile> profiles)
+    : _profilesByUid = {for (final profile in profiles) profile.uid: profile};
+
+  final Map<String, PublicProfile> _profilesByUid;
+
+  @override
+  Stream<PublicProfile?> watchPublicProfile({required String uid}) =>
+      Stream.value(_profilesByUid[uid]);
+
+  @override
+  Future<PublicProfile?> fetchPublicProfile({required String uid}) async =>
+      _profilesByUid[uid];
+
+  @override
+  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
+    final seen = <String>{};
+    return [
+      for (final uid in uids)
+        if (seen.add(uid) && _profilesByUid[uid] != null) _profilesByUid[uid]!,
+    ];
+  }
+}
+
+extension on EventSuccessHostTab {
+  HostEventManageSection get hostManageSection {
+    return switch (this) {
+      EventSuccessHostTab.setup => HostEventManageSection.setup,
+      EventSuccessHostTab.live => HostEventManageSection.live,
+      EventSuccessHostTab.report => HostEventManageSection.report,
+    };
+  }
+}
+
+extension on HostEventManageSection {
+  EventSuccessHostTab get eventSuccessTab {
+    return switch (this) {
+      HostEventManageSection.setup => EventSuccessHostTab.setup,
+      HostEventManageSection.live => EventSuccessHostTab.live,
+      HostEventManageSection.report => EventSuccessHostTab.report,
+    };
+  }
 }
 
 Set<String> _selectedModuleIds(
@@ -1693,4 +1951,27 @@ Set<String> _selectedModuleIds(
     ids.add(EventSuccessModuleCatalog.firstHelloCheckIn.id);
   }
   return ids;
+}
+
+List<String> _assignmentParticipantUids(
+  List<EventSuccessAssignment> assignments,
+) {
+  final uids = <String>{};
+  for (final assignment in assignments) {
+    uids
+      ..add(assignment.uid)
+      ..addAll(assignment.allPeerUids);
+  }
+  return uids.toList()..sort();
+}
+
+List<String> _wingmanProfileUids(List<EventSuccessWingmanRequest> requests) {
+  final uids = <String>{};
+  for (final request in requests) {
+    if (!request.isActive) continue;
+    uids
+      ..add(request.requesterUid)
+      ..add(request.targetUid);
+  }
+  return uids.toList()..sort();
 }

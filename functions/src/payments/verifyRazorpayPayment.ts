@@ -7,6 +7,8 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
+import {eventParticipationId} from "../shared/relationshipDocuments";
+import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {buildPaymentRecord, verifyPaidEventBooking} from "./paymentValidation";
 import {
   createRazorpayClient,
@@ -90,8 +92,15 @@ export async function verifyRazorpayPaymentHandler(
   // race condition between order creation and payment), issue an immediate
   // refund so the user is never charged for a spot they didn't get.
   try {
+    const participationSnap = await db
+      .collection("eventParticipations")
+      .doc(eventParticipationId(booking.eventId, userId))
+      .get();
+    const hasHostApproval =
+      hasHostApprovedJoinRequest(participationSnap.data());
     await deps.signUpForEvent(db, booking.eventId, userId, paymentId, {
       hasValidInvite: booking.inviteVerified,
+      ...(hasHostApproval ? {hasHostApproval} : {}),
     });
   } catch (signUpError) {
     let refundSucceeded = false;

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -67,12 +68,12 @@ class EligibilityStep extends StatelessWidget {
             borderWidth: 0,
             child: Text(
               'Leave fields empty to apply no restriction. These filters help curate a safe, balanced event.',
-              style: CatchTextStyles.bodyS(context, color: t.primary),
+              style: CatchTextStyles.supporting(context, color: t.primary),
             ),
           ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Age range'),
-          const SizedBox(height: 8),
+          gapH8,
           Row(
             children: [
               Expanded(
@@ -93,7 +94,7 @@ class EligibilityStep extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              gapW12,
               Expanded(
                 child: CatchTextField(
                   key: CreateEventFormKeys.maxAge,
@@ -114,9 +115,9 @@ class EligibilityStep extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Gender caps'),
-          const SizedBox(height: 8),
+          gapH8,
           Row(
             children: [
               Expanded(
@@ -138,7 +139,7 @@ class EligibilityStep extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(width: 12),
+              gapW12,
               Expanded(
                 child: CatchTextField(
                   key: CreateEventFormKeys.maxWomen,

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
@@ -109,7 +110,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   .read(onboardingControllerProvider.notifier)
                                   .goToStep(previousStep),
                       ),
-                      const SizedBox(height: 8),
+                      gapH8,
                     ],
                     Expanded(child: currentStep),
                   ],

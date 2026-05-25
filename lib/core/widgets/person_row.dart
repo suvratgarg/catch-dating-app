@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
@@ -114,7 +115,7 @@ class PersonRow extends StatelessWidget {
                 borderWidth: data.isFresh ? 2 : 0,
                 borderColor: data.isFresh ? t.primary : null,
               ),
-              const SizedBox(width: 12),
+              gapW12,
               // Text column
               Expanded(
                 child: isChatMode
@@ -122,7 +123,7 @@ class PersonRow extends StatelessWidget {
                     : _RosterLayout(data: data),
               ),
               // Trailing widget (chip, button, etc.)
-              if (trailing != null) ...[const SizedBox(width: 10), trailing!],
+              if (trailing != null) ...[gapW10, trailing!],
             ],
           ),
         ),
@@ -157,20 +158,20 @@ class _ChatLayout extends StatelessWidget {
               ),
             ),
             if (data.timestamp != null)
-              Text(data.timestamp!, style: CatchTextStyles.bodyS(context)),
+              Text(data.timestamp!, style: CatchTextStyles.supporting(context)),
           ],
         ),
         // Event context with route icon
         if (data.contextLine != null) ...[
-          const SizedBox(height: 2),
+          gapH2,
           Row(
             children: [
               Icon(Icons.directions_run_rounded, size: 11, color: t.ink3),
-              const SizedBox(width: 3),
+              gapW3,
               Expanded(
                 child: Text(
                   data.contextLine!,
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -179,14 +180,14 @@ class _ChatLayout extends StatelessWidget {
           ),
         ],
         // Last message + unread badge
-        const SizedBox(height: 4),
+        gapH4,
         Row(
           children: [
             Expanded(
               child: Text(
                 data.isTyping ? 'Typing…' : data.lastMessage!,
                 style:
-                    CatchTextStyles.bodyS(
+                    CatchTextStyles.supporting(
                       context,
                       color: data.isTyping ? t.primary : t.ink2,
                     ).copyWith(
@@ -199,7 +200,7 @@ class _ChatLayout extends StatelessWidget {
               ),
             ),
             if (data.unreadCount > 0) ...[
-              const SizedBox(width: 8),
+              gapW8,
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
@@ -208,9 +209,8 @@ class _ChatLayout extends StatelessWidget {
                 ),
                 child: Text(
                   '${data.unreadCount}',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
+                  style: CatchTextStyles.statusLabel(
+                    context,
                     color: t.primaryInk,
                   ),
                 ),
@@ -242,16 +242,16 @@ class _RosterLayout extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         if (data.metaLine != null) ...[
-          const SizedBox(height: 3),
+          gapH3,
           Text(
             data.metaLine!,
-            style: CatchTextStyles.bodyS(context),
+            style: CatchTextStyles.supporting(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ],
         if (data.contextLine != null) ...[
-          const SizedBox(height: 2),
+          gapH2,
           Row(
             children: [
               Icon(
@@ -259,11 +259,11 @@ class _RosterLayout extends StatelessWidget {
                 size: 11,
                 color: CatchTokens.of(context).ink3,
               ),
-              const SizedBox(width: 3),
+              gapW3,
               Expanded(
                 child: Text(
                   data.contextLine!,
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

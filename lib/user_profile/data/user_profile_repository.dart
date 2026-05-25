@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_callable_dtos.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -79,12 +80,12 @@ class UserProfileRepository {
   /// limits when they try to validate every changed field directly.
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update profile',
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateUserProfile')
-        .call(UpdateUserProfileCallableRequest(fields: fields).toJson()),
+        .call(UpdateUserProfileCallableRequest.fromPatch(patch).toJson()),
     context: BackendErrorContext(
       service: BackendService.functions,
       action: action,
@@ -92,29 +93,14 @@ class UserProfileRepository {
     ),
   );
 
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) => updateUserProfile(
-    uid: uid,
-    fields: {'photoUrls': photoUrls},
-    action: 'update photo URLs',
-  );
-
   Future<void> updateProfilePhotos({
     required String uid,
     required List<ProfilePhoto> profilePhotos,
-    required List<String> photoUrls,
   }) {
     final normalizedPhotos = normalizeProfilePhotos(profilePhotos);
     return updateUserProfile(
       uid: uid,
-      fields: {
-        'profilePhotos': profilePhotosToJson(normalizedPhotos),
-        'photoUrls': photoUrls,
-        'photoThumbnailUrls': profilePhotoThumbnailUrls(normalizedPhotos),
-        'photoPrompts': profilePhotoPromptsToJson(normalizedPhotos),
-      },
+      patch: UpdateUserProfilePatch(profilePhotos: normalizedPhotos),
       action: 'update profile photos',
     );
   }
@@ -125,16 +111,22 @@ class UserProfileRepository {
     required double longitude,
     String? city,
   }) {
-    final cityPatch = city == null ? null : {'city': city};
-    return updateUserProfile(
-      uid: uid,
-      fields: {'latitude': latitude, 'longitude': longitude, ...?cityPatch},
-    );
+    // `city` is only included when detected, mirroring the previous
+    // spread-when-non-null behavior. Passing `null` would explicitly clear
+    // the stored city, which is not what callers want.
+    final patch = city == null
+        ? UpdateUserProfilePatch(latitude: latitude, longitude: longitude)
+        : UpdateUserProfilePatch(
+            latitude: latitude,
+            longitude: longitude,
+            city: city,
+          );
+    return updateUserProfile(uid: uid, patch: patch);
   }
 
   Future<void> setProfileComplete({required String uid}) => updateUserProfile(
     uid: uid,
-    fields: {'profileComplete': true},
+    patch: UpdateUserProfilePatch(profileComplete: true),
     action: 'set profile complete',
   );
 }

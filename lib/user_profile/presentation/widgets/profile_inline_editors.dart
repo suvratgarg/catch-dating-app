@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
@@ -22,16 +23,14 @@ typedef ProfileInlineSaveCallback = VoidCallback;
 
 Future<void> _saveField({
   required WidgetRef ref,
-  required Map<String, dynamic> fields,
+  required UpdateUserProfilePatch patch,
 }) {
   return ProfileEditController.saveFieldsMutation.run(
     ref,
     (tx) async =>
-        tx.get(profileEditControllerProvider.notifier).saveFields(fields),
+        tx.get(profileEditControllerProvider.notifier).saveFields(patch),
   );
 }
-
-String _enumName(Object value) => value is Enum ? value.name : value.toString();
 
 mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   bool _isSaving = false;
@@ -39,7 +38,7 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   bool get isSaving => _isSaving;
 
-  Future<bool> saveFields(Map<String, dynamic> fields) async {
+  Future<bool> saveFields(UpdateUserProfilePatch patch) async {
     if (_isSaving) return false;
     setState(() {
       _isSaving = true;
@@ -47,7 +46,7 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     });
 
     try {
-      await _saveField(ref: ref, fields: fields);
+      await _saveField(ref: ref, patch: patch);
       if (!mounted) return false;
       setState(() => _isSaving = false);
       return true;
@@ -226,7 +225,7 @@ class ProfileInlineTextValue extends StatelessWidget {
     final t = CatchTokens.of(context);
     final direction = Directionality.of(context);
     final textScaler = MediaQuery.textScalerOf(context);
-    final valueStyle = CatchTextStyles.bodyL(
+    final valueStyle = CatchTextStyles.profileAnswer(
       context,
       color: isAddAffordance && !isEditing ? t.ink3 : t.ink,
     );
@@ -290,7 +289,7 @@ class ProfileInlineTextValue extends StatelessWidget {
                           IgnorePointer(
                             child: Text(
                               hintText,
-                              style: CatchTextStyles.bodyL(
+                              style: CatchTextStyles.profileAnswer(
                                 context,
                                 color: t.ink3,
                               ),
@@ -425,7 +424,7 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
     this.autofillHints,
     this.validator,
     this.toFieldValue,
-    this.toFields,
+    required this.patchForValue,
   });
 
   final IconData icon;
@@ -448,7 +447,7 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
   final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
   final Object? Function(String value)? toFieldValue;
-  final Map<String, dynamic> Function(String value)? toFields;
+  final UpdateUserProfilePatch Function(Object? value) patchForValue;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
 
@@ -545,9 +544,7 @@ class _ProfileInlineTextEntryEditorState
       return;
     }
 
-    final fields =
-        widget.toFields?.call(rawValue) ?? {widget.fieldName: fieldValue};
-    final saved = await saveFields(fields);
+    final saved = await saveFields(widget.patchForValue(fieldValue));
     if (saved && mounted) widget.onSaved();
   }
 
@@ -637,6 +634,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
+    required this.patchForValue,
     this.isAddAffordance = false,
   });
 
@@ -648,6 +646,7 @@ class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
+  final UpdateUserProfilePatch Function(int value) patchForValue;
   final bool isAddAffordance;
 
   @override
@@ -680,7 +679,7 @@ class _ProfileInlineHeightEditorState
       _cancel();
       return;
     }
-    final saved = await saveFields({'height': _heightCm});
+    final saved = await saveFields(widget.patchForValue(_heightCm));
     if (saved && mounted) widget.onSaved();
   }
 
@@ -767,7 +766,7 @@ class _ProfileHeightStepButton extends StatelessWidget {
         shape: const CircleBorder(),
         child: InkResponse(
           onTap: enabled ? onPressed : null,
-          radius: Sizes.p18,
+          radius: CatchSpacing.micro18,
           customBorder: const CircleBorder(),
           child: SizedBox.square(
             dimension: 36,
@@ -797,6 +796,7 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
+    required this.patchForValue,
     this.isAddAffordance = false,
     this.allowEmptySelection = true,
   });
@@ -813,6 +813,7 @@ class ProfileInlineSingleChoiceEntryEditor<T extends Labelled>
   final VoidCallback onTap;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
+  final UpdateUserProfilePatch Function(T? value) patchForValue;
 
   @override
   ConsumerState<ProfileInlineSingleChoiceEntryEditor<T>> createState() =>
@@ -842,9 +843,7 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
       widget.onCancel();
       return;
     }
-    final saved = await saveFields({
-      widget.fieldName: _selected == null ? null : _enumName(_selected!),
-    });
+    final saved = await saveFields(widget.patchForValue(_selected));
     if (saved && mounted) {
       widget.onSaved();
     }
@@ -916,6 +915,7 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
     required this.onTap,
     required this.onSaved,
     required this.onCancel,
+    required this.patchForValues,
     this.isAddAffordance = false,
     this.isOptional = true,
   });
@@ -932,6 +932,7 @@ class ProfileInlineMultiChoiceEntryEditor<T extends Labelled>
   final VoidCallback onTap;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
+  final UpdateUserProfilePatch Function(List<T> values) patchForValues;
 
   @override
   ConsumerState<ProfileInlineMultiChoiceEntryEditor<T>> createState() =>
@@ -962,9 +963,9 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
       widget.onCancel();
       return;
     }
-    final saved = await saveFields({
-      widget.fieldName: _selected.map(_enumName).toList(),
-    });
+    final saved = await saveFields(
+      widget.patchForValues(_selected.toList(growable: false)),
+    );
     if (saved && mounted) widget.onSaved();
   }
 
@@ -1132,7 +1133,7 @@ class _ProfileChipPlaceholder extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Text(
       isAddAffordance ? '+ $value' : value,
-      style: CatchTextStyles.bodyL(
+      style: CatchTextStyles.profileAnswer(
         context,
         color: isAddAffordance ? t.ink3 : null,
       ),
@@ -1189,6 +1190,7 @@ class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
     required this.maxFieldName,
     required this.onSaved,
     required this.onCancel,
+    required this.patchForRange,
     this.saveEndValue,
     this.savedCurrentMax,
   });
@@ -1210,6 +1212,7 @@ class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
   final String maxFieldName;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
+  final UpdateUserProfilePatch Function(int min, int max) patchForRange;
 
   @override
   ConsumerState<ProfileInlineRangeEditor> createState() =>
@@ -1257,10 +1260,7 @@ class _ProfileInlineRangeEditorState
       _cancel();
       return;
     }
-    final saved = await saveFields({
-      widget.minFieldName: newMin,
-      widget.maxFieldName: newMax,
-    });
+    final saved = await saveFields(widget.patchForRange(newMin, newMax));
     if (saved && mounted) widget.onSaved();
   }
 
@@ -1278,7 +1278,7 @@ class _ProfileInlineRangeEditorState
       isSaving: isSaving,
       animateValueContent: false,
       saveError: buildSaveError(),
-      contentActionGap: Sizes.p2,
+      contentActionGap: CatchSpacing.micro2,
       onCancel: _cancel,
       onSubmit: _submit,
       editorChildren: [

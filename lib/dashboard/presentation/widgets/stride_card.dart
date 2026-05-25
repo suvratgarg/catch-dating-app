@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_stride_actions.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,10 +54,9 @@ class _DashboardStrideSectionState
   Future<void> _connect() async {
     if (_isConnecting) return;
     setState(() => _isConnecting = true);
-    final granted = await ref
-        .read(healthActivityRepositoryProvider)
-        .requestActivityReadPermission();
-    ref.invalidate(weeklyActivityProvider);
+    final actions = ref.read(dashboardStrideActionsProvider);
+    final granted = await actions.requestActivityReadPermission();
+    actions.refreshWeeklyActivity();
     if (!mounted) return;
     setState(() => _isConnecting = false);
     if (!granted) {
@@ -70,8 +69,9 @@ class _DashboardStrideSectionState
   Future<void> _installHealthConnect() async {
     if (_isInstallingHealthConnect) return;
     setState(() => _isInstallingHealthConnect = true);
-    await ref.read(healthActivityRepositoryProvider).installHealthConnect();
-    ref.invalidate(weeklyActivityProvider);
+    final actions = ref.read(dashboardStrideActionsProvider);
+    await actions.installHealthConnect();
+    actions.refreshWeeklyActivity();
     if (!mounted) return;
     setState(() => _isInstallingHealthConnect = false);
   }
@@ -106,7 +106,7 @@ class StrideCard extends StatelessWidget {
     final maxMinutes = summary.maxDailyActiveMinutes;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p18),
+      padding: const EdgeInsets.all(CatchSpacing.micro18),
       borderColor: t.line,
       backgroundColor: t.surface,
       child: Column(
@@ -114,7 +114,7 @@ class StrideCard extends StatelessWidget {
         children: [
           Text(
             'Your activity · this week',
-            style: CatchTextStyles.titleL(context),
+            style: CatchTextStyles.sectionTitle(context),
           ),
           gapH8,
           Row(
@@ -123,15 +123,13 @@ class StrideCard extends StatelessWidget {
             children: [
               Text(
                 totalKm.toStringAsFixed(1),
-                style: CatchTextStyles.displayXL(
-                  context,
-                ).copyWith(fontSize: 36, letterSpacing: -1),
+                style: CatchTextStyles.statDisplay(context),
               ),
               gapW6,
               Flexible(
                 child: Text(
                   _metricLabel(summary),
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -141,7 +139,7 @@ class StrideCard extends StatelessWidget {
           gapH4,
           Text(
             _sourceText(snapshot),
-            style: CatchTextStyles.bodyS(context).copyWith(color: t.ink3),
+            style: CatchTextStyles.supporting(context, color: t.ink3),
           ),
           gapH10,
           SizedBox(
@@ -167,8 +165,8 @@ class StrideCard extends StatelessWidget {
           if (onConnect != null || onInstallHealthConnect != null) ...[
             gapH12,
             Wrap(
-              spacing: Sizes.p8,
-              runSpacing: Sizes.p8,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
               children: [
                 if (onConnect != null)
                   _StrideActionButton(
@@ -257,12 +255,7 @@ class StrideBarColumn extends StatelessWidget {
         gapH4,
         Text(
           dayLabel,
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.4,
-            color: t.ink3,
-          ),
+          style: CatchTextStyles.statusLabel(context, color: t.ink3),
         ),
       ],
     );
@@ -293,7 +286,7 @@ class _StrideActionButton extends StatelessWidget {
               child: CatchLoadingIndicator(strokeWidth: 2),
             )
           : Icon(icon, size: 16),
-      label: Text(label),
+      label: Text(label, style: CatchTextStyles.labelL(context)),
     );
   }
 }
@@ -328,7 +321,7 @@ class _StrideSectionStateCard extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodyS(context).copyWith(color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],

@@ -32,7 +32,7 @@ import {validateSelfCheckInAttendanceCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
   eventParticipationId,

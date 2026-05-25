@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_suvbot_demo_actions_response.schema.json",
+  "title": "ListSuvbotDemoActionsCallableResponse",
+  "description": "Callable response returned by listSuvbotDemoActions. Each action describes a button in the Suvbot demo-operations menu.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["actions"],
+  "properties": {
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "description", "icon"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1, "maxLength": 120},
+          "label": {"type": "string", "minLength": 1, "maxLength": 120},
+          "description": {"type": "string", "minLength": 1, "maxLength": 500},
+          "icon": {"type": "string", "minLength": 1, "maxLength": 80},
+          "destructive": {"type": "boolean"},
+          "requiresText": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

@@ -16,8 +16,8 @@ interface ProfilePhotoPath {
 
 /**
  * Generates a tiny public-profile thumbnail whenever a user profile photo is
- * uploaded. Avatar-scale UI should consume users/publicProfiles
- * `photoThumbnailUrls` instead of downloading full profile images.
+ * uploaded. Avatar-scale UI should consume `profilePhotos.thumbnailUrl`
+ * instead of downloading full profile images.
  */
 export const generateProfilePhotoThumbnail = onObjectFinalized(
   async (event) => {
@@ -60,7 +60,6 @@ export const generateProfilePhotoThumbnail = onObjectFinalized(
       const url = downloadUrl(bucket.name, thumbnailPath, token);
       await updateProfileThumbnailUrl({
         uid: parsed.uid,
-        photoIndex: parsed.index,
         sourcePath: filePath,
         thumbnailPath,
         thumbnailUrl: url,
@@ -122,20 +121,17 @@ function downloadUrl(bucketName: string, filePath: string, token: string) {
  * Writes the thumbnail URL into the matching users/{uid} photo slot.
  * @param {object} input Thumbnail update input.
  * @param {string} input.uid User id.
- * @param {number} input.photoIndex Profile photo slot index.
  * @param {string} input.sourcePath Source profile photo Storage path.
  * @param {string} input.thumbnailPath Generated thumbnail Storage path.
  * @param {string} input.thumbnailUrl Generated thumbnail download URL.
  */
 async function updateProfileThumbnailUrl({
   uid,
-  photoIndex,
   sourcePath,
   thumbnailPath,
   thumbnailUrl,
 }: {
   uid: string;
-  photoIndex: number;
   sourcePath: string;
   thumbnailPath: string;
   thumbnailUrl: string;
@@ -155,37 +151,9 @@ async function updateProfileThumbnailUrl({
     if (groupedUpdate) {
       tx.update(userRef, {
         profilePhotos: groupedUpdate.profilePhotos,
-        photoThumbnailUrls: photoThumbnailUrlsFromGroupedProfilePhotos(
-          groupedUpdate.profilePhotos
-        ),
       });
-      return;
     }
-
-    const photoUrls = asStringArray(data.photoUrls);
-    const sourceUrl = photoUrls[photoIndex];
-    if (!downloadUrlContainsPath(sourceUrl, sourcePath)) return;
-
-    const thumbnails = asStringArray(data.photoThumbnailUrls);
-    const updated = [...thumbnails];
-    while (updated.length <= photoIndex) updated.push("");
-    updated[photoIndex] = thumbnailUrl;
-
-    tx.update(userRef, {
-      photoThumbnailUrls: updated,
-    });
   });
-}
-
-/**
- * Coerces an unknown value into a string array.
- * @param {unknown} value Value read from Firestore.
- * @return {string[]} String-only array.
- */
-function asStringArray(value: unknown): string[] {
-  return Array.isArray(value) ?
-    value.filter((item): item is string => typeof item === "string") :
-    [];
 }
 
 /**
@@ -234,26 +202,6 @@ function updateGroupedProfilePhotoThumbnail({
     profilePhotos: updated,
     position: updatedPosition,
   };
-}
-
-/**
- * Derives the compatibility thumbnail URL array from grouped profile photos.
- * @param {unknown[]} profilePhotos Stored grouped photo records.
- * @return {string[]} Ordered thumbnail URL list.
- */
-function photoThumbnailUrlsFromGroupedProfilePhotos(
-  profilePhotos: unknown[]
-): string[] {
-  return profilePhotos
-    .filter(isRecord)
-    .filter((photo) =>
-      typeof photo.position === "number" &&
-      Number.isInteger(photo.position) &&
-      typeof photo.thumbnailUrl === "string"
-    )
-    .sort((a, b) => (a.position as number) - (b.position as number))
-    .map((photo) => photo.thumbnailUrl as string)
-    .slice(0, profilePhotoPolicy.maxPhotos);
 }
 
 /**

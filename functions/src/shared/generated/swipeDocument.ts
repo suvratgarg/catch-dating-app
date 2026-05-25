@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Current storage contract for contextual profile decisions stored at swipes/{userId}/outgoing/{targetId}.
+ * Storage contract for contextual profile decisions stored at profileDecisions/{userId}/outgoing/{targetId}.
  */
 export interface SwipeDocument {
   swiperId: string;

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,6 @@ class FakeOnboardingUserProfileRepository extends Fake
 
   UserProfile? currentUser;
   UserProfile? lastSavedUser;
-  final updatedPhotoUrls = <List<String>>[];
 
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
@@ -136,23 +136,12 @@ class FakeOnboardingUserProfileRepository extends Fake
   }
 
   @override
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) async {
-    updatedPhotoUrls.add(List<String>.from(photoUrls));
-    currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
-      photoUrls: List<String>.from(photoUrls),
-    );
-  }
-
-  @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update profile',
   }) async {
-    final updated = Map<String, dynamic>.from(fields);
+    final updated = Map<String, dynamic>.from(patch.toFieldsJson());
     if (updated.containsKey('profileComplete')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
         profileComplete: updated['profileComplete'] as bool,
@@ -169,20 +158,11 @@ class FakeOnboardingUserProfileRepository extends Fake
             .toList(),
       );
     }
-    if (updated.containsKey('paceMinSecsPerKm')) {
+    if (updated.containsKey('activityPreferences')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
-        paceMinSecsPerKm: updated['paceMinSecsPerKm'] as int,
-        paceMaxSecsPerKm: updated['paceMaxSecsPerKm'] as int,
-        preferredDistances: (updated['preferredDistances'] as List)
-            .map((e) => PreferredDistance.values.firstWhere((d) => d.name == e))
-            .toList(),
-        runningReasons: (updated['runningReasons'] as List)
-            .map((e) => RunReason.values.firstWhere((r) => r.name == e))
-            .toList(),
-        preferredRunTimes: (updated['preferredRunTimes'] as List)
-            .map((e) => PreferredRunTime.values.firstWhere((t) => t.name == e))
-            .toList(),
-        runPreferencesVersion: updated['runPreferencesVersion'] as int,
+        activityPreferences: ActivityPreferences.fromJson(
+          Map<String, dynamic>.from(updated['activityPreferences'] as Map),
+        ),
       );
     }
     lastSavedUser = currentUser;

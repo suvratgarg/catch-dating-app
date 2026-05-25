@@ -243,7 +243,7 @@ void main() {
         find.widgetWithText(TextField, 'Search for a meeting point'),
         'Cubbon',
       );
-      await tester.pump(const Duration(milliseconds: 350));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
       await tester.pump();
 
       expect(find.text('Cubbon Park'), findsWidgets);
@@ -302,7 +302,7 @@ void main() {
           find.widgetWithText(TextField, 'Search for a meeting point'),
           'Cubbon',
         );
-        await tester.pump(const Duration(milliseconds: 350));
+        await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
         await tester.pump();
 
         await tester.tap(find.text('Cubbon Park'));

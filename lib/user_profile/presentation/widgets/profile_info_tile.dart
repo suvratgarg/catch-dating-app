@@ -42,10 +42,9 @@ class ProfileInfoTile extends StatelessWidget {
         : Text(
             isAddAffordance ? '+ $value' : value,
             key: ValueKey('profile-info-$label-$value-$isAddAffordance'),
-            style: CatchTextStyles.bodyM(
-              context,
-              color: isAddAffordance ? t.primary : t.ink,
-            ).copyWith(fontWeight: FontWeight.w500),
+            style: isAddAffordance
+                ? CatchTextStyles.labelL(context, color: t.primary)
+                : CatchTextStyles.sectionTitle(context, color: t.ink),
           );
     final valueSlot = valueContent ?? defaultValueContent;
     final valueArea = animateValueContent
@@ -70,7 +69,10 @@ class ProfileInfoTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+              Text(
+                label,
+                style: CatchTextStyles.kicker(context, color: t.ink2),
+              ),
               gapH4,
               valueArea,
             ],

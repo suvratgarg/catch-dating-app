@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 import {
   buildOrderCreatePayload,
   buildPaymentRecord,

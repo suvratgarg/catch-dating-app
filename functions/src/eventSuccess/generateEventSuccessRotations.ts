@@ -2,7 +2,7 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {EventDoc, ClubDoc, BlockDoc, UserProfileDoc} from
-  "../shared/firestore";
+  "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
   "../shared/generated/eventIdCallablePayload";

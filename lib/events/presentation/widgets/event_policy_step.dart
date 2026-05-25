@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -131,10 +132,10 @@ class EventPolicyStep extends StatelessWidget {
             borderWidth: 0,
             child: Text(
               'Configure who can book, how waitlists open, what attendees pay, and what happens if plans change.',
-              style: CatchTextStyles.bodyS(context, color: t.primary),
+              style: CatchTextStyles.supporting(context, color: t.primary),
             ),
           ),
-          const SizedBox(height: 20),
+          gapH20,
           Row(
             children: [
               Expanded(
@@ -155,7 +156,7 @@ class EventPolicyStep extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(width: 12),
+              gapW12,
               Expanded(
                 child: CatchTextField(
                   key: CreateEventFormKeys.price,
@@ -181,9 +182,9 @@ class EventPolicyStep extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Admission format'),
-          const SizedBox(height: 8),
+          gapH8,
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -204,13 +205,13 @@ class EventPolicyStep extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          gapH8,
           Text(
             admissionPreset.description,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
-            const SizedBox(height: 20),
+            gapH20,
             CatchSurface(
               padding: const EdgeInsets.all(12),
               tone: CatchSurfaceTone.surface,
@@ -223,16 +224,19 @@ class EventPolicyStep extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(Icons.key_outlined, color: t.primary, size: 18),
-                      const SizedBox(width: 8),
+                      gapW8,
                       Expanded(
                         child: Text(
                           'The code is stored in the host-only private access document. Public event listings only show that an invite is required.',
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  gapH12,
                   CatchTextField(
                     key: CreateEventFormKeys.inviteCode,
                     label: 'Invite code',
@@ -255,7 +259,7 @@ class EventPolicyStep extends StatelessWidget {
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
-            const SizedBox(height: 20),
+            gapH20,
             CatchSurface(
               padding: const EdgeInsets.all(12),
               tone: CatchSurfaceTone.surface,
@@ -275,11 +279,11 @@ class EventPolicyStep extends StatelessWidget {
                     ),
                     subtitle: Text(
                       'Optionally cap straight men and straight women without making this a separate admission format.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                   if (cohortCapsEnabled) ...[
-                    const SizedBox(height: 12),
+                    gapH12,
                     Row(
                       children: [
                         Expanded(
@@ -300,7 +304,7 @@ class EventPolicyStep extends StatelessWidget {
                                 : null,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        gapW12,
                         Expanded(
                           child: CatchTextField(
                             key: CreateEventFormKeys.maxWomen,
@@ -327,7 +331,7 @@ class EventPolicyStep extends StatelessWidget {
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
-            const SizedBox(height: 20),
+            gapH20,
             CatchSurface(
               padding: const EdgeInsets.all(12),
               tone: CatchSurfaceTone.surface,
@@ -337,11 +341,11 @@ class EventPolicyStep extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.how_to_reg_outlined, color: t.primary, size: 18),
-                  const SizedBox(width: 8),
+                  gapW8,
                   Expanded(
                     child: Text(
                       'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                 ],
@@ -349,7 +353,7 @@ class EventPolicyStep extends StatelessWidget {
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
-            const SizedBox(height: 20),
+            gapH20,
             CatchSurface(
               padding: const EdgeInsets.all(12),
               tone: CatchSurfaceTone.surface,
@@ -369,11 +373,11 @@ class EventPolicyStep extends StatelessWidget {
                     ),
                     subtitle: Text(
                       'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ),
                   if (dynamicPricingEnabled) ...[
-                    const SizedBox(height: 12),
+                    gapH12,
                     Row(
                       children: [
                         Expanded(
@@ -393,7 +397,7 @@ class EventPolicyStep extends StatelessWidget {
                                 : null,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        gapW12,
                         Expanded(
                           child: CatchTextField(
                             key: CreateEventFormKeys.dynamicPricingMax,
@@ -418,9 +422,9 @@ class EventPolicyStep extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Age range'),
-          const SizedBox(height: 8),
+          gapH8,
           Row(
             children: [
               Expanded(
@@ -441,7 +445,7 @@ class EventPolicyStep extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              gapW12,
               Expanded(
                 child: CatchTextField(
                   key: CreateEventFormKeys.maxAge,
@@ -462,9 +466,9 @@ class EventPolicyStep extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          gapH20,
           const FieldLabel('Cancellation policy'),
-          const SizedBox(height: 8),
+          gapH8,
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -484,19 +488,19 @@ class EventPolicyStep extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 8),
+          gapH8,
           Text(
             _policyFor(cancellationPolicyId).attendeeSummary,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          const SizedBox(height: 12),
+          gapH12,
           CatchSurface(
             padding: const EdgeInsets.all(12),
             tone: CatchSurfaceTone.surface,
             radius: CatchRadius.md,
             child: Text(
               'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],

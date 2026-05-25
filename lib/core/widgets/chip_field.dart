@@ -103,7 +103,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
             gapH8,
             Text(
               field.errorText!,
-              style: CatchTextStyles.bodyS(context, color: t.danger),
+              style: CatchTextStyles.supporting(context, color: t.danger),
             ),
           ],
         ],

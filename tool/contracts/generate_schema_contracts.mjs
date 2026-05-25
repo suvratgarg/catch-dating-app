@@ -31,6 +31,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/profilePhoto.ts",
   },
   {
+    name: "ActivityPreferences",
+    source: "embedded/activity_preferences.schema.json",
+    typeOutput: "functions/src/shared/generated/activityPreferences.ts",
+  },
+  {
     name: "ConfigCitiesDocument",
     source: "firestore/config_cities.schema.json",
     typeOutput: "functions/src/shared/generated/configCitiesDocument.ts",
@@ -324,11 +329,25 @@ const schemaSpecs = [
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
   },
   {
+    name: "EventJoinRequestDecisionCallablePayload",
+    source: "callables/event_join_request_decision_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventJoinRequestDecisionCallablePayload.ts",
+  },
+  {
     name: "OverrideEventSuccessRotationsCallablePayload",
     source: "callables/override_event_success_rotations_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/" +
       "overrideEventSuccessRotationsCallablePayload.ts",
+  },
+  {
+    name: "OverrideEventSuccessGroupsCallablePayload",
+    source: "callables/override_event_success_groups_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "overrideEventSuccessGroupsCallablePayload.ts",
   },
   {
     name: "SubmitEventSuccessWingmanRequestCallablePayload",
@@ -400,10 +419,35 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/reportUserCallablePayload.ts",
   },
   {
+    name: "RequestSuvbotDemoOperationCallablePayload",
+    source: "callables/request_suvbot_demo_operation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "requestSuvbotDemoOperationCallablePayload.ts",
+  },
+  {
+    name: "ListSuvbotDemoActionsCallableResponse",
+    source: "callable_responses/list_suvbot_demo_actions_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listSuvbotDemoActionsCallableResponse.ts",
+  },
+  {
     name: "VerifyRazorpayPaymentCallablePayload",
     source: "callables/verify_razorpay_payment_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts",
+  },
+  {
+    name: "EventBookingCallablePayload",
+    source: "callables/event_booking_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventBookingCallablePayload.ts",
+  },
+  {
+    name: "CreateRazorpayOrderCallablePayload",
+    source: "callables/create_razorpay_order_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createRazorpayOrderCallablePayload.ts",
   },
   {
     name: "RazorpayOrderCallableResponse",
@@ -434,6 +478,14 @@ const schemaSpecs = [
     source: "callable_responses/place_details_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/placeDetailsCallableResponse.ts",
+  },
+  {
+    name: "FetchEventSuccessWingmanCandidatesCallableResponse",
+    source:
+      "callable_responses/fetch_event_success_wingman_candidates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "fetchEventSuccessWingmanCandidatesCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",
@@ -473,6 +525,212 @@ const schemaSpecs = [
   },
 ];
 
+const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
+  {
+    name: "Gender",
+    source: "shared/profile_common.schema.json",
+    pointer: "/definitions/gender",
+  },
+  {
+    name: "PaymentStatus",
+    source: "firestore/payments.schema.json",
+    pointer: "/properties/status",
+  },
+  {
+    name: "ProfilePromptAnswer",
+    source: "embedded/profile_prompt_answer.schema.json",
+  },
+  {
+    name: "PhotoPromptAnswer",
+    source: "embedded/photo_prompt_answer.schema.json",
+  },
+  {
+    name: "ProfilePhoto",
+    source: "embedded/profile_photo.schema.json",
+  },
+  {
+    name: "ActivityPreferences",
+    source: "embedded/activity_preferences.schema.json",
+  },
+  {
+    name: "EventMeetingLocation",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventMeetingLocation",
+  },
+  {
+    name: "EventFormatSnapshot",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventFormatSnapshot",
+  },
+  {
+    name: "EventSuccessFormatPrimitives",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventSuccessFormatPrimitives",
+  },
+  {
+    name: "EventSuccessStructureConfig",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventSuccessStructureConfig",
+  },
+  {
+    name: "EventSuccessQuestionnaireConfig",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventSuccessQuestionnaireConfig",
+  },
+  {
+    name: "EventSuccessDefaults",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventSuccessDefaults",
+  },
+  {
+    name: "EventPolicyDefaults",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventPolicyDefaults",
+  },
+  {
+    name: "ClubHostDefaults",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/clubHostDefaults",
+  },
+  {
+    name: "ClubHostProfile",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/clubHostProfile",
+  },
+  {
+    name: "EventConstraints",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventConstraints",
+  },
+  {
+    name: "EventPolicyBundleDoc",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventPolicyBundle",
+  },
+  {
+    name: "EventPolicyAdmissionDoc",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventPolicyBundle/properties/admission",
+  },
+  {
+    name: "EventPolicyPrivateAccessDoc",
+    source: "shared/event_common.schema.json",
+    pointer:
+      "/definitions/eventPolicyBundle/properties/admission/" +
+      "properties/privateAccessPolicy",
+  },
+  {
+    name: "EventPolicyWaitlistDoc",
+    source: "shared/event_common.schema.json",
+    pointer:
+      "/definitions/eventPolicyBundle/properties/admission/" +
+      "properties/waitlistPolicy",
+  },
+  {
+    name: "EventPolicyBalancedRatioDoc",
+    source: "shared/event_common.schema.json",
+    pointer:
+      "/definitions/eventPolicyBundle/properties/admission/" +
+      "properties/balancedRatioPolicy",
+  },
+  {
+    name: "EventPolicyPricingDoc",
+    source: "shared/event_common.schema.json",
+    pointer: "/definitions/eventPolicyBundle/properties/pricing",
+  },
+  {
+    name: "EventPolicyDemandPricingRuleDoc",
+    source: "shared/event_common.schema.json",
+    pointer:
+      "/definitions/eventPolicyBundle/properties/pricing/" +
+      "properties/demandPricingRules/items",
+  },
+];
+
+const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
+  ["ClubDoc.hostProfiles", "ClubHostProfile[]"],
+  ["ClubDoc.hostDefaults", "ClubHostDefaults"],
+  ["EventDoc.meetingLocation", "EventMeetingLocation | null"],
+  ["EventDoc.eventFormat", "EventFormatSnapshot"],
+  ["EventDoc.constraints", "EventConstraints"],
+  ["EventDoc.eventPolicy", "EventPolicyBundleDoc | null"],
+  ["EventFormatSnapshot.version", "number"],
+  [
+    "EventFormatSnapshot.eventSuccessPrimitives",
+    "EventSuccessFormatPrimitives",
+  ],
+  ["EventSuccessDefaults.structureConfig", "EventSuccessStructureConfig"],
+  [
+    "EventSuccessDefaults.questionnaireConfig",
+    "EventSuccessQuestionnaireConfig",
+  ],
+  ["ClubHostDefaults.eventPolicy", "EventPolicyDefaults"],
+  ["ClubHostDefaults.eventSuccess", "EventSuccessDefaults"],
+  [
+    "ClubHostDefaults.eventSuccessByActivityKind",
+    "Record<string, EventSuccessDefaults>",
+  ],
+  ["EventPolicyBundleDoc.version", "number"],
+  ["EventPolicyBundleDoc.admission", "EventPolicyAdmissionDoc"],
+  ["EventPolicyBundleDoc.pricing", "EventPolicyPricingDoc"],
+  ["EventPolicyAdmissionDoc.waitlistPolicy", "EventPolicyWaitlistDoc"],
+  [
+    "EventPolicyAdmissionDoc.privateAccessPolicy",
+    "EventPolicyPrivateAccessDoc",
+  ],
+  [
+    "EventPolicyAdmissionDoc.balancedRatioPolicy",
+    "EventPolicyBalancedRatioDoc | null",
+  ],
+  ["EventPolicyPricingDoc.demandPricingRules", "EventPolicyDemandPricingRuleDoc[]"],
+]);
+
+const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
+  ["EventConstraints", ["maxMen", "maxWomen"]],
+  [
+    "EventDoc",
+    [
+      "startingPointLat",
+      "startingPointLng",
+      "locationDetails",
+      "bookedCount",
+      "checkedInCount",
+      "waitlistedCount",
+      "cancelledAt",
+      "cancellationReason",
+    ],
+  ],
+  [
+    "MatchDoc",
+    [
+      "lastMessageAt",
+      "lastMessagePreview",
+      "lastMessageSenderId",
+      "blockedBy",
+      "blockedAt",
+    ],
+  ],
+  [
+    "EventPolicyAdmissionDoc",
+    [
+      "waitlistPolicy",
+      "inviteRequired",
+      "membershipRequired",
+      "manualApprovalRequired",
+      "privateAccessPolicy",
+      "cohortCapacityLimits",
+      "balancedRatioPolicy",
+    ],
+  ],
+  [
+    "EventPolicyPricingDoc",
+    [
+      "cohortAdjustmentsInPaise",
+      "demandPricingRules",
+    ],
+  ],
+]);
+
 const generatedFiles = [];
 
 async function main() {
@@ -511,6 +769,13 @@ async function main() {
   addTextOutput(
     "functions/src/shared/generated/schemaValidators.ts",
     renderTsValidators()
+  );
+  addTextOutput(
+    "functions/src/shared/generated/firestoreAdminTypes.ts",
+    await renderTsFirestoreAdminTypes({
+      schemaSpecs,
+      profilePhotoPolicy,
+    })
   );
   addTextOutput(
     "functions/src/shared/generated/schemaPaths.ts",
@@ -557,6 +822,7 @@ async function main() {
   const dartCallableRequests = renderDartCallableRequestClasses({
     schemaSpecs,
     schemaMap: bundledSchemas,
+    commonSchema: readContractJson("shared/profile_common.schema.json"),
   });
   addTextOutput(
     "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
@@ -638,7 +904,17 @@ function applyDerivedProfilePhotoPolicyValues(value, profilePhotoPolicy) {
 }
 
 async function addTypeOutput(spec, schema) {
-  let types = await compile(schema, spec.name, {
+  let types = await compileTs(schema, spec.name);
+  types = normalizeExternalTypeReferences(spec.name, types);
+  const imports = tsTypeImports(spec.name, types);
+  addTextOutput(
+    spec.typeOutput,
+    `${tsGeneratedHeader()}${imports}${types.trim()}\n`
+  );
+}
+
+function compileTs(schema, name) {
+  return compile(schema, name, {
     bannerComment: "",
     cwd: repoRoot,
     declareExternallyReferenced: false,
@@ -655,32 +931,192 @@ async function addTypeOutput(spec, schema) {
       useTabs: false,
     },
   });
-  types = normalizeExternalTypeReferences(spec.name, types);
-  const imports = tsTypeImports(spec.name, types);
-  addTextOutput(
-    spec.typeOutput,
-    `${tsGeneratedHeader()}${imports}${types.trim()}\n`
+}
+
+async function renderTsFirestoreAdminTypes({schemaSpecs, profilePhotoPolicy}) {
+  const firestoreSpecs = schemaSpecs
+    .filter((spec) => spec.source.startsWith("firestore/"));
+  const allAdminTypeNames = [
+    ...FIRESTORE_ADMIN_EMBEDDED_SPECS.map((spec) => spec.name),
+    ...firestoreSpecs.map((spec) => firestoreAdminTypeName(spec.name)),
+  ];
+  const sections = [];
+
+  for (const spec of FIRESTORE_ADMIN_EMBEDDED_SPECS) {
+    const schema = firestoreAdminNamedSchema(spec, profilePhotoPolicy);
+    applyFirestoreAdminFieldOverrides(schema, spec.name);
+    applyFirestoreAdminOptionalFields(schema, spec.name);
+    sections.push(await compileFirestoreAdminType(
+      schema,
+      spec.name,
+      allAdminTypeNames
+    ));
+  }
+
+  for (const spec of firestoreSpecs) {
+    const file = path.join(contractRoot, spec.source);
+    const schema = applyProfilePhotoPolicy(
+      bundleSchema(file),
+      profilePhotoPolicy
+    );
+    stripInternalDemoFields(schema);
+    stripTopLevelStructuralValidation(schema);
+    const adminName = firestoreAdminTypeName(spec.name);
+    schema.title = adminName;
+    applyFirestoreAdminFieldOverrides(schema, adminName);
+    applyFirestoreAdminOptionalFields(schema, adminName);
+    sections.push(await compileFirestoreAdminType(
+      withAdminTimestamps(schema),
+      adminName,
+      allAdminTypeNames
+    ));
+  }
+
+  return `${tsGeneratedHeader()}` +
+`/**
+ * Schema-derived Admin SDK Firestore document types.
+ *
+ * The sibling generated document files model serialized JSON fixture
+ * timestamps as {_seconds, _nanoseconds}. These types keep the same
+ * schema-owned fields, but project Firestore timestamp values as live
+ * FirebaseFirestore.Timestamp instances for Cloud Functions code that reads
+ * and writes through the Admin SDK.
+ */
+
+// FirebaseFirestore.Timestamp is available globally through firebase-admin's
+// @google-cloud/firestore dependency.
+
+${sections.join("\n\n")}\n`;
+}
+
+async function compileFirestoreAdminType(schema, name, allAdminTypeNames) {
+  let types = await compileTs(schema, name);
+  types = normalizeTypeReferences(name, types, allAdminTypeNames);
+  return types.trim();
+}
+
+function firestoreAdminNamedSchema(spec, profilePhotoPolicy) {
+  const file = path.join(contractRoot, spec.source);
+  const bundled = applyProfilePhotoPolicy(bundleSchema(file), profilePhotoPolicy);
+  const source = spec.pointer ?
+    resolveJsonPointer(bundled, spec.pointer) :
+    bundled;
+  return withAdminTimestamps({
+    ...structuredClone(source),
+    title: spec.name,
+  });
+}
+
+function firestoreAdminTypeName(schemaName) {
+  return schemaName.endsWith("Document") ?
+    `${schemaName.slice(0, -"Document".length)}Doc` :
+    schemaName;
+}
+
+function withAdminTimestamps(schema) {
+  const cloned = structuredClone(schema);
+  replaceSerializedTimestampSchemas(cloned);
+  return cloned;
+}
+
+function replaceSerializedTimestampSchemas(value) {
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const item = value[i];
+      if (isSerializedTimestampSchema(item)) {
+        value[i] = {tsType: "FirebaseFirestore.Timestamp"};
+      } else {
+        replaceSerializedTimestampSchemas(item);
+      }
+    }
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  if (isSerializedTimestampSchema(value)) {
+    for (const key of Object.keys(value)) delete value[key];
+    value.tsType = "FirebaseFirestore.Timestamp";
+    return;
+  }
+  for (const child of Object.values(value)) {
+    replaceSerializedTimestampSchemas(child);
+  }
+}
+
+function isSerializedTimestampSchema(value) {
+  if (!value || typeof value !== "object" || value.type !== "object") {
+    return false;
+  }
+  const properties = value.properties;
+  if (!properties || typeof properties !== "object") return false;
+  return Boolean(
+    properties._seconds?.type === "integer" &&
+    properties._nanoseconds?.type === "integer"
   );
 }
 
-function normalizeExternalTypeReferences(currentTypeName, source) {
+function stripInternalDemoFields(schema) {
+  const fields = schema["x-internal-demo-fields"];
+  if (!Array.isArray(fields) || !schema.properties) return;
+  for (const field of fields) {
+    delete schema.properties[field];
+  }
+  if (Array.isArray(schema.required)) {
+    schema.required = schema.required.filter((field) => !fields.includes(field));
+  }
+}
+
+function stripTopLevelStructuralValidation(schema) {
+  delete schema.anyOf;
+  delete schema.oneOf;
+  delete schema.allOf;
+}
+
+function applyFirestoreAdminFieldOverrides(schema, typeName) {
+  if (!schema.properties) return;
+  for (const [key, tsType] of FIRESTORE_ADMIN_FIELD_OVERRIDES) {
+    const [targetTypeName, fieldName] = key.split(".");
+    if (targetTypeName !== typeName || !schema.properties[fieldName]) {
+      continue;
+    }
+    schema.properties[fieldName] = {tsType};
+  }
+}
+
+function applyFirestoreAdminOptionalFields(schema, typeName) {
+  const fields = FIRESTORE_ADMIN_OPTIONAL_FIELDS.get(typeName);
+  if (!fields || !Array.isArray(schema.required)) return;
+  schema.required = schema.required.filter((field) => !fields.includes(field));
+}
+
+function normalizeTypeReferences(currentTypeName, source, typeNames) {
   let normalized = source;
-  for (const spec of schemaSpecs) {
-    if (currentTypeName === spec.name) continue;
+  for (const name of typeNames) {
+    if (currentTypeName === name) continue;
     normalized = normalized.replace(
-      new RegExp(`\\b${spec.name}\\d+\\b`, "g"),
-      spec.name
+      new RegExp(`\\b${name}\\d+\\b`, "g"),
+      name
     );
   }
   return normalized;
 }
 
+function normalizeExternalTypeReferences(currentTypeName, source) {
+  return normalizeTypeReferences(
+    currentTypeName,
+    source,
+    schemaSpecs.map((spec) => spec.name)
+  );
+}
+
 function tsTypeImports(currentTypeName, source) {
   const imports = [];
+  const typeSource = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
   for (const spec of schemaSpecs) {
     if (currentTypeName === spec.name) continue;
     const pattern = new RegExp(`\\b${spec.name}\\b`);
-    if (!pattern.test(source)) continue;
+    if (!pattern.test(typeSource)) continue;
     imports.push(`import {${spec.name}} from "${typeImportPath(spec)}";`);
   }
   return imports.length === 0 ? "" : `${imports.join("\n")}\n\n`;
@@ -1040,17 +1476,129 @@ function dartSchemaConstName(name) {
 // text — the caller logs it so contributors see what's still hand-written.
 // ────────────────────────────────────────────────────────────────────────────
 
-function renderDartCallableRequestClasses({schemaSpecs, schemaMap}) {
+// Callable schemas where the generator's projection would shadow a
+// hand-written class that adds behavior the generator can't reproduce:
+//   - UpdateUserProfileCallablePayload: the feature-local callable request
+//     wrapper still owns the generated typed patch object.
+//   - EventBookingCallablePayload / CreateRazorpayOrderCallablePayload:
+//     hand-written DTOs apply `inviteCode?.trim()` at serialization time.
+//     The schemas exist for validation and as the contract source of truth;
+//     the Dart classes stay hand-written so the trim normalization remains
+//     attached to the boundary.
+const DART_CALLABLE_REQUEST_SKIP = new Set([
+  "UpdateUserProfileCallablePayload",
+  "EventBookingCallablePayload",
+  "CreateRazorpayOrderCallablePayload",
+]);
+
+const DART_PATCH_HELPER_SPECS = new Set([
+  "UpdateUserProfileCallablePayload",
+  "UpdateClubCallablePayload",
+]);
+
+const DART_CALLABLE_FIELD_OVERRIDES = new Map([
+  [
+    "CreateClubCallableRequest.hostDefaults",
+    {
+      dartType: "ClubHostDefaults",
+      imports: [
+        "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.meetingLocation",
+    {
+      dartType: "EventMeetingLocation",
+      imports: [
+        "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.eventPolicy",
+    {
+      dartType: "EventPolicyBundle",
+      imports: [
+        "import 'package:catch_dating_app/event_policies/domain/event_policy.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.privateAccess",
+    {
+      dartType: "CreateEventPrivateAccess",
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.eventFormat",
+    {
+      dartType: "EventFormatSnapshot",
+      imports: [
+        "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.eventSuccessDefaults",
+    {
+      dartType: "EventSuccessDefaults",
+      imports: [
+        "import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+  [
+    "CreateEventCallableRequest.constraints",
+    {
+      dartType: "EventConstraints",
+      imports: [
+        "import 'package:catch_dating_app/events/domain/event_constraints.dart';",
+      ],
+      jsonExpression: (name) => `${name}.toJson()`,
+      nullableJsonExpression: (name) => `${name}?.toJson()`,
+    },
+  ],
+]);
+
+function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}) {
   const classes = [];
   const ungenerable = [];
+  const imports = new Set();
+  const enumTypesBySignature = dartProfileEnumTypesBySignature(commonSchema);
 
   for (const spec of schemaSpecs) {
     if (!isCallableRequestSpec(spec)) continue;
     const schema = schemaMap.get(spec.name);
     if (!schema) continue;
 
+    if (DART_PATCH_HELPER_SPECS.has(spec.name) && isPatchCallableSchema(schema)) {
+      const patchResult = tryEmitDartPatchClass(spec, schema, enumTypesBySignature);
+      if (patchResult.ok) {
+        for (const item of patchResult.imports ?? []) imports.add(item);
+        classes.push(patchResult.text);
+      } else {
+        ungenerable.push({name: `${spec.name}Patch`, reason: patchResult.reason});
+      }
+    }
+
+    if (DART_CALLABLE_REQUEST_SKIP.has(spec.name)) continue;
+
     const result = tryEmitDartCallableClass(spec, schema);
     if (result.ok) {
+      for (const item of result.imports ?? []) imports.add(item);
       classes.push(result.text);
     } else {
       ungenerable.push({name: spec.name, reason: result.reason});
@@ -1061,10 +1609,13 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap}) {
     "// No callable request classes are currently generatable.\n" :
     classes.join("\n\n");
 
-  const text = `${dartGeneratedHeader()}
+  const importBlock = [...imports].sort().join("\n");
+  const text = `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
 // Typed callable request DTOs emitted from contracts/callables/ and
 // contracts/patches/. The toJson() output of each class is validated against
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
+// Patch helper classes are emitted for configured callable schemas whose
+// wrapper contains an inner fields object.
 //
 // Hand-written DTOs in lib/**/data/*_callable_dtos.dart may still exist for
 // schemas that this generator cannot yet emit (nested objects, anyOf with
@@ -1084,6 +1635,13 @@ function isCallableRequestSpec(spec) {
   return false;
 }
 
+function isPatchCallableSchema(schema) {
+  return schema?.type === "object" &&
+    schema?.properties?.fields?.type === "object" &&
+    schema?.properties?.fields?.properties &&
+    schema?.required?.includes("fields");
+}
+
 function tryEmitDartCallableClass(spec, schema) {
   if (schema.type !== "object" || !schema.properties) {
     return {ok: false, reason: "not an object schema"};
@@ -1095,27 +1653,371 @@ function tryEmitDartCallableClass(spec, schema) {
   const required = new Set(schema.required ?? []);
 
   const fields = [];
+  const imports = new Set();
   for (const [fieldName, prop] of Object.entries(schema.properties)) {
-    const mapped = mapDartType(prop);
+    const override = dartCallableFieldOverride(className, fieldName);
+    const mapped = override?.dartType ?? mapDartType(prop);
     if (mapped === null) {
       return {
         ok: false,
         reason: `cannot map field "${fieldName}" (${describeSchemaType(prop)})`,
       };
     }
+    for (const item of override?.imports ?? []) imports.add(item);
     const isRequired = required.has(fieldName);
     // Optional schema fields ("not in required") map to nullable Dart fields,
     // even when the schema type itself is non-null. JSON-side "omitted" is
     // Dart-side null. The map literal uses `?name` to drop entries when null.
     const dartType = isRequired || mapped.endsWith("?") ? mapped : `${mapped}?`;
-    fields.push({name: fieldName, dartType, isRequired});
+    fields.push({
+      name: fieldName,
+      dartType,
+      isRequired,
+      jsonExpression: override?.jsonExpression?.(fieldName),
+      nullableJsonExpression: override?.nullableJsonExpression?.(fieldName),
+    });
   }
 
   if (fields.length === 0) {
     return {ok: false, reason: "no properties"};
   }
 
-  return {ok: true, text: formatDartCallableClass(className, fields, schema.description)};
+  const extraText = dartCallableExtraClassText(className);
+  const text = formatDartCallableClass(className, fields, schema.description);
+
+  return {
+    ok: true,
+    imports,
+    text: extraText ? `${extraText}\n\n${text}` : text,
+  };
+}
+
+function dartCallableFieldOverride(className, fieldName) {
+  return DART_CALLABLE_FIELD_OVERRIDES.get(`${className}.${fieldName}`) ?? null;
+}
+
+function dartCallableExtraClassText(className) {
+  if (className !== "CreateEventCallableRequest") return "";
+  return `/// Nested private-access payload accepted by createEvent.
+final class CreateEventPrivateAccess {
+  const CreateEventPrivateAccess({this.inviteCode});
+
+  final String? inviteCode;
+
+  Map<String, Object?> toJson() => {
+    'inviteCode': ?inviteCode,
+  };
+}`;
+}
+
+function tryEmitDartPatchClass(spec, schema, enumTypesBySignature) {
+  const config = dartPatchClassConfig(spec.name);
+  if (!config) {
+    return {ok: false, reason: "no Dart patch config"};
+  }
+  const fieldsSchema = schema.properties.fields;
+  const patchProperties = fieldsSchema.properties;
+  if (!patchProperties || Object.keys(patchProperties).length === 0) {
+    return {ok: false, reason: "patch fields object has no properties"};
+  }
+
+  const fields = [];
+  for (const [fieldName, prop] of Object.entries(patchProperties)) {
+    const mapped = mapDartPatchField(fieldName, prop, enumTypesBySignature, config);
+    if (mapped === null) {
+      return {
+        ok: false,
+        reason: `cannot map patch field "${fieldName}" (${describeSchemaType(prop)})`,
+      };
+    }
+    fields.push({name: fieldName, ...mapped});
+  }
+
+  return {
+    ok: true,
+    imports: config.imports,
+    text: formatDartPatchClass(config, fields, schema.description),
+  };
+}
+
+function dartPatchClassConfig(specName) {
+  const className = specName
+    .replace(/CallablePayload$/, "")
+    .replace(/Payload$/, "") + "Patch";
+  switch (specName) {
+    case "UpdateUserProfileCallablePayload":
+      return {
+        className,
+        sentinelName: "_updateUserProfilePatchUnset",
+        jsonValueHelperName: "_updateUserProfilePatchJsonValue",
+        includeTimestampJsonHelper: true,
+        imports: [
+          "import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';",
+          "import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';",
+          "import 'package:catch_dating_app/user_profile/domain/user_profile.dart';",
+          "import 'package:cloud_firestore/cloud_firestore.dart';",
+        ],
+        objectFields: new Map([["activityPreferences", "ActivityPreferences"]]),
+        listObjectFields: new Map([
+          ["profilePrompts", "ProfilePromptAnswer"],
+          ["profilePhotos", "ProfilePhoto"],
+        ]),
+      };
+    case "UpdateClubCallablePayload":
+      return {
+        className,
+        sentinelName: "_updateClubPatchUnset",
+        jsonValueHelperName: "_updateClubPatchJsonValue",
+        includeTimestampJsonHelper: false,
+        imports: [
+          "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+        ],
+        objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
+        listObjectFields: new Map(),
+      };
+    default:
+      return null;
+  }
+}
+
+function dartProfileEnumTypesBySignature(commonSchema) {
+  const definitions = commonSchema?.definitions ?? {};
+  const typesBySignature = new Map();
+  for (const [name, definition] of Object.entries(definitions)) {
+    if (!Array.isArray(definition?.enum)) continue;
+    const values = definition.enum.filter((value) => value !== null);
+    if (values.length === 0 || !values.every((value) => typeof value === "string")) {
+      continue;
+    }
+    typesBySignature.set(enumSignature(values), pascalCase(name));
+  }
+  return typesBySignature;
+}
+
+function mapDartPatchField(fieldName, prop, enumTypesBySignature, config) {
+  if (!prop || typeof prop !== "object") return null;
+  const nullable = schemaAllowsNull(prop);
+  const enumType = dartEnumTypeForSchema(prop, enumTypesBySignature);
+  const dateTime = isMillisSinceEpochInteger(prop);
+  const list = prop.type === "array" ? mapDartPatchListField(
+    fieldName,
+    prop,
+    enumTypesBySignature,
+    config
+  ) : null;
+  const objectType = config.objectFields.get(fieldName);
+
+  if (list) {
+    return {
+      paramType: `${list.dartType}?`,
+      nullable,
+      jsonExpression: `${fieldName}.map((e) => ${list.itemJsonExpression("e")}).toList()`,
+      usesJsonValueHelper: list.usesJsonValueHelper,
+    };
+  }
+  if (enumType) {
+    return {
+      paramType: nullable ? "Object?" : `${enumType}?`,
+      nullable,
+      jsonExpression: nullable ?
+        `(${fieldName} as ${enumType}?)?.name` :
+        `${fieldName}.name`,
+    };
+  }
+  if (dateTime) {
+    return {
+      paramType: "DateTime?",
+      nullable,
+      jsonExpression: `${fieldName}.millisecondsSinceEpoch`,
+    };
+  }
+  if (objectType) {
+    return {
+      paramType: `${objectType}?`,
+      nullable,
+      jsonExpression: `${fieldName}.toJson()`,
+    };
+  }
+
+  const scalarType = dartScalarPatchType(prop);
+  if (scalarType) {
+    return {
+      paramType: nullable ? "Object?" : `${scalarType}?`,
+      nullable,
+      jsonExpression: nullable ? fieldName : fieldName,
+    };
+  }
+
+  return null;
+}
+
+function mapDartPatchListField(fieldName, prop, enumTypesBySignature, config) {
+  const items = prop.items;
+  if (!items || typeof items !== "object") return null;
+  const enumType = dartEnumTypeForSchema(items, enumTypesBySignature);
+  if (enumType) {
+    return {
+      dartType: `List<${enumType}>`,
+      itemJsonExpression: (value) => `${value}.name`,
+    };
+  }
+  const objectType = config.listObjectFields.get(fieldName);
+  if (objectType) {
+    return {
+      dartType: `List<${objectType}>`,
+      itemJsonExpression: (value) =>
+        `${config.jsonValueHelperName}(${value}.toJson())`,
+      usesJsonValueHelper: true,
+    };
+  }
+  const scalarType = dartScalarPatchType(items);
+  if (scalarType) {
+    return {
+      dartType: `List<${scalarType}>`,
+      itemJsonExpression: (value) => value,
+    };
+  }
+  return null;
+}
+
+function dartScalarPatchType(prop) {
+  if (!prop || typeof prop !== "object") return null;
+  if (Array.isArray(prop.type)) {
+    const nonNull = prop.type.filter((value) => value !== "null");
+    if (nonNull.length !== 1) return null;
+    return dartScalarPatchType({...prop, type: nonNull[0]});
+  }
+  if (Array.isArray(prop.anyOf) && !prop.type) {
+    const nonNull = prop.anyOf.filter((item) => item?.type !== "null");
+    const scalarTypes = new Set(nonNull.map(dartScalarPatchType).filter(Boolean));
+    return scalarTypes.size === 1 ? [...scalarTypes][0] : null;
+  }
+  if (Object.hasOwn(prop, "const")) {
+    if (typeof prop.const === "string") return "String";
+    if (typeof prop.const === "number") {
+      return Number.isInteger(prop.const) ? "int" : "double";
+    }
+    if (typeof prop.const === "boolean") return "bool";
+  }
+  switch (prop.type) {
+    case "string": return "String";
+    case "integer": return "int";
+    case "number": return "double";
+    case "boolean": return "bool";
+    default: return null;
+  }
+}
+
+function dartEnumTypeForSchema(prop, enumTypesBySignature) {
+  if (!prop || typeof prop !== "object") return null;
+  if (Array.isArray(prop.enum)) {
+    const values = prop.enum.filter((value) => value !== null);
+    if (values.length > 0 && values.every((value) => typeof value === "string")) {
+      return enumTypesBySignature.get(enumSignature(values)) ?? null;
+    }
+  }
+  if (Array.isArray(prop.anyOf)) {
+    for (const item of prop.anyOf) {
+      const type = dartEnumTypeForSchema(item, enumTypesBySignature);
+      if (type) return type;
+    }
+  }
+  return null;
+}
+
+function schemaAllowsNull(prop) {
+  if (!prop || typeof prop !== "object") return false;
+  if (Array.isArray(prop.type) && prop.type.includes("null")) return true;
+  if (Array.isArray(prop.enum) && prop.enum.includes(null)) return true;
+  if (Array.isArray(prop.anyOf)) return prop.anyOf.some(schemaAllowsNull);
+  return prop.type === "null";
+}
+
+function isMillisSinceEpochInteger(prop) {
+  if (!prop || typeof prop !== "object") return false;
+  const type = Array.isArray(prop.type) ?
+    prop.type.filter((value) => value !== "null")[0] :
+    prop.type;
+  return type === "integer" &&
+    typeof prop.description === "string" &&
+    /milliseconds since epoch/i.test(prop.description);
+}
+
+function enumSignature(values) {
+  return values.join("\u0000");
+}
+
+function pascalCase(value) {
+  return String(value)
+    .split(/[^A-Za-z0-9]+/)
+    .flatMap((part) => part.split(/(?=[A-Z])/))
+    .filter(Boolean)
+    .map((part) => `${part[0].toUpperCase()}${part.slice(1)}`)
+    .join("");
+}
+
+function formatDartPatchClass(config, fields, description) {
+  const helperBlock = fields.some((field) => field.usesJsonValueHelper) ?
+    `\n\n${formatDartPatchJsonValueHelper(config)}` :
+    "";
+  const ctorParams = fields.map((field) => {
+    const defaultValue = field.nullable ? ` = ${config.sentinelName}` : "";
+    return `    ${field.paramType} ${field.name}${defaultValue},`;
+  }).join("\n");
+
+  const jsonEntries = fields.map((field) => {
+    if (field.nullable) {
+      return `         if (!identical(${field.name}, ${config.sentinelName}))
+           ${dartString(field.name)}: ${field.jsonExpression},`;
+    }
+    return `         if (${field.name} != null)
+           ${dartString(field.name)}: ${field.jsonExpression},`;
+  }).join("\n");
+
+  const docComment = description ?
+    `/// Typed patch helper generated from ${description}\n` :
+    "/// Typed patch helper generated from the updateUserProfile schema.\n";
+
+  return `${docComment}final class ${config.className} {
+  ${config.className}({
+${ctorParams}
+  }) : _fields = {
+${jsonEntries}
+       };
+
+  /// Escape hatch for callers that compute the field key dynamically.
+  /// Prefer the typed constructor for app presentation and repository code.
+  ${config.className}.raw(Map<String, Object?> fields)
+    : _fields = Map<String, Object?>.from(fields);
+
+  final Map<String, Object?> _fields;
+
+  Iterable<String> get keys => _fields.keys;
+
+  bool get isEmpty => _fields.isEmpty;
+  bool get isNotEmpty => _fields.isNotEmpty;
+
+  Map<String, Object?> toFieldsJson() =>
+      Map<String, Object?>.unmodifiable(_fields);
+}
+
+${helperBlock}
+const Object ${config.sentinelName} = Object();`;
+}
+
+function formatDartPatchJsonValueHelper(config) {
+  return `Object? ${config.jsonValueHelperName}(Object? value) {
+  ${config.includeTimestampJsonHelper ? "if (value is Timestamp) return value.millisecondsSinceEpoch;\n  " : ""}if (value is DateTime) return value.millisecondsSinceEpoch;
+  if (value is Iterable) {
+    return value.map(${config.jsonValueHelperName}).toList();
+  }
+  if (value is Map) {
+    return value.map(
+      (key, child) => MapEntry(key, ${config.jsonValueHelperName}(child)),
+    );
+  }
+  return value;
+}`;
 }
 
 function mapDartType(prop) {
@@ -1192,11 +2094,13 @@ function formatDartCallableClass(className, fields, description) {
     `  final ${f.dartType} ${f.name};`
   ).join("\n");
 
-  const jsonEntries = fields.map((f) =>
-    f.isRequired ?
-      `    ${dartString(f.name)}: ${f.name},` :
-      `    ${dartString(f.name)}: ?${f.name},`
-  ).join("\n");
+  const jsonEntries = fields.map((f) => {
+    const jsonExpression = f.jsonExpression ?? f.name;
+    const nullableJsonExpression = f.nullableJsonExpression ?? jsonExpression;
+    return f.isRequired ?
+      `    ${dartString(f.name)}: ${jsonExpression},` :
+      `    ${dartString(f.name)}: ?${nullableJsonExpression},`;
+  }).join("\n");
 
   const docComment = description ?
     `/// ${description}\n` :
@@ -1332,7 +2236,7 @@ function mjsGeneratedHeader() {
 function dartGeneratedHeader() {
   return `// GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, use_null_aware_elements
 `;
 }
 

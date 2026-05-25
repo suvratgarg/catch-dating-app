@@ -8,7 +8,7 @@ import {
   Gender,
   PublicProfileDoc,
   UserProfileDoc,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from
   "../shared/generated/startEventSuccessFirstHelloMissionCallablePayload";

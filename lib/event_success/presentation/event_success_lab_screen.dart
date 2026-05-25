@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -33,7 +34,12 @@ class EventSuccessLabScreen extends StatelessWidget {
         : playbooks.first;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Event Success Lab')),
+      appBar: AppBar(
+        title: Text(
+          'Event Success Lab',
+          style: CatchTextStyles.titleL(context),
+        ),
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -244,7 +250,7 @@ class _PromiseCard extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s3),
           Text(title, style: CatchTextStyles.titleM(context)),
           const SizedBox(height: CatchSpacing.s2),
-          Text(body, style: CatchTextStyles.bodyS(context)),
+          Text(body, style: CatchTextStyles.supporting(context)),
         ],
       ),
     );
@@ -289,7 +295,7 @@ class _PlaybookCard extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s3),
           Text(playbook.title, style: CatchTextStyles.displayS(context)),
           const SizedBox(height: CatchSpacing.s2),
-          Text(playbook.summary, style: CatchTextStyles.bodyM(context)),
+          Text(playbook.summary, style: CatchTextStyles.bodyLead(context)),
           const SizedBox(height: CatchSpacing.s4),
           _CapacityRow(capacity: playbook.capacity),
           const SizedBox(height: CatchSpacing.s4),
@@ -342,10 +348,13 @@ class _CapacityRow extends StatelessWidget {
               children: [
                 Text(
                   '${capacity.min}-${capacity.max} attendees',
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
                 const SizedBox(height: CatchSpacing.s1),
-                Text(capacity.rationale, style: CatchTextStyles.bodyS(context)),
+                Text(
+                  capacity.rationale,
+                  style: CatchTextStyles.supporting(context),
+                ),
               ],
             ),
           ),
@@ -374,21 +383,18 @@ class _RunOfShow extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: t.primarySoft,
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    ),
-                    child: SizedBox(
-                      width: 34,
-                      height: 34,
-                      child: Center(
-                        child: Text(
-                          '${step.durationMinutes}',
-                          style: CatchTextStyles.labelL(
-                            context,
-                            color: t.primary,
-                          ),
+                  CatchSurface(
+                    width: 34,
+                    height: 34,
+                    radius: CatchRadius.pill,
+                    backgroundColor: t.primarySoft,
+                    borderWidth: 0,
+                    child: Center(
+                      child: Text(
+                        '${step.durationMinutes}',
+                        style: CatchTextStyles.labelL(
+                          context,
+                          color: t.primary,
                         ),
                       ),
                     ),
@@ -404,11 +410,14 @@ class _RunOfShow extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(step.title, style: CatchTextStyles.titleS(context)),
+                      Text(
+                        step.title,
+                        style: CatchTextStyles.sectionTitle(context),
+                      ),
                       const SizedBox(height: CatchSpacing.s1),
                       Text(
                         step.hostInstruction,
-                        style: CatchTextStyles.bodyS(context),
+                        style: CatchTextStyles.supporting(context),
                       ),
                     ],
                   ),
@@ -470,11 +479,11 @@ class _LayerHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(layer.label, style: CatchTextStyles.titleS(context)),
+          Text(layer.label, style: CatchTextStyles.sectionTitle(context)),
           const SizedBox(height: CatchSpacing.s1),
           Text(
             layer.description,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),
@@ -515,7 +524,7 @@ class _ModuleCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CatchSpacing.s3),
-          Text(module.hostPromise, style: CatchTextStyles.bodyS(context)),
+          Text(module.hostPromise, style: CatchTextStyles.supporting(context)),
           const SizedBox(height: CatchSpacing.s3),
           Wrap(
             spacing: CatchSpacing.s2,
@@ -623,7 +632,7 @@ class _NotesList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: CatchTextStyles.titleS(context)),
+        Text(title, style: CatchTextStyles.sectionTitle(context)),
         const SizedBox(height: CatchSpacing.s2),
         for (final item in items)
           Padding(
@@ -633,17 +642,11 @@ class _NotesList extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: t.primary,
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    ),
-                    child: const SizedBox.square(dimension: 5),
-                  ),
+                  child: CatchStatusDot(color: t.primary, size: 5),
                 ),
                 const SizedBox(width: CatchSpacing.s2),
                 Expanded(
-                  child: Text(item, style: CatchTextStyles.bodyS(context)),
+                  child: Text(item, style: CatchTextStyles.supporting(context)),
                 ),
               ],
             ),

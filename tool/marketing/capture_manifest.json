@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "updated": "2026-05-25",
+  "description": "Marketing website image slots that must be sourced from deterministic app UI captures. Entries stay pending until the synthetic demo fixture and screenshot harness are ready.",
+  "captures": [
+    {
+      "id": "member-event-discovery",
+      "audience": "member",
+      "surface": "Event discovery",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.member.eventDiscovery",
+      "sourcePath": "artifacts/marketing/app-screenshots/member-event-discovery.png",
+      "websitePath": "website/assets/app-screenshots/member-event-discovery.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/member-event-discovery.svg",
+      "alt": "Catch event discovery screen showing hosted singles events",
+      "caption": "Members browse real hosted events before any dating surface opens.",
+      "walkthroughStep": "Discover"
+    },
+    {
+      "id": "post-run-catch-window",
+      "audience": "member",
+      "surface": "Post-event catch window",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.member.postRunCatchWindow",
+      "sourcePath": "artifacts/marketing/app-screenshots/post-run-catch-window.png",
+      "websitePath": "website/assets/app-screenshots/post-run-catch-window.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/post-run-catch-window.svg",
+      "alt": "Catch post-event roster screen for the 24 hour catch window",
+      "caption": "The roster opens after attendance creates shared context.",
+      "walkthroughStep": "Unlock"
+    },
+    {
+      "id": "match-chat-context",
+      "audience": "member",
+      "surface": "Contextual match chat",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.member.matchChatContext",
+      "sourcePath": "artifacts/marketing/app-screenshots/match-chat-context.png",
+      "websitePath": "website/assets/app-screenshots/match-chat-context.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/match-chat-context.svg",
+      "alt": "Catch match chat screen with shared event context",
+      "caption": "Matches start with the room they already shared.",
+      "walkthroughStep": "Match"
+    },
+    {
+      "id": "host-event-setup",
+      "audience": "host",
+      "surface": "Host event setup",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.host.eventSetup",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-event-setup.png",
+      "websitePath": "website/assets/app-screenshots/host-event-setup.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/host-event-setup.svg",
+      "alt": "Catch host event setup screen",
+      "caption": "Create the event, set the access model, and preview the guest experience.",
+      "walkthroughStep": "Setup"
+    },
+    {
+      "id": "host-live-console",
+      "audience": "host",
+      "surface": "Host live console",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.host.liveConsole",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+      "websitePath": "website/assets/app-screenshots/host-live-console.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/host-live-console.svg",
+      "alt": "Catch host live console with roster and check-in controls",
+      "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
+      "walkthroughStep": "Live"
+    },
+    {
+      "id": "host-post-event-report",
+      "audience": "host",
+      "surface": "Host post-event report",
+      "status": "pending-fixture",
+      "device": "iphone-15",
+      "fixtureKey": "salesDemo.host.postEventReport",
+      "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+      "websitePath": "website/assets/app-screenshots/host-post-event-report.png",
+      "placeholderPath": "website/assets/app-screenshots/placeholders/host-post-event-report.svg",
+      "alt": "Catch host post-event report screen",
+      "caption": "Review attendance and event momentum after the room closes.",
+      "walkthroughStep": "Report"
+    }
+  ]
+}

@@ -99,7 +99,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 32),
+          gapH32,
           OnboardingStepHeader(
             title: widget.profileCompletionOnly
                 ? 'Add prompts to start swiping'
@@ -135,7 +135,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );

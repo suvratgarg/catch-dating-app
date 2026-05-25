@@ -57,9 +57,9 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 32),
+            gapH32,
             const OnboardingStepHeader(title: 'How do you identify?'),
-            const SizedBox(height: 32),
+            gapH32,
             ChipField<Gender>(
               label: 'I am a...',
               values: Gender.values,
@@ -92,7 +92,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               gapH16,
               ErrorBanner(message: mutationErrorMessage(mutation)),
             ],
-            const SizedBox(height: 40),
+            gapH40,
             CatchButton(
               label: 'Continue',
               onPressed: _submit,
@@ -100,7 +100,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               fullWidth: true,
               size: CatchButtonSize.lg,
             ),
-            const SizedBox(height: 32),
+            gapH32,
           ],
         ),
       ),

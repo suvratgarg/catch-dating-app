@@ -267,7 +267,7 @@ export function buildSwipeDocs({admin, marker, uidA, uidB, eventId, now}) {
   const createdAt = timestampFromDate(admin, now);
   return [
     {
-      path: `swipes/${uidA}/outgoing/${uidB}`,
+      path: `profileDecisions/${uidA}/outgoing/${uidB}`,
       data: {
         ...marker,
         swiperId: uidA,
@@ -278,7 +278,7 @@ export function buildSwipeDocs({admin, marker, uidA, uidB, eventId, now}) {
       },
     },
     {
-      path: `swipes/${uidB}/outgoing/${uidA}`,
+      path: `profileDecisions/${uidB}/outgoing/${uidA}`,
       data: {
         ...marker,
         swiperId: uidB,
@@ -767,16 +767,18 @@ export function buildSuvbotDocs({admin, marker, uid, now}) {
         age: 99,
         gender: "other",
         profilePrompts: [],
-        photoUrls: [],
-        photoThumbnailUrls: [],
-        photoPrompts: [],
         profilePhotos: [],
         city: "mumbai",
-        paceMinSecsPerKm: 300,
-        paceMaxSecsPerKm: 420,
-        preferredDistances: [],
-        runningReasons: ["community"],
-        preferredRunTimes: [],
+        activityPreferences: {
+          running: {
+            paceMinSecsPerKm: 300,
+            paceMaxSecsPerKm: 420,
+            preferredDistances: [],
+            runningReasons: ["community"],
+            preferredRunTimes: [],
+            version: 1,
+          },
+        },
       },
     },
     {
@@ -1525,14 +1527,14 @@ async function collectMatchPaths(db, docs, demoMatchIds, uid) {
 }
 
 async function collectOutgoingSwipePaths(db, docs, uid) {
-  const snap = await db.collection("swipes").doc(uid).collection("outgoing").get();
+  const snap = await db.collection("profileDecisions").doc(uid).collection("outgoing").get();
   for (const doc of snap.docs) {
     if (isDemoOwned(doc.data())) docs.push(doc.ref.path);
   }
 }
 
 async function collectIncomingSwipePaths(db, docs, uid) {
-  const swipersSnap = await db.collection("swipes").get();
+  const swipersSnap = await db.collection("profileDecisions").get();
   for (const swiperDoc of swipersSnap.docs) {
     if (swiperDoc.id === uid) continue;
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
@@ -1583,7 +1585,7 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
     db.collection("savedEvents").where("uid", "==", userId).get(),
     db.collection("payments").where("userId", "==", userId).get(),
     db.collection("notifications").doc(userId).collection("items").get(),
-    db.collection("swipes").doc(userId).collection("outgoing").get(),
+    db.collection("profileDecisions").doc(userId).collection("outgoing").get(),
     db.collection("events").get(),
   ]);
 
@@ -1802,7 +1804,7 @@ export async function buildLaunchCleanupPlan({
     }
   }
 
-  const swipers = await db.collection("swipes").get();
+  const swipers = await db.collection("profileDecisions").get();
   for (const swiperDoc of swipers.docs) {
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
     for (const doc of outgoing.docs) {
@@ -1902,7 +1904,7 @@ export async function buildStaleEventCleanupPlan({
     paths.add(doc.ref.path);
   }
 
-  const swipers = await db.collection("swipes").get();
+  const swipers = await db.collection("profileDecisions").get();
   for (const swiperDoc of swipers.docs) {
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
     for (const doc of outgoing.docs) {
@@ -2010,12 +2012,10 @@ export function publicName(publicProfile, userProfile = {}) {
 }
 
 export function firstPhoto(publicProfile = {}) {
-  return Array.isArray(publicProfile.photoThumbnailUrls) &&
-    publicProfile.photoThumbnailUrls.length > 0 ?
-    publicProfile.photoThumbnailUrls[0] :
-    Array.isArray(publicProfile.photoUrls) && publicProfile.photoUrls.length > 0 ?
-      publicProfile.photoUrls[0] :
-      null;
+  const primaryPhoto = Array.isArray(publicProfile.profilePhotos) ?
+    publicProfile.profilePhotos[0] :
+    null;
+  return primaryPhoto?.thumbnailUrl ?? primaryPhoto?.url ?? null;
 }
 
 export function cityLabel(city) {

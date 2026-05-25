@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingStepHeader extends StatelessWidget {
@@ -15,15 +16,13 @@ class OnboardingStepHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          title,
-          style: CatchTextStyles.titleL(
-            context,
-          ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
-        ),
+        Text(title, style: CatchTextStyles.formQuestion(context, color: t.ink)),
         if (subtitle != null && subtitle!.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Text(subtitle!, style: CatchTextStyles.bodyM(context, color: t.ink2)),
+          gapH8,
+          Text(
+            subtitle!,
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
+          ),
         ],
       ],
     );
