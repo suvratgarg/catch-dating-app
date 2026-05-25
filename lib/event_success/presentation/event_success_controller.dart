@@ -30,6 +30,7 @@ class EventSuccessController extends _$EventSuccessController {
   static final generateMicroPodsMutation = Mutation<void>();
   static final generateGuidedRotationsMutation = Mutation<void>();
   static final overrideGuidedRotationsMutation = Mutation<void>();
+  static final overrideGroupAssignmentsMutation = Mutation<void>();
   static final microPodsOptOutMutation = Mutation<void>();
   static final guidedRotationsOptOutMutation = Mutation<void>();
 
@@ -203,6 +204,16 @@ class EventSuccessController extends _$EventSuccessController {
     await ref
         .read(eventSuccessRepositoryProvider)
         .overrideGuidedRotations(eventId: eventId, rounds: rounds);
+  }
+
+  Future<void> overrideGroupAssignments({
+    required String eventId,
+    required List<EventSuccessGroupOverrideRound> rounds,
+  }) async {
+    requireSignedInUid(ref, action: 'override event groups');
+    await ref
+        .read(eventSuccessRepositoryProvider)
+        .overrideGroupAssignments(eventId: eventId, rounds: rounds);
   }
 
   Future<void> setMicroPodsOptOut({

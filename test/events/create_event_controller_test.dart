@@ -148,7 +148,8 @@ void main() {
             ),
           );
 
-      final defaults = fakeEventRepository.createdEventSuccessDefaults;
+      final defaults = fakeEventRepository.createdEventSuccessDefaults
+          ?.toJson();
       expect(defaults, isNotNull);
       expect(defaults!['enabled'], true);
       expect(defaults['playbookId'], 'dinner_table_mixer');
@@ -189,7 +190,8 @@ void main() {
               ),
             );
 
-        final defaults = fakeEventRepository.createdEventSuccessDefaults;
+        final defaults = fakeEventRepository.createdEventSuccessDefaults
+            ?.toJson();
         final structure = defaults?['structureConfig'] as Map<String, Object?>?;
         expect(defaults, isNotNull);
         expect(defaults!['playbookId'], 'pub_quiz_team_mixer');

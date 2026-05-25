@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:flutter/material.dart';
 
@@ -20,11 +20,11 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          Sizes.p20,
-          Sizes.p16,
-          Sizes.p20,
-          Sizes.p24,
+        padding: EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s4,
+          CatchSpacing.s5,
+          CatchSpacing.s6,
         ),
         children: [
           EventSuccessDefaultsPanel(

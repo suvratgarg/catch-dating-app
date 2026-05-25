@@ -169,11 +169,11 @@ class _EmptyRosterMessage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.titleS(context)),
+                Text(title, style: CatchTextStyles.sectionTitle(context)),
                 gapH4,
                 Text(
                   message,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -206,7 +206,7 @@ class _SwipeWindowBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodyS(context, color: t.primary),
+              style: CatchTextStyles.supporting(context, color: t.primary),
             ),
           ),
         ],

@@ -43,10 +43,14 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
     final mutation = kind == EventSuccessRevealAssignmentKind.rotations
         ? ref.watch(EventSuccessController.guidedRotationsOptOutMutation)
         : ref.watch(EventSuccessController.microPodsOptOutMutation);
+    final groupSlots =
+        assigned?.groupRotationSlots ?? const <EventSuccessGroupRotationSlot>[];
     final roundCount = assigned == null
         ? 0
         : kind == EventSuccessRevealAssignmentKind.rotations
         ? assigned.rotationSlots.length
+        : groupSlots.isNotEmpty
+        ? groupSlots.length
         : 1;
     final revealedThrough = plan.revealedThroughRoundIndex(referenceNow);
     final activeRound = _safeRoundIndex(
@@ -62,13 +66,25 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
                 (slot) => plan.isRoundRevealed(slot.roundIndex, referenceNow),
               )
               .toList(growable: false);
+    final visibleGroupSlots = groupSlots
+        .where((slot) => plan.isRoundRevealed(slot.roundIndex, referenceNow))
+        .toList(growable: false);
     final podVisible =
         assigned != null &&
         kind == EventSuccessRevealAssignmentKind.microPods &&
+        groupSlots.isEmpty &&
         plan.isRoundRevealed(0, referenceNow);
     final showAssignment = kind == EventSuccessRevealAssignmentKind.rotations
         ? visibleSlots.isNotEmpty
+        : groupSlots.isNotEmpty
+        ? visibleGroupSlots.isNotEmpty
         : podVisible;
+    final title = _attendeeTitle(
+      assigned: assigned,
+      showAssignment: showAssignment,
+      isCountingDown: isCountingDown,
+      remainingSeconds: _remainingSeconds(plan, referenceNow),
+    );
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
@@ -111,15 +127,7 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
               ],
             ),
             gapH12,
-            Text(
-              _attendeeTitle(
-                assigned: assigned,
-                showAssignment: showAssignment,
-                isCountingDown: isCountingDown,
-                remainingSeconds: _remainingSeconds(plan, referenceNow),
-              ),
-              style: CatchTextStyles.titleL(context),
-            ),
+            Text(title, style: CatchTextStyles.titleL(context)),
             gapH6,
             Text(
               _attendeeSubtitle(
@@ -127,7 +135,7 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
                 showAssignment: showAssignment,
                 isCountingDown: isCountingDown,
               ),
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
             if (assigned != null && !optedOut) ...[
               gapH16,
@@ -143,6 +151,12 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
               else if (kind == EventSuccessRevealAssignmentKind.rotations)
                 _VisibleRotationSlots(
                   slots: visibleSlots,
+                  profilesByUid: profilesByUid,
+                  peersLoading: peersLoading,
+                )
+              else if (groupSlots.isNotEmpty)
+                _VisibleGroupRotationSlots(
+                  slots: visibleGroupSlots,
                   profilesByUid: profilesByUid,
                   peersLoading: peersLoading,
                 )
@@ -236,6 +250,10 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
 
   String _attendeeClue(EventSuccessAssignment assignment, int activeRound) {
     if (kind == EventSuccessRevealAssignmentKind.microPods) {
+      final slot = _groupSlotForRound(assignment, activeRound);
+      if (slot != null) {
+        return 'Clue: ${slot.unitLabel} is ready, but the names unlock together.';
+      }
       return 'Clue: ${assignment.label} is ready, but the names unlock together.';
     }
     final slot = _slotForRound(assignment, activeRound);

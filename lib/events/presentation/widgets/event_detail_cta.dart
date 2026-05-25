@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
@@ -54,6 +55,10 @@ class EventDetailCta extends ConsumerWidget {
     final status = _statusForEligibility(eligibility);
     final requiresHostApproval =
         event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired;
+    final hasApprovedJoinRequest =
+        requiresHostApproval &&
+        participation?.status == EventParticipationStatus.waitlisted &&
+        participation?.hasHostApproval == true;
     final canRequestHostApproval =
         requiresHostApproval && eligibility is GenderCapacityReached;
     final supportsPaid = ref
@@ -114,6 +119,10 @@ class EventDetailCta extends ConsumerWidget {
                   ? 'Unavailable on this platform'
                   : needsRunPreferences
                   ? 'Set run preferences'
+                  : hasApprovedJoinRequest
+                  ? isFreeForViewer
+                        ? 'Join approved event'
+                        : 'Complete approved booking'
                   : isFreeForViewer
                   ? 'Join event — ${event.spotsRemaining} spots left'
                   : 'Book event',
@@ -271,6 +280,9 @@ EventEligibility _eligibilityForParticipation({
     EventParticipationStatus.attended =>
       _hasEventStarted(event, now) ? const Attended() : const AlreadySignedUp(),
     EventParticipationStatus.signedUp => const AlreadySignedUp(),
+    EventParticipationStatus.waitlisted
+        when participation?.hasHostApproval == true =>
+      _hasEventStarted(event, now) ? const EventPast() : const Eligible(),
     EventParticipationStatus.waitlisted => const OnWaitlist(),
     EventParticipationStatus.cancelled ||
     EventParticipationStatus.deleted ||
@@ -324,7 +336,7 @@ class PriceLeading extends StatelessWidget {
         Text(price, style: CatchTextStyles.titleL(context)),
         Text(
           'per person',
-          style: CatchTextStyles.bodyS(
+          style: CatchTextStyles.supporting(
             context,
             color: CatchTokens.of(context).ink2,
           ),
@@ -344,7 +356,7 @@ class BookedLeading extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.check_circle_rounded, color: t.primary, size: 18),
-        const SizedBox(width: 6),
+        gapW6,
         Text("You're in!", style: CatchTextStyles.labelL(context)),
       ],
     );
@@ -361,7 +373,7 @@ class AttendedLeading extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.directions_run_rounded, color: t.primary, size: 18),
-        const SizedBox(width: 6),
+        gapW6,
         Text('Completed', style: CatchTextStyles.labelL(context)),
       ],
     );

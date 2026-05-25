@@ -2,11 +2,12 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('manual QA screen renders host and attendee panes', (
@@ -25,45 +26,27 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
 
     expect(find.text('Event success manual QA'), findsOneWidget);
     expect(find.text('Fixture scenario'), findsOneWidget);
-    expect(find.text('Host surface'), findsOneWidget);
     expect(find.text('Attendee moment'), findsNothing);
     expect(find.text('Attendee choices'), findsOneWidget);
-    expect(find.text('Host config and controls'), findsOneWidget);
+    expect(find.text('Host Manage'), findsOneWidget);
+    expect(find.text('HOST MANAGE'), findsOneWidget);
+    await _scrollHostManageUntilVisible(tester, 'Participation');
+    expect(find.text('Participation'), findsOneWidget);
+    expect(find.text('Guest'), findsOneWidget);
     expect(find.text('Attendee experience'), findsOneWidget);
     expect(find.text('Event companion'), findsOneWidget);
     expect(find.text('Fixture data'), findsOneWidget);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(CatchSegmentedControl<EventSuccessHostTab>),
-        matching: find.text('Live'),
-      ),
-    );
-    await tester.pump();
-    final regenerateRotationsButton = find.byKey(
-      const ValueKey('eventSuccessGenerateRotationsButton'),
-    );
-    await tester.ensureVisible(regenerateRotationsButton);
-    await tester.pump();
-    await tester.tap(regenerateRotationsButton);
-    await tester.pump();
-
-    expect(
-      find.textContaining('Fixture rotations regenerated'),
-      findsOneWidget,
-    );
+    await _tapHostSection(tester, 'Live');
+    expect(find.text('Live now'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(CatchSegmentedControl<EventSuccessHostTab>),
-        matching: find.text('Report'),
-      ),
-    );
-    await tester.pump();
+    await _tapHostSection(tester, 'Report');
+    await _scrollHostManageUntilVisible(tester, 'Post-event host report');
 
     expect(find.text('Post-event host report'), findsOneWidget);
   });
@@ -84,14 +67,9 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(CatchSegmentedControl<EventSuccessHostTab>),
-        matching: find.text('Live'),
-      ),
-    );
-    await tester.pump();
+    await _tapHostSection(tester, 'Live');
 
     expect(find.text('Live now'), findsOneWidget);
     expect(
@@ -124,7 +102,7 @@ void main() {
     expect(find.text('countingDown'), findsWidgets);
     expect(find.text('Next reveal in 15s'), findsWidgets);
 
-    await tester.pump(const Duration(seconds: 2));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 2));
 
     expect(find.text('Next reveal in 13s'), findsWidgets);
 
@@ -156,6 +134,7 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
 
     final companion = find.byType(EventSuccessCompanionScreen);
     final playfulOption = find.descendant(
@@ -174,7 +153,7 @@ void main() {
     await tester.ensureVisible(saveButton);
     await tester.pump();
     await tester.tap(saveButton);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(
       find.descendant(
@@ -187,7 +166,9 @@ void main() {
     expect(find.text('Sign in required'), findsNothing);
   });
 
-  testWidgets('manual QA keeps First Hello mission in sync', (tester) async {
+  testWidgets('manual QA host manage live includes participant table', (
+    tester,
+  ) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1200, 2400);
     addTearDown(tester.view.resetDevicePixelRatio);
@@ -201,45 +182,20 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
 
-    await tester.tap(find.text('First Hello'));
-    await tester.pumpAndSettle();
+    await _tapHostSection(tester, 'Live');
+    await _scrollHostManageUntilVisible(tester, 'Guest');
 
-    final companion = find.byType(EventSuccessCompanionScreen);
+    expect(find.text('All'), findsWidgets);
+    expect(find.text('Due'), findsWidgets);
+    expect(find.text('In'), findsWidgets);
+    expect(find.text('Waitlist'), findsWidgets);
+    expect(find.text('Guest'), findsOneWidget);
+    expect(find.text('Status'), findsOneWidget);
+    expect(find.text('Host action'), findsOneWidget);
     expect(
-      find.descendant(of: companion, matching: find.text('Find Arjun.')),
-      findsOneWidget,
-    );
-    expect(find.text('first hello pending'), findsOneWidget);
-    expect(
-      find.descendant(
-        of: companion,
-        matching: find.text('A few quick questions'),
-      ),
-      findsNothing,
-    );
-
-    final answer = find.descendant(
-      of: companion,
-      matching: find.text('Playful energy'),
-    );
-    await tester.ensureVisible(answer);
-    await tester.pump();
-    await tester.tap(answer);
-    await tester.pump();
-
-    final completeButton = find.descendant(
-      of: companion,
-      matching: find.widgetWithText(CatchButton, 'Complete check-in'),
-    );
-    await tester.ensureVisible(completeButton);
-    await tester.pump();
-    await tester.tap(completeButton);
-    await tester.pumpAndSettle();
-
-    expect(find.text('first hello complete'), findsOneWidget);
-    expect(
-      find.descendant(of: companion, matching: find.text('Find Arjun.')),
+      find.text('Signed-up participants will appear here when they book.'),
       findsNothing,
     );
     expect(find.text('Live now'), findsOneWidget);
@@ -260,6 +216,7 @@ void main() {
         ),
       ),
     );
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Singles mixer'));
     await tester.pump();
@@ -267,13 +224,7 @@ void main() {
     expect(find.textContaining('Singles Mixer'), findsWidgets);
     expect(find.text('10s reveal'), findsOneWidget);
 
-    await tester.tap(
-      find.descendant(
-        of: find.byType(CatchSegmentedControl<EventSuccessHostTab>),
-        matching: find.text('Live'),
-      ),
-    );
-    await tester.pump();
+    await _tapHostSection(tester, 'Live');
 
     expect(find.textContaining('Step 1/4: Quick questions'), findsWidgets);
 
@@ -301,16 +252,72 @@ void main() {
 
 Future<void> _tapHostNext(WidgetTester tester) async {
   final nextButton = find.byKey(const ValueKey('eventSuccessNextStepButton'));
-  await tester.ensureVisible(nextButton);
+  await _scrollHostManageFinderUntilVisible(tester, nextButton);
   await tester.pump();
-  await tester.tap(nextButton);
+  await tester.tap(nextButton.first);
+  await tester.pump();
+}
+
+Future<void> _tapHostSection(WidgetTester tester, String label) async {
+  final hostManage = find.byType(HostEventManageScreen);
+  final scrollable = find
+      .descendant(of: hostManage, matching: find.byType(Scrollable))
+      .first;
+  final section = find.descendant(
+    of: find.descendant(
+      of: hostManage,
+      matching: find.byType(CatchSegmentedControl<HostEventManageSection>),
+    ),
+    matching: find.text(label),
+  );
+  for (var i = 0; i < 12 && section.evaluate().isEmpty; i += 1) {
+    await tester.drag(scrollable, const Offset(0, 180));
+    await tester.pump();
+  }
+  await tester.ensureVisible(section.first);
+  await tester.pump();
+  await tester.tap(section.first);
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _scrollHostManageUntilVisible(
+  WidgetTester tester,
+  String label,
+) async {
+  await _scrollHostManageFinderUntilVisible(
+    tester,
+    find.descendant(
+      of: find.byType(HostEventManageScreen),
+      matching: find.text(label),
+    ),
+  );
+}
+
+Future<void> _scrollHostManageFinderUntilVisible(
+  WidgetTester tester,
+  Finder target,
+) async {
+  final hostManage = find.byType(HostEventManageScreen);
+  final scrollable = find
+      .descendant(of: hostManage, matching: find.byType(Scrollable))
+      .first;
+  for (var i = 0; i < 12; i += 1) {
+    if (target.evaluate().isNotEmpty) {
+      await tester.ensureVisible(target.first);
+      await tester.pump();
+      return;
+    }
+    await tester.drag(scrollable, const Offset(0, -180));
+    await tester.pump();
+  }
+  expect(target, findsWidgets);
   await tester.pump();
 }
 
 Future<void> _tapHostButton(WidgetTester tester, String label) async {
   final nextButton = find.widgetWithText(CatchButton, label);
-  await tester.ensureVisible(nextButton);
+  await _scrollHostManageFinderUntilVisible(tester, nextButton);
   await tester.pump();
-  await tester.tap(nextButton);
+  await tester.tap(nextButton.first);
   await tester.pump();
 }

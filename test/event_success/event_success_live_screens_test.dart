@@ -34,6 +34,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
     show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('host screen exposes setup live mode and report tabs', (
@@ -110,11 +111,11 @@ void main() {
     expect(find.text('Match clue questions'), findsNothing);
 
     await tester.tap(find.text('Advanced'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Match clue questions'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Live now'), findsOneWidget);
     expect(find.text('Conversation cues'), findsOneWidget);
     expect(
@@ -123,7 +124,7 @@ void main() {
     );
 
     await tester.tap(find.text('Report'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Post-event host report'), findsOneWidget);
   });
 
@@ -766,6 +767,105 @@ void main() {
     expect(find.text('Edit rotations'), findsOneWidget);
   });
 
+  testWidgets('host live mode opens group override editor', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 2400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final start = DateTime(2026, 5, 21, 8);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(minutes: 60)),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event);
+    final assignments = [
+      EventSuccessAssignment(
+        id: eventSuccessAssignmentId(
+          eventId: event.id,
+          moduleId: EventSuccessModuleCatalog.microPods.id,
+          uid: 'runner-1',
+        ),
+        eventId: event.id,
+        clubId: event.clubId,
+        uid: 'runner-1',
+        moduleId: EventSuccessModuleCatalog.microPods.id,
+        label: 'Table A',
+        displayTitle: 'Table A',
+        displaySubtitle: '3 people at this table.',
+        peerUids: const ['runner-2', 'runner-3'],
+        source: 'server_v1',
+        createdAt: start,
+        updatedAt: start,
+      ),
+      EventSuccessAssignment(
+        id: eventSuccessAssignmentId(
+          eventId: event.id,
+          moduleId: EventSuccessModuleCatalog.microPods.id,
+          uid: 'runner-2',
+        ),
+        eventId: event.id,
+        clubId: event.clubId,
+        uid: 'runner-2',
+        moduleId: EventSuccessModuleCatalog.microPods.id,
+        label: 'Table A',
+        displayTitle: 'Table A',
+        displaySubtitle: '3 people at this table.',
+        peerUids: const ['runner-1', 'runner-3'],
+        source: 'server_v1',
+        createdAt: start,
+        updatedAt: start,
+      ),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: const EventParticipationRoster(
+                    bookedIds: ['runner-1', 'runner-2', 'runner-3'],
+                    checkedInIds: ['runner-1', 'runner-2', 'runner-3'],
+                    waitlistedIds: [],
+                  ),
+                  assignments: assignments,
+                  assignmentParticipantProfiles: [
+                    buildPublicProfile(uid: 'runner-1', name: 'Arjun'),
+                    buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
+                    buildPublicProfile(uid: 'runner-3', name: 'Naina'),
+                  ],
+                  initialTab: EventSuccessHostTab.live,
+                  showTabs: false,
+                  embedded: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Edit groups'), findsOneWidget);
+    await tester.tap(find.text('Edit groups'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Host override'), findsOneWidget);
+    expect(find.text('Round 1'), findsOneWidget);
+    expect(find.text('Group label'), findsOneWidget);
+    expect(find.text('Table A'), findsWidgets);
+    expect(find.text('Arjun'), findsWidgets);
+    expect(find.text('Rhea'), findsWidgets);
+    expect(find.text('Naina'), findsWidgets);
+    expect(find.text('Save overrides'), findsOneWidget);
+  });
+
   testWidgets('host live mode shows the countdown reveal console', (
     tester,
   ) async {
@@ -1080,7 +1180,7 @@ void main() {
     );
 
     await tester.tap(find.text('Edit rotations'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Host override'), findsOneWidget);
     expect(find.text('Round 1'), findsOneWidget);
@@ -1239,7 +1339,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask the host for an intro'),
         400,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
       expect(find.text('Host can see'), findsOneWidget);
       expect(find.text('Rhea'), findsOneWidget);
@@ -1247,10 +1347,10 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask host'),
         200,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
       await tester.tap(find.text('Ask host'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       final request = await firestore
           .collection('eventSuccessWingmanRequests')
@@ -1318,7 +1418,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Ask the host for an intro'),
         400,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
 
       expect(find.text('Arjun'), findsOneWidget);
@@ -1597,7 +1697,7 @@ void main() {
     await tester.tap(find.text('Playful competition'));
     await tester.pump();
     await tester.tap(find.text('Save clues'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     final saved = await firestore
         .collection('eventSuccessCompatibilityResponses')
@@ -1663,7 +1763,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('A few quick questions'), findsOneWidget);
     expect(find.text('Can guide pairings'), findsOneWidget);
@@ -1795,7 +1895,7 @@ void main() {
       expect(find.textContaining('not a public share card'), findsOneWidget);
       expect(find.text('Suggested first-message openers'), findsOneWidget);
       expect(find.textContaining('compare routes'), findsOneWidget);
-      final copyOpener = find.byTooltip('Copy opener').first;
+      final copyOpener = findFirstByTooltip('Copy opener');
       await tester.ensureVisible(copyOpener);
       await tester.pump();
       expect(copyOpener, findsOneWidget);
@@ -1803,18 +1903,18 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('How did it feel?'),
         400,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
       expect(find.text('Submit feedback'), findsOneWidget);
       await tester.scrollUntilVisible(
         find.text('Submit feedback'),
         400,
-        scrollable: find.byType(Scrollable).first,
+        scrollable: findPrimaryScrollable(),
       );
-      await tester.drag(find.byType(Scrollable).first, const Offset(0, -180));
+      await tester.drag(findPrimaryScrollable(), const Offset(0, -180));
       await tester.pump();
       await tester.tap(find.text('Submit feedback'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       final feedback = await firestore
           .collection('eventSuccessFeedback')
@@ -1890,6 +1990,97 @@ void main() {
     expect(find.text('4 people'), findsOneWidget);
     expect(find.text('Rhea'), findsOneWidget);
     expect(find.text('Naina'), findsOneWidget);
+  });
+
+  testWidgets('companion screen shows rotating group slots as tables', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1600);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final start = DateTime(2026, 5, 18, 7);
+    final event = buildEvent(
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+    );
+    final plan = EventSuccessPlan.defaultForEvent(event);
+    final assignment = EventSuccessAssignment(
+      id: eventSuccessAssignmentId(
+        eventId: event.id,
+        moduleId: EventSuccessModuleCatalog.microPods.id,
+        uid: 'runner-1',
+      ),
+      eventId: event.id,
+      clubId: event.clubId,
+      uid: 'runner-1',
+      moduleId: EventSuccessModuleCatalog.microPods.id,
+      label: 'Table rotations',
+      displayTitle: '2 table rotations',
+      displaySubtitle: '20-minute tables across the event.',
+      peerUids: const ['runner-2', 'runner-3', 'runner-4', 'runner-5'],
+      groupRotationSlots: [
+        EventSuccessGroupRotationSlot(
+          roundIndex: 0,
+          label: 'Round 1',
+          unitLabel: 'Table A',
+          startsAt: start,
+          endsAt: start.add(const Duration(minutes: 20)),
+          peerUids: const ['runner-2', 'runner-3'],
+          compatibility: 'mixed',
+        ),
+        EventSuccessGroupRotationSlot(
+          roundIndex: 1,
+          label: 'Round 2',
+          unitLabel: 'Table B',
+          startsAt: start.add(const Duration(minutes: 20)),
+          endsAt: start.add(const Duration(minutes: 40)),
+          peerUids: const ['runner-4', 'runner-5'],
+          compatibility: 'social',
+        ),
+      ],
+      source: 'server_v1',
+      createdAt: start,
+      updatedAt: start,
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionScreen(
+            event: event,
+            plan: plan,
+            userProfile: buildUser(uid: 'runner-1'),
+            participation: buildEventParticipation(
+              event: event,
+              uid: 'runner-1',
+              status: EventParticipationStatus.attended,
+            ),
+            wingmanRequestCandidates: const [],
+            assignment: assignment,
+            assignmentPeerProfiles: [
+              buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
+              buildPublicProfile(uid: 'runner-3', name: 'Naina'),
+              buildPublicProfile(uid: 'runner-4', name: 'Kabir'),
+              buildPublicProfile(uid: 'runner-5', name: 'Dev'),
+            ],
+            now: start.subtract(const Duration(hours: 1)),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('2 table rotations'), findsOneWidget);
+    expect(find.text('Round 1'), findsOneWidget);
+    expect(find.text('Table A'), findsOneWidget);
+    expect(find.text('Round 2'), findsOneWidget);
+    expect(find.text('Table B'), findsOneWidget);
+    expect(find.text('Rhea'), findsOneWidget);
+    expect(find.text('Naina'), findsOneWidget);
+    expect(find.text('Kabir'), findsOneWidget);
+    expect(find.text('Dev'), findsOneWidget);
   });
 
   testWidgets('companion screen shows assigned rotation schedule', (
@@ -2323,7 +2514,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Pod A'), findsOneWidget);
     expect(find.text('Rhea'), findsOneWidget);
@@ -2409,7 +2600,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('1 guided rotation'), findsOneWidget);
     expect(find.text('Round 1'), findsOneWidget);
@@ -2502,7 +2693,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Companion not available'), findsOneWidget);
     expect(
@@ -2577,6 +2768,7 @@ extension on EventSuccessAssignment {
       displaySubtitle: displaySubtitle,
       peerUids: peerUids,
       rotationSlots: rotationSlots,
+      groupRotationSlots: groupRotationSlots,
       source: source,
       createdAt: createdAt,
       updatedAt: updatedAt,

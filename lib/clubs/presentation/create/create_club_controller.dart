@@ -117,12 +117,16 @@ class CreateClubController extends _$CreateClubController {
         if (uploadedImageUrl == null && uploadedProfileImageUrl == null) {
           throw StateError('Only the club owner can edit club details.');
         }
+        final patch = <String, Object?>{};
+        if (uploadedImageUrl != null) {
+          patch['imageUrl'] = uploadedImageUrl;
+        }
+        if (uploadedProfileImageUrl != null) {
+          patch['profileImageUrl'] = uploadedProfileImageUrl;
+        }
         await clubsRepo.updateClub(
           clubId: existingClub.id,
-          patch: UpdateClubPatch(
-            imageUrl: uploadedImageUrl,
-            profileImageUrl: uploadedProfileImageUrl,
-          ),
+          patch: UpdateClubPatch.raw(patch),
         );
         return;
       }
@@ -174,12 +178,16 @@ class CreateClubController extends _$CreateClubController {
           .uploadClubProfileImage(clubId: createdClubId, image: profileImage);
     }
     if (uploadedCover != null || uploadedProfile != null) {
+      final patch = <String, Object?>{};
+      if (uploadedCover != null) {
+        patch['imageUrl'] = uploadedCover;
+      }
+      if (uploadedProfile != null) {
+        patch['profileImageUrl'] = uploadedProfile;
+      }
       await clubsRepo.updateClub(
         clubId: createdClubId,
-        patch: UpdateClubPatch(
-          imageUrl: uploadedCover,
-          profileImageUrl: uploadedProfile,
-        ),
+        patch: UpdateClubPatch.raw(patch),
       );
     }
   }

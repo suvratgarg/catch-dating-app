@@ -43,14 +43,11 @@ class _EventSuccessAudioPalette {
     return switch (kind) {
       EventSuccessLiveEffectKind.stepChange ||
       EventSuccessLiveEffectKind.liveEntry => '$_base/ui_confirm.mp3',
-      EventSuccessLiveEffectKind.countdownStart =>
-        '$_base/countdown_rise.mp3',
+      EventSuccessLiveEffectKind.countdownStart => '$_base/countdown_rise.mp3',
       EventSuccessLiveEffectKind.assignmentRevealed =>
         '$_base/reveal_climax.mp3',
-      EventSuccessLiveEffectKind.guideComplete =>
-        '$_base/afterglow_settle.mp3',
-      EventSuccessLiveEffectKind.revealReset =>
-        '$_base/transition_whoosh.mp3',
+      EventSuccessLiveEffectKind.guideComplete => '$_base/afterglow_settle.mp3',
+      EventSuccessLiveEffectKind.revealReset => '$_base/transition_whoosh.mp3',
     };
   }
 
@@ -66,13 +63,11 @@ class _EventSuccessAudioPalette {
 }
 
 final eventSuccessLiveEffectsControllerProvider =
-    Provider<EventSuccessLiveEffectsController>(
-  (ref) {
-    final controller = EventSuccessLiveEffectsController();
-    ref.onDispose(controller.dispose);
-    return controller;
-  },
-);
+    Provider<EventSuccessLiveEffectsController>((ref) {
+      final controller = EventSuccessLiveEffectsController();
+      ref.onDispose(controller.dispose);
+      return controller;
+    });
 
 /// Multi-channel effects controller layering haptics + asset audio. Designed
 /// to gracefully no-op when audio assets are missing (so UI work isn't
@@ -102,10 +97,7 @@ class EventSuccessLiveEffectsController {
     if (_disposed) return;
     // Haptics and audio in parallel — haptic latency is the dominant signal
     // on tap, audio gives the weight a beat behind.
-    await Future.wait([
-      _playHaptic(kind),
-      _playEffectSound(kind),
-    ]);
+    await Future.wait([_playHaptic(kind), _playEffectSound(kind)]);
   }
 
   Future<void> playAmbientBed(EventSuccessAmbientBed bed) async {
@@ -189,8 +181,10 @@ class EventSuccessLiveEffectsController {
     });
   }
 
-  AudioPlayer _newEffectPlayer() => AudioPlayer()..setPlayerMode(PlayerMode.lowLatency);
-  AudioPlayer _newBedPlayer() => AudioPlayer()..setPlayerMode(PlayerMode.mediaPlayer);
+  AudioPlayer _newEffectPlayer() =>
+      AudioPlayer()..setPlayerMode(PlayerMode.lowLatency);
+  AudioPlayer _newBedPlayer() =>
+      AudioPlayer()..setPlayerMode(PlayerMode.mediaPlayer);
 
   /// Catch every plausible failure mode so audio gaps never break the UI:
   /// missing platform plugin (web/unit-test envs), missing asset file

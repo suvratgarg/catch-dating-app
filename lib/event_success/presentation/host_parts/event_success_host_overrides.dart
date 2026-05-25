@@ -2,16 +2,22 @@ part of '../event_success_host_screen.dart';
 
 class _MicroPodsHostCard extends ConsumerWidget {
   const _MicroPodsHostCard({
+    required this.event,
     required this.eventId,
     required this.assignments,
+    required this.participantProfiles,
     required this.preferences,
     this.onGenerate,
+    this.onOverride,
   });
 
+  final Event event;
   final String eventId;
   final List<EventSuccessAssignment> assignments;
+  final List<PublicProfile> participantProfiles;
   final List<EventSuccessPreference> preferences;
   final VoidCallback? onGenerate;
+  final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,6 +33,9 @@ class _MicroPodsHostCard extends ConsumerWidget {
         .where((assignment) => !optedOutUids.contains(assignment.uid))
         .toList(growable: false);
     final staleAssignmentCount = assignments.length - activeAssignments.length;
+    final hostEdited = activeAssignments.any(
+      (assignment) => assignment.source == 'host_override_v1',
+    );
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
       padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -60,6 +69,14 @@ class _MicroPodsHostCard extends ConsumerWidget {
                   icon: Icons.visibility_off_outlined,
                 ),
               ],
+              if (hostEdited) ...[
+                gapW8,
+                const CatchBadge(
+                  label: 'Host edited',
+                  tone: CatchBadgeTone.neutral,
+                  icon: Icons.edit_outlined,
+                ),
+              ],
             ],
           ),
           gapH8,
@@ -69,7 +86,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
                 : optedOutCount > 0
                 ? 'Generate attendee pod cards from the roster, excluding opted-out attendees.'
                 : 'Generate attendee pod cards from the current booked and checked-in roster.',
-            style: CatchTextStyles.bodyS(context),
+            style: CatchTextStyles.supporting(context),
           ),
           if (activeAssignments.isNotEmpty) ...[
             gapH12,
@@ -80,25 +97,473 @@ class _MicroPodsHostCard extends ConsumerWidget {
             _ErrorText(error: (mutation as MutationError).error),
           ],
           gapH12,
+          if (activeAssignments.isEmpty)
+            CatchButton(
+              key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
+              label: 'Generate micro-pods',
+              icon: const Icon(Icons.auto_awesome_outlined),
+              isLoading: onGenerate == null && mutation.isPending,
+              onPressed: mutation.isPending
+                  ? null
+                  : onGenerate ??
+                        () => EventSuccessController.generateMicroPodsMutation
+                            .run(
+                              ref,
+                              (tx) => tx
+                                  .get(eventSuccessControllerProvider.notifier)
+                                  .generateMicroPods(eventId: eventId),
+                            ),
+              fullWidth: true,
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: CatchButton(
+                    key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
+                    label: 'Regenerate',
+                    icon: const Icon(Icons.auto_awesome_outlined),
+                    variant: CatchButtonVariant.secondary,
+                    isLoading: onGenerate == null && mutation.isPending,
+                    onPressed: mutation.isPending
+                        ? null
+                        : onGenerate ??
+                              () => EventSuccessController
+                                  .generateMicroPodsMutation
+                                  .run(
+                                    ref,
+                                    (tx) => tx
+                                        .get(
+                                          eventSuccessControllerProvider
+                                              .notifier,
+                                        )
+                                        .generateMicroPods(eventId: eventId),
+                                  ),
+                    fullWidth: true,
+                  ),
+                ),
+                gapW10,
+                Expanded(
+                  child: CatchButton(
+                    label: 'Edit groups',
+                    icon: const Icon(Icons.edit_outlined),
+                    onPressed: () => _showGroupOverrideSheet(
+                      context: context,
+                      event: event,
+                      assignments: activeAssignments,
+                      participantProfiles: participantProfiles,
+                      onOverride: onOverride,
+                    ),
+                    fullWidth: true,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+Future<void> _showGroupOverrideSheet({
+  required BuildContext context,
+  required Event event,
+  required List<EventSuccessAssignment> assignments,
+  required List<PublicProfile> participantProfiles,
+  ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (context) => _GroupOverrideSheet(
+      event: event,
+      assignments: assignments,
+      participantProfiles: participantProfiles,
+      onOverride: onOverride,
+    ),
+  );
+}
+
+class _GroupOverrideSheet extends ConsumerStatefulWidget {
+  const _GroupOverrideSheet({
+    required this.event,
+    required this.assignments,
+    required this.participantProfiles,
+    this.onOverride,
+  });
+
+  final Event event;
+  final List<EventSuccessAssignment> assignments;
+  final List<PublicProfile> participantProfiles;
+  final ValueChanged<List<EventSuccessGroupOverrideRound>>? onOverride;
+
+  @override
+  ConsumerState<_GroupOverrideSheet> createState() =>
+      _GroupOverrideSheetState();
+}
+
+class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
+  late final List<String> _participantUids = _rotationParticipantUids(
+    widget.assignments,
+  );
+  late final Map<String, String> _participantLabels = {
+    for (final profile in widget.participantProfiles) profile.uid: profile.name,
+  };
+  late final List<_GroupOverrideRoundDraft> _rounds =
+      _groupRoundDraftsFromAssignments(widget.assignments);
+
+  @override
+  Widget build(BuildContext context) {
+    final mutation = ref.watch(
+      EventSuccessController.overrideGroupAssignmentsMutation,
+    );
+    final validationError = _validationError;
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
+    return CatchBottomSheetScaffold(
+      title: 'Edit groups',
+      subtitle: 'Host override',
+      action: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (mutation.hasError) ...[
+            _ErrorText(error: (mutation as MutationError).error),
+            gapH8,
+          ],
+          if (validationError != null) ...[
+            Text(
+              validationError,
+              style: CatchTextStyles.supporting(
+                context,
+                color: CatchTokens.of(context).danger,
+              ),
+            ),
+            gapH8,
+          ],
           CatchButton(
-            key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
-            label: assignments.isEmpty ? 'Generate micro-pods' : 'Regenerate',
-            icon: const Icon(Icons.auto_awesome_outlined),
-            isLoading: onGenerate == null && mutation.isPending,
-            onPressed: mutation.isPending
+            label: 'Save overrides',
+            icon: const Icon(Icons.check_rounded),
+            isLoading: widget.onOverride == null && mutation.isPending,
+            onPressed: mutation.isPending || validationError != null
                 ? null
-                : onGenerate ??
-                      () =>
-                          EventSuccessController.generateMicroPodsMutation.run(
-                            ref,
-                            (tx) => tx
-                                .get(eventSuccessControllerProvider.notifier)
-                                .generateMicroPods(eventId: eventId),
-                          ),
+                : () => _saveOverrides(context),
             fullWidth: true,
           ),
         ],
       ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: ListView.separated(
+          shrinkWrap: true,
+          itemCount: _rounds.length,
+          separatorBuilder: (_, _) => gapH12,
+          itemBuilder: (context, index) {
+            final round = _rounds[index];
+            return _GroupOverrideRoundEditor(
+              round: round,
+              participantUids: _participantUids,
+              participantLabel: _participantLabel,
+              onChanged: () => setState(() {}),
+              onAddGroup: () => setState(() => _addGroup(round)),
+              onRemoveGroup: (group) =>
+                  setState(() => round.groups.remove(group)),
+              onAddMember: (group) => setState(() => _addMember(round, group)),
+              onRemoveMember: (group, member) =>
+                  setState(() => group.memberUids.remove(member)),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  String _participantLabel(String uid) => _participantLabels[uid] ?? uid;
+
+  String? get _validationError {
+    if (_rounds.every((round) => round.groups.isEmpty)) {
+      return 'Add at least one group.';
+    }
+    for (final round in _rounds) {
+      final usedInRound = <String>{};
+      for (final group in round.groups) {
+        if (group.label.trim().isEmpty) {
+          return 'Name every group.';
+        }
+        if (group.memberUids.isEmpty) {
+          return 'Add at least one attendee to every group.';
+        }
+        for (final memberUid in group.memberUids) {
+          if (memberUid == null) {
+            return 'Choose every attendee slot.';
+          }
+          if (!usedInRound.add(memberUid)) {
+            return 'Each attendee can appear once per round.';
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  void _addGroup(_GroupOverrideRoundDraft round) {
+    final used = round.groups
+        .expand((group) => group.memberUids)
+        .whereType<String>()
+        .toSet();
+    final available = _participantUids
+        .where((uid) => !used.contains(uid))
+        .toList(growable: false);
+    round.groups.add(
+      _GroupOverrideUnitDraft(
+        label: 'Group ${round.groups.length + 1}',
+        memberUids: <String?>[if (available.isNotEmpty) available.first],
+      ),
+    );
+  }
+
+  void _addMember(
+    _GroupOverrideRoundDraft round,
+    _GroupOverrideUnitDraft group,
+  ) {
+    final used = round.groups
+        .expand((draft) => draft.memberUids)
+        .whereType<String>()
+        .toSet();
+    final available = _participantUids
+        .where((uid) => !used.contains(uid))
+        .toList(growable: false);
+    group.memberUids.add(available.isEmpty ? null : available.first);
+  }
+
+  void _saveOverrides(BuildContext context) {
+    final overrideRounds = [
+      for (final round in _rounds)
+        EventSuccessGroupOverrideRound(
+          roundIndex: round.roundIndex,
+          groups: [
+            for (final group in round.groups)
+              EventSuccessGroupOverrideUnit(
+                label: group.label.trim(),
+                participantUids: group.memberUids.whereType<String>().toList(),
+              ),
+          ],
+        ),
+    ];
+    final fixtureOverride = widget.onOverride;
+    if (fixtureOverride != null) {
+      fixtureOverride(overrideRounds);
+      Navigator.of(context).pop();
+      return;
+    }
+    EventSuccessController.overrideGroupAssignmentsMutation.run(ref, (
+      tx,
+    ) async {
+      await tx
+          .get(eventSuccessControllerProvider.notifier)
+          .overrideGroupAssignments(
+            eventId: widget.event.id,
+            rounds: overrideRounds,
+          );
+      if (context.mounted) Navigator.of(context).pop();
+    });
+  }
+}
+
+class _GroupOverrideRoundEditor extends StatelessWidget {
+  const _GroupOverrideRoundEditor({
+    required this.round,
+    required this.participantUids,
+    required this.participantLabel,
+    required this.onChanged,
+    required this.onAddGroup,
+    required this.onRemoveGroup,
+    required this.onAddMember,
+    required this.onRemoveMember,
+  });
+
+  final _GroupOverrideRoundDraft round;
+  final List<String> participantUids;
+  final String Function(String uid) participantLabel;
+  final VoidCallback onChanged;
+  final VoidCallback onAddGroup;
+  final ValueChanged<_GroupOverrideUnitDraft> onRemoveGroup;
+  final ValueChanged<_GroupOverrideUnitDraft> onAddMember;
+  final void Function(_GroupOverrideUnitDraft group, String? memberUid)
+  onRemoveMember;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Round ${round.roundIndex + 1}',
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
+              ),
+              CatchButton(
+                label: 'Add group',
+                icon: const Icon(Icons.add_rounded),
+                size: CatchButtonSize.sm,
+                variant: CatchButtonVariant.secondary,
+                onPressed: onAddGroup,
+              ),
+            ],
+          ),
+          gapH10,
+          if (round.groups.isEmpty)
+            Text(
+              'No groups in this round.',
+              style: CatchTextStyles.supporting(context, color: t.ink3),
+            )
+          else
+            for (final group in round.groups) ...[
+              _GroupOverrideUnitEditor(
+                group: group,
+                participantUids: participantUids,
+                participantLabel: participantLabel,
+                onChanged: onChanged,
+                onAddMember: () => onAddMember(group),
+                onRemoveGroup: () => onRemoveGroup(group),
+                onRemoveMember: (memberUid) => onRemoveMember(group, memberUid),
+              ),
+              if (group != round.groups.last) gapH10,
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+class _GroupOverrideUnitEditor extends StatelessWidget {
+  const _GroupOverrideUnitEditor({
+    required this.group,
+    required this.participantUids,
+    required this.participantLabel,
+    required this.onChanged,
+    required this.onAddMember,
+    required this.onRemoveGroup,
+    required this.onRemoveMember,
+  });
+
+  final _GroupOverrideUnitDraft group;
+  final List<String> participantUids;
+  final String Function(String uid) participantLabel;
+  final VoidCallback onChanged;
+  final VoidCallback onAddMember;
+  final VoidCallback onRemoveGroup;
+  final ValueChanged<String?> onRemoveMember;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        border: Border.all(color: t.line),
+        borderRadius: BorderRadius.circular(CatchRadius.sm),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: CatchTextField(
+                    label: 'Group label',
+                    initialValue: group.label,
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (value) {
+                      group.label = value;
+                      onChanged();
+                    },
+                  ),
+                ),
+                gapW8,
+                IconButton(
+                  tooltip: 'Remove group',
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  onPressed: onRemoveGroup,
+                ),
+              ],
+            ),
+            gapH10,
+            for (
+              var memberIndex = 0;
+              memberIndex < group.memberUids.length;
+              memberIndex++
+            ) ...[
+              _GroupOverrideMemberEditor(
+                value: group.memberUids[memberIndex],
+                participantUids: participantUids,
+                participantLabel: participantLabel,
+                onChanged: (value) {
+                  group.memberUids[memberIndex] = value;
+                  onChanged();
+                },
+                onRemove: () => onRemoveMember(group.memberUids[memberIndex]),
+              ),
+              gapH8,
+            ],
+            CatchButton(
+              label: 'Add attendee',
+              icon: const Icon(Icons.person_add_alt_1_rounded),
+              size: CatchButtonSize.sm,
+              variant: CatchButtonVariant.secondary,
+              onPressed: onAddMember,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupOverrideMemberEditor extends StatelessWidget {
+  const _GroupOverrideMemberEditor({
+    required this.value,
+    required this.participantUids,
+    required this.participantLabel,
+    required this.onChanged,
+    required this.onRemove,
+  });
+
+  final String? value;
+  final List<String> participantUids;
+  final String Function(String uid) participantLabel;
+  final ValueChanged<String?> onChanged;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: CatchSelectMenu<String>(
+            values: participantUids,
+            value: value,
+            itemLabel: participantLabel,
+            hintText: 'Attendee',
+            semanticLabel: 'Group attendee',
+            onChanged: onChanged,
+          ),
+        ),
+        IconButton(
+          tooltip: 'Remove attendee',
+          icon: const Icon(Icons.close_rounded),
+          onPressed: onRemove,
+        ),
+      ],
     );
   }
 }
@@ -188,7 +653,7 @@ class _RotationsHostCard extends ConsumerWidget {
             staleAssignmentCount > 0
                 ? 'Regenerate to remove opted-out attendees from timed rotations.'
                 : 'Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.',
-            style: CatchTextStyles.bodyS(context),
+            style: CatchTextStyles.supporting(context),
           ),
           if (activeAssignments.isNotEmpty) ...[
             gapH12,
@@ -355,7 +820,7 @@ class _RotationOverrideSheetState
           if (validationError != null) ...[
             Text(
               validationError,
-              style: CatchTextStyles.bodyS(
+              style: CatchTextStyles.supporting(
                 context,
                 color: CatchTokens.of(context).danger,
               ),
@@ -501,7 +966,7 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Round ${round.roundIndex + 1}',
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchButton(
@@ -517,7 +982,7 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
           if (round.pairings.isEmpty)
             Text(
               'No pairs in this round.',
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             )
           else
             for (final pair in round.pairings) ...[
@@ -633,10 +1098,7 @@ List<String> _rotationParticipantUids(
   final uids = <String>{};
   for (final assignment in assignments) {
     uids.add(assignment.uid);
-    uids.addAll(assignment.peerUids);
-    for (final slot in assignment.rotationSlots) {
-      uids.add(slot.peerUid);
-    }
+    uids.addAll(assignment.allPeerUids);
   }
   return uids.toList()..sort();
 }
@@ -652,6 +1114,88 @@ List<String> _wingmanRequestProfileUids(
       ..add(request.targetUid);
   }
   return uids.toList()..sort();
+}
+
+List<_GroupOverrideRoundDraft> _groupRoundDraftsFromAssignments(
+  List<EventSuccessAssignment> assignments,
+) {
+  final hasGroupRotations = assignments.any(
+    (assignment) => assignment.groupRotationSlots.isNotEmpty,
+  );
+  if (hasGroupRotations) {
+    return _groupRotationRoundDraftsFromAssignments(assignments);
+  }
+  return [
+    _GroupOverrideRoundDraft(
+      roundIndex: 0,
+      groups: _staticGroupDraftsFromAssignments(assignments),
+    ),
+  ];
+}
+
+List<_GroupOverrideRoundDraft> _groupRotationRoundDraftsFromAssignments(
+  List<EventSuccessAssignment> assignments,
+) {
+  final groupsByRound = <int, Map<String, _GroupOverrideUnitDraft>>{};
+  for (final assignment in assignments) {
+    for (final slot in assignment.groupRotationSlots) {
+      final memberUids = [assignment.uid, ...slot.peerUids]..sort();
+      final key = '${slot.unitLabel}:${memberUids.join('__')}';
+      groupsByRound
+          .putIfAbsent(slot.roundIndex, () => {})
+          .putIfAbsent(
+            key,
+            () => _GroupOverrideUnitDraft(
+              label: slot.unitLabel,
+              memberUids: <String?>[...memberUids],
+            ),
+          );
+    }
+  }
+  final entries = groupsByRound.entries.toList()
+    ..sort((a, b) => a.key.compareTo(b.key));
+  return [
+    for (final entry in entries)
+      _GroupOverrideRoundDraft(
+        roundIndex: entry.key,
+        groups: entry.value.values.toList(),
+      ),
+  ];
+}
+
+List<_GroupOverrideUnitDraft> _staticGroupDraftsFromAssignments(
+  List<EventSuccessAssignment> assignments,
+) {
+  final memberUidsByLabel = <String, Set<String>>{};
+  for (final assignment in assignments) {
+    memberUidsByLabel.putIfAbsent(assignment.label, () => <String>{}).addAll([
+      assignment.uid,
+      ...assignment.peerUids,
+    ]);
+  }
+  final entries = memberUidsByLabel.entries.toList()
+    ..sort((a, b) => a.key.compareTo(b.key));
+  return [
+    for (final entry in entries)
+      _GroupOverrideUnitDraft(
+        label: entry.key,
+        memberUids: <String?>[...(entry.value.toList()..sort())],
+      ),
+  ];
+}
+
+final class _GroupOverrideRoundDraft {
+  _GroupOverrideRoundDraft({required this.roundIndex, required this.groups});
+
+  final int roundIndex;
+  final List<_GroupOverrideUnitDraft> groups;
+}
+
+final class _GroupOverrideUnitDraft {
+  _GroupOverrideUnitDraft({required this.label, required this.memberUids});
+
+  String label;
+  final List<String?> memberUids;
 }
 
 List<_RotationOverrideRoundDraft> _rotationRoundDraftsFromAssignments(

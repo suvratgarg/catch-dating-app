@@ -88,7 +88,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
           gapH8,
           Text(
             'Sign in to see who has booked this event.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),

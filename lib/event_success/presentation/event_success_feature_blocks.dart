@@ -56,7 +56,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             badge: CatchBadge(label: _draft.status.label, tone: readinessTone),
           ),
           const SizedBox(height: CatchSpacing.s4),
-          Text('Format', style: CatchTextStyles.titleS(context)),
+          Text('Format', style: CatchTextStyles.sectionTitle(context)),
           const SizedBox(height: CatchSpacing.s2),
           Wrap(
             spacing: CatchSpacing.s2,
@@ -77,7 +77,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
           const SizedBox(height: CatchSpacing.s4),
           _PlaybookSummaryCard(draft: _draft),
           const SizedBox(height: CatchSpacing.s4),
-          Text('Event structure', style: CatchTextStyles.titleS(context)),
+          Text('Event structure', style: CatchTextStyles.sectionTitle(context)),
           const SizedBox(height: CatchSpacing.s2),
           EventSuccessStructureConfigEditor(
             value: _draft.structureConfig,
@@ -90,7 +90,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
           const SizedBox(height: CatchSpacing.s4),
           Text(
             'Experience architecture',
-            style: CatchTextStyles.titleS(context),
+            style: CatchTextStyles.sectionTitle(context),
           ),
           const SizedBox(height: CatchSpacing.s2),
           for (final module in _draft.playbook.modules)
@@ -174,12 +174,12 @@ class EventSuccessLiveHostMode extends StatelessWidget {
                 const SizedBox(height: CatchSpacing.s2),
                 Text(
                   resolvedPlan.activeStep.hostInstruction,
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.bodyLead(context),
                 ),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
                   'Attendee experience: ${resolvedPlan.activeStep.attendeeExperience}',
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               ],
             ),
@@ -245,7 +245,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
                 const SizedBox(height: CatchSpacing.s2),
                 Text(
                   resolvedState.podLabel,
-                  style: CatchTextStyles.bodyM(context),
+                  style: CatchTextStyles.bodyLead(context),
                 ),
               ],
             ),
@@ -253,7 +253,10 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s4),
           EventSuccessPromptCard(prompt: resolvedState.prompt),
           const SizedBox(height: CatchSpacing.s4),
-          Text('Ask host for help', style: CatchTextStyles.titleS(context)),
+          Text(
+            'Ask host for help',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           const SizedBox(height: CatchSpacing.s2),
           for (final candidate in resolvedState.wingmanRequestCandidates)
             _WingmanCandidateRow(candidate: candidate),
@@ -315,7 +318,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
           ),
           if (resolvedBrief.strengths.isNotEmpty) ...[
             const SizedBox(height: CatchSpacing.s4),
-            Text('Working well', style: CatchTextStyles.titleS(context)),
+            Text('Working well', style: CatchTextStyles.sectionTitle(context)),
             const SizedBox(height: CatchSpacing.s2),
             Wrap(
               spacing: CatchSpacing.s2,
@@ -372,7 +375,7 @@ class _BlockHeader extends StatelessWidget {
           ],
         ),
         const SizedBox(height: CatchSpacing.s2),
-        Text(subtitle, style: CatchTextStyles.bodyS(context)),
+        Text(subtitle, style: CatchTextStyles.supporting(context)),
       ],
     );
   }
@@ -397,7 +400,10 @@ class _PlaybookSummaryCard extends StatelessWidget {
         children: [
           Text(draft.playbook.title, style: CatchTextStyles.titleM(context)),
           const SizedBox(height: CatchSpacing.s2),
-          Text(draft.playbook.summary, style: CatchTextStyles.bodyS(context)),
+          Text(
+            draft.playbook.summary,
+            style: CatchTextStyles.supporting(context),
+          ),
           const SizedBox(height: CatchSpacing.s3),
           Wrap(
             spacing: CatchSpacing.s2,
@@ -459,11 +465,14 @@ class _ModuleToggleRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(module.title, style: CatchTextStyles.titleS(context)),
+                  Text(
+                    module.title,
+                    style: CatchTextStyles.sectionTitle(context),
+                  ),
                   const SizedBox(height: CatchSpacing.s1),
                   Text(
                     module.hostPromise,
-                    style: CatchTextStyles.bodyS(context),
+                    style: CatchTextStyles.supporting(context),
                   ),
                 ],
               ),
@@ -508,7 +517,7 @@ class _IssueList extends StatelessWidget {
           for (final issue in issues)
             Padding(
               padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
-              child: Text(issue, style: CatchTextStyles.bodyS(context)),
+              child: Text(issue, style: CatchTextStyles.supporting(context)),
             ),
         ],
       ),
@@ -537,7 +546,7 @@ class _ProgressRow extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(label, style: CatchTextStyles.titleS(context)),
+              child: Text(label, style: CatchTextStyles.sectionTitle(context)),
             ),
             Text(detail, style: CatchTextStyles.labelL(context)),
           ],
@@ -598,11 +607,11 @@ class _LiveStepRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(step.title, style: CatchTextStyles.titleS(context)),
+                Text(step.title, style: CatchTextStyles.sectionTitle(context)),
                 const SizedBox(height: CatchSpacing.s1),
                 Text(
                   '${step.durationMinutes} min · ${step.stage.label}',
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               ],
             ),
@@ -640,9 +649,9 @@ class EventSuccessPromptCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.titleS(context)),
+                Text(title, style: CatchTextStyles.sectionTitle(context)),
                 const SizedBox(height: CatchSpacing.s1),
-                Text(prompt, style: CatchTextStyles.bodyS(context)),
+                Text(prompt, style: CatchTextStyles.supporting(context)),
               ],
             ),
           ),
@@ -697,7 +706,10 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text(title, style: CatchTextStyles.titleS(context)),
+                        Text(
+                          title,
+                          style: CatchTextStyles.sectionTitle(context),
+                        ),
                         CatchBadge(
                           label: moment.label,
                           tone: moment == EventSuccessConversationCueMoment.live
@@ -710,7 +722,10 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                       const SizedBox(height: CatchSpacing.s1),
                       Text(
                         subtitle!,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
                       ),
                     ],
                   ],
@@ -753,7 +768,10 @@ class _ConversationCueRow extends StatelessWidget {
                   runSpacing: CatchSpacing.s1,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Text(cue.title, style: CatchTextStyles.titleS(context)),
+                    Text(
+                      cue.title,
+                      style: CatchTextStyles.sectionTitle(context),
+                    ),
                     CatchBadge(
                       label: cue.contextLabel,
                       tone: CatchBadgeTone.neutral,
@@ -761,7 +779,7 @@ class _ConversationCueRow extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: CatchSpacing.s1),
-                Text(cue.body, style: CatchTextStyles.bodyS(context)),
+                Text(cue.body, style: CatchTextStyles.supporting(context)),
               ],
             ),
           ),
@@ -796,9 +814,12 @@ class _WingmanCandidateRow extends StatelessWidget {
               children: [
                 Text(
                   candidate.displayName,
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
-                Text(candidate.context, style: CatchTextStyles.bodyS(context)),
+                Text(
+                  candidate.context,
+                  style: CatchTextStyles.supporting(context),
+                ),
               ],
             ),
           ),
@@ -845,12 +866,12 @@ class EventSuccessRecommendationTile extends StatelessWidget {
                 children: [
                   Text(
                     recommendation.title,
-                    style: CatchTextStyles.titleS(context),
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
                   const SizedBox(height: CatchSpacing.s1),
                   Text(
                     recommendation.rationale,
-                    style: CatchTextStyles.bodyS(context),
+                    style: CatchTextStyles.supporting(context),
                   ),
                 ],
               ),
@@ -904,22 +925,15 @@ class EventSuccessDarkPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = foregroundColor ?? Colors.white;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: Colors.white.withValues(alpha: 0.12),
+      borderColor: Colors.white.withValues(alpha: 0.18),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s2,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s2,
-        ),
-        child: Text(
-          label,
-          style: CatchTextStyles.labelL(context, color: color),
-        ),
-      ),
+      child: Text(label, style: CatchTextStyles.labelL(context, color: color)),
     );
   }
 }

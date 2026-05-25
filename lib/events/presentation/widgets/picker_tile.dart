@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -28,13 +29,13 @@ class PickerTile extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 20, color: t.ink2),
-          const SizedBox(width: 12),
+          gapW12,
           Expanded(
             child: Text(
               value ?? placeholder,
               style: value != null
-                  ? CatchTextStyles.bodyM(context)
-                  : CatchTextStyles.bodyM(context, color: t.ink3),
+                  ? CatchTextStyles.bodyLead(context)
+                  : CatchTextStyles.bodyLead(context, color: t.ink3),
             ),
           ),
           Icon(Icons.chevron_right_rounded, size: 18, color: t.ink3),

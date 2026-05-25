@@ -55,7 +55,7 @@ final class NativeCalendarLauncherProvider
 }
 
 String _$nativeCalendarLauncherHash() =>
-    r'0c5abf080da9b94792e3741ebad6e6cfdfc76839';
+    r'e50281a01f2799732c947bb346272758dc8dd0e5';
 
 @ProviderFor(eventCalendarController)
 final eventCalendarControllerProvider = EventCalendarControllerProvider._();

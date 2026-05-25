@@ -4,6 +4,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CompleteEventSuccessFirstHelloMissionCallableRequest,
+        OverrideEventSuccessGroupsCallableRequest,
         OverrideEventSuccessRotationsCallableRequest,
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest;

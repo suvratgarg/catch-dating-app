@@ -14,6 +14,7 @@ class AttendanceSheetViewModel {
     required this.attendedIds,
     required this.waitlistedIds,
     required this.profileIds,
+    required this.participationsByUid,
   });
 
   final Event event;
@@ -21,6 +22,7 @@ class AttendanceSheetViewModel {
   final Set<String> attendedIds;
   final List<String> waitlistedIds;
   final List<String> profileIds;
+  final Map<String, EventParticipation> participationsByUid;
 
   int get checkedInCount => attendeeIds.where(attendedIds.contains).length;
 
@@ -31,6 +33,8 @@ class AttendanceSheetViewModel {
   bool get isEmpty => attendeeIds.isEmpty && waitlistedIds.isEmpty;
 
   bool isAttended(String uid) => attendedIds.contains(uid);
+
+  EventParticipation? participationFor(String uid) => participationsByUid[uid];
 }
 
 @riverpod
@@ -73,6 +77,8 @@ AsyncValue<AttendanceSheetViewModel?> buildAttendanceSheetViewModel({
   final roster = EventParticipationRoster.fromParticipations(
     participationsAsync.asData?.value ?? const [],
   );
+  final participations =
+      participationsAsync.asData?.value ?? const <EventParticipation>[];
 
   return AsyncData(
     AttendanceSheetViewModel(
@@ -84,6 +90,10 @@ AsyncValue<AttendanceSheetViewModel?> buildAttendanceSheetViewModel({
         ...roster.bookedIds,
         ...roster.waitlistedIds,
       ]),
+      participationsByUid: Map.unmodifiable({
+        for (final participation in participations)
+          participation.uid: participation,
+      }),
     ),
   );
 }

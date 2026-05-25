@@ -30,6 +30,14 @@ String _hostBody({
     return 'All ${kind.assignmentNounPlural} have been released. Reset only if the host wants to rehearse or restart the live flow.';
   }
   if (kind == EventSuccessRevealAssignmentKind.microPods) {
+    final groupRotationCount = _uniqueGroupRotationCountForRound(
+      assignments,
+      roundIndex,
+    );
+    if (groupRotationCount > 0) {
+      final groupWord = groupRotationCount == 1 ? 'group' : 'groups';
+      return '$groupRotationCount rotating $groupWord queued for round ${roundIndex + 1}; reveal names once the host has the room.';
+    }
     final groups = _assignmentCountsByLabel(assignments);
     return '${assignments.length} attendees across ${groups.length} ${kind.assignmentNounPlural}; reveal names once the host has the room.';
   }
@@ -56,6 +64,7 @@ int _maxRotationRoundCount(List<EventSuccessAssignment> assignments) {
   var maxRounds = 0;
   for (final assignment in assignments) {
     maxRounds = math.max(maxRounds, assignment.rotationSlots.length);
+    maxRounds = math.max(maxRounds, assignment.groupRotationSlots.length);
   }
   return maxRounds;
 }
@@ -103,6 +112,21 @@ int _strongCompatibilityPairCount(
   return pairs.length;
 }
 
+int _uniqueGroupRotationCountForRound(
+  List<EventSuccessAssignment> assignments,
+  int roundIndex,
+) {
+  final groups = <String>{};
+  for (final assignment in assignments) {
+    for (final slot in assignment.groupRotationSlots) {
+      if (slot.roundIndex != roundIndex) continue;
+      final uids = [assignment.uid, ...slot.peerUids]..sort();
+      groups.add('${slot.unitLabel}:${uids.join('__')}');
+    }
+  }
+  return groups.length;
+}
+
 EventSuccessRotationSlot? _slotForRound(
   EventSuccessAssignment assignment,
   int roundIndex,
@@ -113,11 +137,22 @@ EventSuccessRotationSlot? _slotForRound(
   return null;
 }
 
+EventSuccessGroupRotationSlot? _groupSlotForRound(
+  EventSuccessAssignment assignment,
+  int roundIndex,
+) {
+  for (final slot in assignment.groupRotationSlots) {
+    if (slot.roundIndex == roundIndex) return slot;
+  }
+  return null;
+}
+
 String _compatibilityLabel(String value) => switch (value) {
   'mutual_interest' => 'Mutual interest',
   'questionnaire_match' => 'Shared clue',
   'balanced' => 'Balanced',
   'social' => 'Social fit',
+  'mixed' => 'Mixed group',
   _ => 'Host fit',
 };
 
@@ -127,6 +162,7 @@ String _compatibilityExplanation(String value) => switch (value) {
     'You share an event answer that can make this round easier to start.',
   'balanced' => 'Balanced by the host for variety and comfort.',
   'social' => 'A lightweight social pairing for this format.',
+  'mixed' => 'A group fit balanced across romantic and social signals.',
   _ => 'Adjusted by the host for the live room.',
 };
 

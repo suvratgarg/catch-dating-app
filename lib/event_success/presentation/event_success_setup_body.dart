@@ -421,7 +421,7 @@ class _StageCard extends StatelessWidget {
             gapH4,
             Text(
               subtitle!,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
           gapH6,
@@ -460,7 +460,7 @@ class _FoundationLine extends StatelessWidget {
                   gapH2,
                   Text(
                     subtitle!,
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
               ],
@@ -588,7 +588,7 @@ class _AttendeePromptPreview extends StatelessWidget {
           Expanded(
             child: Text(
               'Attendees will see: "$text"',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],
@@ -613,7 +613,7 @@ class _SafetyFooter extends StatelessWidget {
           Expanded(
             child: Text(
               'Safety, blocking, and report tools always on.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],
@@ -691,17 +691,17 @@ class _PresetReviewCard extends StatelessWidget {
           gapH8,
           Text(
             profile.summary,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH6,
           Text(
             _structureSectionSubtitle(draft),
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH6,
           Text(
             _structurePreviewText(draft),
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),
@@ -752,7 +752,7 @@ class _QuestionnaireBlock extends StatelessWidget {
         gapH4,
         Text(
           _questionnaireModeSubtitle(mode),
-          style: CatchTextStyles.bodyS(context, color: t.ink2),
+          style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH8,
         Wrap(
@@ -836,7 +836,7 @@ class _SetupDisclosureSection extends StatelessWidget {
           padding: const EdgeInsets.only(top: CatchSpacing.s1),
           child: Text(
             subtitle,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ),
         children: [
@@ -875,7 +875,7 @@ class _RecommendationSwitch extends StatelessWidget {
       ),
       subtitle: Text(
         recommendation.reason,
-        style: CatchTextStyles.bodyS(context, color: t.ink2),
+        style: CatchTextStyles.supporting(context, color: t.ink2),
       ),
     );
   }

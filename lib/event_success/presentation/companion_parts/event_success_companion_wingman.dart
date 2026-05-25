@@ -61,7 +61,7 @@ class _WingmanRequestSectionState
           gapH4,
           Text(
             "Tell the host who you'd like to be introduced to. The host can see this request — the other person is not notified.",
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (requestedTargetUid != null) ...[
             gapH12,
@@ -71,7 +71,7 @@ class _WingmanRequestSectionState
                   Expanded(
                     child: Text(
                       'Request sent for ${requestedTargetName ?? 'this attendee'}.',
-                      style: CatchTextStyles.bodyS(context),
+                      style: CatchTextStyles.supporting(context),
                     ),
                   ),
                   gapW8,
@@ -112,7 +112,7 @@ class _WingmanRequestSectionState
           if (widget.candidates.isEmpty)
             Text(
               'No checked-in attendees available yet.',
-              style: CatchTextStyles.bodyS(context),
+              style: CatchTextStyles.supporting(context),
             )
           else
             for (final candidate in widget.candidates)

@@ -55,7 +55,7 @@ part 'companion_parts/event_success_companion_feedback.dart';
 part 'companion_parts/event_success_companion_afterglow.dart';
 
 AppBar _companionAppBar(BuildContext context) => AppBar(
-  title: const Text('Event companion'),
+  title: Text('Event companion', style: CatchTextStyles.titleL(context)),
   leading: IconButton(
     icon: const Icon(Icons.arrow_back_rounded),
     tooltip: 'Back',
@@ -451,13 +451,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final rotationAssignment = rotationAsync.asData?.value;
     final peerUidsKey = assignment == null
         ? ''
-        : eventSuccessPeerUidsKey(assignment.peerUids);
+        : eventSuccessPeerUidsKey(assignment.allPeerUids);
     final peersAsync = peerUidsKey.isEmpty
         ? const AsyncData(<PublicProfile>[])
         : ref.watch(eventSuccessAssignmentPeerProfilesProvider(peerUidsKey));
     final rotationPeerUidsKey = rotationAssignment == null
         ? ''
-        : eventSuccessPeerUidsKey(rotationAssignment.peerUids);
+        : eventSuccessPeerUidsKey(rotationAssignment.allPeerUids);
     final rotationPeersAsync = rotationPeerUidsKey.isEmpty
         ? const AsyncData(<PublicProfile>[])
         : ref.watch(

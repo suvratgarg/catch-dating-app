@@ -85,7 +85,7 @@ class _DefaultActivityCard extends StatelessWidget {
           gapH4,
           Text(
             'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           Wrap(
@@ -219,7 +219,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           gapH4,
           Text(
             'These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH18,
           const FieldLabel('Admission format'),
@@ -258,7 +258,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             cohortCapsEnabled
                 ? 'Anyone eligible can book until capacity, with optional straight men and straight women caps prefilled.'
                 : selectedAdmissionPreset.description,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.openCapacity) ...[
@@ -279,7 +279,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
               ),
               subtitle: Text(
                 'Optionally prefill straight men and straight women caps for open events.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
           ],
@@ -336,7 +336,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
               ),
               subtitle: Text(
                 'Prefill dynamic pricing controls for balanced singles events.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
             if (defaults.dynamicPricingEnabled) ...[
@@ -433,7 +433,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           gapH8,
           Text(
             _policyFor(defaults.cancellationPolicyId).attendeeSummary,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),

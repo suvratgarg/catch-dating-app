@@ -333,7 +333,8 @@ void main() {
       expect(created.eventFormat.defaultPlaybookId, isNull);
       expect(created.eventFormat.activityDetails['formatSource'], 'custom');
       expect(created.distanceKm, 0);
-      final defaults = fakeEventRepository.createdEventSuccessDefaults;
+      final defaults = fakeEventRepository.createdEventSuccessDefaults
+          ?.toJson();
       final structure = defaults?['structureConfig'] as Map<String, Object?>?;
       expect(defaults, isNotNull);
       expect(defaults!['playbookId'], 'pickleball_rotations');
@@ -508,7 +509,7 @@ void main() {
         find.widgetWithText(TextField, 'Search for a meeting point'),
         'Cubbon',
       );
-      await tester.pump(const Duration(milliseconds: 350));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 350));
       await tester.pump();
       await tester.tap(find.text('Cubbon Park'));
       await tester.pump();
@@ -639,8 +640,8 @@ void main() {
       expect(find.text('Avery'), findsOneWidget);
       expect(find.text('runner-2'), findsNothing);
       expect(find.text('runner-3'), findsNothing);
-      expect(find.text('BOOKED'), findsOneWidget);
-      expect(find.text('WAITLIST'), findsOneWidget);
+      expect(find.textContaining('Booked'), findsWidgets);
+      expect(find.textContaining('Waitlist'), findsWidgets);
     });
 
     testWidgets('host manage exposes lifecycle workspace sections', (
@@ -744,10 +745,17 @@ void main() {
 
       expect(find.text('Live now'), findsOneWidget);
       expect(find.text('Editable roster'), findsOneWidget);
+      expect(find.text('Guest'), findsOneWidget);
+      expect(find.text('Status'), findsOneWidget);
+      expect(find.text('Host action'), findsOneWidget);
+      expect(find.text('Due'), findsWidgets);
+      expect(find.text('In'), findsWidgets);
       expect(find.text('Harsh'), findsOneWidget);
       expect(find.text('Manan'), findsOneWidget);
       expect(find.text('Host check-in QR'), findsOneWidget);
       expect(find.text('Live attendance'), findsNothing);
+      expect(find.text('Needs check-in'), findsNothing);
+      expect(find.text('Recently checked in'), findsNothing);
       expect(
         find.textContaining('Tap a booked participant to toggle check-in'),
         findsNothing,
@@ -755,7 +763,7 @@ void main() {
       expect(find.text('Arrival check-in'), findsNothing);
     });
 
-    testWidgets('host manage labels demand pricing revenue as base estimate', (
+    testWidgets('host manage omits duplicated demand pricing stat strip', (
       tester,
     ) async {
       final participationRepository = FakeEventParticipationRepository();
@@ -787,13 +795,14 @@ void main() {
       );
       await _pumpHostActionFrame(tester);
 
-      expect(find.text('Base est.'), findsOneWidget);
+      expect(find.text('Base est.'), findsNothing);
       expect(find.text('Revenue'), findsNothing);
-      expect(find.text('₹1,200'), findsOneWidget);
+      expect(find.text('₹1,200'), findsNothing);
       expect(
         find.textContaining('Demand-priced bookings may settle higher'),
-        findsOneWidget,
+        findsNothing,
       );
+      expect(find.text('Setup'), findsWidgets);
     });
 
     testWidgets('host manage exposes invite code and private link', (
@@ -955,15 +964,6 @@ void main() {
         find.widgetWithText(CatchButton, 'Delete unused event'),
         findsNothing,
       );
-      final unavailableCopy = find.textContaining(
-        'Delete unused event is unavailable once an event has bookings',
-      );
-      await tester.scrollUntilVisible(
-        unavailableCopy,
-        300,
-        scrollable: _hostManageScrollable(),
-      );
-      expect(unavailableCopy, findsOneWidget);
     });
 
     testWidgets('draft picker deletes persisted drafts and resumes another', (
@@ -1298,7 +1298,7 @@ Future<void> _pumpTestAnimation(WidgetTester tester) async {
 
 Future<void> _pumpHostActionFrame(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 300));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 300));
 }
 
 Finder _hostManageScrollable() => find

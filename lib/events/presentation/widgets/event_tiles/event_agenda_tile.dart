@@ -25,7 +25,7 @@ class EventAgendaTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     final clubName = data.clubName?.trim();
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
       borderColor: t.line,
       onTap: onTap,
@@ -39,7 +39,7 @@ class EventAgendaTile extends StatelessWidget {
                 color: t.primary,
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
               ),
-              child: const SizedBox(width: 4),
+              child: gapW4,
             ),
           ),
           Padding(
@@ -53,7 +53,7 @@ class EventAgendaTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         data.timeLabel,
-                        style: CatchTextStyles.labelM(context),
+                        style: CatchTextStyles.statCompact(context),
                       ),
                     ),
                     EventTileStatusBadge(
@@ -66,7 +66,7 @@ class EventAgendaTile extends StatelessWidget {
                 gapH6,
                 Text(
                   data.meetingPoint,
-                  style: CatchTextStyles.labelL(context),
+                  style: CatchTextStyles.sectionTitle(context),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -74,7 +74,7 @@ class EventAgendaTile extends StatelessWidget {
                   gapH4,
                   Text(
                     clubName,
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -82,7 +82,7 @@ class EventAgendaTile extends StatelessWidget {
                 gapH8,
                 Text(
                   '${data.activitySummaryLabel} · ${data.spotsLabel}',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),

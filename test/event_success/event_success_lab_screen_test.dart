@@ -4,6 +4,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('labels the event success lab as preview-only WIP', (
@@ -40,7 +41,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Pickleball Partner Rotations'),
       500,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
 
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
@@ -48,7 +49,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Pub Quiz Team Mixer'),
       500,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
 
     expect(find.text('Pub Quiz Team Mixer'), findsOneWidget);
@@ -65,21 +66,21 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Live host mode'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Live host mode'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Attendee companion'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Attendee companion'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Post-event host report'),
       700,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
     expect(find.text('Post-event host report'), findsOneWidget);
   });
@@ -98,7 +99,7 @@ void main() {
 
     expect(find.text('Social Event Lite'), findsOneWidget);
     await tester.tap(find.text('Pickleball'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Pickleball Partner Rotations'), findsOneWidget);
 
@@ -109,7 +110,7 @@ void main() {
 
     await tester.scrollUntilVisible(checkInSwitch, 300);
     await tester.tap(checkInSwitch);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Needs work'), findsOneWidget);
     expect(
@@ -126,7 +127,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Host coach sample'),
       800,
-      scrollable: find.byType(Scrollable).first,
+      scrollable: findPrimaryScrollable(),
     );
 
     expect(find.text('Sample debrief'), findsOneWidget);

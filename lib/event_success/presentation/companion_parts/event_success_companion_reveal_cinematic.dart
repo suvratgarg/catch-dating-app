@@ -277,8 +277,13 @@ class _RevealCinematicPainter extends CustomPainter {
         // Co-presence ring sits BEHIND spokes so the spokes carry the
         // anticipation energy and the room-presence reads as ambient.
         _paintCoPresenceRing(canvas, center, radius);
-        _paintSpokes(canvas, center, radius, _anticipationSpokeRotation(),
-            _anticipationSpokeAlpha());
+        _paintSpokes(
+          canvas,
+          center,
+          radius,
+          _anticipationSpokeRotation(),
+          _anticipationSpokeAlpha(),
+        );
         _paintParticles(canvas, size, center, radius);
       case _RevealCinematicPhase.climax:
         // Flash quickly, then ride the burst.
@@ -289,11 +294,14 @@ class _RevealCinematicPainter extends CustomPainter {
             Paint()..color = Colors.white.withValues(alpha: flash * 0.62),
           );
         }
-        _paintVignette(canvas, size, center,
-            0.55 * (1 - climaxProgress * 0.6));
-        _paintSpokes(canvas, center, radius,
-            _anticipationSpokeRotation() + climaxProgress * 1.4,
-            (1 - climaxProgress).clamp(0.0, 1.0) * 0.5);
+        _paintVignette(canvas, size, center, 0.55 * (1 - climaxProgress * 0.6));
+        _paintSpokes(
+          canvas,
+          center,
+          radius,
+          _anticipationSpokeRotation() + climaxProgress * 1.4,
+          (1 - climaxProgress).clamp(0.0, 1.0) * 0.5,
+        );
         _paintParticles(canvas, size, center, radius);
       case _RevealCinematicPhase.settle:
         final fade = 1 - settleProgress;
@@ -334,10 +342,7 @@ class _RevealCinematicPainter extends CustomPainter {
       ],
       stops: const [0.34, 1.0],
     );
-    canvas.drawRect(
-      rect,
-      Paint()..shader = gradient.createShader(rect),
-    );
+    canvas.drawRect(rect, Paint()..shader = gradient.createShader(rect));
   }
 
   /// Faint ring of anonymous dots representing each checked-in attendee.
@@ -393,8 +398,10 @@ class _RevealCinematicPainter extends CustomPainter {
     const count = 14;
     for (var i = 0; i < count; i++) {
       final angle = (math.pi * 2 / count) * i;
-      final innerR = radius * (0.18 + 0.04 * math.sin(angle * 3 + tickPhase * 8));
-      final outerR = radius * (0.92 - 0.05 * math.sin(angle * 2 + tickPhase * 6));
+      final innerR =
+          radius * (0.18 + 0.04 * math.sin(angle * 3 + tickPhase * 8));
+      final outerR =
+          radius * (0.92 - 0.05 * math.sin(angle * 2 + tickPhase * 6));
       canvas.drawLine(
         Offset(math.cos(angle) * innerR, math.sin(angle) * innerR),
         Offset(math.cos(angle) * outerR, math.sin(angle) * outerR),
@@ -404,12 +411,7 @@ class _RevealCinematicPainter extends CustomPainter {
     canvas.restore();
   }
 
-  void _paintParticles(
-    Canvas canvas,
-    Size size,
-    Offset center,
-    double radius,
-  ) {
+  void _paintParticles(Canvas canvas, Size size, Offset center, double radius) {
     for (final particle in particles) {
       _paintParticle(canvas, size, center, radius, particle);
     }
@@ -422,9 +424,7 @@ class _RevealCinematicPainter extends CustomPainter {
     double radius,
     _RevealParticle particle,
   ) {
-    final tickShift = math.sin(
-      (tickPhase + particle.spinPhase) * math.pi * 2,
-    );
+    final tickShift = math.sin((tickPhase + particle.spinPhase) * math.pi * 2);
 
     double progressToCenter;
     double burstOffset;
@@ -465,7 +465,8 @@ class _RevealCinematicPainter extends CustomPainter {
     canvas.drawCircle(
       point,
       particle.size * (1 + 0.18 * tickShift),
-      Paint()..color = color.withValues(alpha: 0.7 * alphaScale.clamp(0.0, 1.0)),
+      Paint()
+        ..color = color.withValues(alpha: 0.7 * alphaScale.clamp(0.0, 1.0)),
     );
   }
 

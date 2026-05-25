@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -38,38 +40,34 @@ class WhenWhereCard extends StatelessWidget {
                   children: [
                     Text(
                       '${start.day}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                      style: CatchTextStyles.statCompact(
+                        context,
                         color: t.primary,
-                        height: 1,
                       ),
                     ),
                     Text(
                       EventFormatters.shortMonth(start).toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
+                      style: CatchTextStyles.statusLabel(
+                        context,
                         color: t.primary,
-                        letterSpacing: 0.5,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              gapW12,
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       event.timeRangeLabel,
-                      style: CatchTextStyles.titleM(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
-                    const SizedBox(height: 2),
+                    gapH2,
                     Text(
                       event.longDateLabel,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -89,35 +87,30 @@ class WhenWhereCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Row(
                   children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: t.raised,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: t.line),
-                      ),
-                      child: Icon(
-                        Icons.location_on_outlined,
-                        size: 20,
-                        color: t.ink2,
-                      ),
+                    CatchIconTile(
+                      icon: Icons.location_on_outlined,
+                      iconColor: t.ink2,
+                      backgroundColor: t.raised,
+                      borderColor: t.line,
+                      size: 44,
+                      iconSize: 20,
+                      radius: 10,
                     ),
-                    const SizedBox(width: 12),
+                    gapW12,
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             event.locationName,
-                            style: CatchTextStyles.titleM(context),
+                            style: CatchTextStyles.sectionTitle(context),
                           ),
                           if (event.locationNotes != null &&
                               event.locationNotes!.isNotEmpty) ...[
-                            const SizedBox(height: 2),
+                            gapH2,
                             Text(
                               event.locationNotes!,
-                              style: CatchTextStyles.bodyS(
+                              style: CatchTextStyles.supporting(
                                 context,
                                 color: t.ink2,
                               ),

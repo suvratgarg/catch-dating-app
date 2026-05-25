@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +26,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const FieldLabel('Event photo', isOptional: true),
-        const SizedBox(height: 8),
+        gapH8,
         Semantics(
           button: true,
           label: hasPhoto ? 'Change event photo' : 'Add event photo',
@@ -41,17 +44,16 @@ class CreateEventPhotoPicker extends StatelessWidget {
                           Positioned(
                             bottom: 8,
                             right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: t.surface.withValues(alpha: 0.85),
-                                shape: BoxShape.circle,
+                            child: CatchIconTile(
+                              icon: Icons.edit_outlined,
+                              iconColor: t.ink,
+                              backgroundColor: t.surface.withValues(
+                                alpha: 0.85,
                               ),
-                              child: Icon(
-                                Icons.edit_outlined,
-                                size: 16,
-                                color: t.ink,
-                              ),
+                              borderColor: Colors.transparent,
+                              size: 28,
+                              iconSize: 16,
+                              radius: CatchRadius.pill,
                             ),
                           ),
                         ],
@@ -67,12 +69,12 @@ class CreateEventPhotoPicker extends StatelessWidget {
                                 size: 40,
                                 color: t.ink2,
                               ),
-                              const SizedBox(height: 8),
+                              gapH8,
                               Text(
                                 'Add event photo',
-                                style: TextStyle(
+                                style: CatchTextStyles.sectionTitle(
+                                  context,
                                   color: t.ink2,
-                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],

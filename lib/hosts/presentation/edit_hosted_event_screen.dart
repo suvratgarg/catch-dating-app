@@ -337,7 +337,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   gapH6,
                   Text(
                     _scheduleErrorText!,
-                    style: CatchTextStyles.bodyS(context, color: t.primary),
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: t.primary,
+                    ),
                   ),
                 ],
                 gapH12,
@@ -791,7 +794,7 @@ class _EditScopeNotice extends StatelessWidget {
                 gapH4,
                 Text(
                   message,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -857,7 +860,7 @@ class _EditablePolicyCard extends StatelessWidget {
         children: [
           Text(
             'Editable until the first booking or waitlist join.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH16,
           Row(
@@ -912,14 +915,14 @@ class _EditablePolicyCard extends StatelessWidget {
           gapH8,
           Text(
             admissionPreset.description,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
             gapH16,
             if (privateAccessAsync.isLoading)
               Text(
                 'Loading current invite code...',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             gapH8,
             CatchTextField(
@@ -947,7 +950,7 @@ class _EditablePolicyCard extends StatelessWidget {
               ),
               subtitle: Text(
                 'Optionally cap straight men and straight women without making this a separate admission format.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
             if (cohortCapsEnabled) ...[
@@ -983,7 +986,7 @@ class _EditablePolicyCard extends StatelessWidget {
             gapH12,
             Text(
               'Requests appear in host manage with each person\'s public profile so the host can review fit before confirming spots.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
@@ -998,7 +1001,7 @@ class _EditablePolicyCard extends StatelessWidget {
               ),
               subtitle: Text(
                 'Increase price for the over-demand cohort while preserving the event balance.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ),
             if (dynamicPricingEnabled) ...[
@@ -1089,7 +1092,7 @@ class _EditablePolicyCard extends StatelessWidget {
           gapH8,
           Text(
             _policyFor(cancellationPolicyId).attendeeSummary,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),
@@ -1117,7 +1120,7 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
           gapH4,
           Text(
             'Capacity, pricing, admission, and cancellation policy lock once the event starts or someone books or joins the waitlist.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH12,
           _ReadOnlyPolicyRow(
@@ -1166,7 +1169,10 @@ class _ReadOnlyPolicyRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+            Text(
+              label,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
             gapW16,
             Expanded(
               child: Text(
@@ -1200,11 +1206,11 @@ class _ReadOnlyScheduleCard extends StatelessWidget {
         children: [
           Text(event.shortDateLabel, style: CatchTextStyles.titleM(context)),
           gapH4,
-          Text(event.timeRangeLabel, style: CatchTextStyles.bodyM(context)),
+          Text(event.timeRangeLabel, style: CatchTextStyles.bodyLead(context)),
           gapH8,
           Text(
             'Schedule changes are blocked here to avoid changing attendee commitments.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),

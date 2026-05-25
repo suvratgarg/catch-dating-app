@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -44,13 +45,13 @@ class MapPinTile extends StatelessWidget {
             size: 20,
             color: foregroundColor,
           ),
-          const SizedBox(width: 12),
+          gapW12,
           Expanded(
             child: Text(
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyM(context, color: foregroundColor),
+              style: CatchTextStyles.bodyLead(context, color: foregroundColor),
             ),
           ),
           Icon(

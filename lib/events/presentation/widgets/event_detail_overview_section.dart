@@ -57,9 +57,12 @@ class _EventDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('About this event', style: CatchTextStyles.titleM(context)),
+        Text('About this event', style: CatchTextStyles.sectionTitle(context)),
         gapH8,
-        Text(description, style: CatchTextStyles.bodyM(context, color: t.ink2)),
+        Text(
+          description,
+          style: CatchTextStyles.bodyLead(context, color: t.ink2),
+        ),
       ],
     );
   }
@@ -82,7 +85,7 @@ class _WhatToExpectSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('What to expect', style: CatchTextStyles.titleM(context)),
+          Text('What to expect', style: CatchTextStyles.sectionTitle(context)),
           gapH10,
           for (final item in items) ...[
             _PolicyLine(icon: item.icon, title: item.title, body: item.body),
@@ -112,7 +115,7 @@ class _EventPolicySummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Booking policy', style: CatchTextStyles.titleM(context)),
+          Text('Booking policy', style: CatchTextStyles.sectionTitle(context)),
           gapH10,
           _PolicyLine(
             icon: Icons.group_outlined,
@@ -173,7 +176,10 @@ class _PolicyLine extends StatelessWidget {
             children: [
               Text(title, style: CatchTextStyles.labelL(context)),
               gapH2,
-              Text(body, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+              Text(
+                body,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
             ],
           ),
         ),

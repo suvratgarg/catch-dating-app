@@ -20,6 +20,11 @@ class _MicroPodCard extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final assigned = assignment;
     final mutation = ref.watch(EventSuccessController.microPodsOptOutMutation);
+    final groupSlots =
+        assigned?.groupRotationSlots ?? const <EventSuccessGroupRotationSlot>[];
+    final profilesByUid = {
+      for (final profile in peerProfiles) profile.uid: profile,
+    };
     return _StagePanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,16 +47,34 @@ class _MicroPodCard extends ConsumerWidget {
                 ? 'You won\'t be included when the host runs the generator.'
                 : assigned?.displaySubtitle ??
                       'The host will publish starter groups once everyone is checked in.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (assigned != null) ...[
             gapH14,
-            _PeopleTokenRow(
-              countLabel: '${assigned.peerUids.length + 1} people',
-              loading: peersLoading,
-              loadingLabel: 'Loading group members',
-              profiles: peerProfiles,
-            ),
+            if (groupSlots.isNotEmpty)
+              if (peersLoading)
+                const CatchBadge(
+                  label: 'Loading group members',
+                  tone: CatchBadgeTone.neutral,
+                  icon: Icons.hourglass_empty_rounded,
+                )
+              else
+                Column(
+                  children: [
+                    for (final slot in groupSlots)
+                      _GroupRotationSlotRow(
+                        slot: slot,
+                        profilesByUid: profilesByUid,
+                      ),
+                  ],
+                )
+            else
+              _PeopleTokenRow(
+                countLabel: '${assigned.peerUids.length + 1} people',
+                loading: peersLoading,
+                loadingLabel: 'Loading group members',
+                profiles: peerProfiles,
+              ),
           ],
           gapH14,
           _StageActionDock(
@@ -69,6 +92,83 @@ class _MicroPodCard extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GroupRotationSlotRow extends StatelessWidget {
+  const _GroupRotationSlotRow({
+    required this.slot,
+    required this.profilesByUid,
+  });
+
+  final EventSuccessGroupRotationSlot slot;
+  final Map<String, PublicProfile> profilesByUid;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final timeRange =
+        '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
+        '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
+    final peerNames = slot.peerUids
+        .map((uid) => profilesByUid[uid]?.name)
+        .whereType<String>()
+        .toList(growable: false);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.primarySoft,
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(CatchSpacing.s3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  CatchBadge(
+                    label: slot.label,
+                    tone: _isStrongRotationSignal(slot.compatibility)
+                        ? CatchBadgeTone.success
+                        : CatchBadgeTone.neutral,
+                  ),
+                  CatchBadge(
+                    label: slot.unitLabel,
+                    tone: CatchBadgeTone.neutral,
+                    icon: Icons.table_restaurant_outlined,
+                  ),
+                ],
+              ),
+              gapH8,
+              Text(timeRange, style: CatchTextStyles.supporting(context)),
+              gapH8,
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchBadge(
+                    label: '${slot.peerUids.length + 1} people',
+                    tone: CatchBadgeTone.neutral,
+                    icon: Icons.group_outlined,
+                  ),
+                  for (final name in peerNames)
+                    CatchBadge(
+                      label: name,
+                      tone: CatchBadgeTone.neutral,
+                      icon: Icons.person_outline_rounded,
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -121,7 +221,7 @@ class _RotationScheduleCard extends ConsumerWidget {
                 ? 'You won\'t be included when the host runs the generator.'
                 : assigned?.displaySubtitle ??
                       'Your timed pairings appear once the host generates rotations.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (assigned != null) ...[
             gapH14,
@@ -199,7 +299,7 @@ class _RotationSlotRow extends StatelessWidget {
               Expanded(
                 child: Text(
                   '$timeRange · $peerName',
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               ),
             ],
@@ -237,7 +337,7 @@ class _LiveStepContextCard extends StatelessWidget {
           Text(
             activeStep?.attendeeExperience ??
                 'Follow the host for the next event moment.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ),
@@ -309,7 +409,7 @@ class _PreCheckInPlanningCard extends StatelessWidget {
           gapH6,
           Text(
             'Live partner and group details unlock after check-in. Here\'s what to expect at the event:',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
           for (final entry in entries) ...[entry, gapH8],
@@ -336,7 +436,7 @@ class _PreviewLine extends StatelessWidget {
           child: Icon(icon, size: 16, color: t.ink2),
         ),
         gapW6,
-        Expanded(child: Text(text, style: CatchTextStyles.bodyS(context))),
+        Expanded(child: Text(text, style: CatchTextStyles.supporting(context))),
       ],
     );
   }
@@ -395,7 +495,7 @@ class _SelfCheckInCard extends ConsumerWidget {
           gapH6,
           Text(
             'Confirm you are at the event so post-event follow-up only includes actual attendees.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
           _StageActionDock(
@@ -538,7 +638,7 @@ class _EventCheckInQrScannerSheetState
                           color: t.ink.withValues(alpha: 0.84),
                           child: Text(
                             _errorText!,
-                            style: CatchTextStyles.bodyS(
+                            style: CatchTextStyles.supporting(
                               context,
                               color: Colors.white,
                             ),
@@ -553,7 +653,7 @@ class _EventCheckInQrScannerSheetState
             gapH10,
             Text(
               'Location still verifies the venue after the QR is scanned.',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
         ),
@@ -642,7 +742,7 @@ class _StageConversationCueCard extends StatelessWidget {
             gapH8,
             Text(
               subtitle!,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
           gapH14,
@@ -679,7 +779,7 @@ class _StageCueLine extends StatelessWidget {
                   Expanded(
                     child: Text(
                       cue.title,
-                      style: CatchTextStyles.titleS(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                   ),
                   IconButton(
@@ -696,7 +796,7 @@ class _StageCueLine extends StatelessWidget {
               gapH4,
               Text(
                 cue.body,
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),
@@ -717,6 +817,10 @@ class _StageCueLine extends StatelessWidget {
           cue.moment == EventSuccessConversationCueMoment.postEvent
               ? 'Opener copied.'
               : 'Cue copied.',
+          style: CatchTextStyles.labelL(
+            context,
+            color: CatchTokens.of(context).bg,
+          ),
         ),
       ),
     );

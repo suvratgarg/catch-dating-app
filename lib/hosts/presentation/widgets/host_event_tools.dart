@@ -249,7 +249,7 @@ class HostEventToolCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(Sizes.p18),
+            padding: const EdgeInsets.all(CatchSpacing.micro18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -409,7 +409,7 @@ class _HostEventMetaLine extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ),
       ],

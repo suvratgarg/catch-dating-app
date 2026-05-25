@@ -59,7 +59,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
               gapH4,
               Text(
                 'This is private-first: hosts see aggregate trends, while private notes and safety concerns stay with Catch.',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
               gapH12,
               _RatingRow(
@@ -86,7 +86,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                     setState(() => _safetyConcern = value ?? false),
                 title: Text(
                   'I want Catch to review a safety or comfort concern',
-                  style: CatchTextStyles.bodyS(context),
+                  style: CatchTextStyles.supporting(context),
                 ),
               ),
               _StageSoftBand(
@@ -191,7 +191,9 @@ class _RatingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(label, style: CatchTextStyles.titleS(context))),
+        Expanded(
+          child: Text(label, style: CatchTextStyles.sectionTitle(context)),
+        ),
         for (var i = 1; i <= 5; i++)
           IconButton(
             tooltip: '$label $i',
@@ -216,7 +218,10 @@ class _CounterRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text('People I met', style: CatchTextStyles.titleS(context)),
+          child: Text(
+            'People I met',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
         ),
         IconButton(
           tooltip: 'Decrease people met',

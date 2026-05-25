@@ -277,10 +277,7 @@ Set<String> _assignmentParticipantUids(
   final uids = <String>{};
   for (final assignment in assignments) {
     uids.add(assignment.uid);
-    uids.addAll(assignment.peerUids);
-    for (final slot in assignment.rotationSlots) {
-      uids.add(slot.peerUid);
-    }
+    uids.addAll(assignment.allPeerUids);
   }
   return uids;
 }

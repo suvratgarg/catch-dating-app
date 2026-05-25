@@ -24,7 +24,7 @@ class EventRailTile extends StatelessWidget {
       backgroundColor: t.surface,
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(Sizes.p14),
+        padding: const EdgeInsets.all(CatchSpacing.micro14),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +46,7 @@ class EventRailTile extends StatelessWidget {
             gapH12,
             Text(
               data.title,
-              style: CatchTextStyles.titleM(context),
+              style: CatchTextStyles.cardTitle(context),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

@@ -434,7 +434,7 @@ class _PlaceSearchPanel extends StatelessWidget {
                         ? null
                         : Text(
                             suggestion.secondaryText,
-                            style: CatchTextStyles.bodyS(
+                            style: CatchTextStyles.supporting(
                               context,
                               color: t.ink2,
                             ),
@@ -511,7 +511,7 @@ class _SelectedPointPanel extends StatelessWidget {
                     gapH4,
                     Text(
                       subtitle,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),

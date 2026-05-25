@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
@@ -133,7 +134,7 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
                   12,
                 ),
                 itemCount: _drafts.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                separatorBuilder: (_, _) => gapH8,
                 itemBuilder: (context, index) {
                   final draft = _drafts[index];
                   return _DraftCard(
@@ -182,10 +183,10 @@ class _DraftCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                gapH4,
                 Text(
                   _formatRelative(draft.savedAt),
-                  style: CatchTextStyles.bodyS(
+                  style: CatchTextStyles.supporting(
                     context,
                     color: CatchTokens.of(context).ink2,
                   ),

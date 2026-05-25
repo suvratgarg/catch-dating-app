@@ -150,7 +150,7 @@ class _HostReportSignalGrid extends StatelessWidget {
                     gapH4,
                     Text(
                       'Shows whether the report is based on enough live data to trust.',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),

@@ -56,7 +56,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
             title: Text(title, style: CatchTextStyles.titleM(context)),
             subtitle: Text(
               subtitle,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
           if (normalized.enabled) ...[

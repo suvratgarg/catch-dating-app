@@ -522,16 +522,43 @@ class EventSuccessRepository {
       if (functions == null) {
         throw StateError('FirebaseFunctions is not configured.');
       }
-      return functions.httpsCallable('overrideEventSuccessRotations').call(
-        OverrideEventSuccessRotationsCallableRequest(
-          eventId: eventId,
-          rounds: rounds.map((round) => round.toJson()).toList(),
-        ).toJson(),
-      );
+      return functions
+          .httpsCallable('overrideEventSuccessRotations')
+          .call(
+            OverrideEventSuccessRotationsCallableRequest(
+              eventId: eventId,
+              rounds: rounds.map((round) => round.toJson()).toList(),
+            ).toJson(),
+          );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'adjust event rotations',
+      resource: _assignmentsPath,
+    ),
+  );
+
+  Future<void> overrideGroupAssignments({
+    required String eventId,
+    required List<EventSuccessGroupOverrideRound> rounds,
+  }) => withBackendErrorContext(
+    () {
+      final functions = _functions;
+      if (functions == null) {
+        throw StateError('FirebaseFunctions is not configured.');
+      }
+      return functions
+          .httpsCallable('overrideEventSuccessGroups')
+          .call(
+            OverrideEventSuccessGroupsCallableRequest(
+              eventId: eventId,
+              rounds: rounds.map((round) => round.toJson()).toList(),
+            ).toJson(),
+          );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'adjust event groups',
       resource: _assignmentsPath,
     ),
   );
@@ -608,13 +635,15 @@ class EventSuccessRepository {
       if (functions == null) {
         throw StateError('FirebaseFunctions is not configured.');
       }
-      return functions.httpsCallable('submitEventSuccessWingmanRequest').call(
-        SubmitEventSuccessWingmanRequestCallableRequest(
-          eventId: event.id,
-          targetUid: target.uid,
-          note: _trimToNull(note),
-        ).toJson(),
-      );
+      return functions
+          .httpsCallable('submitEventSuccessWingmanRequest')
+          .call(
+            SubmitEventSuccessWingmanRequestCallableRequest(
+              eventId: event.id,
+              targetUid: target.uid,
+              note: _trimToNull(note),
+            ).toJson(),
+          );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -651,13 +680,15 @@ class EventSuccessRepository {
       if (functions == null) {
         throw StateError('FirebaseFunctions is not configured.');
       }
-      return functions.httpsCallable('startEventSuccessFirstHelloMission').call(
-        StartEventSuccessFirstHelloMissionCallableRequest(
-          eventId: event.id,
-          latitude: latitude,
-          longitude: longitude,
-        ).toJson(),
-      );
+      return functions
+          .httpsCallable('startEventSuccessFirstHelloMission')
+          .call(
+            StartEventSuccessFirstHelloMissionCallableRequest(
+              eventId: event.id,
+              latitude: latitude,
+              longitude: longitude,
+            ).toJson(),
+          );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,

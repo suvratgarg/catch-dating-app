@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_atoms.dart';
@@ -71,7 +72,7 @@ class EventHeroTile extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(Sizes.p18),
+            padding: const EdgeInsets.all(CatchSpacing.micro18),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,41 +152,28 @@ class _NextEventStatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.primarySoft.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: t.primary.withValues(alpha: 0.18)),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: t.primarySoft.withValues(alpha: 0.72),
+      borderColor: t.primary.withValues(alpha: 0.18),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s1,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s1,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.primary,
-                shape: BoxShape.circle,
-              ),
-              child: const SizedBox.square(dimension: 7),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchStatusDot(color: t.primary),
+          gapW8,
+          Flexible(
+            child: Text(
+              'NEXT EVENT · $label',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.statusLabel(context, color: t.primary),
             ),
-            gapW8,
-            Flexible(
-              child: Text(
-                'NEXT EVENT · $label',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: t.primary,
-                ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -213,7 +201,7 @@ class _EventMetaChip extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],
@@ -255,7 +243,7 @@ class _ConfirmedRow extends StatelessWidget {
             '$signedUpCount attendee${signedUpCount == 1 ? '' : 's'} confirmed',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodyM(context, color: t.ink2),
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
           ),
         ),
       ],

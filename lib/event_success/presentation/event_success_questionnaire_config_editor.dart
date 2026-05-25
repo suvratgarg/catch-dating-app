@@ -40,7 +40,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
         gapH6,
         Text(
           'Choose a reusable template or write custom questions for this event.',
-          style: CatchTextStyles.bodyS(context, color: t.ink2),
+          style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH10,
         Wrap(
@@ -96,7 +96,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
         gapH6,
         Text(
           pack.subtitle,
-          style: CatchTextStyles.bodyS(context, color: t.ink2),
+          style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         if (normalized.usesCustom) ...[
           gapH14,
@@ -138,10 +138,8 @@ Future<void> _openCustomQuestionnaireSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (sheetContext) => _CustomQuestionnaireSheet(
-      initialValue: initial,
-      onChanged: onChanged,
-    ),
+    builder: (sheetContext) =>
+        _CustomQuestionnaireSheet(initialValue: initial, onChanged: onChanged),
   );
 }
 
@@ -216,7 +214,7 @@ class _QuestionnairePreview extends StatelessWidget {
           gapH8,
           Text(
             '+ ${questions.length - 3} more',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
         ],
       ],
