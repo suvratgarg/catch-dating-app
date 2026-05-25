@@ -104,7 +104,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                     ),
                     overlayColor: WidgetStatePropertyAll(t.primarySoft),
                     textStyle: WidgetStatePropertyAll(
-                      CatchTextStyles.bodyM(context, color: t.ink),
+                      CatchTextStyles.bodyLead(context, color: t.ink),
                     ),
                   ),
                   trailingIcon: item == widget.value
@@ -122,6 +122,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                     widget.itemLabel(item),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.labelL(context, color: t.ink),
                   ),
                 ),
               ),

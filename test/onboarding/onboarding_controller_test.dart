@@ -120,9 +120,7 @@ void main() {
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(uid: 'runner-1', runPreferencesVersion: 0).copyWith(
-                preferredDistances: const [],
-                runningReasons: const [],
-                preferredRunTimes: const [],
+                activityPreferences: const ActivityPreferences(),
               ),
             ),
           ),

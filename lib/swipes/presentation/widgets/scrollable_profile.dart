@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
@@ -288,7 +289,7 @@ class _PhotoPromptOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       prompt.displayPrompt,
-      style: CatchTextStyles.titleM(context, color: Colors.white),
+      style: CatchTextStyles.cardTitle(context, color: Colors.white),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
@@ -321,7 +322,10 @@ class _RunningIdentityCard extends StatelessWidget {
         children: [
           Text(
             '${_firstName(profile.name)} likes ${_formatRunMood(profile)}',
-            style: CatchTextStyles.titleM(context, color: palette.textPrimary),
+            style: CatchTextStyles.cardTitle(
+              context,
+              color: palette.textPrimary,
+            ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -358,7 +362,7 @@ class _RunningIdentityCard extends StatelessWidget {
             gapH12,
             Text(
               profile.runningReasons.map((r) => r.label).join(' · '),
-              style: CatchTextStyles.bodyM(
+              style: CatchTextStyles.bodyLead(
                 context,
                 color: palette.textSecondary,
               ),
@@ -381,33 +385,29 @@ class _EventIdentityTagPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = ProfileCardPalette.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: palette.chipFill,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: palette.chipBorder),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(_runTagIcon(tag.kind), size: 14, color: palette.textSecondary),
-            gapW6,
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 190),
-              child: Text(
-                tag.label,
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: palette.textPrimary,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: palette.chipFill,
+      borderColor: palette.chipBorder,
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(_runTagIcon(tag.kind), size: 14, color: palette.textSecondary),
+          gapW6,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 190),
+            child: Text(
+              tag.label,
+              style: CatchTextStyles.labelL(
+                context,
+                color: palette.textPrimary,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -429,13 +429,11 @@ class _RunStatPill extends StatelessWidget {
     final palette = ProfileCardPalette.of(context);
 
     return Expanded(
-      child: Container(
+      child: CatchSurface(
+        radius: CatchRadius.md,
+        backgroundColor: palette.surfaceRaised,
+        borderColor: palette.chipBorder,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        decoration: BoxDecoration(
-          color: palette.surfaceRaised,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(color: palette.chipBorder),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -443,12 +441,18 @@ class _RunStatPill extends StatelessWidget {
             gapH8,
             Text(
               label,
-              style: CatchTextStyles.bodyS(context, color: palette.textMuted),
+              style: CatchTextStyles.statusLabel(
+                context,
+                color: palette.textMuted,
+              ),
             ),
             gapH2,
             Text(
               value,
-              style: CatchTextStyles.mono(context, color: palette.textPrimary),
+              style: CatchTextStyles.statCompact(
+                context,
+                color: palette.textPrimary,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

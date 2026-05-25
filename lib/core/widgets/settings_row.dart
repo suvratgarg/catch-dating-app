@@ -54,7 +54,7 @@ class SettingsRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: CatchTextStyles.bodyM(
+              style: CatchTextStyles.bodyLead(
                 context,
                 color: color,
               ).copyWith(fontWeight: FontWeight.w600),
@@ -71,7 +71,7 @@ class SettingsRow extends StatelessWidget {
                 child: Text(
                   value!,
                   textAlign: TextAlign.right,
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

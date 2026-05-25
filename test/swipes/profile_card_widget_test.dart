@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 Widget _profileCardHarness({required ThemeData theme}) {
   final profile = buildPublicProfile(
@@ -211,13 +212,23 @@ void main() {
     (tester) async {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.community],
+        activityPreferences: const ActivityPreferences(
+          running: RunningPreferences(
+            preferredDistances: [PreferredDistance.fiveK],
+            runningReasons: [RunReason.community],
+            version: currentRunPreferencesVersion,
+          ),
+        ),
       );
       final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
         relationshipGoal: RelationshipGoal.relationship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.community],
+        activityPreferences: const ActivityPreferences(
+          running: RunningPreferences(
+            preferredDistances: [PreferredDistance.fiveK],
+            runningReasons: [RunReason.community],
+            version: currentRunPreferencesVersion,
+          ),
+        ),
       );
 
       await tester.pumpWidget(
@@ -299,12 +310,22 @@ void main() {
   ) async {
     ProfileReactionTarget? reactedTarget;
     final viewer = buildUser().copyWith(
-      preferredDistances: const [PreferredDistance.fiveK],
-      runningReasons: const [RunReason.community],
+      activityPreferences: const ActivityPreferences(
+        running: RunningPreferences(
+          preferredDistances: [PreferredDistance.fiveK],
+          runningReasons: [RunReason.community],
+          version: currentRunPreferencesVersion,
+        ),
+      ),
     );
     final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
-      preferredDistances: const [PreferredDistance.fiveK],
-      runningReasons: const [RunReason.community],
+      activityPreferences: const ActivityPreferences(
+        running: RunningPreferences(
+          preferredDistances: [PreferredDistance.fiveK],
+          runningReasons: [RunReason.community],
+          version: currentRunPreferencesVersion,
+        ),
+      ),
     );
 
     await tester.pumpWidget(
@@ -374,12 +395,12 @@ void main() {
     await tester.tap(
       find.byTooltip('Comment on A perfect event with me looks like...'),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     await tester.enterText(find.byType(TextField), 'This is a great hook.');
     await tester.pump();
     await tester.tap(find.text('Send like'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(reactedTarget?.id, 'profile-prompt-perfectRun');
     expect(reactedComment, 'This is a great hook.');

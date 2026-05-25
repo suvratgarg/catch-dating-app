@@ -242,7 +242,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
         ],

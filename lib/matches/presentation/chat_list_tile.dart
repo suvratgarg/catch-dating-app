@@ -75,11 +75,9 @@ class ChatListTile extends StatelessWidget {
                               preview.displayName,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: CatchTextStyles.titleM(context).copyWith(
-                                fontWeight: hasUnread
-                                    ? FontWeight.w800
-                                    : FontWeight.w600,
-                              ),
+                              style: hasUnread
+                                  ? CatchTextStyles.cardTitle(context)
+                                  : CatchTextStyles.sectionTitle(context),
                             ),
                           ),
                           const SizedBox(width: CatchSpacing.s2),
@@ -90,15 +88,10 @@ class ChatListTile extends StatelessWidget {
                               children: [
                                 Text(
                                   _formatTime(preview.timestamp),
-                                  style:
-                                      CatchTextStyles.bodyS(
-                                        context,
-                                        color: hasUnread ? t.primary : t.ink2,
-                                      ).copyWith(
-                                        fontWeight: hasUnread
-                                            ? FontWeight.w800
-                                            : FontWeight.w500,
-                                      ),
+                                  style: CatchTextStyles.statusLabel(
+                                    context,
+                                    color: hasUnread ? t.primary : t.ink2,
+                                  ),
                                 ),
                                 if (hasUnread) ...[
                                   const SizedBox(width: CatchSpacing.s2),
@@ -114,15 +107,12 @@ class ChatListTile extends StatelessWidget {
                         preview.previewText,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            CatchTextStyles.bodyS(
-                              context,
-                              color: hasUnread ? t.ink : t.ink2,
-                            ).copyWith(
-                              fontWeight: hasUnread
-                                  ? FontWeight.w700
-                                  : FontWeight.w400,
-                            ),
+                        style: hasUnread
+                            ? CatchTextStyles.chatMessage(context, color: t.ink)
+                            : CatchTextStyles.supporting(
+                                context,
+                                color: t.ink2,
+                              ),
                       ),
                     ],
                   ),

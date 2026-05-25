@@ -11,10 +11,10 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -349,12 +349,16 @@ class OnboardingController extends _$OnboardingController {
         .updateUserProfile(
           uid: userProfile.uid,
           patch: UpdateUserProfilePatch(
-            paceMinSecsPerKm: paceMinSecsPerKm,
-            paceMaxSecsPerKm: paceMaxSecsPerKm,
-            preferredDistances: preferredDistances,
-            runningReasons: runningReasons,
-            preferredRunTimes: preferredRunTimes,
-            runPreferencesVersion: currentRunPreferencesVersion,
+            activityPreferences: userProfile.activityPreferences.copyWith(
+              running: RunningPreferences(
+                paceMinSecsPerKm: paceMinSecsPerKm,
+                paceMaxSecsPerKm: paceMaxSecsPerKm,
+                preferredDistances: preferredDistances,
+                runningReasons: runningReasons,
+                preferredRunTimes: preferredRunTimes,
+                version: currentRunPreferencesVersion,
+              ),
+            ),
           ),
         );
     await _deleteDraftNow();

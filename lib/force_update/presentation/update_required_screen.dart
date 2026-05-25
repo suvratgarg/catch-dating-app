@@ -40,7 +40,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
               Text(
                 'A new version of Catch is available. '
                 'Please update to continue.',
-                style: CatchTextStyles.bodyM(context, color: t.ink2),
+                style: CatchTextStyles.bodyLead(context, color: t.ink2),
                 textAlign: TextAlign.center,
               ),
               gapH48,

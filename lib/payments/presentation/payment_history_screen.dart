@@ -129,17 +129,26 @@ class _PaymentTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(eventTitle, style: CatchTextStyles.bodyM(context)),
+                      Text(
+                        eventTitle,
+                        style: CatchTextStyles.bodyLead(context),
+                      ),
                       gapH4,
                       Text(
                         AppTimeFormatters.dateTime(payment.createdAt),
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
                       ),
                       if (statusPresentation.detail case final detail?) ...[
                         gapH4,
                         Text(
                           detail,
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
                         ),
                       ],
                     ],
@@ -153,9 +162,7 @@ class _PaymentTile extends ConsumerWidget {
                         payment.amount,
                         currencyCode: payment.currency,
                       ),
-                      style: CatchTextStyles.bodyM(
-                        context,
-                      ).copyWith(fontWeight: FontWeight.w600),
+                      style: CatchTextStyles.statCompact(context),
                     ),
                     gapH4,
                     CatchBadge(
@@ -248,9 +255,13 @@ class _PaymentTile extends ConsumerWidget {
                         onPressed: () {
                           Navigator.of(sheetContext).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
                                 'Please contact Catch support for assistance with this booking.',
+                                style: CatchTextStyles.labelL(
+                                  context,
+                                  color: CatchTokens.of(context).bg,
+                                ),
                               ),
                             ),
                           );

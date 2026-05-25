@@ -33,6 +33,7 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -775,8 +776,14 @@ void main() {
     ) async {
       final joinedClubIds = ['club-1'];
       final user = buildUser(uid: 'runner-1', name: 'Suvrat Garg').copyWith(
-        photoUrls: const ['https://example.test/full-profile.jpg'],
-        photoThumbnailUrls: const ['https://example.test/profile-thumb.jpg'],
+        profilePhotos: [
+          ProfilePhoto.uploaded(
+            position: 0,
+            url: 'https://example.test/full-profile.jpg',
+            storagePath: 'test-profiles/runner-1/0.jpg',
+            now: DateTime(2026, 1, 1),
+          ).copyWith(thumbnailUrl: 'https://example.test/profile-thumb.jpg'),
+        ],
       );
       final nextEvent = buildEvent(
         id: 'next-event',
@@ -1000,7 +1007,7 @@ void main() {
           const Offset(-420, 0),
         );
         await tester.pump();
-        await tester.pump(const Duration(milliseconds: 250));
+        await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
 
         expect(find.text('Thursday Morning Event'), findsNothing);
         expect(find.text('Friday Morning Event'), findsOneWidget);

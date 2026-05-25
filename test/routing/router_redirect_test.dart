@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,9 +13,19 @@ UserProfile _completeUser() => UserProfile(
   phoneNumber: '+910000000000',
   profileComplete: true,
   interestedInGenders: const [Gender.woman],
-  photoUrls: const [
-    'https://example.test/one.jpg',
-    'https://example.test/two.jpg',
+  profilePhotos: [
+    ProfilePhoto.uploaded(
+      position: 0,
+      url: 'https://example.test/one.jpg',
+      storagePath: 'test-profiles/user-1/0.jpg',
+      now: DateTime(2026, 1, 1),
+    ),
+    ProfilePhoto.uploaded(
+      position: 1,
+      url: 'https://example.test/two.jpg',
+      storagePath: 'test-profiles/user-1/1.jpg',
+      now: DateTime(2026, 1, 1),
+    ),
   ],
   profilePrompts: [
     for (final promptId in defaultProfilePromptIds)
@@ -24,7 +35,9 @@ UserProfile _completeUser() => UserProfile(
         answer: 'Answer for $promptId.',
       ),
   ],
-  runPreferencesVersion: currentRunPreferencesVersion,
+  activityPreferences: const ActivityPreferences(
+    running: RunningPreferences(version: currentRunPreferencesVersion),
+  ),
 );
 
 UserProfile _identityIncompleteUser() => UserProfile(
@@ -236,7 +249,9 @@ void main() {
           _redirect(
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(
-              _completeUser().copyWith(runPreferencesVersion: 0),
+              _completeUser().copyWith(
+                activityPreferences: const ActivityPreferences(),
+              ),
             ),
             location:
                 '/onboarding?intent=complete-run-preferences&from=%2Fclubs%2Fclub-1%2Fevents%2Fevent-1',

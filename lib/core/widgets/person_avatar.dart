@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -91,12 +92,10 @@ class PersonAvatar extends StatelessWidget {
           child: Center(
             child: Text(
               '+$_count',
-              style: TextStyle(
-                fontSize: innerSize * 0.30,
-                fontWeight: FontWeight.w700,
+              style: CatchTextStyles.statusLabel(
+                context,
                 color: t.surface,
-                height: 1,
-              ),
+              ).copyWith(fontSize: innerSize * 0.30, height: 1),
             ),
           ),
         ),

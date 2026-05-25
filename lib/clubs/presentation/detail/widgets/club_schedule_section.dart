@@ -52,8 +52,8 @@ class ClubScheduleSection extends StatelessWidget {
                 iconSize: 22,
                 iconContainerSize: 44,
                 padding: const EdgeInsets.all(CatchSpacing.s4),
-                titleStyle: CatchTextStyles.titleS(context),
-                messageStyle: CatchTextStyles.bodyS(
+                titleStyle: CatchTextStyles.sectionTitle(context),
+                messageStyle: CatchTextStyles.supporting(
                   context,
                   color: CatchTokens.of(context).ink2,
                 ),

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -42,16 +43,16 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 32),
+          gapH32,
           const OnboardingStepHeader(title: "What's your Instagram?"),
-          const SizedBox(height: 8),
+          gapH8,
           Text(
             'This helps us verify you for early access. Your handle is never shown to other users.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 32),
+          gapH32,
           CatchTextField(
             controller: _controller,
             label: 'Instagram handle',
@@ -60,14 +61,14 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
             onSubmitted: (_) => _submit(),
             prefixText: '@',
           ),
-          const SizedBox(height: 40),
+          gapH40,
           CatchButton(
             label: 'Continue',
             onPressed: _submit,
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );

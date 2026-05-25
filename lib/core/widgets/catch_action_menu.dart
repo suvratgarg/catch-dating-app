@@ -92,13 +92,17 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
                 foregroundColor: WidgetStatePropertyAll(_itemColor(t, item)),
                 overlayColor: WidgetStatePropertyAll(t.primarySoft),
                 textStyle: WidgetStatePropertyAll(
-                  CatchTextStyles.bodyM(context, color: _itemColor(t, item)),
+                  CatchTextStyles.bodyLead(context, color: _itemColor(t, item)),
                 ),
               ),
               child: Text(
                 item.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.labelL(
+                  context,
+                  color: _itemColor(t, item),
+                ),
               ),
             ),
           ),

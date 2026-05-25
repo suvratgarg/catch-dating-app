@@ -171,7 +171,7 @@ class _HeadsUp extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.primarySoft,
-      padding: const EdgeInsets.all(Sizes.p14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
       borderWidth: 0,
       child: Column(
@@ -186,7 +186,7 @@ class _HeadsUp extends StatelessWidget {
             'Bring a water bottle and arrive by the meeting time. '
             'Catches unlock automatically when the event finishes — '
             'keep your phone charged.',
-            style: CatchTextStyles.bodyS(context, color: t.ink),
+            style: CatchTextStyles.supporting(context, color: t.ink),
           ),
         ],
       ),
@@ -207,7 +207,7 @@ class _ReferralBanner extends ConsumerWidget {
     return CatchSurface(
       key: PaymentConfirmationKeys.referralShare,
       onTap: () => unawaited(controller.shareReferral(event)),
-      padding: const EdgeInsets.all(Sizes.p14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
       borderColor: t.primary.withValues(alpha: 0.24),
       borderWidth: 1.5,
@@ -221,12 +221,12 @@ class _ReferralBanner extends ConsumerWidget {
               children: [
                 Text(
                   'Bring someone you actually want there',
-                  style: CatchTextStyles.titleS(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH2,
                 Text(
                   'The best invites happen while the plan still feels fresh.',
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),

@@ -120,7 +120,7 @@ class _SegmentButton<T> extends StatelessWidget {
       CatchSegmentedControlStyle.surface => t.ink,
     };
     final foreground = selected ? activeForeground : t.ink2;
-    final labelStyle = CatchTextStyles.titleS(
+    final labelStyle = CatchTextStyles.sectionTitle(
       context,
       color: foreground,
     ).copyWith(fontWeight: selected ? FontWeight.w700 : FontWeight.w600);

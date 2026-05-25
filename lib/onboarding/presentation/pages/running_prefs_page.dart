@@ -76,7 +76,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 32),
+          gapH32,
           OnboardingStepHeader(
             title: widget.profileCompletionOnly
                 ? 'Finish your swipe profile'
@@ -89,7 +89,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
                 ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
                 : 'Help us find compatible running partners.',
           ),
-          const SizedBox(height: 32),
+          gapH32,
 
           // ── Pace ──────────────────────────────────────────────────────────
           Text(
@@ -126,7 +126,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               setState(() => _paceRange = next);
             },
           ),
-          const SizedBox(height: 28),
+          gapH28,
 
           // ── Distances ─────────────────────────────────────────────────────
           ChipField<PreferredDistance>(
@@ -144,7 +144,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               });
             },
           ),
-          const SizedBox(height: 28),
+          gapH28,
 
           // ── Event reasons ───────────────────────────────────────────────────
           ChipField<RunReason>(
@@ -164,7 +164,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               });
             },
           ),
-          const SizedBox(height: 28),
+          gapH28,
 
           // ── Time of day ───────────────────────────────────────────────────
           ChipField<PreferredRunTime>(
@@ -189,7 +189,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             gapH16,
             ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
-          const SizedBox(height: 40),
+          gapH40,
           CatchButton(
             label: widget.runPreferencesOnly
                 ? 'Continue booking'
@@ -199,7 +199,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );

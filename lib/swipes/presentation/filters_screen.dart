@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -178,16 +179,13 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                     ],
                   ),
                 ),
-                Container(
+                CatchBottomDock(
+                  includeSafeArea: false,
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
                     CatchSpacing.s3,
                     CatchSpacing.s5,
                     CatchSpacing.s5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: t.surface,
-                    border: Border(top: BorderSide(color: t.line)),
                   ),
                   child: CatchButton(
                     key: SwipeKeys.applyFiltersButton,
@@ -238,10 +236,7 @@ class _FilterSection extends StatelessWidget {
         children: [
           Text(
             title.toUpperCase(),
-            style: CatchTextStyles.labelM(
-              context,
-              color: t.ink3,
-            ).copyWith(letterSpacing: 0.7),
+            style: CatchTextStyles.kicker(context, color: t.ink3),
           ),
           gapH10,
           child,

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:flutter/material.dart';
 
 class CreateClubCoverPicker extends StatelessWidget {
@@ -53,17 +54,16 @@ class CreateClubCoverPicker extends StatelessWidget {
                           Positioned(
                             bottom: 8,
                             right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: t.surface.withValues(alpha: 0.85),
-                                shape: BoxShape.circle,
+                            child: CatchIconTile(
+                              icon: Icons.edit_outlined,
+                              iconColor: t.ink,
+                              backgroundColor: t.surface.withValues(
+                                alpha: 0.85,
                               ),
-                              child: Icon(
-                                Icons.edit_outlined,
-                                size: 16,
-                                color: t.ink,
-                              ),
+                              borderColor: Colors.transparent,
+                              size: 28,
+                              iconSize: 16,
+                              radius: CatchRadius.pill,
                             ),
                           ),
                         ],
@@ -81,7 +81,7 @@ class CreateClubCoverPicker extends StatelessWidget {
                             gapH8,
                             Text(
                               'Add cover photo',
-                              style: CatchTextStyles.bodyM(
+                              style: CatchTextStyles.bodyLead(
                                 context,
                                 color: t.ink2,
                               ),
@@ -151,17 +151,16 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                           Positioned(
                             bottom: 8,
                             right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: t.surface.withValues(alpha: 0.85),
-                                shape: BoxShape.circle,
+                            child: CatchIconTile(
+                              icon: Icons.edit_outlined,
+                              iconColor: t.ink,
+                              backgroundColor: t.surface.withValues(
+                                alpha: 0.85,
                               ),
-                              child: Icon(
-                                Icons.edit_outlined,
-                                size: 16,
-                                color: t.ink,
-                              ),
+                              borderColor: Colors.transparent,
+                              size: 28,
+                              iconSize: 16,
+                              radius: CatchRadius.pill,
                             ),
                           ),
                         ],
@@ -183,7 +182,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                               ),
                               child: Text(
                                 'Add image',
-                                style: CatchTextStyles.bodyS(
+                                style: CatchTextStyles.supporting(
                                   context,
                                   color: t.ink2,
                                 ),

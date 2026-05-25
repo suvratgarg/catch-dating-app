@@ -24,7 +24,6 @@ void main() {
       interestedInGenders: const [Gender.woman],
       minAgePreference: 18,
       maxAgePreference: 99,
-      preferredDistances: const [],
     );
 
     final router = GoRouter(

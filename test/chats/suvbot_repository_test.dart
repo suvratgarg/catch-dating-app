@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_schema/json_schema.dart';
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};
@@ -47,9 +50,10 @@ void main() {
 
       await repository.requestAction(actionId: 'checkDemoState');
 
-      expect(functions.callables['requestSuvbotDemoOperation']?.calls, [
-        {'action': 'checkDemoState'},
-      ]);
+      final payload =
+          functions.callables['requestSuvbotDemoOperation']?.calls.single;
+      expect(payload, {'action': 'checkDemoState'});
+      _expectValid('RequestSuvbotDemoOperationCallablePayload', payload);
     });
 
     test('sends typed message text for Suvbot free text', () async {
@@ -61,14 +65,15 @@ void main() {
         text: 'Can you reset me?',
       );
 
-      expect(functions.callables['requestSuvbotDemoOperation']?.calls, [
-        {'action': 'message', 'text': 'Can you reset me?'},
-      ]);
+      final payload =
+          functions.callables['requestSuvbotDemoOperation']?.calls.single;
+      expect(payload, {'action': 'message', 'text': 'Can you reset me?'});
+      _expectValid('RequestSuvbotDemoOperationCallablePayload', payload);
     });
 
     test('loads backend-provided action descriptors', () async {
       final functions = TestFirebaseFunctions();
-      functions.responseData['listSuvbotDemoActions'] = {
+      final response = {
         'actions': [
           {
             'id': 'refreshDemoState',
@@ -86,6 +91,8 @@ void main() {
           },
         ],
       };
+      _expectValid('ListSuvbotDemoActionsCallableResponse', response);
+      functions.responseData['listSuvbotDemoActions'] = response;
       final repository = SuvbotRepository(functions);
 
       final actions = await repository.fetchActions();
@@ -106,4 +113,15 @@ void main() {
       expect(isSuvbotConversation(matchId: 'match-1'), isFalse);
     });
   });
+}
+
+void _expectValid(String schemaName, Object? payload) {
+  final schema = schema_contracts.schemaContractsByName[schemaName];
+  expect(schema, isNotNull, reason: 'Missing generated schema $schemaName');
+  final result = JsonSchema.create(schema!).validate(payload);
+  expect(
+    result.isValid,
+    isTrue,
+    reason: '$schemaName rejected $payload: ${result.errors}',
+  );
 }

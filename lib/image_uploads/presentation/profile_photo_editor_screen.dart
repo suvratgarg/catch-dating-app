@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -15,20 +16,19 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ProfilePhotoEditorScreen extends ConsumerStatefulWidget {
   const ProfilePhotoEditorScreen({
     super.key,
     required this.index,
     this.photo,
-    this.initialImage,
+    this.initialImageBytes,
     this.canDelete = false,
   });
 
   final int index;
   final ProfilePhoto? photo;
-  final XFile? initialImage;
+  final Uint8List? initialImageBytes;
   final bool canDelete;
 
   @override
@@ -43,12 +43,13 @@ Future<bool?> openProfilePhotoEditor({
   ProfilePhoto? photo,
   bool canDelete = false,
 }) async {
-  XFile? initialImage;
+  Uint8List? initialImageBytes;
   if (photo == null) {
-    initialImage = await ref
+    final initialImage = await ref
         .read(photoUploadControllerProvider.notifier)
         .pickPhoto();
     if (initialImage == null || !context.mounted) return false;
+    initialImageBytes = await initialImage.readAsBytes();
   }
 
   if (!context.mounted) return false;
@@ -57,7 +58,7 @@ Future<bool?> openProfilePhotoEditor({
       builder: (_) => ProfilePhotoEditorScreen(
         index: index,
         photo: photo,
-        initialImage: initialImage,
+        initialImageBytes: initialImageBytes,
         canDelete: canDelete,
       ),
     ),
@@ -78,32 +79,31 @@ class _ProfilePhotoEditorScreenState
     super.initState();
     final existingPrompt = widget.photo?.prompt;
     _promptId = existingPrompt?.promptId;
-    final initialImage = widget.initialImage;
-    if (initialImage != null) {
-      unawaited(_setImage(initialImage));
+    final initialImageBytes = widget.initialImageBytes;
+    if (initialImageBytes != null) {
+      _imageBytes = initialImageBytes;
     }
   }
 
-  Future<void> _setImage(XFile image) async {
+  Future<void> _pickReplacementImage() async {
     setState(() => _loadingImage = true);
     try {
-      final bytes = await image.readAsBytes();
+      final image = await ref
+          .read(photoUploadControllerProvider.notifier)
+          .pickPhoto();
+      final bytes = await image?.readAsBytes();
       if (!mounted) return;
-      setState(() => _imageBytes = bytes);
+      if (bytes != null) setState(() => _imageBytes = bytes);
     } finally {
       if (mounted) setState(() => _loadingImage = false);
     }
   }
 
   Future<void> _replaceImage() async {
-    final image = await ref
-        .read(photoUploadControllerProvider.notifier)
-        .pickPhoto();
-    if (image == null) return;
-    await _setImage(image);
+    await _pickReplacementImage();
   }
 
-  Future<XFile?> _croppedImageFile() async {
+  Future<Uint8List?> _croppedImageBytes() async {
     if (_imageBytes == null) return null;
     final boundary =
         _cropKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -111,13 +111,7 @@ class _ProfilePhotoEditorScreenState
     final image = await boundary.toImage(pixelRatio: 3);
     final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return null;
-    final bytes = byteData.buffer.asUint8List();
-    return XFile.fromData(
-      bytes,
-      name:
-          'profile_photo_${widget.index}_${DateTime.now().millisecondsSinceEpoch}.png',
-      mimeType: 'image/png',
-    );
+    return byteData.buffer.asUint8List();
   }
 
   Future<void> _save() async {
@@ -134,13 +128,13 @@ class _ProfilePhotoEditorScreenState
               photoIndex: widget.index,
               definition: selectedDefinition,
             );
-      final croppedImage = await _croppedImageFile();
+      final croppedImageBytes = await _croppedImageBytes();
       await PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
         await tx
             .get(photoUploadControllerProvider.notifier)
             .savePhoto(
               index: widget.index,
-              image: croppedImage,
+              imageBytes: croppedImageBytes,
               prompt: prompt,
             );
       });
@@ -205,22 +199,17 @@ class _ProfilePhotoEditorScreenState
             CatchSpacing.s6,
           ),
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.raised,
-                borderRadius: BorderRadius.circular(CatchRadius.lg),
-                border: Border.all(color: t.line),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.lg),
-                child: AspectRatio(
-                  aspectRatio: profilePhotoAspectRatio,
-                  child: _PhotoEditorPreview(
-                    cropKey: _cropKey,
-                    bytes: _imageBytes,
-                    url: widget.photo?.url,
-                    loading: _loadingImage,
-                  ),
+            CatchSurface(
+              backgroundColor: t.raised,
+              borderColor: t.line,
+              clipBehavior: Clip.antiAlias,
+              child: AspectRatio(
+                aspectRatio: profilePhotoAspectRatio,
+                child: _PhotoEditorPreview(
+                  cropKey: _cropKey,
+                  bytes: _imageBytes,
+                  url: widget.photo?.url,
+                  loading: _loadingImage,
                 ),
               ),
             ),

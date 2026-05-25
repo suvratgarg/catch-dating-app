@@ -62,14 +62,20 @@ class CatchStepFlowHeader extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.titleL(context, color: t.ink),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     if (subtitle != null && subtitle!.isNotEmpty)
                       Text(
                         subtitle!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
                       ),
                   ],
                 ),

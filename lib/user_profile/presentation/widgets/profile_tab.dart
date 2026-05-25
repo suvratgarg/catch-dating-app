@@ -17,6 +17,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
@@ -139,6 +140,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
             ? null
             : user.displayName.trim(),
         fieldName: 'displayName',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(displayName: value as String),
         textCapitalization: TextCapitalization.words,
         autofillHints: const [AutofillHints.nickname],
         validator: validateRequiredDisplayName,
@@ -162,6 +165,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.phoneNumber,
         title: 'Phone number',
         fieldName: 'phoneNumber',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(phoneNumber: value as String),
         keyboardType: TextInputType.phone,
         autofillHints: const [AutofillHints.telephoneNumber],
         validator: validateRequiredPhoneNumber,
@@ -173,6 +178,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.email.isNotEmpty ? user.email : 'Email',
         currentValue: user.email,
         fieldName: 'email',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(email: value as String),
         isAddAffordance: user.email.isEmpty,
         keyboardType: TextInputType.emailAddress,
         autofillHints: const [AutofillHints.email],
@@ -188,6 +195,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         currentValue: user.instagramHandle ?? '',
         currentFieldValue: user.instagramHandle,
         fieldName: 'instagramHandle',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(instagramHandle: value as String?),
         isAddAffordance: user.instagramHandle?.isNotEmpty != true,
         keyboardType: TextInputType.text,
         textCapitalization: TextCapitalization.none,
@@ -206,6 +215,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           currentValue: user.height,
           isExpanded: _isExpanded('height'),
           isAddAffordance: user.height == null,
+          patchForValue: (value) => UpdateUserProfilePatch(height: value),
           onTap: () => _toggleField('height'),
           onSaved: _collapseField,
           onCancel: _collapseField,
@@ -223,6 +233,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.occupation ?? 'Job title',
         currentValue: user.occupation ?? '',
         fieldName: 'occupation',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(occupation: value as String),
         isAddAffordance: user.occupation == null,
       ),
       _textEntry(
@@ -232,6 +244,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         value: user.company ?? 'Company',
         currentValue: user.company ?? '',
         fieldName: 'company',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(company: value as String),
         isAddAffordance: user.company == null,
       ),
       _singleEnumEntry<EducationLevel>(
@@ -241,6 +255,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: EducationLevel.values,
         value: user.education,
         fieldName: 'education',
+        patchForValue: (value) => UpdateUserProfilePatch(education: value),
       ),
       _singleEnumEntry<Religion>(
         context: context,
@@ -249,6 +264,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: Religion.values,
         value: user.religion,
         fieldName: 'religion',
+        patchForValue: (value) => UpdateUserProfilePatch(religion: value),
       ),
       _multiEnumEntry<Language>(
         context: context,
@@ -258,6 +274,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         selected: user.languages,
         fieldName: 'languages',
         placeholder: 'Languages',
+        patchForValues: (values) => UpdateUserProfilePatch(languages: values),
       ),
     ];
     final intentions = [
@@ -268,6 +285,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: RelationshipGoal.values,
         value: user.relationshipGoal,
         fieldName: 'relationshipGoal',
+        patchForValue: (value) =>
+            UpdateUserProfilePatch(relationshipGoal: value),
       ),
     ];
     final lifestyle = [
@@ -278,6 +297,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: DrinkingHabit.values,
         value: user.drinking,
         fieldName: 'drinking',
+        patchForValue: (value) => UpdateUserProfilePatch(drinking: value),
       ),
       _singleEnumEntry<SmokingHabit>(
         context: context,
@@ -286,6 +306,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: SmokingHabit.values,
         value: user.smoking,
         fieldName: 'smoking',
+        patchForValue: (value) => UpdateUserProfilePatch(smoking: value),
       ),
       _singleEnumEntry<WorkoutFrequency>(
         context: context,
@@ -294,6 +315,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: WorkoutFrequency.values,
         value: user.workout,
         fieldName: 'workout',
+        patchForValue: (value) => UpdateUserProfilePatch(workout: value),
       ),
       _singleEnumEntry<DietaryPreference>(
         context: context,
@@ -302,6 +324,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: DietaryPreference.values,
         value: user.diet,
         fieldName: 'diet',
+        patchForValue: (value) => UpdateUserProfilePatch(diet: value),
       ),
       _singleEnumEntry<ChildrenStatus>(
         context: context,
@@ -310,6 +333,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: ChildrenStatus.values,
         value: user.children,
         fieldName: 'children',
+        patchForValue: (value) => UpdateUserProfilePatch(children: value),
       ),
     ];
     final location = [
@@ -320,6 +344,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: defaultCityOptions,
         value: cityOptionByName(user.city),
         fieldName: 'city',
+        patchForValue: (value) => UpdateUserProfilePatch(city: value?.name),
       ),
     ];
     final running = [
@@ -339,6 +364,15 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           labelText: (v) => '${formatPace(v.round())}/km',
           minFieldName: 'paceMinSecsPerKm',
           maxFieldName: 'paceMaxSecsPerKm',
+          patchForRange: (min, max) => UpdateUserProfilePatch(
+            activityPreferences: user.activityPreferences.copyWith(
+              running: user.runningPreferences.copyWith(
+                paceMinSecsPerKm: min,
+                paceMaxSecsPerKm: max,
+                version: currentRunPreferencesVersion,
+              ),
+            ),
+          ),
           onSaved: _collapseField,
           onCancel: _collapseField,
         ),
@@ -354,6 +388,14 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         selected: user.preferredDistances,
         fieldName: 'preferredDistances',
         placeholder: 'Preferred distances',
+        patchForValues: (values) => UpdateUserProfilePatch(
+          activityPreferences: user.activityPreferences.copyWith(
+            running: user.runningPreferences.copyWith(
+              preferredDistances: values,
+              version: currentRunPreferencesVersion,
+            ),
+          ),
+        ),
       ),
       _multiEnumEntry<RunReason>(
         context: context,
@@ -363,6 +405,14 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         selected: user.runningReasons,
         fieldName: 'runningReasons',
         placeholder: 'Why I event',
+        patchForValues: (values) => UpdateUserProfilePatch(
+          activityPreferences: user.activityPreferences.copyWith(
+            running: user.runningPreferences.copyWith(
+              runningReasons: values,
+              version: currentRunPreferencesVersion,
+            ),
+          ),
+        ),
       ),
       _multiEnumEntry<PreferredRunTime>(
         context: context,
@@ -372,6 +422,14 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         selected: user.preferredRunTimes,
         fieldName: 'preferredRunTimes',
         placeholder: 'Favorite event times',
+        patchForValues: (values) => UpdateUserProfilePatch(
+          activityPreferences: user.activityPreferences.copyWith(
+            running: user.runningPreferences.copyWith(
+              preferredRunTimes: values,
+              version: currentRunPreferencesVersion,
+            ),
+          ),
+        ),
       ),
     ];
     final prompts = defaultProfilePromptIds
@@ -492,7 +550,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     String Function(String value)? normalizeInput,
     FormFieldValidator<String>? validator,
     Object? Function(String value)? toFieldValue,
-    Map<String, dynamic> Function(String value)? toFields,
+    required UpdateUserProfilePatch Function(Object? value) patchForValue,
   }) {
     final editorTitle = title ?? label;
     final editorKey = expansionKey ?? fieldName;
@@ -519,7 +577,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         autofillHints: autofillHints,
         validator: validator,
         toFieldValue: toFieldValue,
-        toFields: toFields,
+        patchForValue: patchForValue,
         onSaved: _collapseField,
         onCancel: _collapseField,
       ),
@@ -553,12 +611,13 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       normalizeInput: normalizeProfilePromptAnswer,
       keyboardType: TextInputType.multiline,
       validator: validateOptionalProfilePromptAnswer,
-      toFieldValue: (value) => profilePromptsToJson(
-        replaceProfilePromptAnswer(
-          current: user.profilePrompts,
-          definition: definition,
-          answer: value,
-        ),
+      toFieldValue: (value) => replaceProfilePromptAnswer(
+        current: user.profilePrompts,
+        definition: definition,
+        answer: value,
+      ),
+      patchForValue: (value) => UpdateUserProfilePatch(
+        profilePrompts: value as List<ProfilePromptAnswer>,
       ),
     );
   }
@@ -570,6 +629,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     required List<T> values,
     required T? value,
     required String fieldName,
+    required UpdateUserProfilePatch Function(T? value) patchForValue,
     String? title,
     String? placeholder,
   }) {
@@ -583,6 +643,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: values,
         currentValue: value,
         fieldName: fieldName,
+        patchForValue: patchForValue,
         isExpanded: _isExpanded(fieldName),
         isAddAffordance: value == null,
         onTap: () => _toggleField(fieldName),
@@ -604,6 +665,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     required List<T> selected,
     required String fieldName,
     required String placeholder,
+    required UpdateUserProfilePatch Function(List<T> values) patchForValues,
     String? title,
     bool isAddAffordanceWhenEmpty = true,
   }) {
@@ -620,6 +682,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         values: values,
         currentValues: selected,
         fieldName: fieldName,
+        patchForValues: patchForValues,
         isExpanded: _isExpanded(fieldName),
         isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
         onTap: () => _toggleField(fieldName),
@@ -685,7 +748,7 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
       title: 'Profile strength',
       trailing: Text(
         summary.isStrong ? 'Strong' : '${summary.score}%',
-        style: CatchTextStyles.titleS(context, color: t.ink),
+        style: CatchTextStyles.statCompact(context, color: t.ink),
       ),
       headerBodyGap: CatchSpacing.s3,
       child: Column(
@@ -705,7 +768,7 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
           gapH10,
           Text(
             '${summary.completedItems} of ${summary.totalItems} profile basics complete',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
           ),
           if (suggestions.isNotEmpty) ...[
             gapH12,
@@ -747,12 +810,12 @@ class _ProfileQualitySuggestionRow extends StatelessWidget {
             children: [
               Text(
                 suggestion.title,
-                style: CatchTextStyles.labelL(context, color: t.ink),
+                style: CatchTextStyles.sectionTitle(context, color: t.ink),
               ),
               gapH2,
               Text(
                 suggestion.detail,
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
             ],
           ),

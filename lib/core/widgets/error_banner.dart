@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -56,15 +57,18 @@ class ErrorBanner extends StatelessWidget {
               size: 16,
               color: colorScheme.error,
             ),
-            const SizedBox(width: 8),
+            gapW8,
             Expanded(
               child: Text(
                 message,
-                style: CatchTextStyles.bodyS(context, color: colorScheme.error),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: colorScheme.error,
+                ),
               ),
             ),
             if (onRetry != null) ...[
-              const SizedBox(width: 8),
+              gapW8,
               CatchTextButton(
                 label: 'Try again',
                 onPressed: onRetry,

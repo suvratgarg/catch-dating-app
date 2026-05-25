@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ import 'package:flutter/material.dart';
 ///     crossAxisAlignment: CrossAxisAlignment.start,
 ///     children: [
 ///       Text('₹299', style: CatchTextStyles.titleL(context)),
-///       Text('incl. coffee after', style: CatchTextStyles.bodyS(context)),
+///       Text('incl. coffee after', style: CatchTextStyles.supporting(context)),
 ///     ],
 ///   ),
 /// )
@@ -73,10 +74,7 @@ class BottomCTA extends StatelessWidget {
             ),
             child: Row(
               children: [
-                if (leadingContent != null) ...[
-                  leadingContent!,
-                  const SizedBox(width: 14),
-                ],
+                if (leadingContent != null) ...[leadingContent!, gapW14],
                 Expanded(
                   child: CatchButton(
                     label: label,

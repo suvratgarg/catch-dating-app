@@ -55,7 +55,7 @@ class PhotosPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 32),
+          gapH32,
           OnboardingStepHeader(
             title: profileCompletionOnly
                 ? 'Complete your profile to swipe'
@@ -138,7 +138,7 @@ class PhotosPage extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
           ],
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );

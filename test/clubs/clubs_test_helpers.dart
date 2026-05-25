@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,8 +81,18 @@ UserProfile buildUser({
     phoneNumber: '+10000000000',
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
-    photoUrls: photoUrls,
-    runPreferencesVersion: currentRunPreferencesVersion,
+    profilePhotos: [
+      for (final indexed in photoUrls.indexed)
+        ProfilePhoto.uploaded(
+          position: indexed.$1,
+          url: indexed.$2,
+          storagePath: 'test-profiles/$uid/${indexed.$1}.jpg',
+          now: DateTime(2026, 1, 1),
+        ),
+    ],
+    activityPreferences: const ActivityPreferences(
+      running: RunningPreferences(version: currentRunPreferencesVersion),
+    ),
   );
 }
 

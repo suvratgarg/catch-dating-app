@@ -52,9 +52,10 @@ class CatchEmptyState extends StatelessWidget {
             title: title,
             message: message,
             action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.displayM(context),
+            titleStyle: titleStyle ?? CatchTextStyles.cardTitle(context),
             messageStyle:
-                messageStyle ?? CatchTextStyles.bodyM(context, color: t.ink2),
+                messageStyle ??
+                CatchTextStyles.bodyLead(context, color: t.ink2),
           ),
           CatchEmptyStateLayout.inline => _InlineEmptyStateContent(
             icon: icon,
@@ -64,9 +65,10 @@ class CatchEmptyState extends StatelessWidget {
             title: title,
             message: message,
             action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.titleS(context),
+            titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
             messageStyle:
-                messageStyle ?? CatchTextStyles.bodyS(context, color: t.ink2),
+                messageStyle ??
+                CatchTextStyles.supporting(context, color: t.ink2),
           ),
         };
 

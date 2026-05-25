@@ -1102,7 +1102,7 @@ void main() {
       expect(find.text('Host'), findsOneWidget);
       expect(find.byTooltip('Message host'), findsNWidgets(2));
 
-      await tester.tap(find.byTooltip('Message host').last);
+      await tester.tap(findLastByTooltip('Message host'));
       await _pumpClubUi(tester);
 
       expect(fakeRepository.startedConversationClubId, club.id);
@@ -1164,9 +1164,9 @@ void main() {
       expect(find.text('Owner Host'), findsWidgets);
       expect(find.text('Co Host'), findsWidgets);
 
-      await tester.ensureVisible(find.byTooltip('Host actions').last);
+      await tester.ensureVisible(findLastByTooltip('Host actions'));
       await _pumpClubUi(tester);
-      await tester.tap(find.byTooltip('Host actions').last);
+      await tester.tap(findLastByTooltip('Host actions'));
       await _pumpClubUi(tester);
 
       expect(find.text('Transfer ownership'), findsOneWidget);

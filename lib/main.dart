@@ -10,6 +10,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
+import 'package:catch_dating_app/launch_access/domain/launch_access_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -155,7 +156,10 @@ Future<(Object, StackTrace)?> _initializeRemoteConfig() async {
       minimumFetchInterval: AppConfig.remoteConfigMinimumFetchInterval,
     ),
   );
-  await remoteConfig.setDefaults(kAppVersionConfigDefaults);
+  await remoteConfig.setDefaults({
+    ...kAppVersionConfigDefaults,
+    ...kLaunchAccessConfigDefaults,
+  });
   try {
     await remoteConfig.fetchAndActivate();
     return null;

@@ -107,7 +107,7 @@ class ClubDetailBody extends StatelessWidget {
               ],
               Text(
                 club.description,
-                style: CatchTextStyles.bodyM(context, color: t.ink2),
+                style: CatchTextStyles.bodyLead(context, color: t.ink2),
               ),
               gapH20,
               if (club.instagramHandle != null ||
@@ -290,7 +290,7 @@ class _ClubHostRow extends StatelessWidget {
                   Expanded(
                     child: Text(
                       showChevron ? 'View profile' : 'Public profile',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -480,7 +480,7 @@ class _OwnerHostRow extends StatelessWidget {
                 host.displayName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleS(context),
+                style: CatchTextStyles.sectionTitle(context),
               ),
               gapH4,
               CatchBadge(
@@ -661,7 +661,7 @@ class _ContactRow extends StatelessWidget {
                 Expanded(
                   child: Text(
                     label,
-                    style: CatchTextStyles.bodyM(context, color: t.ink),
+                    style: CatchTextStyles.bodyLead(context, color: t.ink),
                   ),
                 ),
                 Icon(Icons.open_in_new_rounded, size: 14, color: t.ink3),
@@ -690,7 +690,7 @@ class _GuestPrompt extends StatelessWidget {
         children: [
           Text(
             'Sign in to join this club, see member reviews, and connect with the community.',
-            style: CatchTextStyles.bodyM(context, color: t.ink2),
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
             textAlign: TextAlign.center,
           ),
           gapH12,

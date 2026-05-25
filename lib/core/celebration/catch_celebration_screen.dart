@@ -127,7 +127,7 @@ class _CatchCelebrationScreenState
                         Align(
                           alignment: Alignment.centerRight,
                           child: widget.onClose == null
-                              ? const SizedBox(height: 44)
+                              ? gapH44
                               : IconBtn(
                                   background: _celebrationCream.withValues(
                                     alpha: 0.22,
@@ -139,7 +139,7 @@ class _CatchCelebrationScreenState
                                   ),
                                 ),
                         ),
-                        const SizedBox(height: 36),
+                        gapH36,
                         Align(
                           alignment: Alignment.centerLeft,
                           child: widget.visual ?? _CelebrationIcon(widget.icon),
@@ -148,16 +148,10 @@ class _CatchCelebrationScreenState
                         if (widget.eyebrow != null) ...[
                           Text(
                             widget.eyebrow!.toUpperCase(),
-                            style:
-                                CatchTextStyles.labelM(
-                                  context,
-                                  color: _celebrationCream.withValues(
-                                    alpha: 0.9,
-                                  ),
-                                ).copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 1.1,
-                                ),
+                            style: CatchTextStyles.labelM(
+                              context,
+                              color: _celebrationCream.withValues(alpha: 0.9),
+                            ).copyWith(fontWeight: FontWeight.w800),
                           ),
                           gapH8,
                         ],
@@ -177,7 +171,7 @@ class _CatchCelebrationScreenState
                           ),
                         ),
                         if (details.isNotEmpty) ...[
-                          const SizedBox(height: 28),
+                          gapH28,
                           _CelebrationDetailsCard(details: details),
                         ],
                         if (widget.note != null) ...[
@@ -313,7 +307,10 @@ class _CelebrationDetailRow extends StatelessWidget {
               gapH3,
               Text(
                 detail.value,
-                style: CatchTextStyles.bodyM(context, color: _celebrationInk),
+                style: CatchTextStyles.bodyLead(
+                  context,
+                  color: _celebrationInk,
+                ),
               ),
             ],
           ),
@@ -345,7 +342,10 @@ class _CelebrationNote extends StatelessWidget {
             Expanded(
               child: Text(
                 note,
-                style: CatchTextStyles.bodyS(context, color: _celebrationInk),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: _celebrationInk,
+                ),
               ),
             ),
           ],

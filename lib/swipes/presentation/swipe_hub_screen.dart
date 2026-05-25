@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
@@ -94,7 +95,7 @@ class _CatchesHubContent extends StatelessWidget {
               pathParameters: {'eventId': featuredRun.id},
             ),
           ),
-          const SizedBox(height: 22),
+          gapH24,
           Row(
             children: [
               Expanded(
@@ -139,14 +140,13 @@ class _CatchesHeader extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: t.primarySoft,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(Icons.favorite_rounded, color: t.primary, size: 21),
+        CatchIconTile(
+          icon: Icons.favorite_rounded,
+          iconColor: t.primary,
+          backgroundColor: t.primarySoft,
+          borderColor: Colors.transparent,
+          size: 42,
+          radius: CatchRadius.pill,
         ),
       ],
     );
@@ -190,23 +190,20 @@ class _CatchesIntroCard extends StatelessWidget {
             children: [
               Text(
                 '24H WINDOW OPEN',
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: Colors.white,
-                ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.4),
+                style: CatchTextStyles.kicker(context, color: Colors.white),
               ),
               gapH10,
               Text(
                 "You ran together.\nNow it's okay to swipe.",
-                style: CatchTextStyles.displayL(
+                style: CatchTextStyles.heroHeadline(
                   context,
                   color: Colors.white,
-                ).copyWith(height: 1.08),
+                ),
               ),
               gapH10,
               Text(
                 'Only checked-in runners from ${event.title} are here.',
-                style: CatchTextStyles.bodyS(
+                style: CatchTextStyles.supporting(
                   context,
                   color: Colors.white.withValues(alpha: 0.9),
                 ),
@@ -264,7 +261,7 @@ class _PillStat extends StatelessWidget {
           children: [
             Text(
               label,
-              style: CatchTextStyles.bodyS(
+              style: CatchTextStyles.supporting(
                 context,
                 color: Colors.white.withValues(alpha: 0.78),
               ),
@@ -323,7 +320,7 @@ class _CatchesEmptyState extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Dating stays locked until you actually event together. No cold swiping strangers.',
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ),
               ],

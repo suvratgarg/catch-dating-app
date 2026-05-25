@@ -113,7 +113,7 @@ class _LabHeader extends StatelessWidget {
         gapH6,
         Text(
           scenario.description,
-          style: CatchTextStyles.bodyM(context, color: t.ink2),
+          style: CatchTextStyles.bodyLead(context, color: t.ink2),
         ),
         gapH16,
         LayoutBuilder(
@@ -292,14 +292,14 @@ class _ScenarioCard extends StatelessWidget {
               scenario.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.titleS(context, color: color),
+              style: CatchTextStyles.sectionTitle(context, color: color),
             ),
             gapH6,
             Text(
               _formatAdmissionFormat(scenario.policy.admissionPolicy.format),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
+              style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ],
         ),
@@ -505,7 +505,7 @@ class _ResultRow extends StatelessWidget {
                     gapH4,
                     Text(
                       row.cohortLabel,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -541,7 +541,7 @@ class _ResultRow extends StatelessWidget {
             gapH10,
             Text(
               'Base ${_formatPaise(row.basePriceInPaise)} · cohort ${_formatSignedPaise(row.cohortAdjustmentInPaise)} · demand ${_formatSignedPaise(row.demandAdjustmentInPaise)}',
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
         ],
@@ -613,7 +613,7 @@ class _CancellationRow extends StatelessWidget {
                     gapH4,
                     Text(
                       '${_formatCancellationActor(row.actor)} · ${row.beforeStartHours}h before start',
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -656,7 +656,7 @@ class _CancellationRow extends StatelessWidget {
           gapH10,
           Text(
             row.explanation,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
+            style: CatchTextStyles.supporting(context, color: t.ink3),
           ),
         ],
       ),
@@ -753,7 +753,7 @@ class _PolicyLine extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: CatchTextStyles.bodyM(context, color: t.ink2),
+            style: CatchTextStyles.bodyLead(context, color: t.ink2),
           ),
         ),
         gapW12,

@@ -78,7 +78,7 @@ class CatchChip extends StatelessWidget {
                           label,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.titleS(
+                          style: CatchTextStyles.sectionTitle(
                             context,
                             color: foreground,
                           ),

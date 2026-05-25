@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -93,7 +95,7 @@ class PhotoUploadController extends _$PhotoUploadController {
 
   Future<void> savePhoto({
     required int index,
-    XFile? image,
+    Uint8List? imageBytes,
     PhotoPromptAnswer? prompt,
   }) async {
     RangeError.checkValueInInterval(
@@ -102,10 +104,16 @@ class PhotoUploadController extends _$PhotoUploadController {
       maximumProfilePhotoCount - 1,
       'index',
     );
-    if (image == null) {
+    if (imageBytes == null) {
       await _persistPhotoPrompt(index: index, prompt: prompt);
       return;
     }
+    final image = XFile.fromData(
+      imageBytes,
+      name:
+          'profile_photo_${index}_${DateTime.now().millisecondsSinceEpoch}.png',
+      mimeType: 'image/png',
+    );
 
     if (state.loadingIndices.contains(index)) return;
     _markUploading(index);
@@ -156,7 +164,6 @@ class PhotoUploadController extends _$PhotoUploadController {
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
         profilePhotos: updatedPhotos,
-        photoUrls: profilePhotoUrls(updatedPhotos),
       );
     });
   }
@@ -187,7 +194,6 @@ class PhotoUploadController extends _$PhotoUploadController {
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
         profilePhotos: updatedPhotos,
-        photoUrls: profilePhotoUrls(updatedPhotos),
       );
     });
   }
@@ -265,7 +271,6 @@ class PhotoUploadController extends _$PhotoUploadController {
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
         profilePhotos: updatedPhotos,
-        photoUrls: profilePhotoUrls(updatedPhotos),
       );
     });
   }
@@ -293,7 +298,6 @@ class PhotoUploadController extends _$PhotoUploadController {
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
         profilePhotos: updatedPhotos,
-        photoUrls: profilePhotoUrls(updatedPhotos),
       );
     });
   }

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -77,19 +78,20 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 32),
+                    gapH32,
                     Text(
                       "What's your number?",
-                      style: CatchTextStyles.titleL(
+                      style: CatchTextStyles.formQuestion(
                         context,
-                      ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
+                        color: t.ink,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    gapH8,
                     Text(
                       "We'll send you a one-time code to verify.",
-                      style: CatchTextStyles.bodyM(context, color: t.ink2),
+                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
                     ),
-                    const SizedBox(height: 40),
+                    gapH40,
                     const CatchFormFieldLabel(label: 'Mobile number'),
                     const SizedBox(height: CatchSpacing.s2),
                     Row(
@@ -106,7 +108,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                             AuthController.sendOtpMutation.reset(ref);
                           },
                         ),
-                        const SizedBox(width: 12),
+                        gapW12,
                         Expanded(
                           child: CatchTextField(
                             key: AuthFormKeys.phoneField,
@@ -156,7 +158,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             fullWidth: true,
             size: CatchButtonSize.lg,
           ),
-          const SizedBox(height: 32),
+          gapH32,
         ],
       ),
     );
@@ -179,12 +181,8 @@ class _CountryCodeSelector extends StatelessWidget {
     return SizedBox(
       width: 120,
       height: CatchTextField.mdControlHeight,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-          border: Border.all(color: t.line2, width: 1.5),
-        ),
+      child: CatchControlShell(
+        padding: EdgeInsets.zero,
         child: CountryCodePicker(
           initialSelection: countryIsoForDialCode(countryCode),
           onChanged: (code) {
@@ -201,9 +199,9 @@ class _CountryCodeSelector extends StatelessWidget {
           showDropDownButton: true,
           hideMainText: false,
           favorite: supportedCountryPickerFavorites,
-          textStyle: CatchTextStyles.bodyM(context, color: t.ink),
-          dialogTextStyle: CatchTextStyles.bodyM(context, color: t.ink),
-          searchStyle: CatchTextStyles.bodyM(context, color: t.ink),
+          textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+          dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
+          searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
           headerTextStyle: CatchTextStyles.titleM(context, color: t.ink),
           dialogBackgroundColor: t.surface,
           backgroundColor: t.surface,
@@ -215,7 +213,7 @@ class _CountryCodeSelector extends StatelessWidget {
           ),
           searchDecoration: InputDecoration(
             hintText: 'Search country',
-            hintStyle: CatchTextStyles.bodyM(context, color: t.ink3),
+            hintStyle: CatchTextStyles.bodyLead(context, color: t.ink3),
             filled: true,
             fillColor: t.raised,
             border: OutlineInputBorder(

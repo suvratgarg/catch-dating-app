@@ -84,7 +84,7 @@ class _CatchMetricCell extends StatelessWidget {
           gapH2,
           Text(
             item.label,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
+            style: CatchTextStyles.supporting(context, color: t.ink3),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

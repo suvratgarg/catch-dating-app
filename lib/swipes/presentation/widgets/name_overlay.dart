@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -98,33 +99,29 @@ class _HeroSignalChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.32),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: Colors.white.withValues(alpha: 0.90), size: 15),
-            gapW6,
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 210),
-              child: Text(
-                label,
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: Colors.white.withValues(alpha: 0.96),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: Colors.black.withValues(alpha: 0.32),
+      borderColor: Colors.white.withValues(alpha: 0.20),
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white.withValues(alpha: 0.90), size: 15),
+          gapW6,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 210),
+            child: Text(
+              label,
+              style: CatchTextStyles.labelL(
+                context,
+                color: Colors.white.withValues(alpha: 0.96),
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -139,13 +136,11 @@ class GoalPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = ProfileCardPalette.of(context);
 
-    return Container(
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: palette.accentSoft,
+      borderColor: palette.accent.withValues(alpha: 0.28),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: palette.accentSoft,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: palette.accent.withValues(alpha: 0.28)),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

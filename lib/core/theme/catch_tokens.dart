@@ -251,10 +251,23 @@ abstract final class CatchSpacing {
   static const double s4 = 16.0;
   static const double s5 = 20.0;
   static const double s6 = 24.0;
+  static const double s7 = 28.0;
   static const double s8 = 32.0;
+  static const double s9 = 36.0;
   static const double s10 = 40.0;
+  static const double s11 = 44.0;
   static const double s12 = 48.0;
   static const double s16 = 64.0;
+
+  /// Component-internal micro spacing. Use only inside dense controls, charts,
+  /// typographic underlines, and tiny badges where the 4-point rhythm is too
+  /// coarse.
+  static const double micro2 = 2.0;
+  static const double micro3 = 3.0;
+  static const double micro6 = 6.0;
+  static const double micro10 = 10.0;
+  static const double micro14 = 14.0;
+  static const double micro18 = 18.0;
 }
 
 // ── Radii ─────────────────────────────────────────────────────────────────────

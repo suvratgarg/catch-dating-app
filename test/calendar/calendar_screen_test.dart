@@ -23,6 +23,7 @@ import 'package:go_router/go_router.dart';
 
 import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
@@ -360,7 +361,7 @@ void main() {
       expect(find.text('Week Event 6').hitTestable(), findsNothing);
 
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Week Event 6').hitTestable(), findsOneWidget);
     });
@@ -401,13 +402,13 @@ void main() {
           find.byKey(_calendarWeekDayKey(selectedDate)),
           const Offset(0, 96),
         );
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         expect(find.byKey(_calendarMonthDayKey(firstOfMonth)), findsOneWidget);
         expect(find.byKey(_calendarWeekDayKey(selectedDate)), findsNothing);
 
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -96));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         expect(find.byKey(_calendarMonthDayKey(firstOfMonth)), findsNothing);
         expect(find.byKey(_calendarWeekDayKey(selectedDate)), findsOneWidget);
@@ -449,13 +450,13 @@ void main() {
           find.byKey(_calendarWeekDayKey(anchor)),
           const Offset(0, 96),
         );
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         await tester.tap(find.byKey(_calendarMonthDayKey(targetDate)));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -96));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         expect(find.byKey(_calendarWeekDayKey(targetDate)), findsOneWidget);
         expect(find.byKey(_calendarWeekDayKey(anchor)), findsNothing);
@@ -494,12 +495,12 @@ void main() {
         find.byKey(_calendarWeekDayKey(futureAnchor)),
         const Offset(0, 96),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text(_monthYearLabel(futureAnchor)), findsOneWidget);
 
       await tester.tap(find.text('Today'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text(_monthYearLabel(today)), findsOneWidget);
       expect(find.byKey(_calendarMonthDayKey(today)), findsOneWidget);
@@ -539,7 +540,7 @@ void main() {
       );
 
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Sticky Week Event 6').hitTestable(), findsOneWidget);
       expect(
@@ -552,7 +553,7 @@ void main() {
       );
 
       await tester.tap(find.byKey(_calendarWeekDayKey(monday)));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Sticky Week Event 0').hitTestable(), findsOneWidget);
     });
@@ -694,8 +695,8 @@ Future<void> _pumpCalendar(
 
 Future<void> _pumpRouterFrame(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 100));
-  await tester.pump(const Duration(seconds: 1));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
+  await pumpFeatureUiFor(tester, const Duration(seconds: 1));
 }
 
 Future<void> _scrollCalendarDown(WidgetTester tester) async {

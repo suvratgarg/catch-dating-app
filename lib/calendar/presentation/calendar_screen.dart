@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
@@ -148,7 +149,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   context,
                   expanded: _calendarExpanded,
                 ) +
-                Sizes.p8) /
+                CatchSpacing.s2) /
             viewportHeight)
         .clamp(0.12, 0.32)
         .toDouble();
@@ -186,7 +187,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   void _handleCalendarDragDelta(double delta, {required double scrollPixels}) {
-    if (delta > _calendarDragThreshold && scrollPixels <= Sizes.p16) {
+    if (delta > _calendarDragThreshold && scrollPixels <= CatchSpacing.s4) {
       _setCalendarExpanded(true);
     } else if (delta < -_calendarDragThreshold) {
       _setCalendarExpanded(false);
@@ -285,27 +286,32 @@ class _CalendarDateHeader extends StatelessWidget {
     final weekdayHeight = scaler.scale(13) * 1.45;
     final dateHeight = scaler.scale(13) * 1.30;
     final weekStripHeight =
-        (Sizes.p8 * 2) + weekdayHeight + Sizes.p2 + dateHeight + Sizes.p4 + 4;
+        (CatchSpacing.s2 * 2) +
+        weekdayHeight +
+        CatchSpacing.micro2 +
+        dateHeight +
+        CatchSpacing.s1 +
+        4;
     if (expanded) {
       final monthWeekdayHeight = scaler.scale(11) * 1.30;
       const monthDayHeight = 40.0;
-      return Sizes.p8 +
+      return CatchSpacing.s2 +
           titleRowHeight +
-          Sizes.p16 +
+          CatchSpacing.s4 +
           monthWeekdayHeight +
-          Sizes.p8 +
+          CatchSpacing.s2 +
           (monthDayHeight * 6) +
-          (Sizes.p6 * 5) +
-          Sizes.p12 +
-          Sizes.p2;
+          (CatchSpacing.micro6 * 5) +
+          CatchSpacing.s3 +
+          CatchSpacing.micro2;
     }
 
-    return Sizes.p8 +
+    return CatchSpacing.s2 +
         titleRowHeight +
-        Sizes.p14 +
+        CatchSpacing.micro14 +
         weekStripHeight +
-        Sizes.p12 +
-        Sizes.p2;
+        CatchSpacing.s3 +
+        CatchSpacing.micro2;
   }
 
   @override
@@ -442,12 +448,12 @@ class _CalendarStatsHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        Sizes.p2,
+        CatchSpacing.micro2,
         CatchSpacing.s5,
         CatchSpacing.s3,
       ),
       child: CatchSurface(
-        padding: const EdgeInsets.all(Sizes.p14),
+        padding: const EdgeInsets.all(CatchSpacing.micro14),
         radius: CatchRadius.md,
         borderColor: t.line,
         child: Row(
@@ -562,7 +568,7 @@ class _WeekDay extends StatelessWidget {
               children: [
                 Text(
                   day,
-                  style: CatchTextStyles.bodyS(
+                  style: CatchTextStyles.statusLabel(
                     context,
                     color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
                   ),
@@ -570,19 +576,15 @@ class _WeekDay extends StatelessWidget {
                 gapH2,
                 Text(
                   '${date.day}',
-                  style: CatchTextStyles.labelL(
+                  style: CatchTextStyles.statCompact(
                     context,
                     color: active ? t.surface : t.ink,
                   ),
                 ),
                 gapH4,
-                Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: hasEvent ? t.primary : Colors.transparent,
-                    shape: BoxShape.circle,
-                  ),
+                CatchStatusDot(
+                  color: hasEvent ? t.primary : Colors.transparent,
+                  size: 4,
                 ),
               ],
             ),
@@ -721,13 +723,9 @@ class _MonthDay extends StatelessWidget {
               children: [
                 inMonth ? dayText : Opacity(opacity: 0, child: dayText),
                 gapH4,
-                Container(
-                  width: 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: hasEvent && inMonth ? t.primary : Colors.transparent,
-                    shape: BoxShape.circle,
-                  ),
+                CatchStatusDot(
+                  color: hasEvent && inMonth ? t.primary : Colors.transparent,
+                  size: 4,
                 ),
               ],
             ),

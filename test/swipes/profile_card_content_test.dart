@@ -7,6 +7,18 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 
+ActivityPreferences runningPrefs({
+  List<PreferredDistance> preferredDistances = const [],
+  List<RunReason> runningReasons = const [],
+}) =>
+    ActivityPreferences(
+      running: RunningPreferences(
+        preferredDistances: preferredDistances,
+        runningReasons: runningReasons,
+        version: currentRunPreferencesVersion,
+      ),
+    );
+
 void main() {
   group('ProfileCardContent', () {
     test('does not expose exact distance on public swipe cards', () {
@@ -21,26 +33,30 @@ void main() {
     });
 
     test('derives trimmed card sections from the public profile', () {
-      final profile =
-          buildPublicProfile(
-            uid: 'runner-2',
-            photoUrls: const [
-              'https://img.example/1.jpg',
-              'https://img.example/2.jpg',
-              'https://img.example/3.jpg',
-            ],
-          ).copyWith(
+      final base = buildPublicProfile(
+        uid: 'runner-2',
+        photoUrls: const [
+          'https://img.example/1.jpg',
+          'https://img.example/2.jpg',
+          'https://img.example/3.jpg',
+        ],
+      );
+      final profile = base.copyWith(
             profilePrompts: normalizeProfilePromptAnswers(
               const [],
               legacyBio: '  Long events and filter coffee.  ',
             ),
-            photoPrompts: const [
-              PhotoPromptAnswer(
-                photoIndex: 1,
-                promptId: 'finishLine',
-                prompt: 'After the finish line',
-                caption: '  Filter coffee stop.  ',
+            profilePhotos: [
+              base.profilePhotos[0],
+              base.profilePhotos[1].copyWith(
+                prompt: const PhotoPromptAnswer(
+                  photoIndex: 1,
+                  promptId: 'finishLine',
+                  prompt: 'After the finish line',
+                  caption: '  Filter coffee stop.  ',
+                ),
               ),
+              base.profilePhotos[2],
             ],
             height: 170,
             occupation: '  Designer  ',
@@ -91,13 +107,17 @@ void main() {
     test('derives compatibility insights when viewer context is available', () {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.friendship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.social],
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.fiveK],
+          runningReasons: const [RunReason.social],
+        ),
       );
       final profile = buildPublicProfile().copyWith(
         relationshipGoal: RelationshipGoal.friendship,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.social],
+        activityPreferences: runningPrefs(
+          preferredDistances: const [PreferredDistance.fiveK],
+          runningReasons: const [RunReason.social],
+        ),
       );
 
       final content = ProfileCardContent.fromProfile(

@@ -307,9 +307,13 @@ void main() {
         city: 'mumbai',
         latitude: 19.076,
         longitude: 72.8777,
-        paceMinSecsPerKm: 330,
-        paceMaxSecsPerKm: 390,
-        preferredDistances: const [PreferredDistance.tenK],
+        activityPreferences: const ActivityPreferences(
+          running: RunningPreferences(
+            paceMinSecsPerKm: 330,
+            paceMaxSecsPerKm: 390,
+            preferredDistances: [PreferredDistance.tenK],
+          ),
+        ),
       );
       final morningHistory = buildEvent(
         id: 'morning-history',

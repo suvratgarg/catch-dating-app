@@ -24,10 +24,12 @@ abstract final class AppTheme {
     required CatchTokens tokens,
   }) {
     final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
+    final textTheme = _textTheme(base.textTheme, tokens);
 
     return base.copyWith(
-      // Inter as the app-wide text theme baseline.
-      textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      // Inter as the app-wide text theme baseline, tuned to Catch's semantic
+      // scale so Material fallbacks do not flatten the app's text hierarchy.
+      textTheme: textTheme,
 
       scaffoldBackgroundColor: tokens.bg,
 
@@ -50,8 +52,8 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(CatchRadius.sm),
           borderSide: BorderSide(color: tokens.primary, width: 1.5),
         ),
-        hintStyle: TextStyle(color: tokens.ink3),
-        labelStyle: TextStyle(color: tokens.ink2),
+        hintStyle: textTheme.bodyLarge?.copyWith(color: tokens.ink3),
+        labelStyle: textTheme.labelLarge?.copyWith(color: tokens.ink2),
       ),
 
       filledButtonTheme: FilledButtonThemeData(
@@ -94,10 +96,56 @@ abstract final class AppTheme {
         titleTextStyle: GoogleFonts.inter(
           fontSize: 17,
           fontWeight: FontWeight.w700,
-          letterSpacing: 17 * -0.02,
+          height: 1.18,
+          letterSpacing: 0,
           color: tokens.ink,
         ),
         iconTheme: IconThemeData(color: tokens.ink),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: tokens.ink,
+        contentTextStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          height: 1.35,
+          letterSpacing: 0,
+          color: tokens.bg,
+        ),
+        actionTextColor: tokens.primarySoft,
+      ),
+
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: tokens.primary,
+          textStyle: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            height: 1.2,
+            letterSpacing: 0,
+          ),
+        ),
+      ),
+
+      menuTheme: MenuThemeData(
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(tokens.surface),
+          surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        ),
+      ),
+
+      menuButtonTheme: MenuButtonThemeData(
+        style: ButtonStyle(
+          textStyle: WidgetStatePropertyAll(
+            GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+              letterSpacing: 0,
+              color: tokens.ink,
+            ),
+          ),
+        ),
       ),
 
       navigationBarTheme: NavigationBarThemeData(
@@ -143,6 +191,41 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(CatchRadius.pill),
         ),
       ),
+    );
+  }
+
+  static TextTheme _textTheme(TextTheme base, CatchTokens tokens) {
+    final inter = GoogleFonts.interTextTheme(base);
+    TextStyle style(
+      double size,
+      FontWeight weight,
+      double height,
+      Color color,
+    ) => GoogleFonts.inter(
+      fontSize: size,
+      fontWeight: weight,
+      height: height,
+      letterSpacing: 0,
+      decoration: TextDecoration.none,
+      color: color,
+    );
+
+    return inter.copyWith(
+      displayLarge: style(40, FontWeight.w800, 1.02, tokens.ink),
+      displayMedium: style(32, FontWeight.w800, 1.04, tokens.ink),
+      displaySmall: style(26, FontWeight.w800, 1.08, tokens.ink),
+      headlineLarge: style(32, FontWeight.w800, 1.05, tokens.ink),
+      headlineMedium: style(28, FontWeight.w800, 1.10, tokens.ink),
+      headlineSmall: style(20, FontWeight.w800, 1.14, tokens.ink),
+      titleLarge: style(19, FontWeight.w700, 1.20, tokens.ink),
+      titleMedium: style(16, FontWeight.w700, 1.24, tokens.ink),
+      titleSmall: style(14, FontWeight.w700, 1.26, tokens.ink),
+      bodyLarge: style(16, FontWeight.w400, 1.50, tokens.ink),
+      bodyMedium: style(14, FontWeight.w400, 1.50, tokens.ink),
+      bodySmall: style(13, FontWeight.w400, 1.45, tokens.ink2),
+      labelLarge: style(13, FontWeight.w700, 1.24, tokens.ink),
+      labelMedium: style(11, FontWeight.w700, 1.24, tokens.ink2),
+      labelSmall: style(10, FontWeight.w800, 1.15, tokens.ink2),
     );
   }
 }

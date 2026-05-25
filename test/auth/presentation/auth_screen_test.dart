@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../onboarding/onboarding_test_helpers.dart';
+import '../../test_pump_helpers.dart';
 
 Future<void> pumpAuthScreen(
   WidgetTester tester, {
@@ -85,7 +86,7 @@ void main() {
       );
 
       await tester.tap(find.text('+91'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Select Country'), findsOneWidget);
       expect(find.byType(Dialog), findsOneWidget);
@@ -216,7 +217,7 @@ void main() {
       expect(repository.signInWithOtpCallCount, 1);
 
       repository.signInWithOtpCompleter!.complete();
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
     });
 
     testWidgets('OTP verification errors settle back into an editable state', (
@@ -245,7 +246,7 @@ void main() {
       await pumpAuthScreen(tester, container: container);
 
       await tester.enterText(find.byKey(AuthFormKeys.otpField), '123456');
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(
         find.text('That code is invalid. Please try again.'),

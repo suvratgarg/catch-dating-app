@@ -95,7 +95,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
               gapH4,
               Text(
                 "Tap people you remember. They'll be easier to spot when you open the catches deck.",
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+                style: CatchTextStyles.bodyLead(context, color: t.ink2),
               ),
               gapH14,
               if (attendeeIds.isEmpty)
@@ -173,7 +173,7 @@ class _RecapHero extends StatelessWidget {
             style: CatchTextStyles.labelM(
               context,
               color: t.surface.withValues(alpha: 0.68),
-            ).copyWith(letterSpacing: 1.1),
+            ).copyWith(fontWeight: FontWeight.w800),
           ),
           gapH10,
           Text(
@@ -183,7 +183,7 @@ class _RecapHero extends StatelessWidget {
           gapH4,
           Text(
             '${event.activitySummaryLabel} · $checkedInCount checked in',
-            style: CatchTextStyles.bodyS(
+            style: CatchTextStyles.supporting(
               context,
               color: t.surface.withValues(alpha: 0.76),
             ),
@@ -219,7 +219,7 @@ class _RecapStat extends StatelessWidget {
           children: [
             Text(
               label.toUpperCase(),
-              style: CatchTextStyles.bodyS(
+              style: CatchTextStyles.supporting(
                 context,
                 color: t.surface.withValues(alpha: 0.56),
               ),
@@ -333,9 +333,7 @@ class _ProfilePhoto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final photoUrl = profile?.photoUrls.isNotEmpty == true
-        ? profile!.photoUrls.first
-        : null;
+    final photoUrl = profile?.primaryPhotoThumbnailUrl;
     if (photoUrl == null) {
       return Container(
         color: CatchTokens.of(context).primarySoft,

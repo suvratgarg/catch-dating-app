@@ -21,7 +21,7 @@ class ProfileEditController extends _$ProfileEditController {
   @override
   void build() {}
 
-  Future<void> saveFields(Map<String, dynamic> fields) {
+  Future<void> saveFields(UpdateUserProfilePatch patch) {
     final uid = requireSignedInUid(ref, action: 'save profile edits');
     final nextSave = _pendingSave
         .catchError((Object error, StackTrace stack) {
@@ -40,18 +40,9 @@ class ProfileEditController extends _$ProfileEditController {
               );
         })
         .then((_) {
-          // Inline-edit bottom sheets compute their patch fields dynamically
-          // (different sheets touch different schema fields); wrap them in
-          // `UpdateUserProfilePatch.raw` so the repository boundary still
-          // takes a typed patch. The schema-conformance test in
-          // `update_user_profile_patch_test.dart` plus the Functions Ajv
-          // validator catch any rogue field names.
           return ref
               .read(userProfileRepositoryProvider)
-              .updateUserProfile(
-                uid: uid,
-                patch: UpdateUserProfilePatch.raw(fields),
-              );
+              .updateUserProfile(uid: uid, patch: patch);
         });
     _pendingSave = nextSave.catchError((Object error, StackTrace stack) {
       ref

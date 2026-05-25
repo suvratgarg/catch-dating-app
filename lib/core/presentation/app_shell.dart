@@ -9,8 +9,10 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -152,24 +154,13 @@ class _GuestAuthCtaBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border(top: BorderSide(color: t.line)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-          child: CatchButton(
-            label: 'Continue with phone',
-            onPressed: () => context.go(_authLocation(context)),
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-        ),
+    return CatchBottomDock(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+      child: CatchButton(
+        label: 'Continue with phone',
+        onPressed: () => context.go(_authLocation(context)),
+        fullWidth: true,
+        size: CatchButtonSize.lg,
       ),
     );
   }
@@ -326,12 +317,11 @@ class AppShellNavigationBadge extends StatelessWidget {
           Positioned(
             top: 0,
             right: 1,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.primary,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-                border: Border.all(color: t.surface, width: 1.5),
-              ),
+            child: CatchSurface(
+              radius: CatchRadius.pill,
+              backgroundColor: t.primary,
+              borderColor: t.surface,
+              borderWidth: 1.5,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
                 child: Padding(
@@ -342,10 +332,10 @@ class AppShellNavigationBadge extends StatelessWidget {
                   child: Center(
                     child: Text(
                       label,
-                      style: CatchTextStyles.labelS(
+                      style: CatchTextStyles.statusLabel(
                         context,
                         color: t.primaryInk,
-                      ).copyWith(fontSize: 10, height: 1),
+                      ),
                     ),
                   ),
                 ),

@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
@@ -426,7 +427,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Center(
                     child: Text(
                       'Catch v1.0 · made for runners and clubs',
-                      style: CatchTextStyles.bodyS(context, color: t.ink3),
+                      style: CatchTextStyles.supporting(context, color: t.ink3),
                     ),
                   ),
                 ],
@@ -515,7 +516,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
               surface: false,
               iconSize: 28,
               titleStyle: CatchTextStyles.titleM(context),
-              messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
+              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
           data: (blockedUsers) {
@@ -529,7 +530,10 @@ class _BlockedAccountsSection extends ConsumerWidget {
                   surface: false,
                   iconSize: 28,
                   titleStyle: CatchTextStyles.titleM(context),
-                  messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
+                  messageStyle: CatchTextStyles.supporting(
+                    context,
+                    color: t.ink2,
+                  ),
                 ),
               );
             }
@@ -560,9 +564,7 @@ class _BlockedAccountTile extends ConsumerWidget {
     final profileAsync = ref.watch(watchPublicProfileProvider(blockedUser.uid));
     final profile = profileAsync.asData?.value;
     final unblocking = ref.watch(SettingsController.unblockUserMutation);
-    final photoUrl = profile != null && profile.photoUrls.isNotEmpty
-        ? profile.photoUrls.first
-        : null;
+    final photoUrl = profile?.primaryPhotoThumbnailUrl;
 
     return PersonRow(
       data: PersonRowData(

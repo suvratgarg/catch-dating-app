@@ -24,13 +24,13 @@ class DetailRow extends StatelessWidget {
           width: labelWidth,
           child: Text(
             label,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
+            style: CatchTextStyles.supporting(context, color: t.ink3),
           ),
         ),
         Expanded(
           child: Text(
             value,
-            style: CatchTextStyles.bodyS(
+            style: CatchTextStyles.supporting(
               context,
               color: t.ink,
             ).copyWith(fontWeight: FontWeight.w600),

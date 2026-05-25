@@ -1,8 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -28,20 +33,7 @@ class SuvbotActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s3,
-        CatchSpacing.s2,
-        CatchSpacing.s3,
-        CatchSpacing.s3,
-      ),
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border(top: BorderSide(color: t.line)),
-      ),
+    return CatchBottomDock(
       child: actions.when(
         data: (items) => _SuvbotControls(
           actions: items,
@@ -71,6 +63,7 @@ class _SuvbotControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final byId = {for (final action in actions) action.id: action};
     final warmActions = [
       byId['warmSignupState'],
@@ -95,16 +88,19 @@ class _SuvbotControls extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Suvbot controls',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                    style: CatchTextStyles.sectionTitle(context, color: t.ink),
                   ),
-                  SizedBox(height: 2),
-                  Text('No typing needed', style: TextStyle(fontSize: 11)),
+                  gapH2,
+                  Text(
+                    'No typing needed',
+                    style: CatchTextStyles.statusLabel(context, color: t.ink2),
+                  ),
                 ],
               ),
             ),
@@ -237,26 +233,19 @@ class _SuvbotButton extends StatelessWidget {
         ? t.accent.withValues(alpha: 0.12)
         : t.surface;
 
-    return SizedBox(
-      height: 42,
-      child: OutlinedButton.icon(
-        onPressed: pending ? null : onPressed,
-        icon: pending
-            ? const SizedBox.square(
-                dimension: 16,
-                child: CatchLoadingIndicator(strokeWidth: 2),
-              )
-            : Icon(icon, size: 17, color: foreground),
-        label: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: foreground,
-          backgroundColor: background,
-          side: BorderSide(color: t.line),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
-          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-        ),
-      ),
+    return CatchButton(
+      label: label,
+      onPressed: pending ? null : onPressed,
+      variant: destructive
+          ? CatchButtonVariant.danger
+          : CatchButtonVariant.secondary,
+      size: CatchButtonSize.sm,
+      fullWidth: true,
+      isLoading: pending,
+      icon: Icon(icon),
+      foregroundColor: foreground,
+      backgroundColor: background,
+      borderColor: t.line,
     );
   }
 }
@@ -278,28 +267,16 @@ class _SuvbotPresetButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return SizedBox(
-      height: 54,
-      child: OutlinedButton(
-        onPressed: pending ? null : onPressed,
-        style: OutlinedButton.styleFrom(
-          foregroundColor: t.ink,
-          backgroundColor: t.surface,
-          side: BorderSide(color: t.line),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s1),
-          textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 17, color: t.accent),
-            const SizedBox(height: 3),
-            Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
-          ],
-        ),
-      ),
+    return CatchButton(
+      label: label,
+      onPressed: pending ? null : onPressed,
+      variant: CatchButtonVariant.secondary,
+      size: CatchButtonSize.sm,
+      fullWidth: true,
+      icon: Icon(icon),
+      foregroundColor: t.ink,
+      backgroundColor: t.surface,
+      borderColor: t.line,
     );
   }
 }
@@ -346,17 +323,7 @@ class _SuvbotGroupLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Text(
-      label,
-      style: TextStyle(
-        color: t.ink2,
-        fontSize: 11,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0.2,
-      ),
-    );
+    return Text(label, style: CatchTextStyles.kicker(context));
   }
 }
 
@@ -410,19 +377,28 @@ Future<void> _showResetSheet(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Reset demo state',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: CatchTextStyles.cardTitle(context),
               ),
               const SizedBox(height: CatchSpacing.s1),
-              const Text('These actions only touch demo-owned data.'),
+              Text(
+                'These actions only touch demo-owned data.',
+                style: CatchTextStyles.supporting(context),
+              ),
               const SizedBox(height: CatchSpacing.s3),
               for (final action in actions) ...[
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(_iconFor(action.icon)),
-                  title: Text(action.label),
-                  subtitle: Text(action.description),
+                  title: Text(
+                    action.label,
+                    style: CatchTextStyles.sectionTitle(context),
+                  ),
+                  subtitle: Text(
+                    action.description,
+                    style: CatchTextStyles.supporting(context),
+                  ),
                   enabled: !pending,
                   onTap: pending
                       ? null
@@ -502,27 +478,26 @@ class _MatchTesterSheetState extends State<_MatchTesterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Match tester',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
+          Text('Match tester', style: CatchTextStyles.cardTitle(context)),
           const SizedBox(height: CatchSpacing.s1),
-          const Text('Enter an allowlisted beta tester phone number.'),
+          Text(
+            'Enter an allowlisted beta tester phone number.',
+            style: CatchTextStyles.supporting(context),
+          ),
           const SizedBox(height: CatchSpacing.s3),
-          TextField(
+          CatchTextField(
+            label: 'Phone number',
             controller: _controller,
             keyboardType: TextInputType.phone,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Phone number',
-              hintText: '+919999999999',
-            ),
+            hintText: '+919999999999',
           ),
           const SizedBox(height: CatchSpacing.s3),
-          FilledButton.icon(
+          CatchButton(
             onPressed: widget.pending ? null : _submit,
             icon: const Icon(Icons.person_add_alt_1_rounded),
-            label: const Text('Create match'),
+            label: 'Create match',
+            fullWidth: true,
           ),
         ],
       ),

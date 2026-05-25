@@ -89,7 +89,9 @@ class DashboardEmptySliverBody extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Sizes.p14),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: CatchSpacing.micro14,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -104,7 +106,10 @@ class DashboardEmptySliverBody extends StatelessWidget {
                           children: [
                             Text(s.$2, style: CatchTextStyles.titleM(context)),
                             gapH3,
-                            Text(s.$3, style: CatchTextStyles.bodyS(context)),
+                            Text(
+                              s.$3,
+                              style: CatchTextStyles.bodyLead(context),
+                            ),
                           ],
                         ),
                       ),

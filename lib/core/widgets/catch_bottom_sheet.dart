@@ -52,7 +52,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
             gapH4,
             Text(
               subtitle!,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],
           gapH16,

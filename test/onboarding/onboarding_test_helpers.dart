@@ -120,7 +120,6 @@ class FakeOnboardingUserProfileRepository extends Fake
 
   UserProfile? currentUser;
   UserProfile? lastSavedUser;
-  final updatedPhotoUrls = <List<String>>[];
 
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
@@ -134,17 +133,6 @@ class FakeOnboardingUserProfileRepository extends Fake
   Future<void> setUserProfile({required UserProfile userProfile}) async {
     lastSavedUser = userProfile;
     currentUser = userProfile;
-  }
-
-  @override
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) async {
-    updatedPhotoUrls.add(List<String>.from(photoUrls));
-    currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
-      photoUrls: List<String>.from(photoUrls),
-    );
   }
 
   @override
@@ -170,20 +158,11 @@ class FakeOnboardingUserProfileRepository extends Fake
             .toList(),
       );
     }
-    if (updated.containsKey('paceMinSecsPerKm')) {
+    if (updated.containsKey('activityPreferences')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
-        paceMinSecsPerKm: updated['paceMinSecsPerKm'] as int,
-        paceMaxSecsPerKm: updated['paceMaxSecsPerKm'] as int,
-        preferredDistances: (updated['preferredDistances'] as List)
-            .map((e) => PreferredDistance.values.firstWhere((d) => d.name == e))
-            .toList(),
-        runningReasons: (updated['runningReasons'] as List)
-            .map((e) => RunReason.values.firstWhere((r) => r.name == e))
-            .toList(),
-        preferredRunTimes: (updated['preferredRunTimes'] as List)
-            .map((e) => PreferredRunTime.values.firstWhere((t) => t.name == e))
-            .toList(),
-        runPreferencesVersion: updated['runPreferencesVersion'] as int,
+        activityPreferences: ActivityPreferences.fromJson(
+          Map<String, dynamic>.from(updated['activityPreferences'] as Map),
+        ),
       );
     }
     lastSavedUser = currentUser;

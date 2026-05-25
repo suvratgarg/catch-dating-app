@@ -29,10 +29,10 @@ class ProfilePromptSection extends StatelessWidget {
       onReact: onReact,
       child: Text(
         answer,
-        style: CatchTextStyles.titleM(
+        style: CatchTextStyles.profileAnswer(
           context,
           color: palette.textPrimary,
-        ).copyWith(height: 1.38),
+        ),
       ),
     );
   }

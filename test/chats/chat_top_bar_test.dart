@@ -6,6 +6,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('opens profile from the chat identity title', (tester) async {
@@ -18,7 +19,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('Taylor'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Profile runner-2'), findsOneWidget);
   });
@@ -33,7 +34,7 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.byTooltip('Chat actions'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('View profile'), findsNothing);
     expect(find.text('Report'), findsOneWidget);
