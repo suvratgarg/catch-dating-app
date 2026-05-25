@@ -20,9 +20,9 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -192,16 +192,9 @@ final class _VisualReviewUserProfileRepository
   Future<void> setUserProfile({required UserProfile userProfile}) async {}
 
   @override
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) async {}
-
-  @override
   Future<void> updateProfilePhotos({
     required String uid,
     required List<ProfilePhoto> profilePhotos,
-    required List<String> photoUrls,
   }) async {}
 
   @override
@@ -369,16 +362,21 @@ UserProfile _user() {
     phoneNumber: '+919876543210',
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
-    photoUrls: const [],
+    profilePhotos: const [],
   );
 }
 
 UserProfile _visualReviewUser() {
   return _user().copyWith(
-    preferredDistances: const [PreferredDistance.fiveK, PreferredDistance.tenK],
-    runningReasons: const [RunReason.community, RunReason.social],
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 390,
+    activityPreferences: const ActivityPreferences(
+      running: RunningPreferences(
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 390,
+        preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
+        runningReasons: [RunReason.community, RunReason.social],
+        version: currentRunPreferencesVersion,
+      ),
+    ),
   );
 }
 

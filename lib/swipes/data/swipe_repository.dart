@@ -14,12 +14,12 @@ class SwipeRepository {
 
   static const _collectionPath =
       schema_contracts.schemaProfileDecisionCollectionPath;
-  static const _futureCollectionPath =
-      schema_contracts.schemaProfileDecisionFutureCollectionPath;
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Map<String, dynamic>> _outgoingSwipesRef(String uid) =>
+  CollectionReference<Map<String, dynamic>> _outgoingProfileDecisionsRef(
+    String uid,
+  ) =>
       _db
           .collection(_collectionPath)
           .doc(uid)
@@ -27,28 +27,15 @@ class SwipeRepository {
             schema_contracts.schemaProfileDecisionOutgoingSubcollectionPath,
           );
 
-  CollectionReference<Map<String, dynamic>> _futureOutgoingSwipesRef(
-    String uid,
-  ) => _db
-      .collection(_futureCollectionPath)
-      .doc(uid)
-      .collection(
-        schema_contracts.schemaProfileDecisionFutureOutgoingSubcollectionPath,
-      );
-
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  /// Returns the set of user IDs this user has already swiped on.
+  /// Returns the set of user IDs this user has already made a decision on.
   Future<Set<String>> fetchSwipedUserIds({required String uid}) =>
       withBackendErrorContext(
         () async {
-          final snaps = await Future.wait([
-            _outgoingSwipesRef(uid).get(),
-            _futureOutgoingSwipesRef(uid).get(),
-          ]);
+          final snap = await _outgoingProfileDecisionsRef(uid).get();
           return {
-            for (final snap in snaps)
-              for (final doc in snap.docs) doc.id,
+            for (final doc in snap.docs) doc.id,
           };
         },
         context: const BackendErrorContext(
@@ -85,14 +72,9 @@ class SwipeRepository {
         ...reactionFields,
         'createdAt': FieldValue.serverTimestamp(),
       };
-      final batch = _db.batch();
-      batch
-        ..set(_outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId), payload)
-        ..set(
-          _futureOutgoingSwipesRef(swipe.swiperId).doc(swipe.targetId),
-          payload,
-        );
-      return batch.commit();
+      return _outgoingProfileDecisionsRef(
+        swipe.swiperId,
+      ).doc(swipe.targetId).set(payload);
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
