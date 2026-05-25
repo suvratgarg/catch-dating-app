@@ -52,6 +52,10 @@ class EventDetailCta extends ConsumerWidget {
       hasInviteCode: _hasInviteCode(inviteCode),
     );
     final status = _statusForEligibility(eligibility);
+    final requiresHostApproval =
+        event.effectiveEventPolicy.admissionPolicy.manualApprovalRequired;
+    final canRequestHostApproval =
+        requiresHostApproval && eligibility is GenderCapacityReached;
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
         .supportsPaidBookings;
@@ -86,102 +90,11 @@ class EventDetailCta extends ConsumerWidget {
               context: AppErrorContext.event,
             ),
           ),
-        switch (status) {
-          EventSignUpStatus.eligible => BottomCTA(
-            label: !isFreeForViewer && !supportsPaid
-                ? 'Unavailable on this platform'
-                : needsRunPreferences
-                ? 'Set run preferences'
-                : isFreeForViewer
-                ? 'Join event — ${event.spotsRemaining} spots left'
-                : 'Book event',
-            onPressed:
-                bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
-                ? null
-                : needsRunPreferences
-                ? () => _openRunPreferencesGate(context)
-                : () {
-                    final router = GoRouter.maybeOf(context);
-                    final navigator = Navigator.of(
-                      context,
-                      rootNavigator: true,
-                    );
-                    EventBookingController.bookMutation.run(ref, (tx) async {
-                      final data = await tx
-                          .get(eventBookingControllerProvider.notifier)
-                          .book(
-                            event: event,
-                            user: userProfile,
-                            inviteCode: inviteCode,
-                          );
-                      if (data != null) {
-                        if (router == null) return;
-                        unawaited(
-                          router.pushNamed(
-                            Routes.paymentConfirmationScreen.name,
-                            extra: data,
-                          ),
-                        );
-                      } else {
-                        unawaited(
-                          navigator.push(
-                            MaterialPageRoute<void>(
-                              fullscreenDialog: true,
-                              builder: (routeContext) =>
-                                  EventJoinedCelebrationScreen(
-                                    event: event,
-                                    onViewEvent: () =>
-                                        Navigator.of(routeContext).pop(),
-                                    onBackHome: () {
-                                      Navigator.of(routeContext).pop();
-                                      router?.goNamed(
-                                        Routes.dashboardScreen.name,
-                                      );
-                                    },
-                                  ),
-                            ),
-                          ),
-                        );
-                      }
-                    });
-                  },
-            isLoading: bookMutation.isPending,
-            leadingContent: isFreeForViewer
-                ? null
-                : PriceLeading(
-                    price: EventFormatters.priceInPaise(
-                      quotedPriceInPaise,
-                      currencyCode: event.currency,
-                    ),
-                  ),
-          ),
-          EventSignUpStatus.signedUp => (() {
-            if (isSelfCheckInOpenForParticipationStatus(
-              event: event,
-              status: participation?.status,
-              now: referenceNow,
-            )) {
-              return const SizedBox.shrink();
-            }
-
-            return BottomCTA(
-              label: 'Cancel booking',
-              onPressed: cancelMutation.isPending
-                  ? null
-                  : () => EventBookingController.cancelMutation.run(
-                      ref,
-                      (tx) async => tx
-                          .get(eventBookingControllerProvider.notifier)
-                          .cancelBooking(event: event),
-                    ),
-              isLoading: cancelMutation.isPending,
-              leadingContent: const BookedLeading(),
-            );
-          })(),
-          EventSignUpStatus.full => BottomCTA(
+        if (canRequestHostApproval)
+          BottomCTA(
             label: needsRunPreferences
                 ? 'Set run preferences'
-                : 'Join waitlist',
+                : 'Request to join',
             onPressed: joinWMutation.isPending
                 ? null
                 : needsRunPreferences
@@ -193,39 +106,155 @@ class EventDetailCta extends ConsumerWidget {
                         .joinWaitlist(event: event, inviteCode: inviteCode),
                   ),
             isLoading: joinWMutation.isPending,
-          ),
-          EventSignUpStatus.waitlisted => BottomCTA(
-            label: 'Leave waitlist',
-            onPressed: leaveWMutation.isPending
-                ? null
-                : () => EventBookingController.leaveWaitlistMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(eventBookingControllerProvider.notifier)
-                        .leaveWaitlist(event: event),
-                  ),
-            isLoading: leaveWMutation.isPending,
-          ),
-          EventSignUpStatus.attended => BottomCTA(
-            label: 'You attended this event',
-            onPressed: null,
-            leadingContent: const AttendedLeading(),
-          ),
-          EventSignUpStatus.past => BottomCTA(
-            label: 'This event has ended',
-            onPressed: null,
-          ),
-          EventSignUpStatus.ineligible => BottomCTA(
-            label: switch (eligibility) {
-              AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
-              AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
-              EventInviteRequired() => 'Invite required',
-              GenderCapacityReached() => 'Spots for your gender are full',
-              _ => 'Not eligible for this event',
-            },
-            onPressed: null,
-          ),
-        },
+          )
+        else
+          switch (status) {
+            EventSignUpStatus.eligible => BottomCTA(
+              label: !isFreeForViewer && !supportsPaid
+                  ? 'Unavailable on this platform'
+                  : needsRunPreferences
+                  ? 'Set run preferences'
+                  : isFreeForViewer
+                  ? 'Join event — ${event.spotsRemaining} spots left'
+                  : 'Book event',
+              onPressed:
+                  bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
+                  ? null
+                  : needsRunPreferences
+                  ? () => _openRunPreferencesGate(context)
+                  : () {
+                      final router = GoRouter.maybeOf(context);
+                      final navigator = Navigator.of(
+                        context,
+                        rootNavigator: true,
+                      );
+                      EventBookingController.bookMutation.run(ref, (tx) async {
+                        final data = await tx
+                            .get(eventBookingControllerProvider.notifier)
+                            .book(
+                              event: event,
+                              user: userProfile,
+                              inviteCode: inviteCode,
+                            );
+                        if (data != null) {
+                          if (router == null) return;
+                          unawaited(
+                            router.pushNamed(
+                              Routes.paymentConfirmationScreen.name,
+                              extra: data,
+                            ),
+                          );
+                        } else {
+                          unawaited(
+                            navigator.push(
+                              MaterialPageRoute<void>(
+                                fullscreenDialog: true,
+                                builder: (routeContext) =>
+                                    EventJoinedCelebrationScreen(
+                                      event: event,
+                                      onViewEvent: () =>
+                                          Navigator.of(routeContext).pop(),
+                                      onBackHome: () {
+                                        Navigator.of(routeContext).pop();
+                                        router?.goNamed(
+                                          Routes.dashboardScreen.name,
+                                        );
+                                      },
+                                    ),
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+              isLoading: bookMutation.isPending,
+              leadingContent: isFreeForViewer
+                  ? null
+                  : PriceLeading(
+                      price: EventFormatters.priceInPaise(
+                        quotedPriceInPaise,
+                        currencyCode: event.currency,
+                      ),
+                    ),
+            ),
+            EventSignUpStatus.signedUp => (() {
+              if (isSelfCheckInOpenForParticipationStatus(
+                event: event,
+                status: participation?.status,
+                now: referenceNow,
+              )) {
+                return const SizedBox.shrink();
+              }
+
+              return BottomCTA(
+                label: 'Cancel booking',
+                onPressed: cancelMutation.isPending
+                    ? null
+                    : () => EventBookingController.cancelMutation.run(
+                        ref,
+                        (tx) async => tx
+                            .get(eventBookingControllerProvider.notifier)
+                            .cancelBooking(event: event),
+                      ),
+                isLoading: cancelMutation.isPending,
+                leadingContent: const BookedLeading(),
+              );
+            })(),
+            EventSignUpStatus.full => BottomCTA(
+              label: needsRunPreferences
+                  ? 'Set run preferences'
+                  : requiresHostApproval
+                  ? 'Request to join'
+                  : 'Join waitlist',
+              onPressed: joinWMutation.isPending
+                  ? null
+                  : needsRunPreferences
+                  ? () => _openRunPreferencesGate(context)
+                  : () => EventBookingController.joinWaitlistMutation.run(
+                      ref,
+                      (tx) async => tx
+                          .get(eventBookingControllerProvider.notifier)
+                          .joinWaitlist(event: event, inviteCode: inviteCode),
+                    ),
+              isLoading: joinWMutation.isPending,
+            ),
+            EventSignUpStatus.waitlisted => BottomCTA(
+              label: requiresHostApproval
+                  ? 'Withdraw request'
+                  : 'Leave waitlist',
+              onPressed: leaveWMutation.isPending
+                  ? null
+                  : () => EventBookingController.leaveWaitlistMutation.run(
+                      ref,
+                      (tx) async => tx
+                          .get(eventBookingControllerProvider.notifier)
+                          .leaveWaitlist(event: event),
+                    ),
+              isLoading: leaveWMutation.isPending,
+            ),
+            EventSignUpStatus.attended => BottomCTA(
+              label: 'You attended this event',
+              onPressed: null,
+              leadingContent: const AttendedLeading(),
+            ),
+            EventSignUpStatus.past => BottomCTA(
+              label: 'This event has ended',
+              onPressed: null,
+            ),
+            EventSignUpStatus.ineligible => BottomCTA(
+              label: switch (eligibility) {
+                AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
+                AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
+                EventInviteRequired() => 'Invite required',
+                GenderCapacityReached() =>
+                  requiresHostApproval
+                      ? 'Request required'
+                      : 'Spots for your gender are full',
+                _ => 'Not eligible for this event',
+              },
+              onPressed: null,
+            ),
+          },
       ],
     );
   }

@@ -34,6 +34,7 @@ import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -48,6 +49,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
 import 'clubs_test_helpers.dart';
 
@@ -120,8 +122,14 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('No clubs in this city yet'), findsOneWidget);
-      expect(find.text('Be the first to create one!'), findsOneWidget);
+      expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
+      expect(
+        find.text(
+          'Try another city from the location control, or create the first '
+          'club when you are ready to host.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('ClubsList shows search-specific empty copy', (tester) async {
@@ -152,12 +160,61 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('No clubs match your search'), findsOneWidget);
+      expect(find.text('No clubs match this search'), findsOneWidget);
       expect(
         find.text('Try another club, neighborhood, host, or tag.'),
         findsOneWidget,
       );
-      expect(find.text('No clubs in this city yet'), findsNothing);
+      expect(find.text('Clear search'), findsOneWidget);
+      expect(find.text('No clubs in Mumbai yet'), findsNothing);
+
+      await tester.tap(find.text('Clear search'));
+      await tester.pump();
+
+      expect(container.read(clubSearchQueryProvider), isEmpty);
+    });
+
+    testWidgets('ClubsList shows filter-specific empty copy', (tester) async {
+      final sourceClub = buildClub(id: 'source-club', name: 'Bandra Pacers');
+      final container = ProviderContainer(
+        overrides: [
+          watchClubsByLocationProvider(
+            'mumbai',
+          ).overrideWith((ref) => Stream.value([sourceClub])),
+          clubsListViewModelProvider.overrideWithValue(
+            const AsyncData(ClubsListViewModel(joinedClubs: [], allClubs: [])),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(clubBrowseFiltersProvider.notifier).toggleHighRatedOnly();
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: CustomScrollView(slivers: [ClubsList()]),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('No clubs match these filters'), findsOneWidget);
+      expect(
+        find.text(
+          'Clear one or more filters to bring nearby clubs back into view.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Clear filters'), findsOneWidget);
+
+      await tester.tap(find.text('Clear filters'));
+      await tester.pump();
+
+      expect(container.read(clubBrowseFiltersProvider).hasActiveFilters, false);
     });
 
     testWidgets('ClubsContent renders avatar rail and discover sections', (
@@ -421,6 +478,7 @@ void main() {
         location: 'indore',
         tags: const ['social', 'Indore'],
         rating: 4.8,
+        reviewCount: 12,
         nextEventLabel: 'Race Course Road Main Gate',
       );
 
@@ -449,7 +507,10 @@ void main() {
       expect(find.text('Join'), findsNothing);
       expect(find.text('SOCIAL'), findsOneWidget);
       expect(find.text('INDORE'), findsNothing);
+      expect(find.text('Bandra · 1 member'), findsOneWidget);
       expect(find.text('NEXT: RACE COURSE ROAD MAIN GATE'), findsOneWidget);
+      expect(find.text('Next Race Course Road Main Gate'), findsOneWidget);
+      expect(find.text('4.8 · 12 reviews'), findsOneWidget);
       expect(find.text('4.8'), findsOneWidget);
     });
 
@@ -844,7 +905,12 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+        ProviderScope(
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
       );
       await _pumpClubUi(tester);
 
@@ -942,6 +1008,171 @@ void main() {
       expect(find.text('Profile host-42'), findsOneWidget);
     });
 
+    testWidgets('ClubDetailBody shows multiple hosts and messages a host', (
+      tester,
+    ) async {
+      final fakeRepository = FakeClubsRepository()
+        ..nextHostConversationMatchId = 'host-inquiry-1';
+      final club = buildClub(
+        id: 'club-multi-host',
+        hostUserId: 'owner-1',
+        ownerUserId: 'owner-1',
+        hostUserIds: const ['owner-1', 'host-2'],
+        hostProfiles: const [
+          ClubHostProfile(
+            uid: 'owner-1',
+            displayName: 'Owner Host',
+            role: ClubHostRole.owner,
+          ),
+          ClubHostProfile(
+            uid: 'host-2',
+            displayName: 'Co Host',
+            role: ClubHostRole.host,
+          ),
+        ],
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => Scaffold(
+              body: ClubDetailBody(
+                club: club,
+                upcoming: const [],
+                reviews: const [],
+                userProfile: buildUser(uid: 'runner-1'),
+                uid: 'runner-1',
+                isHost: false,
+                isMember: false,
+                isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
+                isAuthenticated: true,
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/chat/:matchId',
+            name: Routes.chatScreen.name,
+            builder: (_, state) => Text(
+              'Chat ${state.pathParameters['matchId']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+          GoRoute(
+            path: '/profiles/:uid',
+            name: Routes.publicProfileScreen.name,
+            builder: (_, state) => Text(
+              'Profile ${state.pathParameters['uid']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+        ],
+      );
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.text('Hosted by Owner Host'), findsOneWidget);
+      expect(find.text('Hosted by Co Host'), findsOneWidget);
+      expect(find.text('Owner'), findsOneWidget);
+      expect(find.text('Host'), findsOneWidget);
+      expect(find.byTooltip('Message host'), findsNWidgets(2));
+
+      await tester.tap(find.byTooltip('Message host').last);
+      await _pumpClubUi(tester);
+
+      expect(fakeRepository.startedConversationClubId, club.id);
+      expect(fakeRepository.startedConversationHostUid, 'host-2');
+      expect(find.text('Chat host-inquiry-1'), findsOneWidget);
+    });
+
+    testWidgets('ClubDetailBody owner sees host team management actions', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-owner-hosts',
+        hostUserId: 'owner-1',
+        ownerUserId: 'owner-1',
+        hostUserIds: const ['owner-1', 'host-2'],
+        hostProfiles: const [
+          ClubHostProfile(
+            uid: 'owner-1',
+            displayName: 'Owner Host',
+            role: ClubHostRole.owner,
+          ),
+          ClubHostProfile(
+            uid: 'host-2',
+            displayName: 'Co Host',
+            role: ClubHostRole.host,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('owner-1')),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: ClubDetailBody(
+                club: club,
+                upcoming: const [],
+                reviews: const [],
+                userProfile: buildUser(uid: 'owner-1'),
+                uid: 'owner-1',
+                isHost: true,
+                isMember: true,
+                isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
+                isAuthenticated: true,
+              ),
+            ),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.text('Host team'), findsOneWidget);
+      expect(find.byTooltip('Add host'), findsOneWidget);
+      expect(find.text('Owner Host'), findsWidgets);
+      expect(find.text('Co Host'), findsWidgets);
+
+      await tester.ensureVisible(find.byTooltip('Host actions').last);
+      await _pumpClubUi(tester);
+      await tester.tap(find.byTooltip('Host actions').last);
+      await _pumpClubUi(tester);
+
+      expect(find.text('Transfer ownership'), findsOneWidget);
+      expect(find.text('Remove host'), findsOneWidget);
+    });
+
     testWidgets(
       'ClubDetailBody keeps club review aggregate read-only below schedule',
       (tester) async {
@@ -954,21 +1185,23 @@ void main() {
         ];
 
         await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.light,
-            home: Scaffold(
-              body: ClubDetailBody(
-                club: club,
-                upcoming: const [],
-                reviews: reviews,
-                userProfile: buildUser(uid: 'runner-1'),
-                uid: 'runner-1',
-                isHost: false,
-                isMember: true,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: ClubDetailBody(
+                  club: club,
+                  upcoming: const [],
+                  reviews: reviews,
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isHost: false,
+                  isMember: true,
+                  isMutating: false,
+                  clubPushNotificationsEnabled: false,
+                  isClubPushMutating: false,
+                  isAuthenticated: true,
+                ),
               ),
             ),
           ),
@@ -1038,7 +1271,12 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+        ProviderScope(
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
       );
       await _pumpClubUi(tester);
 
@@ -1118,12 +1356,12 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CatchSkeleton), findsNWidgets(3));
+      expect(find.byType(CatchSkeleton), findsAtLeastNWidgets(12));
       expect(find.byType(CatchTextField), findsNothing);
     });
 
     testWidgets(
-      'ClubsListScreen hides search when the selected city is empty',
+      'ClubsListScreen keeps search reachable when the selected city is empty',
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
@@ -1150,9 +1388,120 @@ void main() {
         expect(find.byType(CityPicker), findsOneWidget);
         expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
         expect(find.byType(CatchTextField), findsNothing);
-        expect(find.text('No clubs in this city yet'), findsOneWidget);
+        expect(find.text('No clubs in Mumbai yet'), findsOneWidget);
+
+        await tester.tap(find.byTooltip('Search clubs'));
+        await _pumpClubUi(tester);
+
+        expect(find.byType(CatchTextField), findsOneWidget);
       },
     );
+
+    testWidgets('ClubsListScreen filters discover cards from the chip rail', (
+      tester,
+    ) async {
+      final socialClub = buildClub(
+        id: 'social-club',
+        name: 'Bandra Pacers',
+        area: 'Bandra',
+        tags: const ['social'],
+        rating: 4.2,
+      );
+      final tempoClub = buildClub(
+        id: 'tempo-club',
+        name: 'Tempo Queens',
+        area: 'Juhu',
+        tags: const ['tempo'],
+        rating: 4.8,
+        reviewCount: 9,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([socialClub, tempoClub])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ClubsListScreen(),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.text('This week'), findsOneWidget);
+      expect(find.text('Rated 4.5+'), findsOneWidget);
+      expect(find.text('Social'), findsOneWidget);
+      expect(find.text('Tempo'), findsOneWidget);
+      expect(find.text('Bandra Pacers'), findsOneWidget);
+      expect(find.text('Tempo Queens'), findsOneWidget);
+
+      await tester.tap(find.text('Rated 4.5+'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Tempo Queens'), findsOneWidget);
+      expect(find.text('Bandra Pacers'), findsNothing);
+      expect(find.text('Clear'), findsOneWidget);
+    });
+
+    testWidgets('ClubsListScreen toggles from club list to event map', (
+      tester,
+    ) async {
+      final club = buildClub(id: 'club-map', name: 'Bandra Pacers');
+      final event = event_test.buildEvent(
+        id: 'event-map',
+        clubId: club.id,
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 19.07,
+        startingPointLng: 72.88,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([club])),
+            eventMapViewModelProvider.overrideWith(
+              (ref) => AsyncData(
+                EventMapViewModel(events: [event], pinnedEvents: [event]),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ClubsListScreen(enableEventMapNetworkTiles: false),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      expect(find.text('Clubs'), findsOneWidget);
+      expect(find.text('Bandra Pacers'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Map'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Event map'), findsOneWidget);
+      expect(find.text('Nearby events'), findsOneWidget);
+      expect(find.text('Race Course Road main gate'), findsOneWidget);
+      expect(find.text('Bandra Pacers'), findsNothing);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'List'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Clubs'), findsOneWidget);
+      expect(find.text('Bandra Pacers'), findsOneWidget);
+      expect(find.text('Nearby events'), findsNothing);
+    });
 
     testWidgets('ClubsListScreen shows a readable error message', (
       tester,
@@ -1436,7 +1785,10 @@ void main() {
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
+      );
       addTearDown(container.dispose);
 
       await tester.pumpWidget(
@@ -1481,7 +1833,7 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('Edit club'), findsOneWidget);
+      expect(find.text('Club basics'), findsOneWidget);
       expect(find.widgetWithText(TextField, 'Morning Miles'), findsOneWidget);
       expect(find.widgetWithText(TextField, 'Palasia'), findsOneWidget);
       expect(find.text('Indore'), findsOneWidget);
@@ -1498,8 +1850,14 @@ void main() {
       await tester.tap(find.text('Next'));
       await _pumpClubUi(tester);
 
-      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
       expect(find.text('Default event policy'), findsOneWidget);
+
+      await tester.tap(find.text('Next'));
+      await _pumpClubUi(tester);
+
+      expect(find.text('Save changes'), findsOneWidget);
+      expect(find.text('Default event success'), findsOneWidget);
     });
 
     testWidgets(
@@ -1547,6 +1905,8 @@ void main() {
         await _enterCreateClubText(tester, 'Phone number', '');
         await _enterCreateClubText(tester, 'Email', '');
 
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
         await tester.tap(find.text('Next'));
         await _pumpClubUi(tester);
         await tester.tap(find.text('Save changes'));
@@ -1664,6 +2024,11 @@ void main() {
         await _pumpClubUi(tester);
 
         expect(find.text('Default event policy'), findsOneWidget);
+
+        await tester.tap(find.text('Next'));
+        await _pumpClubUi(tester);
+
+        expect(find.text('Default event success'), findsOneWidget);
 
         await tester.tap(find.text('Create club'));
         await _pumpClubUi(tester);

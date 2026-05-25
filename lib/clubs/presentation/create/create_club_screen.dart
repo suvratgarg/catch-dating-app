@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
@@ -7,11 +8,13 @@ import 'package:catch_dating_app/clubs/presentation/create/create_club_controlle
 import 'package:catch_dating_app/clubs/presentation/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_basics_step.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_details_step.dart';
+import 'package:catch_dating_app/clubs/presentation/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart';
 import 'package:flutter/material.dart';
@@ -27,12 +30,11 @@ class CreateClubScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
-  static const _totalSteps = 3;
-
   final _pageController = PageController();
   final _basicsFormKey = GlobalKey<FormState>();
   final _detailsFormKey = GlobalKey<FormState>();
   final _defaultsFormKey = GlobalKey<FormState>();
+  final _eventSuccessFormKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
   final _areaController = TextEditingController();
@@ -51,11 +53,26 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   bool get _isEditing => widget.initialClub != null;
 
-  GlobalKey<FormState> get _currentFormKey => switch (_currentStep) {
-    0 => _basicsFormKey,
-    1 => _detailsFormKey,
-    _ => _defaultsFormKey,
-  };
+  List<FormStepSpec> get _activeSteps {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (_isMediaOnlyForUid(uid)) {
+      return [FormStepSpec(title: 'Club photos', formKey: _basicsFormKey)];
+    }
+    return [
+      FormStepSpec(title: 'Club basics', formKey: _basicsFormKey),
+      FormStepSpec(title: 'Club details', formKey: _detailsFormKey),
+      FormStepSpec(title: 'Host defaults', formKey: _defaultsFormKey),
+      FormStepSpec(
+        title: 'Event success defaults',
+        formKey: _eventSuccessFormKey,
+      ),
+    ];
+  }
+
+  bool _isMediaOnlyForUid(String? uid) {
+    final club = widget.initialClub;
+    return club != null && club.isHostedBy(uid) && !club.isOwnedBy(uid);
+  }
 
   @override
   void initState() {
@@ -165,11 +182,13 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   }
 
   void _next() {
-    if (!(_currentFormKey.currentState?.validate() ?? true)) {
+    final steps = _activeSteps;
+    final formKey = formKeyForStep(steps, _currentStep);
+    if (!(formKey?.currentState?.validate() ?? true)) {
       return;
     }
 
-    if (_currentStep < _totalSteps - 1) {
+    if (_currentStep < steps.length - 1) {
       _goToStep(_currentStep + 1);
       return;
     }
@@ -252,15 +271,14 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     return text.isEmpty ? null : text;
   }
 
-  String get _title => switch (_currentStep) {
-    0 => 'Club basics',
-    1 => 'Club details',
-    _ => 'Host defaults',
-  };
+  String get _title => formTitleForStep(_activeSteps, _currentStep);
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final uid = ref.watch(uidProvider).asData?.value;
+    final mediaOnly = _isMediaOnlyForUid(uid);
+    final activeSteps = _activeSteps;
     final submitMutation = ref.watch(CreateClubController.submitMutation);
     final saveDraftMutation = ref.watch(
       CreateClubDraftController.saveDraftMutation,
@@ -283,10 +301,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
         child: Column(
           children: [
             CatchStepFlowHeader(
-              title: _isEditing ? 'Edit club' : _title,
+              title: _title,
               subtitle: _isEditing ? widget.initialClub!.name : null,
               currentStep: _currentStep,
-              totalSteps: _totalSteps,
+              totalSteps: activeSteps.length,
               onBack: _back,
             ),
             const SizedBox(height: 4),
@@ -303,6 +321,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                       _selectedCity = city?.name;
                     }),
                     areaController: _areaController,
+                    detailsEnabled: !mediaOnly,
                     coverImageBytes: _coverImage?.bytes,
                     existingImageUrl: widget.initialClub?.imageUrl,
                     profileImageBytes: _profileImage?.bytes,
@@ -315,30 +334,42 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         ? null
                         : _pickProfileImage,
                   ),
-                  ClubDetailsStep(
-                    formKey: _detailsFormKey,
-                    descriptionController: _descriptionController,
-                    instagramController: _instagramController,
-                    phoneController: _phoneController,
-                    emailController: _emailController,
-                  ),
-                  ClubHostDefaultsStep(
-                    formKey: _defaultsFormKey,
-                    defaults: _hostDefaults,
-                    onChanged: (defaults) =>
-                        setState(() => _hostDefaults = defaults),
-                  ),
+                  if (!mediaOnly) ...[
+                    ClubDetailsStep(
+                      formKey: _detailsFormKey,
+                      descriptionController: _descriptionController,
+                      instagramController: _instagramController,
+                      phoneController: _phoneController,
+                      emailController: _emailController,
+                    ),
+                    ClubHostDefaultsStep(
+                      formKey: _defaultsFormKey,
+                      defaults: _hostDefaults,
+                      onChanged: (defaults) =>
+                          setState(() => _hostDefaults = defaults),
+                    ),
+                    ClubEventSuccessDefaultsStep(
+                      formKey: _eventSuccessFormKey,
+                      defaults: _hostDefaults,
+                      onChanged: (defaults) =>
+                          setState(() => _hostDefaults = defaults),
+                    ),
+                  ],
                 ],
               ),
             ),
             if (mutationError != null) ErrorBanner(message: mutationError),
             StepperFooter(
-              isLastStep: _currentStep == _totalSteps - 1,
+              isLastStep: _currentStep == activeSteps.length - 1,
               isLoading:
                   submitMutation.isPending || saveDraftMutation.isPending,
               onNext: _next,
-              onSaveDraft: _isEditing ? null : _saveDraft,
-              lastStepLabel: _isEditing ? 'Save changes' : 'Create club',
+              onSaveDraft: _isEditing || mediaOnly ? null : _saveDraft,
+              lastStepLabel: mediaOnly
+                  ? 'Save photos'
+                  : _isEditing
+                  ? 'Save changes'
+                  : 'Create club',
             ),
           ],
         ),

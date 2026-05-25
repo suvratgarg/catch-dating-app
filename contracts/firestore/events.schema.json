@@ -44,106 +44,139 @@
   ],
   "properties": {
     "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "startTime": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "endTime": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "meetingPoint": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "meetingLocation": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventMeetingLocation",
+      "x-catch-ownership": "callable-owned"
     },
     "startingPointLat": {
-      "$ref": "../shared/event_common.schema.json#/definitions/latitude"
+      "$ref": "../shared/event_common.schema.json#/definitions/latitude",
+      "x-catch-ownership": "callable-owned"
     },
     "startingPointLng": {
-      "$ref": "../shared/event_common.schema.json#/definitions/longitude"
+      "$ref": "../shared/event_common.schema.json#/definitions/longitude",
+      "x-catch-ownership": "callable-owned"
     },
     "locationDetails": {
-      "type": ["string", "null"],
-      "maxLength": 1000
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "photoUrl": {
-      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "callable-owned"
     },
     "distanceKm": {
       "type": "number",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "eventFormat": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot",
+      "x-catch-ownership": "callable-owned"
     },
     "pace": {
-      "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+      "$ref": "../shared/event_common.schema.json#/definitions/paceLevel",
+      "x-catch-ownership": "callable-owned"
     },
     "capacityLimit": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "description": {
       "type": "string",
-      "maxLength": 2000
+      "maxLength": 2000,
+      "x-catch-ownership": "callable-owned"
     },
     "priceInPaise": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100000000
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
     },
     "currency": {
       "type": "string",
-      "pattern": "^[A-Z]{3}$"
+      "pattern": "^[A-Z]{3}$",
+      "x-catch-ownership": "callable-owned"
     },
     "bookedCount": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "callable-owned"
     },
     "checkedInCount": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedCount": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventLifecycleStatus"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventLifecycleStatus",
+      "x-catch-ownership": "callable-owned"
     },
     "cancelledAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "cancellationReason": {
-      "type": ["string", "null"],
-      "maxLength": 500
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "constraints": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventConstraints"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventConstraints",
+      "x-catch-ownership": "callable-owned"
     },
     "eventPolicy": {
-      "$ref": "../shared/event_common.schema.json#/definitions/eventPolicyBundle"
+      "$ref": "../shared/event_common.schema.json#/definitions/eventPolicyBundle",
+      "x-catch-ownership": "callable-owned"
     },
     "genderCounts": {
       "type": "object",
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "cohortCounts": {
       "type": "object",
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedCohortCounts": {
       "type": "object",
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

@@ -21,6 +21,7 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
@@ -325,6 +326,53 @@ void main() {
       expect(repository.markReadCalls.single.map((item) => item.id), [
         'unread',
       ]);
+    });
+
+    testWidgets('notifications screen separates upcoming events from updates', (
+      tester,
+    ) async {
+      final upcomingEvent = buildEvent(
+        id: 'event-upcoming',
+        clubId: 'club-1',
+        meetingPoint: 'India Gate lawns east side',
+        startTime: DateTime.now().add(const Duration(days: 2)),
+        distanceKm: 7,
+        pace: PaceLevel.fast,
+      );
+      final notification = _activityNotification(
+        id: 'read',
+        uid: 'runner-1',
+        readAt: DateTime(2026, 5, 16),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            watchActivityNotificationsProvider('runner-1').overrideWithValue(
+              AsyncData<List<ActivityNotification>>([notification]),
+            ),
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(AsyncData<List<Event>>([upcomingEvent])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ActivityScreen(),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Upcoming events'), findsOneWidget);
+      expect(find.text('Recent updates'), findsOneWidget);
+      expect(find.text('India Gate lawns east side'), findsOneWidget);
+      expect(find.text('7km'), findsOneWidget);
+      expect(find.text('Fast'), findsOneWidget);
+      expect(find.text("It's a catch"), findsOneWidget);
+      expect(find.text('Catch'), findsOneWidget);
+      expect(find.text('Upcoming event'), findsNothing);
     });
   });
 
@@ -824,6 +872,7 @@ void main() {
       tester,
     ) async {
       Uri? launchedUri;
+      CalendarEventPayload? calendarEvent;
       final user = buildUser(uid: 'runner-1');
       final event = buildEvent(
         id: 'directions-event',
@@ -847,6 +896,10 @@ void main() {
               LaunchMode mode = LaunchMode.platformDefault,
             }) async {
               launchedUri = uri;
+              return true;
+            }),
+            nativeCalendarLauncherProvider.overrideWithValue((event) async {
+              calendarEvent = event;
               return true;
             }),
             ..._dashboardHostOverrides(user),
@@ -878,9 +931,9 @@ void main() {
       await tester.tap(find.text('Add to calendar'));
       await tester.pump();
 
-      expect(launchedUri?.host, 'calendar.google.com');
-      expect(launchedUri?.queryParameters['action'], 'TEMPLATE');
-      expect(launchedUri?.queryParameters['text'], event.title);
+      expect(calendarEvent?.title, event.title);
+      expect(calendarEvent?.startTime, event.startTime);
+      expect(calendarEvent?.endTime, event.endTime);
     });
 
     testWidgets(
@@ -1191,7 +1244,7 @@ void main() {
 
       expect(find.text('Soon'), findsNothing);
       expect(find.text('Browse events'), findsNothing);
-      expect(find.text('Map view'), findsOneWidget);
+      expect(find.text('Map view'), findsNothing);
       expect(find.text('Calendar'), findsOneWidget);
       expect(find.text('Saved events'), findsOneWidget);
     });
@@ -1206,14 +1259,11 @@ void main() {
         ),
       );
 
-      final mapSize = tester.getSize(_quickActionSurface('Map view'));
       final calendarSize = tester.getSize(_quickActionSurface('Calendar'));
       final savedSize = tester.getSize(_quickActionSurface('Saved events'));
 
-      expect(calendarSize.height, mapSize.height);
-      expect(savedSize.height, mapSize.height);
-      expect(calendarSize.width, mapSize.width);
-      expect(savedSize.width, mapSize.width);
+      expect(savedSize.height, calendarSize.height);
+      expect(savedSize.width, calendarSize.width);
     });
 
     testWidgets('navigates for all primary actions', (tester) async {
@@ -1223,10 +1273,6 @@ void main() {
           GoRoute(
             path: '/',
             builder: (_, _) => const Scaffold(body: QuickActions()),
-          ),
-          GoRoute(
-            path: Routes.eventMapScreen.path,
-            builder: (_, _) => const Scaffold(body: Text('Map screen')),
           ),
           GoRoute(
             path: Routes.calendarScreen.path,
@@ -1243,14 +1289,6 @@ void main() {
       await tester.pumpWidget(
         MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       );
-      await _pumpDashboardUi(tester);
-
-      await tester.tap(find.text('Map view'));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Map screen'), findsOneWidget);
-
-      router.go('/');
       await _pumpDashboardUi(tester);
 
       await tester.tap(find.text('Calendar'));

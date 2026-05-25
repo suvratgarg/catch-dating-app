@@ -30,41 +30,54 @@
   ],
   "properties": {
     "eventId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "welcomeRating": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "callable-owned"
     },
     "structureRating": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "callable-owned"
     },
     "metNewPeopleCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "safetyConcern": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "privateNote": {
-      "type": ["string", "null"],
-      "maxLength": 500
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

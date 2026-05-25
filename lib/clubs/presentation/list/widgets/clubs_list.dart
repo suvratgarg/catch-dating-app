@@ -5,8 +5,10 @@ import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_sta
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +21,7 @@ class ClubsList extends ConsumerWidget {
     final viewModelAsync = ref.watch(clubsListViewModelProvider);
     final city = ref.watch(selectedClubCityProvider);
     final query = ref.watch(clubSearchQueryProvider).trim();
+    final filters = ref.watch(clubBrowseFiltersProvider);
     final sourceClubCount =
         ref
             .watch(watchClubsByLocationProvider(city.name))
@@ -26,7 +29,7 @@ class ClubsList extends ConsumerWidget {
             ?.value
             .length ??
         0;
-    final isSearchEmpty = query.isNotEmpty && sourceClubCount > 0;
+    final hasSourceClubs = sourceClubCount > 0;
 
     return switch (viewModelAsync) {
       AsyncLoading() => const SliverToBoxAdapter(
@@ -37,7 +40,7 @@ class ClubsList extends ConsumerWidget {
             CatchSpacing.s5,
             CatchSpacing.s6,
           ),
-          child: CatchSkeletonList(count: 3),
+          child: _ClubDirectorySkeletonList(),
         ),
       ),
       AsyncError(:final error) => CatchSliverErrorState.fromError(
@@ -51,14 +54,142 @@ class ClubsList extends ConsumerWidget {
       AsyncData(:final value) =>
         value.isEmpty
             ? SliverFillRemaining(
-                child: isSearchEmpty
-                    ? const ClubsEmptyState.noSearchResults()
-                    : const ClubsEmptyState(),
+                child: _buildEmptyState(
+                  ref,
+                  cityLabel: city.label,
+                  hasSourceClubs: hasSourceClubs,
+                  hasSearch: query.isNotEmpty,
+                  filters: filters,
+                ),
               )
             : MutationErrorSnackbarListener(
                 mutation: ClubMembershipController.joinMutation,
                 child: ClubsListBody(viewModel: value),
               ),
     };
+  }
+
+  Widget _buildEmptyState(
+    WidgetRef ref, {
+    required String cityLabel,
+    required bool hasSourceClubs,
+    required bool hasSearch,
+    required ClubBrowseFilterSelection filters,
+  }) {
+    final hasFilters = filters.hasActiveFilters;
+    if (!hasSourceClubs) {
+      return ClubsEmptyState(cityLabel: cityLabel);
+    }
+    if (hasSearch && hasFilters) {
+      return ClubsEmptyState.noFilteredSearchResults(
+        action: _clearAction(ref, clearSearch: true, clearFilters: true),
+      );
+    }
+    if (hasSearch) {
+      return ClubsEmptyState.noSearchResults(
+        hasFilters: false,
+        action: _clearAction(ref, clearSearch: true, clearFilters: false),
+      );
+    }
+    if (hasFilters) {
+      return ClubsEmptyState.noFilterResults(
+        action: _clearAction(ref, clearSearch: false, clearFilters: true),
+      );
+    }
+    return ClubsEmptyState(cityLabel: cityLabel);
+  }
+
+  Widget _clearAction(
+    WidgetRef ref, {
+    required bool clearSearch,
+    required bool clearFilters,
+  }) {
+    final label = switch ((clearSearch, clearFilters)) {
+      (true, true) => 'Clear search and filters',
+      (true, false) => 'Clear search',
+      (false, true) => 'Clear filters',
+      (false, false) => 'Clear',
+    };
+    return CatchButton(
+      label: label,
+      onPressed: () {
+        if (clearSearch) {
+          ref.read(clubSearchQueryProvider.notifier).clear();
+        }
+        if (clearFilters) {
+          ref.read(clubBrowseFiltersProvider.notifier).clear();
+        }
+      },
+      variant: CatchButtonVariant.secondary,
+      icon: const Icon(Icons.close_rounded),
+    );
+  }
+}
+
+class _ClubDirectorySkeletonList extends StatelessWidget {
+  const _ClubDirectorySkeletonList();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+        _ClubDirectorySkeletonCard(),
+        SizedBox(height: 14),
+        _ClubDirectorySkeletonCard(),
+        SizedBox(height: 14),
+        _ClubDirectorySkeletonCard(),
+      ],
+    );
+  }
+}
+
+class _ClubDirectorySkeletonCard extends StatelessWidget {
+  const _ClubDirectorySkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSkeleton.card(height: 120),
+          Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchSkeleton.text(width: 180),
+                const SizedBox(height: 8),
+                CatchSkeleton.text(width: 132),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    CatchSkeleton.card(width: 72, height: 24),
+                    const SizedBox(width: 8),
+                    CatchSkeleton.card(width: 96, height: 24),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(height: 1, color: t.line),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    CatchSkeleton.circle(size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(child: CatchSkeleton.text(width: 140)),
+                    const SizedBox(width: 12),
+                    CatchSkeleton.card(width: 70, height: 36),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

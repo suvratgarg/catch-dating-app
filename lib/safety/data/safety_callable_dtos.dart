@@ -1,46 +1,14 @@
-final class BlockUserCallableRequest {
-  const BlockUserCallableRequest({
-    required this.targetUserId,
-    required this.source,
-  });
+// Safety callable request DTOs.
+//
+// These classes are generated from contracts/callables/{block,unblock,report}_user_payload.schema.json
+// by tool/contracts/generate_schema_contracts.mjs. Their toJson() output is
+// validated against the source schemas by test/core/callable_dto_contracts_test.dart.
+//
+// This file exists so callers can import the safety DTOs at this stable path;
+// the actual class definitions live in the generated file.
 
-  final String targetUserId;
-  final String source;
-
-  Map<String, Object?> toJson() => {
-    'targetUserId': targetUserId,
-    'source': source,
-  };
-}
-
-final class UnblockUserCallableRequest {
-  const UnblockUserCallableRequest({required this.targetUserId});
-
-  final String targetUserId;
-
-  Map<String, Object?> toJson() => {'targetUserId': targetUserId};
-}
-
-final class ReportUserCallableRequest {
-  const ReportUserCallableRequest({
-    required this.targetUserId,
-    required this.source,
-    this.reasonCode,
-    this.contextId,
-    this.notes,
-  });
-
-  final String targetUserId;
-  final String source;
-  final String? reasonCode;
-  final String? contextId;
-  final String? notes;
-
-  Map<String, Object?> toJson() => {
-    'targetUserId': targetUserId,
-    'source': source,
-    'reasonCode': ?reasonCode,
-    'contextId': ?contextId,
-    'notes': ?notes,
-  };
-}
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        BlockUserCallableRequest,
+        UnblockUserCallableRequest,
+        ReportUserCallableRequest;

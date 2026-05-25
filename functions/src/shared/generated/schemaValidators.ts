@@ -48,6 +48,8 @@ import {CreateClubCallableResponse} from "./createClubCallableResponse";
 import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
 import {AddClubHostCallablePayload} from "./addClubHostCallablePayload";
 import {RemoveClubHostCallablePayload} from "./removeClubHostCallablePayload";
+import {TransferClubOwnershipCallablePayload} from "./transferClubOwnershipCallablePayload";
+import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
 import {ClubMembershipCallablePayload} from "./clubMembershipCallablePayload";
@@ -127,6 +129,8 @@ import {
   updateClubCallablePayloadSchema,
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
+  transferClubOwnershipCallablePayloadSchema,
+  startClubHostConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -342,6 +346,14 @@ export const validateRemoveClubHostCallablePayload:
   ValidateFunction<RemoveClubHostCallablePayload> =
     ajv.compile(removeClubHostCallablePayloadSchema) as
       ValidateFunction<RemoveClubHostCallablePayload>;
+export const validateTransferClubOwnershipCallablePayload:
+  ValidateFunction<TransferClubOwnershipCallablePayload> =
+    ajv.compile(transferClubOwnershipCallablePayloadSchema) as
+      ValidateFunction<TransferClubOwnershipCallablePayload>;
+export const validateStartClubHostConversationCallablePayload:
+  ValidateFunction<StartClubHostConversationCallablePayload> =
+    ajv.compile(startClubHostConversationCallablePayloadSchema) as
+      ValidateFunction<StartClubHostConversationCallablePayload>;
 export const validateArchiveClubCallablePayload:
   ValidateFunction<ArchiveClubCallablePayload> =
     ajv.compile(archiveClubCallablePayloadSchema) as

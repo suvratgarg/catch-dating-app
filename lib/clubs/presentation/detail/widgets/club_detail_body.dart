@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
@@ -9,8 +10,14 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -55,6 +62,7 @@ class ClubDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final showMembershipControls = isAuthenticated && !isHost;
+    final isOwner = club.isOwnedBy(uid);
 
     return CustomScrollView(
       slivers: [
@@ -70,8 +78,16 @@ class ClubDetailBody extends StatelessWidget {
             children: [
               StatsStrip(club: club, upcomingCount: upcoming.length),
               gapH16,
-              _ClubHostSection(club: club, canViewProfile: isAuthenticated),
+              _ClubHostSection(
+                club: club,
+                canViewProfile: isAuthenticated,
+                currentUid: uid,
+              ),
               gapH16,
+              if (isOwner) ...[
+                _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
+                gapH16,
+              ],
               if (isHost) ...[
                 HostClubManagementPanel(
                   club: club,
@@ -144,21 +160,47 @@ class ClubDetailBody extends StatelessWidget {
   }
 }
 
-class _ClubHostSection extends StatelessWidget {
-  const _ClubHostSection({required this.club, required this.canViewProfile});
+class _ClubHostSection extends ConsumerWidget {
+  const _ClubHostSection({
+    required this.club,
+    required this.canViewProfile,
+    required this.currentUid,
+  });
 
   final Club club;
   final bool canViewProfile;
+  final String? currentUid;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final hosts = club.displayHostProfiles;
+    final messageMutation = ref.watch(
+      ClubHostManagementController.startConversationMutation,
+    );
 
     void openProfile(String uid) {
       context.pushNamed(
         Routes.publicProfileScreen.name,
         pathParameters: {'uid': uid},
+      );
+    }
+
+    Future<void> messageHost(ClubHostProfile host) async {
+      final matchId = await ClubHostManagementController
+          .startConversationMutation
+          .run(
+            ref,
+            (tx) => tx
+                .get(clubHostManagementControllerProvider.notifier)
+                .startConversation(clubId: club.id, hostUid: host.uid),
+          );
+      if (!context.mounted) return;
+      unawaited(
+        context.pushNamed(
+          Routes.chatScreen.name,
+          pathParameters: {'matchId': matchId},
+        ),
       );
     }
 
@@ -179,6 +221,13 @@ class _ClubHostSection extends StatelessWidget {
                   host: host,
                   borderColor: t.primarySoft,
                   showChevron: canViewProfile,
+                  onMessage:
+                      canViewProfile &&
+                          currentUid != null &&
+                          currentUid != host.uid &&
+                          !messageMutation.isPending
+                      ? () => unawaited(messageHost(host))
+                      : null,
                 ),
               ),
             ),
@@ -195,11 +244,13 @@ class _ClubHostRow extends StatelessWidget {
     required this.host,
     required this.borderColor,
     required this.showChevron,
+    required this.onMessage,
   });
 
   final ClubHostProfile host;
   final Color borderColor;
   final bool showChevron;
+  final VoidCallback? onMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -227,18 +278,301 @@ class _ClubHostRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               gapH6,
-              Text(
-                showChevron ? 'View profile' : 'Public profile',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              Row(
+                children: [
+                  CatchBadge(
+                    label: host.role == ClubHostRole.owner ? 'Owner' : 'Host',
+                    tone: host.role == ClubHostRole.owner
+                        ? CatchBadgeTone.brand
+                        : CatchBadgeTone.neutral,
+                  ),
+                  gapW8,
+                  Expanded(
+                    child: Text(
+                      showChevron ? 'View profile' : 'Public profile',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
+        if (onMessage != null) ...[
+          gapW8,
+          IconButton.filledTonal(
+            tooltip: 'Message host',
+            onPressed: onMessage,
+            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+          ),
+        ],
         if (showChevron) ...[
           gapW8,
           Icon(Icons.chevron_right_rounded, size: 24, color: t.ink3),
         ],
       ],
+    );
+  }
+}
+
+class _ClubOwnerHostManagementSection extends ConsumerWidget {
+  const _ClubOwnerHostManagementSection({
+    required this.club,
+    required this.currentUid,
+  });
+
+  final Club club;
+  final String currentUid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final hosts = club.displayHostProfiles;
+    final addPending = ref
+        .watch(ClubHostManagementController.addHostMutation)
+        .isPending;
+    final removePending = ref
+        .watch(ClubHostManagementController.removeHostMutation)
+        .isPending;
+    final transferPending = ref
+        .watch(ClubHostManagementController.transferOwnershipMutation)
+        .isPending;
+    final actionPending = addPending || removePending || transferPending;
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Expanded(child: SectionHeader(title: 'Host team')),
+              IconButton.filledTonal(
+                tooltip: 'Add host',
+                onPressed: actionPending
+                    ? null
+                    : () => unawaited(_showAddHostSheet(context)),
+                icon: const Icon(Icons.person_add_alt_1_rounded),
+              ),
+            ],
+          ),
+          gapH12,
+          for (final host in hosts) ...[
+            _OwnerHostRow(
+              host: host,
+              canManage: host.uid != currentUid && !actionPending,
+              onTransfer: () => unawaited(_confirmTransfer(context, ref, host)),
+              onRemove: () => unawaited(_confirmRemove(context, ref, host)),
+            ),
+            if (host != hosts.last) gapH10,
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAddHostSheet(BuildContext context) async {
+    final added = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => _AddHostSheet(clubId: club.id),
+    );
+    if (added == true && context.mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Host added.')));
+    }
+  }
+
+  Future<void> _confirmRemove(
+    BuildContext context,
+    WidgetRef ref,
+    ClubHostProfile host,
+  ) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Remove host?',
+      message:
+          '${host.displayName} will stay a club member but will lose host tools.',
+      actions: const [
+        CatchDialogAction(label: 'Cancel', value: false),
+        CatchDialogAction(label: 'Remove', value: true, isDestructive: true),
+      ],
+    );
+    if (confirmed != true) return;
+
+    await ClubHostManagementController.removeHostMutation.run(
+      ref,
+      (tx) => tx
+          .get(clubHostManagementControllerProvider.notifier)
+          .removeHost(clubId: club.id, uid: host.uid),
+    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${host.displayName} removed.')));
+  }
+
+  Future<void> _confirmTransfer(
+    BuildContext context,
+    WidgetRef ref,
+    ClubHostProfile host,
+  ) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Transfer ownership?',
+      message:
+          '${host.displayName} will become the club owner. You will remain a host.',
+      actions: const [
+        CatchDialogAction(label: 'Cancel', value: false),
+        CatchDialogAction(label: 'Transfer', value: true, isDefault: true),
+      ],
+    );
+    if (confirmed != true) return;
+
+    await ClubHostManagementController.transferOwnershipMutation.run(
+      ref,
+      (tx) => tx
+          .get(clubHostManagementControllerProvider.notifier)
+          .transferOwnership(clubId: club.id, uid: host.uid),
+    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),
+    );
+  }
+}
+
+class _OwnerHostRow extends StatelessWidget {
+  const _OwnerHostRow({
+    required this.host,
+    required this.canManage,
+    required this.onTransfer,
+    required this.onRemove,
+  });
+
+  final ClubHostProfile host;
+  final bool canManage;
+  final VoidCallback onTransfer;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      children: [
+        PersonAvatar(
+          size: 42,
+          name: host.displayName,
+          imageUrl: host.avatarUrl,
+        ),
+        gapW10,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                host.displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.titleS(context),
+              ),
+              gapH4,
+              CatchBadge(
+                label: host.role == ClubHostRole.owner ? 'Owner' : 'Host',
+                tone: host.role == ClubHostRole.owner
+                    ? CatchBadgeTone.brand
+                    : CatchBadgeTone.neutral,
+              ),
+            ],
+          ),
+        ),
+        PopupMenuButton<String>(
+          tooltip: 'Host actions',
+          enabled: canManage,
+          icon: Icon(Icons.more_horiz_rounded, color: t.ink2),
+          onSelected: (value) {
+            if (value == 'transfer') onTransfer();
+            if (value == 'remove') onRemove();
+          },
+          itemBuilder: (context) => const [
+            PopupMenuItem(value: 'transfer', child: Text('Transfer ownership')),
+            PopupMenuItem(value: 'remove', child: Text('Remove host')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _AddHostSheet extends ConsumerStatefulWidget {
+  const _AddHostSheet({required this.clubId});
+
+  final String clubId;
+
+  @override
+  ConsumerState<_AddHostSheet> createState() => _AddHostSheetState();
+}
+
+class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final phone = _controller.text.trim();
+    if (phone.isEmpty) return;
+    await ClubHostManagementController.addHostMutation.run(
+      ref,
+      (tx) => tx
+          .get(clubHostManagementControllerProvider.notifier)
+          .addHostByPhone(clubId: widget.clubId, phoneNumber: phone),
+    );
+    if (!mounted) return;
+    Navigator.of(context).pop(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mutation = ref.watch(ClubHostManagementController.addHostMutation);
+
+    return CatchBottomSheetScaffold(
+      title: 'Add host',
+      subtitle: 'Enter the phone number on their Catch profile.',
+      keyboardSafe: true,
+      action: CatchButton(
+        label: 'Add host',
+        onPressed: mutation.isPending ? null : () => unawaited(_submit()),
+        isLoading: mutation.isPending,
+        fullWidth: true,
+        icon: const Icon(Icons.person_add_alt_1_rounded),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CatchTextField(
+            label: 'Phone number',
+            controller: _controller,
+            prefixIcon: const Icon(Icons.phone_outlined),
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => unawaited(_submit()),
+          ),
+          if (mutation.hasError) ...[
+            gapH12,
+            ErrorBanner(message: mutationErrorMessage(mutation)),
+          ],
+        ],
+      ),
     );
   }
 }

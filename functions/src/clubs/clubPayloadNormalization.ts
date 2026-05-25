@@ -88,7 +88,9 @@ export function normalizeClubIdPayload(data: unknown): unknown {
  */
 export function normalizeClubHostPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
-  return normalizeFields(data, {stringFields: ["clubId", "uid"]});
+  return normalizeFields(data, {
+    stringFields: ["clubId", "uid", "hostUid", "phoneNumber"],
+  });
 }
 
 /**

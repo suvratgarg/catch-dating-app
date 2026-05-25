@@ -1,6 +1,15 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 
+// Generated callable request classes (re-exported here so callers can import
+// from a single feature-local path). Generated from contracts/callables/.
+export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        CancelEventCallableRequest,
+        EventIdCallableRequest,
+        MarkEventAttendanceCallableRequest,
+        SelfCheckInAttendanceCallableRequest;
+
 final class CreateEventCallableRequest {
   const CreateEventCallableRequest({
     required this.eventId,
@@ -185,43 +194,10 @@ final class EventConstraintsCallableDto {
   };
 }
 
-final class EventIdCallableRequest {
-  const EventIdCallableRequest(this.eventId, {this.inviteCode});
-
-  final String eventId;
-  final String? inviteCode;
-
-  Map<String, Object?> toJson() => {
-    'eventId': eventId,
-    'inviteCode': ?inviteCode,
-  };
-}
-
-final class CancelEventCallableRequest {
-  const CancelEventCallableRequest({required this.eventId, this.reason});
-
-  final String eventId;
-  final String? reason;
-
-  Map<String, Object?> toJson() => {'eventId': eventId, 'reason': ?reason};
-}
-
 Map<String, Object?>? _privateAccessJson(String? inviteCode) {
   final normalized = inviteCode?.trim();
   if (normalized == null || normalized.isEmpty) return null;
   return {'inviteCode': normalized};
-}
-
-final class MarkEventAttendanceCallableRequest {
-  const MarkEventAttendanceCallableRequest({
-    required this.eventId,
-    required this.userId,
-  });
-
-  final String eventId;
-  final String userId;
-
-  Map<String, Object?> toJson() => {'eventId': eventId, 'userId': userId};
 }
 
 final class MarkEventAttendanceCallableResponse {
@@ -238,22 +214,4 @@ final class MarkEventAttendanceCallableResponse {
   }
 
   final bool attended;
-}
-
-final class SelfCheckInAttendanceCallableRequest {
-  const SelfCheckInAttendanceCallableRequest({
-    required this.eventId,
-    required this.latitude,
-    required this.longitude,
-  });
-
-  final String eventId;
-  final double? latitude;
-  final double? longitude;
-
-  Map<String, Object?> toJson() => {
-    'eventId': eventId,
-    'latitude': ?latitude,
-    'longitude': ?longitude,
-  };
 }

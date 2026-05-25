@@ -5,9 +5,14 @@
   "description": "Callable payload accepted by addClubHost.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["clubId", "uid"],
+  "required": ["clubId"],
+  "oneOf": [
+    {"required": ["uid"]},
+    {"required": ["phoneNumber"]}
+  ],
   "properties": {
     "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "phoneNumber": {"type": "string", "minLength": 6, "maxLength": 32}
   }
 }

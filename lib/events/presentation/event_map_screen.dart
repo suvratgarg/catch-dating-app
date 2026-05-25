@@ -15,21 +15,40 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventMapScreen extends ConsumerStatefulWidget {
+class EventMapScreen extends ConsumerWidget {
   const EventMapScreen({super.key, this.enableNetworkTiles = true});
 
   final bool enableNetworkTiles;
 
   @override
-  ConsumerState<EventMapScreen> createState() => _EventMapScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: EventMapView(
+        enableNetworkTiles: enableNetworkTiles,
+        overlay: const MapOverlayControls(),
+      ),
+    );
+  }
 }
 
-class _EventMapScreenState extends ConsumerState<EventMapScreen> {
+class EventMapView extends ConsumerStatefulWidget {
+  const EventMapView({super.key, this.enableNetworkTiles = true, this.overlay});
+
+  final bool enableNetworkTiles;
+  final Widget? overlay;
+
+  @override
+  ConsumerState<EventMapView> createState() => _EventMapViewState();
+}
+
+class _EventMapViewState extends ConsumerState<EventMapView> {
   String? _selectedEventId;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final viewModelAsync = ref.watch(eventMapViewModelProvider);
     final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
     final selectedCity = ref.watch(selectedClubCityProvider);
@@ -37,79 +56,76 @@ class _EventMapScreenState extends ConsumerState<EventMapScreen> {
       selectedClubCityWasUserSelectedProvider,
     );
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: viewModelAsync.when(
-              loading: () => const CatchLoadingIndicator(),
-              error: (error, _) => CatchErrorState.fromError(
-                error,
-                context: AppErrorContext.event,
-                onRetry: () => ref.invalidate(eventMapViewModelProvider),
-              ),
-              data: (viewModel) {
-                final items = viewModel.effectiveItems;
-                final selectedEvent = viewModel.selectedEvent(_selectedEventId);
-                final selectedEventCenter = _startingPointFor(selectedEvent);
-                final mapCenter = resolveEventMapInitialCenter(
-                  deviceLocation: deviceLocation,
-                  selectedCity: selectedCity,
-                  selectedCityWasUserSelected: selectedCityWasUserSelected,
-                );
-
-                return viewModel.isEmpty
-                    ? const _MapEmptyState()
-                    : !viewModel.hasPinnedEvents
-                    ? Stack(
-                        children: [
-                          const Positioned.fill(child: _NoPinnedEventsState()),
-                          Positioned(
-                            left: CatchSpacing.s5,
-                            right: CatchSpacing.s5,
-                            bottom: CatchSpacing.s5,
-                            child: EventMapSheet(
-                              items: items,
-                              selectedEvent: selectedEvent,
-                              onEventSelected: (event) =>
-                                  setState(() => _selectedEventId = event.id),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Stack(
-                        children: [
-                          Positioned.fill(
-                            child: EventPinsMap(
-                              events: viewModel.pinnedEvents,
-                              initialCenter: mapCenter,
-                              selectedEventId: _selectedEventId,
-                              selectedEventCenter: selectedEventCenter,
-                              enableNetworkTiles: widget.enableNetworkTiles,
-                              onEventSelected: (event) =>
-                                  setState(() => _selectedEventId = event.id),
-                            ),
-                          ),
-                          Positioned(
-                            left: CatchSpacing.s5,
-                            right: CatchSpacing.s5,
-                            bottom: CatchSpacing.s5,
-                            child: EventMapSheet(
-                              items: items,
-                              selectedEvent: selectedEvent,
-                              onEventSelected: (event) =>
-                                  setState(() => _selectedEventId = event.id),
-                            ),
-                          ),
-                        ],
-                      );
-              },
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: viewModelAsync.when(
+            loading: () => const CatchLoadingIndicator(),
+            error: (error, _) => CatchErrorState.fromError(
+              error,
+              context: AppErrorContext.event,
+              onRetry: () => ref.invalidate(eventMapViewModelProvider),
             ),
+            data: (viewModel) {
+              final items = viewModel.effectiveItems;
+              final selectedEvent = viewModel.selectedEvent(_selectedEventId);
+              final selectedEventCenter = _startingPointFor(selectedEvent);
+              final mapCenter = resolveEventMapInitialCenter(
+                deviceLocation: deviceLocation,
+                selectedCity: selectedCity,
+                selectedCityWasUserSelected: selectedCityWasUserSelected,
+              );
+
+              return viewModel.isEmpty
+                  ? const _MapEmptyState()
+                  : !viewModel.hasPinnedEvents
+                  ? Stack(
+                      children: [
+                        const Positioned.fill(child: _NoPinnedEventsState()),
+                        Positioned(
+                          left: CatchSpacing.s5,
+                          right: CatchSpacing.s5,
+                          bottom: CatchSpacing.s5,
+                          child: EventMapSheet(
+                            items: items,
+                            selectedEvent: selectedEvent,
+                            onEventSelected: (event) =>
+                                setState(() => _selectedEventId = event.id),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Stack(
+                      children: [
+                        Positioned.fill(
+                          child: EventPinsMap(
+                            events: viewModel.pinnedEvents,
+                            initialCenter: mapCenter,
+                            selectedEventId: _selectedEventId,
+                            selectedEventCenter: selectedEventCenter,
+                            enableNetworkTiles: widget.enableNetworkTiles,
+                            onEventSelected: (event) =>
+                                setState(() => _selectedEventId = event.id),
+                          ),
+                        ),
+                        Positioned(
+                          left: CatchSpacing.s5,
+                          right: CatchSpacing.s5,
+                          bottom: CatchSpacing.s5,
+                          child: EventMapSheet(
+                            items: items,
+                            selectedEvent: selectedEvent,
+                            onEventSelected: (event) =>
+                                setState(() => _selectedEventId = event.id),
+                          ),
+                        ),
+                      ],
+                    );
+            },
           ),
-          const MapOverlayControls(),
-        ],
-      ),
+        ),
+        ?widget.overlay,
+      ],
     );
   }
 }

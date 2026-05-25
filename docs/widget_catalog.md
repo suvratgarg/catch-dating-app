@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.104
-updated: 2026-05-24
+version: 2.5.108
+updated: 2026-05-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,46 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.108
+
+- Clubs browse now owns the list/map mode switch. List mode remains a club
+  directory with quick filters, while map mode embeds the reusable event map so
+  pins represent upcoming events rather than clubs.
+- `EventMapScreen` now delegates its map body to reusable `EventMapView`, and
+  event-map cards route to the Clubs event detail route instead of the legacy
+  dashboard detail route.
+- Dashboard quick actions no longer expose Map view; dashboard keeps Calendar
+  and Saved events while spatial discovery lives under Clubs.
+
+### 2.5.107
+
+- Notifications now separate signed-up upcoming events from durable recent
+  notification history. `ActivitySection` renders upcoming event tiles first,
+  then groups backend-owned notification updates with typed badges and compact
+  icon chips.
+- The old vertical Activity timeline connector has been removed from the
+  Notifications screen; rows now use `CatchSurface` and `CatchBadge` so the
+  route matches the current Catch design primitives.
+
+### 2.5.106
+
+- Clubs browse now keeps search reachable even when the selected city has no
+  clubs, adds a sliver-native quick-filter rail for upcoming, rating, joined,
+  hosted, activity, and neighborhood filters, and clears city-local filters
+  when the city changes.
+- Club directory cards now surface next-event and review-count context in the
+  card body, and the clubs list loading state uses card-shaped skeletons that
+  match the loaded directory layout.
+- Clubs empty states now distinguish empty city, no-search-result, and
+  no-filter-result cases with clearer recovery copy and inline clear actions.
+
+### 2.5.105
+
+- Host Manage Live now embeds the editable roster inside the event-success Live
+  now flow. The old standalone live-attendance summary is hidden in that
+  context, and the arrival control becomes a QR-only check-in tool so roster
+  status, current stage, and next action do not repeat across separate cards.
 
 ### 2.5.104
 
@@ -151,6 +191,19 @@ a feature section here only when auditing that feature's widget surface.
 - Edit Profile row icons stay on the muted field-icon color even when the row
   is an add affordance; only the add value text uses primary color.
 
+### 2.5.88
+
+- Club detail now supports multi-host presentation and owner host-team
+  management. `ClubDetailBody` renders every `ClubHostProfile`, exposes
+  host-message actions for signed-in non-host viewers, and shows owner-only
+  add/remove/transfer controls backed by `ClubHostManagementController`.
+- Club create/edit now separates event-success defaults into
+  `ClubEventSuccessDefaultsStep`, making the club wizard four steps for owners
+  while co-host edit mode narrows to media updates only.
+- Added `FormStepSpec` helpers in `form_step_flow.dart` so create-club and
+  create-event flows share step title/key lookup instead of hand-written
+  switch statements.
+
 ### 2.5.87
 
 - Added `CatchSectionCard` as the shared polished content-section wrapper:
@@ -167,7 +220,8 @@ a feature section here only when auditing that feature's widget surface.
 
 - Club create/edit now includes a host-defaults step for event policy and
   event-success defaults. `ClubHostDefaultsStep` owns admission, cohort caps,
-  cancellation, dynamic-pricing, and reusable event-success default controls.
+  cancellation, and dynamic-pricing controls; event-success defaults now live on
+  the dedicated `ClubEventSuccessDefaultsStep`.
 - Create event applies club host defaults to the policy step and lets hosts
   override them per event before publishing. Optional event-success setup is
   saved when enabled.
@@ -735,8 +789,9 @@ a feature section here only when auditing that feature's widget surface.
 ### 2.5.30
 
 - Create/Edit Club now uses the shared step-flow form pattern instead of a
-  single long form. `CreateClubScreen` owns a three-step wizard (`Club basics`,
-  `Club details`, and `Host defaults`), reuses
+  single long form. `CreateClubScreen` owns a four-step owner wizard
+  (`Club basics`, `Club details`, `Host defaults`, and
+  `Event success defaults`), reuses
   `CatchStepFlowHeader`/`StepperFooter`, and keeps finite form pages fully
   mounted so validation covers offscreen fields.
 - Added local create-club draft support through `ClubDraft`,
@@ -1484,12 +1539,12 @@ Generated 2026-05-06.
 | `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:170` | Dashboard adapter for shared `HostEventToolsCarousel`. Converts `DashboardHostEventTool` availability into host-tool items and owns route navigation for Manage, Attendance, and Report without adding header/count/bucket chrome around the card. |
 | `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:28` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping event cards for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:18` | Route-level Notifications screen opened from the Home header bell. Uses `CatchTopBar(title: 'Notifications')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and automatically delegates unread notification docs to `ActivityController.markAllRead` when the screen opens. |
-| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:43` | Reusable timeline-style activity feed for backend-owned match, message, club-update, event-signup, waitlist-promotion, event-update, event-cancellation, and event-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
+| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:43` | Reusable notifications body. Separates signed-up upcoming events from backend-owned recent updates, renders event rows as `CatchSurface` tiles, groups notification history by recency, and uses typed `CatchBadge`/icon-chip treatments for match, club, booking, reminder, update, waitlist, and cancellation items. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height horizontal rail of `RecommendCard` widgets for recommended events from the user's followed clubs. |
 | `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:8` | Compatibility wrapper around shared `EventRailTile` for dashboard recommended events. It surfaces activity metadata, price, title, club, date/time, meeting point, signed-up count, and recommendation reason without fake imagery. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
 | `StrideBarColumn` | `lib/dashboard/presentation/widgets/stride_card.dart:105` | Single bar column for the stride card — day label and filled bar. |
-| `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Responsive dashboard quick-action grid for Browse events, Map view, Calendar, and Saved events. Avoids hardcoded tile heights so labels can wrap without clipping on narrow screens. |
+| `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Responsive dashboard quick-action grid for Calendar and Saved events. Spatial discovery lives under Clubs, so the dashboard no longer exposes Map view. Avoids hardcoded tile heights so labels can wrap without clipping on narrow screens. |
 | `DashboardEmpty` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:10` | Standalone empty-dashboard wrapper used by focused tests/non-tab embedding. Renders the empty dashboard header plus `DashboardEmptySliverBody`. |
 | `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:116` | Sliver body for the empty Home dashboard. Keeps the existing "book your first run" education flow without embedding activity updates. |
 | `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first event. Its solid-white CTA uses `CatchButtonVariant.light` so the pill stays legible in dark mode. |
@@ -1509,9 +1564,11 @@ Generated 2026-05-06.
 | `_DashboardLoadingScreen` | `lib/dashboard/presentation/dashboard_screen.dart:220` | Loading scaffold for Home while profile/booked-run data resolves. |
 | `_DashboardErrorScreen` | `lib/dashboard/presentation/dashboard_screen.dart:229` | Branded error scaffold for Home profile/booked-run load failures. |
 | `_DashboardSectionStateCard` | `lib/dashboard/presentation/widgets/dashboard_full.dart:161` | Inline loading/error card for a dashboard section (e.g., "Loading your recent runs..."). |
-| `_ActivityTile` | `lib/dashboard/presentation/widgets/activity_section.dart:171` | Single row in the Activity timeline — icon marker, title, subtitle, relative time, and optional route. |
-| `_ActivityTimelineMarker` | `lib/dashboard/presentation/widgets/activity_section.dart:245` | Timeline rail marker for activity rows. Uses the primary color for unread/high-priority activity and the soft primary surface for normal activity. |
-| `_ActivityStateLabel` | `lib/dashboard/presentation/widgets/activity_section.dart:299` | Status label shown for the loading activity state. |
+| `_UpcomingEventTile` | `lib/dashboard/presentation/widgets/activity_section.dart:193` | Signed-up upcoming event row for Notifications. Shows date, meeting point, time range, distance, pace, and event-detail navigation without mixing the row into notification history. |
+| `_EventDatePill` | `lib/dashboard/presentation/widgets/activity_section.dart:256` | Compact date marker used only inside upcoming-event tiles. |
+| `_NotificationTile` | `lib/dashboard/presentation/widgets/activity_section.dart:293` | Single recent-update row for backend-owned activity notifications. Uses `CatchSurface`, typed badges, relative time, unread styling, and optional route navigation. |
+| `_NotificationIconChip` | `lib/dashboard/presentation/widgets/activity_section.dart:385` | Compact icon container for notification types. It is decorative row chrome, not a standalone surface primitive. |
+| `_ActivityStateLabel` | `lib/dashboard/presentation/widgets/activity_section.dart:638` | Status label shown for the loading activity state. |
 
 ---
 
@@ -1777,10 +1834,11 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateClubScreen` | `lib/clubs/presentation/create/create_club_screen.dart:18` | Create/edit club form. Uses a three-step wizard with `CatchStepFlowHeader`, `StepperFooter`, create-only local drafts, cover photo picking, host defaults, and submit mutation feedback. Handles both create and edit flows. |
-| `ClubBasicsStep` | `lib/clubs/presentation/create/widgets/club_basics_step.dart:11` | First club form step. Keeps cover, club name, city, and area fields in one fully mounted scroll body so validation sees all required fields. |
+| `CreateClubScreen` | `lib/clubs/presentation/create/create_club_screen.dart:18` | Create/edit club form. Uses shared `FormStepSpec` metadata with `CatchStepFlowHeader`, `StepperFooter`, create-only local drafts, cover/profile photo picking, host defaults, a dedicated event-success defaults step, and submit mutation feedback. Owner edit keeps the full wizard; co-host edit narrows to media-only updates. |
+| `ClubBasicsStep` | `lib/clubs/presentation/create/widgets/club_basics_step.dart:11` | First club form step. Keeps cover/profile media, club name, city, and area fields in one fully mounted scroll body so validation sees all required fields. In co-host media edit mode, non-media fields render disabled. |
 | `ClubDetailsStep` | `lib/clubs/presentation/create/widgets/club_details_step.dart:7` | Second club form step. Holds required description plus optional contact fields. |
-| `ClubHostDefaultsStep` | `lib/clubs/presentation/create/widgets/club_host_defaults_step.dart:12` | Third club form step. Configures club-level host defaults for admission, cohort caps, dynamic pricing, age range, cancellation policy, and optional event-success setup inherited by new events. |
+| `ClubHostDefaultsStep` | `lib/clubs/presentation/create/widgets/club_host_defaults_step.dart:12` | Third club form step. Configures club-level host defaults for admission, cohort caps, dynamic pricing, age range, and cancellation policy inherited by new events. |
+| `ClubEventSuccessDefaultsStep` | `lib/clubs/presentation/create/widgets/club_event_success_defaults_step.dart:6` | Fourth club form step. Wraps `EventSuccessDefaultsPanel` for the club's primary activity so event-success run-of-show defaults are edited separately from booking policy defaults. |
 | `CityPicker` | `lib/clubs/presentation/list/widgets/city_picker.dart:12` | Compact city scope picker for the clubs browse header. The closed trigger is a fixed-size circular `CatchControlShell` with a location icon only, while the full city label stays in tooltip/semantics and the token-styled bottom sheet. It updates `selectedClubCityProvider`, clears club search on city changes through the provider seam, listens for GPS/profile auto-selection, and keeps the selected city while the remote city list is loading or unavailable. |
 
 ### ConsumerWidget
@@ -1788,26 +1846,27 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ClubDetailScreen` | `lib/clubs/presentation/detail/club_detail_screen.dart:16` | Club detail screen. Fetches the club, current user profile, active membership edge, upcoming events, and reviews; join/leave mutations stay in `ClubMembershipController`. Renders `ClubDetailBody`. |
-| `ClubsList` | `lib/clubs/presentation/list/widgets/clubs_list.dart:14` | Sliver state-dispatch widget for the clubs tab. Renders skeleton, error, empty, and data slivers from `ClubsListViewModel`, which partitions joined/discover clubs from active membership edges, and owns join-mutation feedback. |
+| `ClubsList` | `lib/clubs/presentation/list/widgets/clubs_list.dart:14` | Sliver state-dispatch widget for the clubs tab. Renders directory-card skeletons, error, city-empty, search-empty, filter-empty, and data slivers from `ClubsListViewModel`, which partitions joined/discover clubs from active membership edges, and owns join-mutation feedback. |
 | `ClubsSearchField` | `lib/clubs/presentation/list/widgets/clubs_search_field.dart:6` | Search text field for filtering the clubs list. Supports autofocus and a platform Done action so `ClubsSliverHeader` can expand search into the full browse-header row without rendering a separate keyboard-dismiss button. |
+| `ClubsFilterRail` | `lib/clubs/presentation/list/widgets/clubs_filter_rail.dart:8` | Sliver-native horizontal quick-filter rail for clubs browse. Uses `CatchChip` for persistent this-week, high-rating, joined, hosted, activity-tag, and neighborhood filters, with dynamic source-club values and a clear action backed by `clubBrowseFiltersProvider`. |
 | `MembershipButton` | `lib/clubs/presentation/detail/widgets/membership_button.dart:7` | Join/Leave/Request membership button on the club detail screen. Calls `ClubMembershipController`. |
 | `MutationErrorSnackbarListener` | `lib/core/widgets/mutation_error_snackbar_listener.dart:13` | Watches a Riverpod `Mutation` and shows a `SnackBar` on error transition. Used for transient mutation errors such as join/leave club failures. |
-| `_DirectoryCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card with cover image, host avatar, stats strip, and role-aware membership CTA. Hosts render a non-interactive `Host` pill, members render `Joined`, and discoverable clubs render `Join`. |
+| `_DirectoryCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:3` | Directory-style club card with cover image, area/member summary, body-level next-event and review-count context, host avatar, and role-aware membership CTA. Hosts render a non-interactive `Host` pill, members render `Joined`, and discoverable clubs render `Join`. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:9` | "Clubs" tab. Gates screen-owned streams while the retained tab branch is inactive, then renders the pinned composable clubs browse header (city scope, title/subtitle, expandable search, create action) plus `ClubsList` body. |
+| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:16` | "Clubs" tab. Owns the club-list/event-map browse mode switch: list mode renders the pinned composable clubs browse header, quick-filter rail, floating Map toggle, and `ClubsList` body; map mode embeds `EventMapView` with a CityPicker context chip and List toggle so pins represent upcoming events rather than clubs. |
 | `ClubsListBody` | `lib/clubs/presentation/list/widgets/clubs_list_body.dart:8` | Sliver-native data body for the clubs tab. Composes the joined-club horizontal rail and discover sliver list without embedding a vertical `ListView` inside the parent `CustomScrollView`. |
 | `ClubDiscoverList` | `lib/clubs/presentation/list/widgets/club_discover_list.dart:8` | Discovery section of the clubs list with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubListTile` | `lib/clubs/presentation/list/widgets/club_list_tile.dart:28` | Club tile rendered as directory card or avatar chip. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider, and host state is passed explicitly for role-aware labeling. No-photo fallbacks hide duplicate location chrome when card metadata already renders area/city below the cover. |
-| `ClubsEmptyState` | `lib/clubs/presentation/list/widgets/clubs_empty_state.dart:4` | Empty state when no clubs are found. |
+| `ClubsEmptyState` | `lib/clubs/presentation/list/widgets/clubs_empty_state.dart:4` | Empty state for empty-city, search-empty, filter-empty, and combined search/filter-empty cases. Uses `CatchEmptyState` with recovery copy and optional clear actions owned by `ClubsList`. |
 | `ClubAvatarRail` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:9` | Horizontal rail of the user's joined clubs plus a create-club tile. Uses larger rounded image chips so no-photo fallback marks and live badges remain legible. |
 | `_CreateClubButton` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:36` | Rounded-square create tile at the end of the avatar rail to create a new club. |
 | `_ClubsBrowseHeader` | `lib/clubs/presentation/list/widgets/clubs_sliver_header.dart:23` | Clubs-specific wrapper around `CatchBrowseHeader`. It is rendered in the pinned sliver slot, owns temporary search-open state, wires city picker/search/create actions, and keeps query state in `clubSearchQueryProvider`. |
 | `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:16` | Club detail identity hero with cover-photo support, shared branded fallback, name, area/city, back, and share. Rating and host-only ownership cues stay out of the hero, and no-photo headers use a shorter height. |
-| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable club detail body: host tools when applicable, stats, the public host identity strip for all viewers, about copy, host/member controls, upcoming events list, then read-only club review aggregate. Host rows collapse into `Hosted by <name>` plus profile affordance so role/location copy is not repeated. |
+| `ClubDetailBody` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable club detail body: host tools when applicable, stats, the public multi-host strip, owner-only host-team management, about copy, host/member controls, upcoming events list, then read-only club review aggregate. Host rows show owner/host badges, profile affordances, and signed-in viewer message buttons backed by the host-inquiry conversation flow. |
 | `ClubScheduleSection` | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart:9` | Sliver-native agenda section for a club's upcoming events. Reuses `EventAgendaSliverList`, shows the compact inline empty state when no events exist, routes selected events to detail, and marks host-owned schedules with the `HOSTED` event-tile status. |
 | `_ClubContactSection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:148` | Contact info section: Instagram, website, WhatsApp, email rows. |
 | `_ContactRow` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:201` | Single contact row: icon, label, and value. |
@@ -1828,10 +1887,11 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateEventScreen` | `lib/events/presentation/create_event_screen.dart:34` | Multi-step event creation flow for details, location, schedule, and event policy. Seeds policy and event-success defaults from `club.hostDefaults`, supports per-event overrides, manages draft save/restore and local form controllers, and saves optional event-success setup after event creation when enabled. On success renders `CreateEventSuccessScreen`; Manage event routes to canonical Host Manage rather than embedding management in the create flow. |
+| `CreateEventScreen` | `lib/events/presentation/create_event_screen.dart:34` | Multi-step event creation flow for details, location, schedule, event policy, and event-success defaults. Uses shared `FormStepSpec` metadata, seeds policy and event-success defaults from `club.hostDefaults`, supports per-event overrides, manages draft save/restore and local form controllers, and saves optional event-success setup after event creation when enabled. On success renders `CreateEventSuccessScreen`; Manage event routes to canonical Host Manage rather than embedding management in the create flow. |
 | `EditHostedEventScreen` | `lib/hosts/presentation/edit_hosted_event_screen.dart:107` | Host-only published-event edit form for backend-supported operational fields: schedule when unlocked, meeting point, pinned starting point, extra directions, distance, pace, description, capacity, price, admission format, invite code, cohort/age limits, dynamic pricing, and cancellation policy. Schedule and booking-policy edits lock once the event has started or has booking, waitlist, or attendance activity. |
-| `EventMapScreen` | `lib/events/presentation/event_map_screen.dart:18` | Chromeless map route wrapper. Watches `EventMapViewModel`, centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes full-screen `EventPinsMap`, floating `MapOverlayControls`, and `EventMapSheet`. |
-| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:110` | Canonical per-event host workspace. Shows shared host stat chips and switches between lifecycle sections: Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live leads with attendance correction before optional live run-of-show; Report leads with attendance summary before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
+| `EventMapScreen` | `lib/events/presentation/event_map_screen.dart:18` | Compatibility route wrapper for the reusable event map body. It provides the standalone scaffold and floating back controls while delegating map content to `EventMapView`. |
+| `EventMapView` | `lib/events/presentation/event_map_screen.dart:37` | Reusable full-screen event map body. Watches `EventMapViewModel`, centers on device location unless the selected club city was manually overridden or location is unavailable, owns selected-event state, and composes `EventPinsMap`, map empty states, optional overlay controls, and `EventMapSheet`. Used by the standalone event map route and Clubs map mode. |
+| `HostEventManageScreen` | `lib/hosts/presentation/host_event_manage_screen.dart:110` | Canonical per-event host workspace. Shows shared host stat chips and switches between lifecycle sections: Setup leads with participants before event details, event-success setup, and lower-priority admin/destructive actions; Live embeds the editable roster inside the event-success Live now flow so check-in status, current stage, QR check-in, and next-step navigation read as one operational surface; Report leads with attendance summary before the post-event host report. Private-link sharing now uses shared event-invite copy rather than terse admin text. |
 | `LocationPickerScreen` | `lib/events/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets hosts tap or search for a location and returns the selected `LocationCoordinate`; keeps confirm/search controls floating above the map. |
 
 ### ConsumerWidget
@@ -1887,7 +1947,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `EventSuccessManualQaScreen` | `lib/event_success/presentation/event_success_manual_qa_screen.dart:38` | Dev/staging manual QA harness. Uses Catch primitives and segmented controls to switch event format, host surface, First Hello arrival ritual, ranking signal, and opt-out states while rendering production host and attendee surfaces side by side from one synchronized in-memory fixture store. |
 | `_FirstHelloCheckInCard` | `lib/event_success/presentation/companion_parts/event_success_companion_arrival_mission.dart:3` | Attendee companion First Hello mission card. Renders a server/manual-QA-provided target, one short question, private answer chips, completion, and a fallback action without leaking broader attendee data. |
-| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode now opens with a showtime console, keeps the active guide compact, then groups current-step tools and supporting controls for attendance, wingman requests, reveal clues, conversation cues, assignments, and reveal controls. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
+| `EventSuccessHostPanel` | `lib/event_success/presentation/event_success_host_screen.dart:249` | Reusable host event-success panel with Setup, Live, and Report bodies. Setup derives recommendations from the event activity profile, keeps the editor visible for QA even when an unsaved started event is locked, and hides unsupported tools behind progressive disclosure. Live mode opens with one Live now console that combines the active stage, progress, attendee-facing state, optional embedded editable roster, current-step controls, and previous/next navigation before lower-priority supporting controls for wingman requests, reveal clues, conversation cues, assignments, and reveal controls. When Host Manage embeds the roster, the arrival control becomes a QR-only card instead of repeating attendance totals already shown by Live now plus the roster. Report mode summarizes signal quality from feedback response, assignment coverage, opt-outs, and wingman requests. Standalone uses can show its own picker; Host Manage passes a fixed lifecycle section and hides the inner picker. |
 | `EventSuccessDefaultsPanel` | `lib/event_success/presentation/event_success_defaults_panel.dart:14` | Shared event-success defaults form. Used by club create/edit and create event to toggle setup, normalize activity-specific recommendations against an optional target attendee count, and show a preset-review card before advanced controls. Guide notes, match clue questions, structure, and tools are progressively disclosed; questionnaire ownership is separate from tool switches, and wingman/openers are derived from module selection instead of repeated booleans. |
 | `_SetupTab` | `lib/event_success/presentation/host_parts/event_success_host_setup.dart:3` | Event-success setup form for playbook selection, target attendee count, host goal, attendee prompt, structure config, module toggles, reveal-clue opt-in, wingman requests, and setup save/ensure mutations. Essentials render first; advanced structure, tool, and delivery controls are progressively disclosed, with multiline guide-note fields and host-facing group/team/table language. |
 
@@ -1902,7 +1962,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:42` | Host Manage section loader for event-success data. It resolves the plan first, synthesizes a default plan until setup is saved, and skips roster/report/assignment/preference/wingman streams while no saved guide exists so Live and Report can render unavailable-guide states immediately. |
+| `EventSuccessHostSection` | `lib/event_success/presentation/event_success_host_screen.dart:42` | Host Manage section loader for event-success data. It resolves the plan first, synthesizes a default plan until setup is saved, and skips roster/report/assignment/preference/wingman streams while no saved guide exists so Live and Report can render unavailable-guide states immediately. Host Manage can pass an embedded live roster so check-in correction remains available inside the Live now flow, including unavailable-guide states. |
 | `EventSuccessLiveRevealHostCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart:3` | Host Live-mode reveal console for structured assignment flows. Shows a kinetic countdown, round queue, assignment clues, and host actions to start countdown, reveal now, or reset reveal state. |
 | `EventSuccessLiveRevealAttendeeCard` | `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart:3` | Companion-side reveal surface for pods and rotations. Hides assignment details until the host reveal state unlocks the round, uses a stronger countdown/waiting/unlocked presentation, then shows partners or podmates with opt-out controls intact. |
 

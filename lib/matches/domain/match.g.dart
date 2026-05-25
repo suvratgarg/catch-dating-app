@@ -35,6 +35,14 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
   blockedAt: const NullableTimestampConverter().fromJson(
     json['blockedAt'] as Timestamp?,
   ),
+  conversationType:
+      $enumDecodeNullable(
+        _$MatchConversationTypeEnumMap,
+        json['conversationType'],
+        unknownValue: MatchConversationType.match,
+      ) ??
+      MatchConversationType.match,
+  clubId: json['clubId'] as String?,
 );
 
 Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
@@ -51,9 +59,17 @@ Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
   'status': _$MatchStatusEnumMap[instance.status]!,
   'blockedBy': instance.blockedBy,
   'blockedAt': const NullableTimestampConverter().toJson(instance.blockedAt),
+  'conversationType':
+      _$MatchConversationTypeEnumMap[instance.conversationType]!,
+  'clubId': instance.clubId,
 };
 
 const _$MatchStatusEnumMap = {
   MatchStatus.active: 'active',
   MatchStatus.blocked: 'blocked',
+};
+
+const _$MatchConversationTypeEnumMap = {
+  MatchConversationType.match: 'match',
+  MatchConversationType.clubHostInquiry: 'clubHostInquiry',
 };

@@ -161,6 +161,11 @@ function harness(overrides: Record<string, FakeData | undefined> = {}) {
     "events/event-1": {
       clubId: "club-1",
       status: "active",
+      eventFormat: {
+        version: 1,
+        activityKind: "pickleball",
+        interactionModel: "pairedRotations",
+      },
       startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
       endTime: fakeTimestamp("2026-05-21T09:00:00.000Z"),
     },
@@ -239,6 +244,11 @@ test("uses the saved event-structure rotation cadence", async () => {
     "events/event-1": {
       clubId: "club-1",
       status: "active",
+      eventFormat: {
+        version: 1,
+        activityKind: "pickleball",
+        interactionModel: "pairedRotations",
+      },
       startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
       endTime: fakeTimestamp("2026-05-21T08:45:00.000Z"),
     },
@@ -324,7 +334,7 @@ test(
 );
 
 test(
-  "requires mutual interest for dating-coded generated rotations",
+  "prioritizes mutual interest before fallback rotation pairings",
   async () => {
     const {firestore, deps} = harness({
       "eventSuccessPlans/event-1": {
@@ -355,15 +365,15 @@ test(
       deps
     );
 
-    assert.deepEqual(result, {assignmentCount: 2, roundCount: 1});
+    assert.deepEqual(result, {assignmentCount: 3, roundCount: 2});
     const manOne = firestore.get(
       "eventSuccessAssignments/event-1_guided_rotations_man-1"
     );
-    assert.deepEqual(manOne?.peerUids, ["woman-1"]);
-    assert.equal(
-      firestore.get("eventSuccessAssignments/event-1_guided_rotations_nb-1"),
-      undefined
+    const nonbinaryAttendee = firestore.get(
+      "eventSuccessAssignments/event-1_guided_rotations_nb-1"
     );
+    assert.deepEqual(manOne?.peerUids, ["woman-1"]);
+    assert.deepEqual(nonbinaryAttendee?.peerUids, ["woman-1"]);
   }
 );
 
@@ -451,6 +461,11 @@ test(
       "events/event-1": {
         clubId: "club-1",
         status: "active",
+        eventFormat: {
+          version: 1,
+          activityKind: "pickleball",
+          interactionModel: "pairedRotations",
+        },
         startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
         endTime: fakeTimestamp("2026-05-21T08:30:00.000Z"),
       },
@@ -509,41 +524,48 @@ test("keeps blocked participant pairs out of rotations", async () => {
   assert.ok(!(manOne?.peerUids as string[]).includes("woman-1"));
 });
 
-test("rotates breaks before exhausting mutual-interest pairs", async () => {
-  const {firestore, deps} = harness({
-    "events/event-1": {
-      clubId: "club-1",
-      status: "active",
-      startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
-      endTime: fakeTimestamp("2026-05-21T08:45:00.000Z"),
-    },
-    ...participation("man-1"),
-    ...participation("man-2"),
-    ...participation("woman-1"),
-    ...participation("woman-2"),
-    ...participation("nb-1"),
-    "users/man-1": user("man", ["woman"]),
-    "users/man-2": user("man", ["woman"]),
-    "users/woman-1": user("woman", ["man"]),
-    "users/woman-2": user("woman", ["man"]),
-    "users/nb-1": user("nonbinary", ["woman"]),
-  });
+test(
+  "exhausts mutual-interest rotations before fallback pairings",
+  async () => {
+    const {firestore, deps} = harness({
+      "events/event-1": {
+        clubId: "club-1",
+        status: "active",
+        eventFormat: {
+          version: 1,
+          activityKind: "pickleball",
+          interactionModel: "pairedRotations",
+        },
+        startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+        endTime: fakeTimestamp("2026-05-21T08:45:00.000Z"),
+      },
+      ...participation("man-1"),
+      ...participation("man-2"),
+      ...participation("woman-1"),
+      ...participation("woman-2"),
+      ...participation("nb-1"),
+      "users/man-1": user("man", ["woman"]),
+      "users/man-2": user("man", ["woman"]),
+      "users/woman-1": user("woman", ["man"]),
+      "users/woman-2": user("woman", ["man"]),
+      "users/nb-1": user("nonbinary", ["woman"]),
+    });
 
-  const result = await generateEventSuccessRotationsHandler(
-    callableRequest("host-1"),
-    deps
-  );
+    const result = await generateEventSuccessRotationsHandler(
+      callableRequest("host-1"),
+      deps
+    );
 
-  assert.deepEqual(result, {assignmentCount: 5, roundCount: 3});
-  const nonbinaryAttendee = firestore.get(
-    "eventSuccessAssignments/event-1_guided_rotations_nb-1"
-  );
-  const slots = nonbinaryAttendee?.rotationSlots as
-    Array<Record<string, unknown>>;
-  assert.equal(slots.length, 2);
-  assert.equal(slots[0].compatibility, "one_way_interest");
-  assert.equal(slots[1].compatibility, "one_way_interest");
-});
+    assert.deepEqual(result, {assignmentCount: 5, roundCount: 3});
+    const nonbinaryAttendee = firestore.get(
+      "eventSuccessAssignments/event-1_guided_rotations_nb-1"
+    );
+    const slots = nonbinaryAttendee?.rotationSlots as
+      Array<Record<string, unknown>>;
+    assert.equal(slots.length, 1);
+    assert.equal(slots[0].compatibility, "one_way_interest");
+  }
+);
 
 test("rejects rotation generation when the module is disabled", async () => {
   const {deps} = harness({
@@ -563,7 +585,7 @@ test("rejects rotation generation when the module is disabled", async () => {
   );
 });
 
-test("rejects pair rotations for team structures", async () => {
+test("rejects pair rotations for larger unit sizes", async () => {
   const {deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
@@ -580,7 +602,7 @@ test("rejects pair rotations for team structures", async () => {
   await assert.rejects(
     () => generateEventSuccessRotationsHandler(callableRequest("host-1"), deps),
     (error) => {
-      isHttpsError(error, "failed-precondition", "Team assignment engine");
+      isHttpsError(error, "failed-precondition", "two-person units");
       return true;
     }
   );
@@ -719,7 +741,7 @@ test("rejects override pairings for blocked attendees", async () => {
 });
 
 test(
-  "rejects dating-coded override pairings without mutual interest",
+  "allows safe host override pairings without mutual interest",
   async () => {
     const {deps} = harness({
       "eventSuccessPlans/event-1": {
@@ -743,24 +765,20 @@ test(
       "users/nb-1": user("nonbinary", ["woman"]),
     });
 
-    await assert.rejects(
-      () => overrideEventSuccessRotationsHandler(
-        callableRequest("host-1", {
-          eventId: "event-1",
-          rounds: [
-            {
-              roundIndex: 0,
-              pairings: [{uidA: "woman-1", uidB: "nb-1"}],
-            },
-          ],
-        }),
-        deps
-      ),
-      (error) => {
-        isHttpsError(error, "failed-precondition", "mutual interest");
-        return true;
-      }
+    const result = await overrideEventSuccessRotationsHandler(
+      callableRequest("host-1", {
+        eventId: "event-1",
+        rounds: [
+          {
+            roundIndex: 0,
+            pairings: [{uidA: "woman-1", uidB: "nb-1"}],
+          },
+        ],
+      }),
+      deps
     );
+
+    assert.deepEqual(result, {assignmentCount: 2, roundCount: 1});
   }
 );
 

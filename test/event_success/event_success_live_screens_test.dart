@@ -115,9 +115,12 @@ void main() {
 
     await tester.tap(find.text('Live'));
     await tester.pumpAndSettle();
-    expect(find.text('Live host mode'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
     expect(find.text('Conversation cues'), findsOneWidget);
-    expect(find.text('Next'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('eventSuccessNextStepButton')),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Report'));
     await tester.pumpAndSettle();
@@ -824,7 +827,8 @@ void main() {
 
     expect(find.text('Synchronized partner reveal'), findsOneWidget);
     expect(find.text('Rotation reveal'), findsOneWidget);
-    expect(find.text('Showtime console'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
+    expect(find.text('Controls for this step'), findsOneWidget);
     expect(find.textContaining('Attendees at'), findsOneWidget);
     expect(find.text('Create the next room-wide beat'), findsOneWidget);
     expect(find.text('Drop 10s countdown'), findsOneWidget);
@@ -883,7 +887,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.widgetWithText(CatchButton, 'Next'));
+    await tester.tap(find.byKey(const ValueKey('eventSuccessNextStepButton')));
     await tester.pump();
     await tester.tap(
       find.widgetWithText(CatchButton, 'Mark live guide complete'),

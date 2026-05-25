@@ -18,7 +18,7 @@ import {
 import {UpdateClubCallablePayload} from
   "../shared/generated/updateClubCallablePayload";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {isClubOwner} from "../shared/clubHosts";
+import {isClubHost, isClubOwner} from "../shared/clubHosts";
 import {
   normalizeArchiveClubPayload,
   normalizeClubIdPayload,
@@ -62,7 +62,7 @@ export async function updateClubHandler(
       tx.get(clubRef),
       tx.get(deletedUserRef),
     ]);
-    assertCanMutateClub(clubSnap, deletedUserSnap, hostUserId);
+    assertCanUpdateClub(clubSnap, deletedUserSnap, hostUserId, data.fields);
     tx.update(clubRef, data.fields);
   });
 
@@ -197,6 +197,37 @@ function assertCanMutateClub(
       "Only the club owner can manage this club."
     );
   }
+}
+
+function assertCanUpdateClub(
+  clubSnap: FirebaseFirestore.DocumentSnapshot,
+  deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
+  hostUserId: string,
+  fields: UpdateClubCallablePayload["fields"]
+) {
+  if (deletedUserSnap.exists) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This account cannot manage clubs."
+    );
+  }
+  if (!clubSnap.exists) {
+    throw new HttpsError("not-found", "Club not found.");
+  }
+  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  if (isClubOwner(club, hostUserId)) return;
+  if (
+    isClubHost(club, hostUserId) &&
+    Object.keys(fields).every((field) =>
+      field === "imageUrl" || field === "profileImageUrl"
+    )
+  ) {
+    return;
+  }
+  throw new HttpsError(
+    "permission-denied",
+    "Only the club owner can manage this club."
+  );
 }
 
 export const archiveClub = onCall(

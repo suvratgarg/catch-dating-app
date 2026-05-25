@@ -77,6 +77,10 @@ void main() {
         final snapshot = EventFormatSnapshot.custom(
           label: 'Salsa night',
           interactionModel: EventInteractionModel.pairedRotations,
+          eventSuccessPrimitives: const {
+            'assignmentAlgorithm': 'pairRotations',
+            'rotationSuitability': 'continuousRounds',
+          },
           activityDetails: const {'danceStyle': 'salsa'},
         );
 
@@ -87,9 +91,39 @@ void main() {
           EventInteractionModel.pairedRotations,
         );
         expect(snapshot.defaultPlaybookId, isNull);
+        expect(
+          snapshot.eventSuccessPrimitives['assignmentAlgorithm'],
+          'pairRotations',
+        );
         expect(snapshot.activityDetails['danceStyle'], 'salsa');
         expect(snapshot.activityDetails['formatSource'], 'custom');
       },
     );
+
+    test('round-trips event success primitives for custom formats', () {
+      const snapshot = EventFormatSnapshot(
+        activityKind: ActivityKind.openActivity,
+        interactionModel: EventInteractionModel.openFormat,
+        customActivityLabel: 'Trivia night',
+        eventSuccessPrimitives: {
+          'phoneAvailability': 'plannedPauses',
+          'rotationSuitability': 'plannedBreaks',
+          'assignmentAlgorithm': 'teamBalancer',
+          'compatibilityPolicy': 'mutualInterestOnly',
+        },
+      );
+
+      final decoded = EventFormatSnapshot.fromJson(snapshot.toJson());
+
+      expect(decoded, snapshot);
+      expect(
+        decoded.eventSuccessPrimitives['phoneAvailability'],
+        'plannedPauses',
+      );
+      expect(
+        decoded.eventSuccessPrimitives['assignmentAlgorithm'],
+        'teamBalancer',
+      );
+    });
   });
 }

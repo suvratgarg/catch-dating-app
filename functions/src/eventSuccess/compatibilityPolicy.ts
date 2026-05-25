@@ -4,6 +4,9 @@ export type CompatibilitySignal =
   "questionnaire_match" |
   "social";
 
+export type QuestionnaireScoringMode =
+  "off" | "icebreaker" | "light" | "strong";
+
 export interface CompatibilityParticipant {
   gender?: string;
   interestedInGenders?: string[];
@@ -14,6 +17,24 @@ export interface CompatibilityScore {
   score: number;
   compatibility: CompatibilitySignal;
 }
+
+export interface DatingCompatibilityScore extends CompatibilityScore {
+  mutualInterest: boolean;
+  oneWayInterest: boolean;
+  orientationCompatible: boolean;
+  sharedAnswerCount: number;
+}
+
+export interface DatingCompatibilityOptions {
+  questionnaireMode?: QuestionnaireScoringMode;
+  allowOrientationFallback?: boolean;
+}
+
+const MUTUAL_INTEREST_SCORE = 100;
+const ONE_WAY_INTEREST_SCORE = 15;
+const SOCIAL_FALLBACK_SCORE = 1;
+const LIGHT_QUESTIONNAIRE_BOOST = 10;
+const STRONG_QUESTIONNAIRE_BOOST = 25;
 
 /**
  * Scores two attendees using profile interest and optional event answers.
@@ -27,28 +48,71 @@ export function scoreCompatibilityPair(
   b: CompatibilityParticipant,
   requireMutualInterest: boolean
 ): CompatibilityScore {
+  const scored = scoreDatingCompatibilityPair(a, b, {
+    questionnaireMode: "light",
+    allowOrientationFallback: !requireMutualInterest,
+  });
+  if (requireMutualInterest && !scored.mutualInterest) {
+    return {score: 0, compatibility: "social"};
+  }
+  return {score: scored.score / 50, compatibility: scored.compatibility};
+}
+
+/**
+ * Scores a dating-coded pair with explicit hard/soft signal metadata.
+ * @param {CompatibilityParticipant} a First attendee.
+ * @param {CompatibilityParticipant} b Second attendee.
+ * @param {DatingCompatibilityOptions} options Scoring options.
+ * @return {DatingCompatibilityScore} Score and explainability metadata.
+ */
+export function scoreDatingCompatibilityPair(
+  a: CompatibilityParticipant,
+  b: CompatibilityParticipant,
+  options: DatingCompatibilityOptions = {}
+): DatingCompatibilityScore {
   const aInterested = isInterestedIn(a, b);
   const bInterested = isInterestedIn(b, a);
-  if (requireMutualInterest && (!aInterested || !bInterested)) {
-    return {score: 0, compatibility: "social"};
-  }
-  const baseScore = aInterested && bInterested ?
-    2 :
-    aInterested || bInterested ? 1 : 0;
-  if (baseScore === 0) {
-    return {score: 0, compatibility: "social"};
-  }
+  const mutualInterest = aInterested && bInterested;
+  const oneWayInterest = !mutualInterest && (aInterested || bInterested);
   const sharedAnswerCount = sharedCompatibilityAnswerCount(a, b);
-  const questionnaireBoost = Math.min(1, sharedAnswerCount * 0.5);
-  if (questionnaireBoost > 0) {
+  const questionnaireBoost = questionnaireScore(
+    sharedAnswerCount,
+    options.questionnaireMode ?? "light"
+  );
+
+  if (mutualInterest) {
     return {
-      score: baseScore + questionnaireBoost,
-      compatibility: "questionnaire_match",
+      score: MUTUAL_INTEREST_SCORE + questionnaireBoost,
+      compatibility: questionnaireBoost > 0 ?
+        "questionnaire_match" :
+        "mutual_interest",
+      mutualInterest,
+      oneWayInterest,
+      orientationCompatible: true,
+      sharedAnswerCount,
     };
   }
+
+  if (oneWayInterest) {
+    return {
+      score: ONE_WAY_INTEREST_SCORE + Math.floor(questionnaireBoost / 4),
+      compatibility: "one_way_interest",
+      mutualInterest,
+      oneWayInterest,
+      orientationCompatible: false,
+      sharedAnswerCount,
+    };
+  }
+
   return {
-    score: baseScore,
-    compatibility: baseScore === 2 ? "mutual_interest" : "one_way_interest",
+    score: options.allowOrientationFallback === true ?
+      SOCIAL_FALLBACK_SCORE :
+      0,
+    compatibility: "social",
+    mutualInterest,
+    oneWayInterest,
+    orientationCompatible: false,
+    sharedAnswerCount,
   };
 }
 
@@ -81,4 +145,26 @@ function isInterestedIn(
 ): boolean {
   if (candidate.gender === undefined) return false;
   return viewer.interestedInGenders?.includes(candidate.gender) === true;
+}
+
+/**
+ * Weights shared answers based on the host's questionnaire intent.
+ * @param {number} sharedAnswerCount Number of shared answer ids.
+ * @param {QuestionnaireScoringMode} mode Questionnaire scoring mode.
+ * @return {number} Pair-score boost.
+ */
+function questionnaireScore(
+  sharedAnswerCount: number,
+  mode: QuestionnaireScoringMode
+): number {
+  if (sharedAnswerCount <= 0) return 0;
+  switch (mode) {
+  case "off":
+  case "icebreaker":
+    return 0;
+  case "light":
+    return Math.min(30, sharedAnswerCount * LIGHT_QUESTIONNAIRE_BOOST);
+  case "strong":
+    return Math.min(75, sharedAnswerCount * STRONG_QUESTIONNAIRE_BOOST);
+  }
 }

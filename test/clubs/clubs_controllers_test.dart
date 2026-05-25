@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -121,6 +122,50 @@ void main() {
 
       expect(fakeRepository.notificationsClubId, 'club-10');
       expect(fakeRepository.notificationsEnabled, isTrue);
+    });
+  });
+
+  group('ClubHostManagementController', () {
+    test('forwards owner host-management actions to the repository', () async {
+      final fakeRepository = FakeClubsRepository();
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('owner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      final controller = container.read(
+        clubHostManagementControllerProvider.notifier,
+      );
+      await controller.addHostByPhone(
+        clubId: 'club-1',
+        phoneNumber: '98765 43210',
+      );
+      await controller.removeHost(clubId: 'club-1', uid: 'host-2');
+      await controller.transferOwnership(clubId: 'club-1', uid: 'host-2');
+      final matchId = await controller.startConversation(
+        clubId: 'club-1',
+        hostUid: 'host-2',
+      );
+
+      expect(fakeRepository.addedHostClubId, 'club-1');
+      expect(fakeRepository.addedHostPhoneNumber, '98765 43210');
+      expect(fakeRepository.removedHostClubId, 'club-1');
+      expect(fakeRepository.removedHostUid, 'host-2');
+      expect(fakeRepository.transferredOwnershipClubId, 'club-1');
+      expect(fakeRepository.transferredOwnershipUid, 'host-2');
+      expect(fakeRepository.startedConversationClubId, 'club-1');
+      expect(fakeRepository.startedConversationHostUid, 'host-2');
+      expect(matchId, fakeRepository.nextHostConversationMatchId);
     });
   });
 
@@ -547,6 +592,58 @@ void main() {
         'https://example.com/new.jpg',
       );
     });
+
+    test(
+      'lets a co-host update club media without changing owner fields',
+      () async {
+        final existingClub = buildClub(
+          id: 'club-1',
+          hostUserId: 'owner-1',
+          ownerUserId: 'owner-1',
+          hostUserIds: const ['owner-1', 'cohost-1'],
+          imageUrl: 'https://example.com/old.jpg',
+        );
+        final fakeRepository = FakeClubsRepository();
+        final fakeImageUploadRepository = FakeImageUploadRepository(
+          pickedImage: XFile('/tmp/club-cover.jpg'),
+          uploadResult: 'https://example.com/new.jpg',
+        );
+        final container = ProviderContainer(
+          overrides: [
+            clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+            imageUploadRepositoryProvider.overrideWith(
+              (ref) => fakeImageUploadRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('cohost-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
+
+        await container
+            .read(createClubControllerProvider.notifier)
+            .submit(
+              name: 'Ignored Name',
+              location: 'indore',
+              area: 'Ignored Area',
+              description: 'Ignored description',
+              existingClub: existingClub,
+              coverImage: fakeImageUploadRepository.pickedImage,
+            );
+
+        expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
+        expect(fakeRepository.lastUpdatedClubId, 'club-1');
+        expect(fakeRepository.lastUpdatedFields, {
+          'imageUrl': 'https://example.com/new.jpg',
+        });
+      },
+    );
 
     test('rejects editing by a non-host user', () async {
       final container = ProviderContainer(

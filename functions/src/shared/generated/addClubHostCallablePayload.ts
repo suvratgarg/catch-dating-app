@@ -5,7 +5,10 @@
 /**
  * Callable payload accepted by addClubHost.
  */
-export interface AddClubHostCallablePayload {
+export type AddClubHostCallablePayload = {
   clubId: string;
-  uid: string;
-}
+  uid?: string;
+  phoneNumber?: string;
+} & {
+  [k: string]: unknown;
+};

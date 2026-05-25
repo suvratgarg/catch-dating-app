@@ -174,6 +174,7 @@ class EventFormatSnapshot {
     this.customActivityLabel,
     this.defaultPlaybookId,
     this.defaultModuleIds = const [],
+    this.eventSuccessPrimitives = const {},
     this.activityDetails = const {},
   });
 
@@ -197,6 +198,7 @@ class EventFormatSnapshot {
     required EventInteractionModel interactionModel,
     Map<String, Object?> activityDetails = const {},
     List<String> defaultModuleIds = const [],
+    Map<String, Object?> eventSuccessPrimitives = const {},
   }) {
     final normalizedLabel = label.trim();
     return EventFormatSnapshot(
@@ -204,6 +206,7 @@ class EventFormatSnapshot {
       interactionModel: interactionModel,
       customActivityLabel: normalizedLabel.isEmpty ? null : normalizedLabel,
       defaultModuleIds: defaultModuleIds,
+      eventSuccessPrimitives: eventSuccessPrimitives,
       activityDetails: {
         if (activityDetails.isNotEmpty) ...activityDetails,
         'formatSource': 'custom',
@@ -233,6 +236,9 @@ class EventFormatSnapshot {
               ?.whereType<String>()
               .toList(growable: false) ??
           const [],
+      eventSuccessPrimitives:
+          (json['eventSuccessPrimitives'] as Map<String, dynamic>?) ??
+          const <String, Object?>{},
       activityDetails:
           (json['activityDetails'] as Map<String, dynamic>?) ??
           const <String, Object?>{},
@@ -245,6 +251,7 @@ class EventFormatSnapshot {
   final String? customActivityLabel;
   final String? defaultPlaybookId;
   final List<String> defaultModuleIds;
+  final Map<String, Object?> eventSuccessPrimitives;
   final Map<String, Object?> activityDetails;
 
   String get label => customActivityLabel ?? activityKind.label;
@@ -259,6 +266,8 @@ class EventFormatSnapshot {
     if (customActivityLabel != null) 'customActivityLabel': customActivityLabel,
     if (defaultPlaybookId != null) 'defaultPlaybookId': defaultPlaybookId,
     if (defaultModuleIds.isNotEmpty) 'defaultModuleIds': defaultModuleIds,
+    if (eventSuccessPrimitives.isNotEmpty)
+      'eventSuccessPrimitives': eventSuccessPrimitives,
     if (activityDetails.isNotEmpty) 'activityDetails': activityDetails,
   };
 
@@ -276,6 +285,10 @@ class EventFormatSnapshot {
               other.defaultModuleIds,
             ) &&
             const MapEquality<String, Object?>().equals(
+              eventSuccessPrimitives,
+              other.eventSuccessPrimitives,
+            ) &&
+            const MapEquality<String, Object?>().equals(
               activityDetails,
               other.activityDetails,
             );
@@ -289,6 +302,7 @@ class EventFormatSnapshot {
     customActivityLabel,
     defaultPlaybookId,
     const ListEquality<String>().hash(defaultModuleIds),
+    const MapEquality<String, Object?>().hash(eventSuccessPrimitives),
     const MapEquality<String, Object?>().hash(activityDetails),
   );
 }

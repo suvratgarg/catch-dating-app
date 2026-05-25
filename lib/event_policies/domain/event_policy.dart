@@ -930,6 +930,27 @@ class EventPolicyBundle {
     );
   }
 
+  factory EventPolicyBundle.requestToJoinEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.manualApproval(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy(
+          mode: EventWaitlistMode.manualReview,
+          offerWindow: Duration.zero,
+        ),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
   factory EventPolicyBundle.fixedCohortCapsEvent({
     required int capacityLimit,
     required int basePriceInPaise,

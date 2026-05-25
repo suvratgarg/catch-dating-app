@@ -338,7 +338,7 @@ class EventRepository {
       withBackendErrorContext(
         () => _functions
             .httpsCallable('deleteEvent')
-            .call(EventIdCallableRequest(eventId).toJson()),
+            .call(EventIdCallableRequest(eventId: eventId).toJson()),
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'delete event',
@@ -353,7 +353,7 @@ class EventRepository {
       withBackendErrorContext(
         () => _functions
             .httpsCallable('cancelEventSignUp')
-            .call(EventIdCallableRequest(eventId).toJson()),
+            .call(EventIdCallableRequest(eventId: eventId).toJson()),
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'cancel sign-up',
@@ -367,7 +367,7 @@ class EventRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('joinEventWaitlist')
-        .call(EventIdCallableRequest(eventId, inviteCode: inviteCode).toJson()),
+        .call(EventIdCallableRequest(eventId: eventId, inviteCode: inviteCode).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'join waitlist',
@@ -381,7 +381,7 @@ class EventRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('leaveEventWaitlist')
-        .call(EventIdCallableRequest(eventId).toJson()),
+        .call(EventIdCallableRequest(eventId: eventId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'leave waitlist',

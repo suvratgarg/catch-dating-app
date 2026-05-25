@@ -17,13 +17,53 @@
     "status"
   ],
   "properties": {
-    "reporterUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "targetUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "source": {"type": "string", "enum": ["profile", "chat", "match", "support"]},
-    "status": {"type": "string", "enum": ["open", "reviewed", "dismissed"]},
-    "reasonCode": {"type": "string", "minLength": 1, "maxLength": 80},
-    "contextId": {"type": "string", "minLength": 1, "maxLength": 180},
-    "notes": {"type": "string", "maxLength": 1000}
+    "reporterUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "targetUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "profile",
+        "chat",
+        "match",
+        "support"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "reviewed",
+        "dismissed"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "reasonCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "contextId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    }
   }
 }

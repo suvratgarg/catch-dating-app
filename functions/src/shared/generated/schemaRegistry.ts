@@ -299,7 +299,8 @@ export const configCitiesDocumentSchema: Record<string, unknown> = {
         "pattern": "^[a-z0-9-]+$"
       },
       "minItems": 1,
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
     "cities": {
       "type": "array",
@@ -366,7 +367,8 @@ export const configCitiesDocumentSchema: Record<string, unknown> = {
           }
         }
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;
@@ -388,19 +390,23 @@ export const onboardingDraftDocumentSchema: Record<string, unknown> = {
   "properties": {
     "step": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "client-writable"
     },
     "draftVersion": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "client-writable"
     },
     "firstName": {
       "type": "string",
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "lastName": {
       "type": "string",
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "dateOfBirth": {
       "anyOf": [
@@ -427,15 +433,18 @@ export const onboardingDraftDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "phoneNumber": {
       "type": "string",
-      "maxLength": 32
+      "maxLength": 32,
+      "x-catch-ownership": "client-writable"
     },
     "countryCode": {
       "type": "string",
-      "maxLength": 8
+      "maxLength": 8,
+      "x-catch-ownership": "client-writable"
     },
     "gender": {
       "anyOf": [
@@ -451,7 +460,8 @@ export const onboardingDraftDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "interestedInGenders": {
       "type": "array",
@@ -464,14 +474,16 @@ export const onboardingDraftDocumentSchema: Record<string, unknown> = {
           "other"
         ]
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "client-writable"
     },
     "instagramHandle": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "profilePrompts": {
       "type": "array",
@@ -503,7 +515,8 @@ export const onboardingDraftDocumentSchema: Record<string, unknown> = {
         },
         "x-catch-catalog": "../catalogs/profile_prompts.json"
       },
-      "maxItems": 3
+      "maxItems": 3,
+      "x-catch-ownership": "client-writable"
     }
   }
 } as const;
@@ -555,21 +568,25 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "client-writable"
     },
     "firstName": {
       "type": "string",
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "lastName": {
       "type": "string",
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "displayName": {
       "type": "string",
       "minLength": 1,
       "maxLength": 80,
-      "pattern": ".*\\S.*"
+      "pattern": ".*\\S.*",
+      "x-catch-ownership": "client-writable"
     },
     "dateOfBirth": {
       "type": "object",
@@ -589,7 +606,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "gender": {
       "type": "string",
@@ -598,19 +616,23 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "woman",
         "nonBinary",
         "other"
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "phoneNumber": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 32
+      "maxLength": 32,
+      "x-catch-ownership": "client-writable"
     },
     "countryCode": {
       "type": "string",
-      "pattern": "^\\+\\d{1,4}$"
+      "pattern": "^\\+\\d{1,4}$",
+      "x-catch-ownership": "client-writable"
     },
     "profileComplete": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "synthetic": {
       "type": "boolean",
@@ -654,7 +676,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "format": "email",
           "maxLength": 320
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "instagramHandle": {
       "anyOf": [
@@ -667,7 +690,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "profilePrompts": {
       "type": "array",
@@ -699,7 +723,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/profile_prompts.json"
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "photoUrls": {
       "type": "array",
@@ -708,7 +733,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "format": "uri",
         "maxLength": 2048
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "photoThumbnailUrls": {
       "type": "array",
@@ -717,7 +743,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "format": "uri",
         "maxLength": 2048
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "photoPrompts": {
       "type": "array",
@@ -756,7 +783,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "profilePhotos": {
       "type": "array",
@@ -958,7 +986,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "x-storage-metadata": true,
         "x-future-field": "profilePhotos",
         "x-migration-contract": "../migrations/profile_photos_storage.json"
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "city": {
       "type": [
@@ -967,7 +996,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       ],
       "minLength": 1,
       "maxLength": 80,
-      "pattern": "^[a-z0-9-]+$"
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "client-writable"
     },
     "latitude": {
       "type": [
@@ -975,7 +1005,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": -90,
-      "maximum": 90
+      "maximum": 90,
+      "x-catch-ownership": "client-writable"
     },
     "longitude": {
       "type": [
@@ -983,7 +1014,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": -180,
-      "maximum": 180
+      "maximum": 180,
+      "x-catch-ownership": "client-writable"
     },
     "interestedInGenders": {
       "type": "array",
@@ -998,17 +1030,20 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "nonBinary",
           "other"
         ]
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "minAgePreference": {
       "type": "integer",
       "minimum": 18,
-      "maximum": 99
+      "maximum": 99,
+      "x-catch-ownership": "client-writable"
     },
     "maxAgePreference": {
       "type": "integer",
       "minimum": 18,
-      "maximum": 99
+      "maximum": 99,
+      "x-catch-ownership": "client-writable"
     },
     "height": {
       "type": [
@@ -1016,19 +1051,22 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": 120,
-      "maximum": 220
+      "maximum": 220,
+      "x-catch-ownership": "client-writable"
     },
     "occupation": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "company": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "education": {
       "type": [
@@ -1044,7 +1082,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "tradeSchool",
         "other",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "religion": {
       "type": [
@@ -1061,7 +1100,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "other",
         "nonReligious",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "languages": {
       "type": "array",
@@ -1083,7 +1123,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "odia",
           "other"
         ]
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "relationshipGoal": {
       "type": [
@@ -1097,7 +1138,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "friendship",
         "unsure",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "drinking": {
       "type": [
@@ -1109,7 +1151,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "socially",
         "often",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "smoking": {
       "type": [
@@ -1121,7 +1164,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "occasionally",
         "often",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "workout": {
       "type": [
@@ -1134,7 +1178,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "often",
         "everyday",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "diet": {
       "type": [
@@ -1148,7 +1193,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "jain",
         "other",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "children": {
       "type": [
@@ -1162,15 +1208,18 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "wantSomeday",
         "dontWant",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "paceMinSecsPerKm": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "x-catch-ownership": "client-writable"
     },
     "paceMaxSecsPerKm": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "x-catch-ownership": "client-writable"
     },
     "preferredDistances": {
       "type": "array",
@@ -1184,7 +1233,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "halfMarathon",
           "marathon"
         ]
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "runningReasons": {
       "type": "array",
@@ -1201,7 +1251,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "raceTraining",
           "social"
         ]
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "preferredRunTimes": {
       "type": "array",
@@ -1216,38 +1267,49 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           "evening",
           "night"
         ]
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "runPreferencesVersion": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "client-writable"
     },
     "prefsNewCatches": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsMessages": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsEventReminders": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsRunStatusUpdates": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsClubUpdates": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsWeeklyDigest": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "prefsShowOnMap": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "client-writable"
     },
     "fcmToken": {
-      "type": "string"
+      "type": "string",
+      "x-catch-ownership": "client-runtime-writable"
     },
     "deleted": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
     },
     "deletedAt": {
       "anyOf": [
@@ -1274,7 +1336,8 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "server-only"
     }
   },
   "x-internal-demo-fields": [
@@ -1324,12 +1387,14 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "trigger-owned"
     },
     "age": {
       "type": "integer",
       "minimum": 18,
-      "maximum": 120
+      "maximum": 120,
+      "x-catch-ownership": "trigger-owned"
     },
     "gender": {
       "type": "string",
@@ -1338,7 +1403,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "woman",
         "nonBinary",
         "other"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -1402,7 +1468,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/profile_prompts.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "photoUrls": {
       "type": "array",
@@ -1411,7 +1478,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "format": "uri",
         "maxLength": 2048
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "photoThumbnailUrls": {
       "type": "array",
@@ -1420,7 +1488,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "format": "uri",
         "maxLength": 2048
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "photoPrompts": {
       "type": "array",
@@ -1459,7 +1528,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "profilePhotos": {
       "type": "array",
@@ -1661,7 +1731,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "x-storage-metadata": true,
         "x-future-field": "profilePhotos",
         "x-migration-contract": "../migrations/profile_photos_storage.json"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "city": {
       "type": [
@@ -1670,7 +1741,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
       ],
       "minLength": 1,
       "maxLength": 80,
-      "pattern": "^[a-z0-9-]+$"
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "trigger-owned"
     },
     "height": {
       "type": [
@@ -1678,19 +1750,22 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": 120,
-      "maximum": 220
+      "maximum": 220,
+      "x-catch-ownership": "trigger-owned"
     },
     "occupation": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "company": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "education": {
       "type": [
@@ -1706,7 +1781,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "tradeSchool",
         "other",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "religion": {
       "type": [
@@ -1723,7 +1799,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "other",
         "nonReligious",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "languages": {
       "type": "array",
@@ -1745,7 +1822,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           "odia",
           "other"
         ]
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "relationshipGoal": {
       "type": [
@@ -1759,7 +1837,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "friendship",
         "unsure",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "drinking": {
       "type": [
@@ -1771,7 +1850,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "socially",
         "often",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "smoking": {
       "type": [
@@ -1783,7 +1863,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "occasionally",
         "often",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "workout": {
       "type": [
@@ -1796,7 +1877,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "often",
         "everyday",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "diet": {
       "type": [
@@ -1810,7 +1892,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "jain",
         "other",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "children": {
       "type": [
@@ -1824,15 +1907,18 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
         "wantSomeday",
         "dontWant",
         null
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "paceMinSecsPerKm": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "x-catch-ownership": "trigger-owned"
     },
     "paceMaxSecsPerKm": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "x-catch-ownership": "trigger-owned"
     },
     "preferredDistances": {
       "type": "array",
@@ -1846,7 +1932,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           "halfMarathon",
           "marathon"
         ]
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "runningReasons": {
       "type": "array",
@@ -1863,7 +1950,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           "raceTraining",
           "social"
         ]
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "preferredRunTimes": {
       "type": "array",
@@ -1878,11 +1966,13 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           "evening",
           "night"
         ]
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "runPreferencesVersion": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     }
   },
   "x-internal-demo-fields": [
@@ -1958,12 +2048,14 @@ export const clubDocumentSchema: Record<string, unknown> = {
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "description": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 2000
+      "maxLength": 2000,
+      "x-catch-ownership": "callable-owned"
     },
     "location": {
       "type": [
@@ -1972,22 +2064,26 @@ export const clubDocumentSchema: Record<string, unknown> = {
       ],
       "minLength": 1,
       "maxLength": 80,
-      "pattern": "^[a-z0-9-]+$"
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "callable-owned"
     },
     "area": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "hostName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "hostAvatarUrl": {
       "anyOf": [
@@ -1999,12 +2095,14 @@ export const clubDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "ownerUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "hostUserIds": {
       "type": "array",
@@ -2015,7 +2113,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "hostProfiles": {
       "type": "array",
@@ -2061,7 +2160,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
             ]
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -2081,7 +2181,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "imageUrl": {
       "anyOf": [
@@ -2093,7 +2194,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "profileImageUrl": {
       "anyOf": [
@@ -2105,7 +2207,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "tags": {
       "type": "array",
@@ -2115,20 +2218,24 @@ export const clubDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 80
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "memberCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "rating": {
       "type": "number",
       "minimum": 0,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "trigger-owned"
     },
     "reviewCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "nextEventAt": {
       "anyOf": [
@@ -2155,45 +2262,52 @@ export const clubDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "nextEventLabel": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "trigger-owned"
     },
     "instagramHandle": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 320
+      "maxLength": 320,
+      "x-catch-ownership": "callable-owned"
     },
     "phoneNumber": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 320
+      "maxLength": 320,
+      "x-catch-ownership": "callable-owned"
     },
     "email": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 320
+      "maxLength": 320,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
       "enum": [
         "active",
         "archived"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "archived": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "archivedAt": {
       "anyOf": [
@@ -2220,14 +2334,16 @@ export const clubDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "archiveReason": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 500
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "hostDefaults": {
       "type": "object",
@@ -2672,7 +2788,8 @@ export const clubDocumentSchema: Record<string, unknown> = {
             }
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -2742,12 +2859,14 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "role": {
       "type": "string",
@@ -2755,7 +2874,8 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
         "owner",
         "host",
         "member"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -2763,10 +2883,12 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
         "active",
         "left",
         "deleted"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "pushNotificationsEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "joinedAt": {
       "type": "object",
@@ -2786,7 +2908,8 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "leftAt": {
       "anyOf": [
@@ -2813,7 +2936,8 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "deletedAt": {
       "anyOf": [
@@ -2840,7 +2964,8 @@ export const clubMembershipDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -2897,12 +3022,14 @@ export const clubHostClaimDocumentSchema: Record<string, unknown> = {
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "createdAt": {
       "type": "object",
@@ -2922,7 +3049,8 @@ export const clubHostClaimDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;
@@ -2975,7 +3103,8 @@ export const eventDocumentSchema: Record<string, unknown> = {
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "startTime": {
       "type": "object",
@@ -2995,7 +3124,8 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "endTime": {
       "type": "object",
@@ -3015,12 +3145,14 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "meetingPoint": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "meetingLocation": {
       "type": "object",
@@ -3075,7 +3207,8 @@ export const eventDocumentSchema: Record<string, unknown> = {
           ],
           "maxLength": 1000
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "startingPointLat": {
       "type": [
@@ -3083,7 +3216,8 @@ export const eventDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": -90,
-      "maximum": 90
+      "maximum": 90,
+      "x-catch-ownership": "callable-owned"
     },
     "startingPointLng": {
       "type": [
@@ -3091,14 +3225,16 @@ export const eventDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minimum": -180,
-      "maximum": 180
+      "maximum": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "locationDetails": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 1000
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "photoUrl": {
       "anyOf": [
@@ -3110,12 +3246,14 @@ export const eventDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "distanceKm": {
       "type": "number",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "eventFormat": {
       "type": "object",
@@ -3183,11 +3321,57 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "maxItems": 30,
           "uniqueItems": true
         },
+        "eventSuccessPrimitives": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.",
+          "properties": {
+            "phoneAvailability": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "plannedPauses",
+                "arrivalAndPostEventOnly",
+                "hostOnlyLive",
+                "noneDuringActivity"
+              ]
+            },
+            "rotationSuitability": {
+              "type": "string",
+              "enum": [
+                "none",
+                "plannedBreaks",
+                "continuousRounds"
+              ]
+            },
+            "assignmentAlgorithm": {
+              "type": "string",
+              "enum": [
+                "none",
+                "pacePods",
+                "socialPods",
+                "pairRotations",
+                "teamBalancer",
+                "tableSeating"
+              ]
+            },
+            "compatibilityPolicy": {
+              "type": "string",
+              "enum": [
+                "none",
+                "socialCohortBalance",
+                "mutualInterestOnly",
+                "questionnaireClueOnly"
+              ]
+            }
+          }
+        },
         "activityDetails": {
           "type": "object",
           "additionalProperties": true
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "pace": {
       "type": "string",
@@ -3196,44 +3380,53 @@ export const eventDocumentSchema: Record<string, unknown> = {
         "moderate",
         "fast",
         "competitive"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "capacityLimit": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "description": {
       "type": "string",
-      "maxLength": 2000
+      "maxLength": 2000,
+      "x-catch-ownership": "callable-owned"
     },
     "priceInPaise": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100000000
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
     },
     "currency": {
       "type": "string",
-      "pattern": "^[A-Z]{3}$"
+      "pattern": "^[A-Z]{3}$",
+      "x-catch-ownership": "callable-owned"
     },
     "bookedCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "checkedInCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
       "enum": [
         "active",
         "cancelled"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "cancelledAt": {
       "anyOf": [
@@ -3260,14 +3453,16 @@ export const eventDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "cancellationReason": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 500
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "constraints": {
       "type": "object",
@@ -3303,7 +3498,8 @@ export const eventDocumentSchema: Record<string, unknown> = {
           ],
           "minimum": 0
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "eventPolicy": {
       "type": "object",
@@ -3570,28 +3766,32 @@ export const eventDocumentSchema: Record<string, unknown> = {
             }
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "genderCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
         "minimum": 0
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "cohortCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
         "minimum": 0
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedCohortCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
         "minimum": 0
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -3649,18 +3849,21 @@ export const eventPrivateAccessDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "inviteCode": {
       "type": "string",
       "minLength": 4,
       "maxLength": 64,
-      "pattern": "^[A-Za-z0-9_-]+$"
+      "pattern": "^[A-Za-z0-9_-]+$",
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -3680,7 +3883,8 @@ export const eventPrivateAccessDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -3723,17 +3927,20 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -3743,7 +3950,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         "attended",
         "cancelled",
         "deleted"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -3763,7 +3971,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -3783,7 +3992,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "signedUpAt": {
       "anyOf": [
@@ -3810,7 +4020,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "waitlistedAt": {
       "anyOf": [
@@ -3837,7 +4048,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "attendedAt": {
       "anyOf": [
@@ -3864,7 +4076,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "cancelledAt": {
       "anyOf": [
@@ -3891,7 +4104,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "deletedAt": {
       "anyOf": [
@@ -3918,7 +4132,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "genderAtSignup": {
       "anyOf": [
@@ -3934,7 +4149,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "cohortAtSignup": {
       "type": [
@@ -3942,7 +4158,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "paymentId": {
       "type": [
@@ -3950,7 +4167,8 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4024,17 +4242,20 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "playbookId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "selectedModuleIds": {
       "type": "array",
@@ -4043,12 +4264,14 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 120
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "targetAttendeeCount": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 1000
+      "maximum": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "structureConfig": {
       "type": "object",
@@ -4095,20 +4318,25 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 60
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "hostGoal": {
       "type": "string",
-      "maxLength": 300
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
     },
     "wingmanRequestsEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "contextualOpenersEnabled": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "compatibilityAffectsRanking": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "questionnaireConfig": {
       "type": "object",
@@ -4179,12 +4407,14 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
             }
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "activeStepIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -4192,7 +4422,8 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         "setup",
         "live",
         "complete"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "revealStatus": {
       "type": "string",
@@ -4200,12 +4431,14 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         "idle",
         "countingDown",
         "revealed"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "activeRevealRoundIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "revealStartedAt": {
       "anyOf": [
@@ -4232,14 +4465,16 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "attendeePrompt": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 300
+      "maxLength": 300,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -4259,7 +4494,8 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -4279,7 +4515,8 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "frozenAt": {
       "anyOf": [
@@ -4306,7 +4543,8 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "completedAt": {
       "anyOf": [
@@ -4333,7 +4571,8 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4404,42 +4643,50 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "welcomeRating": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "callable-owned"
     },
     "structureRating": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "callable-owned"
     },
     "metNewPeopleCount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
     },
     "safetyConcern": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "privateNote": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 500
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -4459,7 +4706,8 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -4479,7 +4727,8 @@ export const eventSuccessFeedbackDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4548,23 +4797,28 @@ export const eventSuccessPreferenceDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "microPodsOptedOut": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "guidedRotationsOptedOut": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -4584,7 +4838,8 @@ export const eventSuccessPreferenceDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -4604,7 +4859,8 @@ export const eventSuccessPreferenceDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4672,17 +4928,20 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "answerIds": {
       "type": "array",
@@ -4692,7 +4951,8 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
         "type": "string",
         "minLength": 1,
         "maxLength": 120
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -4712,7 +4972,8 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -4732,7 +4993,8 @@ export const eventSuccessCompatibilityResponseDocumentSchema: Record<string, unk
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4802,40 +5064,47 @@ export const eventSuccessWingmanRequestDocumentSchema: Record<string, unknown> =
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "requesterUid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "targetUid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
       "enum": [
         "active",
         "withdrawn"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "hostVisibleConsent": {
       "type": "boolean",
-      "const": true
+      "const": true,
+      "x-catch-ownership": "callable-owned"
     },
     "note": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -4855,7 +5124,8 @@ export const eventSuccessWingmanRequestDocumentSchema: Record<string, unknown> =
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -4875,7 +5145,8 @@ export const eventSuccessWingmanRequestDocumentSchema: Record<string, unknown> =
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -4948,37 +5219,44 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "observerUid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "targetUid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "targetDisplayName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
     },
     "targetContext": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 160
+      "maxLength": 160,
+      "x-catch-ownership": "callable-owned"
     },
     "question": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 160
+      "maxLength": 160,
+      "x-catch-ownership": "callable-owned"
     },
     "answerOptions": {
       "type": "array",
@@ -5003,7 +5281,8 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
             "maxLength": 80
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -5011,12 +5290,14 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
         "active",
         "completed",
         "skipped"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "selectedAnswerId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 64
+      "maxLength": 64,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -5036,7 +5317,8 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -5056,7 +5338,8 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "completedAt": {
       "type": "object",
@@ -5076,7 +5359,8 @@ export const eventSuccessArrivalMissionDocumentSchema: Record<string, unknown> =
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -5148,41 +5432,48 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "moduleId": {
       "type": "string",
       "enum": [
         "micro_pods",
         "guided_rotations"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "label": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
     },
     "displayTitle": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "displaySubtitle": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "peerUids": {
       "type": "array",
@@ -5191,7 +5482,8 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "rotationSlots": {
       "type": "array",
@@ -5274,7 +5566,8 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
             ]
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "source": {
       "type": "string",
@@ -5282,7 +5575,8 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
         "server_v1",
         "host_override_v1",
         "server"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -5302,7 +5596,8 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -5322,7 +5617,8 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -5396,50 +5692,61 @@ export const eventSuccessScorecardDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "bookedCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "checkedInCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "feedbackCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "attendeesWhoMetTwoPlusPeople": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "mutualMatchCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "chatStartedCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "averageWelcomeRating": {
       "type": "number",
       "minimum": 0,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "trigger-owned"
     },
     "averageStructureRating": {
       "type": "number",
       "minimum": 0,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "trigger-owned"
     },
     "safetyIncidentCount": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -5459,7 +5766,8 @@ export const eventSuccessScorecardDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -5521,28 +5829,33 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "reporterUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "feedbackId": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 256
+      "maxLength": 256,
+      "x-catch-ownership": "callable-owned"
     },
     "source": {
       "type": "string",
       "enum": [
         "event_success_feedback"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -5550,11 +5863,13 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
         "open",
         "reviewed",
         "dismissed"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "note": {
       "type": "string",
-      "maxLength": 500
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -5574,7 +5889,8 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "type": "object",
@@ -5594,7 +5910,8 @@ export const eventSafetyReportDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -5630,34 +5947,41 @@ export const clubScheduleLockDocumentSchema: Record<string, unknown> = {
   "properties": {
     "ownerType": {
       "type": "string",
-      "const": "club"
+      "const": "club",
+      "x-catch-ownership": "callable-owned"
     },
     "ownerId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "slot": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "startTimeMillis": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "endTimeMillis": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -5726,39 +6050,47 @@ export const userEventScheduleLockDocumentSchema: Record<string, unknown> = {
   "properties": {
     "ownerType": {
       "type": "string",
-      "const": "user"
+      "const": "user",
+      "x-catch-ownership": "callable-owned"
     },
     "ownerId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "slot": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "startTimeMillis": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "endTimeMillis": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -5823,12 +6155,14 @@ export const savedEventDocumentSchema: Record<string, unknown> = {
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "savedAt": {
       "type": "object",
@@ -5848,7 +6182,8 @@ export const savedEventDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "synthetic": {
       "type": "boolean",
@@ -5919,32 +6254,38 @@ export const paymentDocumentSchema: Record<string, unknown> = {
     "userId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "orderId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "paymentId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "amount": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 100000000
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
     },
     "currency": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 3
+      "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -5953,10 +6294,12 @@ export const paymentDocumentSchema: Record<string, unknown> = {
         "completed",
         "failed",
         "refunded"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "signUpFailed": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -5976,7 +6319,8 @@ export const paymentDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -6045,24 +6389,28 @@ export const swipeDocumentSchema: Record<string, unknown> = {
     "swiperId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "targetId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "direction": {
       "type": "string",
       "enum": [
         "like",
         "pass"
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "reactionTargetId": {
       "type": [
@@ -6070,7 +6418,8 @@ export const swipeDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "reactionTargetType": {
       "type": [
@@ -6086,28 +6435,32 @@ export const swipeDocumentSchema: Record<string, unknown> = {
         "details",
         "lifestyle",
         null
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "reactionTargetLabel": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "client-writable"
     },
     "reactionTargetPreview": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "client-writable"
     },
     "comment": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "client-writable"
     },
     "createdAt": {
       "type": "object",
@@ -6127,7 +6480,8 @@ export const swipeDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "client-writable"
     },
     "synthetic": {
       "type": "boolean",
@@ -6201,22 +6555,25 @@ export const matchDocumentSchema: Record<string, unknown> = {
     "user1Id": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "user2Id": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "eventIds": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "createdAt": {
       "type": "object",
@@ -6236,7 +6593,8 @@ export const matchDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "lastMessageAt": {
       "anyOf": [
@@ -6263,14 +6621,16 @@ export const matchDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "lastMessagePreview": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 300
+      "maxLength": 300,
+      "x-catch-ownership": "trigger-owned"
     },
     "lastMessageSenderId": {
       "type": [
@@ -6278,21 +6638,24 @@ export const matchDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "unreadCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
         "minimum": 0
-      }
+      },
+      "x-catch-ownership": "client-runtime-writable"
     },
     "status": {
       "type": "string",
       "enum": [
         "active",
         "blocked"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "blockedBy": {
       "type": [
@@ -6300,7 +6663,8 @@ export const matchDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "blockedAt": {
       "anyOf": [
@@ -6327,7 +6691,8 @@ export const matchDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "participantIds": {
       "type": "array",
@@ -6338,7 +6703,22 @@ export const matchDocumentSchema: Record<string, unknown> = {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
+    },
+    "conversationType": {
+      "type": "string",
+      "enum": [
+        "match",
+        "clubHostInquiry"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -6425,11 +6805,13 @@ export const chatMessageDocumentSchema: Record<string, unknown> = {
     "senderId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "client-writable"
     },
     "text": {
       "type": "string",
-      "maxLength": 2000
+      "maxLength": 2000,
+      "x-catch-ownership": "client-writable"
     },
     "imageUrl": {
       "anyOf": [
@@ -6441,7 +6823,8 @@ export const chatMessageDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "sentAt": {
       "anyOf": [
@@ -6468,7 +6851,8 @@ export const chatMessageDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-writable"
     },
     "synthetic": {
       "type": "boolean",
@@ -6535,7 +6919,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "type": {
       "type": "string",
@@ -6548,17 +6933,20 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "eventCancelled",
         "eventUpdated",
         "clubUpdate"
-      ]
+      ],
+      "x-catch-ownership": "server-only"
     },
     "title": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 160
+      "maxLength": 160,
+      "x-catch-ownership": "server-only"
     },
     "body": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 500
+      "maxLength": 500,
+      "x-catch-ownership": "server-only"
     },
     "createdAt": {
       "type": "object",
@@ -6578,7 +6966,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     },
     "readAt": {
       "anyOf": [
@@ -6605,7 +6994,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "client-runtime-writable"
     },
     "matchId": {
       "type": [
@@ -6613,7 +7003,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
     },
     "eventId": {
       "type": [
@@ -6621,7 +7012,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "clubId": {
       "type": [
@@ -6629,7 +7021,8 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "actorUid": {
       "type": [
@@ -6637,14 +7030,16 @@ export const activityNotificationDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "actorName": {
       "type": [
         "string",
         "null"
       ],
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
     },
     "synthetic": {
       "type": "boolean",
@@ -6712,7 +7107,8 @@ export const reviewDocumentSchema: Record<string, unknown> = {
     "clubId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "eventId": {
       "type": [
@@ -6720,26 +7116,31 @@ export const reviewDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "reviewerUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "reviewerName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "rating": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "callable-owned"
     },
     "comment": {
       "type": "string",
-      "maxLength": 1000
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -6759,7 +7160,8 @@ export const reviewDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "updatedAt": {
       "anyOf": [
@@ -6786,7 +7188,8 @@ export const reviewDocumentSchema: Record<string, unknown> = {
         {
           "type": "null"
         }
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "type": "boolean",
@@ -6844,12 +7247,14 @@ export const blockDocumentSchema: Record<string, unknown> = {
     "blockerUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "blockedUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -6869,7 +7274,8 @@ export const blockDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "source": {
       "type": "string",
@@ -6878,12 +7284,14 @@ export const blockDocumentSchema: Record<string, unknown> = {
         "chat",
         "match",
         "support"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "reasonCode": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -6910,12 +7318,14 @@ export const reportDocumentSchema: Record<string, unknown> = {
     "reporterUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "targetUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
       "type": "object",
@@ -6935,7 +7345,8 @@ export const reportDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "source": {
       "type": "string",
@@ -6944,7 +7355,8 @@ export const reportDocumentSchema: Record<string, unknown> = {
         "chat",
         "match",
         "support"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
       "type": "string",
@@ -6952,21 +7364,25 @@ export const reportDocumentSchema: Record<string, unknown> = {
         "open",
         "reviewed",
         "dismissed"
-      ]
+      ],
+      "x-catch-ownership": "callable-owned"
     },
     "reasonCode": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 80
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
     },
     "contextId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
     },
     "notes": {
       "type": "string",
-      "maxLength": 1000
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -6993,7 +7409,8 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
     "targetUserId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "flagType": {
       "type": "string",
@@ -7001,7 +7418,8 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
         "explicit_photo",
         "banned_text",
         "underage_content"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "source": {
       "type": "string",
@@ -7012,7 +7430,8 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
         "user_bio",
         "club_description",
         "review_comment"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "status": {
       "type": "string",
@@ -7020,7 +7439,8 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
         "pending",
         "reviewed",
         "dismissed"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "createdAt": {
       "type": "object",
@@ -7040,7 +7460,8 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "reviewedAt": {
       "type": "object",
@@ -7060,22 +7481,26 @@ export const moderationFlagDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     },
     "contextId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
     },
     "context": {
       "type": "string",
-      "maxLength": 1000
+      "maxLength": 1000,
+      "x-catch-ownership": "trigger-owned"
     },
     "safeSearchResults": {
       "type": "object",
       "additionalProperties": {
         "type": "string"
-      }
+      },
+      "x-catch-ownership": "trigger-owned"
     }
   }
 } as const;
@@ -7099,7 +7524,8 @@ export const deletedUserTombstoneDocumentSchema: Record<string, unknown> = {
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "deletedAt": {
       "type": "object",
@@ -7119,7 +7545,8 @@ export const deletedUserTombstoneDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     },
     "retainedFor": {
       "type": "array",
@@ -7128,7 +7555,8 @@ export const deletedUserTombstoneDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 80
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;
@@ -7155,20 +7583,24 @@ export const rateLimitDocumentSchema: Record<string, unknown> = {
     "uid": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "action": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
     },
     "windowKey": {
       "type": "integer",
-      "minimum": 0
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
     },
     "count": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
     },
     "expiresAt": {
       "type": "object",
@@ -7188,7 +7620,8 @@ export const rateLimitDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;
@@ -7216,22 +7649,26 @@ export const functionEventReceiptDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "onMessageCreated"
-      ]
+      ],
+      "x-catch-ownership": "server-only"
     },
     "eventId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 240
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
     },
     "matchId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "messageId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "createdAt": {
       "type": "object",
@@ -7251,7 +7688,8 @@ export const functionEventReceiptDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;
@@ -7287,12 +7725,14 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
     "seedId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "manifestId": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 180
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
     },
     "generatedAt": {
       "type": "object",
@@ -7312,7 +7752,8 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
           "minimum": 0,
           "maximum": 999999999
         }
-      }
+      },
+      "x-catch-ownership": "server-only"
     },
     "anchorUserIds": {
       "type": "array",
@@ -7321,14 +7762,16 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 180
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
     "counts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
         "minimum": 0
-      }
+      },
+      "x-catch-ownership": "server-only"
     },
     "paths": {
       "type": "array",
@@ -7337,10 +7780,12 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 512
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
     "appendMode": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "server-only"
     },
     "appendedAnchorUserIds": {
       "type": "array",
@@ -7349,7 +7794,8 @@ export const seedEventManifestDocumentSchema: Record<string, unknown> = {
         "minLength": 1,
         "maxLength": 180
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "x-catch-ownership": "server-only"
     },
     "synthetic": {
       "type": "boolean",
@@ -9095,8 +9541,19 @@ export const addClubHostCallablePayloadSchema: Record<string, unknown> = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "clubId",
-    "uid"
+    "clubId"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "uid"
+      ]
+    },
+    {
+      "required": [
+        "phoneNumber"
+      ]
+    }
   ],
   "properties": {
     "clubId": {
@@ -9108,6 +9565,11 @@ export const addClubHostCallablePayloadSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 6,
+      "maxLength": 32
     }
   }
 } as const;
@@ -9130,6 +9592,56 @@ export const removeClubHostCallablePayloadSchema: Record<string, unknown> = {
       "maxLength": 180
     },
     "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const transferClubOwnershipCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/transfer_club_ownership_payload.schema.json",
+  "title": "TransferClubOwnershipCallablePayload",
+  "description": "Callable payload accepted by transferClubOwnership.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "uid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const startClubHostConversationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json",
+  "title": "StartClubHostConversationCallablePayload",
+  "description": "Callable payload accepted by startClubHostConversation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "hostUid"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hostUid": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -9726,6 +10238,51 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
           },
           "maxItems": 30,
           "uniqueItems": true
+        },
+        "eventSuccessPrimitives": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.",
+          "properties": {
+            "phoneAvailability": {
+              "type": "string",
+              "enum": [
+                "continuous",
+                "plannedPauses",
+                "arrivalAndPostEventOnly",
+                "hostOnlyLive",
+                "noneDuringActivity"
+              ]
+            },
+            "rotationSuitability": {
+              "type": "string",
+              "enum": [
+                "none",
+                "plannedBreaks",
+                "continuousRounds"
+              ]
+            },
+            "assignmentAlgorithm": {
+              "type": "string",
+              "enum": [
+                "none",
+                "pacePods",
+                "socialPods",
+                "pairRotations",
+                "teamBalancer",
+                "tableSeating"
+              ]
+            },
+            "compatibilityPolicy": {
+              "type": "string",
+              "enum": [
+                "none",
+                "socialCohortBalance",
+                "mutualInterestOnly",
+                "questionnaireClueOnly"
+              ]
+            }
+          }
         },
         "activityDetails": {
           "type": "object",
@@ -11189,24 +11746,28 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
         "swiperId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 180
+          "maxLength": 180,
+          "x-catch-ownership": "client-writable"
         },
         "targetId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 180
+          "maxLength": 180,
+          "x-catch-ownership": "client-writable"
         },
         "eventId": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 180
+          "maxLength": 180,
+          "x-catch-ownership": "client-writable"
         },
         "direction": {
           "type": "string",
           "enum": [
             "like",
             "pass"
-          ]
+          ],
+          "x-catch-ownership": "client-writable"
         },
         "reactionTargetId": {
           "type": [
@@ -11214,7 +11775,8 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
             "null"
           ],
           "minLength": 1,
-          "maxLength": 80
+          "maxLength": 80,
+          "x-catch-ownership": "client-writable"
         },
         "reactionTargetType": {
           "type": [
@@ -11230,28 +11792,32 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
             "details",
             "lifestyle",
             null
-          ]
+          ],
+          "x-catch-ownership": "client-writable"
         },
         "reactionTargetLabel": {
           "type": [
             "string",
             "null"
           ],
-          "maxLength": 80
+          "maxLength": 80,
+          "x-catch-ownership": "client-writable"
         },
         "reactionTargetPreview": {
           "type": [
             "string",
             "null"
           ],
-          "maxLength": 240
+          "maxLength": 240,
+          "x-catch-ownership": "client-writable"
         },
         "comment": {
           "type": [
             "string",
             "null"
           ],
-          "maxLength": 240
+          "maxLength": 240,
+          "x-catch-ownership": "client-writable"
         },
         "createdAt": {
           "type": "object",
@@ -11271,7 +11837,8 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
               "minimum": 0,
               "maximum": 999999999
             }
-          }
+          },
+          "x-catch-ownership": "client-writable"
         },
         "synthetic": {
           "type": "boolean",

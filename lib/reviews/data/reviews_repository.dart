@@ -130,7 +130,7 @@ class ReviewsRepository {
   Future<void> deleteReview(String reviewId) => withBackendErrorContext(
     () => _functions
         .httpsCallable('deleteEventReview')
-        .call(ReviewIdCallableRequest(reviewId).toJson()),
+        .call(DeleteEventReviewCallableRequest(reviewId: reviewId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'delete review',

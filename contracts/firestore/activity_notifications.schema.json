@@ -17,9 +17,18 @@
     "demoOpsId",
     "demoOpsCommand"
   ],
-  "required": ["uid", "type", "title", "body", "createdAt"],
+  "required": [
+    "uid",
+    "type",
+    "title",
+    "body",
+    "createdAt"
+  ],
   "properties": {
-    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
     "type": {
       "type": "string",
       "enum": [
@@ -31,22 +40,90 @@
         "eventCancelled",
         "eventUpdated",
         "clubUpdate"
-      ]
+      ],
+      "x-catch-ownership": "server-only"
     },
-    "title": {"type": "string", "minLength": 1, "maxLength": 160},
-    "body": {"type": "string", "minLength": 1, "maxLength": 500},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "readAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
-    "matchId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
-    "eventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
-    "clubId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
-    "actorUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
-    "actorName": {"type": ["string", "null"], "maxLength": 120},
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "x-catch-ownership": "server-only"
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    },
+    "readAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "client-runtime-writable"
+    },
+    "matchId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "server-only"
+    },
+    "eventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "clubId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "actorName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

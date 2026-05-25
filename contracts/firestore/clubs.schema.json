@@ -49,34 +49,42 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "description": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 2000
+      "maxLength": 2000,
+      "x-catch-ownership": "callable-owned"
     },
     "location": {
-      "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+      "$ref": "../shared/event_common.schema.json#/definitions/citySlug",
+      "x-catch-ownership": "callable-owned"
     },
     "area": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "hostName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 120
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
     },
     "hostAvatarUrl": {
-      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "callable-owned"
     },
     "ownerUserId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
     },
     "hostUserIds": {
       "type": "array",
@@ -85,7 +93,8 @@
       "uniqueItems": true,
       "items": {
         "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "hostProfiles": {
       "type": "array",
@@ -93,16 +102,20 @@
       "maxItems": 20,
       "items": {
         "$ref": "../shared/event_common.schema.json#/definitions/clubHostProfile"
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "imageUrl": {
-      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "callable-owned"
     },
     "profileImageUrl": {
-      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+      "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
+      "x-catch-ownership": "callable-owned"
     },
     "tags": {
       "type": "array",
@@ -112,50 +125,70 @@
         "type": "string",
         "minLength": 1,
         "maxLength": 80
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "memberCount": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned"
     },
     "rating": {
       "type": "number",
       "minimum": 0,
-      "maximum": 5
+      "maximum": 5,
+      "x-catch-ownership": "trigger-owned"
     },
     "reviewCount": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger",
+      "x-catch-ownership": "trigger-owned"
     },
     "nextEventAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
     },
     "nextEventLabel": {
-      "type": ["string", "null"],
-      "maxLength": 240
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "trigger-owned"
     },
     "instagramHandle": {
-      "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+      "$ref": "../shared/event_common.schema.json#/definitions/contactString",
+      "x-catch-ownership": "callable-owned"
     },
     "phoneNumber": {
-      "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+      "$ref": "../shared/event_common.schema.json#/definitions/contactString",
+      "x-catch-ownership": "callable-owned"
     },
     "email": {
-      "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+      "$ref": "../shared/event_common.schema.json#/definitions/contactString",
+      "x-catch-ownership": "callable-owned"
     },
     "status": {
-      "$ref": "../shared/event_common.schema.json#/definitions/clubLifecycleStatus"
+      "$ref": "../shared/event_common.schema.json#/definitions/clubLifecycleStatus",
+      "x-catch-ownership": "callable-owned"
     },
     "archived": {
-      "type": "boolean"
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
     },
     "archivedAt": {
-      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
     },
     "archiveReason": {
-      "type": ["string", "null"],
-      "maxLength": 500
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "x-catch-ownership": "callable-owned"
     },
     "hostDefaults": {
-      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults"
+      "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults",
+      "x-catch-ownership": "callable-owned"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

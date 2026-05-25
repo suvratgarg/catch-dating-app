@@ -67,9 +67,7 @@ void main() {
     },
   );
 
-  testWidgets('view event opens the dashboard event detail route', (
-    tester,
-  ) async {
+  testWidgets('view event opens the club event detail route', (tester) async {
     final event = buildEvent(
       id: 'event-map-1',
       clubId: 'club-map-1',
@@ -87,8 +85,8 @@ void main() {
           builder: (_, _) => const EventMapScreen(enableNetworkTiles: false),
         ),
         GoRoute(
-          path: Routes.dashboardEventDetailScreen.path,
-          name: Routes.dashboardEventDetailScreen.name,
+          path: Routes.eventDetailScreen.path,
+          name: Routes.eventDetailScreen.name,
           builder: (_, state) => Scaffold(
             body: Text(
               'Event detail ${state.pathParameters['clubId']}/'

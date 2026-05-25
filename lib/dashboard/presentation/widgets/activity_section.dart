@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -65,28 +66,21 @@ class ActivitySection extends ConsumerWidget {
     final notifications =
         notificationsAsync.asData?.value ?? const <ActivityNotification>[];
     final events = eventsAsync.asData?.value ?? const <Event>[];
-    final items = _ActivityItem.fromData(
-      notifications: notifications,
-      events: events,
+    final visibleNotifications = notifications
+        .where((notification) => notification.isVisibleInActivity)
+        .toList(growable: false);
+    final notificationItems = _NotificationItem.fromNotifications(
+      visibleNotifications,
     );
+    final upcomingEvents = _upcomingEvents(events);
 
-    final hasUnread = notifications.any(
+    final hasUnread = visibleNotifications.any(
       (notification) => notification.isUnread,
     );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (showMarkAllReadAction && hasUnread && items.isNotEmpty) ...[
-          Align(
-            alignment: Alignment.centerRight,
-            child: CatchTextButton(
-              label: 'Mark all read',
-              onPressed: () => _markAllRead(ref, notifications, context),
-            ),
-          ),
-          gapH8,
-        ],
         if (isLoading) ...[
           CatchSurface(
             padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -115,7 +109,7 @@ class ActivitySection extends ConsumerWidget {
               ref.invalidate(watchSignedUpEventsProvider(uid));
             },
           ),
-        ] else if (items.isEmpty) ...[
+        ] else if (upcomingEvents.isEmpty && notificationItems.isEmpty) ...[
           if (showEmptyState)
             CatchEmptyState(
               icon: Icons.notifications_none_rounded,
@@ -128,20 +122,37 @@ class ActivitySection extends ConsumerWidget {
               messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
         ] else ...[
-          Divider(color: t.line, height: 1),
-          gapH18,
-          for (final group in _groupItems(items)) ...[
-            SectionHeader(title: group.label),
-            gapH8,
-            for (final entry in group.items.indexed) ...[
-              _ActivityTile(
-                item: entry.$2,
-                isFirst: entry.$1 == 0,
-                isLast: entry.$1 == group.items.length - 1,
-              ),
-              if (entry.$2 != group.items.last) Divider(color: t.line),
+          if (upcomingEvents.isNotEmpty) ...[
+            const SectionHeader(title: 'Upcoming events', heavy: true),
+            for (final entry in upcomingEvents.indexed) ...[
+              _UpcomingEventTile(event: entry.$2),
+              if (entry.$1 != upcomingEvents.length - 1) gapH10,
             ],
-            gapH18,
+            if (notificationItems.isNotEmpty) gapH24,
+          ],
+          if (notificationItems.isNotEmpty) ...[
+            SectionHeader(
+              title: 'Recent updates',
+              heavy: true,
+              trailing: showMarkAllReadAction && hasUnread
+                  ? CatchTextButton(
+                      label: 'Mark all read',
+                      onPressed: () =>
+                          _markAllRead(ref, visibleNotifications, context),
+                    )
+                  : null,
+            ),
+            for (final group in _groupItems(notificationItems)) ...[
+              SectionHeader(
+                title: group.label,
+                padding: const EdgeInsets.only(top: 4, bottom: 8),
+              ),
+              for (final entry in group.items.indexed) ...[
+                _NotificationTile(item: entry.$2),
+                if (entry.$1 != group.items.length - 1) gapH10,
+              ],
+              gapH16,
+            ],
           ],
         ],
       ],
@@ -179,135 +190,319 @@ class ActivitySection extends ConsumerWidget {
   }
 }
 
-class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({
-    required this.item,
-    required this.isFirst,
-    required this.isLast,
-  });
+class _UpcomingEventTile extends StatelessWidget {
+  const _UpcomingEventTile({required this.event});
 
-  final _ActivityItem item;
-  final bool isFirst;
-  final bool isLast;
+  final Event event;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Semantics(
-      button: item.route != null,
-      label: '${item.title}. ${item.subtitle}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            final route = item.route;
-            if (route != null) context.push(route);
-          },
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
+    return CatchSurface(
+      onTap: () => context.push(_eventRoute(event)),
+      borderColor: t.line,
+      backgroundColor: t.surface,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _EventDatePill(date: event.startTime),
+          gapW12,
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _ActivityTimelineMarker(
-                  icon: item.icon,
-                  isPrimary: item.isPrimary,
-                  isFirst: isFirst,
-                  isLast: isLast,
-                ),
-                gapW12,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: CatchTextStyles.bodyM(context, color: t.ink)
-                            .copyWith(
-                              fontWeight: item.isPrimary
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
-                            ),
-                      ),
-                      gapH4,
-                      Text(
-                        item.subtitle,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
-                      ),
-                    ],
-                  ),
-                ),
-                gapW8,
                 Text(
-                  item.timeLabel,
-                  style: CatchTextStyles.bodyS(context, color: t.ink3),
+                  event.locationName,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleS(context, color: t.ink),
+                ),
+                gapH4,
+                Text(
+                  '${EventFormatters.shortDate(event.startTime)} · '
+                  '${event.compactTimeRangeLabel}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+                gapH8,
+                Wrap(
+                  spacing: CatchSpacing.s1,
+                  runSpacing: CatchSpacing.s1,
+                  children: [
+                    CatchBadge(
+                      label: event.distanceLabel,
+                      tone: CatchBadgeTone.brand,
+                    ),
+                    CatchBadge(
+                      label: event.pace.label,
+                      tone: CatchBadgeTone.neutral,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ActivityTimelineMarker extends StatelessWidget {
-  const _ActivityTimelineMarker({
-    required this.icon,
-    required this.isPrimary,
-    required this.isFirst,
-    required this.isLast,
-  });
-
-  final IconData icon;
-  final bool isPrimary;
-  final bool isFirst;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return SizedBox(
-      width: 46,
-      height: 56,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          Positioned(
-            top: isFirst ? 23 : 0,
-            bottom: isLast ? 33 : 0,
-            child: Container(width: 2, color: t.line),
-          ),
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: isPrimary ? t.primary : t.primarySoft,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: isPrimary ? t.primaryInk : t.primary,
-              size: 21,
-            ),
-          ),
+          gapW8,
+          Icon(Icons.chevron_right_rounded, size: 20, color: t.ink3),
         ],
       ),
     );
   }
 }
 
-class _ActivityStateLabel extends StatelessWidget {
-  const _ActivityStateLabel(this.message);
+class _EventDatePill extends StatelessWidget {
+  const _EventDatePill({required this.date});
 
-  final String message;
+  final DateTime date;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Text(message, style: CatchTextStyles.bodyS(context, color: t.ink2));
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.primarySoft.withValues(alpha: 0.64),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+        border: Border.all(color: t.primary.withValues(alpha: 0.16)),
+      ),
+      child: SizedBox(
+        width: 52,
+        height: 58,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              EventFormatters.shortMonth(date).toUpperCase(),
+              style: CatchTextStyles.labelS(context, color: t.primary),
+            ),
+            gapH2,
+            Text(
+              '${date.day}',
+              style: CatchTextStyles.titleL(context, color: t.ink),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationTile extends StatelessWidget {
+  const _NotificationTile({required this.item});
+
+  final _NotificationItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final visual = _NotificationVisual.from(item.type, t);
+
+    return Semantics(
+      button: item.route != null,
+      label: '${item.title}. ${item.subtitle}',
+      child: CatchSurface(
+        onTap: item.route == null ? null : () => context.push(item.route!),
+        borderColor: item.isUnread
+            ? visual.accent.withValues(alpha: 0.34)
+            : t.line,
+        backgroundColor: item.isUnread
+            ? visual.accent.withValues(alpha: 0.06)
+            : t.surface,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _NotificationIconChip(visual: visual),
+            gapW12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.titleS(context, color: t.ink)
+                              .copyWith(
+                                fontWeight: item.isUnread
+                                    ? FontWeight.w700
+                                    : FontWeight.w600,
+                              ),
+                        ),
+                      ),
+                      gapW8,
+                      Text(
+                        item.timeLabel,
+                        style: CatchTextStyles.bodyS(context, color: t.ink3),
+                      ),
+                    ],
+                  ),
+                  gapH4,
+                  Text(
+                    item.subtitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  ),
+                  gapH8,
+                  Wrap(
+                    spacing: CatchSpacing.s1,
+                    runSpacing: CatchSpacing.s1,
+                    children: [
+                      CatchBadge(
+                        label: visual.label,
+                        tone: visual.badgeTone,
+                        icon: visual.badgeIcon,
+                      ),
+                      if (item.isUnread)
+                        const CatchBadge(
+                          label: 'New',
+                          tone: CatchBadgeTone.live,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (item.route != null) ...[
+              gapW8,
+              Icon(Icons.chevron_right_rounded, size: 20, color: t.ink3),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NotificationIconChip extends StatelessWidget {
+  const _NotificationIconChip({required this.visual});
+
+  final _NotificationVisual visual;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: visual.background,
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+        border: Border.all(color: visual.border),
+      ),
+      child: SizedBox.square(
+        dimension: 42,
+        child: Icon(visual.icon, color: visual.accent, size: 21),
+      ),
+    );
+  }
+}
+
+class _NotificationVisual {
+  const _NotificationVisual({
+    required this.icon,
+    required this.label,
+    required this.badgeTone,
+    required this.accent,
+    required this.background,
+    required this.border,
+    this.badgeIcon,
+  });
+
+  final IconData icon;
+  final String label;
+  final CatchBadgeTone badgeTone;
+  final Color accent;
+  final Color background;
+  final Color border;
+  final IconData? badgeIcon;
+
+  static _NotificationVisual from(
+    ActivityNotificationType type,
+    CatchTokens t,
+  ) {
+    _NotificationVisual visual({
+      required IconData icon,
+      required String label,
+      required CatchBadgeTone tone,
+      required Color accent,
+      IconData? badgeIcon,
+      double backgroundAlpha = 0.11,
+    }) {
+      return _NotificationVisual(
+        icon: icon,
+        label: label,
+        badgeTone: tone,
+        accent: accent,
+        background: accent.withValues(alpha: backgroundAlpha),
+        border: accent.withValues(alpha: 0.14),
+        badgeIcon: badgeIcon,
+      );
+    }
+
+    return switch (type) {
+      ActivityNotificationType.message => visual(
+        icon: Icons.chat_bubble_outline_rounded,
+        label: 'Message',
+        tone: CatchBadgeTone.neutral,
+        accent: t.ink2,
+        badgeIcon: Icons.chat_bubble_outline_rounded,
+      ),
+      ActivityNotificationType.match => visual(
+        icon: Icons.favorite_rounded,
+        label: 'Catch',
+        tone: CatchBadgeTone.brand,
+        accent: t.primary,
+        badgeIcon: Icons.favorite_rounded,
+      ),
+      ActivityNotificationType.eventReminder => visual(
+        icon: Icons.notifications_active_outlined,
+        label: 'Reminder',
+        tone: CatchBadgeTone.live,
+        accent: t.primary,
+        badgeIcon: Icons.notifications_active_outlined,
+      ),
+      ActivityNotificationType.eventSignup => visual(
+        icon: Icons.check_circle_outline_rounded,
+        label: 'Booked',
+        tone: CatchBadgeTone.success,
+        accent: t.success,
+        badgeIcon: Icons.check_rounded,
+      ),
+      ActivityNotificationType.waitlistPromotion => visual(
+        icon: Icons.event_available_rounded,
+        label: 'Waitlist',
+        tone: CatchBadgeTone.warning,
+        accent: t.warning,
+        badgeIcon: Icons.schedule_rounded,
+      ),
+      ActivityNotificationType.eventCancelled => visual(
+        icon: Icons.event_busy_rounded,
+        label: 'Cancelled',
+        tone: CatchBadgeTone.danger,
+        accent: t.danger,
+        badgeIcon: Icons.close_rounded,
+      ),
+      ActivityNotificationType.eventUpdated => visual(
+        icon: Icons.update_rounded,
+        label: 'Updated',
+        tone: CatchBadgeTone.neutral,
+        accent: t.accent,
+        badgeIcon: Icons.update_rounded,
+      ),
+      ActivityNotificationType.clubUpdate => visual(
+        icon: Icons.groups_rounded,
+        label: 'Club',
+        tone: CatchBadgeTone.neutral,
+        accent: t.accent,
+        badgeIcon: Icons.groups_rounded,
+      ),
+    };
   }
 }
 
@@ -315,101 +510,57 @@ class _ActivityGroup {
   const _ActivityGroup({required this.label, required this.items});
 
   final String label;
-  final List<_ActivityItem> items;
+  final List<_NotificationItem> items;
 }
 
-class _ActivityItem {
-  const _ActivityItem({
+class _NotificationItem {
+  const _NotificationItem({
+    required this.type,
     required this.title,
     required this.subtitle,
     required this.createdAt,
-    required this.icon,
     required this.timeLabel,
+    required this.isUnread,
     this.route,
-    this.isPrimary = false,
   });
 
+  final ActivityNotificationType type;
   final String title;
   final String subtitle;
   final DateTime createdAt;
-  final IconData icon;
   final String timeLabel;
+  final bool isUnread;
   final String? route;
-  final bool isPrimary;
 
-  static List<_ActivityItem> fromData({
-    required List<ActivityNotification> notifications,
-    required List<Event> events,
-  }) {
+  static List<_NotificationItem> fromNotifications(
+    Iterable<ActivityNotification> notifications,
+  ) {
     final now = DateTime.now();
-    final items = <_ActivityItem>[];
-
-    for (final notification in notifications) {
-      items.add(_ActivityItem.fromNotification(notification, now));
-    }
-
-    final durableReminderEventIds = notifications
-        .where(
-          (notification) =>
-              notification.type == ActivityNotificationType.eventReminder,
-        )
-        .map((notification) => notification.eventId)
-        .whereType<String>()
-        .toSet();
-
-    for (final event
-        in events
-            .where(
-              (event) =>
-                  event.startTime.isAfter(now) &&
-                  !durableReminderEventIds.contains(event.id),
+    final items =
+        notifications
+            .where((notification) => notification.isVisibleInActivity)
+            .map(
+              (notification) =>
+                  _NotificationItem.fromNotification(notification, now),
             )
-            .take(3)) {
-      final reminderAt = event.startTime.subtract(const Duration(minutes: 15));
-      items.add(
-        _ActivityItem(
-          title: _eventReminderTitle(event.startTime, now),
-          subtitle: '${event.locationName} · ${event.activitySummaryLabel}',
-          createdAt: reminderAt,
-          icon: Icons.directions_run_rounded,
-          route: Routes.eventDetailScreen.path
-              .replaceFirst(':clubId', event.clubId)
-              .replaceFirst(':eventId', event.id),
-          timeLabel: EventFormatters.shortDate(event.startTime),
-        ),
-      );
-    }
-
-    items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            .toList(growable: false)
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return items;
   }
 
-  factory _ActivityItem.fromNotification(
+  factory _NotificationItem.fromNotification(
     ActivityNotification notification,
     DateTime now,
   ) {
-    return _ActivityItem(
+    return _NotificationItem(
+      type: notification.type,
       title: notification.title,
       subtitle: notification.body,
       createdAt: notification.createdAt,
-      icon: _notificationIcon(notification.type),
       route: _notificationRoute(notification),
       timeLabel: _relativeTime(notification.createdAt, now),
-      isPrimary: notification.isUnread,
+      isUnread: notification.isUnread,
     );
-  }
-
-  static IconData _notificationIcon(ActivityNotificationType type) {
-    return switch (type) {
-      ActivityNotificationType.message => Icons.chat_bubble_outline_rounded,
-      ActivityNotificationType.match => Icons.favorite_rounded,
-      ActivityNotificationType.eventReminder ||
-      ActivityNotificationType.eventSignup ||
-      ActivityNotificationType.waitlistPromotion ||
-      ActivityNotificationType.eventCancelled ||
-      ActivityNotificationType.eventUpdated => Icons.directions_run_rounded,
-      ActivityNotificationType.clubUpdate => Icons.groups_rounded,
-    };
   }
 
   static String? _notificationRoute(ActivityNotification notification) {
@@ -428,13 +579,6 @@ class _ActivityItem {
     return null;
   }
 
-  static String _eventReminderTitle(DateTime startTime, DateTime now) {
-    final minutes = startTime.difference(now).inMinutes;
-    if (minutes <= 60) return 'Your event starts soon';
-    if (DateUtils.isSameDay(startTime, now)) return 'Event later today';
-    return 'Upcoming event';
-  }
-
   static String _relativeTime(DateTime time, DateTime now) {
     final difference = now.difference(time);
     if (difference.inMinutes < 1) return 'Now';
@@ -444,23 +588,38 @@ class _ActivityItem {
   }
 }
 
-List<_ActivityGroup> _groupItems(List<_ActivityItem> items) {
+List<Event> _upcomingEvents(List<Event> events) {
   final now = DateTime.now();
-  final today = <_ActivityItem>[];
-  final yesterday = <_ActivityItem>[];
-  final upcoming = <_ActivityItem>[];
-  final earlier = <_ActivityItem>[];
+  final upcoming =
+      events.where((event) => event.isUpcomingAt(now)).toList(growable: false)
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  return upcoming.take(3).toList(growable: false);
+}
+
+String _eventRoute(Event event) {
+  return Routes.eventDetailScreen.path
+      .replaceFirst(':clubId', event.clubId)
+      .replaceFirst(':eventId', event.id);
+}
+
+List<_ActivityGroup> _groupItems(List<_NotificationItem> items) {
+  final now = DateTime.now();
+  final today = <_NotificationItem>[];
+  final yesterday = <_NotificationItem>[];
+  final thisWeek = <_NotificationItem>[];
+  final earlier = <_NotificationItem>[];
+  final weekAgo = now.subtract(const Duration(days: 7));
 
   for (final item in items) {
-    if (item.createdAt.isAfter(now)) {
-      upcoming.add(item);
-    } else if (DateUtils.isSameDay(item.createdAt, now)) {
+    if (DateUtils.isSameDay(item.createdAt, now)) {
       today.add(item);
     } else if (DateUtils.isSameDay(
       item.createdAt,
       now.subtract(const Duration(days: 1)),
     )) {
       yesterday.add(item);
+    } else if (item.createdAt.isAfter(weekAgo)) {
+      thisWeek.add(item);
     } else {
       earlier.add(item);
     }
@@ -468,9 +627,22 @@ List<_ActivityGroup> _groupItems(List<_ActivityItem> items) {
 
   return [
     if (today.isNotEmpty) _ActivityGroup(label: 'Today', items: today),
-    if (upcoming.isNotEmpty) _ActivityGroup(label: 'Upcoming', items: upcoming),
     if (yesterday.isNotEmpty)
       _ActivityGroup(label: 'Yesterday', items: yesterday),
-    if (earlier.isNotEmpty) _ActivityGroup(label: 'This week', items: earlier),
+    if (thisWeek.isNotEmpty)
+      _ActivityGroup(label: 'This week', items: thisWeek),
+    if (earlier.isNotEmpty) _ActivityGroup(label: 'Earlier', items: earlier),
   ];
+}
+
+class _ActivityStateLabel extends StatelessWidget {
+  const _ActivityStateLabel(this.message);
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Text(message, style: CatchTextStyles.bodyS(context, color: t.ink2));
+  }
 }

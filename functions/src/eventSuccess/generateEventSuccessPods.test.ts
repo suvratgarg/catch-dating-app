@@ -155,7 +155,15 @@ class FakeFirestore {
 
 function harness(overrides: Record<string, FakeData | undefined> = {}) {
   const firestore = new FakeFirestore({
-    "events/event-1": {clubId: "club-1", status: "active"},
+    "events/event-1": {
+      clubId: "club-1",
+      status: "active",
+      eventFormat: {
+        version: 1,
+        activityKind: "socialRun",
+        interactionModel: "pacePods",
+      },
+    },
     "clubs/club-1": {
       hostUserId: "host-1",
       hostName: "Host",
@@ -324,6 +332,43 @@ test("uses saved unit size for generated pod count", async () => {
   );
 
   assert.deepEqual(result, {assignmentCount: 7, podCount: 3});
+});
+
+test("uses unit kind labels for table assignments", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "tables",
+        unitSize: 4,
+        unitCount: 2,
+      },
+    },
+    ...Object.fromEntries(
+      Array.from({length: 6}, (_, index) => [
+        `eventParticipations/event-1_runner-${index + 1}`,
+        {
+          eventId: "event-1",
+          uid: `runner-${index + 1}`,
+          status: "signedUp",
+        },
+      ])
+    ),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
+  const runnerOne = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  );
+  assert.equal(runnerOne?.displayTitle, "Table A");
+  assert.match(String(runnerOne?.displaySubtitle), /at this table/);
 });
 
 test("uses saved fixed unit count when present", async () => {
@@ -499,6 +544,63 @@ test("uses profile cohorts as pod balancing tie-breakers", async () => {
   );
 });
 
+test("uses format primitives for custom team formats", async () => {
+  const {firestore, deps} = harness({
+    "events/event-1": {
+      clubId: "club-1",
+      status: "active",
+      eventFormat: {
+        version: 1,
+        activityKind: "openActivity",
+        interactionModel: "openFormat",
+        customActivityLabel: "Trivia night",
+        eventSuccessPrimitives: {
+          assignmentAlgorithm: "teamBalancer",
+          compatibilityPolicy: "mutualInterestOnly",
+        },
+      },
+    },
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 3,
+        unitCount: 2,
+      },
+    },
+    "eventParticipations/event-1_gay-man-1": participation("gay-man-1"),
+    "eventParticipations/event-1_gay-man-2": participation("gay-man-2"),
+    "eventParticipations/event-1_straight-man-1":
+      participation("straight-man-1"),
+    "eventParticipations/event-1_straight-man-2":
+      participation("straight-man-2"),
+    "eventParticipations/event-1_straight-woman-1":
+      participation("straight-woman-1"),
+    "eventParticipations/event-1_straight-woman-2":
+      participation("straight-woman-2"),
+    "users/gay-man-1": user("man", ["man"]),
+    "users/gay-man-2": user("man", ["man"]),
+    "users/straight-man-1": user("man", ["woman"]),
+    "users/straight-man-2": user("man", ["woman"]),
+    "users/straight-woman-1": user("woman", ["man"]),
+    "users/straight-woman-2": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
+  const gayManOne = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_gay-man-1"
+  );
+  assert.ok((gayManOne?.peerUids as string[]).includes("gay-man-2"));
+  assert.equal(gayManOne?.displayTitle, "Team A");
+});
+
 test("rejects non-host pod generation", async () => {
   const {deps} = harness();
 
@@ -529,8 +631,8 @@ test("rejects pod generation when the module is disabled", async () => {
   );
 });
 
-test("rejects micro-pods for pair rotation structures", async () => {
-  const {deps} = harness({
+test("uses the same group engine for pair-sized units", async () => {
+  const {firestore, deps} = harness({
     "eventSuccessPlans/event-1": {
       eventId: "event-1",
       clubId: "club-1",
@@ -540,15 +642,21 @@ test("rejects micro-pods for pair rotation structures", async () => {
         unitSize: 2,
       },
     },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
   });
 
-  await assert.rejects(
-    () => generateEventSuccessPodsHandler(callableRequest("host-1"), deps),
-    (error) => {
-      isHttpsError(error, "failed-precondition", "guided rotations");
-      return true;
-    }
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
   );
+
+  assert.deepEqual(result, {assignmentCount: 2, podCount: 1});
+  const assignment = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  );
+  assert.equal(assignment?.displayTitle, "Pair A");
+  assert.match(String(assignment?.displaySubtitle), /in this pair/);
 });
 
 function callableRequest(uid: string): CallableRequest<unknown> {

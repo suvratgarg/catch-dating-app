@@ -1,44 +1,80 @@
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_calendar_links.g.dart';
 
+const _calendarChannel = MethodChannel('catch/calendar');
+
+typedef NativeCalendarLauncher =
+    Future<bool> Function(CalendarEventPayload event);
+
+@Riverpod(keepAlive: true)
+NativeCalendarLauncher nativeCalendarLauncher(Ref ref) {
+  return (event) async {
+    try {
+      final added = await _calendarChannel.invokeMethod<bool>(
+        'addToCalendar',
+        event.toJson(),
+      );
+      return added ?? false;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
+      return false;
+    }
+  };
+}
+
 @Riverpod(keepAlive: true)
 EventCalendarController eventCalendarController(Ref ref) =>
-    EventCalendarController(ref.watch(externalLinkControllerProvider));
+    EventCalendarController(ref.watch(nativeCalendarLauncherProvider));
 
 class EventCalendarController {
-  const EventCalendarController(this._links);
+  const EventCalendarController(this._addEvent);
 
-  final ExternalLinkController _links;
+  final NativeCalendarLauncher _addEvent;
 
   Future<bool> addToCalendar(Event event) {
-    return _links.openExternal(calendarUriForEvent(event));
+    return _addEvent(calendarEventPayloadForEvent(event));
   }
 }
 
-Uri calendarUriForEvent(Event event) {
-  return Uri.https('calendar.google.com', '/calendar/render', {
-    'action': 'TEMPLATE',
-    'text': event.title,
-    'dates':
-        '${_calendarTimestamp(event.startTime)}/${_calendarTimestamp(event.endTime)}',
-    'details': _calendarDetails(event),
-    'location': _calendarLocation(event),
+class CalendarEventPayload {
+  const CalendarEventPayload({
+    required this.title,
+    required this.description,
+    required this.location,
+    required this.startTime,
+    required this.endTime,
   });
+
+  final String title;
+  final String description;
+  final String location;
+  final DateTime startTime;
+  final DateTime endTime;
+
+  Map<String, Object?> toJson() {
+    return {
+      'title': title,
+      'description': description,
+      'location': location,
+      'startTimeMillis': startTime.millisecondsSinceEpoch,
+      'endTimeMillis': endTime.millisecondsSinceEpoch,
+    };
+  }
 }
 
-String _calendarTimestamp(DateTime dateTime) {
-  final utc = dateTime.toUtc();
-  String twoDigits(int value) => value.toString().padLeft(2, '0');
-  return '${utc.year}'
-      '${twoDigits(utc.month)}'
-      '${twoDigits(utc.day)}T'
-      '${twoDigits(utc.hour)}'
-      '${twoDigits(utc.minute)}'
-      '${twoDigits(utc.second)}Z';
+CalendarEventPayload calendarEventPayloadForEvent(Event event) {
+  return CalendarEventPayload(
+    title: event.title,
+    description: _calendarDetails(event),
+    location: _calendarLocation(event),
+    startTime: event.startTime,
+    endTime: event.endTime,
+  );
 }
 
 String _calendarDetails(Event event) {

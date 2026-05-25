@@ -32,37 +32,115 @@
     "participantIds"
   ],
   "properties": {
-    "user1Id": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "user2Id": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "user1Id": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "user2Id": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
     "eventIds": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "uniqueItems": true,
-      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "x-catch-ownership": "trigger-owned"
     },
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "lastMessageAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
-    "lastMessagePreview": {"type": ["string", "null"], "maxLength": 300},
-    "lastMessageSenderId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "lastMessageAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "lastMessagePreview": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "lastMessageSenderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
+    },
     "unreadCounts": {
       "type": "object",
-      "additionalProperties": {"$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"}
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      },
+      "x-catch-ownership": "client-runtime-writable"
     },
-    "status": {"type": "string", "enum": ["active", "blocked"]},
-    "blockedBy": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
-    "blockedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "blocked"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "blockedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "blockedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
     "participantIds": {
       "type": "array",
       "minItems": 2,
       "maxItems": 2,
       "uniqueItems": true,
-      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "x-catch-ownership": "trigger-owned"
     },
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "conversationType": {
+      "type": "string",
+      "enum": [
+        "match",
+        "clubHostInquiry"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

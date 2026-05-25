@@ -9,6 +9,54 @@ part of 'event_calendar_links.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(nativeCalendarLauncher)
+final nativeCalendarLauncherProvider = NativeCalendarLauncherProvider._();
+
+final class NativeCalendarLauncherProvider
+    extends
+        $FunctionalProvider<
+          NativeCalendarLauncher,
+          NativeCalendarLauncher,
+          NativeCalendarLauncher
+        >
+    with $Provider<NativeCalendarLauncher> {
+  NativeCalendarLauncherProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'nativeCalendarLauncherProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$nativeCalendarLauncherHash();
+
+  @$internal
+  @override
+  $ProviderElement<NativeCalendarLauncher> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  NativeCalendarLauncher create(Ref ref) {
+    return nativeCalendarLauncher(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NativeCalendarLauncher value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NativeCalendarLauncher>(value),
+    );
+  }
+}
+
+String _$nativeCalendarLauncherHash() =>
+    r'0c5abf080da9b94792e3741ebad6e6cfdfc76839';
+
 @ProviderFor(eventCalendarController)
 final eventCalendarControllerProvider = EventCalendarControllerProvider._();
 
@@ -55,4 +103,4 @@ final class EventCalendarControllerProvider
 }
 
 String _$eventCalendarControllerHash() =>
-    r'7bc402933186825f159914e24b4f1ee303c73f37';
+    r'7a189f7cd79d9cb39b04a8c665ec82eabe6abe7b';

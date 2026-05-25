@@ -14,11 +14,6 @@ class QuickActions extends StatelessWidget {
 
   static final _actions = [
     _QuickAction(
-      icon: Icons.map_outlined,
-      label: 'Map view',
-      route: Routes.eventMapScreen.path,
-    ),
-    _QuickAction(
       icon: Icons.calendar_month_outlined,
       label: 'Calendar',
       route: Routes.calendarScreen.path,

@@ -257,6 +257,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/removeClubHostCallablePayload.ts",
   },
   {
+    name: "TransferClubOwnershipCallablePayload",
+    source: "callables/transfer_club_ownership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/transferClubOwnershipCallablePayload.ts",
+  },
+  {
+    name: "StartClubHostConversationCallablePayload",
+    source: "callables/start_club_host_conversation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/startClubHostConversationCallablePayload.ts",
+  },
+  {
     name: "ArchiveClubCallablePayload",
     source: "callables/archive_club_payload.schema.json",
     typeOutput:
@@ -541,6 +553,24 @@ async function main() {
     "lib/core/schema_contracts/generated/schema_contracts.g.dart",
     renderDartSchemaContracts({schemaMap: bundledSchemas})
   );
+
+  const dartCallableRequests = renderDartCallableRequestClasses({
+    schemaSpecs,
+    schemaMap: bundledSchemas,
+  });
+  addTextOutput(
+    "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
+    dartCallableRequests.text
+  );
+  if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
+    console.log(
+      `[callable_request_dtos.g.dart] ${dartCallableRequests.ungenerable.length} ` +
+      `schemas not yet generatable (hand-written in lib/**/data/*_callable_dtos.dart):`
+    );
+    for (const entry of dartCallableRequests.ungenerable) {
+      console.log(`  - ${entry.name}: ${entry.reason}`);
+    }
+  }
 
   const staleFiles = [];
   for (const file of generatedFiles) {
@@ -997,6 +1027,192 @@ ${bySource}
 
 function dartSchemaConstName(name) {
   return `schema${name}Schema`;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Dart callable request DTO generation.
+//
+// Walks every callable payload schema (and the update_user_profile patch),
+// emits a Dart class with constructor, fields, and toJson(). Classes for
+// schemas that are still too rich (nested objects without inline class
+// emission yet, anyOf with multiple non-null branches, etc.) are skipped and
+// reported via the `dartUngenerable` list returned alongside the rendered
+// text — the caller logs it so contributors see what's still hand-written.
+// ────────────────────────────────────────────────────────────────────────────
+
+function renderDartCallableRequestClasses({schemaSpecs, schemaMap}) {
+  const classes = [];
+  const ungenerable = [];
+
+  for (const spec of schemaSpecs) {
+    if (!isCallableRequestSpec(spec)) continue;
+    const schema = schemaMap.get(spec.name);
+    if (!schema) continue;
+
+    const result = tryEmitDartCallableClass(spec, schema);
+    if (result.ok) {
+      classes.push(result.text);
+    } else {
+      ungenerable.push({name: spec.name, reason: result.reason});
+    }
+  }
+
+  const body = classes.length === 0 ?
+    "// No callable request classes are currently generatable.\n" :
+    classes.join("\n\n");
+
+  const text = `${dartGeneratedHeader()}
+// Typed callable request DTOs emitted from contracts/callables/ and
+// contracts/patches/. The toJson() output of each class is validated against
+// the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
+//
+// Hand-written DTOs in lib/**/data/*_callable_dtos.dart may still exist for
+// schemas that this generator cannot yet emit (nested objects, anyOf with
+// multiple non-null branches, Timestamp serialization quirks); see backlog
+// item CONTRACT-DART-GEN-001.
+
+${body}
+`;
+
+  return {text, ungenerable};
+}
+
+function isCallableRequestSpec(spec) {
+  if (typeof spec.source !== "string") return false;
+  if (spec.source.startsWith("callables/")) return true;
+  if (spec.source === "patches/update_user_profile.schema.json") return true;
+  return false;
+}
+
+function tryEmitDartCallableClass(spec, schema) {
+  if (schema.type !== "object" || !schema.properties) {
+    return {ok: false, reason: "not an object schema"};
+  }
+
+  // BlockUserCallablePayload → BlockUserCallableRequest
+  // UpdateUserProfileCallablePayload → UpdateUserProfileCallableRequest
+  const className = spec.name.replace(/Payload$/, "Request");
+  const required = new Set(schema.required ?? []);
+
+  const fields = [];
+  for (const [fieldName, prop] of Object.entries(schema.properties)) {
+    const mapped = mapDartType(prop);
+    if (mapped === null) {
+      return {
+        ok: false,
+        reason: `cannot map field "${fieldName}" (${describeSchemaType(prop)})`,
+      };
+    }
+    const isRequired = required.has(fieldName);
+    // Optional schema fields ("not in required") map to nullable Dart fields,
+    // even when the schema type itself is non-null. JSON-side "omitted" is
+    // Dart-side null. The map literal uses `?name` to drop entries when null.
+    const dartType = isRequired || mapped.endsWith("?") ? mapped : `${mapped}?`;
+    fields.push({name: fieldName, dartType, isRequired});
+  }
+
+  if (fields.length === 0) {
+    return {ok: false, reason: "no properties"};
+  }
+
+  return {ok: true, text: formatDartCallableClass(className, fields, schema.description)};
+}
+
+function mapDartType(prop) {
+  if (!prop || typeof prop !== "object") return null;
+
+  // Type union including null → nullable scalar.
+  if (Array.isArray(prop.type)) {
+    const isNullable = prop.type.includes("null");
+    const nonNull = prop.type.filter((t) => t !== "null");
+    if (nonNull.length !== 1) return null;
+    const base = mapDartType({...prop, type: nonNull[0]});
+    if (!base) return null;
+    const baseStripped = base.endsWith("?") ? base.slice(0, -1) : base;
+    return isNullable ? `${baseStripped}?` : base;
+  }
+
+  // anyOf with a "null" branch → nullable of the single non-null branch.
+  if (Array.isArray(prop.anyOf) && !prop.type) {
+    const hasNull = prop.anyOf.some((s) => s && s.type === "null");
+    const nonNull = prop.anyOf.filter((s) => s && s.type !== "null");
+    if (nonNull.length !== 1) return null;
+    const inner = mapDartType(nonNull[0]);
+    if (!inner) return null;
+    const innerStripped = inner.endsWith("?") ? inner.slice(0, -1) : inner;
+    return hasNull ? `${innerStripped}?` : inner;
+  }
+
+  // Enum (string with const list of values) → String for now.
+  // The JSON Schema validates the value; Dart side stays String.
+
+  switch (prop.type) {
+    case "string": return "String";
+    case "integer": return "int";
+    case "number": return "double";
+    case "boolean": return "bool";
+    case "array": {
+      if (!prop.items || typeof prop.items !== "object") return null;
+      const innerType = mapDartType(prop.items);
+      if (!innerType) return null;
+      // Dart Lists drop the inner nullability suffix for the element type.
+      const innerStripped = innerType.endsWith("?") ?
+        innerType.slice(0, -1) :
+        innerType;
+      return `List<${innerStripped}>`;
+    }
+    case "object": {
+      // Strictly-typed nested objects would ideally each get their own emitted
+      // Dart class. For now, project them as Map<String, Object?> — matching
+      // the choice the hand-written DTOs make for nested payloads. This keeps
+      // the toJson() output schema-conformant while losing field-level Dart
+      // typing for the nested shape. Future work: emit nested classes.
+      return "Map<String, Object?>";
+    }
+    default: return null;
+  }
+}
+
+function describeSchemaType(prop) {
+  if (!prop || typeof prop !== "object") return "non-object";
+  if (Array.isArray(prop.type)) return `type=[${prop.type.join(", ")}]`;
+  if (Array.isArray(prop.anyOf)) return "anyOf";
+  if (prop.type === "object" && prop.properties) return "nested object";
+  return prop.type ? `type=${prop.type}` : "no type";
+}
+
+function formatDartCallableClass(className, fields, description) {
+  const ctorParams = fields.map((f) =>
+    f.isRequired ?
+      `    required this.${f.name},` :
+      `    this.${f.name},`
+  ).join("\n");
+
+  const fieldDecls = fields.map((f) =>
+    `  final ${f.dartType} ${f.name};`
+  ).join("\n");
+
+  const jsonEntries = fields.map((f) =>
+    f.isRequired ?
+      `    ${dartString(f.name)}: ${f.name},` :
+      `    ${dartString(f.name)}: ?${f.name},`
+  ).join("\n");
+
+  const docComment = description ?
+    `/// ${description}\n` :
+    "";
+
+  return `${docComment}final class ${className} {
+  const ${className}({
+${ctorParams}
+  });
+
+${fieldDecls}
+
+  Map<String, Object?> toJson() => {
+${jsonEntries}
+  };
+}`;
 }
 
 function profileDecisionPathParts(schemaOrPath) {

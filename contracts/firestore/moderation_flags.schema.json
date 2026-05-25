@@ -9,12 +9,26 @@
   "x-firestore-path": "moderationFlags/{flagId}",
   "x-document-id-field": "id",
   "x-owner": "moderation triggers",
-  "required": ["targetUserId", "flagType", "source", "status", "createdAt"],
+  "required": [
+    "targetUserId",
+    "flagType",
+    "source",
+    "status",
+    "createdAt"
+  ],
   "properties": {
-    "targetUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "trigger-owned"
+    },
     "flagType": {
       "type": "string",
-      "enum": ["explicit_photo", "banned_text", "underage_content"]
+      "enum": [
+        "explicit_photo",
+        "banned_text",
+        "underage_content"
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
     "source": {
       "type": "string",
@@ -25,16 +39,43 @@
         "user_bio",
         "club_description",
         "review_comment"
-      ]
+      ],
+      "x-catch-ownership": "trigger-owned"
     },
-    "status": {"type": "string", "enum": ["pending", "reviewed", "dismissed"]},
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "contextId": {"type": "string", "minLength": 1, "maxLength": 180},
-    "context": {"type": "string", "maxLength": 1000},
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "dismissed"
+      ],
+      "x-catch-ownership": "trigger-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "reviewedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "trigger-owned"
+    },
+    "contextId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "context": {
+      "type": "string",
+      "maxLength": 1000,
+      "x-catch-ownership": "trigger-owned"
+    },
     "safeSearchResults": {
       "type": "object",
-      "additionalProperties": {"type": "string"}
+      "additionalProperties": {
+        "type": "string"
+      },
+      "x-catch-ownership": "trigger-owned"
     }
   }
 }

@@ -92,7 +92,8 @@ void main() {
       );
       _expectValid(
         'EventIdCallablePayload',
-        EventIdCallableRequest('event-1', inviteCode: 'CATCH_2026').toJson(),
+        EventIdCallableRequest(eventId: 'event-1', inviteCode: 'CATCH_2026')
+            .toJson(),
       );
       _expectValid(
         'CancelEventCallablePayload',
@@ -103,7 +104,7 @@ void main() {
       );
       _expectValid(
         'DeleteEventCallablePayload',
-        const EventIdCallableRequest('event-1').toJson(),
+        const EventIdCallableRequest(eventId: 'event-1').toJson(),
       );
       _expectValid(
         'MarkEventAttendanceCallablePayload',
@@ -149,11 +150,11 @@ void main() {
       );
       _expectValid(
         'ClubMembershipCallablePayload',
-        const ClubIdCallableRequest('club-1').toJson(),
+        const ClubMembershipCallableRequest(clubId: 'club-1').toJson(),
       );
       _expectValid(
         'DeleteClubCallablePayload',
-        const ClubIdCallableRequest('club-1').toJson(),
+        const DeleteClubCallableRequest(clubId: 'club-1').toJson(),
       );
       _expectValid(
         'SetClubNotificationPreferenceCallablePayload',
@@ -230,7 +231,7 @@ void main() {
         );
         _expectValid(
           'DeleteEventReviewCallablePayload',
-          const ReviewIdCallableRequest('review-1').toJson(),
+          const DeleteEventReviewCallableRequest(reviewId: 'review-1').toJson(),
         );
         _expectValid(
           'BlockUserCallablePayload',

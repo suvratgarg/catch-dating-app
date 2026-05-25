@@ -17,8 +17,10 @@ import 'package:catch_dating_app/events/presentation/event_booking_controller.da
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 enum HostEventParticipantsMode { setup, live, report }
 
@@ -27,10 +29,12 @@ class HostEventAttendancePanel extends StatelessWidget {
     super.key,
     required this.eventId,
     this.scrollable = false,
+    this.showSummaryHeader = true,
   });
 
   final String eventId;
   final bool scrollable;
+  final bool showSummaryHeader;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +42,7 @@ class HostEventAttendancePanel extends StatelessWidget {
       eventId: eventId,
       mode: HostEventParticipantsMode.live,
       scrollable: scrollable,
+      showSummaryHeader: showSummaryHeader,
     );
   }
 }
@@ -48,11 +53,13 @@ class HostEventParticipantsPanel extends ConsumerWidget {
     required this.eventId,
     required this.mode,
     this.scrollable = false,
+    this.showSummaryHeader = true,
   });
 
   final String eventId;
   final HostEventParticipantsMode mode;
   final bool scrollable;
+  final bool showSummaryHeader;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,6 +101,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
           viewModel: viewModel,
           mode: mode,
           scrollable: scrollable,
+          showSummaryHeader: showSummaryHeader,
         );
       },
     );
@@ -105,17 +113,24 @@ class _ParticipantsList extends ConsumerWidget {
     required this.viewModel,
     required this.mode,
     required this.scrollable,
+    required this.showSummaryHeader,
   });
 
   final AttendanceSheetViewModel viewModel;
   final HostEventParticipantsMode mode;
   final bool scrollable;
+  final bool showSummaryHeader;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final attendeeIds = viewModel.attendeeIds;
     final waitlistedIds = viewModel.waitlistedIds;
     final mutation = ref.watch(EventBookingController.markAttendanceMutation);
+    final usesRequestApproval = viewModel
+        .event
+        .effectiveEventPolicy
+        .admissionPolicy
+        .manualApprovalRequired;
 
     if (viewModel.isEmpty) {
       return Padding(
@@ -158,6 +173,7 @@ class _ParticipantsList extends ConsumerWidget {
             eventId: viewModel.event.id,
             mode: mode,
             scrollable: scrollable,
+            usesRequestApproval: usesRequestApproval,
           );
 
     return Column(
@@ -165,12 +181,14 @@ class _ParticipantsList extends ConsumerWidget {
       children: [
         if (mutation.hasError)
           ErrorBanner(message: mutationErrorMessage(mutation)),
-        _ParticipantsSummaryHeader(
-          mode: mode,
-          checkedInCount: viewModel.checkedInCount,
-          totalCount: viewModel.totalCount,
-          waitlistCount: viewModel.waitlistCount,
-        ),
+        if (showSummaryHeader)
+          _ParticipantsSummaryHeader(
+            mode: mode,
+            checkedInCount: viewModel.checkedInCount,
+            totalCount: viewModel.totalCount,
+            waitlistCount: viewModel.waitlistCount,
+            usesRequestApproval: usesRequestApproval,
+          ),
         if (scrollable) Expanded(child: rows) else rows,
       ],
     );
@@ -183,12 +201,14 @@ class _ParticipantsSummaryHeader extends StatelessWidget {
     required this.checkedInCount,
     required this.totalCount,
     required this.waitlistCount,
+    required this.usesRequestApproval,
   });
 
   final HostEventParticipantsMode mode;
   final int checkedInCount;
   final int totalCount;
   final int waitlistCount;
+  final bool usesRequestApproval;
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +281,9 @@ class _ParticipantsSummaryHeader extends StatelessWidget {
                       : CatchBadgeTone.success,
                 ),
                 CatchBadge(
-                  label: '$waitlistCount waitlist',
+                  label: usesRequestApproval
+                      ? '$waitlistCount requests'
+                      : '$waitlistCount waitlist',
                   tone: waitlistCount == 0
                       ? CatchBadgeTone.neutral
                       : CatchBadgeTone.warning,
@@ -271,7 +293,9 @@ class _ParticipantsSummaryHeader extends StatelessWidget {
             if (mode == HostEventParticipantsMode.live) ...[
               gapH8,
               Text(
-                'Tap a booked participant to toggle check-in. Waitlisted people are shown for context only.',
+                usesRequestApproval
+                    ? 'Tap a booked participant to toggle check-in. Requests are shown for host review context.'
+                    : 'Tap a booked participant to toggle check-in. Waitlisted people are shown for context only.',
                 style: CatchTextStyles.bodyS(context, color: t.ink2),
               ),
             ],
@@ -291,6 +315,7 @@ class _ParticipantRows extends StatelessWidget {
     required this.eventId,
     required this.mode,
     required this.scrollable,
+    required this.usesRequestApproval,
   });
 
   final List<String> attendeeIds;
@@ -300,6 +325,7 @@ class _ParticipantRows extends StatelessWidget {
   final String eventId;
   final HostEventParticipantsMode mode;
   final bool scrollable;
+  final bool usesRequestApproval;
 
   @override
   Widget build(BuildContext context) {
@@ -334,7 +360,7 @@ class _ParticipantRows extends StatelessWidget {
         if (attendeeIds.isNotEmpty && waitlistedIds.isNotEmpty) gapH16,
         if (waitlistedIds.isNotEmpty)
           _ParticipantSection(
-            title: 'Waitlist',
+            title: usesRequestApproval ? 'Requests' : 'Waitlist',
             count: waitlistedIds.length,
             children: [
               for (var i = 0; i < waitlistedIds.length; i++) ...[
@@ -342,6 +368,7 @@ class _ParticipantRows extends StatelessWidget {
                   uid: waitlistedIds[i],
                   name: profiles[waitlistedIds[i]]?.$1 ?? 'Runner',
                   photoUrl: profiles[waitlistedIds[i]]?.$2,
+                  usesRequestApproval: usesRequestApproval,
                 ),
                 if (i < waitlistedIds.length - 1) gapH8,
               ],
@@ -420,22 +447,27 @@ class _AttendeeRow extends ConsumerWidget {
           seed: uid,
           metaLine: label.metaLine,
         ),
-        trailing: CatchBadge(
-          label: label.badge,
-          tone: label.tone,
-          icon: label.icon,
-          uppercase: true,
+        trailing: _ParticipantTrailing(
+          status: CatchBadge(
+            label: label.badge,
+            tone: label.tone,
+            icon: label.icon,
+            uppercase: true,
+          ),
+          uid: uid,
         ),
-        onTap: !canToggle || mutation.isPending
-            ? null
-            : () {
-                EventBookingController.markAttendanceMutation.run(
-                  ref,
-                  (tx) async => tx
-                      .get(eventBookingControllerProvider.notifier)
-                      .markAttendance(eventId: eventId, userId: uid),
-                );
-              },
+        onTap: canToggle
+            ? mutation.isPending
+                  ? null
+                  : () {
+                      EventBookingController.markAttendanceMutation.run(
+                        ref,
+                        (tx) async => tx
+                            .get(eventBookingControllerProvider.notifier)
+                            .markAttendance(eventId: eventId, userId: uid),
+                      );
+                    }
+            : () => _openPublicProfile(context, uid),
       ),
     );
   }
@@ -482,11 +514,13 @@ class _WaitlistedRow extends StatelessWidget {
     required this.uid,
     required this.name,
     required this.photoUrl,
+    required this.usesRequestApproval,
   });
 
   final String uid;
   final String name;
   final String? photoUrl;
+  final bool usesRequestApproval;
 
   @override
   Widget build(BuildContext context) {
@@ -501,17 +535,63 @@ class _WaitlistedRow extends StatelessWidget {
           name: name,
           imageUrl: photoUrl,
           seed: uid,
-          metaLine: 'Waitlisted',
+          metaLine: usesRequestApproval ? 'Requested' : 'Waitlisted',
         ),
-        trailing: const CatchBadge(
-          label: 'waitlist',
-          tone: CatchBadgeTone.neutral,
-          icon: Icons.hourglass_empty_rounded,
-          uppercase: true,
+        trailing: _ParticipantTrailing(
+          status: CatchBadge(
+            label: usesRequestApproval ? 'request' : 'waitlist',
+            tone: usesRequestApproval
+                ? CatchBadgeTone.warning
+                : CatchBadgeTone.neutral,
+            icon: usesRequestApproval
+                ? Icons.pending_actions_rounded
+                : Icons.hourglass_empty_rounded,
+            uppercase: true,
+          ),
+          uid: uid,
         ),
+        onTap: () => _openPublicProfile(context, uid),
       ),
     );
   }
+}
+
+class _ParticipantTrailing extends StatelessWidget {
+  const _ParticipantTrailing({required this.status, required this.uid});
+
+  final Widget status;
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        status,
+        gapW6,
+        Tooltip(
+          message: 'View profile',
+          child: IconButton(
+            visualDensity: VisualDensity.compact,
+            iconSize: 18,
+            color: t.ink2,
+            onPressed: () => _openPublicProfile(context, uid),
+            icon: const Icon(Icons.person_search_outlined),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+void _openPublicProfile(BuildContext context, String uid) {
+  final router = GoRouter.maybeOf(context);
+  if (router == null) return;
+  router.pushNamed(
+    Routes.publicProfileScreen.name,
+    pathParameters: {'uid': uid},
+  );
 }
 
 extension on HostEventParticipantsMode {

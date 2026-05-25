@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
@@ -59,7 +60,6 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
-  static const _totalSteps = 5;
   final _pageController = PageController();
   int _currentStep = 0;
   Event? _createdEvent;
@@ -74,6 +74,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _whereFormKey = GlobalKey<FormState>();
   final _whenFormKey = GlobalKey<FormState>();
   final _eventPolicyFormKey = GlobalKey<FormState>();
+
+  List<FormStepSpec> get _stepSpecs => [
+    FormStepSpec(title: 'Event basics', formKey: _eventDetailsFormKey),
+    FormStepSpec(title: 'Meeting location', formKey: _whereFormKey),
+    FormStepSpec(title: 'When is the event?', formKey: _whenFormKey),
+    FormStepSpec(title: 'Event policy', formKey: _eventPolicyFormKey),
+    const FormStepSpec(title: 'Live event guide'),
+  ];
 
   // Step 2 — When
   final _dateController = TextEditingController();
@@ -114,6 +122,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _dynamicPricingMaxController = TextEditingController();
   EventAdmissionPreset _selectedAdmissionPreset =
       EventAdmissionPreset.openCapacity;
+  bool _cohortCapsEnabled = false;
   bool _dynamicPricingEnabled = false;
   EventCancellationPolicyId _selectedCancellationPolicyId =
       EventCancellationPolicyId.standard;
@@ -134,9 +143,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   );
 
   EventPolicyDefaults get _eventPolicyDefaults => EventPolicyDefaults(
-    admissionPreset: _admissionDefaultPresetFromSelected(
-      _selectedAdmissionPreset,
-    ),
+    admissionPreset: _admissionDefaultPresetFromSelected(),
     minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
     maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
     maxMen: int.tryParse(_maxMenController.text.trim()),
@@ -155,6 +162,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final capacityLimit = int.parse(_capacityController.text.trim());
     final basePriceInPaise = (double.parse(_priceController.text.trim()) * 100)
         .round();
+    if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
+      return EventPolicyBundle.requestToJoinEvent(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: basePriceInPaise,
+        cancellationPolicy: _eventPolicyDefaults.cancellationPolicy,
+      );
+    }
     return _eventPolicyDefaults.toEventPolicyBundle(
       capacityLimit: capacityLimit,
       basePriceInPaise: basePriceInPaise,
@@ -313,7 +327,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void _next() {
     if (!_validateCurrentStep() || !_validateCurrentSchedule()) return;
 
-    if (_currentStep < _totalSteps - 1) {
+    if (_currentStep < _stepSpecs.length - 1) {
       _goToStep(_currentStep + 1);
     } else {
       _submit();
@@ -352,13 +366,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   bool _validateCurrentStep() {
-    final formKey = switch (_currentStep) {
-      0 => _eventDetailsFormKey,
-      1 => _whereFormKey,
-      2 => _whenFormKey,
-      3 => _eventPolicyFormKey,
-      _ => null,
-    };
+    final formKey = formKeyForStep(_stepSpecs, _currentStep);
     return formKey?.currentState?.validate() ?? true;
   }
 
@@ -448,7 +456,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     maxAge: _trimmedTextOrNull(_maxAgeController),
     maxMen: _trimmedTextOrNull(_maxMenController),
     maxWomen: _trimmedTextOrNull(_maxWomenController),
-    admissionPreset: _selectedAdmissionPreset.name,
+    cohortCapsEnabled: _cohortCapsEnabled,
+    admissionPreset: _draftAdmissionPresetName,
     inviteCode: _trimmedTextOrNull(_inviteCodeController),
     dynamicPricingEnabled: _dynamicPricingEnabled,
     dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
@@ -557,6 +566,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _selectedAdmissionPreset = _admissionPresetFromName(
         draft.admissionPreset,
       );
+      _cohortCapsEnabled =
+          draft.admissionPreset == 'fixedCohortCaps' ||
+          draft.maxMen != null ||
+          draft.maxWomen != null;
       if (draft.inviteCode != null) {
         _inviteCodeController.text = draft.inviteCode!;
       }
@@ -611,7 +624,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       maxAge: _trimmedTextOrNull(_maxAgeController),
       maxMen: _trimmedTextOrNull(_maxMenController),
       maxWomen: _trimmedTextOrNull(_maxWomenController),
-      admissionPreset: _selectedAdmissionPreset.name,
+      admissionPreset: _draftAdmissionPresetName,
       inviteCode: _trimmedTextOrNull(_inviteCodeController),
       dynamicPricingEnabled: _dynamicPricingEnabled,
       dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
@@ -675,6 +688,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return _selectedInteractionModel.name;
   }
 
+  String get _draftAdmissionPresetName =>
+      _selectedAdmissionPreset == EventAdmissionPreset.openCapacity &&
+          _cohortCapsEnabled
+      ? 'fixedCohortCaps'
+      : _selectedAdmissionPreset.name;
+
   EventMeetingLocation? get _currentMeetingLocation {
     final coordinate = _startingPoint;
     final name = _trimmedTextOrNull(_meetingPointController);
@@ -700,21 +719,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
-  static String _stepTitle(int step) => switch (step) {
-    0 => 'Event basics',
-    1 => 'Meeting location',
-    2 => 'When is the event?',
-    3 => 'Event policy',
-    4 => 'Live event guide',
-    _ => throw RangeError.range(step, 0, _totalSteps - 1, 'step'),
-  };
-
   static String _formatClockTime(TimeOfDay time) {
     return AppTimeFormatters.clockTime(hour: time.hour, minute: time.minute);
   }
 
   static EventAdmissionPreset _admissionPresetFromName(String? name) {
     if (name == null) return EventAdmissionPreset.openCapacity;
+    if (name == 'fixedCohortCaps') {
+      return EventAdmissionPreset.openCapacity;
+    }
     return EventAdmissionPreset.values.firstWhere(
       (preset) => preset.name == name,
       orElse: () => EventAdmissionPreset.openCapacity,
@@ -736,6 +749,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _selectedAdmissionPreset = _admissionPresetFromDefault(
       policy.admissionPreset,
     );
+    _cohortCapsEnabled =
+        policy.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps ||
+        policy.maxMen != null ||
+        policy.maxWomen != null;
     _minAgeController.text = policy.minAge == 0 ? '' : policy.minAge.toString();
     _maxAgeController.text = policy.maxAge == 99
         ? ''
@@ -803,21 +820,23 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       EventAdmissionDefaultPreset.balancedSingles =>
         EventAdmissionPreset.balancedSingles,
       EventAdmissionDefaultPreset.fixedCohortCaps =>
-        EventAdmissionPreset.fixedCohortCaps,
+        EventAdmissionPreset.openCapacity,
     };
   }
 
-  static EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
-    EventAdmissionPreset preset,
-  ) {
-    return switch (preset) {
+  EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected() {
+    if (_selectedAdmissionPreset == EventAdmissionPreset.openCapacity &&
+        _cohortCapsEnabled) {
+      return EventAdmissionDefaultPreset.fixedCohortCaps;
+    }
+    return switch (_selectedAdmissionPreset) {
       EventAdmissionPreset.openCapacity =>
         EventAdmissionDefaultPreset.openCapacity,
       EventAdmissionPreset.inviteOnly => EventAdmissionDefaultPreset.inviteOnly,
+      EventAdmissionPreset.requestToJoin =>
+        EventAdmissionDefaultPreset.openCapacity,
       EventAdmissionPreset.balancedSingles =>
         EventAdmissionDefaultPreset.balancedSingles,
-      EventAdmissionPreset.fixedCohortCaps =>
-        EventAdmissionDefaultPreset.fixedCohortCaps,
     };
   }
 
@@ -856,10 +875,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         child: Column(
           children: [
             CreateEventStepHeader(
-              title: _stepTitle(_currentStep),
+              title: formTitleForStep(_stepSpecs, _currentStep),
               clubName: widget.club.name,
               currentStep: _currentStep,
-              totalSteps: _totalSteps,
+              totalSteps: _stepSpecs.length,
               onBack: _back,
             ),
             const SizedBox(height: 4),
@@ -942,7 +961,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       if (preset != EventAdmissionPreset.balancedSingles) {
                         _dynamicPricingEnabled = false;
                       }
+                      if (preset != EventAdmissionPreset.openCapacity) {
+                        _cohortCapsEnabled = false;
+                      }
                     }),
+                    cohortCapsEnabled: _cohortCapsEnabled,
+                    onCohortCapsEnabledChanged: (enabled) =>
+                        setState(() => _cohortCapsEnabled = enabled),
                     dynamicPricingEnabled: _dynamicPricingEnabled,
                     onDynamicPricingChanged: (enabled) =>
                         setState(() => _dynamicPricingEnabled = enabled),
@@ -970,7 +995,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 ),
               ),
             StepperFooter(
-              isLastStep: _currentStep == _totalSteps - 1,
+              isLastStep: _currentStep == _stepSpecs.length - 1,
               isLoading: submitMutation.isPending,
               onNext: _next,
               onSaveDraft: _saveDraft,

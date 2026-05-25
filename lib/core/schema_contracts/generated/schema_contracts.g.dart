@@ -312,6 +312,7 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
       },
       'minItems': 1,
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
     'cities': <String, Object?>{
       'type': 'array',
@@ -379,6 +380,7 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
         },
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
   },
 };
@@ -401,18 +403,22 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
     'step': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'client-writable',
     },
     'draftVersion': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'client-writable',
     },
     'firstName': <String, Object?>{
       'type': 'string',
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'lastName': <String, Object?>{
       'type': 'string',
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'dateOfBirth': <String, Object?>{
       'anyOf': <Object?>[
@@ -440,14 +446,17 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'phoneNumber': <String, Object?>{
       'type': 'string',
       'maxLength': 32,
+      'x-catch-ownership': 'client-writable',
     },
     'countryCode': <String, Object?>{
       'type': 'string',
       'maxLength': 8,
+      'x-catch-ownership': 'client-writable',
     },
     'gender': <String, Object?>{
       'anyOf': <Object?>[
@@ -464,6 +473,7 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'interestedInGenders': <String, Object?>{
       'type': 'array',
@@ -477,6 +487,7 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
         ],
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'client-writable',
     },
     'instagramHandle': <String, Object?>{
       'type': <Object?>[
@@ -484,6 +495,7 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'profilePrompts': <String, Object?>{
       'type': 'array',
@@ -516,6 +528,7 @@ const schemaOnboardingDraftDocumentSchema = <String, Object?>{
         'x-catch-catalog': '../catalogs/profile_prompts.json',
       },
       'maxItems': 3,
+      'x-catch-ownership': 'client-writable',
     },
   },
 };
@@ -568,20 +581,24 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'client-writable',
     },
     'firstName': <String, Object?>{
       'type': 'string',
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'lastName': <String, Object?>{
       'type': 'string',
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'displayName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
       'pattern': '.*\\S.*',
+      'x-catch-ownership': 'client-writable',
     },
     'dateOfBirth': <String, Object?>{
       'type': 'object',
@@ -602,6 +619,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'client-writable',
     },
     'gender': <String, Object?>{
       'type': 'string',
@@ -611,18 +629,22 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'nonBinary',
         'other',
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'phoneNumber': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 32,
+      'x-catch-ownership': 'client-writable',
     },
     'countryCode': <String, Object?>{
       'type': 'string',
       'pattern': '^\\+\\d{1,4}\$',
+      'x-catch-ownership': 'client-writable',
     },
     'profileComplete': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -667,6 +689,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'maxLength': 320,
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'instagramHandle': <String, Object?>{
       'anyOf': <Object?>[
@@ -680,6 +703,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'profilePrompts': <String, Object?>{
       'type': 'array',
@@ -712,6 +736,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         },
         'x-catch-catalog': '../catalogs/profile_prompts.json',
       },
+      'x-catch-ownership': 'client-writable',
     },
     'photoUrls': <String, Object?>{
       'type': 'array',
@@ -721,6 +746,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'format': 'uri',
         'maxLength': 2048,
       },
+      'x-catch-ownership': 'client-writable',
     },
     'photoThumbnailUrls': <String, Object?>{
       'type': 'array',
@@ -730,6 +756,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'format': 'uri',
         'maxLength': 2048,
       },
+      'x-catch-ownership': 'client-writable',
     },
     'photoPrompts': <String, Object?>{
       'type': 'array',
@@ -769,6 +796,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         },
         'x-catch-catalog': '../catalogs/photo_prompts.json',
       },
+      'x-catch-ownership': 'client-writable',
     },
     'profilePhotos': <String, Object?>{
       'type': 'array',
@@ -971,6 +999,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'x-future-field': 'profilePhotos',
         'x-migration-contract': '../migrations/profile_photos_storage.json',
       },
+      'x-catch-ownership': 'client-writable',
     },
     'city': <String, Object?>{
       'type': <Object?>[
@@ -980,6 +1009,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 80,
       'pattern': '^[a-z0-9-]+\$',
+      'x-catch-ownership': 'client-writable',
     },
     'latitude': <String, Object?>{
       'type': <Object?>[
@@ -988,6 +1018,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       ],
       'minimum': -90,
       'maximum': 90,
+      'x-catch-ownership': 'client-writable',
     },
     'longitude': <String, Object?>{
       'type': <Object?>[
@@ -996,6 +1027,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       ],
       'minimum': -180,
       'maximum': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'interestedInGenders': <String, Object?>{
       'type': 'array',
@@ -1011,16 +1043,19 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'other',
         ],
       },
+      'x-catch-ownership': 'client-writable',
     },
     'minAgePreference': <String, Object?>{
       'type': 'integer',
       'minimum': 18,
       'maximum': 99,
+      'x-catch-ownership': 'client-writable',
     },
     'maxAgePreference': <String, Object?>{
       'type': 'integer',
       'minimum': 18,
       'maximum': 99,
+      'x-catch-ownership': 'client-writable',
     },
     'height': <String, Object?>{
       'type': <Object?>[
@@ -1029,18 +1064,21 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       ],
       'minimum': 120,
       'maximum': 220,
+      'x-catch-ownership': 'client-writable',
     },
     'occupation': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'company': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'education': <String, Object?>{
       'type': <Object?>[
@@ -1057,6 +1095,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'other',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'religion': <String, Object?>{
       'type': <Object?>[
@@ -1074,6 +1113,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'nonReligious',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'languages': <String, Object?>{
       'type': 'array',
@@ -1096,6 +1136,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'other',
         ],
       },
+      'x-catch-ownership': 'client-writable',
     },
     'relationshipGoal': <String, Object?>{
       'type': <Object?>[
@@ -1110,6 +1151,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'unsure',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'drinking': <String, Object?>{
       'type': <Object?>[
@@ -1122,6 +1164,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'often',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'smoking': <String, Object?>{
       'type': <Object?>[
@@ -1134,6 +1177,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'often',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'workout': <String, Object?>{
       'type': <Object?>[
@@ -1147,6 +1191,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'everyday',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'diet': <String, Object?>{
       'type': <Object?>[
@@ -1161,6 +1206,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'other',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'children': <String, Object?>{
       'type': <Object?>[
@@ -1175,14 +1221,17 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
         'dontWant',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'paceMinSecsPerKm': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
+      'x-catch-ownership': 'client-writable',
     },
     'paceMaxSecsPerKm': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
+      'x-catch-ownership': 'client-writable',
     },
     'preferredDistances': <String, Object?>{
       'type': 'array',
@@ -1197,6 +1246,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'marathon',
         ],
       },
+      'x-catch-ownership': 'client-writable',
     },
     'runningReasons': <String, Object?>{
       'type': 'array',
@@ -1214,6 +1264,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'social',
         ],
       },
+      'x-catch-ownership': 'client-writable',
     },
     'preferredRunTimes': <String, Object?>{
       'type': 'array',
@@ -1229,37 +1280,48 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'night',
         ],
       },
+      'x-catch-ownership': 'client-writable',
     },
     'runPreferencesVersion': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'client-writable',
     },
     'prefsNewCatches': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsMessages': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsEventReminders': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsRunStatusUpdates': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsClubUpdates': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsWeeklyDigest': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'prefsShowOnMap': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'client-writable',
     },
     'fcmToken': <String, Object?>{
       'type': 'string',
+      'x-catch-ownership': 'client-runtime-writable',
     },
     'deleted': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'server-only',
     },
     'deletedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -1287,6 +1349,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'server-only',
     },
   },
   'x-internal-demo-fields': <Object?>[
@@ -1337,11 +1400,13 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'trigger-owned',
     },
     'age': <String, Object?>{
       'type': 'integer',
       'minimum': 18,
       'maximum': 120,
+      'x-catch-ownership': 'trigger-owned',
     },
     'gender': <String, Object?>{
       'type': 'string',
@@ -1351,6 +1416,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'nonBinary',
         'other',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -1415,6 +1481,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         },
         'x-catch-catalog': '../catalogs/profile_prompts.json',
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'photoUrls': <String, Object?>{
       'type': 'array',
@@ -1424,6 +1491,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'format': 'uri',
         'maxLength': 2048,
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'photoThumbnailUrls': <String, Object?>{
       'type': 'array',
@@ -1433,6 +1501,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'format': 'uri',
         'maxLength': 2048,
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'photoPrompts': <String, Object?>{
       'type': 'array',
@@ -1472,6 +1541,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         },
         'x-catch-catalog': '../catalogs/photo_prompts.json',
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'profilePhotos': <String, Object?>{
       'type': 'array',
@@ -1674,6 +1744,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'x-future-field': 'profilePhotos',
         'x-migration-contract': '../migrations/profile_photos_storage.json',
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'city': <String, Object?>{
       'type': <Object?>[
@@ -1683,6 +1754,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 80,
       'pattern': '^[a-z0-9-]+\$',
+      'x-catch-ownership': 'trigger-owned',
     },
     'height': <String, Object?>{
       'type': <Object?>[
@@ -1691,18 +1763,21 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
       ],
       'minimum': 120,
       'maximum': 220,
+      'x-catch-ownership': 'trigger-owned',
     },
     'occupation': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'company': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'education': <String, Object?>{
       'type': <Object?>[
@@ -1719,6 +1794,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'other',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'religion': <String, Object?>{
       'type': <Object?>[
@@ -1736,6 +1812,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'nonReligious',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'languages': <String, Object?>{
       'type': 'array',
@@ -1758,6 +1835,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'other',
         ],
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'relationshipGoal': <String, Object?>{
       'type': <Object?>[
@@ -1772,6 +1850,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'unsure',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'drinking': <String, Object?>{
       'type': <Object?>[
@@ -1784,6 +1863,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'often',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'smoking': <String, Object?>{
       'type': <Object?>[
@@ -1796,6 +1876,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'often',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'workout': <String, Object?>{
       'type': <Object?>[
@@ -1809,6 +1890,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'everyday',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'diet': <String, Object?>{
       'type': <Object?>[
@@ -1823,6 +1905,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'other',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'children': <String, Object?>{
       'type': <Object?>[
@@ -1837,14 +1920,17 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
         'dontWant',
         null,
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'paceMinSecsPerKm': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
+      'x-catch-ownership': 'trigger-owned',
     },
     'paceMaxSecsPerKm': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
+      'x-catch-ownership': 'trigger-owned',
     },
     'preferredDistances': <String, Object?>{
       'type': 'array',
@@ -1859,6 +1945,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'marathon',
         ],
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'runningReasons': <String, Object?>{
       'type': 'array',
@@ -1876,6 +1963,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'social',
         ],
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'preferredRunTimes': <String, Object?>{
       'type': 'array',
@@ -1891,10 +1979,12 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
           'night',
         ],
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'runPreferencesVersion': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
   },
   'x-internal-demo-fields': <Object?>[
@@ -1971,11 +2061,13 @@ const schemaClubDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'description': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 2000,
+      'x-catch-ownership': 'callable-owned',
     },
     'location': <String, Object?>{
       'type': <Object?>[
@@ -1985,21 +2077,25 @@ const schemaClubDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 80,
       'pattern': '^[a-z0-9-]+\$',
+      'x-catch-ownership': 'callable-owned',
     },
     'area': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'hostUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'hostName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'hostAvatarUrl': <String, Object?>{
       'anyOf': <Object?>[
@@ -2012,11 +2108,13 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'ownerUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'hostUserIds': <String, Object?>{
       'type': 'array',
@@ -2028,6 +2126,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 180,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'hostProfiles': <String, Object?>{
       'type': 'array',
@@ -2074,6 +2173,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -2094,6 +2194,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'imageUrl': <String, Object?>{
       'anyOf': <Object?>[
@@ -2106,6 +2207,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'profileImageUrl': <String, Object?>{
       'anyOf': <Object?>[
@@ -2118,6 +2220,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'tags': <String, Object?>{
       'type': 'array',
@@ -2128,19 +2231,23 @@ const schemaClubDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 80,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'memberCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'rating': <String, Object?>{
       'type': 'number',
       'minimum': 0,
       'maximum': 5,
+      'x-catch-ownership': 'trigger-owned',
     },
     'reviewCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'nextEventAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -2168,6 +2275,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'nextEventLabel': <String, Object?>{
       'type': <Object?>[
@@ -2175,6 +2283,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 240,
+      'x-catch-ownership': 'trigger-owned',
     },
     'instagramHandle': <String, Object?>{
       'type': <Object?>[
@@ -2182,6 +2291,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 320,
+      'x-catch-ownership': 'callable-owned',
     },
     'phoneNumber': <String, Object?>{
       'type': <Object?>[
@@ -2189,6 +2299,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 320,
+      'x-catch-ownership': 'callable-owned',
     },
     'email': <String, Object?>{
       'type': <Object?>[
@@ -2196,6 +2307,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 320,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -2203,9 +2315,11 @@ const schemaClubDocumentSchema = <String, Object?>{
         'active',
         'archived',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'archived': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'archivedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -2233,6 +2347,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'archiveReason': <String, Object?>{
       'type': <Object?>[
@@ -2240,6 +2355,7 @@ const schemaClubDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 500,
+      'x-catch-ownership': 'callable-owned',
     },
     'hostDefaults': <String, Object?>{
       'type': 'object',
@@ -2685,6 +2801,7 @@ const schemaClubDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -2755,11 +2872,13 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'role': <String, Object?>{
       'type': 'string',
@@ -2768,6 +2887,7 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
         'host',
         'member',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -2776,9 +2896,11 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
         'left',
         'deleted',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'pushNotificationsEnabled': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'joinedAt': <String, Object?>{
       'type': 'object',
@@ -2799,6 +2921,7 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'leftAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -2826,6 +2949,7 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'deletedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -2853,6 +2977,7 @@ const schemaClubMembershipDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -2910,11 +3035,13 @@ const schemaClubHostClaimDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -2935,6 +3062,7 @@ const schemaClubHostClaimDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
   },
 };
@@ -2988,6 +3116,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'startTime': <String, Object?>{
       'type': 'object',
@@ -3008,6 +3137,7 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'endTime': <String, Object?>{
       'type': 'object',
@@ -3028,11 +3158,13 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'meetingPoint': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
     },
     'meetingLocation': <String, Object?>{
       'type': 'object',
@@ -3088,6 +3220,7 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maxLength': 1000,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'startingPointLat': <String, Object?>{
       'type': <Object?>[
@@ -3096,6 +3229,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       ],
       'minimum': -90,
       'maximum': 90,
+      'x-catch-ownership': 'callable-owned',
     },
     'startingPointLng': <String, Object?>{
       'type': <Object?>[
@@ -3104,6 +3238,7 @@ const schemaEventDocumentSchema = <String, Object?>{
       ],
       'minimum': -180,
       'maximum': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'locationDetails': <String, Object?>{
       'type': <Object?>[
@@ -3111,6 +3246,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 1000,
+      'x-catch-ownership': 'callable-owned',
     },
     'photoUrl': <String, Object?>{
       'anyOf': <Object?>[
@@ -3123,11 +3259,13 @@ const schemaEventDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'distanceKm': <String, Object?>{
       'type': 'number',
       'minimum': 0,
       'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
     },
     'eventFormat': <String, Object?>{
       'type': 'object',
@@ -3195,11 +3333,57 @@ const schemaEventDocumentSchema = <String, Object?>{
           'maxItems': 30,
           'uniqueItems': true,
         },
+        'eventSuccessPrimitives': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'description': 'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
+          'properties': <String, Object?>{
+            'phoneAvailability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'continuous',
+                'plannedPauses',
+                'arrivalAndPostEventOnly',
+                'hostOnlyLive',
+                'noneDuringActivity',
+              ],
+            },
+            'rotationSuitability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'plannedBreaks',
+                'continuousRounds',
+              ],
+            },
+            'assignmentAlgorithm': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'pacePods',
+                'socialPods',
+                'pairRotations',
+                'teamBalancer',
+                'tableSeating',
+              ],
+            },
+            'compatibilityPolicy': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'socialCohortBalance',
+                'mutualInterestOnly',
+                'questionnaireClueOnly',
+              ],
+            },
+          },
+        },
         'activityDetails': <String, Object?>{
           'type': 'object',
           'additionalProperties': true,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'pace': <String, Object?>{
       'type': 'string',
@@ -3209,36 +3393,44 @@ const schemaEventDocumentSchema = <String, Object?>{
         'fast',
         'competitive',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'capacityLimit': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 1000,
+      'x-catch-ownership': 'callable-owned',
     },
     'description': <String, Object?>{
       'type': 'string',
       'maxLength': 2000,
+      'x-catch-ownership': 'callable-owned',
     },
     'priceInPaise': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
+      'x-catch-ownership': 'callable-owned',
     },
     'currency': <String, Object?>{
       'type': 'string',
       'pattern': '^[A-Z]{3}\$',
+      'x-catch-ownership': 'callable-owned',
     },
     'bookedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'checkedInCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'waitlistedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -3246,6 +3438,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'active',
         'cancelled',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'cancelledAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3273,6 +3466,7 @@ const schemaEventDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'cancellationReason': <String, Object?>{
       'type': <Object?>[
@@ -3280,6 +3474,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 500,
+      'x-catch-ownership': 'callable-owned',
     },
     'constraints': <String, Object?>{
       'type': 'object',
@@ -3316,6 +3511,7 @@ const schemaEventDocumentSchema = <String, Object?>{
           'minimum': 0,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'eventPolicy': <String, Object?>{
       'type': 'object',
@@ -3583,6 +3779,7 @@ const schemaEventDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'genderCounts': <String, Object?>{
       'type': 'object',
@@ -3590,6 +3787,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'type': 'integer',
         'minimum': 0,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'cohortCounts': <String, Object?>{
       'type': 'object',
@@ -3597,6 +3795,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'type': 'integer',
         'minimum': 0,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'waitlistedCohortCounts': <String, Object?>{
       'type': 'object',
@@ -3604,6 +3803,7 @@ const schemaEventDocumentSchema = <String, Object?>{
         'type': 'integer',
         'minimum': 0,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -3662,17 +3862,20 @@ const schemaEventPrivateAccessDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'inviteCode': <String, Object?>{
       'type': 'string',
       'minLength': 4,
       'maxLength': 64,
       'pattern': '^[A-Za-z0-9_-]+\$',
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -3693,6 +3896,7 @@ const schemaEventPrivateAccessDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
   },
 };
@@ -3736,16 +3940,19 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -3756,6 +3963,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
         'cancelled',
         'deleted',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -3776,6 +3984,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -3796,6 +4005,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'signedUpAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3823,6 +4033,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'waitlistedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3850,6 +4061,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'attendedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3877,6 +4089,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'cancelledAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3904,6 +4117,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'deletedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -3931,6 +4145,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'genderAtSignup': <String, Object?>{
       'anyOf': <Object?>[
@@ -3947,6 +4162,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'cohortAtSignup': <String, Object?>{
       'type': <Object?>[
@@ -3955,6 +4171,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'paymentId': <String, Object?>{
       'type': <Object?>[
@@ -3963,6 +4180,7 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4037,16 +4255,19 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'playbookId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'selectedModuleIds': <String, Object?>{
       'type': 'array',
@@ -4056,11 +4277,13 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 120,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'targetAttendeeCount': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 1000,
+      'x-catch-ownership': 'callable-owned',
     },
     'structureConfig': <String, Object?>{
       'type': 'object',
@@ -4108,19 +4331,24 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'maximum': 60,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'hostGoal': <String, Object?>{
       'type': 'string',
       'maxLength': 300,
+      'x-catch-ownership': 'callable-owned',
     },
     'wingmanRequestsEnabled': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'contextualOpenersEnabled': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'compatibilityAffectsRanking': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'questionnaireConfig': <String, Object?>{
       'type': 'object',
@@ -4192,11 +4420,13 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'activeStepIndex': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -4205,6 +4435,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         'live',
         'complete',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'revealStatus': <String, Object?>{
       'type': 'string',
@@ -4213,11 +4444,13 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         'countingDown',
         'revealed',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'activeRevealRoundIndex': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
     },
     'revealStartedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -4245,6 +4478,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'attendeePrompt': <String, Object?>{
       'type': <Object?>[
@@ -4252,6 +4486,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 300,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -4272,6 +4507,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -4292,6 +4528,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'frozenAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -4319,6 +4556,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'completedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -4346,6 +4584,7 @@ const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4417,34 +4656,41 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'welcomeRating': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 5,
+      'x-catch-ownership': 'callable-owned',
     },
     'structureRating': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 5,
+      'x-catch-ownership': 'callable-owned',
     },
     'metNewPeopleCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
     },
     'safetyConcern': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'privateNote': <String, Object?>{
       'type': <Object?>[
@@ -4452,6 +4698,7 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 500,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -4472,6 +4719,7 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -4492,6 +4740,7 @@ const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4561,22 +4810,27 @@ const schemaEventSuccessPreferenceDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'microPodsOptedOut': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'guidedRotationsOptedOut': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -4597,6 +4851,7 @@ const schemaEventSuccessPreferenceDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -4617,6 +4872,7 @@ const schemaEventSuccessPreferenceDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4685,16 +4941,19 @@ const schemaEventSuccessCompatibilityResponseDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'answerIds': <String, Object?>{
       'type': 'array',
@@ -4705,6 +4964,7 @@ const schemaEventSuccessCompatibilityResponseDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 120,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -4725,6 +4985,7 @@ const schemaEventSuccessCompatibilityResponseDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -4745,6 +5006,7 @@ const schemaEventSuccessCompatibilityResponseDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4815,21 +5077,25 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'requesterUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'targetUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -4837,10 +5103,12 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
         'active',
         'withdrawn',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'hostVisibleConsent': <String, Object?>{
       'type': 'boolean',
       'const': true,
+      'x-catch-ownership': 'callable-owned',
     },
     'note': <String, Object?>{
       'type': <Object?>[
@@ -4848,6 +5116,7 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -4868,6 +5137,7 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -4888,6 +5158,7 @@ const schemaEventSuccessWingmanRequestDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -4961,36 +5232,43 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'observerUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'targetUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'targetDisplayName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'callable-owned',
     },
     'targetContext': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 160,
+      'x-catch-ownership': 'callable-owned',
     },
     'question': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 160,
+      'x-catch-ownership': 'callable-owned',
     },
     'answerOptions': <String, Object?>{
       'type': 'array',
@@ -5016,6 +5294,7 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -5024,11 +5303,13 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
         'completed',
         'skipped',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'selectedAnswerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 64,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -5049,6 +5330,7 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -5069,6 +5351,7 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'completedAt': <String, Object?>{
       'type': 'object',
@@ -5089,6 +5372,7 @@ const schemaEventSuccessArrivalMissionDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5161,16 +5445,19 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'moduleId': <String, Object?>{
       'type': 'string',
@@ -5178,16 +5465,19 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
         'micro_pods',
         'guided_rotations',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'label': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'callable-owned',
     },
     'displayTitle': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'displaySubtitle': <String, Object?>{
       'type': <Object?>[
@@ -5195,6 +5485,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
     },
     'peerUids': <String, Object?>{
       'type': 'array',
@@ -5204,6 +5495,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 180,
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'rotationSlots': <String, Object?>{
       'type': 'array',
@@ -5287,6 +5579,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
           },
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'source': <String, Object?>{
       'type': 'string',
@@ -5295,6 +5588,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
         'host_override_v1',
         'server',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -5315,6 +5609,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -5335,6 +5630,7 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5409,49 +5705,60 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'bookedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'checkedInCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'feedbackCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'attendeesWhoMetTwoPlusPeople': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'mutualMatchCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'chatStartedCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'averageWelcomeRating': <String, Object?>{
       'type': 'number',
       'minimum': 0,
       'maximum': 5,
+      'x-catch-ownership': 'trigger-owned',
     },
     'averageStructureRating': <String, Object?>{
       'type': 'number',
       'minimum': 0,
       'maximum': 5,
+      'x-catch-ownership': 'trigger-owned',
     },
     'safetyIncidentCount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'trigger-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -5472,6 +5779,7 @@ const schemaEventSuccessScorecardDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5534,27 +5842,32 @@ const schemaEventSafetyReportDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'reporterUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'feedbackId': <String, Object?>{
       'type': 'string',
       'minLength': 3,
       'maxLength': 256,
+      'x-catch-ownership': 'callable-owned',
     },
     'source': <String, Object?>{
       'type': 'string',
       'enum': <Object?>[
         'event_success_feedback',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -5563,10 +5876,12 @@ const schemaEventSafetyReportDocumentSchema = <String, Object?>{
         'reviewed',
         'dismissed',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'note': <String, Object?>{
       'type': 'string',
       'maxLength': 500,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -5587,6 +5902,7 @@ const schemaEventSafetyReportDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'type': 'object',
@@ -5607,6 +5923,7 @@ const schemaEventSafetyReportDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
   },
 };
@@ -5643,33 +5960,40 @@ const schemaClubScheduleLockDocumentSchema = <String, Object?>{
     'ownerType': <String, Object?>{
       'type': 'string',
       'const': 'club',
+      'x-catch-ownership': 'callable-owned',
     },
     'ownerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'slot': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'startTimeMillis': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'endTimeMillis': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5739,38 +6063,46 @@ const schemaUserEventScheduleLockDocumentSchema = <String, Object?>{
     'ownerType': <String, Object?>{
       'type': 'string',
       'const': 'user',
+      'x-catch-ownership': 'callable-owned',
     },
     'ownerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'slot': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'uid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'startTimeMillis': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'endTimeMillis': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5836,11 +6168,13 @@ const schemaSavedEventDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'savedAt': <String, Object?>{
       'type': 'object',
@@ -5861,6 +6195,7 @@ const schemaSavedEventDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'client-writable',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -5932,31 +6267,37 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'orderId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
     },
     'paymentId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'amount': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
+      'x-catch-ownership': 'callable-owned',
     },
     'currency': <String, Object?>{
       'type': 'string',
       'minLength': 3,
       'maxLength': 3,
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -5966,9 +6307,11 @@ const schemaPaymentDocumentSchema = <String, Object?>{
         'failed',
         'refunded',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'signUpFailed': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -5989,6 +6332,7 @@ const schemaPaymentDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6058,16 +6402,19 @@ const schemaSwipeDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'targetId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'direction': <String, Object?>{
       'type': 'string',
@@ -6075,6 +6422,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
         'like',
         'pass',
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'reactionTargetId': <String, Object?>{
       'type': <Object?>[
@@ -6083,6 +6431,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'reactionTargetType': <String, Object?>{
       'type': <Object?>[
@@ -6099,6 +6448,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
         'lifestyle',
         null,
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'reactionTargetLabel': <String, Object?>{
       'type': <Object?>[
@@ -6106,6 +6456,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 80,
+      'x-catch-ownership': 'client-writable',
     },
     'reactionTargetPreview': <String, Object?>{
       'type': <Object?>[
@@ -6113,6 +6464,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 240,
+      'x-catch-ownership': 'client-writable',
     },
     'comment': <String, Object?>{
       'type': <Object?>[
@@ -6120,6 +6472,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 240,
+      'x-catch-ownership': 'client-writable',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6140,6 +6493,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'client-writable',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6214,21 +6568,24 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'user2Id': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'eventIds': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
+      'minItems': 0,
       'uniqueItems': true,
       'items': <String, Object?>{
         'type': 'string',
         'minLength': 1,
         'maxLength': 180,
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6249,6 +6606,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'lastMessageAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -6276,6 +6634,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'lastMessagePreview': <String, Object?>{
       'type': <Object?>[
@@ -6283,6 +6642,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 300,
+      'x-catch-ownership': 'trigger-owned',
     },
     'lastMessageSenderId': <String, Object?>{
       'type': <Object?>[
@@ -6291,6 +6651,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'unreadCounts': <String, Object?>{
       'type': 'object',
@@ -6298,6 +6659,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
         'type': 'integer',
         'minimum': 0,
       },
+      'x-catch-ownership': 'client-runtime-writable',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -6305,6 +6667,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
         'active',
         'blocked',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'blockedBy': <String, Object?>{
       'type': <Object?>[
@@ -6313,6 +6676,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'blockedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -6340,6 +6704,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'participantIds': <String, Object?>{
       'type': 'array',
@@ -6351,6 +6716,21 @@ const schemaMatchDocumentSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 180,
       },
+      'x-catch-ownership': 'trigger-owned',
+    },
+    'conversationType': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'match',
+        'clubHostInquiry',
+      ],
+      'x-catch-ownership': 'trigger-owned',
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6438,10 +6818,12 @@ const schemaChatMessageDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'client-writable',
     },
     'text': <String, Object?>{
       'type': 'string',
       'maxLength': 2000,
+      'x-catch-ownership': 'client-writable',
     },
     'imageUrl': <String, Object?>{
       'anyOf': <Object?>[
@@ -6454,6 +6836,7 @@ const schemaChatMessageDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'sentAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -6481,6 +6864,7 @@ const schemaChatMessageDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-writable',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6548,6 +6932,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'type': <String, Object?>{
       'type': 'string',
@@ -6561,16 +6946,19 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
         'eventUpdated',
         'clubUpdate',
       ],
+      'x-catch-ownership': 'server-only',
     },
     'title': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 160,
+      'x-catch-ownership': 'server-only',
     },
     'body': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 500,
+      'x-catch-ownership': 'server-only',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6591,6 +6979,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
     'readAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -6618,6 +7007,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'client-runtime-writable',
     },
     'matchId': <String, Object?>{
       'type': <Object?>[
@@ -6626,6 +7016,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 240,
+      'x-catch-ownership': 'server-only',
     },
     'eventId': <String, Object?>{
       'type': <Object?>[
@@ -6634,6 +7025,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'clubId': <String, Object?>{
       'type': <Object?>[
@@ -6642,6 +7034,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'actorUid': <String, Object?>{
       'type': <Object?>[
@@ -6650,6 +7043,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'actorName': <String, Object?>{
       'type': <Object?>[
@@ -6657,6 +7051,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 120,
+      'x-catch-ownership': 'server-only',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6725,6 +7120,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'eventId': <String, Object?>{
       'type': <Object?>[
@@ -6733,25 +7129,30 @@ const schemaReviewDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'reviewerUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'reviewerName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
     },
     'rating': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 5,
+      'x-catch-ownership': 'callable-owned',
     },
     'comment': <String, Object?>{
       'type': 'string',
       'maxLength': 1000,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6772,6 +7173,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'updatedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -6799,6 +7201,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -6857,11 +7260,13 @@ const schemaBlockDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'blockedUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6882,6 +7287,7 @@ const schemaBlockDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'source': <String, Object?>{
       'type': 'string',
@@ -6891,11 +7297,13 @@ const schemaBlockDocumentSchema = <String, Object?>{
         'match',
         'support',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'reasonCode': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'callable-owned',
     },
   },
 };
@@ -6923,11 +7331,13 @@ const schemaReportDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'targetUserId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -6948,6 +7358,7 @@ const schemaReportDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'callable-owned',
     },
     'source': <String, Object?>{
       'type': 'string',
@@ -6957,6 +7368,7 @@ const schemaReportDocumentSchema = <String, Object?>{
         'match',
         'support',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -6965,20 +7377,24 @@ const schemaReportDocumentSchema = <String, Object?>{
         'reviewed',
         'dismissed',
       ],
+      'x-catch-ownership': 'callable-owned',
     },
     'reasonCode': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 80,
+      'x-catch-ownership': 'callable-owned',
     },
     'contextId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
     },
     'notes': <String, Object?>{
       'type': 'string',
       'maxLength': 1000,
+      'x-catch-ownership': 'callable-owned',
     },
   },
 };
@@ -7006,6 +7422,7 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'flagType': <String, Object?>{
       'type': 'string',
@@ -7014,6 +7431,7 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
         'banned_text',
         'underage_content',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'source': <String, Object?>{
       'type': 'string',
@@ -7025,6 +7443,7 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
         'club_description',
         'review_comment',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'status': <String, Object?>{
       'type': 'string',
@@ -7033,6 +7452,7 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
         'reviewed',
         'dismissed',
       ],
+      'x-catch-ownership': 'trigger-owned',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -7053,6 +7473,7 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'reviewedAt': <String, Object?>{
       'type': 'object',
@@ -7073,21 +7494,25 @@ const schemaModerationFlagDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'trigger-owned',
     },
     'contextId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'trigger-owned',
     },
     'context': <String, Object?>{
       'type': 'string',
       'maxLength': 1000,
+      'x-catch-ownership': 'trigger-owned',
     },
     'safeSearchResults': <String, Object?>{
       'type': 'object',
       'additionalProperties': <String, Object?>{
         'type': 'string',
       },
+      'x-catch-ownership': 'trigger-owned',
     },
   },
 };
@@ -7112,6 +7537,7 @@ const schemaDeletedUserTombstoneDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'deletedAt': <String, Object?>{
       'type': 'object',
@@ -7132,6 +7558,7 @@ const schemaDeletedUserTombstoneDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
     'retainedFor': <String, Object?>{
       'type': 'array',
@@ -7141,6 +7568,7 @@ const schemaDeletedUserTombstoneDocumentSchema = <String, Object?>{
         'maxLength': 80,
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
   },
 };
@@ -7168,19 +7596,23 @@ const schemaRateLimitDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'action': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 120,
+      'x-catch-ownership': 'server-only',
     },
     'windowKey': <String, Object?>{
       'type': 'integer',
       'minimum': 0,
+      'x-catch-ownership': 'server-only',
     },
     'count': <String, Object?>{
       'type': 'integer',
       'minimum': 1,
+      'x-catch-ownership': 'server-only',
     },
     'expiresAt': <String, Object?>{
       'type': 'object',
@@ -7201,6 +7633,7 @@ const schemaRateLimitDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
   },
 };
@@ -7229,21 +7662,25 @@ const schemaFunctionEventReceiptDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'onMessageCreated',
       ],
+      'x-catch-ownership': 'server-only',
     },
     'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 240,
+      'x-catch-ownership': 'server-only',
     },
     'matchId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'messageId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'createdAt': <String, Object?>{
       'type': 'object',
@@ -7264,6 +7701,7 @@ const schemaFunctionEventReceiptDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
   },
 };
@@ -7300,11 +7738,13 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'manifestId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+      'x-catch-ownership': 'server-only',
     },
     'generatedAt': <String, Object?>{
       'type': 'object',
@@ -7325,6 +7765,7 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+      'x-catch-ownership': 'server-only',
     },
     'anchorUserIds': <String, Object?>{
       'type': 'array',
@@ -7334,6 +7775,7 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
         'maxLength': 180,
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
     'counts': <String, Object?>{
       'type': 'object',
@@ -7341,6 +7783,7 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
         'type': 'integer',
         'minimum': 0,
       },
+      'x-catch-ownership': 'server-only',
     },
     'paths': <String, Object?>{
       'type': 'array',
@@ -7350,9 +7793,11 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
         'maxLength': 512,
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
     'appendMode': <String, Object?>{
       'type': 'boolean',
+      'x-catch-ownership': 'server-only',
     },
     'appendedAnchorUserIds': <String, Object?>{
       'type': 'array',
@@ -7362,6 +7807,7 @@ const schemaSeedEventManifestDocumentSchema = <String, Object?>{
         'maxLength': 180,
       },
       'uniqueItems': true,
+      'x-catch-ownership': 'server-only',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',
@@ -9108,7 +9554,18 @@ const schemaAddClubHostCallablePayloadSchema = <String, Object?>{
   'additionalProperties': false,
   'required': <Object?>[
     'clubId',
-    'uid',
+  ],
+  'oneOf': <Object?>[
+    <String, Object?>{
+      'required': <Object?>[
+        'uid',
+      ],
+    },
+    <String, Object?>{
+      'required': <Object?>[
+        'phoneNumber',
+      ],
+    },
   ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
@@ -9120,6 +9577,11 @@ const schemaAddClubHostCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'phoneNumber': <String, Object?>{
+      'type': 'string',
+      'minLength': 6,
+      'maxLength': 32,
     },
   },
 };
@@ -9142,6 +9604,56 @@ const schemaRemoveClubHostCallablePayloadSchema = <String, Object?>{
       'maxLength': 180,
     },
     'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+  },
+};
+
+const schemaTransferClubOwnershipCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/transfer_club_ownership_payload.schema.json',
+  'title': 'TransferClubOwnershipCallablePayload',
+  'description': 'Callable payload accepted by transferClubOwnership.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'clubId',
+    'uid',
+  ],
+  'properties': <String, Object?>{
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+  },
+};
+
+const schemaStartClubHostConversationCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json',
+  'title': 'StartClubHostConversationCallablePayload',
+  'description': 'Callable payload accepted by startClubHostConversation.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'clubId',
+    'hostUid',
+  ],
+  'properties': <String, Object?>{
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'hostUid': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -9738,6 +10250,51 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
           },
           'maxItems': 30,
           'uniqueItems': true,
+        },
+        'eventSuccessPrimitives': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'description': 'Optional event-success behavior primitives for custom or unsupported activity formats. These fields translate a saved event format into the small set of primitives event success can reason about.',
+          'properties': <String, Object?>{
+            'phoneAvailability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'continuous',
+                'plannedPauses',
+                'arrivalAndPostEventOnly',
+                'hostOnlyLive',
+                'noneDuringActivity',
+              ],
+            },
+            'rotationSuitability': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'plannedBreaks',
+                'continuousRounds',
+              ],
+            },
+            'assignmentAlgorithm': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'pacePods',
+                'socialPods',
+                'pairRotations',
+                'teamBalancer',
+                'tableSeating',
+              ],
+            },
+            'compatibilityPolicy': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'socialCohortBalance',
+                'mutualInterestOnly',
+                'questionnaireClueOnly',
+              ],
+            },
+          },
         },
         'activityDetails': <String, Object?>{
           'type': 'object',
@@ -11202,16 +11759,19 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
+          'x-catch-ownership': 'client-writable',
         },
         'targetId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
+          'x-catch-ownership': 'client-writable',
         },
         'eventId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
+          'x-catch-ownership': 'client-writable',
         },
         'direction': <String, Object?>{
           'type': 'string',
@@ -11219,6 +11779,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
             'like',
             'pass',
           ],
+          'x-catch-ownership': 'client-writable',
         },
         'reactionTargetId': <String, Object?>{
           'type': <Object?>[
@@ -11227,6 +11788,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
           ],
           'minLength': 1,
           'maxLength': 80,
+          'x-catch-ownership': 'client-writable',
         },
         'reactionTargetType': <String, Object?>{
           'type': <Object?>[
@@ -11243,6 +11805,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
             'lifestyle',
             null,
           ],
+          'x-catch-ownership': 'client-writable',
         },
         'reactionTargetLabel': <String, Object?>{
           'type': <Object?>[
@@ -11250,6 +11813,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
             'null',
           ],
           'maxLength': 80,
+          'x-catch-ownership': 'client-writable',
         },
         'reactionTargetPreview': <String, Object?>{
           'type': <Object?>[
@@ -11257,6 +11821,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
             'null',
           ],
           'maxLength': 240,
+          'x-catch-ownership': 'client-writable',
         },
         'comment': <String, Object?>{
           'type': <Object?>[
@@ -11264,6 +11829,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
             'null',
           ],
           'maxLength': 240,
+          'x-catch-ownership': 'client-writable',
         },
         'createdAt': <String, Object?>{
           'type': 'object',
@@ -11284,6 +11850,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
               'maximum': 999999999,
             },
           },
+          'x-catch-ownership': 'client-writable',
         },
         'synthetic': <String, Object?>{
           'type': 'boolean',
@@ -11883,6 +12450,16 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaRemoveClubHostCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'TransferClubOwnershipCallablePayload',
+    source: 'callables/transfer_club_ownership_payload.schema.json',
+    schema: schemaTransferClubOwnershipCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'StartClubHostConversationCallablePayload',
+    source: 'callables/start_club_host_conversation_payload.schema.json',
+    schema: schemaStartClubHostConversationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ArchiveClubCallablePayload',
     source: 'callables/archive_club_payload.schema.json',
     schema: schemaArchiveClubCallablePayloadSchema,
@@ -12099,6 +12676,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'UpdateClubCallablePayload': schemaUpdateClubCallablePayloadSchema,
   'AddClubHostCallablePayload': schemaAddClubHostCallablePayloadSchema,
   'RemoveClubHostCallablePayload': schemaRemoveClubHostCallablePayloadSchema,
+  'TransferClubOwnershipCallablePayload': schemaTransferClubOwnershipCallablePayloadSchema,
+  'StartClubHostConversationCallablePayload': schemaStartClubHostConversationCallablePayloadSchema,
   'ArchiveClubCallablePayload': schemaArchiveClubCallablePayloadSchema,
   'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
   'ClubMembershipCallablePayload': schemaClubMembershipCallablePayloadSchema,
@@ -12180,6 +12759,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/update_club_payload.schema.json': schemaUpdateClubCallablePayloadSchema,
   'callables/add_club_host_payload.schema.json': schemaAddClubHostCallablePayloadSchema,
   'callables/remove_club_host_payload.schema.json': schemaRemoveClubHostCallablePayloadSchema,
+  'callables/transfer_club_ownership_payload.schema.json': schemaTransferClubOwnershipCallablePayloadSchema,
+  'callables/start_club_host_conversation_payload.schema.json': schemaStartClubHostConversationCallablePayloadSchema,
   'callables/archive_club_payload.schema.json': schemaArchiveClubCallablePayloadSchema,
   'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
   'callables/club_membership_payload.schema.json': schemaClubMembershipCallablePayloadSchema,

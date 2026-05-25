@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
@@ -229,9 +230,10 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
   String attendeePromptFor(Event event) {
     final configured = attendeePrompt?.trim();
     if (configured != null && configured.isNotEmpty) return configured;
-    return playbook.activityType.isMovementHeavy
-        ? 'Find someone running your pace and ask what route they want to try next.'
-        : 'Find someone near you and ask what brought them here.';
+    return EventSuccessActivityProfile.forFormat(
+      event.eventFormat,
+      targetAttendeeCount: targetAttendeeCount,
+    ).defaultAttendeePrompt;
   }
 
   EventSuccessBrief buildBriefFromScorecard({

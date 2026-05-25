@@ -6,6 +6,10 @@
 		<string>Catch uses your location to find nearby run clubs and show distance to other runners.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Catch uses the camera to scan host QR codes for event check-in.</string>
+		<key>NSCalendarsUsageDescription</key>
+		<string>Catch uses calendar access to let you review and save booked runs to your calendar.</string>
+		<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+		<string>Catch uses calendar access to let you review and save booked runs to your calendar.</string>
 		<key>NSHealthShareUsageDescription</key>
 		<string>Catch uses read-only access to your running workouts to show your weekly running distance on the dashboard.</string>
 		<key>NSHealthUpdateUsageDescription</key>

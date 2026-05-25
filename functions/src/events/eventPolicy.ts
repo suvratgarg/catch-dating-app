@@ -306,12 +306,19 @@ export function assertPolicyAllowsSignup(params: {
   cohortId: string;
   roster: EventRosterSnapshot;
   hasValidInvite?: boolean;
+  hasHostApproval?: boolean;
 }) {
   const admission = params.policy.admission;
   if (admission.inviteRequired && params.hasValidInvite !== true) {
     throw new HttpsError(
       "failed-precondition",
       "Enter a valid invite code to book this event."
+    );
+  }
+  if (admission.manualApprovalRequired && params.hasHostApproval !== true) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Request to join this event before booking."
     );
   }
 

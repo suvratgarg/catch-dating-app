@@ -47,6 +47,8 @@ import {
   updateClubCallablePayloadSchema,
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
+  transferClubOwnershipCallablePayloadSchema,
+  startClubHostConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
   clubMembershipCallablePayloadSchema,
@@ -136,6 +138,8 @@ export const validateCreateClubCallableResponse = ajv.compile(createClubCallable
 export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
 export const validateAddClubHostCallablePayload = ajv.compile(addClubHostCallablePayloadSchema);
 export const validateRemoveClubHostCallablePayload = ajv.compile(removeClubHostCallablePayloadSchema);
+export const validateTransferClubOwnershipCallablePayload = ajv.compile(transferClubOwnershipCallablePayloadSchema);
+export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
 export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);

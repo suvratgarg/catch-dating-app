@@ -93,7 +93,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Showtime console'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
     expect(
       find.textContaining('Step 1/4: Check in and skill confirm'),
       findsWidgets,
@@ -242,7 +242,7 @@ void main() {
       find.descendant(of: companion, matching: find.text('Find Arjun.')),
       findsNothing,
     );
-    expect(find.text('Live host mode'), findsOneWidget);
+    expect(find.text('Live now'), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 
@@ -300,7 +300,11 @@ void main() {
 }
 
 Future<void> _tapHostNext(WidgetTester tester) async {
-  await _tapHostButton(tester, 'Next');
+  final nextButton = find.byKey(const ValueKey('eventSuccessNextStepButton'));
+  await tester.ensureVisible(nextButton);
+  await tester.pump();
+  await tester.tap(nextButton);
+  await tester.pump();
 }
 
 Future<void> _tapHostButton(WidgetTester tester, String label) async {

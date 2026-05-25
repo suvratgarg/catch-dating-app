@@ -15,6 +15,14 @@ const generatedTypesPath = path.join(
 const functionsIndexPath = path.join(repoRoot, "functions/src/index.ts");
 const contractRoot = path.join(repoRoot, "contracts");
 
+const OWNERSHIP_TAGS = new Set([
+  "client-writable",
+  "client-runtime-writable",
+  "callable-owned",
+  "trigger-owned",
+  "server-only",
+]);
+
 const contract = readJson(contractPath);
 const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
@@ -54,7 +62,7 @@ for (const collection of contract.collections ?? []) {
     requireExistingRepoPath(collection.rulesTestFile, `${label}.rulesTestFile`);
   }
 
-  validateFieldGroups(collection, label);
+  validateOwnershipTags(collection, label);
   validateTypeContract(collection, label);
   validateSchemaFieldProjection(collection, label);
   validateRulesFieldAllowList(collection, label);
@@ -62,7 +70,11 @@ for (const collection of contract.collections ?? []) {
   validateOperations(collection, label);
 
   for (const embeddedType of collection.embeddedTypes ?? []) {
-    validateTypeContract(embeddedType, `${label}.${embeddedType.typescriptInterface}`);
+    validateEmbeddedType(
+      collection,
+      embeddedType,
+      `${label}.${embeddedType.typescriptInterface}`
+    );
   }
 }
 
@@ -89,13 +101,56 @@ function loadFirestoreSchemas() {
   const firestoreSchemaDir = path.join(contractRoot, "firestore");
   for (const entry of fs.readdirSync(firestoreSchemaDir, {withFileTypes: true})) {
     if (!entry.isFile() || !entry.name.endsWith(".schema.json")) continue;
-    const schema = readJson(path.join(firestoreSchemaDir, entry.name));
+    const filePath = path.join(firestoreSchemaDir, entry.name);
+    const schema = readJson(filePath);
     const collectionId = schema["x-firestore-collection"];
     if (typeof collectionId === "string" && collectionId.length > 0) {
-      schemas.set(collectionId, schema);
+      schemas.set(collectionId, {schema, filePath});
     }
   }
   return schemas;
+}
+
+function resolveRef(ref, fromFilePath) {
+  const [filePart, pointerPart] = ref.split("#");
+  let target;
+  if (filePart) {
+    const targetPath = path.resolve(path.dirname(fromFilePath), filePart);
+    target = readJson(targetPath);
+  } else {
+    return null;
+  }
+  if (pointerPart) {
+    const segments = pointerPart.split("/").filter(Boolean);
+    for (const seg of segments) {
+      if (target == null) return null;
+      target = target[seg];
+    }
+  }
+  return target ?? null;
+}
+
+function resolveNestedProperty(parentSchema, parentFilePath, propertyPath) {
+  const segments = propertyPath.split(".");
+  let current = parentSchema;
+  let currentFilePath = parentFilePath;
+  for (const segment of segments) {
+    if (!current || !current.properties) return null;
+    let next = current.properties[segment];
+    if (!next) return null;
+    if (typeof next.$ref === "string") {
+      const refStr = next.$ref;
+      const [filePart] = refStr.split("#");
+      const nextFilePath = filePart
+        ? path.resolve(path.dirname(currentFilePath), filePart)
+        : currentFilePath;
+      next = resolveRef(refStr, currentFilePath);
+      if (!next) return null;
+      currentFilePath = nextFilePath;
+    }
+    current = next;
+  }
+  return current;
 }
 
 function requireString(value, label) {
@@ -123,83 +178,60 @@ function assertUnique(seen, value, label) {
   seen.add(value);
 }
 
-function validateFieldGroups(collection, label) {
-  const allFields = new Set(effectiveAllFields(collection));
-  for (const groupName of [
-    "allFields",
+function validateOwnershipTags(collection, label) {
+  const legacyGroups = [
     "clientWritableFields",
     "clientRuntimeWritableFields",
     "callableOwnedFields",
     "triggerOwnedFields",
     "serverOwnedFields",
-    "internalDemoFields",
-  ]) {
-    const fields = collection[groupName] ?? [];
-    if (!Array.isArray(fields)) {
-      errors.push(`${label}.${groupName} must be an array when present`);
-      continue;
-    }
-    const seen = new Set();
-    for (const field of fields) {
-      if (typeof field !== "string" || field.length === 0) {
-        errors.push(`${label}.${groupName} contains a non-string field`);
-        continue;
-      }
-      assertUnique(seen, field, `${label}.${groupName}.${field}`);
-      if (
-        groupName !== "allFields" &&
-        groupName !== "internalDemoFields" &&
-        allFields.size > 0 &&
-        !allFields.has(field)
-      ) {
-        errors.push(`${label}.${groupName}.${field} is missing from allFields`);
-      }
+  ];
+  for (const groupName of legacyGroups) {
+    if (collection[groupName] !== undefined) {
+      errors.push(
+        `${label}.${groupName} is no longer carried in firestore_contract.json. ` +
+        `Move ownership to per-property "x-catch-ownership" annotations on ` +
+        `the corresponding schema in contracts/firestore/.`
+      );
     }
   }
 
-  assertNoOverlap(
-    collection.clientWritableFields ?? [],
-    [
-      ...(collection.callableOwnedFields ?? []),
-      ...(collection.triggerOwnedFields ?? []),
-      ...(collection.serverOwnedFields ?? []),
-    ],
-    `${label}: clientWritableFields overlap backend-owned fields`
-  );
+  if (collection.allFields !== undefined) {
+    errors.push(
+      `${label}.allFields is no longer carried in firestore_contract.json. ` +
+      `Schema properties are the source of truth.`
+    );
+  }
+
+  if (collection.internalDemoFields !== undefined) {
+    errors.push(
+      `${label}.internalDemoFields is no longer carried in firestore_contract.json. ` +
+      `Use the schema's "x-internal-demo-fields" root array.`
+    );
+  }
+
+  const entry = schemaByCollectionId.get(collection.id);
+  if (!entry) return;
+  const {schema} = entry;
+
+  for (const [field, def] of Object.entries(schema.properties ?? {})) {
+    const ownership = def["x-catch-ownership"];
+    if (ownership === undefined) continue;
+    if (typeof ownership !== "string" || !OWNERSHIP_TAGS.has(ownership)) {
+      errors.push(
+        `${label}: property "${field}" has unrecognized x-catch-ownership ` +
+        `"${ownership}". Valid: ${[...OWNERSHIP_TAGS].join(", ")}.`
+      );
+    }
+  }
 }
 
+
 function validateSchemaFieldProjection(collection, label) {
-  const schema = schemaByCollectionId.get(collection.id);
-  if (!schema) return;
-
-  const modelSchemaFields = schemaModelFields(schema);
-  const contractFields = [...(collection.allFields ?? [])].sort();
-  if (
-    collection.allFields &&
-    modelSchemaFields.join("\n") !== contractFields.join("\n")
-  ) {
-    errors.push(
-      `${label}: allFields differ from JSON schema model fields. ` +
-      `expected [${modelSchemaFields.join(", ")}], actual ` +
-      `[${contractFields.join(", ")}]`
-    );
-  }
-
-  const internalDemoFields = new Set(schema["x-internal-demo-fields"] ?? []);
-  const contractInternalDemoFields = [
-    ...(collection.internalDemoFields ?? []),
-  ].sort();
-  const schemaInternalDemoFields = [...internalDemoFields].sort();
-  if (
-    schemaInternalDemoFields.join("\n") !==
-    contractInternalDemoFields.join("\n")
-  ) {
-    errors.push(
-      `${label}: internalDemoFields differ from JSON schema. expected ` +
-      `[${schemaInternalDemoFields.join(", ")}], actual ` +
-      `[${contractInternalDemoFields.join(", ")}]`
-    );
-  }
+  // Allowable schema metadata is enforced by node tool/contracts/validate_schema_contracts.mjs.
+  // Field-shape drift between schema and contract is no longer possible: schemas are the
+  // single source of truth for field names and internal-demo markers.
+  return;
 }
 
 function validateRulesFieldAllowList(collection, label) {
@@ -221,15 +253,6 @@ function validateRulesFieldAllowList(collection, label) {
       `ownership contract. expected [${expected.join(", ")}], actual ` +
       `[${actual.join(", ")}]`
     );
-  }
-}
-
-function assertNoOverlap(left, right, label) {
-  const rightSet = new Set(right);
-  for (const value of left) {
-    if (rightSet.has(value)) {
-      errors.push(`${label}: ${value}`);
-    }
   }
 }
 
@@ -261,9 +284,61 @@ function validateTypeContract(collection, label) {
 }
 
 function effectiveAllFields(collection) {
-  const schema = schemaByCollectionId.get(collection.id);
-  if (schema) return schemaModelFields(schema);
-  return collection.allFields ?? [];
+  const entry = schemaByCollectionId.get(collection.id);
+  return entry ? schemaModelFields(entry.schema) : [];
+}
+
+function validateEmbeddedType(parentCollection, embeddedType, label) {
+  if (!embeddedType.typescriptInterface) return;
+
+  const generatedFields = extractInterfaceFields(
+    generatedTypes,
+    embeddedType.typescriptInterface
+  );
+  if (!generatedFields) {
+    errors.push(`${label}: generated TS interface not found: ${embeddedType.typescriptInterface}`);
+    return;
+  }
+
+  let sourceFields = null;
+  if (typeof embeddedType.propertyPath === "string") {
+    const parentEntry = schemaByCollectionId.get(parentCollection.id);
+    if (!parentEntry) {
+      errors.push(`${label}: parent collection has no schema entry to resolve propertyPath`);
+      return;
+    }
+    const resolved = resolveNestedProperty(
+      parentEntry.schema,
+      parentEntry.filePath,
+      embeddedType.propertyPath
+    );
+    if (!resolved || !resolved.properties) {
+      errors.push(
+        `${label}: propertyPath "${embeddedType.propertyPath}" did not resolve to a ` +
+        `schema with properties`
+      );
+      return;
+    }
+    sourceFields = Object.keys(resolved.properties);
+  } else if (Array.isArray(embeddedType.allFields)) {
+    sourceFields = embeddedType.allFields;
+  }
+
+  if (sourceFields === null) {
+    errors.push(
+      `${label}: embedded type needs either "propertyPath" (preferred) or "allFields"`
+    );
+    return;
+  }
+
+  const expected = [...sourceFields].sort();
+  const actual = [...generatedFields].sort();
+  if (expected.join("\n") !== actual.join("\n")) {
+    errors.push(
+      `${label}: fields differ from ${embeddedType.typescriptInterface}. ` +
+      `expected [${expected.join(", ")}], actual [${actual.join(", ")}]`
+    );
+  }
 }
 
 function schemaModelFields(schema) {
@@ -335,7 +410,7 @@ function validateOperations(collection, label) {
     return;
   }
 
-  const allFields = new Set(collection.allFields ?? []);
+  const allFields = new Set(effectiveAllFields(collection));
   const rulesTestSource = collection.rulesTestFile ?
     readText(path.join(repoRoot, collection.rulesTestFile)) :
     null;
@@ -358,6 +433,8 @@ function validateOperations(collection, label) {
         operation.function
       );
     }
+
+    validatePayloadSchemaRef(operation, operationLabel);
 
     for (const fieldGroup of [
       "allowedFields",
@@ -388,6 +465,47 @@ function validateOperations(collection, label) {
       `${operationLabel}.rulesTestNames`,
       collection.rulesTestFile
     );
+  }
+}
+
+function validatePayloadSchemaRef(operation, operationLabel) {
+  const ref = operation.payloadSchemaRef;
+  if (ref === undefined) return;
+  if (typeof ref !== "string" || ref.length === 0) {
+    errors.push(`${operationLabel}.payloadSchemaRef must be a non-empty string`);
+    return;
+  }
+
+  const schemaPath = path.join(repoRoot, ref);
+  if (!fs.existsSync(schemaPath)) {
+    errors.push(`${operationLabel}.payloadSchemaRef points at missing schema: ${ref}`);
+    return;
+  }
+
+  // Field-by-field cross-check is intentionally not done here: callable input
+  // field names (e.g. startTimeMillis) commonly differ from the document field
+  // names they map to (e.g. startTime). Catching that requires an explicit
+  // input→doc mapping declaration, which the contract does not carry today.
+  // The link is still useful: it makes the operation→schema relationship
+  // explicit and catches stale references when schemas are renamed or deleted.
+
+  if (operation.strictAllowedFieldsMatch === true && Array.isArray(operation.allowedFields)) {
+    const payloadSchema = readJson(schemaPath);
+    const patchProps = payloadSchema.properties?.fields?.properties;
+    const inputProps = patchProps && typeof patchProps === "object"
+      ? patchProps
+      : payloadSchema.properties;
+    if (inputProps && typeof inputProps === "object") {
+      const inputSet = new Set(Object.keys(inputProps));
+      for (const field of operation.allowedFields) {
+        if (!inputSet.has(field)) {
+          errors.push(
+            `${operationLabel}.allowedFields.${field} is not in ${ref} ` +
+            `(strictAllowedFieldsMatch: true)`
+          );
+        }
+      }
+    }
   }
 }
 

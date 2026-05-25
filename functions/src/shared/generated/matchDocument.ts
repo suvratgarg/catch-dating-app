@@ -9,7 +9,7 @@ export interface MatchDocument {
   user1Id: string;
   user2Id: string;
   /**
-   * @minItems 1
+   * @minItems 0
    */
   eventIds: string[];
   /**
@@ -39,6 +39,8 @@ export interface MatchDocument {
    * @maxItems 2
    */
   participantIds: string[];
+  conversationType?: "match" | "clubHostInquiry";
+  clubId?: string;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

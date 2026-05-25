@@ -198,7 +198,17 @@ List<_ExpectationItem> _expectationItems(Event event) {
     ),
   ];
 
-  if (policy.admissionPolicy.format == EventAdmissionFormat.balancedRatio) {
+  if (policy.admissionPolicy.manualApprovalRequired) {
+    items.add(
+      const _ExpectationItem(
+        icon: Icons.pending_actions_outlined,
+        title: 'Host review',
+        body:
+            'Request a spot first. The host can review your public profile before confirming the roster.',
+      ),
+    );
+  } else if (policy.admissionPolicy.format ==
+      EventAdmissionFormat.balancedRatio) {
     items.add(
       const _ExpectationItem(
         icon: Icons.balance_outlined,
@@ -269,8 +279,8 @@ String _admissionTitle(EventAdmissionPolicy policy) {
   return switch (policy.format) {
     EventAdmissionFormat.open => 'Open capacity',
     EventAdmissionFormat.inviteOnly => 'Invite only',
-    EventAdmissionFormat.manualApproval => 'Manual approval',
-    EventAdmissionFormat.fixedCohortCaps => 'Fixed cohort caps',
+    EventAdmissionFormat.manualApproval => 'Request to join',
+    EventAdmissionFormat.fixedCohortCaps => 'Open with cohort caps',
     EventAdmissionFormat.balancedRatio => 'Balanced singles',
     EventAdmissionFormat.membersOnly => 'Members only',
   };
@@ -281,7 +291,7 @@ String _admissionSummary(EventAdmissionPolicy policy) {
     EventAdmissionFormat.open =>
       'Attendees book until ${policy.capacityLimit} spots are filled.',
     EventAdmissionFormat.fixedCohortCaps =>
-      'Straight men and women use explicit cohort caps; other cohorts book within total capacity.',
+      'Attendees book within total capacity, with optional straight men and straight women caps applied.',
     EventAdmissionFormat.balancedRatio =>
       'Straight men and women are balanced within a small tolerance; other cohorts book within total capacity.',
     EventAdmissionFormat.inviteOnly =>

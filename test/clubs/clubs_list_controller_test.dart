@@ -97,6 +97,25 @@ void main() {
       expect(container.read(clubSearchQueryProvider), isEmpty);
     });
 
+    test('setCity clears city-local filters but keeps global filters', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final filters = container.read(clubBrowseFiltersProvider.notifier);
+      filters.toggleThisWeekOnly();
+      filters.toggleHighRatedOnly();
+      filters.toggleActivityTag('tempo');
+      filters.toggleArea('Bandra');
+
+      container.read(selectedClubCityProvider.notifier).setCity(_city('delhi'));
+
+      final selection = container.read(clubBrowseFiltersProvider);
+      expect(selection.thisWeekOnly, isTrue);
+      expect(selection.highRatedOnly, isTrue);
+      expect(selection.activityTag, isNull);
+      expect(selection.area, isNull);
+    });
+
     test('matchesClubSearchQuery matches name, area, host, and tags', () {
       final bandraClub = buildClub(
         id: 'club-1',
@@ -118,6 +137,55 @@ void main() {
       expect(matchesClubSearchQuery(hostClub, 'asha'), isTrue);
       expect(matchesClubSearchQuery(taggedClub, 'tempo'), isTrue);
       expect(matchesClubSearchQuery(taggedClub, 'missing'), isFalse);
+    });
+
+    test('applyClubBrowseFilters combines quick filters', () {
+      final now = DateTime(2026, 1, 1, 8);
+      final matchingClub = buildClub(
+        id: 'matching-club',
+        area: 'Bandra',
+        tags: const ['tempo'],
+        rating: 4.8,
+        nextEventAt: now.add(const Duration(days: 2)),
+      );
+      final staleEventClub = buildClub(
+        id: 'stale-event-club',
+        area: 'Bandra',
+        tags: const ['tempo'],
+        rating: 4.9,
+        nextEventAt: now.subtract(const Duration(hours: 1)),
+      );
+      final lowRatedClub = buildClub(
+        id: 'low-rated-club',
+        area: 'Bandra',
+        tags: const ['tempo'],
+        rating: 4.2,
+        nextEventAt: now.add(const Duration(days: 2)),
+      );
+      final wrongAreaClub = buildClub(
+        id: 'wrong-area-club',
+        area: 'Juhu',
+        tags: const ['tempo'],
+        rating: 4.8,
+        nextEventAt: now.add(const Duration(days: 2)),
+      );
+
+      final filtered = applyClubBrowseFilters(
+        clubs: [matchingClub, staleEventClub, lowRatedClub, wrongAreaClub],
+        filters: const ClubBrowseFilterSelection(
+          thisWeekOnly: true,
+          highRatedOnly: true,
+          joinedOnly: true,
+          hostedOnly: true,
+          activityTag: 'Tempo',
+          area: 'bandra',
+        ),
+        joinedClubIds: {'matching-club', 'stale-event-club', 'wrong-area-club'},
+        hostedClubIds: {'matching-club', 'low-rated-club'},
+        now: now,
+      );
+
+      expect(filtered.map((club) => club.id), ['matching-club']);
     });
 
     test(

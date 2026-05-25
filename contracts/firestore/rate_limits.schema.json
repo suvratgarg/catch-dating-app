@@ -9,12 +9,37 @@
   "x-firestore-path": "rateLimits/{docId}",
   "x-document-id-field": "docId",
   "x-owner": "shared callable rate-limit middleware",
-  "required": ["uid", "action", "windowKey", "count", "expiresAt"],
+  "required": [
+    "uid",
+    "action",
+    "windowKey",
+    "count",
+    "expiresAt"
+  ],
   "properties": {
-    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "action": {"type": "string", "minLength": 1, "maxLength": 120},
-    "windowKey": {"type": "integer", "minimum": 0},
-    "count": {"type": "integer", "minimum": 1},
-    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "server-only"
+    },
+    "windowKey": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "server-only"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "server-only"
+    }
   }
 }

@@ -123,7 +123,7 @@ ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
   final hasConversation = match.lastMessagePreview != null;
   final String previewText;
   if (!hasConversation) {
-    previewText = 'You matched!';
+    previewText = match.isClubHostInquiry ? 'Ask the host' : 'You matched!';
   } else if (match.lastMessageSenderId == uid) {
     previewText = 'You: ${match.lastMessagePreview}';
   } else {

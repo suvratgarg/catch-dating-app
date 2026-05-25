@@ -7,6 +7,8 @@ part 'match.g.dart';
 
 enum MatchStatus { active, blocked }
 
+enum MatchConversationType { match, clubHostInquiry }
+
 @freezed
 abstract class Match with _$Match {
   const Match._();
@@ -26,6 +28,10 @@ abstract class Match with _$Match {
     @Default(MatchStatus.active) MatchStatus status,
     String? blockedBy,
     @NullableTimestampConverter() DateTime? blockedAt,
+    @JsonKey(unknownEnumValue: MatchConversationType.match)
+    @Default(MatchConversationType.match)
+    MatchConversationType conversationType,
+    String? clubId,
   }) = _Match;
 
   factory Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
@@ -37,6 +43,9 @@ abstract class Match with _$Match {
   String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 
   bool get isBlocked => status == MatchStatus.blocked;
+
+  bool get isClubHostInquiry =>
+      conversationType == MatchConversationType.clubHostInquiry;
 
   bool hasUnreadIncomingFor(String uid) =>
       !isBlocked &&

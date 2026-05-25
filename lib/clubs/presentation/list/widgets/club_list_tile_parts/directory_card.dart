@@ -91,7 +91,7 @@ class _DirectoryCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${club.area} · ${club.memberCount} runners',
+                    _clubSummaryLabel(club),
                     style: CatchTextStyles.bodyS(context),
                   ),
                   if (visibleTags.isNotEmpty) ...[
@@ -107,6 +107,28 @@ class _DirectoryCard extends StatelessWidget {
                           uppercase: true,
                         );
                       }).toList(),
+                    ),
+                  ],
+                  if (_hasMetadataPills(club)) ...[
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (club.nextEventLabel != null)
+                          _ClubMetaPill(
+                            icon: Icons.event_available_outlined,
+                            label: 'Next ${club.nextEventLabel}',
+                          ),
+                        if (club.rating > 0 && club.reviewCount > 0)
+                          _ClubMetaPill(
+                            icon: Icons.star_rounded,
+                            iconColor: t.gold,
+                            label:
+                                '${club.rating.toStringAsFixed(1)} · '
+                                '${_reviewCountLabel(club.reviewCount)}',
+                          ),
+                      ],
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -142,6 +164,20 @@ class _DirectoryCard extends StatelessWidget {
   }
 }
 
+String _clubSummaryLabel(Club club) {
+  final memberLabel = club.memberCount == 1 ? 'member' : 'members';
+  return '${club.area} · ${club.memberCount} $memberLabel';
+}
+
+bool _hasMetadataPills(Club club) {
+  return club.nextEventLabel != null ||
+      (club.rating > 0 && club.reviewCount > 0);
+}
+
+String _reviewCountLabel(int count) {
+  return count == 1 ? '1 review' : '$count reviews';
+}
+
 List<String> _visibleTags(Club club) {
   final locationNames = {
     club.location.toLowerCase(),
@@ -150,6 +186,50 @@ List<String> _visibleTags(Club club) {
   return club.tags
       .where((tag) => !locationNames.contains(tag.trim().toLowerCase()))
       .toList(growable: false);
+}
+
+class _ClubMetaPill extends StatelessWidget {
+  const _ClubMetaPill({
+    required this.icon,
+    required this.label,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.raised,
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: t.line),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 13, color: iconColor ?? t.ink2),
+            const SizedBox(width: 4),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 220),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.labelS(context, color: t.ink2),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _MembershipButton extends StatelessWidget {

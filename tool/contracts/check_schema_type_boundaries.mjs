@@ -64,10 +64,17 @@ for (const key of Object.keys(exceptions)) {
 }
 
 const facade = fs.readFileSync(firestoreFacadePath, "utf8");
-if (!facade.toLowerCase().includes("transitional")) {
+const facadeLower = facade.toLowerCase();
+// The preamble must position this file as a parallel projection of JSON
+// Schema-owned shape, not as the canonical source. Either phrasing works.
+if (
+  !facadeLower.includes("admin sdk timestamp overlay") &&
+  !facadeLower.includes("transitional")
+) {
   errors.push(
-    "functions/src/shared/firestore.ts must describe itself as transitional " +
-      "so new code does not treat it as canonical schema truth."
+    "functions/src/shared/firestore.ts must describe itself as an Admin SDK " +
+      "Timestamp overlay (or transitional facade) so new code does not treat " +
+      "it as canonical schema truth."
   );
 }
 

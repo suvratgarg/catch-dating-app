@@ -12,6 +12,7 @@ class _LiveTab extends ConsumerWidget {
     required this.preferences,
     required this.wingmanRequests,
     required this.wingmanProfiles,
+    this.liveRoster,
     required this.fixtureActions,
     required this.shrinkWrap,
     required this.physics,
@@ -28,6 +29,7 @@ class _LiveTab extends ConsumerWidget {
   final List<EventSuccessPreference> preferences;
   final List<EventSuccessWingmanRequest> wingmanRequests;
   final List<PublicProfile> wingmanProfiles;
+  final Widget? liveRoster;
   final EventSuccessHostFixtureActions? fixtureActions;
   final bool shrinkWrap;
   final ScrollPhysics physics;
@@ -58,6 +60,16 @@ class _LiveTab extends ConsumerWidget {
                 ? 'Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.'
                 : 'This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.',
           ),
+          if (liveRoster != null) ...[
+            gapH16,
+            const _LiveSectionHeader(
+              title: 'Editable roster',
+              subtitle:
+                  'Tap a booked attendee if their check-in state is wrong.',
+            ),
+            gapH10,
+            liveRoster!,
+          ],
         ],
       );
     }
@@ -81,24 +93,33 @@ class _LiveTab extends ConsumerWidget {
         primary: shrinkWrap ? false : null,
         physics: physics,
         padding: padding,
-        children: const [
-          _NoticeCard(
+        children: [
+          const _NoticeCard(
             icon: Icons.rule_folder_outlined,
             title: 'No live steps selected',
             body:
                 'This saved setup does not include any tools the host can use during the event.',
           ),
+          if (liveRoster != null) ...[
+            gapH16,
+            const _LiveSectionHeader(
+              title: 'Editable roster',
+              subtitle:
+                  'Tap a booked attendee if their check-in state is wrong.',
+            ),
+            gapH10,
+            liveRoster!,
+          ],
         ],
       );
     }
-    final previousIndex = (plan.activeStepIndex - 1).clamp(
-      0,
-      livePlan.steps.length - 1,
-    );
-    final nextIndex = (plan.activeStepIndex + 1).clamp(
-      0,
-      livePlan.steps.length - 1,
-    );
+    final activeStepIndex = livePlan.activeStepIndex;
+    final previousIndex = (activeStepIndex - 1)
+        .clamp(0, livePlan.steps.length - 1)
+        .toInt();
+    final nextIndex = (activeStepIndex + 1)
+        .clamp(0, livePlan.steps.length - 1)
+        .toInt();
     final activeModuleIds = livePlan.activeStep.moduleIds.toSet();
     bool activeStepHas(String moduleId) => activeModuleIds.contains(moduleId);
     final conversationCueActive =
@@ -111,6 +132,10 @@ class _LiveTab extends ConsumerWidget {
       checkedInCount: livePlan.checkedInCount,
       waitlistCount: roster.waitlistedCount,
     );
+
+    Widget attendanceQrCard() => _LiveCheckInQrCard(event: event);
+
+    final hasEmbeddedRoster = liveRoster != null;
 
     Widget wingmanCard() => _WingmanRequestsHostCard(
       requests: wingmanRequests,
@@ -167,7 +192,7 @@ class _LiveTab extends ConsumerWidget {
     final currentStepCards = <Widget>[
       if (runtime.checkInEnabled &&
           activeStepHas(EventSuccessModuleCatalog.checkIn.id))
-        attendanceCard(),
+        hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
       if (runtime.wingmanRequestsEnabled &&
           activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))
         wingmanCard(),
@@ -186,7 +211,7 @@ class _LiveTab extends ConsumerWidget {
     final supportingCards = <Widget>[
       if (runtime.checkInEnabled &&
           !activeStepHas(EventSuccessModuleCatalog.checkIn.id))
-        attendanceCard(),
+        hasEmbeddedRoster ? attendanceQrCard() : attendanceCard(),
       if (runtime.compatibilityQuestionnaireEnabled)
         _CompatibilitySignalHostCard(plan: plan),
       if (runtime.wingmanRequestsEnabled &&
@@ -219,54 +244,29 @@ class _LiveTab extends ConsumerWidget {
           _ErrorText(error: (completeMutation as MutationError).error),
           gapH16,
         ],
-        _LiveShowtimeConsole(plan: livePlan, event: event),
-        gapH16,
-        EventSuccessLiveHostMode(plan: livePlan, showStepList: false),
-        gapH16,
-        Row(
-          children: [
-            Expanded(
-              child: CatchButton(
-                label: 'Previous',
-                variant: CatchButtonVariant.secondary,
-                onPressed: mutation.isPending || plan.activeStepIndex == 0
-                    ? null
-                    : () => _advanceStep(
-                        ref,
-                        event.id,
-                        previousIndex,
-                        fixtureActions?.onPreviousStep,
-                      ),
-              ),
-            ),
-            gapW10,
-            Expanded(
-              child: CatchButton(
-                label: 'Next',
-                onPressed:
-                    mutation.isPending ||
-                        plan.activeStepIndex >= livePlan.steps.length - 1
-                    ? null
-                    : () => _advanceStep(
-                        ref,
-                        event.id,
-                        nextIndex,
-                        fixtureActions?.onNextStep,
-                      ),
-              ),
-            ),
-          ],
+        _LiveNowConsole(
+          plan: livePlan,
+          event: event,
+          liveRoster: liveRoster,
+          currentStepControls: currentStepCards,
+          onPrevious: mutation.isPending || activeStepIndex == 0
+              ? null
+              : () => _advanceStep(
+                  ref,
+                  event.id,
+                  previousIndex,
+                  fixtureActions?.onPreviousStep,
+                ),
+          onNext:
+              mutation.isPending || activeStepIndex >= livePlan.steps.length - 1
+              ? null
+              : () => _advanceStep(
+                  ref,
+                  event.id,
+                  nextIndex,
+                  fixtureActions?.onNextStep,
+                ),
         ),
-        if (currentStepCards.isNotEmpty) ...[
-          gapH20,
-          const _LiveSectionHeader(
-            title: 'Current step tools',
-            subtitle:
-                'The controls most relevant to the host step attendees are seeing now.',
-          ),
-          gapH10,
-          ..._spacedCards(currentStepCards),
-        ],
         if (supportingCards.isNotEmpty) ...[
           gapH20,
           const _LiveSectionHeader(
@@ -346,96 +346,281 @@ class _LiveTab extends ConsumerWidget {
   }
 }
 
-class _LiveShowtimeConsole extends StatelessWidget {
-  const _LiveShowtimeConsole({required this.plan, required this.event});
+class _LiveNowConsole extends StatelessWidget {
+  const _LiveNowConsole({
+    required this.plan,
+    required this.event,
+    required this.liveRoster,
+    required this.currentStepControls,
+    required this.onPrevious,
+    required this.onNext,
+  });
 
   final EventSuccessLivePlan plan;
+  final Event event;
+  final Widget? liveRoster;
+  final List<Widget> currentStepControls;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSurface(
+          clipBehavior: Clip.antiAlias,
+          borderWidth: 0,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              t.ink,
+              Color.lerp(t.ink, t.primary, 0.52)!,
+              Color.lerp(t.accent, t.gold, 0.18)!,
+            ],
+          ),
+          padding: const EdgeInsets.all(CatchSpacing.s4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchBadge(
+                    label: 'Live now',
+                    tone: CatchBadgeTone.live,
+                    icon: Icons.auto_awesome_rounded,
+                    backgroundColor: t.surface.withValues(alpha: 0.14),
+                    foregroundColor: t.surface,
+                    borderColor: t.surface.withValues(alpha: 0.18),
+                  ),
+                  CatchBadge(
+                    label:
+                        'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
+                    tone: CatchBadgeTone.neutral,
+                    backgroundColor: t.surface.withValues(alpha: 0.12),
+                    foregroundColor: t.surface.withValues(alpha: 0.90),
+                    borderColor: t.surface.withValues(alpha: 0.16),
+                  ),
+                  CatchBadge(
+                    label: plan.activeStep.stage.label,
+                    tone: CatchBadgeTone.neutral,
+                    backgroundColor: t.surface.withValues(alpha: 0.12),
+                    foregroundColor: t.surface.withValues(alpha: 0.90),
+                    borderColor: t.surface.withValues(alpha: 0.16),
+                  ),
+                ],
+              ),
+              gapH14,
+              _LiveNowProgressMeter(
+                label: 'Checked in',
+                detail: '${plan.checkedInCount}/${plan.bookedCount}',
+                value: plan.checkInProgress,
+              ),
+              gapH10,
+              _LiveNowProgressMeter(
+                label: 'Run of show',
+                detail: '${plan.activeStepIndex + 1}/${plan.steps.length}',
+                value: plan.runOfShowProgress,
+              ),
+              gapH16,
+              Text(
+                plan.activeStep.title,
+                style: CatchTextStyles.titleL(context, color: t.surface),
+              ),
+              gapH6,
+              Text(
+                plan.activeStep.hostInstruction,
+                style: CatchTextStyles.bodyM(
+                  context,
+                  color: t.surface.withValues(alpha: 0.84),
+                ),
+              ),
+              gapH12,
+              CatchSurface(
+                padding: const EdgeInsets.all(CatchSpacing.s3),
+                backgroundColor: t.surface.withValues(alpha: 0.10),
+                borderColor: t.surface.withValues(alpha: 0.14),
+                radius: CatchRadius.sm,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.phone_iphone_rounded,
+                      size: 18,
+                      color: t.surface.withValues(alpha: 0.82),
+                    ),
+                    gapW8,
+                    Expanded(
+                      child: Text(
+                        'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
+                        style: CatchTextStyles.bodyS(
+                          context,
+                          color: t.surface.withValues(alpha: 0.82),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (liveRoster != null) ...[
+          gapH14,
+          const _LiveSectionHeader(
+            title: 'Editable roster',
+            subtitle: 'Tap a booked attendee if their check-in state is wrong.',
+          ),
+          gapH10,
+          liveRoster!,
+        ],
+        if (currentStepControls.isNotEmpty) ...[
+          gapH14,
+          const _LiveSectionHeader(
+            title: 'Controls for this step',
+            subtitle: 'Handle these before moving the room forward.',
+          ),
+          gapH10,
+          ..._spacedCards(currentStepControls),
+        ],
+        gapH14,
+        _LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
+      ],
+    );
+  }
+}
+
+class _LiveCheckInQrCard extends StatelessWidget {
+  const _LiveCheckInQrCard({required this.event});
+
   final Event event;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      clipBehavior: Clip.antiAlias,
-      borderWidth: 0,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          t.ink,
-          Color.lerp(t.ink, t.primary, 0.52)!,
-          Color.lerp(t.accent, t.gold, 0.18)!,
-        ],
-      ),
+      borderColor: t.line,
       padding: const EdgeInsets.all(CatchSpacing.s4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
+          Row(
             children: [
-              CatchBadge(
-                label: 'Showtime console',
-                tone: CatchBadgeTone.live,
-                icon: Icons.auto_awesome_rounded,
-                backgroundColor: t.surface.withValues(alpha: 0.14),
-                foregroundColor: t.surface,
-                borderColor: t.surface.withValues(alpha: 0.18),
-              ),
-              CatchBadge(
-                label: 'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
-                tone: CatchBadgeTone.neutral,
-                backgroundColor: t.surface.withValues(alpha: 0.12),
-                foregroundColor: t.surface.withValues(alpha: 0.90),
-                borderColor: t.surface.withValues(alpha: 0.16),
+              Icon(Icons.qr_code_2_rounded, color: t.primary),
+              gapW10,
+              Expanded(
+                child: Text(
+                  'Host check-in QR',
+                  style: CatchTextStyles.titleM(context),
+                ),
               ),
             ],
           ),
-          gapH14,
+          gapH8,
           Text(
-            plan.activeStep.title,
-            style: CatchTextStyles.titleL(context, color: t.surface),
-          ),
-          gapH6,
-          Text(
-            plan.activeStep.hostInstruction,
-            style: CatchTextStyles.bodyS(
-              context,
-              color: t.surface.withValues(alpha: 0.80),
-            ),
+            'Use this for new arrivals; use the editable roster above for manual fixes.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
           gapH12,
-          Container(
-            padding: const EdgeInsets.all(CatchSpacing.s3),
-            decoration: BoxDecoration(
-              color: t.surface.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(CatchRadius.sm),
-              border: Border.all(color: t.surface.withValues(alpha: 0.14)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.phone_iphone_rounded,
-                  size: 18,
-                  color: t.surface.withValues(alpha: 0.82),
-                ),
-                gapW8,
-                Expanded(
-                  child: Text(
-                    'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
-                    style: CatchTextStyles.bodyS(
-                      context,
-                      color: t.surface.withValues(alpha: 0.82),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _HostCheckInQrPanel(event: event),
         ],
       ),
+    );
+  }
+}
+
+class _LiveNowProgressMeter extends StatelessWidget {
+  const _LiveNowProgressMeter({
+    required this.label,
+    required this.detail,
+    required this.value,
+  });
+
+  final String label;
+  final String detail;
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final foreground = t.surface;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: CatchTextStyles.titleS(context, color: foreground),
+              ),
+            ),
+            Text(
+              detail,
+              style: CatchTextStyles.labelL(context, color: foreground),
+            ),
+          ],
+        ),
+        gapH6,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: LinearProgressIndicator(
+            value: value.clamp(0, 1).toDouble(),
+            minHeight: 8,
+            backgroundColor: foreground.withValues(alpha: 0.14),
+            valueColor: AlwaysStoppedAnimation<Color>(foreground),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LiveStepNavigation extends StatelessWidget {
+  const _LiveStepNavigation({
+    required this.plan,
+    required this.onPrevious,
+    required this.onNext,
+  });
+
+  final EventSuccessLivePlan plan;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final nextLabel = plan.activeStepIndex >= plan.steps.length - 1
+        ? 'Final step'
+        : 'Next: ${plan.steps[plan.activeStepIndex + 1].title}';
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: CatchButton(
+            key: const ValueKey('eventSuccessPreviousStepButton'),
+            label: 'Previous',
+            icon: const Icon(Icons.arrow_back_rounded),
+            variant: CatchButtonVariant.secondary,
+            onPressed: onPrevious,
+            fullWidth: true,
+          ),
+        ),
+        gapW10,
+        Expanded(
+          flex: 5,
+          child: CatchButton(
+            key: const ValueKey('eventSuccessNextStepButton'),
+            label: nextLabel,
+            icon: const Icon(Icons.arrow_forward_rounded),
+            onPressed: onNext,
+            fullWidth: true,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -113,6 +113,16 @@
       "checks": ["node --check tool/contracts/check_firestore_contract.mjs"]
     },
     {
+      "id": "contracts:storage-contract",
+      "category": "contracts",
+      "path": "tool/contracts/check_storage_contract.mjs",
+      "command": "node tool/contracts/check_storage_contract.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks Storage contract metadata against storage rules and tests.",
+      "checks": ["node --check tool/contracts/check_storage_contract.mjs"]
+    },
+    {
       "id": "contracts:rules-semantics",
       "category": "contracts",
       "path": "tool/contracts/check_firestore_rules_semantics.mjs",

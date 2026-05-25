@@ -106,6 +106,9 @@ export async function onSwipeCreatedHandler(
     lastMessageSenderId: null,
     unreadCounts: {[id1]: 0, [id2]: 0},
     status: "active",
+    blockedBy: null,
+    blockedAt: null,
+    conversationType: "match",
   };
 
   try {
@@ -127,7 +130,11 @@ export async function onSwipeCreatedHandler(
       // ALREADY_EXISTS - keep one match doc per pair and append shared event
       // history instead of creating another conversation.
       if (sharedEventIds.length > 0) {
-        await matchRef.update({eventIds: deps.arrayUnion(...sharedEventIds)});
+        await matchRef.update({
+          eventIds: deps.arrayUnion(...sharedEventIds),
+          conversationType: "match",
+          clubId: admin.firestore.FieldValue.delete(),
+        });
       }
       await writeReactionCommentMessages(
         matchRef,

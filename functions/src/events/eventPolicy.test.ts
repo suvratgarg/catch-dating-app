@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   cohortIds,
   EventPolicyBundleDoc,
+  assertPolicyAllowsSignup,
   quotePriceInPaise,
   quoteAttendeeCancellation,
 } from "./eventPolicy";
@@ -104,6 +105,38 @@ test("quotePriceInPaise includes same-cohort waitlist demand", () => {
     }),
     55000
   );
+});
+
+test("manual approval policy blocks direct signup until host approval", () => {
+  const requestPolicy: EventPolicyBundleDoc = {
+    ...policy("standard"),
+    admission: {
+      ...policy("standard").admission,
+      format: "manualApproval",
+      manualApprovalRequired: true,
+      waitlistPolicy: {mode: "manualReview", offerWindowMinutes: 0},
+    },
+  };
+  const roster = {
+    bookedCountsByCohort: {},
+    waitlistedCountsByCohort: {},
+    totalBooked: 0,
+  };
+
+  assert.throws(
+    () => assertPolicyAllowsSignup({
+      policy: requestPolicy,
+      cohortId: cohortIds.menInterestedInWomen,
+      roster,
+    }),
+    /Request to join/
+  );
+  assert.doesNotThrow(() => assertPolicyAllowsSignup({
+    policy: requestPolicy,
+    cohortId: cohortIds.menInterestedInWomen,
+    roster,
+    hasHostApproval: true,
+  }));
 });
 
 function policy(

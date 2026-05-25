@@ -485,7 +485,7 @@ class EventSuccessRepository {
           }
           return functions
               .httpsCallable('generateEventSuccessPods')
-              .call(EventIdCallableRequest(eventId).toJson());
+              .call(EventIdCallableRequest(eventId: eventId).toJson());
         },
         context: const BackendErrorContext(
           service: BackendService.functions,
@@ -503,7 +503,7 @@ class EventSuccessRepository {
           }
           return functions
               .httpsCallable('generateEventSuccessRotations')
-              .call(EventIdCallableRequest(eventId).toJson());
+              .call(EventIdCallableRequest(eventId: eventId).toJson());
         },
         context: const BackendErrorContext(
           service: BackendService.functions,
@@ -627,7 +627,7 @@ class EventSuccessRepository {
           }
           return functions
               .httpsCallable('withdrawEventSuccessWingmanRequest')
-              .call(EventIdCallableRequest(event.id).toJson());
+              .call(EventIdCallableRequest(eventId: event.id).toJson());
         },
         context: const BackendErrorContext(
           service: BackendService.functions,
@@ -721,7 +721,7 @@ class EventSuccessRepository {
       }
       final result = await functions
           .httpsCallable('fetchEventSuccessWingmanCandidates')
-          .call<Map<String, dynamic>>(EventIdCallableRequest(eventId).toJson());
+          .call<Map<String, dynamic>>(EventIdCallableRequest(eventId: eventId).toJson());
       final profiles = result.data['profiles'];
       if (profiles is! List) return const <PublicProfile>[];
       return profiles

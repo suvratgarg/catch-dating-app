@@ -30,20 +30,53 @@
     "updatedAt"
   ],
   "properties": {
-    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
     "moduleId": {
       "type": "string",
-      "enum": ["micro_pods", "guided_rotations"]
+      "enum": [
+        "micro_pods",
+        "guided_rotations"
+      ],
+      "x-catch-ownership": "callable-owned"
     },
-    "label": {"type": "string", "minLength": 1, "maxLength": 80},
-    "displayTitle": {"type": "string", "minLength": 1, "maxLength": 120},
-    "displaySubtitle": {"type": ["string", "null"], "maxLength": 240},
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "displayTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "displaySubtitle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
     "peerUids": {
       "type": "array",
       "maxItems": 20,
-      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "rotationSlots": {
       "type": "array",
@@ -60,11 +93,25 @@
           "compatibility"
         ],
         "properties": {
-          "roundIndex": {"type": "integer", "minimum": 0, "maximum": 100},
-          "label": {"type": "string", "minLength": 1, "maxLength": 80},
-          "startsAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-          "endsAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-          "peerUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "endsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "peerUid": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          },
           "compatibility": {
             "type": "string",
             "enum": [
@@ -76,19 +123,43 @@
             ]
           }
         }
-      }
+      },
+      "x-catch-ownership": "callable-owned"
     },
     "source": {
       "type": "string",
-      "enum": ["server_v1", "host_override_v1", "server"]
+      "enum": [
+        "server_v1",
+        "host_override_v1",
+        "server"
+      ],
+      "x-catch-ownership": "callable-owned"
     },
-    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
   }
 }

@@ -58,4 +58,4 @@ final class PaymentConfirmationControllerProvider
 }
 
 String _$paymentConfirmationControllerHash() =>
-    r'18d8482240540718b96443a5e96cd7d115288bab';
+    r'9ba8d00bd1a8a90f8b11d974e8df3b23ca66c372';

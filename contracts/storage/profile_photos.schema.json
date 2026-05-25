@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/profile_photos.schema.json",
+  "title": "ProfilePhotosStoragePath",
+  "description": "Owner-uploaded profile photo objects stored at users/{uid}/photos/{fileName}. Path segment uid must match Firebase Auth uid for writes.",
+  "type": "object",
+  "x-storage-rules-match": "match /users/{uid}/photos/{fileName}",
+  "x-storage-read": "any authenticated user",
+  "x-storage-write": "owner (uid path segment must equal request.auth.uid)",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "users",
+  "x-storage-known-consumers": [
+    "lib/user_profile/presentation/widgets/profile_photo_picker.dart",
+    "functions/src/profiles/generateProfilePhotoThumbnail.ts",
+    "functions/scripts/backfill-profile-thumbnails.cjs"
+  ],
+  "properties": {
+    "uid": {
+      "type": "string",
+      "description": "Firebase Auth uid; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Conventional pattern: {photoIndex}_{timestamp}.{ext}"
+    }
+  }
+}

@@ -107,6 +107,7 @@ test("buildMatchSignalFacts emits one match fact per participant", () => {
     createdAt: "CREATED_AT" as never,
     status: "active",
     unreadCounts: {},
+    conversationType: "match",
   });
 
   assert.deepEqual(
