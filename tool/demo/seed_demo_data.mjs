@@ -511,6 +511,7 @@ function anchorProfileFromUserDoc(uid, data) {
   const firstName = data.firstName || firstWord(data.displayName || data.name || "Runner");
   const displayName = data.displayName || firstName;
   const gender = validGender(data.gender) ? data.gender : "other";
+  const profilePhotos = normalizedProfilePhotos({uid, ...data});
   return {
     uid,
     firstName,
@@ -521,7 +522,7 @@ function anchorProfileFromUserDoc(uid, data) {
     latitude: typeof data.latitude === "number" ? data.latitude : cityData.mumbai.lat,
     longitude: typeof data.longitude === "number" ? data.longitude : cityData.mumbai.lng,
     age: ageFromTimestamp(data.dateOfBirth) ?? 30,
-    photoUrls: Array.isArray(data.photoUrls) ? data.photoUrls : [],
+    profilePhotos,
     source: "anchor",
   };
 }
@@ -673,7 +674,7 @@ function buildSeed({
     ...eventSuccessScorecards.map((scorecard) => ({path: `eventSuccessScorecards/${scorecard.id}`, data: scorecard.doc})),
     ...scheduleLocks,
     ...savedEvents.map((savedEvent) => ({path: `savedEvents/${savedEvent.id}`, data: savedEvent.doc})),
-    ...swipes.map((swipe) => ({path: `swipes/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
+    ...swipes.map((swipe) => ({path: `profileDecisions/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
     ...matches.map((match) => ({path: `matches/${match.id}`, data: match.doc})),
     ...messages.map((message) => ({path: `matches/${message.matchId}/messages/${message.id}`, data: message.doc})),
     ...payments.map((payment) => ({path: `payments/${payment.id}`, data: payment.doc})),
@@ -730,7 +731,24 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const thumbnail = thumbnailUrlForPhoto(photo);
       const profilePrompts = profilePromptsForIndex(index);
       const photoPrompts = photoPromptsForIndex(index);
+      const photoUrls = [photo];
       const photoThumbnailUrls = thumbnail ? [thumbnail] : [];
+      const profilePhotosForUser = profilePhotosFromLegacyArrays({
+        uid,
+        photoUrls,
+        photoThumbnailUrls,
+        photoPrompts,
+      });
+      const activityPreferences = {
+        running: {
+          paceMinSecsPerKm: 275 + (index % 5) * 15,
+          paceMaxSecsPerKm: 375 + (index % 5) * 20,
+          preferredDistances: [["fiveK", "tenK"], ["tenK"], ["halfMarathon"], ["fiveK", "halfMarathon"]][index % 4],
+          runningReasons: [["fitness", "social"], ["community", "mindfulness"], ["challenge", "raceTraining"]][index % 3],
+          preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
+          version: 1,
+        },
+      };
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -744,15 +762,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index + 1}@example.test`,
         profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}events${index + 1}`,
-        photoUrls: [photo],
-        photoThumbnailUrls,
-        photoPrompts,
-        profilePhotos: profilePhotosFromLegacyArrays({
-          uid,
-          photoUrls: [photo],
-          photoThumbnailUrls,
-          photoPrompts,
-        }),
+        profilePhotos: profilePhotosForUser,
         city,
         latitude: lat,
         longitude: lng,
@@ -771,12 +781,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         workout: ["sometimes", "often", "everyday"][index % 3],
         diet: ["omnivore", "vegetarian", "vegan", "jain"][index % 4],
         children: ["dontHave", "wantSomeday", "dontWant"][index % 3],
-        paceMinSecsPerKm: 275 + (index % 5) * 15,
-        paceMaxSecsPerKm: 375 + (index % 5) * 20,
-        preferredDistances: [["fiveK", "tenK"], ["tenK"], ["halfMarathon"], ["fiveK", "halfMarathon"]][index % 4],
-        runningReasons: [["fitness", "social"], ["community", "mindfulness"], ["challenge", "raceTraining"]][index % 3],
-        preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
-        runPreferencesVersion: 1,
+        activityPreferences,
         prefsNewCatches: true,
         prefsMessages: true,
         prefsEventReminders: true,
@@ -795,8 +800,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         age,
         latitude: lat,
         longitude: lng,
-        photoUrls: [photo],
-        photoThumbnailUrls: thumbnail ? [thumbnail] : [],
+        profilePhotos: profilePhotosForUser,
         source: "synthetic",
         userDoc,
         publicProfileDoc: publicProfileFromUserDoc(userDoc),
@@ -836,11 +840,6 @@ export function publicProfileFromUserDoc(userDoc) {
     profilePrompts: Array.isArray(userDoc.profilePrompts) ?
       userDoc.profilePrompts :
       [],
-    photoUrls: userDoc.photoUrls,
-    photoThumbnailUrls: normalizedPhotoThumbnailUrls(userDoc),
-    photoPrompts: Array.isArray(userDoc.photoPrompts) ?
-      userDoc.photoPrompts :
-      [],
     profilePhotos: normalizedProfilePhotos(userDoc),
     city: userDoc.city,
     height: userDoc.height,
@@ -855,12 +854,7 @@ export function publicProfileFromUserDoc(userDoc) {
     workout: userDoc.workout,
     diet: userDoc.diet,
     children: userDoc.children,
-    paceMinSecsPerKm: userDoc.paceMinSecsPerKm,
-    paceMaxSecsPerKm: userDoc.paceMaxSecsPerKm,
-    preferredDistances: userDoc.preferredDistances,
-    runningReasons: userDoc.runningReasons,
-    preferredRunTimes: userDoc.preferredRunTimes,
-    runPreferencesVersion: userDoc.runPreferencesVersion ?? 0,
+    activityPreferences: normalizedActivityPreferences(userDoc),
   };
 }
 
@@ -908,6 +902,30 @@ function normalizedProfilePhotos(userDoc) {
   });
 }
 
+function normalizedActivityPreferences(userDoc) {
+  const running = userDoc.activityPreferences?.running ?? {};
+  return {
+    running: {
+      paceMinSecsPerKm: running.paceMinSecsPerKm ??
+        userDoc.paceMinSecsPerKm ??
+        300,
+      paceMaxSecsPerKm: running.paceMaxSecsPerKm ??
+        userDoc.paceMaxSecsPerKm ??
+        420,
+      preferredDistances: running.preferredDistances ??
+        userDoc.preferredDistances ??
+        [],
+      runningReasons: running.runningReasons ??
+        userDoc.runningReasons ??
+        [],
+      preferredRunTimes: running.preferredRunTimes ??
+        userDoc.preferredRunTimes ??
+        [],
+      version: running.version ?? userDoc.runPreferencesVersion ?? 0,
+    },
+  };
+}
+
 function profilePhotosFromLegacyArrays({
   uid,
   photoUrls,
@@ -946,7 +964,24 @@ function thumbnailStoragePathForStoragePath(storagePath) {
 function storagePathForSeedPhoto(uid, photoUrl, index) {
   const parsedPath = storagePathFromFirebaseDownloadUrl(photoUrl);
   if (parsedPath) return parsedPath;
-  return `users/legacy/photos/${index}.jpg`;
+  return `users/${uid}/photos/${index}.jpg`;
+}
+
+function primaryProfilePhotoUrl(profilePhotos) {
+  if (!Array.isArray(profilePhotos)) return null;
+  const photo = profilePhotos.find((candidate) =>
+    typeof candidate?.url === "string" && candidate.url.length > 0
+  );
+  return photo?.url ?? null;
+}
+
+function primaryProfilePhotoThumbnailUrl(profilePhotos) {
+  if (!Array.isArray(profilePhotos)) return null;
+  const photo = profilePhotos.find((candidate) =>
+    typeof candidate?.thumbnailUrl === "string" &&
+    candidate.thumbnailUrl.length > 0
+  );
+  return photo?.thumbnailUrl ?? primaryProfilePhotoUrl(profilePhotos);
 }
 
 function storagePathFromFirebaseDownloadUrl(value) {
@@ -978,7 +1013,7 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
   const area = cityMeta.areas[clubIndex % cityMeta.areas.length];
   const id = `${seedPrefix}_club_${city}_${String(clubIndex + 1).padStart(2, "0")}`;
   const hostName = host.displayName || host.firstName;
-  const hostAvatarUrl = host.photoThumbnailUrls?.[0] ?? host.photoUrls?.[0] ?? null;
+  const hostAvatarUrl = primaryProfilePhotoThumbnailUrl(host.profilePhotos);
   return {
     id,
     city,
@@ -1678,24 +1713,25 @@ function buildMessages({seedPrefix, seedMarker, match, anchor, target, now}) {
 function buildSuvbotSeedDocs({seedPrefix, seedMarker, anchorProfiles, now}) {
   const docs = [{
     path: "publicProfiles/suvbot",
-    data: {
-      ...seedMarker,
-      name: "Suvbot",
-      age: 99,
-      gender: "other",
-      profilePrompts: [],
-      photoUrls: [],
-      photoThumbnailUrls: [],
-      photoPrompts: [],
-      profilePhotos: [],
-      city: "mumbai",
-      paceMinSecsPerKm: 300,
-      paceMaxSecsPerKm: 420,
-      preferredDistances: [],
-      runningReasons: ["community"],
-      preferredRunTimes: [],
-      runPreferencesVersion: 1,
-    },
+      data: {
+        ...seedMarker,
+        name: "Suvbot",
+        age: 99,
+        gender: "other",
+        profilePrompts: [],
+        profilePhotos: [],
+        city: "mumbai",
+        activityPreferences: {
+          running: {
+            paceMinSecsPerKm: 300,
+            paceMaxSecsPerKm: 420,
+            preferredDistances: [],
+            runningReasons: ["community"],
+            preferredRunTimes: [],
+            version: 1,
+          },
+        },
+      },
   }];
   const text = "I can refresh your seeded demo state or check what is ready to test.";
   for (const anchor of anchorProfiles) {
@@ -1937,7 +1973,7 @@ export function validateSeedDocuments(writePlan) {
     userEventScheduleLocks: 0,
     savedEvents: 0,
     payments: 0,
-    swipes: 0,
+    profileDecisions: 0,
     matches: 0,
     chatMessages: 0,
     reviews: 0,
@@ -2094,7 +2130,7 @@ export function validateSeedDocuments(writePlan) {
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.swipes += 1;
+      result.profileDecisions += 1;
     } else if (isMatchPath(doc.path)) {
       assertValidSchemaPayload(
         validateMatchDocument,
@@ -2168,15 +2204,18 @@ function validatePromptAnswers({path: docPath, data, result}) {
     );
     result.profilePromptAnswers += 1;
   }
-  for (const [index, prompt] of (data.photoPrompts ?? []).entries()) {
+  const photoPrompts = (data.profilePhotos ?? [])
+    .map((photo) => photo?.prompt)
+    .filter(Boolean);
+  for (const [index, prompt] of photoPrompts.entries()) {
     assertKnownPhotoPrompt(
       prompt,
-      `${docPath}.photoPrompts[${index}]`
+      `${docPath}.profilePhotos[${index}].prompt`
     );
     assertValidSchemaPayload(
       validatePhotoPromptAnswer,
       prompt,
-      `${docPath}.photoPrompts[${index}]`
+      `${docPath}.profilePhotos[${index}].prompt`
     );
     result.photoPromptAnswers += 1;
   }
@@ -2277,7 +2316,7 @@ function isPaymentPath(docPath) {
 }
 
 function isSwipePath(docPath) {
-  return /^swipes\/[^/]+\/outgoing\/[^/]+$/.test(docPath);
+  return /^profileDecisions\/[^/]+\/outgoing\/[^/]+$/.test(docPath);
 }
 
 function isMatchPath(docPath) {
@@ -2491,7 +2530,7 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   if (doc.path.startsWith("payments/")) {
     return newAnchorSet.has(doc.data.userId);
   }
-  if (doc.path.startsWith("swipes/")) {
+  if (doc.path.startsWith("profileDecisions/")) {
     return newAnchorSet.has(doc.data.swiperId) ||
       newAnchorSet.has(doc.data.targetId);
   }
@@ -2650,7 +2689,7 @@ export async function filterAppendDocsForValidRelationships(firestore, docs) {
   const skippedMatchIds = new Set();
 
   for (const doc of docs) {
-    if (!doc.path.startsWith("swipes/")) {
+    if (!doc.path.startsWith("profileDecisions/")) {
       kept.push(doc);
       continue;
     }
@@ -2899,7 +2938,7 @@ function printSummary({
     `${schemaValidation.clubs} clubs, ` +
     `${schemaValidation.events} events, ` +
     `${schemaValidation.eventParticipations} participations, ` +
-    `${schemaValidation.swipes} decisions, ` +
+    `${schemaValidation.profileDecisions} decisions, ` +
     `${schemaValidation.matches} matches`
   );
   if (identityDiagnostics.duplicateNamePhotoPairs > 0) {
@@ -3001,7 +3040,7 @@ function countDocs(docs) {
 
 function countKeyForPath(docPath) {
   if (/^matches\/[^/]+\/messages\//.test(docPath)) return "messages";
-  if (/^swipes\/[^/]+\/outgoing\//.test(docPath)) return "swipes";
+  if (/^profileDecisions\/[^/]+\/outgoing\//.test(docPath)) return "profileDecisions";
   if (/^notifications\/[^/]+\/items\//.test(docPath)) return "notifications";
   return docPath.split("/")[0];
 }
@@ -3019,7 +3058,9 @@ function syntheticPublicIdentityDiagnostics(docs) {
     if (!doc.path.startsWith("publicProfiles/")) continue;
     if (doc.data.synthetic !== true) continue;
     const name = normalizedPublicName(doc.data.name);
-    const firstPhoto = Array.isArray(doc.data.photoUrls) ? doc.data.photoUrls[0] : null;
+    const firstPhoto = Array.isArray(doc.data.profilePhotos) ?
+      doc.data.profilePhotos[0]?.url :
+      null;
     if (!name || typeof firstPhoto !== "string" || firstPhoto.length === 0) continue;
     const key = `${name}|${firstPhoto}`;
     const firstPath = seen.get(key);

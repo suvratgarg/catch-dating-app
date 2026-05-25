@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nyc-sales-persona-image-pilot-gemini-v1",
+  "label": "U.S. NYC sales persona Gemini/Nano Banana image generation pilot",
+  "personaCatalogId": "us-nyc-sales-personas-v1",
+  "provider": "gemini",
+  "api": "gemini-generate-content",
+  "model": "gemini-3-pro-image-preview",
+  "fallbackModel": "gemini-3.1-flash-image-preview",
+  "size": "1024x1536",
+  "quality": "high",
+  "imageFormat": "png",
+  "referenceStrategy": "hero-only",
+  "pilotPersonaIds": [
+    "nyc_maya_shah_001",
+    "nyc_jordan_ellis_002",
+    "nyc_sofia_martinez_003"
+  ],
+  "reviewCriteria": [
+    "The person is clearly an adult and looks consistent across all photos.",
+    "The photo feels like a real dating-app profile image, not a stock ad, fashion campaign, or fitness-only profile.",
+    "Name, gender, ethnicity, age, height, body type, and activity context remain plausible.",
+    "No logos, readable text, watermarks, celebrity resemblance, distorted hands, duplicated faces, or ambiguous profile owner.",
+    "The photo set includes normal social, cultural, food, active, and portrait variety without skewing toward running.",
+    "The result should be directly comparable to the ChatGPT web Maya Shah pilot before standardizing on a provider."
+  ]
+}

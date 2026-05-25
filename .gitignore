@@ -78,6 +78,14 @@ app.*.map.json
 codex_audit/*.zip
 codex_audit/**/logs/
 
+# Website research/reference screenshots
+docs/visual_references/**/*.avif
+docs/visual_references/**/*.gif
+docs/visual_references/**/*.jpg
+docs/visual_references/**/*.jpeg
+docs/visual_references/**/*.png
+docs/visual_references/**/*.webp
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile

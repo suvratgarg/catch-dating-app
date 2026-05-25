@@ -10,6 +10,10 @@
   "readiness": {
     "hostClub": 1,
     "upcomingEvents": 1,
-    "participants": 6
+    "participants": 20,
+    "minimumPersonaPhotos": 4,
+    "eventSuccessPlan": 1,
+    "eventSuccessScorecard": 1,
+    "eventPolicySnapshot": 1
   }
 }

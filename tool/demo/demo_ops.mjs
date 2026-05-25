@@ -46,6 +46,26 @@ import {
   applyMemberCountRepairPlan,
   buildMemberCountRepairPlan,
 } from "../data/recompute_club_member_counts.mjs";
+import {
+  DEFAULT_PERSONA_CATALOG_PATH,
+  DEFAULT_PHOTO_ACTIVITY_TAXONOMY_PATH,
+  DEFAULT_PHOTO_COMPOSITION_INDEX_PATH,
+  formatPersonaPhotoGenerationPlanMarkdown,
+  loadPhotoActivityTaxonomy,
+  loadPhotoCompositionIndex,
+  personaPhotoGenerationPlan,
+  personaCatalogSummary,
+  validatePersonaCatalog,
+} from "./demo_persona_catalog.mjs";
+import {
+  DEFAULT_PERSONA_IMAGE_OUTPUT_DIR,
+  DEFAULT_PERSONA_IMAGE_PILOT_PATH,
+  buildPersonaImageGenerationBatch,
+  formatPersonaImageGenerationBatchJsonl,
+  formatPersonaImageGenerationBatchMarkdown,
+  generatePersonaImageBatch,
+  loadPersonaImagePilotConfig,
+} from "./demo_persona_image_generation.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const admin = loadFirebaseAdmin();
@@ -73,6 +93,18 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === "list-golden-accounts") {
     printGoldenAccounts(args);
+    return;
+  }
+  if (command === "validate-persona-catalog") {
+    printPersonaCatalogValidation(args);
+    return;
+  }
+  if (command === "persona-photo-plan") {
+    printPersonaPhotoPlan(args);
+    return;
+  }
+  if (command === "persona-image-generate") {
+    await runPersonaImageGenerate(args);
     return;
   }
   if (command === "seed-world" || command === "append-user") {
@@ -781,6 +813,20 @@ function parseArgs(argv) {
     cleanupPast: true,
     cleanupCancelled: true,
     goldenFile: null,
+    personaCatalog: null,
+    photoTaxonomy: null,
+    photoComposition: null,
+    photoPlanFormat: "text",
+    imagePilotConfig: null,
+    imageProvider: null,
+    imageModel: null,
+    imageFallbackModel: null,
+    imageSize: null,
+    imageQuality: null,
+    imageFormat: null,
+    imageOutputDir: null,
+    personas: [],
+    requirePublishedAssets: false,
     demoScenario: null,
     apply: false,
     allowProd: false,
@@ -806,6 +852,7 @@ function parseArgs(argv) {
     else if (arg === "--with-messages") args.withMessages = true;
     else if (arg === "--skip-functions-build") args.skipFunctionsBuild = true;
     else if (arg === "--bypass-suvbot-access") args.bypassSuvbotAccess = true;
+    else if (arg === "--require-published-assets") args.requirePublishedAssets = true;
     else if (arg === "--via-swipes-only") {
       args.viaSwipes = true;
       args.viaSwipesOnly = true;
@@ -839,6 +886,19 @@ function parseArgs(argv) {
     else if (arg === "--text") args.text = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefixes") args.seedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--golden-file") args.goldenFile = requireValue(argv, ++i, arg);
+    else if (arg === "--persona-catalog") args.personaCatalog = requireValue(argv, ++i, arg);
+    else if (arg === "--photo-taxonomy") args.photoTaxonomy = requireValue(argv, ++i, arg);
+    else if (arg === "--photo-composition") args.photoComposition = requireValue(argv, ++i, arg);
+    else if (arg === "--format") args.photoPlanFormat = requireValue(argv, ++i, arg);
+    else if (arg === "--image-pilot-config") args.imagePilotConfig = requireValue(argv, ++i, arg);
+    else if (arg === "--image-provider") args.imageProvider = requireValue(argv, ++i, arg);
+    else if (arg === "--image-model") args.imageModel = requireValue(argv, ++i, arg);
+    else if (arg === "--image-fallback-model") args.imageFallbackModel = requireValue(argv, ++i, arg);
+    else if (arg === "--image-size") args.imageSize = requireValue(argv, ++i, arg);
+    else if (arg === "--image-quality") args.imageQuality = requireValue(argv, ++i, arg);
+    else if (arg === "--image-format") args.imageFormat = requireValue(argv, ++i, arg);
+    else if (arg === "--image-output-dir") args.imageOutputDir = requireValue(argv, ++i, arg);
+    else if (arg === "--personas") args.personas = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--demo-scenario") args.demoScenario = requireValue(argv, ++i, arg);
     else if (arg === "--synthetic-matches") {
       args.syntheticMatches = Number(requireValue(argv, ++i, arg));
@@ -879,6 +939,226 @@ function printGoldenAccounts(args) {
   for (const account of accounts) {
     console.log(`- ${account.role}: ${account.phone} (${account.scenario})`);
   }
+}
+
+function printPersonaCatalogValidation(args) {
+  const {catalog, result, summary} = validatePersonaCatalogFromArgs(args);
+  if (!result.valid) {
+    if (args.json) {
+      console.log(JSON.stringify({valid: false, summary, issues: result.issues}, null, 2));
+    } else {
+      console.error("Persona catalog invalid");
+      for (const issue of result.issues) console.error(`- ${issue}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+  if (args.json) {
+    console.log(JSON.stringify({valid: true, summary}, null, 2));
+    return;
+  }
+  console.log("Persona catalog valid");
+  console.log(`Catalog: ${summary.id}`);
+  console.log(`Personas: ${summary.personaCount}`);
+  console.log(`Photos: ${summary.photoCount}`);
+  console.log(`Uploaded photos: ${summary.uploadedPhotoCount}`);
+  console.log(`Running photos: ${summary.runningPhotoCount}`);
+  console.log(`Cities: ${JSON.stringify(summary.cityCounts)}`);
+  console.log(`Genders: ${JSON.stringify(summary.genderCounts)}`);
+  console.log(`Photo categories: ${JSON.stringify(summary.categoryCounts)}`);
+  console.log(`Category shares: ${JSON.stringify(summary.categoryShares)}`);
+  console.log(`Activity shares: ${JSON.stringify(summary.activityShares)}`);
+  if (summary.cityPhotoComposition) {
+    console.log(`City composition: ${JSON.stringify(summary.cityPhotoComposition)}`);
+  }
+  if (summary.cohortPhotoComposition) {
+    console.log(`Cohort composition: ${JSON.stringify(summary.cohortPhotoComposition)}`);
+  }
+  void catalog;
+}
+
+function printPersonaPhotoPlan(args) {
+  const {catalog, result, summary, photoTaxonomy, photoCompositionIndex} =
+    validatePersonaCatalogFromArgs(args);
+  if (!result.valid) {
+    if (args.json) {
+      console.log(JSON.stringify({valid: false, summary, issues: result.issues}, null, 2));
+    } else {
+      console.error("Persona catalog invalid");
+      for (const issue of result.issues) console.error(`- ${issue}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+  const plan = personaPhotoGenerationPlan(catalog, {
+    photoTaxonomy,
+    photoCompositionIndex,
+  });
+  if (args.json) {
+    console.log(JSON.stringify({valid: true, plan}, null, 2));
+    return;
+  }
+  if (args.photoPlanFormat === "markdown") {
+    process.stdout.write(formatPersonaPhotoGenerationPlanMarkdown(plan));
+    return;
+  }
+  if (args.photoPlanFormat !== "text") {
+    throw new Error("--format must be text or markdown.");
+  }
+  console.log("Persona photo generation plan");
+  console.log(`Catalog: ${plan.catalogId}`);
+  console.log(`Photos: ${plan.photos.length}`);
+  console.log(`Categories: ${JSON.stringify(plan.summary.categoryCounts)}`);
+  console.log(`Activities: ${JSON.stringify(plan.summary.activityCounts)}`);
+  for (const photo of plan.photos) {
+    console.log(
+      `- ${photo.displayName} #${photo.position}: ${photo.categoryId}/${photo.activityId}`
+    );
+    console.log(`  ${photo.scene}`);
+  }
+}
+
+async function runPersonaImageGenerate(args) {
+  const {catalog, result, summary} = validatePersonaCatalogFromArgs(args);
+  if (!result.valid) {
+    if (args.json) {
+      console.log(JSON.stringify({valid: false, summary, issues: result.issues}, null, 2));
+    } else {
+      console.error("Persona catalog invalid");
+      for (const issue of result.issues) console.error(`- ${issue}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  const pilotConfig = loadPersonaImagePilotConfig(
+    args.imagePilotConfig ?? DEFAULT_PERSONA_IMAGE_PILOT_PATH
+  );
+  const batch = buildPersonaImageGenerationBatch(catalog, {
+    pilotConfig,
+    personaIds: args.personas,
+    provider: args.imageProvider ?? undefined,
+    model: args.imageModel ?? undefined,
+    fallbackModel: args.imageFallbackModel ?? undefined,
+    size: args.imageSize ?? undefined,
+    quality: args.imageQuality ?? undefined,
+    imageFormat: args.imageFormat ?? undefined,
+    outputDir: args.imageOutputDir ?? DEFAULT_PERSONA_IMAGE_OUTPUT_DIR,
+  });
+
+  if (args.json && !args.apply) {
+    console.log(JSON.stringify({valid: true, apply: false, batch}, null, 2));
+    return;
+  }
+  if (args.photoPlanFormat === "markdown" && !args.apply) {
+    process.stdout.write(formatPersonaImageGenerationBatchMarkdown(batch));
+    return;
+  }
+  if (args.photoPlanFormat === "jsonl" && !args.apply) {
+    process.stdout.write(formatPersonaImageGenerationBatchJsonl(batch));
+    return;
+  }
+  if (!["text", "markdown", "jsonl"].includes(args.photoPlanFormat)) {
+    throw new Error("--format must be text, markdown, or jsonl.");
+  }
+
+  if (!args.json) printPersonaImageBatchSummary(batch, args.apply);
+  if (!args.apply) {
+    console.log("\nDry run only. Re-run with --apply to generate local images.");
+    return;
+  }
+
+  let manifest;
+  try {
+    manifest = await generatePersonaImageBatch(batch, {
+      onProgress: args.json ? null : ({event, persona, photo, result}) => {
+        if (event === "start") {
+          console.log(`Generating ${persona.displayName} #${photo.position + 1} (${photo.requestKind})...`);
+        } else if (event === "complete") {
+          console.log(`Generated ${persona.displayName} #${photo.position + 1} with ${result.model}.`);
+        }
+      },
+    });
+  } catch (error) {
+    if (args.json) {
+      console.log(JSON.stringify({
+        valid: false,
+        apply: true,
+        error: {
+          message: error.message,
+          status: error.status ?? null,
+          code: error.code ?? null,
+          type: error.type ?? null,
+          manifestPath: error.manifestPath ?? null,
+        },
+      }, null, 2));
+    } else {
+      console.error(`\nImage generation failed: ${error.message}`);
+      if (error.code) console.error(`${batch.provider} code: ${error.code}`);
+      if (error.manifestPath) console.error(`Failure manifest: ${error.manifestPath}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+  if (args.json) {
+    console.log(JSON.stringify({valid: true, apply: true, batch, manifest}, null, 2));
+    return;
+  }
+  console.log("\nGenerated:");
+  console.log(`Manifest: ${manifest.manifestPath}`);
+  console.log(`Images: ${manifest.outputs.length}`);
+  for (const output of manifest.outputs) {
+    console.log(`- ${output.displayName} #${output.position + 1}: ${output.localPath}`);
+  }
+}
+
+function printPersonaImageBatchSummary(batch, apply) {
+  console.log("Persona image generation batch");
+  console.log(`Mode: ${apply ? "apply" : "dry run"}`);
+  console.log(`Batch: ${batch.id}`);
+  console.log(`Catalog: ${batch.catalogId}`);
+  console.log(`Provider: ${batch.provider}`);
+  console.log(`Model: ${batch.model}`);
+  console.log(`Fallback model: ${batch.fallbackModel}`);
+  console.log(`Size: ${batch.size}`);
+  console.log(`Quality: ${batch.quality}`);
+  console.log(`Image format: ${batch.imageFormat}`);
+  console.log(`Reference strategy: ${batch.referenceStrategy}`);
+  console.log(`Output dir: ${batch.outputDir}`);
+  console.log(`Personas: ${batch.personaCount}`);
+  console.log(`Photos: ${batch.photoCount}`);
+  for (const persona of batch.personas) {
+    const requests = persona.photos.map((photo) =>
+      `${photo.position + 1}:${photo.requestKind}`
+    ).join(", ");
+    console.log(`- ${persona.displayName}: ${requests}`);
+  }
+}
+
+function validatePersonaCatalogFromArgs(args) {
+  const catalogPath = path.resolve(
+    path.resolve(toolDir, "../.."),
+    args.personaCatalog ?? DEFAULT_PERSONA_CATALOG_PATH
+  );
+  const photoTaxonomyPath = path.resolve(
+    path.resolve(toolDir, "../.."),
+    args.photoTaxonomy ?? DEFAULT_PHOTO_ACTIVITY_TAXONOMY_PATH
+  );
+  const photoCompositionPath = path.resolve(
+    path.resolve(toolDir, "../.."),
+    args.photoComposition ?? DEFAULT_PHOTO_COMPOSITION_INDEX_PATH
+  );
+  const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
+  const photoTaxonomy = loadPhotoActivityTaxonomy(photoTaxonomyPath);
+  const photoCompositionIndex = loadPhotoCompositionIndex(photoCompositionPath);
+  const result = validatePersonaCatalog(catalog, {
+    photoTaxonomy,
+    photoCompositionIndex,
+    requirePublishedAssets: args.requirePublishedAssets,
+    source: catalogPath,
+  });
+  const summary = personaCatalogSummary(catalog);
+  return {catalog, result, summary, photoTaxonomy, photoCompositionIndex};
 }
 
 function phonesFromArgs(args) {
@@ -984,7 +1264,10 @@ function printCommands() {
 - create-host-account
 - create-check-in-event
 - scenario-info
-- list-golden-accounts`);
+- list-golden-accounts
+- validate-persona-catalog
+- persona-photo-plan
+- persona-image-generate`);
 }
 
 function printHelp() {
@@ -1006,6 +1289,9 @@ Usage:
   node tool/demo/demo_ops.mjs create-check-in-event --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
   node tool/demo/demo_ops.mjs demo-checklist --env prod --phone +91...
   node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
+  node tool/demo/demo_ops.mjs validate-persona-catalog --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+  node tool/demo/demo_ops.mjs persona-photo-plan --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+  node tool/demo/demo_ops.mjs persona-image-generate --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
 
 Common options:
   --env <dev|staging|prod>       Resolve project id from .firebaserc.
@@ -1028,8 +1314,8 @@ Command options:
   --lat / --lng                  Manual coordinates for create-check-in-event.
   --meeting-point <label>        Meeting label for create-check-in-event.
   --text <message>               Demo chat message text.
-  --via-swipes                   Also write reciprocal swipe likes.
-  --via-swipes-only              Write reciprocal likes only; rely on trigger.
+  --via-swipes                   Also write reciprocal profile-decision likes.
+  --via-swipes-only              Write profile-decision likes only; rely on trigger.
   --with-messages                Create starter chat messages for match-phones.
   --no-messages                  Deprecated; match-phones defaults to no messages.
   --synthetic-matches <n>        warm-user synthetic match count. Default: 3.
@@ -1038,6 +1324,20 @@ Command options:
   --keep-cancelled-events          cleanup-stale-events leaves cancelled seeded events.
   --demo-scenario <name|path>    scenario-info target.
   --golden-file <path>           Golden account registry JSON.
+  --persona-catalog <path>       Persona catalog for validate-persona-catalog.
+  --photo-taxonomy <path>        Photo activity taxonomy for persona validation.
+  --photo-composition <path>     Photo composition index for persona validation.
+  --format <text|markdown|jsonl> persona-photo-plan/persona-image-generate output format.
+  --require-published-assets     Require uploaded persona assets.
+  --image-pilot-config <path>    Image generation pilot JSON.
+  --personas <id,...>            Persona IDs for persona-image-generate.
+  --image-provider <provider>    Image provider: openai or gemini. Default openai.
+  --image-model <model>          Image model. Default from pilot config.
+  --image-fallback-model <model> Fallback image model if the primary is unavailable.
+  --image-size <size>            Image size. Default 1024x1536.
+  --image-quality <quality>      Image quality. Default high.
+  --image-format <jpeg|png|webp> Saved image format. Default jpeg for OpenAI, png for Gemini.
+  --image-output-dir <path>      Local generated image output directory.
   --anchor-file <path>           seed-world/append-user anchor file.
   --anchor-phones <phone,...>    seed-world/append-user real users.
   --anchor-users <uid,...>       seed-world/append-user real users.

@@ -180,7 +180,7 @@ node tool/data/validate_firestore_data.mjs --env dev --emulator
 
 The validator is read-only. It checks document shape, approximate document
 size, high-growth array lengths, and cross-document references for users, run
-clubs, runs, reviews, swipes, matches, chat messages, and onboarding drafts.
+clubs, runs, reviews, profile decisions, matches, chat messages, and onboarding drafts.
 Live validation uses the Firebase Admin SDK, so the shell must have Application
 Default Credentials configured, for example through
 `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json` or

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "id": "sales-demo-photo-activity-taxonomy-v1",
+  "label": "Sales demo dating-profile photo activity taxonomy",
+  "guidance": "This file defines the allowed vocabulary. Composition requirements live in photo_composition_index.json.",
+  "categories": [
+    {
+      "id": "clearSoloPortrait",
+      "label": "Clear solo portrait",
+      "purpose": "Primary dating-app image with a clearly visible face, natural light, and no ambiguity about which person is the profile owner."
+    },
+    {
+      "id": "socialDining",
+      "label": "Restaurant, cafe, or food moment",
+      "purpose": "Shows dateability, warmth, taste, and a normal post-event or weekend social setting."
+    },
+    {
+      "id": "activeLifestyle",
+      "label": "Active lifestyle",
+      "purpose": "Shows motion or hobbies without making the app feel like a running-only product."
+    },
+    {
+      "id": "cultureNightlife",
+      "label": "Culture or nightlife",
+      "purpose": "Shows evening, arts, music, gallery, museum, or going-out context."
+    },
+    {
+      "id": "creativeWork",
+      "label": "Creative or work-adjacent",
+      "purpose": "Shows ambition, taste, craft, or professional identity without looking like a LinkedIn photo."
+    },
+    {
+      "id": "friendsGroup",
+      "label": "Friends or group moment",
+      "purpose": "Shows social proof while keeping the profile owner unmistakably in focus."
+    },
+    {
+      "id": "everydayCandid",
+      "label": "Everyday candid",
+      "purpose": "Shows grounded personality through bookstore, market, cooking, neighborhood, or casual weekend context."
+    },
+    {
+      "id": "travelOutdoor",
+      "label": "Travel or outdoor lifestyle",
+      "purpose": "Adds visual variety through outdoor, day-trip, park, beach, hiking, or city-exploration context."
+    }
+  ],
+  "activities": [
+    {"id": "street_portrait", "categoryId": "clearSoloPortrait", "label": "Street or neighborhood solo portrait"},
+    {"id": "waterfront_portrait", "categoryId": "clearSoloPortrait", "label": "Waterfront solo portrait"},
+    {"id": "rooftop_portrait", "categoryId": "clearSoloPortrait", "label": "Rooftop solo portrait"},
+    {"id": "park_portrait", "categoryId": "clearSoloPortrait", "label": "Park solo portrait"},
+    {"id": "restaurant", "categoryId": "socialDining", "label": "Restaurant dinner"},
+    {"id": "coffee", "categoryId": "socialDining", "label": "Coffee or cafe"},
+    {"id": "brunch", "categoryId": "socialDining", "label": "Brunch or casual meal"},
+    {"id": "dumplings", "categoryId": "socialDining", "label": "Casual dumpling spot"},
+    {"id": "pickleball", "categoryId": "activeLifestyle", "label": "Pickleball"},
+    {"id": "tennis", "categoryId": "activeLifestyle", "label": "Tennis"},
+    {"id": "basketball", "categoryId": "activeLifestyle", "label": "Basketball"},
+    {"id": "yoga", "categoryId": "activeLifestyle", "label": "Yoga or stretch class"},
+    {"id": "cycling", "categoryId": "activeLifestyle", "label": "Cycling"},
+    {"id": "hiking", "categoryId": "activeLifestyle", "label": "Hiking or trail walk"},
+    {"id": "running", "categoryId": "activeLifestyle", "label": "Running", "countsAsRunning": true},
+    {"id": "gallery", "categoryId": "cultureNightlife", "label": "Gallery opening"},
+    {"id": "museum", "categoryId": "cultureNightlife", "label": "Museum or cultural afternoon"},
+    {"id": "jazz_bar", "categoryId": "cultureNightlife", "label": "Jazz bar or live music"},
+    {"id": "rooftop_dinner", "categoryId": "cultureNightlife", "label": "Rooftop dinner or evening event"},
+    {"id": "architecture_studio", "categoryId": "creativeWork", "label": "Architecture or design studio"},
+    {"id": "music_studio", "categoryId": "creativeWork", "label": "Music studio"},
+    {"id": "professional_event", "categoryId": "creativeWork", "label": "Professional event candid"},
+    {"id": "friends_picnic", "categoryId": "friendsGroup", "label": "Friends picnic"},
+    {"id": "friends_brunch", "categoryId": "friendsGroup", "label": "Friends brunch or table moment"},
+    {"id": "group_walk", "categoryId": "friendsGroup", "label": "Group walk or casual social outing"},
+    {"id": "bookstore", "categoryId": "everydayCandid", "label": "Bookstore"},
+    {"id": "weekend_market", "categoryId": "everydayCandid", "label": "Weekend market"},
+    {"id": "cooking", "categoryId": "everydayCandid", "label": "Cooking at home"},
+    {"id": "neighborhood_candid", "categoryId": "everydayCandid", "label": "Neighborhood candid"},
+    {"id": "park_day", "categoryId": "travelOutdoor", "label": "Park day"},
+    {"id": "day_trip", "categoryId": "travelOutdoor", "label": "Day trip"},
+    {"id": "city_steps", "categoryId": "travelOutdoor", "label": "City steps or landmark walk"}
+  ]
+}

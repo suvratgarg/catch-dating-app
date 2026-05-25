@@ -1,7 +1,7 @@
 ---
 doc_id: demo_data_seeding
-version: 1.1.0
-updated: 2026-05-12
+version: 1.2.8
+updated: 2026-05-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -10,7 +10,7 @@ status: active
 
 This repo has a repeatable Firebase Admin SDK seeder for filling Catch with
 realistic demo data. It is intended for TestFlight/dev/staging testing where
-the app needs enough users, clubs, events, attendance history, swipes, matches,
+the app needs enough users, clubs, events, attendance history, profile decisions, matches,
 messages, payments, reviews, and notifications to exercise real flows.
 
 The day-to-day internal CLI is:
@@ -49,7 +49,7 @@ Depending on the scenario, the seeder creates:
   answers, live-reveal assignments, private feedback, wingman requests, and
   aggregate scorecards for seeded singles mixers;
 - `savedEvents/{uid_eventId}` for anchor users;
-- `swipes/{uid}/outgoing/{targetUid}` and reciprocal likes for anchor-user match flows;
+- `profileDecisions/{uid}/outgoing/{targetUid}` and reciprocal likes for anchor-user match flows;
 - `matches/{matchId}` and `matches/{matchId}/messages/{messageId}`;
 - `payments/{paymentId}` for completed, refunded, and failed/sign-up-failed states;
 - `reviews/{eventId~reviewerUid}` and derived club rating summaries;
@@ -62,6 +62,55 @@ match, and chat.
 Seeded matches use deterministic match IDs and write `eventIds` instead of the
 legacy single `eventId`, so the chats list can collapse one visible conversation
 per matched person while still preserving the shared-event history.
+
+## Sales-Grade Synthetic Supply
+
+The current world seeder is useful for breadth testing, but it is not yet the
+source of truth for host sales demos. Sales demos require a canonical synthetic
+persona catalog with coherent names, demographics, profile fields, photo sets,
+storage-owned assets, market-specific venues, and event-success state. Track that
+work in `sales_demo_seed_tracker.md`.
+
+Seed scenarios should migrate toward selecting reusable personas from that
+catalog instead of generating one-off users from small name and image pools. Live
+sales-demo writes must require uploaded assets and full profile photo metadata;
+draft catalogs can be validated for internal consistency before image generation
+and upload are complete.
+
+Sales persona cohort scope lives in `sales_demo_persona_cohorts.md`. The first
+production scope is the 24-person New York cohort plus a planned 36-person India
+core cohort. Do not create a separate full synthetic user set per Indian city
+until there is a product reason to do so; use city overlays and roster subsets
+against the reusable India core.
+
+Persona photos are planned against
+`tool/demo/demo_seed/personas/photo_activity_taxonomy.json` and
+`tool/demo/demo_seed/personas/photo_composition_index.json`. The taxonomy defines
+the allowed photo vocabulary; the composition index sets repeatable per-profile,
+catalog-wide, city, and cohort ratios before image generation. This keeps prompts
+balanced across solo portraits, food/dateable contexts, social proof, culture,
+creative/work-adjacent settings, everyday candids, optional active lifestyle
+shots, and a small but non-dominant running slice.
+
+The initial New York sales catalog lives at
+`tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json`. It currently
+contains 24 coherent synthetic personas and 96 planned photo slots. Assets are
+still draft-only until images are generated, reviewed, uploaded, and the live
+asset gate passes with `--require-published-assets`.
+
+For image generation, organization, upload, and post-upload validation, follow
+`sales_demo_image_generation_runbook.md`. The first batch uses the subscription
+ChatGPT web UI to avoid additional API spend, one conversation per persona, and
+four-person waves. Manual web downloads are still draft assets until normalized,
+uploaded to UID-owned `users/{uid}/photos/` Storage paths, projected into
+`users/{uid}` and `publicProfiles/{uid}`, and validated with
+`--require-published-assets`.
+
+The local API pilot generator is still useful for future provider comparisons
+when the user explicitly approves API spend. It is intentionally dry-run-first
+and writes generated assets under ignored `build/demo-persona-images/` output.
+It does not mutate the catalog or upload storage assets; those steps happen only
+after visual review.
 
 Seeded event schedules are validated before any write plan is emitted. The seed
 fails if a event exceeds the shared max duration, if one club hosts overlapping
@@ -122,6 +171,9 @@ The supported commands are:
 | `create-check-in-event` | Create a near-immediate signed-up event at manual/user coordinates for location-gated check-in. |
 | `scenario-info` | List scenario definitions under `tool/demo/demo_seed/scenarios`. |
 | `list-golden-accounts` | Read the golden account registry JSON. |
+| `validate-persona-catalog` | Validate the sales-grade synthetic persona catalog and optionally require uploaded assets. |
+| `persona-photo-plan` | Print approved persona photo scenes and generation prompts before image generation. |
+| `persona-image-generate` | Dry-run or generate the first local image pilot from the persona catalog. |
 
 All write/delete commands are dry-run-first. Add `--apply` to mutate data.
 Production writes also require `--allow-prod`.
@@ -177,6 +229,81 @@ The `suvbot` command builds `functions/` and imports
 `--skip-functions-build` only when you already built Functions and want to
 reuse the existing compiled output.
 
+### Validate Sales Personas
+
+Use this before a persona catalog is used by a seed scenario:
+
+```bash
+node tool/demo/demo_ops.mjs validate-persona-catalog \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+```
+
+Live sales-demo seeding should require uploaded assets:
+
+```bash
+node tool/demo/demo_ops.mjs validate-persona-catalog \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json \
+  --require-published-assets
+```
+
+Before spending on image generation, review the planned photo scenes and prompts:
+
+```bash
+node tool/demo/demo_ops.mjs persona-photo-plan \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+```
+
+For a reviewable prompt document:
+
+```bash
+node tool/demo/demo_ops.mjs persona-photo-plan \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json \
+  --format markdown
+```
+
+Dry-run the first image-generation pilot:
+
+```bash
+node tool/demo/demo_ops.mjs persona-image-generate \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+```
+
+Generate local review images after the dry run looks right:
+
+```bash
+node tool/demo/demo_ops.mjs persona-image-generate \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json \
+  --apply
+```
+
+The pilot config is
+`tool/demo/demo_seed/personas/image_generation_pilot.json`. Override the pilot
+with `--personas <id,...>`, `--image-model <model>`, or
+`--image-output-dir <path>` when comparing providers or re-running a smaller
+slice.
+
+For the Gemini/Nano Banana provider comparison, use the Gemini pilot config:
+
+```bash
+node tool/demo/demo_ops.mjs persona-image-generate \
+  --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json \
+  --image-pilot-config tool/demo/demo_seed/personas/image_generation_pilot.gemini.json \
+  --personas nyc_maya_shah_001 \
+  --image-output-dir build/demo-persona-images-gemini \
+  --apply
+```
+
+Gemini generation requires `GEMINI_API_KEY`, `GOOGLE_API_KEY`, or
+`GOOGLE_GENAI_API_KEY` in the shell. The default Gemini model is Nano Banana Pro
+(`gemini-3-pro-image-preview`) with `gemini-3.1-flash-image-preview` as the
+fallback if the primary model is unavailable.
+
+If API limits block the scripted pilot, use ChatGPT web only as a manual
+review fallback. Keep downloaded images in ignored `build/demo-persona-images/`
+output with a local manifest and do not mutate the persona catalog or storage
+URLs until the assets have passed review, normalization, upload, and
+`--require-published-assets`.
+
 ### Match Two Real Testers
 
 Use this when you want yourself and a friend to appear in each other's chat tab
@@ -207,22 +334,24 @@ Opt-in starter messages are backdated into the recent past. The command does
 not use a Firestore server timestamp for generated chat rows because demo plans
 need deterministic dry-run output and repeatable document IDs.
 
-To exercise the actual swipe trigger as well, add:
+To exercise the actual profile-decision trigger as well, add the legacy-named
+option:
 
 ```bash
 --via-swipes
 ```
 
-To write only reciprocal swipe likes and rely on the deployed trigger to create
-the match:
+To write only reciprocal profile-decision likes and rely on the deployed trigger
+to create the match:
 
 ```bash
 --via-swipes-only
 ```
 
-`--via-swipes` requires a shared attended event. The command auto-detects one from
-`eventParticipations`; if there is no shared attended event, pass `--event-id` or warm
-the users first.
+`--via-swipes` requires a shared attended event. The command auto-detects one
+from `eventParticipations`; if there is no shared attended event, pass
+`--event-id` or warm the users first. The option writes
+`profileDecisions/{uid}/outgoing/{targetUid}` documents.
 
 ### Warm One Account
 
@@ -285,7 +414,7 @@ to that user:
 - `userEventScheduleLocks` by `uid`;
 - `savedEvents` by `uid`;
 - `payments` by `userId`;
-- `swipes/{uid}/outgoing/*` and incoming demo swipes;
+- `profileDecisions/{uid}/outgoing/*` and incoming demo profile decisions;
 - demo-owned `matches` involving the user and the entire message subcollection
   under those disposable match threads, including real dogfood messages sent
   inside the seeded relationship;
@@ -308,7 +437,7 @@ node tool/demo/demo_ops.mjs cleanup-stale-events \
 
 The command is dry-run-first if you omit `--apply`. It deletes stale seeded
 `events`, `eventParticipations`, schedule locks, saved events, payments, reviews,
-event-linked swipes, demo match threads tied to stale event IDs, and event/match
+event-linked profile decisions, demo match threads tied to stale event IDs, and event/match
 notifications. It recomputes event and event-club aggregates after apply.
 
 To keep one stale category:
@@ -350,8 +479,8 @@ node tool/demo/demo_ops.mjs validate-demo-state \
 ```
 
 The validator checks for a public profile and enough active matches, messages,
-event participations, notifications, saved events, payments, and outgoing swipes to
-make the app feel warm. It is deliberately product-oriented: it answers “will
+event participations, notifications, saved events, payments, and outgoing
+profile decisions to make the app feel warm. It is deliberately product-oriented: it answers “will
 this account feel useful in a demo?” rather than merely validating Firestore
 schema shape.
 
@@ -516,16 +645,17 @@ Treat this tooling as product infrastructure:
 - **Profile preservation:** never overwrite real `users/{uid}` or
   `publicProfiles/{uid}` from demo tooling.
 - **Thumbnail-complete synthetic profiles:** seeded synthetic users and
-  `publicProfiles` must include `photoThumbnailUrls` derived from their profile
-  photos. Event detail and dashboard hype avatars intentionally prefer thumbnail
-  imagery for blurred tiny social-proof circles; missing thumbnails degrade
-  back to deterministic color placeholders or full-photo compatibility paths.
+  `publicProfiles` must include `profilePhotos.thumbnailUrl` values derived
+  from their profile photos. Event detail and dashboard hype avatars
+  intentionally prefer thumbnail imagery for blurred tiny social-proof circles;
+  missing thumbnails degrade back to deterministic color placeholders or
+  full-photo fallback paths.
 - **Edge-first counts:** when tooling writes relationship edges, recompute parent
   aggregate projections instead of hand-tuning counts.
-- **Relationship invariants:** swipes and swipe-derived matches must be backed
-  by attended `eventParticipations` for both users on the same event. Append mode
-  filters out relationship docs that fail this check instead of creating invalid
-  demo state.
+- **Relationship invariants:** profile decisions and decision-derived matches
+  must be backed by attended `eventParticipations` for both users on the same
+  event. Append mode filters out relationship docs that fail this check instead
+  of creating invalid demo state.
 - **Architecture signal:** if a demo command has to duplicate complicated product
   logic, that is evidence the production mutation should probably move behind a
   callable/repository seam.
@@ -802,7 +932,7 @@ Firebase projects.
 - Event and club aggregate fields are computed from edge documents so the existing
   Firestore validator can catch drift.
 - Matches are written directly by Admin SDK for seeded demo state; live app
-  behavior still creates real matches from reciprocal swipes through Functions.
+  behavior still creates real matches from reciprocal profile decisions through Functions.
 
 ## Recommended Beta Workflow
 
@@ -847,7 +977,7 @@ Approved and implemented:
 Recommended next additions:
 
 - **Golden personas:** named internal demo accounts such as founder, host,
-  high-activity runner, new user, paid-event user, and empty-state user.
+  high-activity attendee, new user, paid-event user, and empty-state user.
 - **Scenario snapshots:** `investor-demo`, `press-demo`, `host-demo`,
   `payments-demo`, `safety-demo`, and `empty-state-demo` JSON scenario files.
 - **Conversation scripts:** deterministic chat transcripts with richer pacing,
@@ -874,9 +1004,9 @@ Architecture signals to watch:
   cleanup-safe.
 - If resetting one user's state requires broad collection scans, add stronger
   ownership indexes or per-operation manifests before beta data volume grows.
-  The current reset command intentionally scans `swipes/*/outgoing` instead of
-  requiring an indexed collection-group query; this is acceptable for small beta
-  data and should be revisited before seeded data becomes large.
+  The current reset command intentionally scans `profileDecisions/*/outgoing`
+  instead of requiring an indexed collection-group query; this is acceptable for
+  small beta data and should be revisited before seeded data becomes large.
 - If “warm user” requires too many unrelated writes, consider adding a formal
   onboarding/demo-state service boundary in Functions so network-effect setup
   becomes one backend-owned transaction.

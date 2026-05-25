@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "id": "sales-demo-photo-composition-index-v1",
+  "label": "Sales demo photo composition index",
+  "photoActivityTaxonomyId": "sales-demo-photo-activity-taxonomy-v1",
+  "profileRules": {
+    "photoCount": {"minimum": 4, "target": 4, "maximum": 6},
+    "minimumDistinctCategories": 4,
+    "categoryCounts": {
+      "clearSoloPortrait": {"minimum": 1, "target": 1, "maximum": 2},
+      "activeLifestyle": {"minimum": 0, "target": 1, "maximum": 1},
+      "friendsGroup": {"minimum": 0, "target": 0.5, "maximum": 1},
+      "socialDining": {"minimum": 0, "target": 1, "maximum": 2},
+      "cultureNightlife": {"minimum": 0, "target": 0.75, "maximum": 2},
+      "creativeWork": {"minimum": 0, "target": 0.5, "maximum": 1},
+      "everydayCandid": {"minimum": 0, "target": 0.5, "maximum": 1},
+      "travelOutdoor": {"minimum": 0, "target": 0.25, "maximum": 1}
+    },
+    "activityCounts": {
+      "running": {"minimum": 0, "target": 0.25, "maximum": 1}
+    }
+  },
+  "catalogRules": {
+    "minimumPersonas": 8,
+    "categoryShare": {
+      "clearSoloPortrait": {"minimum": 0.2, "target": 0.25, "maximum": 0.32},
+      "socialDining": {"minimum": 0.12, "target": 0.17, "maximum": 0.25},
+      "activeLifestyle": {"minimum": 0.09, "target": 0.14, "maximum": 0.2},
+      "cultureNightlife": {"minimum": 0.1, "target": 0.16, "maximum": 0.22},
+      "friendsGroup": {"minimum": 0.08, "target": 0.12, "maximum": 0.18},
+      "creativeWork": {"minimum": 0.06, "target": 0.1, "maximum": 0.16},
+      "everydayCandid": {"minimum": 0.05, "target": 0.09, "maximum": 0.16},
+      "travelOutdoor": {"minimum": 0, "target": 0.05, "maximum": 0.12}
+    },
+    "activityShare": {
+      "running": {"minimum": 0.03, "target": 0.08, "maximum": 0.15},
+      "pickleball": {"minimum": 0.03, "target": 0.06, "maximum": 0.12},
+      "coffee": {"minimum": 0.06, "target": 0.09, "maximum": 0.16},
+      "restaurant": {"minimum": 0.02, "target": 0.05, "maximum": 0.1},
+      "gallery": {"minimum": 0.02, "target": 0.04, "maximum": 0.08},
+      "music_studio": {"minimum": 0.02, "target": 0.03, "maximum": 0.06},
+      "professional_event": {"minimum": 0.02, "target": 0.03, "maximum": 0.06},
+      "friends_brunch": {"minimum": 0.02, "target": 0.03, "maximum": 0.08},
+      "friends_picnic": {"minimum": 0.02, "target": 0.03, "maximum": 0.08}
+    }
+  },
+  "cityRules": {
+    "new-york": {
+      "minimumPersonas": 8,
+      "categoryShare": {
+        "clearSoloPortrait": {"minimum": 0.2, "target": 0.25, "maximum": 0.32},
+        "socialDining": {"minimum": 0.12, "target": 0.17, "maximum": 0.25},
+        "activeLifestyle": {"minimum": 0.09, "target": 0.14, "maximum": 0.2},
+        "cultureNightlife": {"minimum": 0.1, "target": 0.16, "maximum": 0.24},
+        "friendsGroup": {"minimum": 0.08, "target": 0.12, "maximum": 0.18},
+        "creativeWork": {"minimum": 0.06, "target": 0.1, "maximum": 0.16},
+        "everydayCandid": {"minimum": 0.05, "target": 0.09, "maximum": 0.16}
+      },
+      "activityShare": {
+        "running": {"minimum": 0.03, "target": 0.08, "maximum": 0.15},
+        "pickleball": {"minimum": 0.03, "target": 0.06, "maximum": 0.12},
+        "coffee": {"minimum": 0.06, "target": 0.09, "maximum": 0.16},
+        "rooftop_dinner": {"minimum": 0.03, "target": 0.06, "maximum": 0.12},
+        "gallery": {"minimum": 0.02, "target": 0.04, "maximum": 0.08}
+      }
+    }
+  },
+  "cohortRules": {
+    "hostSalesPilot": {
+      "minimumPersonas": 8,
+      "categoryShare": {
+        "clearSoloPortrait": {"minimum": 0.2, "target": 0.25, "maximum": 0.32},
+        "socialDining": {"minimum": 0.12, "target": 0.17, "maximum": 0.25},
+        "activeLifestyle": {"minimum": 0.09, "target": 0.14, "maximum": 0.2},
+        "cultureNightlife": {"minimum": 0.1, "target": 0.16, "maximum": 0.24},
+        "friendsGroup": {"minimum": 0.08, "target": 0.12, "maximum": 0.18},
+        "creativeWork": {"minimum": 0.06, "target": 0.1, "maximum": 0.16},
+        "everydayCandid": {"minimum": 0.05, "target": 0.09, "maximum": 0.16}
+      },
+      "activityShare": {
+        "running": {"minimum": 0.03, "target": 0.08, "maximum": 0.15},
+        "pickleball": {"minimum": 0.03, "target": 0.06, "maximum": 0.12},
+        "coffee": {"minimum": 0.06, "target": 0.09, "maximum": 0.16},
+        "restaurant": {"minimum": 0.02, "target": 0.05, "maximum": 0.1}
+      }
+    }
+  }
+}

@@ -93,6 +93,10 @@
 
     const status = form.querySelector("[data-form-status]");
     const submitButton = form.querySelector("button[type='submit']");
+    const defaultSubmitText =
+      submitButton instanceof HTMLButtonElement
+        ? submitButton.textContent
+        : "Join the waitlist";
     const citySelect = form.elements.namedItem("city");
     const customCityField = form.querySelector("[data-custom-city]");
     const customCityInput = form.elements.namedItem("customCity");
@@ -152,7 +156,7 @@
       if (!(submitButton instanceof HTMLButtonElement)) return;
 
       submitButton.disabled = true;
-      submitButton.textContent = "Joining...";
+      submitButton.textContent = submitButton.dataset.loadingText || "Joining...";
       setStatus("", "");
 
       try {
@@ -198,13 +202,54 @@
         setStatus(message, "is-error");
       } finally {
         submitButton.disabled = false;
-        submitButton.textContent = "Join the waitlist";
+        submitButton.textContent = defaultSubmitText;
       }
     });
+  }
+
+  async function initMarketingCaptures() {
+    const slots = document.querySelectorAll("[data-capture-slot]");
+    if (!slots.length) return;
+
+    try {
+      const response = await fetch("/assets/app-screenshots/manifest.json", {
+        cache: "no-cache",
+      });
+      if (!response.ok) return;
+      const manifest = await response.json();
+      const captures = Array.isArray(manifest.captures) ? manifest.captures : [];
+      const byId = new Map(captures.map((capture) => [capture.id, capture]));
+
+      slots.forEach(function (slot) {
+        const id = slot.getAttribute("data-capture-slot");
+        const capture = byId.get(id);
+        if (!capture) return;
+
+        const image = slot.querySelector("[data-capture-image]");
+        if (image instanceof HTMLImageElement && capture.webPath) {
+          image.src = capture.webPath;
+          image.alt = capture.alt || image.alt;
+        }
+
+        const caption = slot.querySelector("[data-capture-caption]");
+        if (caption instanceof HTMLElement && capture.caption) {
+          caption.textContent = capture.caption;
+        }
+
+        const status = slot.querySelector("[data-capture-status]");
+        if (status instanceof HTMLElement && capture.statusLabel) {
+          status.textContent = capture.statusLabel;
+          status.dataset.captureStatus = capture.status;
+        }
+      });
+    } catch (_) {
+      // Static file previews can run without a fetchable manifest.
+    }
   }
 
   initHeaderState();
   initRevealAnimations();
   initHeroParallax();
   initWaitlistForm();
+  initMarketingCaptures();
 })();

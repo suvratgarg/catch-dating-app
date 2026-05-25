@@ -7,7 +7,7 @@ import {
   thumbnailUrlForPhoto,
 } from "./seed_demo_data.mjs";
 
-test("append filter drops swipes and match artifacts without attended edges",
+test("append filter drops profile decisions and match artifacts without attended edges",
   async () => {
     const firestore = fakeFirestore({
       eventParticipations: {
@@ -44,8 +44,8 @@ test("append filter drops swipes and match artifacts without attended edges",
       "matches/new_target",
       "matches/new_target/messages/one",
       "notifications/new/items/match_new_target",
-      "swipes/new/outgoing/target",
-      "swipes/target/outgoing/new",
+      "profileDecisions/new/outgoing/target",
+      "profileDecisions/target/outgoing/new",
     ]);
   }
 );
@@ -74,8 +74,8 @@ test("append filter keeps swipe relationships when both users attended",
       "eventParticipations/run_1_new",
       "matches/new_target",
       "matches/new_target/messages/one",
-      "swipes/new/outgoing/target",
-      "swipes/target/outgoing/new",
+      "profileDecisions/new/outgoing/target",
+      "profileDecisions/target/outgoing/new",
     ]);
     assert.deepEqual(result.skippedPaths, []);
   }
@@ -131,24 +131,30 @@ test("seed public profiles carry thumbnail URLs for tiny avatar surfaces", () =>
       answer: "Easy kilometres.",
     }],
     gender: "woman",
-    photoUrls: [fullPhoto],
-    photoPrompts: [{
-      photoIndex: 0,
-      promptId: "proofIRun",
-      prompt: "Proof I actually event",
-    }],
-    preferredRunTimes: ["morning"],
+    profilePhotos: [profilePhoto({
+      url: fullPhoto,
+      thumbnailUrl: thumbnailUrlForPhoto(fullPhoto),
+      prompt: {
+        photoIndex: 0,
+        promptId: "proofIRun",
+        prompt: "Proof I actually event",
+      },
+    })],
+    activityPreferences: activityPreferences({preferredRunTimes: ["morning"]}),
   };
 
   const publicProfile = publicProfileFromUserDoc(userDoc);
 
   assert.equal(Object.hasOwn(publicProfile, "bio"), false);
   assert.deepEqual(publicProfile.profilePrompts, userDoc.profilePrompts);
-  assert.deepEqual(publicProfile.photoUrls, [fullPhoto]);
-  assert.deepEqual(publicProfile.photoPrompts, userDoc.photoPrompts);
-  assert.deepEqual(publicProfile.preferredRunTimes, ["morning"]);
-  assert.equal(publicProfile.photoThumbnailUrls.length, 1);
-  const thumbnail = new URL(publicProfile.photoThumbnailUrls[0]);
+  assert.deepEqual(publicProfile.profilePhotos[0].url, fullPhoto);
+  assert.deepEqual(publicProfile.profilePhotos[0].prompt, userDoc.profilePhotos[0].prompt);
+  assert.deepEqual(
+    publicProfile.activityPreferences.running.preferredRunTimes,
+    ["morning"]
+  );
+  assert.equal(publicProfile.profilePhotos.length, 1);
+  const thumbnail = new URL(publicProfile.profilePhotos[0].thumbnailUrl);
   assert.equal(thumbnail.hostname, "images.unsplash.com");
   assert.equal(thumbnail.searchParams.get("w"), "160");
   assert.equal(thumbnail.searchParams.get("h"), "160");
@@ -162,16 +168,18 @@ test("seed thumbnail normalization preserves existing thumbnails", () => {
     dateOfBirth: fakeTimestamp("1996-05-14T00:00:00.000Z"),
     profilePrompts: [],
     gender: "man",
-    photoUrls: ["https://example.test/full.jpg"],
-    photoThumbnailUrls: ["https://example.test/thumb.jpg"],
-    photoPrompts: [],
+    profilePhotos: [profilePhoto({
+      url: "https://example.test/full.jpg",
+      thumbnailUrl: "https://example.test/thumb.jpg",
+    })],
   };
 
   const publicProfile = publicProfileFromUserDoc(userDoc);
 
-  assert.deepEqual(publicProfile.photoThumbnailUrls, [
-    "https://example.test/thumb.jpg",
-  ]);
+  assert.equal(
+    publicProfile.profilePhotos[0].thumbnailUrl,
+    "https://example.test/thumb.jpg"
+  );
 });
 
 test("thumbnailUrlForPhoto leaves non-Unsplash URLs usable", () => {
@@ -198,8 +206,37 @@ function fakeTimestamp(iso) {
 
 function swipeDoc(swiperId, targetId, eventId) {
   return {
-    path: `swipes/${swiperId}/outgoing/${targetId}`,
+    path: `profileDecisions/${swiperId}/outgoing/${targetId}`,
     data: {swiperId, targetId, eventId, direction: "like"},
+  };
+}
+
+function profilePhoto({url, thumbnailUrl, prompt = null}) {
+  return {
+    id: "photo-1",
+    url,
+    thumbnailUrl,
+    storagePath: "users/demo/photos/photo-1.jpg",
+    thumbnailStoragePath: "users/demo/photoThumbnails/photo-1.jpg",
+    prompt,
+    moderation: null,
+    position: 0,
+    createdAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
+  };
+}
+
+function activityPreferences(overrides = {}) {
+  return {
+    running: {
+      paceMinSecsPerKm: 300,
+      paceMaxSecsPerKm: 420,
+      preferredDistances: [],
+      runningReasons: [],
+      preferredRunTimes: [],
+      version: 1,
+      ...overrides,
+    },
   };
 }
 

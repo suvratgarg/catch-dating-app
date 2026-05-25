@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-24",
+  "updated": "2026-05-25",
   "tools": [
     {
       "id": "tool:runner",
@@ -61,16 +61,6 @@
       "status": "active",
       "description": "Runs the full data/schema/rules contract gate.",
       "checks": ["bash -n tool/check_data_contract.sh"]
-    },
-    {
-      "id": "contracts:generate-firestore-types",
-      "category": "contracts",
-      "path": "tool/contracts/generate_firestore_types.dart",
-      "command": "dart tool/contracts/generate_firestore_types.dart",
-      "safety": "local-writes-generated",
-      "status": "active",
-      "description": "Generates Functions Firestore TypeScript interfaces from Dart models.",
-      "checks": ["dart analyze tool/contracts/generate_firestore_types.dart"]
     },
     {
       "id": "contracts:generate-business-rules",
@@ -263,6 +253,16 @@
       "checks": ["node --check tool/data/backfill_profile_photos.mjs", "node --test tool/data/backfill_profile_photos.test.mjs"]
     },
     {
+      "id": "data:retire-legacy-profile-fields",
+      "category": "data",
+      "path": "tool/data/retire_legacy_profile_fields.mjs",
+      "command": "node tool/data/retire_legacy_profile_fields.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Deletes retired legacy profile fields after structured profile migrations.",
+      "checks": ["node --check tool/data/retire_legacy_profile_fields.mjs"]
+    },
+    {
       "id": "data:strip-profile-coordinates",
       "category": "data",
       "path": "tool/data/strip_public_profile_coordinates.mjs",
@@ -321,6 +321,26 @@
       "status": "active",
       "description": "Builds and optionally writes demo seed worlds.",
       "checks": ["node --check tool/demo/seed_demo_data.mjs", "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"]
+    },
+    {
+      "id": "demo:persona-catalog",
+      "category": "demo",
+      "path": "tool/demo/demo_persona_catalog.mjs",
+      "command": "node tool/demo/demo_persona_catalog.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates and summarizes sales-demo persona catalogs.",
+      "checks": ["node --check tool/demo/demo_persona_catalog.mjs", "node --test tool/demo/demo_persona_catalog.test.mjs"]
+    },
+    {
+      "id": "demo:persona-image-generation",
+      "category": "demo",
+      "path": "tool/demo/demo_persona_image_generation.mjs",
+      "command": "node tool/demo/demo_persona_image_generation.mjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "description": "Builds reviewable persona image-generation batches from the demo persona catalog.",
+      "checks": ["node --check tool/demo/demo_persona_image_generation.mjs", "node --test tool/demo/demo_persona_image_generation.test.mjs"]
     },
     {
       "id": "firebase:project-resolver",
@@ -451,6 +471,19 @@
       "status": "watch",
       "description": "Historical run-data to event-data migration.",
       "checks": ["node --check tool/migrations/migrate_run_data_to_events.mjs"]
+    },
+    {
+      "id": "marketing:app-media-sync",
+      "category": "marketing",
+      "path": "tool/marketing/sync_website_media.mjs",
+      "command": "node tool/marketing/sync_website_media.mjs",
+      "safety": "local-writes-website-assets",
+      "status": "active",
+      "description": "Syncs app-derived marketing capture slots into website assets and checks drift.",
+      "checks": [
+        "node --check tool/marketing/sync_website_media.mjs",
+        "node tool/marketing/sync_website_media.mjs --check"
+      ]
     },
     {
       "id": "design:preview-app",

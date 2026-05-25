@@ -140,8 +140,8 @@ test("buildMatchPhonePlan can write reciprocal swipe docs", async () => {
   assert.deepEqual(
     plan.docs.map((doc) => doc.path).sort(),
     [
-      "swipes/uid_a/outgoing/uid_b",
-      "swipes/uid_b/outgoing/uid_a",
+      "profileDecisions/uid_a/outgoing/uid_b",
+      "profileDecisions/uid_b/outgoing/uid_a",
     ]
   );
 });
@@ -191,7 +191,7 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
         },
       },
     },
-    swipes: {
+    profileDecisions: {
       uid_a: {
         outgoing: {
           uid_b: {targetId: "uid_b", synthetic: true},
@@ -228,8 +228,8 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
     "payments/demo_payment",
     "savedEvents/demo_saved",
     "savedEvents/from_manifest",
-    "swipes/uid_a/outgoing/uid_b",
-    "swipes/uid_b/outgoing/uid_a",
+    "profileDecisions/uid_a/outgoing/uid_b",
+    "profileDecisions/uid_b/outgoing/uid_a",
   ].sort());
 });
 
@@ -245,7 +245,7 @@ test("validate report surfaces demo readiness gaps", async () => {
     eventParticipations: {},
     savedEvents: {},
     payments: {},
-    swipes: {uid_a: {outgoing: {}}},
+    profileDecisions: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {}}},
   });
 
@@ -323,7 +323,7 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
     payments: {
       payment_1: {userId: "uid_a"},
     },
-    swipes: {uid_a: {outgoing: {}}},
+    profileDecisions: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {n1: {}}}},
   });
   for (const event of Object.values(db.data.events)) {
@@ -433,7 +433,7 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
         },
       },
     },
-    swipes: {
+    profileDecisions: {
       real_user: {
         outgoing: {
           demo_ops_2026_user: {targetId: "demo_ops_2026_user"},
@@ -457,7 +457,7 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
     "matches/match_1",
     "matches/match_1/messages/message_1",
     "notifications/real_user/items/demo",
-    "swipes/real_user/outgoing/demo_ops_2026_user",
+    "profileDecisions/real_user/outgoing/demo_ops_2026_user",
     "users/demo_ops_2026_user",
   ]);
 });
@@ -515,7 +515,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
         messages: {m2: {}},
       },
     },
-    swipes: {
+    profileDecisions: {
       uid_a: {
         outgoing: {
           uid_b: {eventId: "demo_past"},
@@ -555,7 +555,7 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
     "payments/payment",
     "reviews/review",
     "savedEvents/saved",
-    "swipes/uid_a/outgoing/uid_b",
+    "profileDecisions/uid_a/outgoing/uid_b",
     "userEventScheduleLocks/user_lock",
   ].sort());
 });
@@ -645,12 +645,16 @@ function collectionGroupQuery(data, collectionId, filters = []) {
     where: (field, op, value) => collectionGroupQuery(data, collectionId, [...filters, {field, op, value}]),
     get: async () => {
       const entries = [];
-      for (const [parentId, parent] of Object.entries(data.swipes ?? {})) {
+      for (const [parentId, parent] of Object.entries(
+        data.profileDecisions ?? {}
+      )) {
         const nested = parent[collectionId] ?? {};
         for (const [docId, value] of Object.entries(nested)) {
           entries.push({
             id: docId,
-            ref: {path: `swipes/${parentId}/${collectionId}/${docId}`},
+            ref: {
+              path: `profileDecisions/${parentId}/${collectionId}/${docId}`,
+            },
             data: () => structuredClone(value),
           });
         }
