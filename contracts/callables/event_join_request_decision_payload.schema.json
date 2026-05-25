@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_join_request_decision_payload.schema.json",
+  "title": "EventJoinRequestDecisionCallablePayload",
+  "description": "Callable payload accepted by decideEventJoinRequest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "userId", "decision"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "userId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decision": {
+      "type": "string",
+      "enum": ["approve", "decline"]
+    }
+  }
+}

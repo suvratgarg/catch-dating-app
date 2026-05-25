@@ -7,6 +7,7 @@ import addFormats from "ajv-formats";
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
+import {ActivityPreferences} from "./activityPreferences";
 import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
 import {UserProfileDocument} from "./userProfileDocument";
@@ -62,6 +63,7 @@ import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
+import {OverrideEventSuccessGroupsCallablePayload} from "./overrideEventSuccessGroupsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
 import {CompleteEventSuccessFirstHelloMissionCallablePayload} from "./completeEventSuccessFirstHelloMissionCallablePayload";
@@ -94,6 +96,7 @@ import {
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
+  activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
@@ -149,6 +152,7 @@ import {
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
   completeEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -194,6 +198,10 @@ export const validateProfilePhoto:
   ValidateFunction<ProfilePhoto> =
     ajv.compile(profilePhotoSchema) as
       ValidateFunction<ProfilePhoto>;
+export const validateActivityPreferences:
+  ValidateFunction<ActivityPreferences> =
+    ajv.compile(activityPreferencesSchema) as
+      ValidateFunction<ActivityPreferences>;
 export const validateConfigCitiesDocument:
   ValidateFunction<ConfigCitiesDocument> =
     ajv.compile(configCitiesDocumentSchema) as
@@ -414,6 +422,10 @@ export const validateOverrideEventSuccessRotationsCallablePayload:
   ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
     ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
       ValidateFunction<OverrideEventSuccessRotationsCallablePayload>;
+export const validateOverrideEventSuccessGroupsCallablePayload:
+  ValidateFunction<OverrideEventSuccessGroupsCallablePayload> =
+    ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema) as
+      ValidateFunction<OverrideEventSuccessGroupsCallablePayload>;
 export const validateSubmitEventSuccessWingmanRequestCallablePayload:
   ValidateFunction<SubmitEventSuccessWingmanRequestCallablePayload> =
     ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema) as

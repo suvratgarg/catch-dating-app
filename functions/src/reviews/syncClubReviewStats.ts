@@ -1,6 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {ReviewDoc} from "../shared/firestore";
+import {ReviewDoc} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubReviewStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;

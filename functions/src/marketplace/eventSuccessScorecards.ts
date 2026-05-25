@@ -1,6 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {EventDoc, MatchDoc} from "../shared/firestore";
+import {EventDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
 import {buildFeedbackSignalFact} from "./signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,

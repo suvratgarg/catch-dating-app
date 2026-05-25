@@ -317,7 +317,6 @@ void main() {
             'meetingLocation': meetingLocation.toJson(),
             'startingPointLat': event.startingPointLat,
             'startingPointLng': event.startingPointLng,
-            'locationDetails': event.locationDetails,
             'photoUrl': event.photoUrl,
             'eventFormat': event.eventFormat.toJson(),
             'distanceKm': event.distanceKm,

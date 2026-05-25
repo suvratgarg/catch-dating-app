@@ -1,8 +1,9 @@
-// Schema-conformance tests for [UpdateUserProfilePatch]. Catches drift
-// between the hand-written typed patch class and
+// Schema-conformance tests for the generated [UpdateUserProfilePatch].
+// Catches generator drift against
 // `contracts/patches/update_user_profile.schema.json`.
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,9 +27,6 @@ void main() {
         dateOfBirth: DateTime.utc(1990, 1, 1),
         gender: Gender.other,
         profileComplete: true,
-        photoUrls: const [],
-        photoThumbnailUrls: const [],
-        photoPrompts: const [],
         profilePhotos: const [],
         city: 'x',
         latitude: 0,
@@ -48,12 +46,14 @@ void main() {
         workout: WorkoutFrequency.sometimes,
         diet: DietaryPreference.other,
         children: ChildrenStatus.dontHave,
-        paceMinSecsPerKm: 300,
-        paceMaxSecsPerKm: 420,
-        preferredDistances: const [PreferredDistance.fiveK],
-        runningReasons: const [RunReason.fitness],
-        preferredRunTimes: const [PreferredRunTime.morning],
-        runPreferencesVersion: 1,
+        activityPreferences: const ActivityPreferences(
+          running: RunningPreferences(
+            preferredDistances: [PreferredDistance.fiveK],
+            runningReasons: [RunReason.fitness],
+            preferredRunTimes: [PreferredRunTime.morning],
+            version: 1,
+          ),
+        ),
         prefsNewCatches: true,
         prefsMessages: true,
         prefsEventReminders: true,
@@ -68,8 +68,9 @@ void main() {
       final fieldsSchema =
           (schema['properties'] as Map<String, Object?>)['fields']
               as Map<String, Object?>;
-      final schemaFields =
-          (fieldsSchema['properties'] as Map<String, Object?>).keys.toSet();
+      final schemaFields = (fieldsSchema['properties'] as Map<String, Object?>)
+          .keys
+          .toSet();
       final patchKeys = allSet.keys.toSet();
 
       final missingFromPatch = schemaFields.difference(patchKeys);
@@ -116,21 +117,70 @@ void main() {
     test('Lists of enum values serialize as lists of enum names', () {
       final patch = UpdateUserProfilePatch(
         interestedInGenders: const [Gender.man, Gender.woman],
-        preferredDistances: const [
-          PreferredDistance.fiveK,
-          PreferredDistance.tenK,
-        ],
+        activityPreferences: const ActivityPreferences(
+          running: RunningPreferences(
+            preferredDistances: [
+              PreferredDistance.fiveK,
+              PreferredDistance.tenK,
+            ],
+          ),
+        ),
       );
       final encoded = patch.toFieldsJson();
       expect(encoded['interestedInGenders'], ['man', 'woman']);
-      expect(encoded['preferredDistances'], ['fiveK', 'tenK']);
+      expect(
+        (encoded['activityPreferences'] as Map)['running'],
+        containsPair('preferredDistances', ['fiveK', 'tenK']),
+      );
+    });
+
+    test('typed embedded objects serialize to callable-safe JSON', () {
+      final createdAt = DateTime.utc(2026, 1, 1, 8);
+      final updatedAt = DateTime.utc(2026, 1, 2, 8);
+      final patch = UpdateUserProfilePatch(
+        profilePhotos: [
+          ProfilePhoto(
+            id: 'photo-1',
+            url: 'https://catchdates.com/photo.jpg',
+            thumbnailUrl: 'https://catchdates.com/photo-thumb.jpg',
+            storagePath: 'users/runner-1/photos/photo.jpg',
+            thumbnailStoragePath: 'users/runner-1/photoThumbnails/photo.jpg',
+            position: 0,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+        ],
+      );
+
+      final photos = patch.toFieldsJson()['profilePhotos'] as List<Object?>;
+      final photoJson = Map<String, Object?>.from(photos.single! as Map);
+      expect(photoJson['createdAt'], createdAt.millisecondsSinceEpoch);
+      expect(photoJson['updatedAt'], updatedAt.millisecondsSinceEpoch);
+
+      final schema = JsonSchema.create(
+        schema_contracts
+            .schemaContractsByName['UpdateUserProfileCallablePayload']!,
+      );
+      expect(schema.validate({'fields': patch.toFieldsJson()}).isValid, isTrue);
     });
 
     test('Nullable fields can be explicitly cleared via null', () {
-      // `city`, `instagramHandle`, `latitude`, `longitude` use the sentinel
-      // pattern: not passing = omit, passing null = explicitly clear.
-      final cleared = UpdateUserProfilePatch(city: null);
-      expect(cleared.toFieldsJson(), {'city': null});
+      // Nullable fields use the sentinel pattern: not passing = omit, passing
+      // null = explicitly clear.
+      final cleared = UpdateUserProfilePatch(
+        city: null,
+        occupation: null,
+        height: null,
+        education: null,
+        relationshipGoal: null,
+      );
+      expect(cleared.toFieldsJson(), {
+        'city': null,
+        'occupation': null,
+        'height': null,
+        'education': null,
+        'relationshipGoal': null,
+      });
 
       final omitted = UpdateUserProfilePatch();
       expect(omitted.toFieldsJson(), isEmpty);

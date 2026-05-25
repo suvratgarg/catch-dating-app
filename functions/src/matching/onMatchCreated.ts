@@ -1,7 +1,11 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {UserProfileDoc, MatchDoc, PublicProfileDoc} from "../shared/firestore";
+import {
+  MatchDoc,
+  PublicProfileDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   allowsPushPreference,
   activityNotificationId,

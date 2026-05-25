@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/client_writes/create_profile_decision.schema.json",
   "title": "CreateProfileDecisionClientWrite",
-  "description": "Client-owned Firestore create operation for the current swipes/{userId}/outgoing/{targetId} storage path.",
+  "description": "Client-owned Firestore create operation for the current profileDecisions/{userId}/outgoing/{targetId} storage path.",
   "type": "object",
   "additionalProperties": false,
   "required": ["path", "data"],
@@ -25,8 +25,8 @@
     }
   },
   "x-firestore-operation": "create",
-  "x-firestore-path": "swipes/{userId}/outgoing/{targetId}",
+  "x-firestore-path": "profileDecisions/{userId}/outgoing/{targetId}",
   "x-logical-name": "profileDecision",
-  "x-migration-phase": "observe",
+  "x-migration-phase": "new_primary",
   "x-owner": "authenticated profile viewer direct create; matching trigger consumes likes"
 }

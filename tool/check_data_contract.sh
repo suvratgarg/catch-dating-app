@@ -12,17 +12,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "==> Checking generated Firestore TypeScript types"
-git diff -- functions/src/shared/firestore.ts >"$before_diff"
-dart tool/contracts/generate_firestore_types.dart
-git diff -- functions/src/shared/firestore.ts >"$after_diff"
-if ! diff -u "$before_diff" "$after_diff"; then
-  echo
-  echo "Generated Firestore types are stale."
-  echo "Command: dart tool/contracts/generate_firestore_types.dart"
-  exit 1
-fi
-
 echo "==> Checking generated shared business constants"
 git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
   >"$before_diff"
@@ -67,9 +56,6 @@ node --test tool/demo/seed_demo_data_append.test.mjs \
   tool/data/backfill_profile_photos.test.mjs \
   tool/data/repair_future_event_attendance.test.mjs
 node tool/demo/seed_demo_data.mjs --scenario smoke --json >/dev/null
-
-echo "==> Analyzing Firestore type generator"
-dart analyze tool/contracts/generate_firestore_types.dart
 
 echo "==> Checking Firestore contract metadata"
 node tool/contracts/check_firestore_contract.mjs

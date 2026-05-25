@@ -5,7 +5,7 @@ import {
   EventDoc,
   EventParticipationDoc,
   UserProfileDoc,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 import {
   activityNotificationId,
   allowsPushPreference,

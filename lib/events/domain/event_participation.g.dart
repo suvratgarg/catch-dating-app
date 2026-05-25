@@ -40,6 +40,14 @@ _EventParticipation _$EventParticipationFromJson(Map<String, dynamic> json) =>
       ),
       cohortAtSignup: json['cohortAtSignup'] as String?,
       paymentId: json['paymentId'] as String?,
+      hostApprovalStatus: $enumDecodeNullable(
+        _$EventJoinRequestStatusEnumMap,
+        json['hostApprovalStatus'],
+      ),
+      hostApprovalDecidedAt: const NullableTimestampConverter().fromJson(
+        json['hostApprovalDecidedAt'] as Timestamp?,
+      ),
+      hostApprovalDecidedBy: json['hostApprovalDecidedBy'] as String?,
     );
 
 Map<String, dynamic> _$EventParticipationToJson(
@@ -63,6 +71,12 @@ Map<String, dynamic> _$EventParticipationToJson(
   'genderAtSignup': _$GenderEnumMap[instance.genderAtSignup],
   'cohortAtSignup': instance.cohortAtSignup,
   'paymentId': instance.paymentId,
+  'hostApprovalStatus':
+      _$EventJoinRequestStatusEnumMap[instance.hostApprovalStatus],
+  'hostApprovalDecidedAt': const NullableTimestampConverter().toJson(
+    instance.hostApprovalDecidedAt,
+  ),
+  'hostApprovalDecidedBy': instance.hostApprovalDecidedBy,
 };
 
 const _$EventParticipationStatusEnumMap = {
@@ -78,4 +92,10 @@ const _$GenderEnumMap = {
   Gender.woman: 'woman',
   Gender.nonBinary: 'nonBinary',
   Gender.other: 'other',
+};
+
+const _$EventJoinRequestStatusEnumMap = {
+  EventJoinRequestStatus.pending: 'pending',
+  EventJoinRequestStatus.approved: 'approved',
+  EventJoinRequestStatus.declined: 'declined',
 };

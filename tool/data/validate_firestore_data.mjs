@@ -20,10 +20,23 @@ const WARN_DOC_BYTES = 768 * 1024;
 const ERROR_DOC_BYTES = 950 * 1024;
 
 const ARRAY_LIMITS = {
-  "users.photoUrls": 12,
+  "users.profilePhotos": 6,
+  "publicProfiles.profilePhotos": 6,
   "matches.participantIds": 20,
   "matches.eventIds": 100,
 };
+
+const retiredProfileFields = [
+  "photoUrls",
+  "photoThumbnailUrls",
+  "photoPrompts",
+  "paceMinSecsPerKm",
+  "paceMaxSecsPerKm",
+  "preferredDistances",
+  "runningReasons",
+  "preferredRunTimes",
+  "runPreferencesVersion",
+];
 
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
@@ -212,6 +225,9 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
   }
 
   for (const doc of collections.users) validateUser(doc, currentReport);
+  for (const doc of collections.publicProfiles) {
+    validatePublicProfile(doc, currentReport);
+  }
   validateSyntheticPublicProfileIdentities(
     collections.publicProfiles,
     currentReport
@@ -287,12 +303,29 @@ function validateUser(doc, currentReport) {
   requireString(data, "gender", doc, currentReport);
   requireString(data, "phoneNumber", doc, currentReport);
   requireBool(data, "profileComplete", doc, currentReport);
-  requireStringArray(data, "photoUrls", doc, currentReport);
-  if (data.photoThumbnailUrls !== undefined) {
-    requireStringArray(data, "photoThumbnailUrls", doc, currentReport);
-  }
+  requireArray(data, "profilePhotos", doc, currentReport);
+  requireObject(data, "activityPreferences", doc, currentReport);
   requireStringArray(data, "interestedInGenders", doc, currentReport);
-  checkArrayLimit("users.photoUrls", data.photoUrls, doc, currentReport);
+  checkArrayLimit("users.profilePhotos", data.profilePhotos, doc, currentReport);
+  warnRetiredProfileFields(data, doc, currentReport);
+}
+
+function validatePublicProfile(doc, currentReport) {
+  const data = doc.data;
+  requireArray(data, "profilePhotos", doc, currentReport);
+  requireObject(data, "activityPreferences", doc, currentReport);
+  checkArrayLimit("publicProfiles.profilePhotos", data.profilePhotos, doc,
+    currentReport);
+  warnRetiredProfileFields(data, doc, currentReport);
+}
+
+function warnRetiredProfileFields(data, doc, currentReport) {
+  for (const field of retiredProfileFields) {
+    if (Object.hasOwn(data, field)) {
+      issue(currentReport, "warning", doc.path, "retired-profile-field",
+        `${field} is retired; run tool/data/retire_legacy_profile_fields.mjs after verifying the app-version floor.`);
+    }
+  }
 }
 
 function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport) {
@@ -303,16 +336,21 @@ function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport)
     if (!isSyntheticPublicProfile(doc)) continue;
 
     const name = normalizedPublicName(data.name);
-    const firstPhoto = Array.isArray(data.photoUrls) ? data.photoUrls[0] : null;
-    const firstThumbnail = Array.isArray(data.photoThumbnailUrls) ?
-      data.photoThumbnailUrls[0] :
+    const firstProfilePhoto = Array.isArray(data.profilePhotos) ?
+      data.profilePhotos[0] :
+      null;
+    const firstPhoto = typeof firstProfilePhoto?.url === "string" ?
+      firstProfilePhoto.url :
+      null;
+    const firstThumbnail = typeof firstProfilePhoto?.thumbnailUrl === "string" ?
+      firstProfilePhoto.thumbnailUrl :
       null;
     if (typeof firstPhoto === "string" &&
         firstPhoto.length > 0 &&
         (typeof firstThumbnail !== "string" || firstThumbnail.length === 0)) {
       issue(currentReport, "warning", doc.path,
         "missing-synthetic-public-profile-thumbnail",
-        "Synthetic publicProfiles with photos should include photoThumbnailUrls for tiny avatar surfaces.");
+        "Synthetic publicProfiles with photos should include profilePhotos.thumbnailUrl for tiny avatar surfaces.");
     }
     if (!name || typeof firstPhoto !== "string" || firstPhoto.length === 0) {
       continue;
@@ -745,7 +783,10 @@ function publicDisplayName(user) {
 }
 
 function publicAvatarUrl(user) {
-  return user.photoThumbnailUrls?.[0] ?? user.photoUrls?.[0] ?? null;
+  const primaryPhoto = Array.isArray(user.profilePhotos) ?
+    user.profilePhotos[0] :
+    null;
+  return primaryPhoto?.thumbnailUrl ?? primaryPhoto?.url ?? null;
 }
 
 function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}) {
@@ -814,6 +855,12 @@ function requireObject(data, field, doc, currentReport) {
       data[field] === null ||
       Array.isArray(data[field])) {
     typeIssue(field, "object", doc, currentReport);
+  }
+}
+
+function requireArray(data, field, doc, currentReport) {
+  if (!Array.isArray(data[field])) {
+    typeIssue(field, "array", doc, currentReport);
   }
 }
 

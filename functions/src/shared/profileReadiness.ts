@@ -1,6 +1,6 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {computeAge} from "./dates";
-import {Gender, UserProfileDoc} from "./firestore";
+import {Gender, UserProfileDoc} from "./generated/firestoreAdminTypes";
 import {
   defaultProfilePromptIds,
   profilePhotoPolicy,

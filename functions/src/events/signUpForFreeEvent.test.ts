@@ -124,6 +124,52 @@ test("signUpForFreeEventHandler rejects paid events", async () => {
   );
 });
 
+test(
+  "signUpForFreeEventHandler requires host approval for request events",
+  async () => {
+    const event = {
+      priceInPaise: 0,
+      capacityLimit: 12,
+      bookedCount: 0,
+      genderCounts: {},
+      cohortCounts: {},
+      waitlistedCohortCounts: {},
+      constraints: {minAge: 0, maxAge: 99},
+      eventPolicy: manualApprovalPolicy(),
+    };
+
+    await assert.rejects(
+      () => signUpForFreeEventHandler(
+        request("runner-1", {eventId: "event-1"}),
+        deps({events: {"event-1": event}})
+      ),
+      isHttpsError(
+        "failed-precondition",
+        "Request to join this event before booking."
+      )
+    );
+
+    const signUpCalls: SignUpCall[] = [];
+    const result = await signUpForFreeEventHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps({
+        events: {"event-1": event},
+        eventParticipations: {
+          "event-1_runner-1": {hostApprovalStatus: "approved"},
+        },
+        signUpCalls,
+      })
+    );
+
+    assert.deepEqual(result, {success: true});
+    assert.deepEqual(signUpCalls, [{
+      eventId: "event-1",
+      userId: "runner-1",
+      options: {hasValidInvite: true, hasHostApproval: true},
+    }]);
+  }
+);
+
 test("signUpForFreeEventHandler rate limits before reading events", async (
 ) => {
   let readCount = 0;
@@ -172,6 +218,7 @@ function deps({
     },
   },
   eventPrivateAccess = {},
+  eventParticipations = {},
   signUpCalls = [],
   rateLimitCalls = [],
   onEventRead,
@@ -180,6 +227,7 @@ function deps({
   events?: Record<string, Record<string, unknown>>;
   users?: Record<string, Record<string, unknown>>;
   eventPrivateAccess?: Record<string, Record<string, unknown>>;
+  eventParticipations?: Record<string, Record<string, unknown>>;
   signUpCalls?: SignUpCall[];
   rateLimitCalls?: Array<{uid: string; action: string}>;
   onEventRead?: () => void;
@@ -191,7 +239,10 @@ function deps({
 }) {
   const firestore = {
     collection: (path: string) => {
-      assert.match(path, /^(events|users|eventPrivateAccess)$/);
+      assert.match(
+        path,
+        /^(events|users|eventPrivateAccess|eventParticipations)$/
+      );
       return {
         doc: (id: string) => ({
           get: async () => {
@@ -200,7 +251,9 @@ function deps({
               events[id] :
               path === "users" ?
                 users[id] :
-                eventPrivateAccess[id];
+                path === "eventPrivateAccess" ?
+                  eventPrivateAccess[id] :
+                  eventParticipations[id];
             return {
               exists: data !== undefined,
               data: () => data,
@@ -221,7 +274,7 @@ function deps({
       eventId: string,
       userId: string,
       _paymentId?: string,
-      options?: {hasValidInvite?: boolean}
+      options?: {hasValidInvite?: boolean; hasHostApproval?: boolean}
     ) => {
       signUpCalls.push({eventId, userId, options});
     },
@@ -231,7 +284,7 @@ function deps({
 interface SignUpCall {
   eventId: string;
   userId: string;
-  options?: {hasValidInvite?: boolean};
+  options?: {hasValidInvite?: boolean; hasHostApproval?: boolean};
 }
 
 function inviteOnlyPolicy() {
@@ -248,6 +301,34 @@ function inviteOnlyPolicy() {
         mode: "inviteCode",
         inviteCodeHint: "CA...HI",
         privateLinkEnabled: true,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise: 0,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+}
+
+function manualApprovalPolicy() {
+  return {
+    version: 1,
+    admission: {
+      format: "manualApproval",
+      capacityLimit: 12,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: true,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
       },
       cohortCapacityLimits: {},
       balancedRatioPolicy: null,

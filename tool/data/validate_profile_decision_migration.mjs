@@ -385,7 +385,7 @@ function printItems(label, items) {
 function printHelp() {
   console.log(`Usage: node tool/data/validate_profile_decision_migration.mjs [options]
 
-Dry-event validator for the eventual swipes -> profileDecisions storage rename.
+Dry-event validator for the legacy swipes -> profileDecisions storage rename.
 The script reads both paths, validates decision documents against the generated
 schema, and compares counts plus document contents. It never writes data.
 

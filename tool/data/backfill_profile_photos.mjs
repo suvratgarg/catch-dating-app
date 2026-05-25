@@ -256,19 +256,11 @@ function normalizeStoredProfilePhotos(photos) {
 function profilePhotoPatch(profilePhotos) {
   return {
     profilePhotos,
-    photoUrls: profilePhotos.map((photo) => photo.url),
-    photoThumbnailUrls: profilePhotos.map((photo) => photo.thumbnailUrl),
-    photoPrompts: profilePhotos
-      .filter((photo) => photo.prompt)
-      .map((photo) => ({...photo.prompt, photoIndex: photo.position})),
   };
 }
 
 function photoFieldsEqual(current, patch) {
-  return isDeepStrictEqual(current.profilePhotos ?? [], patch.profilePhotos) &&
-    isDeepStrictEqual(current.photoUrls ?? [], patch.photoUrls) &&
-    isDeepStrictEqual(current.photoThumbnailUrls ?? [], patch.photoThumbnailUrls) &&
-    isDeepStrictEqual(current.photoPrompts ?? [], patch.photoPrompts);
+  return isDeepStrictEqual(current.profilePhotos ?? [], patch.profilePhotos);
 }
 
 function firestoreDataEqual(left, right) {

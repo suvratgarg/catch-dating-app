@@ -27,21 +27,13 @@ void main() {
         );
 
         final doc = await firestore
-            .collection('swipes')
-            .doc('runner-1')
-            .collection('outgoing')
-            .doc('runner-2')
-            .get();
-        final futureDoc = await firestore
             .collection('profileDecisions')
             .doc('runner-1')
             .collection('outgoing')
             .doc('runner-2')
             .get();
         final data = doc.data();
-        final futureData = futureDoc.data();
 
-        expect(futureData?..remove('createdAt'), data?..remove('createdAt'));
         expect(data?['swiperId'], 'runner-1');
         expect(data?['targetId'], 'runner-2');
         expect(data?['direction'], 'like');
@@ -74,7 +66,7 @@ void main() {
       );
 
       final doc = await firestore
-          .collection('swipes')
+          .collection('profileDecisions')
           .doc('runner-1')
           .collection('outgoing')
           .doc('runner-2')
@@ -86,30 +78,21 @@ void main() {
       expect(data?.containsKey('comment'), isFalse);
     });
 
-    test(
-      'fetchSwipedUserIds unions legacy and future decision paths',
-      () async {
-        final firestore = FakeFirebaseFirestore();
-        final repository = SwipeRepository(firestore);
+    test('fetchSwipedUserIds reads profile decision paths', () async {
+      final firestore = FakeFirebaseFirestore();
+      final repository = SwipeRepository(firestore);
 
-        await firestore
-            .collection('swipes')
-            .doc('runner-1')
-            .collection('outgoing')
-            .doc('runner-2')
-            .set({'targetId': 'runner-2'});
-        await firestore
-            .collection('profileDecisions')
-            .doc('runner-1')
-            .collection('outgoing')
-            .doc('runner-3')
-            .set({'targetId': 'runner-3'});
+      await firestore
+          .collection('profileDecisions')
+          .doc('runner-1')
+          .collection('outgoing')
+          .doc('runner-2')
+          .set({'targetId': 'runner-2'});
 
-        await expectLater(
-          repository.fetchSwipedUserIds(uid: 'runner-1'),
-          completion({'runner-2', 'runner-3'}),
-        );
-      },
-    );
+      await expectLater(
+        repository.fetchSwipedUserIds(uid: 'runner-1'),
+        completion({'runner-2'}),
+      );
+    });
   });
 }

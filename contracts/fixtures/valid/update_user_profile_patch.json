@@ -9,6 +9,15 @@
       }
     ],
     "height": 180,
-    "preferredRunTimes": ["morning", "evening"]
+    "activityPreferences": {
+      "running": {
+        "paceMinSecsPerKm": 300,
+        "paceMaxSecsPerKm": 420,
+        "preferredDistances": ["fiveK", "tenK"],
+        "runningReasons": ["fitness", "social"],
+        "preferredRunTimes": ["morning", "evening"],
+        "version": 1
+      }
+    }
   }
 }

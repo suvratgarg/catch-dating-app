@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
@@ -8,8 +9,10 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:catch_dating_app/event_success/data/event_success_callable_dtos.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
@@ -23,79 +26,73 @@ import 'package:json_schema/json_schema.dart';
 void main() {
   group('callable request DTO contracts', () {
     test('event request DTOs match generated payload schemas', () {
-      final details = EventDetailsCallableDto(
-        startTimeMillis: DateTime.utc(2026, 6, 1, 6).millisecondsSinceEpoch,
-        endTimeMillis: DateTime.utc(2026, 6, 1, 7).millisecondsSinceEpoch,
-        meetingPoint: 'Cubbon Park gate',
-        meetingLocation: const EventMeetingLocation(
-          name: 'Cubbon Park gate',
-          address: 'Cubbon Park, Bengaluru',
-          placeId: 'places/cubbon',
-          latitude: 12.9763,
-          longitude: 77.5929,
-          notes: 'Meet beside the main entrance.',
-        ),
-        startingPointLat: 12.9763,
-        startingPointLng: 77.5929,
-        locationDetails: 'Meet beside the main entrance.',
-        photoUrl: 'https://catchdates.com/events/cubbon.jpg',
-        distanceKm: 5,
-        pace: 'easy',
-        description: 'Easy morning social run.',
+      final startTime = DateTime.utc(2026, 6, 1, 6);
+      final endTime = DateTime.utc(2026, 6, 1, 7);
+      const meetingLocation = EventMeetingLocation(
+        name: 'Cubbon Park gate',
+        address: 'Cubbon Park, Bengaluru',
+        placeId: 'places/cubbon',
+        latitude: 12.9763,
+        longitude: 77.5929,
+        notes: 'Meet beside the main entrance.',
       );
-      final constraints = EventConstraintsCallableDto(
+      const constraints = EventConstraints(
         minAge: 21,
         maxAge: 45,
         maxMen: null,
         maxWomen: null,
       );
-      final eventFormat = <String, Object?>{
-        'version': 1,
-        'activityKind': 'socialRun',
-        'interactionModel': 'pacePods',
-      };
+      const eventFormat = EventFormatSnapshot.socialRun();
 
       _expectValid(
         'CreateEventCallablePayload',
         CreateEventCallableRequest(
           eventId: 'event-1',
           clubId: 'club-1',
-          details: details,
+          startTimeMillis: startTime.millisecondsSinceEpoch,
+          endTimeMillis: endTime.millisecondsSinceEpoch,
+          meetingPoint: meetingLocation.name,
+          meetingLocation: meetingLocation,
+          startingPointLat: meetingLocation.latitude,
+          startingPointLng: meetingLocation.longitude,
+          locationDetails: meetingLocation.notes,
+          photoUrl: 'https://catchdates.com/events/cubbon.jpg',
+          distanceKm: 5,
+          pace: 'easy',
           capacityLimit: 24,
+          description: 'Easy morning social run.',
           priceInPaise: 49900,
           currency: 'INR',
           constraints: constraints,
           eventPolicy: null,
           eventFormat: eventFormat,
-          eventSuccessDefaults: {
-            'enabled': true,
-            'playbookId': 'social_run_light',
-            'selectedModuleIds': [
-              'qr_check_in',
-              'micro_pods',
-              'social_missions',
-            ],
-            'structureConfig': {
-              'unitKind': 'wholeGroup',
-              'unitSize': 24,
-              'unitCount': 1,
-              'rotationIntervalMinutes': null,
-              'revealCountdownSeconds': 10,
-            },
-            'hostGoal': 'Help attendees meet at least two new people.',
-            'wingmanRequestsEnabled': true,
-            'contextualOpenersEnabled': true,
-            'compatibilityAffectsRanking': false,
-            'questionnaireConfig': {'templateId': 'balanced'},
-          },
-          inviteCode: 'CATCH_2026',
+          eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
+            ActivityKind.socialRun,
+            enabled: true,
+            targetAttendeeCount: 24,
+          ),
+          privateAccess: const CreateEventPrivateAccess(
+            inviteCode: 'CATCH_2026',
+          ),
         ).toJson(),
       );
       _expectValid(
         'UpdateEventCallablePayload',
         UpdateEventCallableRequest(
           eventId: 'event-1',
-          fields: details.toJson(),
+          fields: {
+            'startTimeMillis': startTime.millisecondsSinceEpoch,
+            'endTimeMillis': endTime.millisecondsSinceEpoch,
+            'meetingPoint': meetingLocation.name,
+            'meetingLocation': meetingLocation.toJson(),
+            'startingPointLat': meetingLocation.latitude,
+            'startingPointLng': meetingLocation.longitude,
+            'locationDetails': meetingLocation.notes,
+            'photoUrl': 'https://catchdates.com/events/cubbon.jpg',
+            'distanceKm': 5,
+            'pace': 'easy',
+            'description': 'Easy morning social run.',
+          },
         ).toJson(),
       );
       _expectValid(
@@ -274,14 +271,13 @@ void main() {
           ).toJson(),
         );
 
-        final updateProfilePayload =
-            UpdateUserProfileCallableRequest.fromPatch(
-              UpdateUserProfilePatch(
-                name: 'Runner One',
-                dateOfBirth: DateTime.utc(1994, 5, 20),
-                height: 176,
-              ),
-            ).toJson();
+        final updateProfilePayload = UpdateUserProfileCallableRequest.fromPatch(
+          UpdateUserProfilePatch(
+            name: 'Runner One',
+            dateOfBirth: DateTime.utc(1994, 5, 20),
+            height: 176,
+          ),
+        ).toJson();
         _expectValid('UpdateUserProfileCallablePayload', updateProfilePayload);
         expect(
           (updateProfilePayload['fields']!
@@ -448,8 +444,10 @@ void main() {
         throwsStateError,
       );
       expect(
-        () => FetchEventSuccessWingmanCandidatesCallableResponse
-            .fromCallableData(<String, Object?>{}),
+        () =>
+            FetchEventSuccessWingmanCandidatesCallableResponse.fromCallableData(
+              <String, Object?>{},
+            ),
         throwsStateError,
       );
       expect(

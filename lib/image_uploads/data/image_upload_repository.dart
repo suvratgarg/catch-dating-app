@@ -34,6 +34,22 @@ class UploadedImage {
   final String storagePath;
 }
 
+class _StorageUploadContract {
+  const _StorageUploadContract({
+    required this.resource,
+    required this.maxBytes,
+    required this.contentTypePattern,
+  });
+
+  final String resource;
+  final int maxBytes;
+  final String contentTypePattern;
+
+  bool allowsContentType(String contentType) {
+    return RegExp('^$contentTypePattern\$').hasMatch(contentType);
+  }
+}
+
 class ImageUploadRepository {
   ImageUploadRepository(this._storage, {ImagePicker? picker})
     : _picker = picker ?? ImagePicker();
@@ -62,6 +78,27 @@ class ImageUploadRepository {
     maxWidth: 1440,
     maxHeight: 1920,
     quality: 78,
+  );
+
+  static const _profilePhotosContract = _StorageUploadContract(
+    resource: 'profile_photos',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
+  static const _clubImagesContract = _StorageUploadContract(
+    resource: 'club_images',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
+  static const _eventImagesContract = _StorageUploadContract(
+    resource: 'event_images',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
+  static const _matchChatImagesContract = _StorageUploadContract(
+    resource: 'match_chat_images',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
   );
 
   final FirebaseStorage _storage;
@@ -104,7 +141,13 @@ class ImageUploadRepository {
       () async {
         final bytes = await image.readAsBytes();
         final ext = _normalizedExt(image.name);
-        final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+        final contentType = _contentTypeForExt(ext);
+        _assertUploadConformsToStorageContract(
+          storagePath: storagePath,
+          byteLength: bytes.length,
+          reportedContentType: image.mimeType,
+          effectiveContentType: contentType,
+        );
         final finalStoragePath = '$storagePath.$ext';
         final ref = _storage.ref(finalStoragePath);
         await ref.putData(bytes, SettableMetadata(contentType: contentType));
@@ -157,7 +200,12 @@ class ImageUploadRepository {
     required String clubId,
     required String eventId,
     required XFile image,
-  }) => upload(storagePath: 'clubs/$clubId/run_${eventId}_photo', image: image);
+  }) => upload(
+    storagePath:
+        'clubs/$clubId/events/$eventId/photo_'
+        '${DateTime.now().millisecondsSinceEpoch}',
+    image: image,
+  );
 
   Future<String> uploadChatImage({
     required String matchId,
@@ -190,22 +238,81 @@ class ImageUploadRepository {
   static String _normalizedExt(String filename) =>
       _ext(filename) == 'png' ? 'png' : 'jpg';
 
+  static String _contentTypeForExt(String ext) =>
+      ext == 'png' ? 'image/png' : 'image/jpeg';
+
+  static void _assertUploadConformsToStorageContract({
+    required String storagePath,
+    required int byteLength,
+    required String? reportedContentType,
+    required String effectiveContentType,
+  }) {
+    final contract = _contractForStoragePath(storagePath);
+    if (contract == null) return;
+
+    final context = BackendErrorContext(
+      service: BackendService.storage,
+      action: 'upload image',
+      resource: contract.resource,
+    );
+    if (byteLength > contract.maxBytes) {
+      throw StorageUploadPreflightException(
+        constraint: 'max-bytes',
+        message:
+            'That image is too large. Please choose an image under '
+            '${_formatBytes(contract.maxBytes)}.',
+        debugMessage:
+            'Storage upload was $byteLength bytes; max is '
+            '${contract.maxBytes} bytes for ${contract.resource}.',
+        context: context,
+      );
+    }
+
+    final sourceContentType = reportedContentType?.trim();
+    final contentType = sourceContentType == null || sourceContentType.isEmpty
+        ? effectiveContentType
+        : sourceContentType;
+    if (!contract.allowsContentType(contentType)) {
+      throw StorageUploadPreflightException(
+        constraint: 'content-type',
+        message: 'Please choose an image file.',
+        debugMessage:
+            'Storage upload content type "$contentType" did not match '
+            '${contract.contentTypePattern} for ${contract.resource}.',
+        context: context,
+      );
+    }
+  }
+
   static String _resourceForStoragePath(String storagePath) {
-    if (storagePath.startsWith('users/')) return 'profile_photos';
-    final storageName = storagePath.split('/').last;
-    if (storagePath.startsWith('clubs/') &&
-        storageName.startsWith('run_') &&
-        storageName.endsWith('_photo')) {
-      return 'event_photos';
-    }
-    if (storagePath.startsWith('clubs/') &&
-        storageName.startsWith('profile')) {
-      return 'club_profile_images';
-    }
-    if (storagePath.startsWith('clubs/')) return 'club_covers';
-    if (storagePath.startsWith('matches/')) return 'chat_images';
+    final contract = _contractForStoragePath(storagePath);
+    if (contract != null) return contract.resource;
     return 'images';
   }
+
+  static _StorageUploadContract? _contractForStoragePath(String storagePath) {
+    if (storagePath.startsWith('users/') && storagePath.contains('/photos/')) {
+      return _profilePhotosContract;
+    }
+    final storageName = storagePath.split('/').last;
+    if (storagePath.startsWith('clubs/') &&
+        storagePath.contains('/events/') &&
+        storageName.isNotEmpty) {
+      return _eventImagesContract;
+    }
+    if (storagePath.startsWith('clubs/')) return _clubImagesContract;
+    if (storagePath.startsWith('matches/') &&
+        storagePath.contains('/images/')) {
+      return _matchChatImagesContract;
+    }
+    return null;
+  }
+}
+
+String _formatBytes(int bytes) {
+  final mb = bytes / (1024 * 1024);
+  if (mb == mb.roundToDouble()) return '${mb.toInt()} MB';
+  return '${mb.toStringAsFixed(1)} MB';
 }
 
 @riverpod

@@ -1,7 +1,11 @@
 import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {UserProfileDoc, PaymentDoc, EventDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  PaymentDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {requireAuth} from "../shared/auth";
 import {

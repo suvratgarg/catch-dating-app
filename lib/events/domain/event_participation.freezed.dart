@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventParticipation {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; EventParticipationStatus get status;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get signedUpAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get attendedAt;@NullableTimestampConverter() DateTime? get cancelledAt;@NullableTimestampConverter() DateTime? get deletedAt;@JsonKey(unknownEnumValue: null) Gender? get genderAtSignup; String? get cohortAtSignup; String? get paymentId;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; EventParticipationStatus get status;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get signedUpAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get attendedAt;@NullableTimestampConverter() DateTime? get cancelledAt;@NullableTimestampConverter() DateTime? get deletedAt;@JsonKey(unknownEnumValue: null) Gender? get genderAtSignup; String? get cohortAtSignup; String? get paymentId;@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? get hostApprovalStatus;@NullableTimestampConverter() DateTime? get hostApprovalDecidedAt; String? get hostApprovalDecidedBy;
 /// Create a copy of EventParticipation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $EventParticipationCopyWith<EventParticipation> get copyWith => _$EventParticipa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.signedUpAt, signedUpAt) || other.signedUpAt == signedUpAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.genderAtSignup, genderAtSignup) || other.genderAtSignup == genderAtSignup)&&(identical(other.cohortAtSignup, cohortAtSignup) || other.cohortAtSignup == cohortAtSignup)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.signedUpAt, signedUpAt) || other.signedUpAt == signedUpAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.genderAtSignup, genderAtSignup) || other.genderAtSignup == genderAtSignup)&&(identical(other.cohortAtSignup, cohortAtSignup) || other.cohortAtSignup == cohortAtSignup)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.hostApprovalStatus, hostApprovalStatus) || other.hostApprovalStatus == hostApprovalStatus)&&(identical(other.hostApprovalDecidedAt, hostApprovalDecidedAt) || other.hostApprovalDecidedAt == hostApprovalDecidedAt)&&(identical(other.hostApprovalDecidedBy, hostApprovalDecidedBy) || other.hostApprovalDecidedBy == hostApprovalDecidedBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,status,createdAt,updatedAt,signedUpAt,waitlistedAt,attendedAt,cancelledAt,deletedAt,genderAtSignup,cohortAtSignup,paymentId);
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,status,createdAt,updatedAt,signedUpAt,waitlistedAt,attendedAt,cancelledAt,deletedAt,genderAtSignup,cohortAtSignup,paymentId,hostApprovalStatus,hostApprovalDecidedAt,hostApprovalDecidedBy);
 
 @override
 String toString() {
-  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId)';
+  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $EventParticipationCopyWith<$Res>  {
   factory $EventParticipationCopyWith(EventParticipation value, $Res Function(EventParticipation) _then) = _$EventParticipationCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
 });
 
 
@@ -65,7 +65,7 @@ class _$EventParticipationCopyWithImpl<$Res>
 
 /// Create a copy of EventParticipation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? signedUpAt = freezed,Object? waitlistedAt = freezed,Object? attendedAt = freezed,Object? cancelledAt = freezed,Object? deletedAt = freezed,Object? genderAtSignup = freezed,Object? cohortAtSignup = freezed,Object? paymentId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? signedUpAt = freezed,Object? waitlistedAt = freezed,Object? attendedAt = freezed,Object? cancelledAt = freezed,Object? deletedAt = freezed,Object? genderAtSignup = freezed,Object? cohortAtSignup = freezed,Object? paymentId = freezed,Object? hostApprovalStatus = freezed,Object? hostApprovalDecidedAt = freezed,Object? hostApprovalDecidedBy = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -82,6 +82,9 @@ as DateTime?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ig
 as DateTime?,genderAtSignup: freezed == genderAtSignup ? _self.genderAtSignup : genderAtSignup // ignore: cast_nullable_to_non_nullable
 as Gender?,cohortAtSignup: freezed == cohortAtSignup ? _self.cohortAtSignup : cohortAtSignup // ignore: cast_nullable_to_non_nullable
 as String?,paymentId: freezed == paymentId ? _self.paymentId : paymentId // ignore: cast_nullable_to_non_nullable
+as String?,hostApprovalStatus: freezed == hostApprovalStatus ? _self.hostApprovalStatus : hostApprovalStatus // ignore: cast_nullable_to_non_nullable
+as EventJoinRequestStatus?,hostApprovalDecidedAt: freezed == hostApprovalDecidedAt ? _self.hostApprovalDecidedAt : hostApprovalDecidedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,hostApprovalDecidedBy: freezed == hostApprovalDecidedBy ? _self.hostApprovalDecidedBy : hostApprovalDecidedBy // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -167,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventParticipation() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
   return orElse();
 
 }
@@ -188,10 +191,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)  $default,) {final _that = this;
 switch (_that) {
 case _EventParticipation():
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +211,10 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,) {final _that = this;
 switch (_that) {
 case _EventParticipation() when $default != null:
-return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId);case _:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
   return null;
 
 }
@@ -222,8 +225,8 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 /// @nodoc
 @JsonSerializable()
 
-class _EventParticipation implements EventParticipation {
-  const _EventParticipation({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.status, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.signedUpAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.attendedAt, @NullableTimestampConverter() this.cancelledAt, @NullableTimestampConverter() this.deletedAt, @JsonKey(unknownEnumValue: null) this.genderAtSignup, this.cohortAtSignup, this.paymentId});
+class _EventParticipation extends EventParticipation {
+  const _EventParticipation({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.status, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.signedUpAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.attendedAt, @NullableTimestampConverter() this.cancelledAt, @NullableTimestampConverter() this.deletedAt, @JsonKey(unknownEnumValue: null) this.genderAtSignup, this.cohortAtSignup, this.paymentId, @JsonKey(unknownEnumValue: null) this.hostApprovalStatus, @NullableTimestampConverter() this.hostApprovalDecidedAt, this.hostApprovalDecidedBy}): super._();
   factory _EventParticipation.fromJson(Map<String, dynamic> json) => _$EventParticipationFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -241,6 +244,9 @@ class _EventParticipation implements EventParticipation {
 @override@JsonKey(unknownEnumValue: null) final  Gender? genderAtSignup;
 @override final  String? cohortAtSignup;
 @override final  String? paymentId;
+@override@JsonKey(unknownEnumValue: null) final  EventJoinRequestStatus? hostApprovalStatus;
+@override@NullableTimestampConverter() final  DateTime? hostApprovalDecidedAt;
+@override final  String? hostApprovalDecidedBy;
 
 /// Create a copy of EventParticipation
 /// with the given fields replaced by the non-null parameter values.
@@ -255,16 +261,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.signedUpAt, signedUpAt) || other.signedUpAt == signedUpAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.genderAtSignup, genderAtSignup) || other.genderAtSignup == genderAtSignup)&&(identical(other.cohortAtSignup, cohortAtSignup) || other.cohortAtSignup == cohortAtSignup)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventParticipation&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.signedUpAt, signedUpAt) || other.signedUpAt == signedUpAt)&&(identical(other.waitlistedAt, waitlistedAt) || other.waitlistedAt == waitlistedAt)&&(identical(other.attendedAt, attendedAt) || other.attendedAt == attendedAt)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt)&&(identical(other.genderAtSignup, genderAtSignup) || other.genderAtSignup == genderAtSignup)&&(identical(other.cohortAtSignup, cohortAtSignup) || other.cohortAtSignup == cohortAtSignup)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.hostApprovalStatus, hostApprovalStatus) || other.hostApprovalStatus == hostApprovalStatus)&&(identical(other.hostApprovalDecidedAt, hostApprovalDecidedAt) || other.hostApprovalDecidedAt == hostApprovalDecidedAt)&&(identical(other.hostApprovalDecidedBy, hostApprovalDecidedBy) || other.hostApprovalDecidedBy == hostApprovalDecidedBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,status,createdAt,updatedAt,signedUpAt,waitlistedAt,attendedAt,cancelledAt,deletedAt,genderAtSignup,cohortAtSignup,paymentId);
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,status,createdAt,updatedAt,signedUpAt,waitlistedAt,attendedAt,cancelledAt,deletedAt,genderAtSignup,cohortAtSignup,paymentId,hostApprovalStatus,hostApprovalDecidedAt,hostApprovalDecidedBy);
 
 @override
 String toString() {
-  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId)';
+  return 'EventParticipation(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, status: $status, createdAt: $createdAt, updatedAt: $updatedAt, signedUpAt: $signedUpAt, waitlistedAt: $waitlistedAt, attendedAt: $attendedAt, cancelledAt: $cancelledAt, deletedAt: $deletedAt, genderAtSignup: $genderAtSignup, cohortAtSignup: $cohortAtSignup, paymentId: $paymentId, hostApprovalStatus: $hostApprovalStatus, hostApprovalDecidedAt: $hostApprovalDecidedAt, hostApprovalDecidedBy: $hostApprovalDecidedBy)';
 }
 
 
@@ -275,7 +281,7 @@ abstract mixin class _$EventParticipationCopyWith<$Res> implements $EventPartici
   factory _$EventParticipationCopyWith(_EventParticipation value, $Res Function(_EventParticipation) _then) = __$EventParticipationCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
 });
 
 
@@ -292,7 +298,7 @@ class __$EventParticipationCopyWithImpl<$Res>
 
 /// Create a copy of EventParticipation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? signedUpAt = freezed,Object? waitlistedAt = freezed,Object? attendedAt = freezed,Object? cancelledAt = freezed,Object? deletedAt = freezed,Object? genderAtSignup = freezed,Object? cohortAtSignup = freezed,Object? paymentId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,Object? signedUpAt = freezed,Object? waitlistedAt = freezed,Object? attendedAt = freezed,Object? cancelledAt = freezed,Object? deletedAt = freezed,Object? genderAtSignup = freezed,Object? cohortAtSignup = freezed,Object? paymentId = freezed,Object? hostApprovalStatus = freezed,Object? hostApprovalDecidedAt = freezed,Object? hostApprovalDecidedBy = freezed,}) {
   return _then(_EventParticipation(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
@@ -309,6 +315,9 @@ as DateTime?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ig
 as DateTime?,genderAtSignup: freezed == genderAtSignup ? _self.genderAtSignup : genderAtSignup // ignore: cast_nullable_to_non_nullable
 as Gender?,cohortAtSignup: freezed == cohortAtSignup ? _self.cohortAtSignup : cohortAtSignup // ignore: cast_nullable_to_non_nullable
 as String?,paymentId: freezed == paymentId ? _self.paymentId : paymentId // ignore: cast_nullable_to_non_nullable
+as String?,hostApprovalStatus: freezed == hostApprovalStatus ? _self.hostApprovalStatus : hostApprovalStatus // ignore: cast_nullable_to_non_nullable
+as EventJoinRequestStatus?,hostApprovalDecidedAt: freezed == hostApprovalDecidedAt ? _self.hostApprovalDecidedAt : hostApprovalDecidedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,hostApprovalDecidedBy: freezed == hostApprovalDecidedBy ? _self.hostApprovalDecidedBy : hostApprovalDecidedBy // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

@@ -48,6 +48,15 @@ export interface EventParticipationDocument {
   cohortAtSignup?: string | null;
   paymentId: string | null;
   /**
+   * Manual-approval request state for request-to-join events. Null for regular waitlist edges.
+   */
+  hostApprovalStatus?: "pending" | "approved" | "declined" | null;
+  hostApprovalDecidedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  hostApprovalDecidedBy?: string | null;
+  /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */
   synthetic?: boolean;

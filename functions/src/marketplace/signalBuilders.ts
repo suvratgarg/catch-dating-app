@@ -1,4 +1,8 @@
-import {ChatMessageDoc, MatchDoc, SwipeDoc} from "../shared/firestore";
+import {
+  ChatMessageDoc,
+  MatchDoc,
+  SwipeDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   ParticipantSignalFactInput,
   participantSignalFactId,

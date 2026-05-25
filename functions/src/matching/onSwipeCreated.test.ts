@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {onSwipeCreatedHandler} from "./onSwipeCreated";
-import {SwipeDoc} from "../shared/firestore";
+import {SwipeDoc} from "../shared/generated/firestoreAdminTypes";
 
 test(
   "onSwipeCreatedHandler creates a deterministic reciprocal match",
@@ -17,7 +17,7 @@ test(
       },
       deps({
         docs: {
-          "swipes/user-a/outgoing/user-b": swipe(
+          "profileDecisions/user-a/outgoing/user-b": swipe(
             "user-a",
             "user-b",
             "event-1",
@@ -61,7 +61,7 @@ test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
     },
     deps({
       docs: {
-        "swipes/user-a/outgoing/user-b": swipe(
+        "profileDecisions/user-a/outgoing/user-b": swipe(
           "user-a",
           "user-b",
           "event-1",
@@ -107,7 +107,7 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
     },
     deps({
       docs: {
-        "swipes/user-a/outgoing/user-b": swipe(
+        "profileDecisions/user-a/outgoing/user-b": swipe(
           "user-a",
           "user-b",
           "event-2",
@@ -155,7 +155,7 @@ test(
       },
       deps({
         docs: {
-          "swipes/user-b/outgoing/user-a": swipe(
+          "profileDecisions/user-b/outgoing/user-a": swipe(
             "user-b",
             "user-a",
             "event-1",

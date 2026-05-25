@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/reviews/data/review_callable_adapters.dart';
 import 'package:catch_dating_app/reviews/data/review_callable_dtos.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -103,7 +104,7 @@ class ReviewsRepository {
       () => _functions
           .httpsCallable('createEventReview')
           .call(
-            CreateEventReviewCallableRequest.fromReview(
+            createEventReviewCallableRequestFromReview(
               review,
               eventId: eventId,
             ).toJson(),
@@ -119,7 +120,7 @@ class ReviewsRepository {
   Future<void> updateReview(Review review) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateEventReview')
-        .call(UpdateEventReviewCallableRequest.fromReview(review).toJson()),
+        .call(updateEventReviewCallableRequestFromReview(review).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update review',

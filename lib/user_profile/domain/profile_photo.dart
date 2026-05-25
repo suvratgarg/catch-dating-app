@@ -194,6 +194,7 @@ List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
         : thumbnailStoragePathForStoragePath(storagePath);
     if (storagePath.isEmpty || thumbnailStoragePath.isEmpty) continue;
 
+    final position = photo.position.clamp(0, maximumProfilePhotoCount - 1);
     final normalized = photo.copyWith(
       id: photo.id.trim().isNotEmpty
           ? photo.id.trim()
@@ -202,7 +203,8 @@ List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
       thumbnailUrl: thumbnailUrl,
       storagePath: storagePath,
       thumbnailStoragePath: thumbnailStoragePath,
-      position: photo.position.clamp(0, maximumProfilePhotoCount - 1),
+      prompt: _normalizeEmbeddedPhotoPrompt(photo.prompt, position),
+      position: position,
     );
     byId[normalized.id] = normalized;
   }
@@ -210,6 +212,20 @@ List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
   final ordered = byId.values.toList(growable: false)
     ..sort((a, b) => a.position.compareTo(b.position));
   return ordered.take(maximumProfilePhotoCount).toList(growable: false);
+}
+
+PhotoPromptAnswer? _normalizeEmbeddedPhotoPrompt(
+  PhotoPromptAnswer? prompt,
+  int position,
+) {
+  if (prompt == null) return null;
+  final definition = photoPromptDefinition(prompt.promptId.trim());
+  return PhotoPromptAnswer(
+    photoIndex: position,
+    promptId: definition.id,
+    prompt: definition.title,
+    caption: normalizePhotoPromptCaption(prompt.caption),
+  );
 }
 
 List<ProfilePhoto> compactProfilePhotoPositions(
@@ -320,76 +336,10 @@ ProfilePhoto _copyProfilePhotoToPosition(
   );
 }
 
-List<ProfilePhoto> profilePhotosFromLegacyArrays({
-  required String uid,
-  required List<String> photoUrls,
-  required List<String> photoThumbnailUrls,
-  required List<PhotoPromptAnswer> photoPrompts,
-}) {
-  final promptsByIndex = {
-    for (final prompt in normalizePhotoPromptAnswers(photoPrompts))
-      prompt.photoIndex: prompt,
-  };
-  final legacyEpoch = DateTime.fromMillisecondsSinceEpoch(0);
-  final photos = <ProfilePhoto>[];
-  for (final indexedUrl in photoUrls.indexed) {
-    final index = indexedUrl.$1;
-    final url = indexedUrl.$2.trim();
-    if (url.isEmpty) continue;
-    final thumbnailUrl =
-        index < photoThumbnailUrls.length &&
-            photoThumbnailUrls[index].trim().isNotEmpty
-        ? photoThumbnailUrls[index].trim()
-        : url;
-    final storagePath =
-        storagePathFromFirebaseDownloadUrl(url) ??
-        'users/$uid/photos/legacy_$index.jpg';
-    final thumbnailStoragePath =
-        storagePathFromFirebaseDownloadUrl(thumbnailUrl) ??
-        thumbnailStoragePathForStoragePath(storagePath);
-    photos.add(
-      ProfilePhoto(
-        id: profilePhotoIdForStoragePath(storagePath, index),
-        url: url,
-        thumbnailUrl: thumbnailUrl,
-        storagePath: storagePath,
-        thumbnailStoragePath: thumbnailStoragePath,
-        prompt: promptsByIndex[index],
-        moderation: null,
-        position: index,
-        createdAt: legacyEpoch,
-        updatedAt: legacyEpoch,
-      ),
-    );
-  }
-  return normalizeProfilePhotos(photos);
-}
-
 List<Map<String, dynamic>> profilePhotosToJson(Iterable<ProfilePhoto> photos) =>
     normalizeProfilePhotos(
       photos,
     ).map((photo) => photo.toJson()).toList(growable: false);
-
-List<String> profilePhotoUrls(Iterable<ProfilePhoto> photos) =>
-    normalizeProfilePhotos(
-      photos,
-    ).map((photo) => photo.url).toList(growable: false);
-
-List<String> profilePhotoThumbnailUrls(Iterable<ProfilePhoto> photos) =>
-    normalizeProfilePhotos(
-      photos,
-    ).map((photo) => photo.thumbnailUrl).toList(growable: false);
-
-List<Map<String, dynamic>> profilePhotoPromptsToJson(
-  Iterable<ProfilePhoto> photos,
-) => normalizeProfilePhotos(photos)
-    .where((photo) => photo.prompt != null)
-    .map(
-      (photo) => photoPromptSelectionToJson(
-        photo.prompt!.copyWith(photoIndex: photo.position),
-      ),
-    )
-    .toList(growable: false);
 
 ProfilePhoto replaceProfilePhotoPrompt({
   required ProfilePhoto photo,
@@ -405,18 +355,6 @@ ProfilePhoto replaceProfilePhotoPrompt({
     ),
     updatedAt: DateTime.now(),
   );
-}
-
-String? storagePathFromFirebaseDownloadUrl(String url) {
-  final uri = Uri.tryParse(url);
-  if (uri == null) return null;
-  final segments = uri.pathSegments;
-  final objectMarkerIndex = segments.indexOf('o');
-  if (objectMarkerIndex == -1 || objectMarkerIndex + 1 >= segments.length) {
-    return null;
-  }
-  final objectPath = segments[objectMarkerIndex + 1];
-  return objectPath.trim().isEmpty ? null : objectPath;
 }
 
 String thumbnailStoragePathForStoragePath(String storagePath) {

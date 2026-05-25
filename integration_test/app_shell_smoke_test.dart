@@ -1324,7 +1324,7 @@ void main() {
   ) async {
     final user = event_helpers
         .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
-        .copyWith(profileComplete: false, photoUrls: const []);
+        .copyWith(profileComplete: false, profilePhotos: const []);
 
     await _pumpCatchApp(
       tester,

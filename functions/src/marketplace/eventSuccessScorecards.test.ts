@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {EventDoc, MatchDoc} from "../shared/firestore";
+import {EventDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
 import {
   buildEventSuccessScorecard,
   writeEventSafetyReportIfNeeded,

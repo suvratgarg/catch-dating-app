@@ -14,9 +14,6 @@ abstract class PublicProfile with _$PublicProfile {
     required int age,
     required Gender gender,
     @Default([]) List<ProfilePromptAnswer> profilePrompts,
-    @Default([]) List<String> photoUrls,
-    @Default([]) List<String> photoThumbnailUrls,
-    @Default([]) List<PhotoPromptAnswer> photoPrompts,
     @Default([]) List<ProfilePhoto> profilePhotos,
 
     // Location
@@ -40,17 +37,12 @@ abstract class PublicProfile with _$PublicProfile {
     @JsonKey(unknownEnumValue: null) DietaryPreference? diet,
     @JsonKey(unknownEnumValue: null) ChildrenStatus? children,
 
-    // Running identity
-    @Default(defaultPaceMinSecsPerKm) int paceMinSecsPerKm,
-    @Default(defaultPaceMaxSecsPerKm) int paceMaxSecsPerKm,
-    @Default([]) List<PreferredDistance> preferredDistances,
-    @Default([]) List<RunReason> runningReasons,
-    @Default([]) List<PreferredRunTime> preferredRunTimes,
-    @Default(0) int runPreferencesVersion,
+    // Activity preferences
+    @Default(ActivityPreferences()) ActivityPreferences activityPreferences,
   }) = _PublicProfile;
 
   factory PublicProfile.fromJson(Map<String, dynamic> json) =>
-      _$PublicProfileFromJson(_migratePromptJson(json));
+      _$PublicProfileFromJson(_migratePublicProfileJson(json));
 }
 
 /// Builds a [PublicProfile] from a [UserProfile], projecting only the fields
@@ -64,9 +56,6 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   age: user.age,
   gender: user.gender,
   profilePrompts: user.profilePrompts,
-  photoUrls: user.photoUrls,
-  photoThumbnailUrls: user.photoThumbnailUrls,
-  photoPrompts: user.photoPrompts,
   profilePhotos: user.effectiveProfilePhotos,
   city: user.city,
   height: user.height,
@@ -81,15 +70,10 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   workout: user.workout,
   diet: user.diet,
   children: user.children,
-  paceMinSecsPerKm: user.paceMinSecsPerKm,
-  paceMaxSecsPerKm: user.paceMaxSecsPerKm,
-  preferredDistances: user.preferredDistances,
-  runningReasons: user.runningReasons,
-  preferredRunTimes: user.preferredRunTimes,
-  runPreferencesVersion: user.runPreferencesVersion,
+  activityPreferences: user.activityPreferences,
 );
 
-Map<String, dynamic> _migratePromptJson(Map<String, dynamic> json) {
+Map<String, dynamic> _migratePublicProfileJson(Map<String, dynamic> json) {
   final migrated = Map<String, dynamic>.from(json);
   final legacyBio = migrated['bio'];
   final hasStructuredPrompts =
@@ -105,6 +89,7 @@ Map<String, dynamic> _migratePromptJson(Map<String, dynamic> json) {
   }
 
   migrated.remove('bio');
+  _migrateActivityPreferences(migrated);
   return migrated;
 }
 
@@ -121,18 +106,21 @@ extension PublicProfilePhotos on PublicProfile {
   }
 
   List<ProfilePhoto> get effectiveProfilePhotos {
-    final normalized = normalizeProfilePhotos(profilePhotos);
-    if (normalized.isNotEmpty) return normalized;
-    return profilePhotosFromLegacyArrays(
-      uid: uid,
-      photoUrls: photoUrls,
-      photoThumbnailUrls: photoThumbnailUrls,
-      photoPrompts: photoPrompts,
-    );
+    return normalizeProfilePhotos(profilePhotos);
   }
 }
 
 extension PublicProfileRunPreferences on PublicProfile {
+  RunningPreferences get runningPreferences => activityPreferences.running;
+  int get paceMinSecsPerKm => runningPreferences.paceMinSecsPerKm;
+  int get paceMaxSecsPerKm => runningPreferences.paceMaxSecsPerKm;
+  List<PreferredDistance> get preferredDistances =>
+      runningPreferences.preferredDistances;
+  List<RunReason> get runningReasons => runningPreferences.runningReasons;
+  List<PreferredRunTime> get preferredRunTimes =>
+      runningPreferences.preferredRunTimes;
+  int get runPreferencesVersion => runningPreferences.version;
+
   bool get hasCurrentRunPreferences {
     return runPreferencesVersion >= currentRunPreferencesVersion ||
         preferredDistances.isNotEmpty ||
@@ -141,4 +129,28 @@ extension PublicProfileRunPreferences on PublicProfile {
         paceMinSecsPerKm != defaultPaceMinSecsPerKm ||
         paceMaxSecsPerKm != defaultPaceMaxSecsPerKm;
   }
+}
+
+void _migrateActivityPreferences(Map<String, dynamic> migrated) {
+  final activityPreferences = _stringKeyedMap(migrated['activityPreferences']);
+  final running = _stringKeyedMap(activityPreferences['running']);
+
+  running['paceMinSecsPerKm'] ??=
+      migrated['paceMinSecsPerKm'] ?? defaultPaceMinSecsPerKm;
+  running['paceMaxSecsPerKm'] ??=
+      migrated['paceMaxSecsPerKm'] ?? defaultPaceMaxSecsPerKm;
+  running['preferredDistances'] ??= migrated['preferredDistances'] ?? const [];
+  running['runningReasons'] ??= migrated['runningReasons'] ?? const [];
+  running['preferredRunTimes'] ??= migrated['preferredRunTimes'] ?? const [];
+  running['version'] ??= migrated['runPreferencesVersion'] ?? 0;
+
+  activityPreferences['running'] = running;
+  migrated['activityPreferences'] = activityPreferences;
+}
+
+Map<String, dynamic> _stringKeyedMap(Object? value) {
+  if (value is Map) {
+    return value.map((key, child) => MapEntry(key.toString(), child));
+  }
+  return <String, dynamic>{};
 }

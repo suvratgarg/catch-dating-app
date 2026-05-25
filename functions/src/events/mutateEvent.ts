@@ -15,7 +15,7 @@ import {
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
   EventMeetingLocation,
-} from "../shared/firestore";
+} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CancelEventCallablePayload} from
   "../shared/generated/cancelEventCallablePayload";

@@ -1,7 +1,7 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {MatchDoc, SwipeDoc} from "../shared/firestore";
+import {MatchDoc, SwipeDoc} from "../shared/generated/firestoreAdminTypes";
 import {
   schemaProfileDecisionCollectionPath,
   schemaProfileDecisionOutgoingSubcollectionPath,

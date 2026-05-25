@@ -272,6 +272,92 @@ export const profilePhotoSchema: Record<string, unknown> = {
   "x-migration-contract": "../migrations/profile_photos_storage.json"
 } as const;
 
+export const activityPreferencesSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/activity_preferences.schema.json",
+  "title": "ActivityPreferences",
+  "description": "Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "running"
+  ],
+  "properties": {
+    "running": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paceMinSecsPerKm",
+        "paceMaxSecsPerKm",
+        "preferredDistances",
+        "runningReasons",
+        "preferredRunTimes",
+        "version"
+      ],
+      "properties": {
+        "paceMinSecsPerKm": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "paceMaxSecsPerKm": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preferredDistances": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "fiveK",
+              "tenK",
+              "halfMarathon",
+              "marathon"
+            ]
+          }
+        },
+        "runningReasons": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "fitness",
+              "community",
+              "mindfulness",
+              "challenge",
+              "weightLoss",
+              "raceTraining",
+              "social"
+            ]
+          }
+        },
+        "preferredRunTimes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "earlyMorning",
+              "morning",
+              "afternoon",
+              "evening",
+              "night"
+            ]
+          }
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+} as const;
+
 export const configCitiesDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/config_cities.schema.json",
@@ -543,19 +629,12 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     "profileComplete",
     "email",
     "profilePrompts",
-    "photoUrls",
-    "photoThumbnailUrls",
-    "photoPrompts",
+    "profilePhotos",
     "interestedInGenders",
     "minAgePreference",
     "maxAgePreference",
     "languages",
-    "paceMinSecsPerKm",
-    "paceMaxSecsPerKm",
-    "preferredDistances",
-    "runningReasons",
-    "preferredRunTimes",
-    "runPreferencesVersion",
+    "activityPreferences",
     "prefsNewCatches",
     "prefsMessages",
     "prefsEventReminders",
@@ -723,66 +802,6 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/profile_prompts.json"
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "photoUrls": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "photoThumbnailUrls": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "photoPrompts": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "PhotoPromptAnswer",
-        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "photoIndex",
-          "promptId",
-          "prompt"
-        ],
-        "properties": {
-          "photoIndex": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
-          },
-          "promptId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          },
-          "prompt": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 140
-          },
-          "caption": {
-            "type": "string",
-            "maxLength": 140,
-            "deprecated": true,
-            "description": "Legacy user-entered caption retained for compatibility with older documents."
-          }
-        },
-        "x-catch-catalog": "../catalogs/photo_prompts.json"
       },
       "x-catch-ownership": "client-writable"
     },
@@ -1211,68 +1230,88 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "client-writable"
     },
-    "paceMinSecsPerKm": {
-      "type": "integer",
-      "minimum": 1,
-      "x-catch-ownership": "client-writable"
-    },
-    "paceMaxSecsPerKm": {
-      "type": "integer",
-      "minimum": 1,
-      "x-catch-ownership": "client-writable"
-    },
-    "preferredDistances": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "fiveK",
-          "tenK",
-          "halfMarathon",
-          "marathon"
-        ]
+    "activityPreferences": {
+      "title": "ActivityPreferences",
+      "description": "Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "running"
+      ],
+      "properties": {
+        "running": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paceMinSecsPerKm",
+            "paceMaxSecsPerKm",
+            "preferredDistances",
+            "runningReasons",
+            "preferredRunTimes",
+            "version"
+          ],
+          "properties": {
+            "paceMinSecsPerKm": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "paceMaxSecsPerKm": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "preferredDistances": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "fiveK",
+                  "tenK",
+                  "halfMarathon",
+                  "marathon"
+                ]
+              }
+            },
+            "runningReasons": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "fitness",
+                  "community",
+                  "mindfulness",
+                  "challenge",
+                  "weightLoss",
+                  "raceTraining",
+                  "social"
+                ]
+              }
+            },
+            "preferredRunTimes": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "earlyMorning",
+                  "morning",
+                  "afternoon",
+                  "evening",
+                  "night"
+                ]
+              }
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
       },
-      "x-catch-ownership": "client-writable"
-    },
-    "runningReasons": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "fitness",
-          "community",
-          "mindfulness",
-          "challenge",
-          "weightLoss",
-          "raceTraining",
-          "social"
-        ]
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "preferredRunTimes": {
-      "type": "array",
-      "maxItems": 8,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "earlyMorning",
-          "morning",
-          "afternoon",
-          "evening",
-          "night"
-        ]
-      },
-      "x-catch-ownership": "client-writable"
-    },
-    "runPreferencesVersion": {
-      "type": "integer",
-      "minimum": 0,
       "x-catch-ownership": "client-writable"
     },
     "prefsNewCatches": {
@@ -1373,15 +1412,8 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
     "age",
     "gender",
     "profilePrompts",
-    "photoUrls",
-    "photoThumbnailUrls",
-    "photoPrompts",
-    "paceMinSecsPerKm",
-    "paceMaxSecsPerKm",
-    "preferredDistances",
-    "runningReasons",
-    "preferredRunTimes",
-    "runPreferencesVersion"
+    "profilePhotos",
+    "activityPreferences"
   ],
   "properties": {
     "name": {
@@ -1468,66 +1500,6 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/profile_prompts.json"
-      },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "photoUrls": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "photoThumbnailUrls": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "type": "string",
-        "format": "uri",
-        "maxLength": 2048
-      },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "photoPrompts": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "PhotoPromptAnswer",
-        "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "photoIndex",
-          "promptId",
-          "prompt"
-        ],
-        "properties": {
-          "photoIndex": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 5
-          },
-          "promptId": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 80
-          },
-          "prompt": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 140
-          },
-          "caption": {
-            "type": "string",
-            "maxLength": 140,
-            "deprecated": true,
-            "description": "Legacy user-entered caption retained for compatibility with older documents."
-          }
-        },
-        "x-catch-catalog": "../catalogs/photo_prompts.json"
       },
       "x-catch-ownership": "trigger-owned"
     },
@@ -1910,68 +1882,88 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "trigger-owned"
     },
-    "paceMinSecsPerKm": {
-      "type": "integer",
-      "minimum": 1,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "paceMaxSecsPerKm": {
-      "type": "integer",
-      "minimum": 1,
-      "x-catch-ownership": "trigger-owned"
-    },
-    "preferredDistances": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "fiveK",
-          "tenK",
-          "halfMarathon",
-          "marathon"
-        ]
+    "activityPreferences": {
+      "title": "ActivityPreferences",
+      "description": "Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "running"
+      ],
+      "properties": {
+        "running": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paceMinSecsPerKm",
+            "paceMaxSecsPerKm",
+            "preferredDistances",
+            "runningReasons",
+            "preferredRunTimes",
+            "version"
+          ],
+          "properties": {
+            "paceMinSecsPerKm": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "paceMaxSecsPerKm": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "preferredDistances": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "fiveK",
+                  "tenK",
+                  "halfMarathon",
+                  "marathon"
+                ]
+              }
+            },
+            "runningReasons": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "fitness",
+                  "community",
+                  "mindfulness",
+                  "challenge",
+                  "weightLoss",
+                  "raceTraining",
+                  "social"
+                ]
+              }
+            },
+            "preferredRunTimes": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "earlyMorning",
+                  "morning",
+                  "afternoon",
+                  "evening",
+                  "night"
+                ]
+              }
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
       },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "runningReasons": {
-      "type": "array",
-      "maxItems": 12,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "fitness",
-          "community",
-          "mindfulness",
-          "challenge",
-          "weightLoss",
-          "raceTraining",
-          "social"
-        ]
-      },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "preferredRunTimes": {
-      "type": "array",
-      "maxItems": 8,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": [
-          "earlyMorning",
-          "morning",
-          "afternoon",
-          "evening",
-          "night"
-        ]
-      },
-      "x-catch-ownership": "trigger-owned"
-    },
-    "runPreferencesVersion": {
-      "type": "integer",
-      "minimum": 0,
       "x-catch-ownership": "trigger-owned"
     }
   },
@@ -6505,17 +6497,17 @@ export const paymentDocumentSchema: Record<string, unknown> = {
 
 export const swipeDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/swipes.schema.json",
+  "$id": "https://catch.app/contracts/firestore/profile_decisions.schema.json",
   "title": "SwipeDocument",
-  "description": "Current storage contract for contextual profile decisions stored at swipes/{userId}/outgoing/{targetId}.",
+  "description": "Storage contract for contextual profile decisions stored at profileDecisions/{userId}/outgoing/{targetId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "swipes",
-  "x-firestore-path": "swipes/{userId}/outgoing/{targetId}",
+  "x-firestore-collection": "profileDecisions",
+  "x-firestore-path": "profileDecisions/{userId}/outgoing/{targetId}",
   "x-document-id-field": "targetId",
   "x-owner": "authenticated swiper direct create; matching trigger consumes likes",
   "x-logical-name": "profileDecision",
-  "x-migration-phase": "observe",
+  "x-migration-phase": "new_primary",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -8084,63 +8076,6 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
         "profileComplete": {
           "type": "boolean"
         },
-        "photoUrls": {
-          "type": "array",
-          "maxItems": 6,
-          "items": {
-            "type": "string",
-            "format": "uri",
-            "maxLength": 2048
-          }
-        },
-        "photoThumbnailUrls": {
-          "type": "array",
-          "maxItems": 6,
-          "items": {
-            "type": "string",
-            "format": "uri",
-            "maxLength": 2048
-          }
-        },
-        "photoPrompts": {
-          "type": "array",
-          "maxItems": 6,
-          "items": {
-            "title": "PhotoPromptAnswer",
-            "description": "One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.",
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "photoIndex",
-              "promptId",
-              "prompt"
-            ],
-            "properties": {
-              "photoIndex": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 5
-              },
-              "promptId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              },
-              "prompt": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 140
-              },
-              "caption": {
-                "type": "string",
-                "maxLength": 140,
-                "deprecated": true,
-                "description": "Legacy user-entered caption retained for compatibility with older documents."
-              }
-            },
-            "x-catch-catalog": "../catalogs/photo_prompts.json"
-          }
-        },
         "profilePhotos": {
           "type": "array",
           "maxItems": 6,
@@ -8482,63 +8417,88 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
             null
           ]
         },
-        "paceMinSecsPerKm": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "paceMaxSecsPerKm": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "preferredDistances": {
-          "type": "array",
-          "maxItems": 12,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "fiveK",
-              "tenK",
-              "halfMarathon",
-              "marathon"
-            ]
+        "activityPreferences": {
+          "title": "ActivityPreferences",
+          "description": "Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "running"
+          ],
+          "properties": {
+            "running": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "paceMinSecsPerKm",
+                "paceMaxSecsPerKm",
+                "preferredDistances",
+                "runningReasons",
+                "preferredRunTimes",
+                "version"
+              ],
+              "properties": {
+                "paceMinSecsPerKm": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "paceMaxSecsPerKm": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "preferredDistances": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "fiveK",
+                      "tenK",
+                      "halfMarathon",
+                      "marathon"
+                    ]
+                  }
+                },
+                "runningReasons": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "fitness",
+                      "community",
+                      "mindfulness",
+                      "challenge",
+                      "weightLoss",
+                      "raceTraining",
+                      "social"
+                    ]
+                  }
+                },
+                "preferredRunTimes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "earlyMorning",
+                      "morning",
+                      "afternoon",
+                      "evening",
+                      "night"
+                    ]
+                  }
+                },
+                "version": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
           }
-        },
-        "runningReasons": {
-          "type": "array",
-          "maxItems": 12,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "fitness",
-              "community",
-              "mindfulness",
-              "challenge",
-              "weightLoss",
-              "raceTraining",
-              "social"
-            ]
-          }
-        },
-        "preferredRunTimes": {
-          "type": "array",
-          "maxItems": 8,
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "earlyMorning",
-              "morning",
-              "afternoon",
-              "evening",
-              "night"
-            ]
-          }
-        },
-        "runPreferencesVersion": {
-          "type": "integer",
-          "minimum": 0
         },
         "prefsNewCatches": {
           "type": "boolean"
@@ -11318,6 +11278,76 @@ export const overrideEventSuccessRotationsCallablePayloadSchema: Record<string, 
   }
 } as const;
 
+export const overrideEventSuccessGroupsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/override_event_success_groups_payload.schema.json",
+  "title": "OverrideEventSuccessGroupsCallablePayload",
+  "description": "Callable payload accepted by overrideEventSuccessGroups.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "rounds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rounds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "groups"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          },
+          "groups": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "participantUids"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "participantUids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 24,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 export const submitEventSuccessWingmanRequestCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/submit_event_success_wingman_request_payload.schema.json",
@@ -12041,7 +12071,7 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/client_writes/create_profile_decision.schema.json",
   "title": "CreateProfileDecisionClientWrite",
-  "description": "Client-owned Firestore create operation for the current swipes/{userId}/outgoing/{targetId} storage path.",
+  "description": "Client-owned Firestore create operation for the current profileDecisions/{userId}/outgoing/{targetId} storage path.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -12071,15 +12101,15 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
     },
     "data": {
       "title": "SwipeDocument",
-      "description": "Current storage contract for contextual profile decisions stored at swipes/{userId}/outgoing/{targetId}.",
+      "description": "Storage contract for contextual profile decisions stored at profileDecisions/{userId}/outgoing/{targetId}.",
       "type": "object",
       "additionalProperties": false,
-      "x-firestore-collection": "swipes",
-      "x-firestore-path": "swipes/{userId}/outgoing/{targetId}",
+      "x-firestore-collection": "profileDecisions",
+      "x-firestore-path": "profileDecisions/{userId}/outgoing/{targetId}",
       "x-document-id-field": "targetId",
       "x-owner": "authenticated swiper direct create; matching trigger consumes likes",
       "x-logical-name": "profileDecision",
-      "x-migration-phase": "observe",
+      "x-migration-phase": "new_primary",
       "x-internal-demo-fields": [
         "synthetic",
         "seedPrefix",
@@ -12229,9 +12259,9 @@ export const createProfileDecisionClientWriteSchema: Record<string, unknown> = {
     }
   },
   "x-firestore-operation": "create",
-  "x-firestore-path": "swipes/{userId}/outgoing/{targetId}",
+  "x-firestore-path": "profileDecisions/{userId}/outgoing/{targetId}",
   "x-logical-name": "profileDecision",
-  "x-migration-phase": "observe",
+  "x-migration-phase": "new_primary",
   "x-owner": "authenticated profile viewer direct create; matching trigger consumes likes"
 } as const;
 

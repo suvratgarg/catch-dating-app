@@ -1,4 +1,4 @@
-import {ClubDoc} from "./firestore";
+import {ClubDoc} from "./generated/firestoreAdminTypes";
 
 export type ClubHostRole = "owner" | "host";
 

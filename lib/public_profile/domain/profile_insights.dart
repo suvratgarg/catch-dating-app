@@ -122,9 +122,7 @@ class ProfileCardInsights {
 
 ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
   final profilePhotos = profile.effectiveProfilePhotos;
-  final photoCount = profilePhotos.isNotEmpty
-      ? profilePhotos.length
-      : profile.photoUrls.where((url) => url.trim().isNotEmpty).length;
+  final photoCount = profilePhotos.length;
   final promptCount = normalizeProfilePromptAnswers(
     profile.profilePrompts,
   ).length;
@@ -133,7 +131,7 @@ ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
       if (photo.prompt != null) photo.prompt!,
   ];
   final photoPromptCount = normalizePhotoPromptAnswers(
-    nestedPhotoPrompts.isNotEmpty ? nestedPhotoPrompts : profile.photoPrompts,
+    nestedPhotoPrompts,
   ).length;
   final runningDetailsComplete =
       profile.hasCurrentRunPreferences &&

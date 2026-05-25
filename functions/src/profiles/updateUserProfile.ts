@@ -50,9 +50,6 @@ const nullableTrimmedStringFields: ProfilePatchField[] = [
 const trimmedStringArrayFields: ProfilePatchField[] = [
   "interestedInGenders",
   "languages",
-  "preferredDistances",
-  "runningReasons",
-  "preferredRunTimes",
 ];
 
 /**
@@ -177,14 +174,14 @@ function normalizeProfilePatchFields(
       normalized.profilePrompts
     );
   }
-  if ("photoPrompts" in normalized) {
-    normalized.photoPrompts = normalizePhotoPromptPayloads(
-      normalized.photoPrompts
-    );
-  }
   if ("profilePhotos" in normalized) {
     normalized.profilePhotos = normalizeProfilePhotoPayloads(
       normalized.profilePhotos
+    );
+  }
+  if ("activityPreferences" in normalized) {
+    normalized.activityPreferences = normalizeActivityPreferencesPayload(
+      normalized.activityPreferences
     );
   }
 
@@ -229,24 +226,6 @@ function normalizeProfilePromptPayloads(value: unknown): unknown {
 }
 
 /**
- * Trims photo prompt id/title fields while preserving legacy caption validation
- * semantics when older clients send captions.
- * @param {unknown} value Raw photo prompt payloads.
- * @return {unknown} Normalized photo prompt payloads.
- */
-function normalizePhotoPromptPayloads(value: unknown): unknown {
-  if (!Array.isArray(value)) return value;
-  return value.map((item) => {
-    if (!isRecord(item)) return item;
-    return {
-      ...item,
-      promptId: trimIfString(item.promptId),
-      prompt: trimIfString(item.prompt),
-    };
-  });
-}
-
-/**
  * Trims profile-photo ids, URLs, Storage paths, and nested prompt display
  * fields while preserving timestamp validation semantics.
  * @param {unknown} value Raw profile-photo payloads.
@@ -276,6 +255,29 @@ function normalizeProfilePhotoPayloads(value: unknown): unknown {
     }
     return normalized;
   });
+}
+
+/**
+ * Trims enum-like string arrays inside nested activity preference payloads.
+ * @param {unknown} value Raw activity preference payload.
+ * @return {unknown} Normalized activity preference payload.
+ */
+function normalizeActivityPreferencesPayload(value: unknown): unknown {
+  if (!isRecord(value)) return value;
+  const normalized: Record<string, unknown> = {...value};
+  if (isRecord(value.running)) {
+    normalized.running = {
+      ...value.running,
+      preferredDistances: trimStringArrayValues(
+        value.running.preferredDistances
+      ),
+      runningReasons: trimStringArrayValues(value.running.runningReasons),
+      preferredRunTimes: trimStringArrayValues(
+        value.running.preferredRunTimes
+      ),
+    };
+  }
+  return normalized;
 }
 
 /**
@@ -333,18 +335,7 @@ function profilePhotoCountAfterPatch(
   const profilePhotos = Object.hasOwn(updateFields, "profilePhotos") ?
     updateFields.profilePhotos :
     currentData.profilePhotos;
-  const groupedCount = countProfilePhotoRecords(profilePhotos);
-  if (groupedCount > 0 || Object.hasOwn(updateFields, "profilePhotos")) {
-    return groupedCount;
-  }
-
-  const photoUrls = Object.hasOwn(updateFields, "photoUrls") ?
-    updateFields.photoUrls :
-    currentData.photoUrls;
-  return asNonEmptyStringArray(photoUrls).slice(
-    0,
-    profilePhotoPolicy.maxPhotos
-  ).length;
+  return countProfilePhotoRecords(profilePhotos);
 }
 
 /**
@@ -365,19 +356,6 @@ function countProfilePhotoRecords(value: unknown): number {
       photo.position < profilePhotoPolicy.maxPhotos
     )
     .length;
-}
-
-/**
- * Coerces an unknown value into a non-empty string array.
- * @param {unknown} value Candidate array.
- * @return {string[]} Trimmed strings.
- */
-function asNonEmptyStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((item): item is string => typeof item === "string")
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
 }
 
 /**
@@ -487,33 +465,32 @@ function toFirestorePatch(
       }))
       .filter((prompt) => prompt.answer.length > 0);
   }
-  if (fields.photoPrompts !== undefined) {
-    updateFields.photoPrompts = fields.photoPrompts
-      .map((prompt) => ({
-        ...prompt,
-        promptId: prompt.promptId.trim(),
-        prompt: prompt.prompt.trim(),
-        ...(prompt.caption !== undefined && {
-          caption: collapseStackedPromptBlankLines(prompt.caption ?? "").trim(),
-        }),
-      }))
-      .filter((prompt) =>
-        prompt.promptId.length > 0 && prompt.prompt.length > 0
-      );
-  }
   if (fields.profilePhotos !== undefined) {
-    updateFields.profilePhotos = fields.profilePhotos.map((photo) => ({
-      ...photo,
-      createdAt: deps.timestampFromMillis(photo.createdAt),
-      updatedAt: deps.timestampFromMillis(photo.updatedAt),
-      ...(photo.moderation?.reviewedAt !== undefined &&
-        photo.moderation?.reviewedAt !== null && {
-        moderation: {
-          ...photo.moderation,
-          reviewedAt: deps.timestampFromMillis(photo.moderation.reviewedAt),
-        },
-      }),
-    }));
+    updateFields.profilePhotos = fields.profilePhotos.map((photo) => {
+      const prompt = photo.prompt ?
+        {
+          ...photo.prompt,
+          ...(photo.prompt.caption !== undefined && {
+            caption: collapseStackedPromptBlankLines(
+              photo.prompt.caption ?? ""
+            ).trim(),
+          }),
+        } :
+        photo.prompt;
+      return {
+        ...photo,
+        prompt,
+        createdAt: deps.timestampFromMillis(photo.createdAt),
+        updatedAt: deps.timestampFromMillis(photo.updatedAt),
+        ...(photo.moderation?.reviewedAt !== undefined &&
+          photo.moderation?.reviewedAt !== null && {
+          moderation: {
+            ...photo.moderation,
+            reviewedAt: deps.timestampFromMillis(photo.moderation.reviewedAt),
+          },
+        }),
+      };
+    });
   }
   if (fields.dateOfBirth !== undefined) {
     updateFields.dateOfBirth = deps.timestampFromMillis(fields.dateOfBirth);

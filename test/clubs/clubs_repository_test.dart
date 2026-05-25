@@ -232,10 +232,6 @@ void main() {
           'location': 'mumbai',
           'area': 'Bandra',
           'imageUrl': 'https://example.com/cover.jpg',
-          'profileImageUrl': null,
-          'instagramHandle': null,
-          'phoneNumber': null,
-          'email': null,
         },
       ]);
     });

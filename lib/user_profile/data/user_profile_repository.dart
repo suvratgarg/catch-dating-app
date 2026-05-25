@@ -85,9 +85,7 @@ class UserProfileRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateUserProfile')
-        .call(
-          UpdateUserProfileCallableRequest.fromPatch(patch).toJson(),
-        ),
+        .call(UpdateUserProfileCallableRequest.fromPatch(patch).toJson()),
     context: BackendErrorContext(
       service: BackendService.functions,
       action: action,
@@ -95,33 +93,14 @@ class UserProfileRepository {
     ),
   );
 
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) => updateUserProfile(
-    uid: uid,
-    patch: UpdateUserProfilePatch(photoUrls: photoUrls),
-    action: 'update photo URLs',
-  );
-
   Future<void> updateProfilePhotos({
     required String uid,
     required List<ProfilePhoto> profilePhotos,
-    required List<String> photoUrls,
   }) {
     final normalizedPhotos = normalizeProfilePhotos(profilePhotos);
-    final photoPrompts = normalizedPhotos
-        .where((photo) => photo.prompt != null)
-        .map((photo) => photo.prompt!.copyWith(photoIndex: photo.position))
-        .toList(growable: false);
     return updateUserProfile(
       uid: uid,
-      patch: UpdateUserProfilePatch(
-        profilePhotos: normalizedPhotos,
-        photoUrls: photoUrls,
-        photoThumbnailUrls: profilePhotoThumbnailUrls(normalizedPhotos),
-        photoPrompts: photoPrompts,
-      ),
+      patch: UpdateUserProfilePatch(profilePhotos: normalizedPhotos),
       action: 'update profile photos',
     );
   }

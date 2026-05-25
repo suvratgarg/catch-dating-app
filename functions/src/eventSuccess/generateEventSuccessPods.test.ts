@@ -2,7 +2,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";
-import {generateEventSuccessPodsHandler} from "./generateEventSuccessPods";
+import {
+  generateEventSuccessPodsHandler,
+  overrideEventSuccessGroupsHandler,
+} from "./generateEventSuccessPods";
 import {isHttpsError} from "../shared/testUtils";
 
 type FakeData = Record<string, unknown>;
@@ -601,6 +604,208 @@ test("uses format primitives for custom team formats", async () => {
   assert.equal(gayManOne?.displayTitle, "Team A");
 });
 
+test("writes group rotation slots for rotating table formats", async () => {
+  const {firestore, deps} = harness({
+    "events/event-1": {
+      clubId: "club-1",
+      status: "active",
+      startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+      endTime: fakeTimestamp("2026-05-21T08:40:00.000Z"),
+      eventFormat: {
+        version: 1,
+        activityKind: "openActivity",
+        interactionModel: "openFormat",
+      },
+    },
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "tables",
+        unitSize: 3,
+        unitCount: 2,
+        rotationIntervalMinutes: 20,
+      },
+    },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventParticipations/event-1_runner-3": participation("runner-3"),
+    "eventParticipations/event-1_runner-4": participation("runner-4"),
+    "eventParticipations/event-1_runner-5": participation("runner-5"),
+    "eventParticipations/event-1_runner-6": participation("runner-6"),
+  });
+
+  const result = await generateEventSuccessPodsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 6, podCount: 2});
+  const assignment = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  );
+  const slots = assignment?.groupRotationSlots as FakeData[];
+  assert.equal(assignment?.displayTitle, "2 table rotations");
+  assert.equal(assignment?.rotationSlots, undefined);
+  assert.equal(slots.length, 2);
+  assert.equal((slots[0].peerUids as string[]).length, 2);
+  assert.match(String(slots[0].unitLabel), /^Table /);
+});
+
+test("lets hosts override rotating table groups", async () => {
+  const {firestore, deps, rateLimitCalls} = harness({
+    "events/event-1": {
+      clubId: "club-1",
+      status: "active",
+      startTime: fakeTimestamp("2026-05-21T08:00:00.000Z"),
+      endTime: fakeTimestamp("2026-05-21T08:40:00.000Z"),
+      eventFormat: {
+        version: 1,
+        activityKind: "openActivity",
+        interactionModel: "openFormat",
+      },
+    },
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "tables",
+        unitSize: 2,
+        unitCount: 2,
+        rotationIntervalMinutes: 20,
+      },
+    },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventParticipations/event-1_runner-3": participation("runner-3"),
+    "eventParticipations/event-1_runner-4": participation("runner-4"),
+  });
+
+  const result = await overrideEventSuccessGroupsHandler(
+    callableRequestWithData("host-1", {
+      eventId: "event-1",
+      rounds: [
+        {
+          roundIndex: 0,
+          groups: [
+            {label: "Table Red", participantUids: ["runner-1", "runner-2"]},
+            {label: "Table Blue", participantUids: ["runner-3", "runner-4"]},
+          ],
+        },
+        {
+          roundIndex: 1,
+          groups: [
+            {label: "Table Red", participantUids: ["runner-1", "runner-3"]},
+            {label: "Table Blue", participantUids: ["runner-2", "runner-4"]},
+          ],
+        },
+      ],
+    }),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 2, groupCount: 4});
+  assert.deepEqual(rateLimitCalls, ["host-1:overrideEventSuccessGroups"]);
+  const runnerOne = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  );
+  const slots = runnerOne?.groupRotationSlots as FakeData[];
+  assert.equal(runnerOne?.source, "host_override_v1");
+  assert.equal(runnerOne?.displayTitle, "2 table rotations");
+  assert.deepEqual(runnerOne?.peerUids, ["runner-2", "runner-3"]);
+  assert.equal(slots[0].unitLabel, "Table Red");
+  assert.equal(slots[0].compatibility, "host_override");
+  assert.deepEqual(slots[1].peerUids, ["runner-3"]);
+});
+
+test("lets hosts override static team groups", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 2,
+        unitCount: 2,
+      },
+    },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "eventParticipations/event-1_runner-3": participation("runner-3"),
+    "eventParticipations/event-1_runner-4": participation("runner-4"),
+  });
+
+  const result = await overrideEventSuccessGroupsHandler(
+    callableRequestWithData("host-1", {
+      eventId: "event-1",
+      rounds: [
+        {
+          roundIndex: 0,
+          groups: [
+            {label: "Quiz Team 1", participantUids: ["runner-1", "runner-3"]},
+            {label: "Quiz Team 2", participantUids: ["runner-2", "runner-4"]},
+          ],
+        },
+      ],
+    }),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 4, roundCount: 1, groupCount: 2});
+  const runnerOne = firestore.get(
+    "eventSuccessAssignments/event-1_micro_pods_runner-1"
+  );
+  assert.equal(runnerOne?.displayTitle, "Quiz Team 1");
+  assert.equal(runnerOne?.source, "host_override_v1");
+  assert.deepEqual(runnerOne?.peerUids, ["runner-3"]);
+  assert.equal(runnerOne?.groupRotationSlots, undefined);
+});
+
+test("rejects blocked attendees in host group overrides", async () => {
+  const {deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["micro_pods"],
+      structureConfig: {
+        unitKind: "teams",
+        unitSize: 2,
+        unitCount: 1,
+      },
+    },
+    "eventParticipations/event-1_runner-1": participation("runner-1"),
+    "eventParticipations/event-1_runner-2": participation("runner-2"),
+    "blocks/block-1": {
+      blockerUserId: "runner-1",
+      blockedUserId: "runner-2",
+    },
+  });
+
+  await assert.rejects(
+    () => overrideEventSuccessGroupsHandler(
+      callableRequestWithData("host-1", {
+        eventId: "event-1",
+        rounds: [
+          {
+            roundIndex: 0,
+            groups: [
+              {label: "Team A", participantUids: ["runner-1", "runner-2"]},
+            ],
+          },
+        ],
+      }),
+      deps
+    ),
+    (error) => {
+      isHttpsError(error, "failed-precondition", "Blocked attendees");
+      return true;
+    }
+  );
+});
+
 test("rejects non-host pod generation", async () => {
   const {deps} = harness();
 
@@ -666,6 +871,16 @@ function callableRequest(uid: string): CallableRequest<unknown> {
   } as CallableRequest<unknown>;
 }
 
+function callableRequestWithData(
+  uid: string,
+  data: unknown
+): CallableRequest<unknown> {
+  return {
+    auth: {uid},
+    data,
+  } as CallableRequest<unknown>;
+}
+
 function participation(uid: string): FakeData {
   return {
     eventId: "event-1",
@@ -676,4 +891,9 @@ function participation(uid: string): FakeData {
 
 function user(gender: string, interestedInGenders: string[]): FakeData {
   return {gender, interestedInGenders};
+}
+
+function fakeTimestamp(isoString: string): {toMillis: () => number} {
+  const millis = Date.parse(isoString);
+  return {toMillis: () => millis};
 }

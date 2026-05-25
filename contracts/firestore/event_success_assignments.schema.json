@@ -126,6 +126,65 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "groupRotationSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "unitLabel",
+          "startsAt",
+          "endsAt",
+          "peerUids",
+          "compatibility"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "unitLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "endsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "peerUids": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            }
+          },
+          "compatibility": {
+            "type": "string",
+            "enum": [
+              "mutual_interest",
+              "one_way_interest",
+              "questionnaire_match",
+              "social",
+              "mixed",
+              "host_override"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "source": {
       "type": "string",
       "enum": [

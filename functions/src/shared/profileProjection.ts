@@ -1,11 +1,11 @@
 import {computeAge} from "./dates";
-import * as admin from "firebase-admin";
 import {
+  ActivityPreferences,
   PhotoPromptAnswer,
   ProfilePromptAnswer,
   PublicProfileDoc,
   UserProfileDoc,
-} from "./firestore";
+} from "./generated/firestoreAdminTypes";
 import {DemoMetadata, demoMetadataFromSources} from "./demoMetadata";
 import {
   profilePhotoPolicy,
@@ -34,6 +34,17 @@ interface StoredProfilePhoto {
 type UserProfileWithPhotos = UserProfileDoc & {
   profilePhotos?: StoredProfilePhoto[];
 };
+
+type RunningPreferencesProjection = ActivityPreferences["running"];
+
+type LegacyRunningPreferenceFields = Partial<{
+  paceMinSecsPerKm: number;
+  paceMaxSecsPerKm: number;
+  preferredDistances: string[];
+  runningReasons: string[];
+  preferredRunTimes: string[];
+  runPreferencesVersion: number;
+}>;
 
 const perfectRunPromptDefinition = profilePromptCatalog.prompts.find(
   (prompt) => prompt.id === profilePromptCatalog.defaultPromptIds[0]
@@ -66,8 +77,6 @@ export function publicAvatarUrl(user: UserProfileDoc): string | null {
   const primaryPhoto = normalizeProfilePhotos(user)[0];
   return primaryPhoto?.thumbnailUrl ??
     primaryPhoto?.url ??
-    normalizePhotoUrls(user.photoThumbnailUrls)[0] ??
-    normalizePhotoUrls(user.photoUrls)[0] ??
     null;
 }
 
@@ -84,26 +93,14 @@ export function publicProfileFromUserProfileDoc(
   user: UserProfileDoc
 ): PublicProfileProjection {
   const profilePhotos = normalizeProfilePhotos(user);
+  const running = runningPreferencesFromUserProfileDoc(user);
   return {
     ...demoMetadataFromSources(user),
     name: publicDisplayName(user),
     age: computeAge(user.dateOfBirth.toDate()),
     profilePrompts: normalizeProfilePrompts(user),
     gender: user.gender,
-    photoUrls: profilePhotos.length > 0 ?
-      profilePhotos.map((photo) => photo.url) :
-      normalizePhotoUrls(user.photoUrls),
-    photoThumbnailUrls: profilePhotos.length > 0 ?
-      profilePhotos.map((photo) => photo.thumbnailUrl) :
-      normalizePhotoUrls(user.photoThumbnailUrls),
-    photoPrompts: profilePhotos.length > 0 ?
-      profilePhotos
-        .map((photo) => photo.prompt ?
-          {...photo.prompt, photoIndex: photo.position} :
-          null)
-        .filter((prompt): prompt is PhotoPromptAnswer => prompt !== null) :
-      normalizePhotoPrompts(user.photoPrompts),
-    ...(profilePhotos.length > 0 && {profilePhotos}),
+    profilePhotos,
     ...(user.city && {city: user.city}),
     ...(user.height !== undefined && {height: user.height}),
     ...(user.occupation && {occupation: user.occupation}),
@@ -117,12 +114,44 @@ export function publicProfileFromUserProfileDoc(
     ...(user.workout && {workout: user.workout}),
     ...(user.diet && {diet: user.diet}),
     ...(user.children && {children: user.children}),
-    paceMinSecsPerKm: user.paceMinSecsPerKm,
-    paceMaxSecsPerKm: user.paceMaxSecsPerKm,
-    preferredDistances: user.preferredDistances ?? [],
-    runningReasons: user.runningReasons ?? [],
-    preferredRunTimes: user.preferredRunTimes ?? [],
-    runPreferencesVersion: user.runPreferencesVersion ?? 0,
+    activityPreferences: {running},
+  };
+}
+
+/**
+ * Returns the current nested running preferences, migrating legacy root fields
+ * when older documents are still being read.
+ * @param {UserProfileDoc} user Private profile document.
+ * @return {RunningPreferencesProjection} Running preference projection.
+ */
+export function runningPreferencesFromUserProfileDoc(
+  user: UserProfileDoc
+): RunningPreferencesProjection {
+  const nested = user.activityPreferences?.running;
+  const legacy = user as UserProfileDoc & LegacyRunningPreferenceFields;
+  return {
+    paceMinSecsPerKm: nested?.paceMinSecsPerKm ??
+      legacy.paceMinSecsPerKm ??
+      300,
+    paceMaxSecsPerKm: nested?.paceMaxSecsPerKm ??
+      legacy.paceMaxSecsPerKm ??
+      420,
+    preferredDistances: nested?.preferredDistances ??
+      (legacy.preferredDistances as RunningPreferencesProjection[
+        "preferredDistances"
+      ] | undefined) ??
+      [],
+    runningReasons: nested?.runningReasons ??
+      (legacy.runningReasons as RunningPreferencesProjection[
+        "runningReasons"
+      ] | undefined) ??
+      [],
+    preferredRunTimes: nested?.preferredRunTimes ??
+      (legacy.preferredRunTimes as RunningPreferencesProjection[
+        "preferredRunTimes"
+      ] | undefined) ??
+      [],
+    version: nested?.version ?? legacy.runPreferencesVersion ?? 0,
   };
 }
 
@@ -189,8 +218,7 @@ export function normalizePhotoPrompts(
 }
 
 /**
- * Normalizes grouped profile photos, falling back to legacy parallel arrays
- * until all live profile documents have been backfilled.
+ * Normalizes grouped profile photos.
  * @param {UserProfileDoc} user Private user profile document.
  * @return {StoredProfilePhoto[]} Ordered profile photos.
  */
@@ -222,34 +250,7 @@ export function normalizeProfilePhotos(
     )
     .sort((a, b) => a.position - b.position)
     .slice(0, maxProfilePhotos);
-  if (groupedPhotos.length > 0) return groupedPhotos;
-
-  const promptsByIndex = new Map(
-    normalizePhotoPrompts(user.photoPrompts).map((prompt) => [
-      prompt.photoIndex,
-      prompt,
-    ])
-  );
-  return normalizePhotoUrls(user.photoUrls)
-    .map((url, index) => {
-      const thumbnailUrl = normalizePhotoUrls(user.photoThumbnailUrls)[index] ??
-        url;
-      const storagePath = storagePathFromDownloadUrl(url) ??
-        `users/legacy/photos/${index}.jpg`;
-      return {
-        id: profilePhotoIdForStoragePath(storagePath, index),
-        url,
-        thumbnailUrl,
-        storagePath,
-        thumbnailStoragePath: storagePathFromDownloadUrl(thumbnailUrl) ??
-          thumbnailStoragePathForStoragePath(storagePath),
-        prompt: promptsByIndex.get(index) ?? null,
-        moderation: null,
-        position: index,
-        createdAt: admin.firestore.Timestamp.fromMillis(0),
-        updatedAt: admin.firestore.Timestamp.fromMillis(0),
-      };
-    });
+  return groupedPhotos;
 }
 
 /**
@@ -298,67 +299,6 @@ function normalizeProfilePhotoPrompt(
     {...prompt, photoIndex: position},
   ]);
   return normalized[0] ?? null;
-}
-
-/**
- * Best-effort Firebase download URL to Storage object path parser.
- * @param {string} value Download URL.
- * @return {string | null} Storage object path if the URL contains one.
- */
-function storagePathFromDownloadUrl(value: string): string | null {
-  try {
-    const url = new URL(value);
-    const segments = url.pathname.split("/").filter(Boolean);
-    const objectMarkerIndex = segments.indexOf("o");
-    if (objectMarkerIndex < 0 || objectMarkerIndex + 1 >= segments.length) {
-      return null;
-    }
-    return decodeURIComponent(segments[objectMarkerIndex + 1]);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Derives the profile thumbnail path that generateProfilePhotoThumbnail writes.
- * @param {string} storagePath Full-size photo Storage path.
- * @return {string} Thumbnail Storage path.
- */
-function thumbnailStoragePathForStoragePath(storagePath: string): string {
-  const parts = storagePath.split("/");
-  if (parts.length >= 4 && parts[0] === "users" && parts[2] === "photos") {
-    const sourceName = stripExtension(parts[parts.length - 1]);
-    return `users/${parts[1]}/photoThumbnails/${sourceName}.jpg`;
-  }
-  return `${storagePath}.thumbnail.jpg`;
-}
-
-/**
- * Builds a stable id from a Storage object path.
- * @param {string} storagePath Storage object path.
- * @param {number} position Fallback photo position.
- * @return {string} Contract-safe id.
- */
-function profilePhotoIdForStoragePath(
-  storagePath: string,
-  position: number
-): string {
-  const fileName = stripExtension(storagePath.split("/").pop() ?? "");
-  const normalized = fileName
-    .replace(/[^A-Za-z0-9_-]+/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "");
-  return normalized || `photo_${position}`;
-}
-
-/**
- * Removes the final file extension.
- * @param {string} fileName File name.
- * @return {string} File name without extension.
- */
-function stripExtension(fileName: string): string {
-  const dot = fileName.lastIndexOf(".");
-  return dot <= 0 ? fileName : fileName.slice(0, dot);
 }
 
 /**

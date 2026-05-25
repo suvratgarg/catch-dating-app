@@ -6,6 +6,7 @@ import {
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
+  activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
@@ -61,6 +62,7 @@ import {
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
+  overrideEventSuccessGroupsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
   completeEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -103,6 +105,7 @@ addFormats(ajv);
 export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema);
 export const validatePhotoPromptAnswer = ajv.compile(photoPromptAnswerSchema);
 export const validateProfilePhoto = ajv.compile(profilePhotoSchema);
+export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
 export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSchema);
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
@@ -158,6 +161,7 @@ export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayload
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
 export const validateEventJoinRequestDecisionCallablePayload = ajv.compile(eventJoinRequestDecisionCallablePayloadSchema);
 export const validateOverrideEventSuccessRotationsCallablePayload = ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema);
+export const validateOverrideEventSuccessGroupsCallablePayload = ajv.compile(overrideEventSuccessGroupsCallablePayloadSchema);
 export const validateSubmitEventSuccessWingmanRequestCallablePayload = ajv.compile(submitEventSuccessWingmanRequestCallablePayloadSchema);
 export const validateStartEventSuccessFirstHelloMissionCallablePayload = ajv.compile(startEventSuccessFirstHelloMissionCallablePayloadSchema);
 export const validateCompleteEventSuccessFirstHelloMissionCallablePayload = ajv.compile(completeEventSuccessFirstHelloMissionCallablePayloadSchema);

@@ -8,8 +8,10 @@ import {
 const projection = {
   publicDisplayName: (user) =>
     user.displayName?.trim() || user.firstName?.trim() || "Runner",
-  publicAvatarUrl: (user) => user.photoThumbnailUrls?.[0] ??
-    user.photoUrls?.[0] ?? null,
+  publicAvatarUrl: (user) =>
+    user.profilePhotos?.[0]?.thumbnailUrl ??
+    user.profilePhotos?.[0]?.url ??
+    null,
 };
 
 test("buildClubHostProfileRepairPlan finds stale host projections",
@@ -18,12 +20,15 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
       users: {
         "host-1": {
           displayName: "New Host",
-          photoThumbnailUrls: ["https://example.com/new-thumb.jpg"],
-          photoUrls: ["https://example.com/new-full.jpg"],
+          profilePhotos: [
+            profilePhoto("https://example.com/new-full.jpg", {
+              thumbnailUrl: "https://example.com/new-thumb.jpg",
+            }),
+          ],
         },
         "host-2": {
           firstName: "Second",
-          photoUrls: ["https://example.com/second.jpg"],
+          profilePhotos: [profilePhoto("https://example.com/second.jpg")],
         },
       },
       clubs: {
@@ -98,11 +103,11 @@ test("buildClubHostProfileRepairPlan refreshes multi-host projections",
       users: {
         "owner-1": {
           displayName: "Owner One",
-          photoThumbnailUrls: ["https://example.com/owner.jpg"],
+          profilePhotos: [profilePhoto("https://example.com/owner.jpg")],
         },
         "cohost-1": {
           displayName: "Co Host",
-          photoThumbnailUrls: ["https://example.com/cohost.jpg"],
+          profilePhotos: [profilePhoto("https://example.com/cohost.jpg")],
         },
       },
       clubs: {
@@ -242,5 +247,18 @@ function docSnapshot(collectionName, id, value) {
     id,
     ref: {path: `${collectionName}/${id}`},
     data: () => ({...value}),
+  };
+}
+
+function profilePhoto(url, {thumbnailUrl = url} = {}) {
+  return {
+    id: "photo-1",
+    url,
+    thumbnailUrl,
+    storagePath: "users/host/photos/photo-1.jpg",
+    thumbnailStoragePath: "users/host/photoThumbnails/photo-1.jpg",
+    prompt: null,
+    moderation: null,
+    position: 0,
   };
 }

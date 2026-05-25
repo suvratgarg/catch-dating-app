@@ -101,6 +101,20 @@ export function normalizeMarkEventAttendancePayload(data: unknown): unknown {
 }
 
 /**
+ * Trims join-request decision payload ids and decision before validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+export function normalizeEventJoinRequestDecisionPayload(
+  data: unknown
+): unknown {
+  if (!isRecord(data)) return data;
+  return normalizeFields(data, {
+    stringFields: ["eventId", "userId", "decision"],
+  });
+}
+
+/**
  * Returns a shallow copy with selected string fields trimmed.
  * @param {PayloadRecord} data Payload record.
  * @param {object} options Fields to normalize.

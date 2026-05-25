@@ -12,7 +12,7 @@ const ignoredPathParts = [
   `${path.sep}generated${path.sep}`,
   `${path.sep}.dart_tool${path.sep}`,
 ];
-const ignoredFiles = new Set(["functions/src/shared/firestore.ts"]);
+const ignoredFiles = new Set();
 
 const checks = [
   {

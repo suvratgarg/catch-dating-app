@@ -1,10 +1,9 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {UserProfileDoc} from "./firestore";
+import {UserProfileDoc} from "./generated/firestoreAdminTypes";
 import {profilePromptCatalog} from "./generated/schemaRegistry";
 import {
-  normalizePhotoUrls,
   publicDisplayName,
   publicAvatarUrl,
   publicProfileFromUserProfileDoc,
@@ -31,25 +30,38 @@ function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
       prompt: " A perfect event with me looks like... ",
       answer: "Morning runner\n\n\nCoffee after.",
     }],
-    photoPrompts: [{
-      photoIndex: 0,
-      promptId: " proofIRun ",
-      prompt: " Proof I actually event ",
-      caption: "Race morning\n\n\nFinish-line smile.",
+    profilePhotos: [{
+      id: "photo_0",
+      url: " https://example.test/full.jpg ",
+      thumbnailUrl: " https://example.test/thumb.jpg ",
+      storagePath: "users/runner-1/photos/0.jpg",
+      thumbnailStoragePath: "users/runner-1/photoThumbnails/0.jpg",
+      position: 0,
+      prompt: {
+        photoIndex: 0,
+        promptId: " proofIRun ",
+        prompt: " Proof I actually event ",
+        caption: "Race morning\n\n\nFinish-line smile.",
+      },
+      moderation: null,
+      createdAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
+      updatedAt: timestamp(new Date("2026-01-01T00:00:00.000Z")),
     }],
-    photoUrls: ["https://example.test/full.jpg"],
-    photoThumbnailUrls: ["https://example.test/thumb.jpg"],
     city: "mumbai",
     interestedInGenders: ["man"],
     minAgePreference: 24,
     maxAgePreference: 42,
     languages: ["english"],
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: ["fiveK"],
-    runningReasons: ["fitness"],
-    preferredRunTimes: ["morning"],
-    runPreferencesVersion: 1,
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: ["fiveK"],
+        runningReasons: ["fitness"],
+        preferredRunTimes: ["morning"],
+        version: 1,
+      },
+    },
     prefsNewCatches: true,
     prefsMessages: true,
     prefsEventReminders: true,
@@ -77,41 +89,28 @@ test("publicDisplayName uses editable display name with safe fallbacks", () => {
   );
 });
 
-test("public photo URLs are trimmed and invalid values are dropped", () => {
-  assert.deepEqual(
-    normalizePhotoUrls([
-      " https://example.test/one.jpg ",
-      "",
-      "not a url",
-      "https://example.test/two.jpg",
-    ]),
-    [
-      "https://example.test/one.jpg",
-      "https://example.test/two.jpg",
-    ]
-  );
+test("publicAvatarUrl reads grouped profile photo thumbnails", () => {
   assert.equal(
     publicAvatarUrl(completeUser({
-      photoThumbnailUrls: ["bad thumbnail"],
-      photoUrls: [" https://example.test/full.jpg "],
+      profilePhotos: [{
+        ...completeUser().profilePhotos[0],
+        thumbnailUrl: "",
+      }],
     })),
     "https://example.test/full.jpg"
   );
 });
 
-test("publicProfileFromUserProfileDoc drops invalid photo URLs", () => {
+test("publicProfileFromUserProfileDoc drops invalid grouped photos", () => {
   const profile = publicProfileFromUserProfileDoc(completeUser({
-    photoUrls: ["not a url", "https://example.test/full.jpg"],
-    photoThumbnailUrls: [
-      "https://example.test/thumb.jpg",
-      "bad thumbnail",
+    profilePhotos: [
+      {...completeUser().profilePhotos[0], url: "not a url"},
+      completeUser().profilePhotos[0],
     ],
   }));
 
-  assert.deepEqual(profile.photoUrls, ["https://example.test/full.jpg"]);
-  assert.deepEqual(profile.photoThumbnailUrls, [
-    "https://example.test/thumb.jpg",
-  ]);
+  assert.equal(profile.profilePhotos.length, 1);
+  assert.equal(profile.profilePhotos[0].url, "https://example.test/full.jpg");
 });
 
 test(
@@ -137,18 +136,21 @@ test(
       prompt: "A perfect event with me looks like...",
       answer: "Morning runner\n\nCoffee after.",
     }]);
-    assert.deepEqual(profile.photoPrompts, [{
+    assert.deepEqual(profile.profilePhotos[0].prompt, {
       photoIndex: 0,
       promptId: "proofIRun",
       prompt: "Proof I actually event",
       caption: "Race morning\n\nFinish-line smile.",
-    }]);
+    });
     assert.equal(profile.height, 168);
     assert.equal(profile.occupation, "Designer");
     assert.equal(profile.company, "Stride Labs");
     assert.equal(profile.relationshipGoal, "relationship");
-    assert.deepEqual(profile.preferredRunTimes, ["morning"]);
-    assert.equal(profile.runPreferencesVersion, 1);
+    assert.deepEqual(
+      profile.activityPreferences.running.preferredRunTimes,
+      ["morning"]
+    );
+    assert.equal(profile.activityPreferences.running.version, 1);
   }
 );
 

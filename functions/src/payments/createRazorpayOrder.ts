@@ -5,7 +5,10 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import Razorpay from "razorpay";
-import {EventDoc, UserProfileDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {buildOrderCreatePayload} from "./paymentValidation";
 import {
   createRazorpayClient,
@@ -17,9 +20,9 @@ import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {
-  EventIdCallablePayload,
-} from "../shared/generated/eventIdCallablePayload";
-import {validateEventIdCallablePayload} from
+  CreateRazorpayOrderCallablePayload,
+} from "../shared/generated/createRazorpayOrderCallablePayload";
+import {validateCreateRazorpayOrderCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
@@ -29,6 +32,7 @@ import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasHostApprovedJoinRequest,
   hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
@@ -57,11 +61,12 @@ export async function createRazorpayOrderHandler(
   deps: CreateRazorpayOrderDeps = defaultDeps
 ) {
   const uid = requireAuth(request);
-  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
+  const payload = validateCallableWithAjv<CreateRazorpayOrderCallablePayload>(
     request,
-    validateEventIdCallablePayload,
+    validateCreateRazorpayOrderCallablePayload,
     normalizeEventIdPayload
   );
+  const {eventId, inviteCode} = payload;
 
   const db = deps.firestore();
   const [eventSnap, userSnap, participationSnap, activeParticipationsSnap] =
@@ -146,6 +151,7 @@ export async function createRazorpayOrderHandler(
       totalBooked: event.bookedCount ?? signedUpCount,
     },
     hasValidInvite,
+    hasHostApproval: hasHostApprovedJoinRequest(participation),
   });
 
   const razorpay = deps.createClient();

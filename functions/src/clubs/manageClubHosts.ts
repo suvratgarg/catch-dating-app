@@ -3,7 +3,7 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {ClubDoc, UserProfileDoc} from "../shared/firestore";
+import {ClubDoc, UserProfileDoc} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {AddClubHostCallablePayload} from
   "../shared/generated/addClubHostCallablePayload";

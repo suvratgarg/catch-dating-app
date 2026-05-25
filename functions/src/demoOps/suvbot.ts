@@ -1741,17 +1741,18 @@ function suvbotPublicProfileDoc(): FirebaseFirestore.DocumentData {
     age: 99,
     gender: "other",
     profilePrompts: [],
-    photoUrls: [],
-    photoThumbnailUrls: [],
-    photoPrompts: [],
     profilePhotos: [],
     city: "mumbai",
-    paceMinSecsPerKm: 300,
-    paceMaxSecsPerKm: 420,
-    preferredDistances: [],
-    runningReasons: ["community"],
-    preferredRunTimes: [],
-    runPreferencesVersion: 1,
+    activityPreferences: {
+      running: {
+        paceMinSecsPerKm: 300,
+        paceMaxSecsPerKm: 420,
+        preferredDistances: [],
+        runningReasons: ["community"],
+        preferredRunTimes: [],
+        version: 1,
+      },
+    },
   };
 }
 

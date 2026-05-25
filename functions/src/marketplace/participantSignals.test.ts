@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {SwipeDoc} from "../shared/firestore";
+import {SwipeDoc} from "../shared/generated/firestoreAdminTypes";
 import {
   buildAttendanceSignalFact,
   buildChatSignalFacts,

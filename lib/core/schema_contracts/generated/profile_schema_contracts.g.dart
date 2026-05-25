@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, use_null_aware_elements
 
 class SchemaProfilePromptDefinition {
   const SchemaProfilePromptDefinition({
@@ -47,9 +47,9 @@ const schemaMaximumHeightCm = 220;
 const schemaProfileDecisionLogicalName =
     'profileDecision';
 const schemaProfileDecisionPathTemplate =
-    'swipes/{userId}/outgoing/{targetId}';
+    'profileDecisions/{userId}/outgoing/{targetId}';
 const schemaProfileDecisionCollectionPath =
-    'swipes';
+    'profileDecisions';
 const schemaProfileDecisionOutgoingSubcollectionPath =
     'outgoing';
 const schemaProfileDecisionFuturePathTemplate =
@@ -459,63 +459,6 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         'profileComplete': <String, Object?>{
           'type': 'boolean',
         },
-        'photoUrls': <String, Object?>{
-          'type': 'array',
-          'maxItems': 6,
-          'items': <String, Object?>{
-            'type': 'string',
-            'format': 'uri',
-            'maxLength': 2048,
-          },
-        },
-        'photoThumbnailUrls': <String, Object?>{
-          'type': 'array',
-          'maxItems': 6,
-          'items': <String, Object?>{
-            'type': 'string',
-            'format': 'uri',
-            'maxLength': 2048,
-          },
-        },
-        'photoPrompts': <String, Object?>{
-          'type': 'array',
-          'maxItems': 6,
-          'items': <String, Object?>{
-            'title': 'PhotoPromptAnswer',
-            'description': 'One optional display prompt selected for a profile photo slot. The caption field is legacy-only and should no longer be written by clients.',
-            'type': 'object',
-            'additionalProperties': false,
-            'required': <Object?>[
-              'photoIndex',
-              'promptId',
-              'prompt',
-            ],
-            'properties': <String, Object?>{
-              'photoIndex': <String, Object?>{
-                'type': 'integer',
-                'minimum': 0,
-                'maximum': 5,
-              },
-              'promptId': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 80,
-              },
-              'prompt': <String, Object?>{
-                'type': 'string',
-                'minLength': 1,
-                'maxLength': 140,
-              },
-              'caption': <String, Object?>{
-                'type': 'string',
-                'maxLength': 140,
-                'deprecated': true,
-                'description': 'Legacy user-entered caption retained for compatibility with older documents.',
-              },
-            },
-            'x-catch-catalog': '../catalogs/photo_prompts.json',
-          },
-        },
         'profilePhotos': <String, Object?>{
           'type': 'array',
           'maxItems': 6,
@@ -857,63 +800,88 @@ const schemaUpdateUserProfileCallablePayloadSchema =
             null,
           ],
         },
-        'paceMinSecsPerKm': <String, Object?>{
-          'type': 'integer',
-          'minimum': 1,
-        },
-        'paceMaxSecsPerKm': <String, Object?>{
-          'type': 'integer',
-          'minimum': 1,
-        },
-        'preferredDistances': <String, Object?>{
-          'type': 'array',
-          'maxItems': 12,
-          'uniqueItems': true,
-          'items': <String, Object?>{
-            'type': 'string',
-            'enum': <Object?>[
-              'fiveK',
-              'tenK',
-              'halfMarathon',
-              'marathon',
-            ],
+        'activityPreferences': <String, Object?>{
+          'title': 'ActivityPreferences',
+          'description': 'Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.',
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'running',
+          ],
+          'properties': <String, Object?>{
+            'running': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'paceMinSecsPerKm',
+                'paceMaxSecsPerKm',
+                'preferredDistances',
+                'runningReasons',
+                'preferredRunTimes',
+                'version',
+              ],
+              'properties': <String, Object?>{
+                'paceMinSecsPerKm': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                },
+                'paceMaxSecsPerKm': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                },
+                'preferredDistances': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 12,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'fiveK',
+                      'tenK',
+                      'halfMarathon',
+                      'marathon',
+                    ],
+                  },
+                },
+                'runningReasons': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 12,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'fitness',
+                      'community',
+                      'mindfulness',
+                      'challenge',
+                      'weightLoss',
+                      'raceTraining',
+                      'social',
+                    ],
+                  },
+                },
+                'preferredRunTimes': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'earlyMorning',
+                      'morning',
+                      'afternoon',
+                      'evening',
+                      'night',
+                    ],
+                  },
+                },
+                'version': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                },
+              },
+            },
           },
-        },
-        'runningReasons': <String, Object?>{
-          'type': 'array',
-          'maxItems': 12,
-          'uniqueItems': true,
-          'items': <String, Object?>{
-            'type': 'string',
-            'enum': <Object?>[
-              'fitness',
-              'community',
-              'mindfulness',
-              'challenge',
-              'weightLoss',
-              'raceTraining',
-              'social',
-            ],
-          },
-        },
-        'preferredRunTimes': <String, Object?>{
-          'type': 'array',
-          'maxItems': 8,
-          'uniqueItems': true,
-          'items': <String, Object?>{
-            'type': 'string',
-            'enum': <Object?>[
-              'earlyMorning',
-              'morning',
-              'afternoon',
-              'evening',
-              'night',
-            ],
-          },
-        },
-        'runPreferencesVersion': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
         },
         'prefsNewCatches': <String, Object?>{
           'type': 'boolean',

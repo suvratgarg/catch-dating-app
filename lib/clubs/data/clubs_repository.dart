@@ -152,7 +152,7 @@ class ClubsRepository {
               instagramHandle: instagramHandle,
               phoneNumber: phoneNumber,
               email: email,
-              hostDefaults: hostDefaults?.toJson(),
+              hostDefaults: hostDefaults,
             ).toJson(),
           );
       return CreateClubCallableResponse.fromCallableData(result.data).clubId;

@@ -46,7 +46,7 @@ options when specific functions need higher or lower limits.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `syncClubMemberStats` | `src/clubs/` | `clubMemberships/{membershipId}` onWrite — recomputes `memberCount` |
 | `syncClubNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes club next-event projection |
-| `onSwipeCreated` | `src/matching/` | `swipes/{id}/outgoing/{id}` onCreate — mutual-like → match |
+| `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
 | `onEventSuccessFeedbackWritten` | `src/marketplace/` | Event-success feedback write — recomputes scorecard inputs |
@@ -78,8 +78,7 @@ options when specific functions need higher or lower limits.
 | Module | Purpose |
 |--------|---------|
 | `src/shared/callableOptions.ts` | App Check enforcement policy |
-| `src/shared/firestore.ts` | Transitional Admin SDK document type facade for code that reads/writes Firestore `Timestamp` values |
-| `src/shared/generated/` | Contract-generated JSON Schema types and Ajv validators |
+| `src/shared/generated/` | Contract-generated JSON Schema types, Admin SDK Firestore types, and Ajv validators |
 | `src/shared/rateLimit.ts` | Per-user Firestore-transaction rate limiter + IP limiter |
 | `src/shared/auth.ts` | `requireAuth()` helper (extracts uid from callable request) |
 | `src/shared/validation.ts` | `validateCallableWithAjv()` — generated Ajv request body validation |
@@ -101,8 +100,7 @@ per-IP counter (3 POSTs per hour). This does not survive cold starts.
 
 **Photos:** `moderatePhotoOnUpload` events Google Cloud Vision SafeSearch on
 every Storage upload. Images with `VERY_LIKELY` adult/violent content are
-deleted and removed from the user's grouped `profilePhotos` plus legacy
-`photoUrls`/`photoThumbnailUrls`/`photoPrompts` compatibility arrays. `LIKELY`
+deleted and removed from the user's grouped `profilePhotos`. `LIKELY`
 content is flagged for human review. Requires Cloud Vision API enabled on the
 GCP project.
 
@@ -167,16 +165,15 @@ const data = validateCallableWithAjv<CreateEventCallablePayload>(
 );
 ```
 
-Contract sources live under `contracts/`. Regenerate TypeScript validators and
-types with `node tool/contracts/generate_schema_contracts.mjs`; `./tool/check_data_contract.sh`
+Contract sources live under `contracts/`. Regenerate TypeScript validators,
+serialized document types, and Admin SDK Timestamp document types with
+`node tool/contracts/generate_schema_contracts.mjs`; `./tool/check_data_contract.sh`
 fails if generated output is stale. Normalization stays explicit at the callable
 boundary so JSON Schema validation remains side-effect free.
 
-`src/shared/firestore.ts` still exists as a transitional Admin SDK type facade
-because Firestore-triggered Functions operate on `FirebaseFirestore.Timestamp`
-instances, while the contract-generated document types intentionally describe
-serialized JSON-schema fixture shapes. Do not add new validation logic or
-canonical field definitions there; add or edit the relevant schema in
+Use `src/shared/generated/firestoreAdminTypes.ts` for Admin SDK reads/writes
+that return live `FirebaseFirestore.Timestamp` instances. Do not add validation
+logic or canonical field definitions there; add or edit the relevant schema in
 `contracts/` first.
 
 ## Secrets

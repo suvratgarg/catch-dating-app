@@ -1,15 +1,18 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDoc, UserProfileDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {
-  EventIdCallablePayload,
-} from "../shared/generated/eventIdCallablePayload";
-import {validateEventIdCallablePayload} from
+  EventBookingCallablePayload,
+} from "../shared/generated/eventBookingCallablePayload";
+import {validateEventBookingCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
@@ -17,10 +20,12 @@ import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasHostApprovedJoinRequest,
   hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
 } from "./eventPolicy";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -55,19 +60,23 @@ export async function signUpForFreeEventHandler(
   deps: SignUpForFreeEventDeps = defaultDeps
 ): Promise<{success: boolean}> {
   const uid = requireAuth(request);
-  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
+  const payload = validateCallableWithAjv<EventBookingCallablePayload>(
     request,
-    validateEventIdCallablePayload,
+    validateEventBookingCallablePayload,
     normalizeEventIdPayload
   );
+  const {eventId, inviteCode} = payload;
   const db = deps.firestore();
 
   await deps.checkRateLimit(db, uid, "signUpForFreeEvent");
 
   // Verify the event exists and is actually free.
-  const [eventSnap, userSnap] = await Promise.all([
+  const [eventSnap, userSnap, participationSnap] = await Promise.all([
     db.collection("events").doc(eventId).get(),
     db.collection("users").doc(uid).get(),
+    db.collection("eventParticipations")
+      .doc(eventParticipationId(eventId, uid))
+      .get(),
   ]);
 
   if (!eventSnap.exists) {
@@ -80,6 +89,9 @@ export async function signUpForFreeEventHandler(
   const event = eventSnap.data() as EventDoc;
   const user = userSnap.data() as UserProfileDoc;
   const policy = eventPolicyFromEvent(event);
+  const cohortId = cohortIdForUser(user);
+  const roster = rosterFromEvent(event);
+  const hasHostApproval = hasHostApprovedJoinRequest(participationSnap.data());
   const hasValidInvite = await hasValidInviteForEvent({
     db,
     eventId,
@@ -88,8 +100,8 @@ export async function signUpForFreeEventHandler(
   });
   const priceInPaise = quotePriceInPaise({
     policy,
-    cohortId: cohortIdForUser(user),
-    roster: rosterFromEvent(event),
+    cohortId,
+    roster,
   });
 
   if (priceInPaise !== 0) {
@@ -100,12 +112,16 @@ export async function signUpForFreeEventHandler(
   }
   assertPolicyAllowsSignup({
     policy,
-    cohortId: cohortIdForUser(user),
-    roster: rosterFromEvent(event),
+    cohortId,
+    roster,
     hasValidInvite,
+    hasHostApproval,
   });
 
-  await deps.signUpForEvent(db, eventId, uid, undefined, {hasValidInvite});
+  await deps.signUpForEvent(db, eventId, uid, undefined, {
+    hasValidInvite,
+    ...(hasHostApproval ? {hasHostApproval} : {}),
+  });
 
   return {success: true};
 }

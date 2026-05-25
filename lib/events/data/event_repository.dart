@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -270,12 +272,12 @@ class EventRepository {
   Future<void> createEvent({
     required Event event,
     String? inviteCode,
-    Map<String, Object?>? eventSuccessDefaults,
+    EventSuccessDefaults? eventSuccessDefaults,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createEvent')
         .call(
-          CreateEventCallableRequest.fromEvent(
+          createEventCallableRequestFromEvent(
             event,
             inviteCode: inviteCode,
             eventSuccessDefaults: eventSuccessDefaults,
@@ -296,7 +298,7 @@ class EventRepository {
     () => _functions
         .httpsCallable('updateEvent')
         .call(
-          UpdateEventCallableRequest.fromEvent(
+          updateEventCallableRequestFromEvent(
             event,
             includePolicy: includePolicy,
             inviteCode: inviteCode,

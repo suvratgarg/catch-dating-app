@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/activity_preferences.schema.json",
+  "title": "ActivityPreferences",
+  "description": "Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["running"],
+  "properties": {
+    "running": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paceMinSecsPerKm",
+        "paceMaxSecsPerKm",
+        "preferredDistances",
+        "runningReasons",
+        "preferredRunTimes",
+        "version"
+      ],
+      "properties": {
+        "paceMinSecsPerKm": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+        },
+        "paceMaxSecsPerKm": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+        },
+        "preferredDistances": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/profile_common.schema.json#/definitions/preferredDistance"
+          }
+        },
+        "runningReasons": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/profile_common.schema.json#/definitions/runReason"
+          }
+        },
+        "preferredRunTimes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/profile_common.schema.json#/definitions/preferredRunTime"
+          }
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

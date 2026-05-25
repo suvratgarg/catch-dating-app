@@ -9,17 +9,28 @@
       "answer": "Easy kilometres, low-pressure conversation, and coffee after."
     }
   ],
-  "photoUrls": [
-    "https://example.test/profile.jpg"
-  ],
-  "photoThumbnailUrls": [
-    "https://example.test/profile-thumb.jpg"
-  ],
-  "photoPrompts": [
+  "profilePhotos": [
     {
-      "photoIndex": 0,
-      "promptId": "proofIRun",
-      "prompt": "Proof I actually event"
+      "id": "profile_0",
+      "url": "https://example.test/profile.jpg",
+      "thumbnailUrl": "https://example.test/profile-thumb.jpg",
+      "storagePath": "users/user-1/photos/profile_0.jpg",
+      "thumbnailStoragePath": "users/user-1/photoThumbnails/profile_0.jpg",
+      "prompt": {
+        "photoIndex": 0,
+        "promptId": "proofIRun",
+        "prompt": "Proof I actually event"
+      },
+      "moderation": null,
+      "position": 0,
+      "createdAt": {
+        "_seconds": 1715731200,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1715731200,
+        "_nanoseconds": 0
+      }
     }
   ],
   "city": "indore",
@@ -35,10 +46,14 @@
   "workout": "often",
   "diet": "vegetarian",
   "children": "dontHave",
-  "paceMinSecsPerKm": 300,
-  "paceMaxSecsPerKm": 420,
-  "preferredDistances": ["fiveK", "tenK"],
-  "runningReasons": ["fitness", "social"],
-  "preferredRunTimes": ["morning", "evening"],
-  "runPreferencesVersion": 1
+  "activityPreferences": {
+    "running": {
+      "paceMinSecsPerKm": 300,
+      "paceMaxSecsPerKm": 420,
+      "preferredDistances": ["fiveK", "tenK"],
+      "runningReasons": ["fitness", "social"],
+      "preferredRunTimes": ["morning", "evening"],
+      "version": 1
+    }
+  }
 }

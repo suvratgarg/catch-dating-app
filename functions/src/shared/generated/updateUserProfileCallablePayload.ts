@@ -4,6 +4,7 @@
 
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
+import {ActivityPreferences} from "./activityPreferences";
 
 /**
  * Callable request body for updateUserProfile. Values are normalized before Firestore writes.
@@ -25,18 +26,6 @@ export interface UpdateUserProfileCallablePayload {
     dateOfBirth?: number;
     gender?: "man" | "woman" | "nonBinary" | "other";
     profileComplete?: boolean;
-    /**
-     * @maxItems 6
-     */
-    photoUrls?: string[];
-    /**
-     * @maxItems 6
-     */
-    photoThumbnailUrls?: string[];
-    /**
-     * @maxItems 6
-     */
-    photoPrompts?: PhotoPromptAnswer[];
     /**
      * @maxItems 6
      */
@@ -123,35 +112,7 @@ export interface UpdateUserProfileCallablePayload {
       | "wantSomeday"
       | "dontWant"
       | null;
-    paceMinSecsPerKm?: number;
-    paceMaxSecsPerKm?: number;
-    /**
-     * @maxItems 12
-     */
-    preferredDistances?: ("fiveK" | "tenK" | "halfMarathon" | "marathon")[];
-    /**
-     * @maxItems 12
-     */
-    runningReasons?: (
-      | "fitness"
-      | "community"
-      | "mindfulness"
-      | "challenge"
-      | "weightLoss"
-      | "raceTraining"
-      | "social"
-    )[];
-    /**
-     * @maxItems 8
-     */
-    preferredRunTimes?: (
-      | "earlyMorning"
-      | "morning"
-      | "afternoon"
-      | "evening"
-      | "night"
-    )[];
-    runPreferencesVersion?: number;
+    activityPreferences?: ActivityPreferences;
     prefsNewCatches?: boolean;
     prefsMessages?: boolean;
     prefsEventReminders?: boolean;

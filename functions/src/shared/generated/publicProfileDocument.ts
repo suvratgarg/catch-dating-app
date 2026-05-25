@@ -3,8 +3,8 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
-import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
+import {ActivityPreferences} from "./activityPreferences";
 
 /**
  * Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.
@@ -44,19 +44,7 @@ export interface PublicProfileDocument {
   /**
    * @maxItems 6
    */
-  photoUrls: string[];
-  /**
-   * @maxItems 6
-   */
-  photoThumbnailUrls: string[];
-  /**
-   * @maxItems 6
-   */
-  photoPrompts: PhotoPromptAnswer[];
-  /**
-   * @maxItems 6
-   */
-  profilePhotos?: ProfilePhoto[];
+  profilePhotos: ProfilePhoto[];
   city?: string | null;
   height?: number | null;
   occupation?: string | null;
@@ -115,33 +103,5 @@ export interface PublicProfileDocument {
     | "wantSomeday"
     | "dontWant"
     | null;
-  paceMinSecsPerKm: number;
-  paceMaxSecsPerKm: number;
-  /**
-   * @maxItems 12
-   */
-  preferredDistances: ("fiveK" | "tenK" | "halfMarathon" | "marathon")[];
-  /**
-   * @maxItems 12
-   */
-  runningReasons: (
-    | "fitness"
-    | "community"
-    | "mindfulness"
-    | "challenge"
-    | "weightLoss"
-    | "raceTraining"
-    | "social"
-  )[];
-  /**
-   * @maxItems 8
-   */
-  preferredRunTimes: (
-    | "earlyMorning"
-    | "morning"
-    | "afternoon"
-    | "evening"
-    | "night"
-  )[];
-  runPreferencesVersion: number;
+  activityPreferences: ActivityPreferences;
 }

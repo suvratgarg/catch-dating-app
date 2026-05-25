@@ -35,7 +35,7 @@ test("future attended participations are downgraded and aggregates repaired",
           genderAtSignup: "woman",
         },
       },
-      swipes: {
+      profileDecisions: {
         invalid: {
           eventId: "future",
           swiperId: "runner",
@@ -82,7 +82,7 @@ test("future attended participations are downgraded and aggregates repaired",
     ]);
     assert.deepEqual(plan.swipeDeletes, [
       {
-        path: "swipes/invalid/outgoing/target",
+        path: "profileDecisions/invalid/outgoing/target",
         eventId: "future",
         swiperId: "runner",
         targetId: "target",
@@ -104,11 +104,15 @@ function fakeFirestore(initialData) {
     collectionGroup: (collectionName) => ({
       get: async () => ({
         size: collectionName === "outgoing" ?
-          Object.keys(initialData.swipes ?? {}).length :
+          Object.keys(initialData.profileDecisions ?? {}).length :
           0,
         docs: collectionName === "outgoing" ?
-          Object.entries(initialData.swipes ?? {}).map(
-            ([id, data]) => fakeDocAt(`swipes/${id}/outgoing/target`, id, data)
+          Object.entries(initialData.profileDecisions ?? {}).map(
+            ([id, data]) => fakeDocAt(
+              `profileDecisions/${id}/outgoing/target`,
+              id,
+              data
+            )
           ) :
           [],
       }),

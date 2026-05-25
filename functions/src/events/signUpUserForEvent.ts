@@ -1,6 +1,9 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import {UserProfileDoc, EventDoc} from "../shared/firestore";
+import {
+  EventDoc,
+  UserProfileDoc,
+} from "../shared/generated/firestoreAdminTypes";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
 import {assertBookingReadyUserProfile} from "../shared/profileReadiness";

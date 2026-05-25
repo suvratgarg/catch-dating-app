@@ -10,7 +10,7 @@ const contractPath = path.join(toolDir, "firestore_contract.json");
 const rulesPath = path.join(repoRoot, "firestore.rules");
 const generatedTypesPath = path.join(
   repoRoot,
-  "functions/src/shared/firestore.ts"
+  "functions/src/shared/generated/firestoreAdminTypes.ts"
 );
 const functionsIndexPath = path.join(repoRoot, "functions/src/index.ts");
 const contractRoot = path.join(repoRoot, "contracts");

@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/generated/firestoreAdminTypes";
 import {
   EVENT_MAX_DURATION_MINUTES,
   EVENT_SCHEDULE_LOCK_SLOT_MINUTES,

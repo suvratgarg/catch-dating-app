@@ -11,9 +11,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -76,6 +79,45 @@ void main() {
       expect(location.longitude, 75.8577);
     });
 
+    test(
+      'EventMeetingLocation decodes event_common fixture shape directly',
+      () {
+        final location = EventMeetingLocation.fromJson(
+          _fixtureMapField('event_doc.json', 'meetingLocation'),
+        );
+        expect(location.name, 'Race Course Road gate');
+        expect(location.placeId, 'race-course-road-gate');
+        expect(location.notes, 'Meet near the main gate.');
+      },
+    );
+
+    test('EventFormatSnapshot decodes event_common fixture shape directly', () {
+      final format = EventFormatSnapshot.fromJson(
+        _fixtureMapField('event_doc.json', 'eventFormat'),
+      );
+      expect(format.activityKind, ActivityKind.socialRun);
+      expect(format.interactionModel, EventInteractionModel.pacePods);
+      expect(format.defaultPlaybookId, 'social_run_light');
+    });
+
+    test('EventConstraints decodes event_common fixture shape directly', () {
+      final constraints = EventConstraints.fromJson(
+        _fixtureMapField('event_doc.json', 'constraints'),
+      );
+      expect(constraints.minAge, 21);
+      expect(constraints.maxAge, 45);
+      expect(constraints.maxMen, 8);
+      expect(constraints.maxWomen, isNull);
+    });
+
+    test('EventPolicyBundle decodes event_common fixture shape directly', () {
+      final policy = EventPolicyBundle.fromJson(_eventPolicyBundleFixture());
+      expect(policy.capacityLimit, 12);
+      expect(policy.basePriceInPaise, 49900);
+      expect(policy.usesInviteOnly, isFalse);
+      expect(policy.usesDemandPricing, isFalse);
+    });
+
     test('Club decodes club_doc.json', () {
       final json = _loadFixture('club_doc.json', injectIdField: 'id');
       final club = Club.fromJson(json);
@@ -83,6 +125,15 @@ void main() {
       expect(club.name, isNotEmpty);
       // hostUserId is required by both schema and Dart class.
       expect(club.hostUserId, isNotEmpty);
+    });
+
+    test('ClubHostProfile decodes event_common fixture shape directly', () {
+      final host = ClubHostProfile.fromJson(
+        _fixtureListItemMap('club_doc.json', 'hostProfiles', 0),
+      );
+      expect(host.uid, 'host-1');
+      expect(host.displayName, 'Subrath');
+      expect(host.role, ClubHostRole.owner);
     });
 
     test('ClubMembership decodes club_membership_doc.json', () {
@@ -158,6 +209,52 @@ void main() {
     });
   });
 }
+
+Map<String, dynamic> _fixtureMapField(String fileName, String fieldName) {
+  final json = _loadFixture(fileName, injectIdField: null);
+  final value = json[fieldName];
+  expect(value, isA<Map>());
+  return Map<String, dynamic>.from(value as Map);
+}
+
+Map<String, dynamic> _fixtureListItemMap(
+  String fileName,
+  String fieldName,
+  int index,
+) {
+  final json = _loadFixture(fileName, injectIdField: null);
+  final value = json[fieldName];
+  expect(value, isA<List<Object?>>());
+  final item = (value as List<Object?>)[index];
+  expect(item, isA<Map>());
+  return Map<String, dynamic>.from(item as Map);
+}
+
+Map<String, dynamic> _eventPolicyBundleFixture() => {
+  'version': 1,
+  'admission': {
+    'format': 'open',
+    'capacityLimit': 12,
+    'waitlistPolicy': {'mode': 'rankedOffer', 'offerWindowMinutes': 20},
+    'inviteRequired': false,
+    'membershipRequired': false,
+    'manualApprovalRequired': false,
+    'privateAccessPolicy': {
+      'mode': 'none',
+      'inviteCodeHint': null,
+      'privateLinkEnabled': false,
+    },
+    'cohortCapacityLimits': <String, Object?>{},
+    'balancedRatioPolicy': null,
+  },
+  'pricing': {
+    'basePriceInPaise': 49900,
+    'cohortAdjustmentsInPaise': <String, Object?>{},
+    'demandPricingRules': <Object?>[],
+  },
+  'cancellation': {'policyId': 'standard'},
+  'settlement': {'hostPayoutTiming': 'afterEventCompletion'},
+};
 
 /// Loads a fixture from `contracts/fixtures/valid/`, walks the JSON tree
 /// converting any `{_seconds, _nanoseconds}` shape into Firestore Timestamps,

@@ -1,15 +1,175 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
-// ignore_for_file: constant_identifier_names
+// ignore_for_file: constant_identifier_names, use_null_aware_elements
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 // Typed callable request DTOs emitted from contracts/callables/ and
 // contracts/patches/. The toJson() output of each class is validated against
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
+// Patch helper classes are emitted for configured callable schemas whose
+// wrapper contains an inner fields object.
 //
 // Hand-written DTOs in lib/**/data/*_callable_dtos.dart may still exist for
 // schemas that this generator cannot yet emit (nested objects, anyOf with
 // multiple non-null branches, Timestamp serialization quirks); see backlog
 // item CONTRACT-DART-GEN-001.
+
+/// Typed patch helper generated from Callable request body for updateUserProfile. Values are normalized before Firestore writes.
+final class UpdateUserProfilePatch {
+  UpdateUserProfilePatch({
+    String? name,
+    String? displayName,
+    String? email,
+    Object? instagramHandle = _updateUserProfilePatchUnset,
+    List<ProfilePromptAnswer>? profilePrompts,
+    String? phoneNumber,
+    DateTime? dateOfBirth,
+    Gender? gender,
+    bool? profileComplete,
+    List<ProfilePhoto>? profilePhotos,
+    Object? city = _updateUserProfilePatchUnset,
+    Object? latitude = _updateUserProfilePatchUnset,
+    Object? longitude = _updateUserProfilePatchUnset,
+    List<Gender>? interestedInGenders,
+    int? minAgePreference,
+    int? maxAgePreference,
+    Object? height = _updateUserProfilePatchUnset,
+    Object? occupation = _updateUserProfilePatchUnset,
+    Object? company = _updateUserProfilePatchUnset,
+    Object? education = _updateUserProfilePatchUnset,
+    Object? religion = _updateUserProfilePatchUnset,
+    List<Language>? languages,
+    Object? relationshipGoal = _updateUserProfilePatchUnset,
+    Object? drinking = _updateUserProfilePatchUnset,
+    Object? smoking = _updateUserProfilePatchUnset,
+    Object? workout = _updateUserProfilePatchUnset,
+    Object? diet = _updateUserProfilePatchUnset,
+    Object? children = _updateUserProfilePatchUnset,
+    ActivityPreferences? activityPreferences,
+    bool? prefsNewCatches,
+    bool? prefsMessages,
+    bool? prefsEventReminders,
+    bool? prefsRunStatusUpdates,
+    bool? prefsClubUpdates,
+    bool? prefsWeeklyDigest,
+    bool? prefsShowOnMap,
+  }) : _fields = {
+         if (name != null)
+           'name': name,
+         if (displayName != null)
+           'displayName': displayName,
+         if (email != null)
+           'email': email,
+         if (!identical(instagramHandle, _updateUserProfilePatchUnset))
+           'instagramHandle': instagramHandle,
+         if (profilePrompts != null)
+           'profilePrompts': profilePrompts.map((e) => _updateUserProfilePatchJsonValue(e.toJson())).toList(),
+         if (phoneNumber != null)
+           'phoneNumber': phoneNumber,
+         if (dateOfBirth != null)
+           'dateOfBirth': dateOfBirth.millisecondsSinceEpoch,
+         if (gender != null)
+           'gender': gender.name,
+         if (profileComplete != null)
+           'profileComplete': profileComplete,
+         if (profilePhotos != null)
+           'profilePhotos': profilePhotos.map((e) => _updateUserProfilePatchJsonValue(e.toJson())).toList(),
+         if (!identical(city, _updateUserProfilePatchUnset))
+           'city': city,
+         if (!identical(latitude, _updateUserProfilePatchUnset))
+           'latitude': latitude,
+         if (!identical(longitude, _updateUserProfilePatchUnset))
+           'longitude': longitude,
+         if (interestedInGenders != null)
+           'interestedInGenders': interestedInGenders.map((e) => e.name).toList(),
+         if (minAgePreference != null)
+           'minAgePreference': minAgePreference,
+         if (maxAgePreference != null)
+           'maxAgePreference': maxAgePreference,
+         if (!identical(height, _updateUserProfilePatchUnset))
+           'height': height,
+         if (!identical(occupation, _updateUserProfilePatchUnset))
+           'occupation': occupation,
+         if (!identical(company, _updateUserProfilePatchUnset))
+           'company': company,
+         if (!identical(education, _updateUserProfilePatchUnset))
+           'education': (education as EducationLevel?)?.name,
+         if (!identical(religion, _updateUserProfilePatchUnset))
+           'religion': (religion as Religion?)?.name,
+         if (languages != null)
+           'languages': languages.map((e) => e.name).toList(),
+         if (!identical(relationshipGoal, _updateUserProfilePatchUnset))
+           'relationshipGoal': (relationshipGoal as RelationshipGoal?)?.name,
+         if (!identical(drinking, _updateUserProfilePatchUnset))
+           'drinking': (drinking as DrinkingHabit?)?.name,
+         if (!identical(smoking, _updateUserProfilePatchUnset))
+           'smoking': (smoking as SmokingHabit?)?.name,
+         if (!identical(workout, _updateUserProfilePatchUnset))
+           'workout': (workout as WorkoutFrequency?)?.name,
+         if (!identical(diet, _updateUserProfilePatchUnset))
+           'diet': (diet as DietaryPreference?)?.name,
+         if (!identical(children, _updateUserProfilePatchUnset))
+           'children': (children as ChildrenStatus?)?.name,
+         if (activityPreferences != null)
+           'activityPreferences': activityPreferences.toJson(),
+         if (prefsNewCatches != null)
+           'prefsNewCatches': prefsNewCatches,
+         if (prefsMessages != null)
+           'prefsMessages': prefsMessages,
+         if (prefsEventReminders != null)
+           'prefsEventReminders': prefsEventReminders,
+         if (prefsRunStatusUpdates != null)
+           'prefsRunStatusUpdates': prefsRunStatusUpdates,
+         if (prefsClubUpdates != null)
+           'prefsClubUpdates': prefsClubUpdates,
+         if (prefsWeeklyDigest != null)
+           'prefsWeeklyDigest': prefsWeeklyDigest,
+         if (prefsShowOnMap != null)
+           'prefsShowOnMap': prefsShowOnMap,
+       };
+
+  /// Escape hatch for callers that compute the field key dynamically.
+  /// Prefer the typed constructor for app presentation and repository code.
+  UpdateUserProfilePatch.raw(Map<String, Object?> fields)
+    : _fields = Map<String, Object?>.from(fields);
+
+  final Map<String, Object?> _fields;
+
+  Iterable<String> get keys => _fields.keys;
+
+  bool get isEmpty => _fields.isEmpty;
+  bool get isNotEmpty => _fields.isNotEmpty;
+
+  Map<String, Object?> toFieldsJson() =>
+      Map<String, Object?>.unmodifiable(_fields);
+}
+
+
+
+Object? _updateUserProfilePatchJsonValue(Object? value) {
+  if (value is Timestamp) return value.millisecondsSinceEpoch;
+  if (value is DateTime) return value.millisecondsSinceEpoch;
+  if (value is Iterable) {
+    return value.map(_updateUserProfilePatchJsonValue).toList();
+  }
+  if (value is Map) {
+    return value.map(
+      (key, child) => MapEntry(key, _updateUserProfilePatchJsonValue(child)),
+    );
+  }
+  return value;
+}
+const Object _updateUserProfilePatchUnset = Object();
 
 /// Callable payload accepted by createClub.
 final class CreateClubCallableRequest {
@@ -37,7 +197,7 @@ final class CreateClubCallableRequest {
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
-  final Map<String, Object?>? hostDefaults;
+  final ClubHostDefaults? hostDefaults;
 
   Map<String, Object?> toJson() => {
     'clubId': ?clubId,
@@ -50,9 +210,73 @@ final class CreateClubCallableRequest {
     'instagramHandle': ?instagramHandle,
     'phoneNumber': ?phoneNumber,
     'email': ?email,
-    'hostDefaults': ?hostDefaults,
+    'hostDefaults': ?hostDefaults?.toJson(),
   };
 }
+
+/// Typed patch helper generated from Callable payload accepted by updateClub.
+final class UpdateClubPatch {
+  UpdateClubPatch({
+    String? name,
+    String? description,
+    Object? location = _updateClubPatchUnset,
+    String? area,
+    String? hostName,
+    Object? hostAvatarUrl = _updateClubPatchUnset,
+    Object? imageUrl = _updateClubPatchUnset,
+    Object? profileImageUrl = _updateClubPatchUnset,
+    List<String>? tags,
+    Object? instagramHandle = _updateClubPatchUnset,
+    Object? phoneNumber = _updateClubPatchUnset,
+    Object? email = _updateClubPatchUnset,
+    ClubHostDefaults? hostDefaults,
+  }) : _fields = {
+         if (name != null)
+           'name': name,
+         if (description != null)
+           'description': description,
+         if (!identical(location, _updateClubPatchUnset))
+           'location': location,
+         if (area != null)
+           'area': area,
+         if (hostName != null)
+           'hostName': hostName,
+         if (!identical(hostAvatarUrl, _updateClubPatchUnset))
+           'hostAvatarUrl': hostAvatarUrl,
+         if (!identical(imageUrl, _updateClubPatchUnset))
+           'imageUrl': imageUrl,
+         if (!identical(profileImageUrl, _updateClubPatchUnset))
+           'profileImageUrl': profileImageUrl,
+         if (tags != null)
+           'tags': tags.map((e) => e).toList(),
+         if (!identical(instagramHandle, _updateClubPatchUnset))
+           'instagramHandle': instagramHandle,
+         if (!identical(phoneNumber, _updateClubPatchUnset))
+           'phoneNumber': phoneNumber,
+         if (!identical(email, _updateClubPatchUnset))
+           'email': email,
+         if (hostDefaults != null)
+           'hostDefaults': hostDefaults.toJson(),
+       };
+
+  /// Escape hatch for callers that compute the field key dynamically.
+  /// Prefer the typed constructor for app presentation and repository code.
+  UpdateClubPatch.raw(Map<String, Object?> fields)
+    : _fields = Map<String, Object?>.from(fields);
+
+  final Map<String, Object?> _fields;
+
+  Iterable<String> get keys => _fields.keys;
+
+  bool get isEmpty => _fields.isEmpty;
+  bool get isNotEmpty => _fields.isNotEmpty;
+
+  Map<String, Object?> toFieldsJson() =>
+      Map<String, Object?>.unmodifiable(_fields);
+}
+
+
+const Object _updateClubPatchUnset = Object();
 
 /// Callable payload accepted by updateClub.
 final class UpdateClubCallableRequest {
@@ -195,6 +419,17 @@ final class SetClubNotificationPreferenceCallableRequest {
   };
 }
 
+/// Nested private-access payload accepted by createEvent.
+final class CreateEventPrivateAccess {
+  const CreateEventPrivateAccess({this.inviteCode});
+
+  final String? inviteCode;
+
+  Map<String, Object?> toJson() => {
+    'inviteCode': ?inviteCode,
+  };
+}
+
 /// Callable payload accepted by createEvent.
 final class CreateEventCallableRequest {
   const CreateEventCallableRequest({
@@ -226,7 +461,7 @@ final class CreateEventCallableRequest {
   final int startTimeMillis;
   final int endTimeMillis;
   final String meetingPoint;
-  final Map<String, Object?>? meetingLocation;
+  final EventMeetingLocation? meetingLocation;
   final double startingPointLat;
   final double startingPointLng;
   final String? locationDetails;
@@ -237,11 +472,11 @@ final class CreateEventCallableRequest {
   final String description;
   final int priceInPaise;
   final String? currency;
-  final Map<String, Object?>? eventPolicy;
-  final Map<String, Object?>? privateAccess;
-  final Map<String, Object?>? eventFormat;
-  final Map<String, Object?>? eventSuccessDefaults;
-  final Map<String, Object?>? constraints;
+  final EventPolicyBundle? eventPolicy;
+  final CreateEventPrivateAccess? privateAccess;
+  final EventFormatSnapshot? eventFormat;
+  final EventSuccessDefaults? eventSuccessDefaults;
+  final EventConstraints? constraints;
 
   Map<String, Object?> toJson() => {
     'eventId': ?eventId,
@@ -249,7 +484,7 @@ final class CreateEventCallableRequest {
     'startTimeMillis': startTimeMillis,
     'endTimeMillis': endTimeMillis,
     'meetingPoint': meetingPoint,
-    'meetingLocation': ?meetingLocation,
+    'meetingLocation': ?meetingLocation?.toJson(),
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': ?locationDetails,
@@ -260,11 +495,11 @@ final class CreateEventCallableRequest {
     'description': description,
     'priceInPaise': priceInPaise,
     'currency': ?currency,
-    'eventPolicy': ?eventPolicy,
-    'privateAccess': ?privateAccess,
-    'eventFormat': ?eventFormat,
-    'eventSuccessDefaults': ?eventSuccessDefaults,
-    'constraints': ?constraints,
+    'eventPolicy': ?eventPolicy?.toJson(),
+    'privateAccess': ?privateAccess?.toJson(),
+    'eventFormat': ?eventFormat?.toJson(),
+    'eventSuccessDefaults': ?eventSuccessDefaults?.toJson(),
+    'constraints': ?constraints?.toJson(),
   };
 }
 
@@ -367,6 +602,22 @@ final class EventJoinRequestDecisionCallableRequest {
 /// Callable payload accepted by overrideEventSuccessRotations.
 final class OverrideEventSuccessRotationsCallableRequest {
   const OverrideEventSuccessRotationsCallableRequest({
+    required this.eventId,
+    required this.rounds,
+  });
+
+  final String eventId;
+  final List<Map<String, Object?>> rounds;
+
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'rounds': rounds,
+  };
+}
+
+/// Callable payload accepted by overrideEventSuccessGroups.
+final class OverrideEventSuccessGroupsCallableRequest {
+  const OverrideEventSuccessGroupsCallableRequest({
     required this.eventId,
     required this.rounds,
   });
