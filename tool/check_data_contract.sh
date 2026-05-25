@@ -118,6 +118,9 @@ flutter analyze \
   lib/public_profile/data/public_profile_repository.dart \
   test/core/schema_contracts_generated_test.dart \
   test/core/callable_dto_contracts_test.dart \
+  test/core/domain_fixture_parity_test.dart \
+  test/core/update_user_profile_patch_test.dart \
+  test/core/update_club_patch_test.dart \
   test/clubs/clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \
@@ -133,6 +136,9 @@ echo "==> Running focused Flutter tests"
 flutter test \
   test/core/schema_contracts_generated_test.dart \
   test/core/callable_dto_contracts_test.dart \
+  test/core/domain_fixture_parity_test.dart \
+  test/core/update_user_profile_patch_test.dart \
+  test/core/update_club_patch_test.dart \
   test/clubs/clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/events/event_repository_test.dart \

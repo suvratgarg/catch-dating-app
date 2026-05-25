@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -615,7 +616,7 @@ void main() {
 
     final context = tester.element(find.byType(ProfileInlineTextValue));
     final t = CatchTokens.of(context);
-    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
     final painter = TextPainter(
       text: TextSpan(text: controller.text, style: style),
       textDirection: TextDirection.ltr,
@@ -666,7 +667,7 @@ void main() {
 
     final context = tester.element(find.byType(ProfileInlineTextValue));
     final t = CatchTokens.of(context);
-    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final style = CatchTextStyles.profileAnswer(context, color: t.ink);
     final painter = TextPainter(
       text: TextSpan(text: controller.text, style: style),
       textDirection: TextDirection.ltr,
@@ -862,7 +863,7 @@ void main() {
 
     await tester.tap(promptTile);
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 80));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 80));
 
     expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
     expect(
@@ -1580,11 +1581,11 @@ class FakeProfileEditUserProfileRepository extends Fake
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update_profile',
   }) async {
     updatedUid = uid;
-    updatedFields = Map<String, dynamic>.from(fields);
+    updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
     final error = updateError;
     if (error != null) throw error;
     final completer = updateCompleter;

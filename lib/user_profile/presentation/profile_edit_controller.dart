@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,9 +40,18 @@ class ProfileEditController extends _$ProfileEditController {
               );
         })
         .then((_) {
+          // Inline-edit bottom sheets compute their patch fields dynamically
+          // (different sheets touch different schema fields); wrap them in
+          // `UpdateUserProfilePatch.raw` so the repository boundary still
+          // takes a typed patch. The schema-conformance test in
+          // `update_user_profile_patch_test.dart` plus the Functions Ajv
+          // validator catch any rogue field names.
           return ref
               .read(userProfileRepositoryProvider)
-              .updateUserProfile(uid: uid, fields: fields);
+              .updateUserProfile(
+                uid: uid,
+                patch: UpdateUserProfilePatch.raw(fields),
+              );
         });
     _pendingSave = nextSave.catchError((Object error, StackTrace stack) {
       ref

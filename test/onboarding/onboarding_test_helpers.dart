@@ -9,6 +9,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -149,10 +150,10 @@ class FakeOnboardingUserProfileRepository extends Fake
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update profile',
   }) async {
-    final updated = Map<String, dynamic>.from(fields);
+    final updated = Map<String, dynamic>.from(patch.toFieldsJson());
     if (updated.containsKey('profileComplete')) {
       currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
         profileComplete: updated['profileComplete'] as bool,

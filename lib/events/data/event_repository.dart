@@ -367,7 +367,12 @@ class EventRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('joinEventWaitlist')
-        .call(EventIdCallableRequest(eventId: eventId, inviteCode: inviteCode).toJson()),
+        .call(
+          EventIdCallableRequest(
+            eventId: eventId,
+            inviteCode: inviteCode,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'join waitlist',
@@ -375,16 +380,39 @@ class EventRepository {
     ),
   );
 
-  Future<void> leaveWaitlist({
+  Future<void> leaveWaitlist({required String eventId}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('leaveEventWaitlist')
+            .call(EventIdCallableRequest(eventId: eventId).toJson()),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'leave waitlist',
+          resource: _collectionPath,
+        ),
+      );
+
+  /// Approves or declines a request-to-join participation via the
+  /// [decideEventJoinRequest] Cloud Function.
+  ///
+  /// The backend verifies host ownership and applies the final policy checks.
+  Future<void> decideJoinRequest({
     required String eventId,
     required String userId,
+    required String decision,
   }) => withBackendErrorContext(
     () => _functions
-        .httpsCallable('leaveEventWaitlist')
-        .call(EventIdCallableRequest(eventId: eventId).toJson()),
+        .httpsCallable('decideEventJoinRequest')
+        .call(
+          EventJoinRequestDecisionCallableRequest(
+            eventId: eventId,
+            userId: userId,
+            decision: decision,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
-      action: 'leave waitlist',
+      action: 'review join request',
       resource: _collectionPath,
     ),
   );

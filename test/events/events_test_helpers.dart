@@ -93,6 +93,7 @@ EventParticipation buildEventParticipation({
   DateTime? createdAt,
   Gender? genderAtSignup,
   String? cohortAtSignup,
+  EventJoinRequestStatus? hostApprovalStatus,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
   return EventParticipation(
@@ -118,6 +119,7 @@ EventParticipation buildEventParticipation({
     deletedAt: status == EventParticipationStatus.deleted ? timestamp : null,
     genderAtSignup: genderAtSignup,
     cohortAtSignup: cohortAtSignup,
+    hostApprovalStatus: hostApprovalStatus,
   );
 }
 
@@ -274,6 +276,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? updateEventError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
+  Object? decideJoinRequestError;
   Object? markAttendanceError;
   String? cancelledEventId;
   String? hostCancelledEventId;
@@ -284,9 +287,11 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? updatedEventInviteCode;
   String? joinedWaitlistEventId;
   String? joinedWaitlistInviteCode;
+  String? decidedJoinRequestEventId;
+  String? decidedJoinRequestUserId;
+  String? decidedJoinRequestDecision;
   String? createdEventInviteCode;
   String? leftWaitlistEventId;
-  String? leftWaitlistUserId;
   String? markedAttendanceEventId;
   String? markedAttendanceUserId;
   String? selfCheckedInEventId;
@@ -397,15 +402,25 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<void> leaveWaitlist({
-    required String eventId,
-    required String userId,
-  }) async {
+  Future<void> leaveWaitlist({required String eventId}) async {
     if (leaveWaitlistError != null) {
       throw leaveWaitlistError!;
     }
     leftWaitlistEventId = eventId;
-    leftWaitlistUserId = userId;
+  }
+
+  @override
+  Future<void> decideJoinRequest({
+    required String eventId,
+    required String userId,
+    required String decision,
+  }) async {
+    if (decideJoinRequestError != null) {
+      throw decideJoinRequestError!;
+    }
+    decidedJoinRequestEventId = eventId;
+    decidedJoinRequestUserId = userId;
+    decidedJoinRequestDecision = decision;
   }
 
   @override

@@ -20,6 +20,7 @@ import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -217,7 +218,7 @@ final class _VisualReviewUserProfileRepository
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update_profile',
   }) async {}
 }

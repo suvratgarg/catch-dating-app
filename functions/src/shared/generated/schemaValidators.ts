@@ -60,6 +60,7 @@ import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
 import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
+import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
 import {SubmitEventSuccessWingmanRequestCallablePayload} from "./submitEventSuccessWingmanRequestCallablePayload";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from "./startEventSuccessFirstHelloMissionCallablePayload";
@@ -72,12 +73,17 @@ import {DeleteEventReviewCallablePayload} from "./deleteEventReviewCallablePaylo
 import {BlockUserCallablePayload} from "./blockUserCallablePayload";
 import {UnblockUserCallablePayload} from "./unblockUserCallablePayload";
 import {ReportUserCallablePayload} from "./reportUserCallablePayload";
+import {RequestSuvbotDemoOperationCallablePayload} from "./requestSuvbotDemoOperationCallablePayload";
+import {ListSuvbotDemoActionsCallableResponse} from "./listSuvbotDemoActionsCallableResponse";
 import {VerifyRazorpayPaymentCallablePayload} from "./verifyRazorpayPaymentCallablePayload";
+import {EventBookingCallablePayload} from "./eventBookingCallablePayload";
+import {CreateRazorpayOrderCallablePayload} from "./createRazorpayOrderCallablePayload";
 import {RazorpayOrderCallableResponse} from "./razorpayOrderCallableResponse";
 import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePayload";
 import {PlacesAutocompleteCallableResponse} from "./placesAutocompleteCallableResponse";
 import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
 import {PlaceDetailsCallableResponse} from "./placeDetailsCallableResponse";
+import {FetchEventSuccessWingmanCandidatesCallableResponse} from "./fetchEventSuccessWingmanCandidatesCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
 import {CreateSavedEventClientWrite} from "./createSavedEventClientWrite";
@@ -141,6 +147,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
+  eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
   submitEventSuccessWingmanRequestCallablePayloadSchema,
   startEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -153,12 +160,17 @@ import {
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
+  requestSuvbotDemoOperationCallablePayloadSchema,
+  listSuvbotDemoActionsCallableResponseSchema,
   verifyRazorpayPaymentCallablePayloadSchema,
+  eventBookingCallablePayloadSchema,
+  createRazorpayOrderCallablePayloadSchema,
   razorpayOrderCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
   placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
   placeDetailsCallableResponseSchema,
+  fetchEventSuccessWingmanCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -394,6 +406,10 @@ export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as
       ValidateFunction<MarkEventAttendanceCallablePayload>;
+export const validateEventJoinRequestDecisionCallablePayload:
+  ValidateFunction<EventJoinRequestDecisionCallablePayload> =
+    ajv.compile(eventJoinRequestDecisionCallablePayloadSchema) as
+      ValidateFunction<EventJoinRequestDecisionCallablePayload>;
 export const validateOverrideEventSuccessRotationsCallablePayload:
   ValidateFunction<OverrideEventSuccessRotationsCallablePayload> =
     ajv.compile(overrideEventSuccessRotationsCallablePayloadSchema) as
@@ -442,10 +458,26 @@ export const validateReportUserCallablePayload:
   ValidateFunction<ReportUserCallablePayload> =
     ajv.compile(reportUserCallablePayloadSchema) as
       ValidateFunction<ReportUserCallablePayload>;
+export const validateRequestSuvbotDemoOperationCallablePayload:
+  ValidateFunction<RequestSuvbotDemoOperationCallablePayload> =
+    ajv.compile(requestSuvbotDemoOperationCallablePayloadSchema) as
+      ValidateFunction<RequestSuvbotDemoOperationCallablePayload>;
+export const validateListSuvbotDemoActionsCallableResponse:
+  ValidateFunction<ListSuvbotDemoActionsCallableResponse> =
+    ajv.compile(listSuvbotDemoActionsCallableResponseSchema) as
+      ValidateFunction<ListSuvbotDemoActionsCallableResponse>;
 export const validateVerifyRazorpayPaymentCallablePayload:
   ValidateFunction<VerifyRazorpayPaymentCallablePayload> =
     ajv.compile(verifyRazorpayPaymentCallablePayloadSchema) as
       ValidateFunction<VerifyRazorpayPaymentCallablePayload>;
+export const validateEventBookingCallablePayload:
+  ValidateFunction<EventBookingCallablePayload> =
+    ajv.compile(eventBookingCallablePayloadSchema) as
+      ValidateFunction<EventBookingCallablePayload>;
+export const validateCreateRazorpayOrderCallablePayload:
+  ValidateFunction<CreateRazorpayOrderCallablePayload> =
+    ajv.compile(createRazorpayOrderCallablePayloadSchema) as
+      ValidateFunction<CreateRazorpayOrderCallablePayload>;
 export const validateRazorpayOrderCallableResponse:
   ValidateFunction<RazorpayOrderCallableResponse> =
     ajv.compile(razorpayOrderCallableResponseSchema) as
@@ -466,6 +498,10 @@ export const validatePlaceDetailsCallableResponse:
   ValidateFunction<PlaceDetailsCallableResponse> =
     ajv.compile(placeDetailsCallableResponseSchema) as
       ValidateFunction<PlaceDetailsCallableResponse>;
+export const validateFetchEventSuccessWingmanCandidatesCallableResponse:
+  ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse> =
+    ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema) as
+      ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse>;
 export const validateCreateProfileDecisionClientWrite:
   ValidateFunction<CreateProfileDecisionClientWrite> =
     ajv.compile(createProfileDecisionClientWriteSchema) as

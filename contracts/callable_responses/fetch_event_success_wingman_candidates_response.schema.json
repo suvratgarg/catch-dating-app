@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/fetch_event_success_wingman_candidates_response.schema.json",
+  "title": "FetchEventSuccessWingmanCandidatesCallableResponse",
+  "description": "Callable response returned by fetchEventSuccessWingmanCandidates. Each profile is the persisted publicProfiles/{uid} document shape with `uid` injected at the wire boundary so clients can identify the profile owner. Per-field shape is enforced by PublicProfileDocument (contracts/firestore/public_profiles.schema.json) when the Dart side parses each entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profiles"],
+  "properties": {
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["uid"],
+        "properties": {
+          "uid": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          }
+        }
+      }
+    }
+  }
+}

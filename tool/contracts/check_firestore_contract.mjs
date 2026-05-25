@@ -78,6 +78,8 @@ for (const collection of contract.collections ?? []) {
   }
 }
 
+validateCallableAliases();
+
 if (errors.length > 0) {
   console.error("Firestore contract check failed:");
   for (const error of errors) {
@@ -87,6 +89,36 @@ if (errors.length > 0) {
 }
 
 console.log("Firestore contract check passed.");
+
+function validateCallableAliases() {
+  const callablesDir = path.join(contractRoot, "callables");
+  if (!fs.existsSync(callablesDir)) return;
+  for (const entry of fs.readdirSync(callablesDir)) {
+    if (!entry.endsWith(".schema.json")) continue;
+    const schema = readJson(path.join(callablesDir, entry));
+    const aliases = schema["x-callable-aliases"];
+    if (aliases === undefined) continue;
+    const label = `contracts/callables/${entry}`;
+    if (!Array.isArray(aliases)) {
+      errors.push(`${label}: x-callable-aliases must be an array when present`);
+      continue;
+    }
+    const seen = new Set();
+    for (const name of aliases) {
+      if (typeof name !== "string" || name.length === 0) {
+        errors.push(`${label}: x-callable-aliases contains a non-string value`);
+        continue;
+      }
+      assertUnique(seen, name, `${label}.x-callable-aliases.${name}`);
+      if (!hasNamedExport(name)) {
+        errors.push(
+          `${label}: x-callable-aliases lists "${name}" but ` +
+          `functions/src/index.ts does not export it`
+        );
+      }
+    }
+  }
+}
 
 function readJson(filePath) {
   return JSON.parse(readText(filePath));

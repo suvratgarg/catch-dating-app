@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/event_success/data/event_success_callable_dtos.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
@@ -521,10 +522,12 @@ class EventSuccessRepository {
       if (functions == null) {
         throw StateError('FirebaseFunctions is not configured.');
       }
-      return functions.httpsCallable('overrideEventSuccessRotations').call({
-        'eventId': eventId,
-        'rounds': rounds.map((round) => round.toJson()).toList(),
-      });
+      return functions.httpsCallable('overrideEventSuccessRotations').call(
+        OverrideEventSuccessRotationsCallableRequest(
+          eventId: eventId,
+          rounds: rounds.map((round) => round.toJson()).toList(),
+        ).toJson(),
+      );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -605,11 +608,13 @@ class EventSuccessRepository {
       if (functions == null) {
         throw StateError('FirebaseFunctions is not configured.');
       }
-      return functions.httpsCallable('submitEventSuccessWingmanRequest').call({
-        'eventId': event.id,
-        'targetUid': target.uid,
-        'note': ?_trimToNull(note),
-      });
+      return functions.httpsCallable('submitEventSuccessWingmanRequest').call(
+        SubmitEventSuccessWingmanRequestCallableRequest(
+          eventId: event.id,
+          targetUid: target.uid,
+          note: _trimToNull(note),
+        ).toJson(),
+      );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -647,7 +652,11 @@ class EventSuccessRepository {
         throw StateError('FirebaseFunctions is not configured.');
       }
       return functions.httpsCallable('startEventSuccessFirstHelloMission').call(
-        {'eventId': event.id, 'latitude': ?latitude, 'longitude': ?longitude},
+        StartEventSuccessFirstHelloMissionCallableRequest(
+          eventId: event.id,
+          latitude: latitude,
+          longitude: longitude,
+        ).toJson(),
       );
     },
     context: const BackendErrorContext(
@@ -670,12 +679,14 @@ class EventSuccessRepository {
       }
       return functions
           .httpsCallable('completeEventSuccessFirstHelloMission')
-          .call({
-            'eventId': event.id,
-            'answerId': answerId,
-            'latitude': ?latitude,
-            'longitude': ?longitude,
-          });
+          .call(
+            CompleteEventSuccessFirstHelloMissionCallableRequest(
+              eventId: event.id,
+              answerId: answerId,
+              latitude: latitude,
+              longitude: longitude,
+            ).toJson(),
+          );
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -721,15 +732,10 @@ class EventSuccessRepository {
       }
       final result = await functions
           .httpsCallable('fetchEventSuccessWingmanCandidates')
-          .call<Map<String, dynamic>>(EventIdCallableRequest(eventId: eventId).toJson());
-      final profiles = result.data['profiles'];
-      if (profiles is! List) return const <PublicProfile>[];
-      return profiles
-          .whereType<Map>()
-          .map((profile) {
-            return PublicProfile.fromJson(Map<String, dynamic>.from(profile));
-          })
-          .toList(growable: false);
+          .call<Object?>(EventIdCallableRequest(eventId: eventId).toJson());
+      return FetchEventSuccessWingmanCandidatesCallableResponse.fromCallableData(
+        result.data,
+      ).profiles;
     },
     context: const BackendErrorContext(
       service: BackendService.functions,

@@ -11,19 +11,6 @@
 // multiple non-null branches, Timestamp serialization quirks); see backlog
 // item CONTRACT-DART-GEN-001.
 
-/// Callable request body for updateUserProfile. Values are normalized before Firestore writes.
-final class UpdateUserProfileCallableRequest {
-  const UpdateUserProfileCallableRequest({
-    required this.fields,
-  });
-
-  final Map<String, Object?> fields;
-
-  Map<String, Object?> toJson() => {
-    'fields': fields,
-  };
-}
-
 /// Callable payload accepted by createClub.
 final class CreateClubCallableRequest {
   const CreateClubCallableRequest({
@@ -326,7 +313,7 @@ final class DeleteEventCallableRequest {
   };
 }
 
-/// Callable payload accepted by simple event actions that need only a eventId.
+/// Callable payload accepted by simple event actions that need only an eventId (plus optional inviteCode for invite-gated events).
 final class EventIdCallableRequest {
   const EventIdCallableRequest({
     required this.eventId,
@@ -355,6 +342,25 @@ final class MarkEventAttendanceCallableRequest {
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'userId': userId,
+  };
+}
+
+/// Callable payload accepted by decideEventJoinRequest.
+final class EventJoinRequestDecisionCallableRequest {
+  const EventJoinRequestDecisionCallableRequest({
+    required this.eventId,
+    required this.userId,
+    required this.decision,
+  });
+
+  final String eventId;
+  final String userId;
+  final String decision;
+
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'userId': userId,
+    'decision': decision,
   };
 }
 
@@ -561,6 +567,22 @@ final class ReportUserCallableRequest {
     'reasonCode': ?reasonCode,
     'contextId': ?contextId,
     'notes': ?notes,
+  };
+}
+
+/// Callable payload accepted by requestSuvbotDemoOperation. Demo-only operations triggered from the Suvbot conversation surface.
+final class RequestSuvbotDemoOperationCallableRequest {
+  const RequestSuvbotDemoOperationCallableRequest({
+    required this.action,
+    this.text,
+  });
+
+  final String action;
+  final String? text;
+
+  Map<String, Object?> toJson() => {
+    'action': action,
+    'text': ?text,
   };
 }
 

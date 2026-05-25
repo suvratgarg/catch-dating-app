@@ -139,6 +139,36 @@ notification fan-out, dynamic Auth/current-time checks, or full Firestore rules.
 Those stay in Functions, repositories, rules, and domain services, consuming
 generated constants/validators where useful.
 
+### Generated Dart Callable Request DTOs
+
+`tool/contracts/generate_schema_contracts.mjs` emits typed Dart classes for
+every callable payload schema (and the `update_user_profile` patch) into
+`lib/core/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
+has a named-parameter constructor, typed fields, and a `toJson()` that the
+existing `test/core/callable_dto_contracts_test.dart` validates against the
+source schema.
+
+Feature-level `lib/**/data/*_callable_dtos.dart` files re-export the generated
+classes via `export ... show`, so callers continue to import from a stable
+feature-local path. Hand-written DTO classes remain in those files only when
+the JSON Schema cannot capture the behavior — specifically:
+
+- domain → DTO adapter factories (`CreateEventCallableRequest.fromEvent(Event)`)
+  that walk a domain model and convert `DateTime` → `int millis`;
+- Firestore `Timestamp` → millis conversion inside `toJson()` (the
+  `UpdateUserProfileCallableRequest` patch wrapper);
+- callable payloads with no JSON Schema yet (`EventBookingCallableRequest`,
+  `CreateRazorpayOrderCallableRequest`);
+- serialization-time shape transforms (e.g.
+  `PlacesAutocompleteCallableRequest` flattens a `LocationCoordinate? bias`
+  into top-level `latitude`/`longitude`);
+- response decoders (`*CallableResponse` with `fromCallableData` factories)
+  and feature-local exceptions.
+
+See backlog item `CONTRACT-DART-GEN-001` for the path to migrating the
+remaining cases (Timestamp-aware emit mode, typed nested classes, missing
+payment schemas).
+
 ## Relationship Documents
 
 Root-level edge/action documents are the source of truth for many-to-many state:

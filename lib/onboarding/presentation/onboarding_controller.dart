@@ -11,6 +11,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -323,10 +324,10 @@ class OnboardingController extends _$OnboardingController {
         .read(userProfileRepositoryProvider)
         .updateUserProfile(
           uid: userProfile.uid,
-          fields: {
-            'profilePrompts': profilePromptsToJson(normalizedPrompts),
-            'profileComplete': true,
-          },
+          patch: UpdateUserProfilePatch(
+            profilePrompts: normalizedPrompts,
+            profileComplete: true,
+          ),
         );
     await _deleteDraftNow();
     ref.invalidateSelf();
@@ -347,16 +348,14 @@ class OnboardingController extends _$OnboardingController {
         .read(userProfileRepositoryProvider)
         .updateUserProfile(
           uid: userProfile.uid,
-          fields: {
-            'paceMinSecsPerKm': paceMinSecsPerKm,
-            'paceMaxSecsPerKm': paceMaxSecsPerKm,
-            'preferredDistances': preferredDistances
-                .map((e) => e.name)
-                .toList(),
-            'runningReasons': runningReasons.map((e) => e.name).toList(),
-            'preferredRunTimes': preferredRunTimes.map((e) => e.name).toList(),
-            'runPreferencesVersion': currentRunPreferencesVersion,
-          },
+          patch: UpdateUserProfilePatch(
+            paceMinSecsPerKm: paceMinSecsPerKm,
+            paceMaxSecsPerKm: paceMaxSecsPerKm,
+            preferredDistances: preferredDistances,
+            runningReasons: runningReasons,
+            preferredRunTimes: preferredRunTimes,
+            runPreferencesVersion: currentRunPreferencesVersion,
+          ),
         );
     await _deleteDraftNow();
     // The router will redirect away shortly.

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -258,14 +259,14 @@ class _FakeSettingsUserProfileRepository extends Fake
   @override
   Future<void> updateUserProfile({
     required String uid,
-    required Map<String, dynamic> fields,
+    required UpdateUserProfilePatch patch,
     String action = 'update profile',
   }) async {
     if (throwOnUpdate) {
       throw Exception('update failed');
     }
     updatedUid = uid;
-    updatedFields = Map<String, dynamic>.from(fields);
+    updatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
   }
 }
 

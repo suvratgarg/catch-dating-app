@@ -324,6 +324,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
   },
   {
+    name: "EventJoinRequestDecisionCallablePayload",
+    source: "callables/event_join_request_decision_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventJoinRequestDecisionCallablePayload.ts",
+  },
+  {
     name: "OverrideEventSuccessRotationsCallablePayload",
     source: "callables/override_event_success_rotations_payload.schema.json",
     typeOutput:
@@ -400,10 +407,35 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/reportUserCallablePayload.ts",
   },
   {
+    name: "RequestSuvbotDemoOperationCallablePayload",
+    source: "callables/request_suvbot_demo_operation_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "requestSuvbotDemoOperationCallablePayload.ts",
+  },
+  {
+    name: "ListSuvbotDemoActionsCallableResponse",
+    source: "callable_responses/list_suvbot_demo_actions_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listSuvbotDemoActionsCallableResponse.ts",
+  },
+  {
     name: "VerifyRazorpayPaymentCallablePayload",
     source: "callables/verify_razorpay_payment_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts",
+  },
+  {
+    name: "EventBookingCallablePayload",
+    source: "callables/event_booking_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventBookingCallablePayload.ts",
+  },
+  {
+    name: "CreateRazorpayOrderCallablePayload",
+    source: "callables/create_razorpay_order_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createRazorpayOrderCallablePayload.ts",
   },
   {
     name: "RazorpayOrderCallableResponse",
@@ -434,6 +466,14 @@ const schemaSpecs = [
     source: "callable_responses/place_details_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/placeDetailsCallableResponse.ts",
+  },
+  {
+    name: "FetchEventSuccessWingmanCandidatesCallableResponse",
+    source:
+      "callable_responses/fetch_event_success_wingman_candidates_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "fetchEventSuccessWingmanCandidatesCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",
@@ -677,10 +717,13 @@ function normalizeExternalTypeReferences(currentTypeName, source) {
 
 function tsTypeImports(currentTypeName, source) {
   const imports = [];
+  const typeSource = source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
   for (const spec of schemaSpecs) {
     if (currentTypeName === spec.name) continue;
     const pattern = new RegExp(`\\b${spec.name}\\b`);
-    if (!pattern.test(source)) continue;
+    if (!pattern.test(typeSource)) continue;
     imports.push(`import {${spec.name}} from "${typeImportPath(spec)}";`);
   }
   return imports.length === 0 ? "" : `${imports.join("\n")}\n\n`;
@@ -1040,12 +1083,29 @@ function dartSchemaConstName(name) {
 // text — the caller logs it so contributors see what's still hand-written.
 // ────────────────────────────────────────────────────────────────────────────
 
+// Callable schemas where the generator's projection would shadow a
+// hand-written class that adds behavior the generator can't reproduce:
+//   - UpdateUserProfileCallablePayload: recursive Firestore Timestamp → millis
+//     conversion in toJson(). Pending the typed UpdateUserProfilePatch class
+//     (CONTRACT-DART-GEN-001).
+//   - EventBookingCallablePayload / CreateRazorpayOrderCallablePayload:
+//     hand-written DTOs apply `inviteCode?.trim()` at serialization time.
+//     The schemas exist for validation and as the contract source of truth;
+//     the Dart classes stay hand-written so the trim normalization remains
+//     attached to the boundary.
+const DART_CALLABLE_REQUEST_SKIP = new Set([
+  "UpdateUserProfileCallablePayload",
+  "EventBookingCallablePayload",
+  "CreateRazorpayOrderCallablePayload",
+]);
+
 function renderDartCallableRequestClasses({schemaSpecs, schemaMap}) {
   const classes = [];
   const ungenerable = [];
 
   for (const spec of schemaSpecs) {
     if (!isCallableRequestSpec(spec)) continue;
+    if (DART_CALLABLE_REQUEST_SKIP.has(spec.name)) continue;
     const schema = schemaMap.get(spec.name);
     if (!schema) continue;
 

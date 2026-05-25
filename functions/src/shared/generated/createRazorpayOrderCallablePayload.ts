@@ -3,9 +3,9 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Callable payload accepted by simple event actions that need only an eventId (plus optional inviteCode for invite-gated events).
+ * Callable payload accepted by createRazorpayOrder. Returns a Razorpay order id + amount that the client uses to open the checkout sheet.
  */
-export interface EventIdCallablePayload {
+export interface CreateRazorpayOrderCallablePayload {
   eventId: string;
   inviteCode?: string | null;
 }

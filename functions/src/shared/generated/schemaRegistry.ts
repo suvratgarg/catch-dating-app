@@ -4170,6 +4170,57 @@ export const eventParticipationDocumentSchema: Record<string, unknown> = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "hostApprovalStatus": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "pending",
+        "approved",
+        "declined",
+        null
+      ],
+      "description": "Manual-approval request state for request-to-join events. Null for regular waitlist edges.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostApprovalDecidedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -5562,6 +5613,101 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
               "one_way_interest",
               "questionnaire_match",
               "social",
+              "host_override"
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "groupRotationSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "unitLabel",
+          "startsAt",
+          "endsAt",
+          "peerUids",
+          "compatibility"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "unitLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "endsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "peerUids": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "compatibility": {
+            "type": "string",
+            "enum": [
+              "mutual_interest",
+              "one_way_interest",
+              "questionnaire_match",
+              "social",
+              "mixed",
               "host_override"
             ]
           }
@@ -11015,7 +11161,17 @@ export const eventIdCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/event_id_payload.schema.json",
   "title": "EventIdCallablePayload",
-  "description": "Callable payload accepted by simple event actions that need only a eventId.",
+  "description": "Callable payload accepted by simple event actions that need only an eventId (plus optional inviteCode for invite-gated events).",
+  "x-callable-aliases": [
+    "cancelEventSignUp",
+    "deleteEvent",
+    "fetchEventSuccessWingmanCandidates",
+    "generateEventSuccessPods",
+    "generateEventSuccessRotations",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "withdrawEventSuccessWingmanRequest"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11060,6 +11216,39 @@ export const markEventAttendanceCallablePayloadSchema: Record<string, unknown> =
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+} as const;
+
+export const eventJoinRequestDecisionCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_join_request_decision_payload.schema.json",
+  "title": "EventJoinRequestDecisionCallablePayload",
+  "description": "Callable payload accepted by decideEventJoinRequest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "userId",
+    "decision"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "decline"
+      ]
     }
   }
 } as const;
@@ -11455,6 +11644,84 @@ export const reportUserCallablePayloadSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const requestSuvbotDemoOperationCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_suvbot_demo_operation_payload.schema.json",
+  "title": "RequestSuvbotDemoOperationCallablePayload",
+  "description": "Callable payload accepted by requestSuvbotDemoOperation. Demo-only operations triggered from the Suvbot conversation surface.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action"
+  ],
+  "properties": {
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  }
+} as const;
+
+export const listSuvbotDemoActionsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_suvbot_demo_actions_response.schema.json",
+  "title": "ListSuvbotDemoActionsCallableResponse",
+  "description": "Callable response returned by listSuvbotDemoActions. Each action describes a button in the Suvbot demo-operations menu.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "actions"
+  ],
+  "properties": {
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "description",
+          "icon"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "icon": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "destructive": {
+            "type": "boolean"
+          },
+          "requiresText": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+} as const;
+
 export const verifyRazorpayPaymentCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/verify_razorpay_payment_payload.schema.json",
@@ -11482,6 +11749,62 @@ export const verifyRazorpayPaymentCallablePayloadSchema: Record<string, unknown>
       "type": "string",
       "minLength": 1,
       "maxLength": 512
+    }
+  }
+} as const;
+
+export const eventBookingCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_booking_payload.schema.json",
+  "title": "EventBookingCallablePayload",
+  "description": "Callable payload accepted by signUpForFreeEvent. Same shape as EventIdCallablePayload but distinct so the booking flow can diverge without breaking the generic event-id callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 4,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    }
+  }
+} as const;
+
+export const createRazorpayOrderCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_razorpay_order_payload.schema.json",
+  "title": "CreateRazorpayOrderCallablePayload",
+  "description": "Callable payload accepted by createRazorpayOrder. Returns a Razorpay order id + amount that the client uses to open the checkout sheet.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 4,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
     }
   }
 } as const;
@@ -11678,6 +12001,36 @@ export const placeDetailsCallableResponseSchema: Record<string, unknown> = {
           "type": "number",
           "minimum": -180,
           "maximum": 180
+        }
+      }
+    }
+  }
+} as const;
+
+export const fetchEventSuccessWingmanCandidatesCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/fetch_event_success_wingman_candidates_response.schema.json",
+  "title": "FetchEventSuccessWingmanCandidatesCallableResponse",
+  "description": "Callable response returned by fetchEventSuccessWingmanCandidates. Each profile is the persisted publicProfiles/{uid} document shape with `uid` injected at the wire boundary so clients can identify the profile owner. Per-field shape is enforced by PublicProfileDocument (contracts/firestore/public_profiles.schema.json) when the Dart side parses each entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profiles"
+  ],
+  "properties": {
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "uid"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
         }
       }
     }

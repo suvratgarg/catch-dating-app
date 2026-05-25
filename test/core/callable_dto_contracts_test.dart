@@ -1,6 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show RequestSuvbotDemoOperationCallableRequest;
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
+import 'package:catch_dating_app/event_success/data/event_success_callable_dtos.dart';
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
@@ -9,6 +16,7 @@ import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
 import 'package:catch_dating_app/reviews/data/review_callable_dtos.dart';
 import 'package:catch_dating_app/safety/data/safety_callable_dtos.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_callable_dtos.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -92,8 +100,10 @@ void main() {
       );
       _expectValid(
         'EventIdCallablePayload',
-        EventIdCallableRequest(eventId: 'event-1', inviteCode: 'CATCH_2026')
-            .toJson(),
+        EventIdCallableRequest(
+          eventId: 'event-1',
+          inviteCode: 'CATCH_2026',
+        ).toJson(),
       );
       _expectValid(
         'CancelEventCallablePayload',
@@ -167,19 +177,28 @@ void main() {
 
     test('payment request DTOs match generated payload schemas', () {
       _expectValid(
-        'EventIdCallablePayload',
+        'EventBookingCallablePayload',
         const EventBookingCallableRequest(
           eventId: 'event-1',
           inviteCode: 'CATCH_2026',
         ).toJson(),
       );
       _expectValid(
-        'EventIdCallablePayload',
+        'CreateRazorpayOrderCallablePayload',
         const CreateRazorpayOrderCallableRequest(
           eventId: 'event-1',
           inviteCode: 'CATCH_2026',
         ).toJson(),
       );
+      // Trim normalization round-trip: whitespace-padded inviteCode in →
+      // trimmed value out, satisfying the schema's pattern.
+      final trimmed = const EventBookingCallableRequest(
+        eventId: 'event-1',
+        inviteCode: '  CATCH_2026  ',
+      ).toJson();
+      _expectValid('EventBookingCallablePayload', trimmed);
+      expect(trimmed['inviteCode'], 'CATCH_2026');
+
       _expectValid(
         'VerifyRazorpayPaymentCallablePayload',
         const VerifyRazorpayPaymentCallableRequest(
@@ -255,18 +274,33 @@ void main() {
           ).toJson(),
         );
 
-        final updateProfilePayload = UpdateUserProfileCallableRequest(
-          fields: {
-            'name': 'Runner One',
-            'dateOfBirth': DateTime.utc(1994, 5, 20),
-            'height': 176,
-          },
-        ).toJson();
+        final updateProfilePayload =
+            UpdateUserProfileCallableRequest.fromPatch(
+              UpdateUserProfilePatch(
+                name: 'Runner One',
+                dateOfBirth: DateTime.utc(1994, 5, 20),
+                height: 176,
+              ),
+            ).toJson();
         _expectValid('UpdateUserProfileCallablePayload', updateProfilePayload);
         expect(
           (updateProfilePayload['fields']!
               as Map<String, Object?>)['dateOfBirth'],
           isA<int>(),
+        );
+
+        _expectValid(
+          'RequestSuvbotDemoOperationCallablePayload',
+          const RequestSuvbotDemoOperationCallableRequest(
+            action: 'checkDemoState',
+          ).toJson(),
+        );
+        _expectValid(
+          'RequestSuvbotDemoOperationCallablePayload',
+          const RequestSuvbotDemoOperationCallableRequest(
+            action: 'resetChats',
+            text: 'Please wipe my chats.',
+          ).toJson(),
         );
       },
     );
@@ -337,6 +371,119 @@ void main() {
         ).place.location,
         const LocationCoordinate(12.9763, 77.5929),
       );
+
+      final publicProfileFixture =
+          jsonDecode(
+                File(
+                  'contracts/fixtures/valid/public_profile_doc.json',
+                ).readAsStringSync(),
+              )
+              as Map<String, dynamic>;
+      // Callable wire format: each profile carries its uid (vs the stored doc
+      // shape where uid is the Firestore doc id and is not in the body).
+      final wingmanCandidatesResponse = <String, Object?>{
+        'profiles': [
+          {'uid': 'runner-2', ...publicProfileFixture},
+        ],
+      };
+      _expectValid(
+        'FetchEventSuccessWingmanCandidatesCallableResponse',
+        wingmanCandidatesResponse,
+      );
+      expect(
+        FetchEventSuccessWingmanCandidatesCallableResponse.fromCallableData(
+          wingmanCandidatesResponse,
+        ).profiles.single.name,
+        'Subrath',
+      );
+
+      final suvbotActionsResponse = <String, Object?>{
+        'actions': [
+          {
+            'id': 'checkDemoState',
+            'label': 'Check demo state',
+            'description': 'Show the current demo configuration.',
+            'icon': 'info',
+          },
+          {
+            'id': 'resetChats',
+            'label': 'Reset chats',
+            'description': 'Wipe demo chat history for this account.',
+            'icon': 'delete',
+            'destructive': true,
+            'requiresText': false,
+          },
+        ],
+      };
+      _expectValid(
+        'ListSuvbotDemoActionsCallableResponse',
+        suvbotActionsResponse,
+      );
+      expect(
+        ListSuvbotDemoActionsCallableResponse.fromCallableData(
+          suvbotActionsResponse,
+        ).actions.length,
+        2,
+      );
+    });
+
+    test('response parsers throw on malformed input', () {
+      // Wrong root shape (non-Map).
+      expect(
+        () => CreateClubCallableResponse.fromCallableData('not-a-map'),
+        throwsStateError,
+      );
+      expect(
+        () => MarkEventAttendanceCallableResponse.fromCallableData(null),
+        throwsStateError,
+      );
+      expect(
+        () => StartClubHostConversationCallableResponse.fromCallableData(42),
+        throwsStateError,
+      );
+      expect(
+        () => PlaceDetailsCallableResponse.fromCallableData(<String, Object?>{
+          // missing required `place` key
+        }),
+        throwsStateError,
+      );
+      expect(
+        () => FetchEventSuccessWingmanCandidatesCallableResponse
+            .fromCallableData(<String, Object?>{}),
+        throwsStateError,
+      );
+      expect(
+        () => ListSuvbotDemoActionsCallableResponse.fromCallableData(
+          <String, Object?>{},
+        ),
+        throwsStateError,
+      );
+      expect(
+        () => SuvbotActionItem.fromCallableData(<String, Object?>{
+          'id': 'x',
+          // missing label/description/icon
+        }),
+        throwsStateError,
+      );
+      // RazorpayOrderCallableResponse throws a typed exception (not a
+      // StateError) — the public contract is "throws on malformed input".
+      expect(
+        () => RazorpayOrderCallableResponse.fromCallableData(<String, Object?>{
+          'orderId': '',
+          'amount': 0,
+          'currency': '',
+        }),
+        throwsA(isA<RazorpayOrderCallableResponseFormatException>()),
+      );
+
+      // PlacesAutocompleteCallableResponse is intentionally permissive:
+      // an empty / malformed predictions list returns an empty wrapper rather
+      // than throwing, so dropdowns render gracefully when the upstream
+      // returns no matches.
+      final empty = PlacesAutocompleteCallableResponse.fromCallableData(
+        <String, Object?>{},
+      );
+      expect(empty.predictions, isEmpty);
     });
   });
 }

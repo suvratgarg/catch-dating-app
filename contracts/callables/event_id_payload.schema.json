@@ -2,7 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/event_id_payload.schema.json",
   "title": "EventIdCallablePayload",
-  "description": "Callable payload accepted by simple event actions that need only a eventId.",
+  "description": "Callable payload accepted by simple event actions that need only an eventId (plus optional inviteCode for invite-gated events).",
+  "x-callable-aliases": [
+    "cancelEventSignUp",
+    "deleteEvent",
+    "fetchEventSuccessWingmanCandidates",
+    "generateEventSuccessPods",
+    "generateEventSuccessRotations",
+    "joinEventWaitlist",
+    "leaveEventWaitlist",
+    "withdrawEventSuccessWingmanRequest"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": ["eventId"],

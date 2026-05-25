@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -26,11 +28,13 @@ class FiltersController extends _$FiltersController {
         .read(userProfileRepositoryProvider)
         .updateUserProfile(
           uid: uid,
-          fields: {
-            'minAgePreference': minAgePreference,
-            'maxAgePreference': maxAgePreference,
-            'interestedInGenders': interestedInGenders,
-          },
+          patch: UpdateUserProfilePatch(
+            minAgePreference: minAgePreference,
+            maxAgePreference: maxAgePreference,
+            interestedInGenders: interestedInGenders
+                .map(Gender.values.byName)
+                .toList(growable: false),
+          ),
         );
   }
 }

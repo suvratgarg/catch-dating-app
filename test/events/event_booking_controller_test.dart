@@ -288,7 +288,46 @@ void main() {
           .leaveWaitlist(event: buildEvent(id: 'event-42'));
 
       expect(fakeEventRepository.leftWaitlistEventId, 'event-42');
-      expect(fakeEventRepository.leftWaitlistUserId, 'runner-42');
+    });
+
+    test('approveJoinRequest delegates to the event repository', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .approveJoinRequest(eventId: 'event-42', userId: 'runner-9');
+
+      expect(fakeEventRepository.decidedJoinRequestEventId, 'event-42');
+      expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-9');
+      expect(fakeEventRepository.decidedJoinRequestDecision, 'approve');
+    });
+
+    test('declineJoinRequest delegates to the event repository', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .declineJoinRequest(eventId: 'event-42', userId: 'runner-9');
+
+      expect(fakeEventRepository.decidedJoinRequestEventId, 'event-42');
+      expect(fakeEventRepository.decidedJoinRequestUserId, 'runner-9');
+      expect(fakeEventRepository.decidedJoinRequestDecision, 'decline');
     });
 
     test('joinWaitlist surfaces repository errors', () async {

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -239,10 +240,10 @@ class FakeClubsRepository implements ClubsRepository {
   @override
   Future<void> updateClub({
     required String clubId,
-    required Map<String, dynamic> fields,
+    required UpdateClubPatch patch,
   }) async {
     lastUpdatedClubId = clubId;
-    lastUpdatedFields = fields;
+    lastUpdatedFields = Map<String, dynamic>.from(patch.toFieldsJson());
   }
 
   @override

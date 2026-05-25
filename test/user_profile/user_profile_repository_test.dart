@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,11 +91,10 @@ void main() {
 
     test('updateUserProfile normalizes date values for the callable', () async {
       final date = DateTime.utc(1998);
-      final timestamp = Timestamp.fromDate(date);
 
       await repository.updateUserProfile(
         uid: 'runner-42',
-        fields: {'name': 'Asha', 'dateOfBirth': timestamp},
+        patch: UpdateUserProfilePatch(name: 'Asha', dateOfBirth: date),
       );
 
       final callable =
@@ -104,7 +103,7 @@ void main() {
         {
           'fields': {
             'name': 'Asha',
-            'dateOfBirth': timestamp.millisecondsSinceEpoch,
+            'dateOfBirth': date.millisecondsSinceEpoch,
           },
         },
       ]);

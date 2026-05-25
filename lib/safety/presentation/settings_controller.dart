@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart'
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,6 +20,35 @@ enum SettingsPreference {
   const SettingsPreference(this.fieldName);
 
   final String fieldName;
+
+  /// Builds a typed profile patch toggling this preference. Each preference
+  /// maps to exactly one boolean field on `users/{uid}` — the switch keeps the
+  /// preference → field mapping explicit and compile-checked.
+  UpdateUserProfilePatch patch(bool value) {
+    return switch (this) {
+      SettingsPreference.showOnMap => UpdateUserProfilePatch(
+        prefsShowOnMap: value,
+      ),
+      SettingsPreference.newCatches => UpdateUserProfilePatch(
+        prefsNewCatches: value,
+      ),
+      SettingsPreference.messages => UpdateUserProfilePatch(
+        prefsMessages: value,
+      ),
+      SettingsPreference.eventReminders => UpdateUserProfilePatch(
+        prefsEventReminders: value,
+      ),
+      SettingsPreference.eventStatusUpdates => UpdateUserProfilePatch(
+        prefsRunStatusUpdates: value,
+      ),
+      SettingsPreference.clubUpdates => UpdateUserProfilePatch(
+        prefsClubUpdates: value,
+      ),
+      SettingsPreference.weeklyDigest => UpdateUserProfilePatch(
+        prefsWeeklyDigest: value,
+      ),
+    };
+  }
 }
 
 /// **Pattern A: Action controller + static Mutations**
@@ -41,7 +71,7 @@ class SettingsController extends _$SettingsController {
     final uid = requireSignedInUid(ref, action: 'save settings');
     await ref
         .read(userProfileRepositoryProvider)
-        .updateUserProfile(uid: uid, fields: {preference.fieldName: value});
+        .updateUserProfile(uid: uid, patch: preference.patch(value));
   }
 
   Future<void> requestAccountDeletion() async {

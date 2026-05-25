@@ -4182,6 +4182,57 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'hostApprovalStatus': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'pending',
+        'approved',
+        'declined',
+        null,
+      ],
+      'description': 'Manual-approval request state for request-to-join events. Null for regular waitlist edges.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'hostApprovalDecidedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'hostApprovalDecidedBy': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',
@@ -5574,6 +5625,101 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
               'one_way_interest',
               'questionnaire_match',
               'social',
+              'host_override',
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'groupRotationSlots': <String, Object?>{
+      'type': 'array',
+      'maxItems': 24,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'roundIndex',
+          'label',
+          'unitLabel',
+          'startsAt',
+          'endsAt',
+          'peerUids',
+          'compatibility',
+        ],
+        'properties': <String, Object?>{
+          'roundIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'unitLabel': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'startsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'endsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'peerUids': <String, Object?>{
+            'type': 'array',
+            'maxItems': 20,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+          },
+          'compatibility': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'mutual_interest',
+              'one_way_interest',
+              'questionnaire_match',
+              'social',
+              'mixed',
               'host_override',
             ],
           },
@@ -11027,7 +11173,17 @@ const schemaEventIdCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/event_id_payload.schema.json',
   'title': 'EventIdCallablePayload',
-  'description': 'Callable payload accepted by simple event actions that need only a eventId.',
+  'description': 'Callable payload accepted by simple event actions that need only an eventId (plus optional inviteCode for invite-gated events).',
+  'x-callable-aliases': <Object?>[
+    'cancelEventSignUp',
+    'deleteEvent',
+    'fetchEventSuccessWingmanCandidates',
+    'generateEventSuccessPods',
+    'generateEventSuccessRotations',
+    'joinEventWaitlist',
+    'leaveEventWaitlist',
+    'withdrawEventSuccessWingmanRequest',
+  ],
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -11072,6 +11228,39 @@ const schemaMarkEventAttendanceCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+  },
+};
+
+const schemaEventJoinRequestDecisionCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/event_join_request_decision_payload.schema.json',
+  'title': 'EventJoinRequestDecisionCallablePayload',
+  'description': 'Callable payload accepted by decideEventJoinRequest.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+    'userId',
+    'decision',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'userId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'decision': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'approve',
+        'decline',
+      ],
     },
   },
 };
@@ -11467,6 +11656,84 @@ const schemaReportUserCallablePayloadSchema = <String, Object?>{
   },
 };
 
+const schemaRequestSuvbotDemoOperationCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/request_suvbot_demo_operation_payload.schema.json',
+  'title': 'RequestSuvbotDemoOperationCallablePayload',
+  'description': 'Callable payload accepted by requestSuvbotDemoOperation. Demo-only operations triggered from the Suvbot conversation surface.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'action',
+  ],
+  'properties': <String, Object?>{
+    'action': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'text': <String, Object?>{
+      'type': 'string',
+      'maxLength': 2000,
+    },
+  },
+};
+
+const schemaListSuvbotDemoActionsCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/list_suvbot_demo_actions_response.schema.json',
+  'title': 'ListSuvbotDemoActionsCallableResponse',
+  'description': 'Callable response returned by listSuvbotDemoActions. Each action describes a button in the Suvbot demo-operations menu.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'actions',
+  ],
+  'properties': <String, Object?>{
+    'actions': <String, Object?>{
+      'type': 'array',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'id',
+          'label',
+          'description',
+          'icon',
+        ],
+        'properties': <String, Object?>{
+          'id': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'description': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 500,
+          },
+          'icon': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'destructive': <String, Object?>{
+            'type': 'boolean',
+          },
+          'requiresText': <String, Object?>{
+            'type': 'boolean',
+          },
+        },
+      },
+    },
+  },
+};
+
 const schemaVerifyRazorpayPaymentCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/verify_razorpay_payment_payload.schema.json',
@@ -11494,6 +11761,62 @@ const schemaVerifyRazorpayPaymentCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 512,
+    },
+  },
+};
+
+const schemaEventBookingCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/event_booking_payload.schema.json',
+  'title': 'EventBookingCallablePayload',
+  'description': 'Callable payload accepted by signUpForFreeEvent. Same shape as EventIdCallablePayload but distinct so the booking flow can diverge without breaking the generic event-id callables.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'inviteCode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 4,
+      'maxLength': 64,
+      'pattern': '^[A-Za-z0-9_-]+\$',
+    },
+  },
+};
+
+const schemaCreateRazorpayOrderCallablePayloadSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callables/create_razorpay_order_payload.schema.json',
+  'title': 'CreateRazorpayOrderCallablePayload',
+  'description': 'Callable payload accepted by createRazorpayOrder. Returns a Razorpay order id + amount that the client uses to open the checkout sheet.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'eventId',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'inviteCode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 4,
+      'maxLength': 64,
+      'pattern': '^[A-Za-z0-9_-]+\$',
     },
   },
 };
@@ -11690,6 +12013,36 @@ const schemaPlaceDetailsCallableResponseSchema = <String, Object?>{
           'type': 'number',
           'minimum': -180,
           'maximum': 180,
+        },
+      },
+    },
+  },
+};
+
+const schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/fetch_event_success_wingman_candidates_response.schema.json',
+  'title': 'FetchEventSuccessWingmanCandidatesCallableResponse',
+  'description': 'Callable response returned by fetchEventSuccessWingmanCandidates. Each profile is the persisted publicProfiles/{uid} document shape with `uid` injected at the wire boundary so clients can identify the profile owner. Per-field shape is enforced by PublicProfileDocument (contracts/firestore/public_profiles.schema.json) when the Dart side parses each entry.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'profiles',
+  ],
+  'properties': <String, Object?>{
+    'profiles': <String, Object?>{
+      'type': 'array',
+      'items': <String, Object?>{
+        'type': 'object',
+        'required': <Object?>[
+          'uid',
+        ],
+        'properties': <String, Object?>{
+          'uid': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
         },
       },
     },
@@ -12510,6 +12863,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaMarkEventAttendanceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventJoinRequestDecisionCallablePayload',
+    source: 'callables/event_join_request_decision_payload.schema.json',
+    schema: schemaEventJoinRequestDecisionCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'OverrideEventSuccessRotationsCallablePayload',
     source: 'callables/override_event_success_rotations_payload.schema.json',
     schema: schemaOverrideEventSuccessRotationsCallablePayloadSchema,
@@ -12570,9 +12928,29 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaReportUserCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'RequestSuvbotDemoOperationCallablePayload',
+    source: 'callables/request_suvbot_demo_operation_payload.schema.json',
+    schema: schemaRequestSuvbotDemoOperationCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'ListSuvbotDemoActionsCallableResponse',
+    source: 'callable_responses/list_suvbot_demo_actions_response.schema.json',
+    schema: schemaListSuvbotDemoActionsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'VerifyRazorpayPaymentCallablePayload',
     source: 'callables/verify_razorpay_payment_payload.schema.json',
     schema: schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventBookingCallablePayload',
+    source: 'callables/event_booking_payload.schema.json',
+    schema: schemaEventBookingCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'CreateRazorpayOrderCallablePayload',
+    source: 'callables/create_razorpay_order_payload.schema.json',
+    schema: schemaCreateRazorpayOrderCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'RazorpayOrderCallableResponse',
@@ -12598,6 +12976,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     name: 'PlaceDetailsCallableResponse',
     source: 'callable_responses/place_details_response.schema.json',
     schema: schemaPlaceDetailsCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'FetchEventSuccessWingmanCandidatesCallableResponse',
+    source: 'callable_responses/fetch_event_success_wingman_candidates_response.schema.json',
+    schema: schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
   ),
   SchemaContractDefinition(
     name: 'CreateProfileDecisionClientWrite',
@@ -12688,6 +13071,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeleteEventCallablePayload': schemaDeleteEventCallablePayloadSchema,
   'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
   'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
+  'EventJoinRequestDecisionCallablePayload': schemaEventJoinRequestDecisionCallablePayloadSchema,
   'OverrideEventSuccessRotationsCallablePayload': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'SubmitEventSuccessWingmanRequestCallablePayload': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   'StartEventSuccessFirstHelloMissionCallablePayload': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -12700,12 +13084,17 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'BlockUserCallablePayload': schemaBlockUserCallablePayloadSchema,
   'UnblockUserCallablePayload': schemaUnblockUserCallablePayloadSchema,
   'ReportUserCallablePayload': schemaReportUserCallablePayloadSchema,
+  'RequestSuvbotDemoOperationCallablePayload': schemaRequestSuvbotDemoOperationCallablePayloadSchema,
+  'ListSuvbotDemoActionsCallableResponse': schemaListSuvbotDemoActionsCallableResponseSchema,
   'VerifyRazorpayPaymentCallablePayload': schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'EventBookingCallablePayload': schemaEventBookingCallablePayloadSchema,
+  'CreateRazorpayOrderCallablePayload': schemaCreateRazorpayOrderCallablePayloadSchema,
   'RazorpayOrderCallableResponse': schemaRazorpayOrderCallableResponseSchema,
   'PlacesAutocompleteCallablePayload': schemaPlacesAutocompleteCallablePayloadSchema,
   'PlacesAutocompleteCallableResponse': schemaPlacesAutocompleteCallableResponseSchema,
   'PlaceDetailsCallablePayload': schemaPlaceDetailsCallablePayloadSchema,
   'PlaceDetailsCallableResponse': schemaPlaceDetailsCallableResponseSchema,
+  'FetchEventSuccessWingmanCandidatesCallableResponse': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
   'CreateProfileDecisionClientWrite': schemaCreateProfileDecisionClientWriteSchema,
   'CreateChatMessageClientWrite': schemaCreateChatMessageClientWriteSchema,
   'CreateSavedEventClientWrite': schemaCreateSavedEventClientWriteSchema,
@@ -12771,6 +13160,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/delete_event_payload.schema.json': schemaDeleteEventCallablePayloadSchema,
   'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
   'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
+  'callables/event_join_request_decision_payload.schema.json': schemaEventJoinRequestDecisionCallablePayloadSchema,
   'callables/override_event_success_rotations_payload.schema.json': schemaOverrideEventSuccessRotationsCallablePayloadSchema,
   'callables/submit_event_success_wingman_request_payload.schema.json': schemaSubmitEventSuccessWingmanRequestCallablePayloadSchema,
   'callables/start_event_success_first_hello_mission_payload.schema.json': schemaStartEventSuccessFirstHelloMissionCallablePayloadSchema,
@@ -12783,12 +13173,17 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/block_user_payload.schema.json': schemaBlockUserCallablePayloadSchema,
   'callables/unblock_user_payload.schema.json': schemaUnblockUserCallablePayloadSchema,
   'callables/report_user_payload.schema.json': schemaReportUserCallablePayloadSchema,
+  'callables/request_suvbot_demo_operation_payload.schema.json': schemaRequestSuvbotDemoOperationCallablePayloadSchema,
+  'callable_responses/list_suvbot_demo_actions_response.schema.json': schemaListSuvbotDemoActionsCallableResponseSchema,
   'callables/verify_razorpay_payment_payload.schema.json': schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'callables/event_booking_payload.schema.json': schemaEventBookingCallablePayloadSchema,
+  'callables/create_razorpay_order_payload.schema.json': schemaCreateRazorpayOrderCallablePayloadSchema,
   'callable_responses/razorpay_order_response.schema.json': schemaRazorpayOrderCallableResponseSchema,
   'callables/places_autocomplete_payload.schema.json': schemaPlacesAutocompleteCallablePayloadSchema,
   'callable_responses/places_autocomplete_response.schema.json': schemaPlacesAutocompleteCallableResponseSchema,
   'callables/place_details_payload.schema.json': schemaPlaceDetailsCallablePayloadSchema,
   'callable_responses/place_details_response.schema.json': schemaPlaceDetailsCallableResponseSchema,
+  'callable_responses/fetch_event_success_wingman_candidates_response.schema.json': schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema,
   'client_writes/create_profile_decision.schema.json': schemaCreateProfileDecisionClientWriteSchema,
   'client_writes/create_chat_message.schema.json': schemaCreateChatMessageClientWriteSchema,
   'client_writes/create_saved_event.schema.json': schemaCreateSavedEventClientWriteSchema,
