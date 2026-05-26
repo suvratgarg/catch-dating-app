@@ -191,12 +191,11 @@ void main() {
         'prefsShowOnMap': false,
         'height': 175,
       });
-      final wireJson = {'fields': patch.toFieldsJson()};
       final schema = JsonSchema.create(
         schema_contracts
             .schemaContractsByName['UpdateUserProfileCallablePayload']!,
       );
-      expect(schema.validate(wireJson).isValid, isTrue);
+      expect(schema.validate(patch.toCallableJson()).isValid, isTrue);
     });
   });
 }

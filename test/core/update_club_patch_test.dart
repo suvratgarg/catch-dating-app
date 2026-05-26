@@ -65,20 +65,24 @@ void main() {
 
     test('typed host defaults serialize to schema-valid JSON', () {
       final patch = UpdateClubPatch(hostDefaults: const ClubHostDefaults());
-      final wireJson = {'clubId': 'club-1', 'fields': patch.toFieldsJson()};
       final schema = JsonSchema.create(
         schema_contracts.schemaContractsByName['UpdateClubCallablePayload']!,
       );
-      expect(schema.validate(wireJson).isValid, isTrue);
+      expect(
+        schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,
+        isTrue,
+      );
     });
 
     test('raw() escape hatch produces a schema-valid patch', () {
       final patch = UpdateClubPatch.raw({'name': 'New Name'});
-      final wireJson = {'clubId': 'club-1', 'fields': patch.toFieldsJson()};
       final schema = JsonSchema.create(
         schema_contracts.schemaContractsByName['UpdateClubCallablePayload']!,
       );
-      expect(schema.validate(wireJson).isValid, isTrue);
+      expect(
+        schema.validate(patch.toCallableJson(clubId: 'club-1')).isValid,
+        isTrue,
+      );
     });
   });
 }

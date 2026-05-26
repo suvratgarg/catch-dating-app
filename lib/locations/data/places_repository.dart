@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
+import 'package:catch_dating_app/locations/data/places_callable_requests.dart';
+import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/domain/place.dart';
 import 'package:cloud_functions/cloud_functions.dart';

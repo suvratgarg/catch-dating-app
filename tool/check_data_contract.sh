@@ -82,24 +82,31 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage \
 
 echo "==> Running focused Flutter analysis"
 flutter analyze \
+  lib/core/schema_contracts/generated/callable_request_dtos.g.dart \
+  lib/core/schema_contracts/generated/callables \
+  lib/core/schema_contracts/generated/schema_contracts.g.dart \
+  lib/core/schema_contracts/generated/schemas \
   lib/clubs/data/clubs_repository.dart \
-  lib/clubs/data/club_callable_dtos.dart \
+  lib/clubs/data/club_callable_responses.dart \
   lib/clubs/presentation/create/create_club_controller.dart \
   lib/reviews/data/reviews_repository.dart \
-  lib/reviews/data/review_callable_dtos.dart \
+  lib/reviews/data/review_callable_adapters.dart \
   lib/reviews/presentation/reviews_section.dart \
   lib/events/data/event_repository.dart \
-  lib/events/data/event_callable_dtos.dart \
+  lib/events/data/event_callable_adapters.dart \
+  lib/events/data/event_callable_responses.dart \
   lib/user_profile/data/user_profile_repository.dart \
-  lib/user_profile/data/user_profile_callable_dtos.dart \
+  lib/user_profile/domain/update_user_profile_patch.dart \
   lib/safety/data/safety_repository.dart \
-  lib/safety/data/safety_callable_dtos.dart \
   lib/payments/data/payment_repository.dart \
   lib/payments/data/payment_history_repository.dart \
-  lib/payments/data/payment_callable_dtos.dart \
+  lib/payments/data/payment_callable_requests.dart \
+  lib/payments/data/payment_callable_responses.dart \
   lib/locations/data/places_repository.dart \
-  lib/locations/data/places_callable_dtos.dart \
+  lib/locations/data/places_callable_requests.dart \
+  lib/locations/data/places_callable_responses.dart \
   lib/matches/data/match_repository.dart \
+  lib/event_success/data/event_success_callable_responses.dart \
   lib/event_success/data/event_success_repository.dart \
   lib/public_profile/data/public_profile_repository.dart \
   test/core/schema_contracts_generated_test.dart \

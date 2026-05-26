@@ -1,18 +1,3 @@
-// Re-export generated callable request classes for clubs. Generated from
-// contracts/callables/ by tool/contracts/generate_schema_contracts.mjs.
-export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show
-        AddClubHostCallableRequest,
-        ArchiveClubCallableRequest,
-        ClubMembershipCallableRequest,
-        CreateClubCallableRequest,
-        DeleteClubCallableRequest,
-        RemoveClubHostCallableRequest,
-        SetClubNotificationPreferenceCallableRequest,
-        StartClubHostConversationCallableRequest,
-        TransferClubOwnershipCallableRequest,
-        UpdateClubCallableRequest;
-
 final class CreateClubCallableResponse {
   const CreateClubCallableResponse({required this.clubId});
 

@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_callable_dtos.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -85,7 +84,7 @@ class UserProfileRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateUserProfile')
-        .call(UpdateUserProfileCallableRequest.fromPatch(patch).toJson()),
+        .call(patch.toCallableJson()),
     context: BackendErrorContext(
       service: BackendService.functions,
       action: action,

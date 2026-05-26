@@ -3,6 +3,7 @@
   "$id": "https://catch.app/contracts/callables/event_booking_payload.schema.json",
   "title": "EventBookingCallablePayload",
   "description": "Callable payload accepted by signUpForFreeEvent. Same shape as EventIdCallablePayload but distinct so the booking flow can diverge without breaking the generic event-id callables.",
+  "x-callable-aliases": ["signUpForFreeEvent"],
   "type": "object",
   "additionalProperties": false,
   "required": ["eventId"],

@@ -1,12 +1,21 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
+import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        AddClubHostCallableRequest,
+        ClubMembershipCallableRequest,
+        CreateClubCallableRequest,
+        RemoveClubHostCallableRequest,
+        SetClubNotificationPreferenceCallableRequest,
+        StartClubHostConversationCallableRequest,
+        TransferClubOwnershipCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -171,12 +180,7 @@ class ClubsRepository {
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('updateClub')
-        .call(
-          UpdateClubCallableRequest(
-            clubId: clubId,
-            fields: patch.toFieldsJson(),
-          ).toJson(),
-        ),
+        .call(patch.toCallableJson(clubId: clubId)),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update club',

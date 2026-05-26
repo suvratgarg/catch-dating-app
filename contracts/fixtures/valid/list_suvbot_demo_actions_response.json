@@ -1,0 +1,18 @@
+{
+  "actions": [
+    {
+      "id": "checkDemoState",
+      "label": "Check demo state",
+      "description": "Show the current demo configuration.",
+      "icon": "info"
+    },
+    {
+      "id": "resetChats",
+      "label": "Reset chats",
+      "description": "Wipe demo chat history for this account.",
+      "icon": "delete",
+      "destructive": true,
+      "requiresText": false
+    }
+  ]
+}
