@@ -39,6 +39,7 @@ Do not edit it by hand.
 | UserEventScheduleLockDocument | `firestore/user_event_schedule_locks.schema.json` | `functions/src/shared/generated/userEventScheduleLockDocument.ts` |
 | SavedEventDocument | `firestore/saved_events.schema.json` | `functions/src/shared/generated/savedEventDocument.ts` |
 | PaymentDocument | `firestore/payments.schema.json` | `functions/src/shared/generated/paymentDocument.ts` |
+| HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `functions/src/shared/generated/hostPaymentAccountDocument.ts` |
 | SwipeDocument | `firestore/swipes.schema.json` | `functions/src/shared/generated/swipeDocument.ts` |
 | MatchDocument | `firestore/matches.schema.json` | `functions/src/shared/generated/matchDocument.ts` |
 | ChatMessageDocument | `firestore/chat_messages.schema.json` | `functions/src/shared/generated/chatMessageDocument.ts` |
@@ -89,6 +90,11 @@ Do not edit it by hand.
 | EventBookingCallablePayload | `callables/event_booking_payload.schema.json` | `functions/src/shared/generated/eventBookingCallablePayload.ts` |
 | CreateRazorpayOrderCallablePayload | `callables/create_razorpay_order_payload.schema.json` | `functions/src/shared/generated/createRazorpayOrderCallablePayload.ts` |
 | RazorpayOrderCallableResponse | `callable_responses/razorpay_order_response.schema.json` | `functions/src/shared/generated/razorpayOrderCallableResponse.ts` |
+| CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `functions/src/shared/generated/createStripeCheckoutSessionCallablePayload.ts` |
+| StripeCheckoutSessionCallableResponse | `callable_responses/stripe_checkout_session_response.schema.json` | `functions/src/shared/generated/stripeCheckoutSessionCallableResponse.ts` |
+| CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `functions/src/shared/generated/createStripeHostOnboardingLinkCallablePayload.ts` |
+| RefreshStripeHostPaymentAccountCallablePayload | `callables/refresh_stripe_host_payment_account_payload.schema.json` | `functions/src/shared/generated/refreshStripeHostPaymentAccountCallablePayload.ts` |
+| StripeHostOnboardingLinkCallableResponse | `callable_responses/stripe_host_onboarding_link_response.schema.json` | `functions/src/shared/generated/stripeHostOnboardingLinkCallableResponse.ts` |
 | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `functions/src/shared/generated/placesAutocompleteCallablePayload.ts` |
 | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `functions/src/shared/generated/placesAutocompleteCallableResponse.ts` |
 | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `functions/src/shared/generated/placeDetailsCallablePayload.ts` |
@@ -132,6 +138,7 @@ Do not edit it by hand.
 | `schemaUserEventScheduleLockDocumentSchema` | UserEventScheduleLockDocument | `firestore/user_event_schedule_locks.schema.json` | `lib/core/schema_contracts/generated/schemas/user_event_schedule_lock_document.g.dart` |
 | `schemaSavedEventDocumentSchema` | SavedEventDocument | `firestore/saved_events.schema.json` | `lib/core/schema_contracts/generated/schemas/saved_event_document.g.dart` |
 | `schemaPaymentDocumentSchema` | PaymentDocument | `firestore/payments.schema.json` | `lib/core/schema_contracts/generated/schemas/payment_document.g.dart` |
+| `schemaHostPaymentAccountDocumentSchema` | HostPaymentAccountDocument | `firestore/host_payment_accounts.schema.json` | `lib/core/schema_contracts/generated/schemas/host_payment_account_document.g.dart` |
 | `schemaSwipeDocumentSchema` | SwipeDocument | `firestore/swipes.schema.json` | `lib/core/schema_contracts/generated/schemas/swipe_document.g.dart` |
 | `schemaMatchDocumentSchema` | MatchDocument | `firestore/matches.schema.json` | `lib/core/schema_contracts/generated/schemas/match_document.g.dart` |
 | `schemaChatMessageDocumentSchema` | ChatMessageDocument | `firestore/chat_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/chat_message_document.g.dart` |
@@ -182,6 +189,11 @@ Do not edit it by hand.
 | `schemaEventBookingCallablePayloadSchema` | EventBookingCallablePayload | `callables/event_booking_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_booking_callable_payload.g.dart` |
 | `schemaCreateRazorpayOrderCallablePayloadSchema` | CreateRazorpayOrderCallablePayload | `callables/create_razorpay_order_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_razorpay_order_callable_payload.g.dart` |
 | `schemaRazorpayOrderCallableResponseSchema` | RazorpayOrderCallableResponse | `callable_responses/razorpay_order_response.schema.json` | `lib/core/schema_contracts/generated/schemas/razorpay_order_callable_response.g.dart` |
+| `schemaCreateStripeCheckoutSessionCallablePayloadSchema` | CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_stripe_checkout_session_callable_payload.g.dart` |
+| `schemaStripeCheckoutSessionCallableResponseSchema` | StripeCheckoutSessionCallableResponse | `callable_responses/stripe_checkout_session_response.schema.json` | `lib/core/schema_contracts/generated/schemas/stripe_checkout_session_callable_response.g.dart` |
+| `schemaCreateStripeHostOnboardingLinkCallablePayloadSchema` | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_stripe_host_onboarding_link_callable_payload.g.dart` |
+| `schemaRefreshStripeHostPaymentAccountCallablePayloadSchema` | RefreshStripeHostPaymentAccountCallablePayload | `callables/refresh_stripe_host_payment_account_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/refresh_stripe_host_payment_account_callable_payload.g.dart` |
+| `schemaStripeHostOnboardingLinkCallableResponseSchema` | StripeHostOnboardingLinkCallableResponse | `callable_responses/stripe_host_onboarding_link_response.schema.json` | `lib/core/schema_contracts/generated/schemas/stripe_host_onboarding_link_callable_response.g.dart` |
 | `schemaPlacesAutocompleteCallablePayloadSchema` | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/places_autocomplete_callable_payload.g.dart` |
 | `schemaPlacesAutocompleteCallableResponseSchema` | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `lib/core/schema_contracts/generated/schemas/places_autocomplete_callable_response.g.dart` |
 | `schemaPlaceDetailsCallablePayloadSchema` | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/place_details_callable_payload.g.dart` |
@@ -231,6 +243,8 @@ Do not edit it by hand.
 | ReportUserCallableRequest | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `lib/core/schema_contracts/generated/callables/report_user_callable_request.g.dart` |
 | RequestSuvbotDemoOperationCallableRequest | RequestSuvbotDemoOperationCallablePayload | `callables/request_suvbot_demo_operation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/request_suvbot_demo_operation_callable_request.g.dart` |
 | VerifyRazorpayPaymentCallableRequest | VerifyRazorpayPaymentCallablePayload | `callables/verify_razorpay_payment_payload.schema.json` | `lib/core/schema_contracts/generated/callables/verify_razorpay_payment_callable_request.g.dart` |
+| CreateStripeCheckoutSessionCallableRequest | CreateStripeCheckoutSessionCallablePayload | `callables/create_stripe_checkout_session_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_stripe_checkout_session_callable_request.g.dart` |
+| CreateStripeHostOnboardingLinkCallableRequest | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_stripe_host_onboarding_link_callable_request.g.dart` |
 | PlacesAutocompleteCallableRequest | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/callables/places_autocomplete_callable_request.g.dart` |
 | PlaceDetailsCallableRequest | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/place_details_callable_request.g.dart` |
 
@@ -238,7 +252,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
-| _None_ | _None_ |
+| RefreshStripeHostPaymentAccountCallablePayload | no properties |
 
 ## Registry And Validator Outputs
 

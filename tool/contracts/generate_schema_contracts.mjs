@@ -163,6 +163,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/paymentDocument.ts",
   },
   {
+    name: "HostPaymentAccountDocument",
+    source: "firestore/host_payment_accounts.schema.json",
+    typeOutput: "functions/src/shared/generated/hostPaymentAccountDocument.ts",
+  },
+  {
     name: "SwipeDocument",
     source: "firestore/swipes.schema.json",
     typeOutput: "functions/src/shared/generated/swipeDocument.ts",
@@ -454,6 +459,43 @@ const schemaSpecs = [
     source: "callable_responses/razorpay_order_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/razorpayOrderCallableResponse.ts",
+  },
+  {
+    name: "CreateStripeCheckoutSessionCallablePayload",
+    source: "callables/create_stripe_checkout_session_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createStripeCheckoutSessionCallablePayload.ts",
+  },
+  {
+    name: "StripeCheckoutSessionCallableResponse",
+    source: "callable_responses/stripe_checkout_session_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "stripeCheckoutSessionCallableResponse.ts",
+  },
+  {
+    name: "CreateStripeHostOnboardingLinkCallablePayload",
+    source: "callables/create_stripe_host_onboarding_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createStripeHostOnboardingLinkCallablePayload.ts",
+  },
+  {
+    name: "RefreshStripeHostPaymentAccountCallablePayload",
+    source:
+      "callables/refresh_stripe_host_payment_account_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "refreshStripeHostPaymentAccountCallablePayload.ts",
+  },
+  {
+    name: "StripeHostOnboardingLinkCallableResponse",
+    source:
+      "callable_responses/stripe_host_onboarding_link_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "stripeHostOnboardingLinkCallableResponse.ts",
   },
   {
     name: "PlacesAutocompleteCallablePayload",

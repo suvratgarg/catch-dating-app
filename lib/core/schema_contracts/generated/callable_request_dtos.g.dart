@@ -22,6 +22,8 @@ export 'callables/complete_event_success_first_hello_mission_callable_request.g.
 export 'callables/create_club_callable_request.g.dart';
 export 'callables/create_event_callable_request.g.dart';
 export 'callables/create_event_review_callable_request.g.dart';
+export 'callables/create_stripe_checkout_session_callable_request.g.dart';
+export 'callables/create_stripe_host_onboarding_link_callable_request.g.dart';
 export 'callables/delete_club_callable_request.g.dart';
 export 'callables/delete_event_callable_request.g.dart';
 export 'callables/delete_event_review_callable_request.g.dart';

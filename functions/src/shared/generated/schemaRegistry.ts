@@ -6528,10 +6528,24 @@ export const paymentDocumentSchema: Record<string, unknown> = {
       "maximum": 100000000,
       "x-catch-ownership": "callable-owned"
     },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
     "currency": {
       "type": "string",
       "minLength": 3,
       "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "razorpay",
+        "stripe"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "status": {
@@ -6542,6 +6556,42 @@ export const paymentDocumentSchema: Record<string, unknown> = {
         "failed",
         "refunded"
       ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "checkoutSessionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostUserId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "stripeAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "applicationFeeAmount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
       "x-catch-ownership": "callable-owned"
     },
     "signUpFailed": {
@@ -6600,6 +6650,178 @@ export const paymentDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+} as const;
+
+export const hostPaymentAccountDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_payment_accounts.schema.json",
+  "title": "HostPaymentAccountDocument",
+  "description": "Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostPaymentAccounts",
+  "x-firestore-path": "hostPaymentAccounts/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "Stripe Connect onboarding and webhook callables",
+  "required": [
+    "userId",
+    "provider",
+    "country",
+    "defaultCurrency",
+    "stripeAccountId",
+    "chargesEnabled",
+    "payoutsEnabled",
+    "detailsSubmitted",
+    "onboardingStatus",
+    "requirementsCurrentlyDue",
+    "requirementsPastDue",
+    "requirementsPendingVerification",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "userId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "stripe"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "country": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2,
+      "x-catch-ownership": "callable-owned"
+    },
+    "defaultCurrency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
+    },
+    "stripeAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "chargesEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "payoutsEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "detailsSubmitted": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "onboardingStatus": {
+      "type": "string",
+      "enum": [
+        "notStarted",
+        "pending",
+        "complete",
+        "restricted"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "disabledReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsCurrentlyDue": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsPastDue": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsPendingVerification": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastStripeEventId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -11986,6 +12208,144 @@ export const razorpayOrderCallableResponseSchema: Record<string, unknown> = {
     "currency": {
       "type": "string",
       "pattern": "^[A-Z]{3}$"
+    }
+  }
+} as const;
+
+export const createStripeCheckoutSessionCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_stripe_checkout_session_payload.schema.json",
+  "title": "CreateStripeCheckoutSessionCallablePayload",
+  "description": "Callable payload accepted by createStripeCheckoutSession. The server derives amount, currency, host account, and booking metadata from Firestore.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 80
+    }
+  }
+} as const;
+
+export const stripeCheckoutSessionCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/stripe_checkout_session_response.schema.json",
+  "title": "StripeCheckoutSessionCallableResponse",
+  "description": "Callable response returned by createStripeCheckoutSession.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "paymentId",
+    "amountMinor",
+    "currency",
+    "checkoutUrl",
+    "provider"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "paymentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000000
+    },
+    "currency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "checkoutUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "stripe"
+      ]
+    }
+  }
+} as const;
+
+export const createStripeHostOnboardingLinkCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_stripe_host_onboarding_link_payload.schema.json",
+  "title": "CreateStripeHostOnboardingLinkCallablePayload",
+  "description": "Callable payload accepted by createStripeHostOnboardingLink. Hosts can optionally provide the Stripe account country and default currency for first-time setup.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "country": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 2,
+      "maxLength": 2
+    },
+    "defaultCurrency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 3,
+      "maxLength": 3
+    }
+  }
+} as const;
+
+export const refreshStripeHostPaymentAccountCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/refresh_stripe_host_payment_account_payload.schema.json",
+  "title": "RefreshStripeHostPaymentAccountCallablePayload",
+  "description": "Callable payload accepted by refreshStripeHostPaymentAccount. The authenticated host id determines which Stripe account is refreshed.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+} as const;
+
+export const stripeHostOnboardingLinkCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/stripe_host_onboarding_link_response.schema.json",
+  "title": "StripeHostOnboardingLinkCallableResponse",
+  "description": "Callable response returned by createStripeHostOnboardingLink.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accountId",
+    "onboardingUrl"
+  ],
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "onboardingUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
     }
   }
 } as const;

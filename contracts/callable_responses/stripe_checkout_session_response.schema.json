@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/stripe_checkout_session_response.schema.json",
+  "title": "StripeCheckoutSessionCallableResponse",
+  "description": "Callable response returned by createStripeCheckoutSession.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "paymentId",
+    "amountMinor",
+    "currency",
+    "checkoutUrl",
+    "provider"
+  ],
+  "properties": {
+    "sessionId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "paymentId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "amountMinor": {"type": "integer", "minimum": 1, "maximum": 100000000},
+    "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+    "checkoutUrl": {"type": "string", "format": "uri", "maxLength": 2048},
+    "provider": {"type": "string", "enum": ["stripe"]}
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_payment_accounts.schema.json",
+  "title": "HostPaymentAccountDocument",
+  "description": "Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostPaymentAccounts",
+  "x-firestore-path": "hostPaymentAccounts/{uid}",
+  "x-document-id-field": "id",
+  "x-owner": "Stripe Connect onboarding and webhook callables",
+  "required": [
+    "userId",
+    "provider",
+    "country",
+    "defaultCurrency",
+    "stripeAccountId",
+    "chargesEnabled",
+    "payoutsEnabled",
+    "detailsSubmitted",
+    "onboardingStatus",
+    "requirementsCurrentlyDue",
+    "requirementsPastDue",
+    "requirementsPendingVerification",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "userId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["stripe"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "country": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2,
+      "x-catch-ownership": "callable-owned"
+    },
+    "defaultCurrency": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
+    },
+    "stripeAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "chargesEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "payoutsEnabled": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "detailsSubmitted": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "onboardingStatus": {
+      "type": "string",
+      "enum": ["notStarted", "pending", "complete", "restricted"],
+      "x-catch-ownership": "callable-owned"
+    },
+    "disabledReason": {
+      "type": ["string", "null"],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsCurrentlyDue": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {"type": "string", "minLength": 1, "maxLength": 160},
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsPastDue": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {"type": "string", "minLength": 1, "maxLength": 160},
+      "x-catch-ownership": "callable-owned"
+    },
+    "requirementsPendingVerification": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {"type": "string", "minLength": 1, "maxLength": 160},
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastStripeEventId": {
+      "type": ["string", "null"],
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}
