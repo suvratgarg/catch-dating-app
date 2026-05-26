@@ -141,7 +141,7 @@ void main() {
     expect(scrolledTitleTop, greaterThanOrEqualTo(0));
     expect(scrolledTitleTop, lessThanOrEqualTo(initialTitleTop));
 
-    await tester.tap(find.byIcon(Icons.search_rounded));
+    await tester.tap(find.byTooltip('Search chats'));
     await tester.pump();
     final midSearchMorphFrame = Duration(
       milliseconds: CatchMotion.base.inMilliseconds ~/ 2,

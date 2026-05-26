@@ -2,14 +2,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   buildOrderCreatePayload,
   buildPaymentRecord,
   verifyPaidEventBooking,
 } from "./paymentValidation";
 
-function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
+function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
     clubId: "club-1",
     startTime: {} as FirebaseFirestore.Timestamp,

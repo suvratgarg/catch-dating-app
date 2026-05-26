@@ -1,0 +1,214 @@
+part of '../event_policy.dart';
+
+class EventPolicyBundle {
+  const EventPolicyBundle({
+    required this.admissionPolicy,
+    required this.pricingPolicy,
+    this.cancellationPolicy = const EventCancellationPolicy.standard(),
+    this.settlementPolicy = const EventSettlementPolicy.afterEventCompletion(),
+    this.cohortResolver = const EventCohortResolver(),
+  });
+
+  final EventAdmissionPolicy admissionPolicy;
+  final EventPricingPolicy pricingPolicy;
+  final EventCancellationPolicy cancellationPolicy;
+  final EventSettlementPolicy settlementPolicy;
+  final EventCohortResolver cohortResolver;
+
+  static const version = 1;
+
+  factory EventPolicyBundle.openEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.open(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy.rankedOffer(),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.inviteOnlyEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    String? inviteCodeHint,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.inviteOnly(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy.disabled(),
+        privateAccessPolicy: EventPrivateAccessPolicy.inviteCode(
+          inviteCodeHint: inviteCodeHint,
+        ),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.requestToJoinEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.manualApproval(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy(
+          mode: EventWaitlistMode.manualReview,
+          offerWindow: Duration.zero,
+        ),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.fixedCohortCapsEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    int? maxMenInterestedInWomen,
+    int? maxWomenInterestedInMen,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.fixedCohortCaps(
+        capacityLimit: capacityLimit,
+        cohortCapacityLimits: {
+          EventCohortIds.menInterestedInWomen: ?maxMenInterestedInWomen,
+          EventCohortIds.womenInterestedInMen: ?maxWomenInterestedInMen,
+        },
+        waitlistPolicy: const EventWaitlistPolicy.rankedOffer(),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.balancedSinglesEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    int maxSkew = 1,
+    EventDemandPricingRule? demandPricingRule,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.balancedRatio(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy.rankedOffer(),
+        balancedRatioPolicy: BalancedRatioPolicy(
+          leftCohortId: EventCohortIds.menInterestedInWomen,
+          rightCohortId: EventCohortIds.womenInterestedInMen,
+          maxSkew: maxSkew,
+          outOfRatioCohortPolicy:
+              EventOutOfRatioCohortPolicy.admitWithinGeneralCapacity,
+        ),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ).copyWithDemandRule(demandPricingRule),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.demandPricedBalancedSinglesEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    required int stepAdjustmentInPaise,
+    required int maxAdjustmentInPaise,
+    int maxSkew = 1,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle.balancedSinglesEvent(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      maxSkew: maxSkew,
+      demandPricingRule: EventDemandPricingRule(
+        pricedCohortId: EventCohortIds.menInterestedInWomen,
+        balancingCohortId: EventCohortIds.womenInterestedInMen,
+        stepAdjustment: MoneyAmount.inPaise(stepAdjustmentInPaise),
+        maxAdjustment: MoneyAmount.inPaise(maxAdjustmentInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.legacyEvent({
+    required int capacityLimit,
+    required int priceInPaise,
+    int? maxMen,
+    int? maxWomen,
+  }) {
+    if (maxMen != null || maxWomen != null) {
+      return EventPolicyBundle.fixedCohortCapsEvent(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: priceInPaise,
+        maxMenInterestedInWomen: maxMen,
+        maxWomenInterestedInMen: maxWomen,
+      );
+    }
+    return EventPolicyBundle.openEvent(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: priceInPaise,
+    );
+  }
+
+  factory EventPolicyBundle.fromJson(Map<String, dynamic> json) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.fromJson(
+        _mapValue(json['admission']) ?? const {},
+      ),
+      pricingPolicy: EventPricingPolicy.fromJson(
+        _mapValue(json['pricing']) ?? const {},
+      ),
+      cancellationPolicy: EventCancellationPolicy.fromJson(
+        _mapValue(json['cancellation']) ?? const {},
+      ),
+      settlementPolicy: EventSettlementPolicy.fromJson(
+        _mapValue(json['settlement']) ?? const {},
+      ),
+    );
+  }
+
+  int get capacityLimit => admissionPolicy.capacityLimit;
+  int get basePriceInPaise => pricingPolicy.basePrice.inPaise;
+
+  bool get usesBalancedRatio =>
+      admissionPolicy.format == EventAdmissionFormat.balancedRatio;
+
+  bool get usesFixedCohortCaps =>
+      admissionPolicy.format == EventAdmissionFormat.fixedCohortCaps;
+
+  bool get usesInviteOnly =>
+      admissionPolicy.format == EventAdmissionFormat.inviteOnly ||
+      admissionPolicy.inviteRequired;
+
+  bool get usesDemandPricing => pricingPolicy.hasDemandPricing;
+
+  Map<String, Object?> toJson() => {
+    'version': version,
+    'admission': admissionPolicy.toJson(),
+    'pricing': pricingPolicy.toJson(),
+    'cancellation': cancellationPolicy.toJson(),
+    'settlement': settlementPolicy.toJson(),
+  };
+}

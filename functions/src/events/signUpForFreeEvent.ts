@@ -2,8 +2,8 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {signUpUserForEvent} from "./signUpUserForEvent";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -86,8 +86,8 @@ export async function signUpForFreeEventHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = eventSnap.data() as EventDoc;
-  const user = userSnap.data() as UserProfileDoc;
+  const event = eventSnap.data() as EventDocument;
+  const user = userSnap.data() as UserProfileDocument;
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
   const roster = rosterFromEvent(event);

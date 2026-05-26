@@ -1,5 +1,9 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        CreateEventCallableRequest,
+        CreateEventPrivateAccess,
+        UpdateEventCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 
 CreateEventCallableRequest createEventCallableRequestFromEvent(

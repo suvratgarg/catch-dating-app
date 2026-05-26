@@ -2,10 +2,10 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  BlockDoc,
-  ClubDoc,
-  EventDoc,
-  UserProfileDoc,
+  BlockDocument,
+  ClubDocument,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -59,7 +59,7 @@ interface EventSuccessPodsDeps {
   ) => Promise<void>;
 }
 
-interface EventSuccessPlanDoc {
+interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
@@ -71,12 +71,12 @@ interface EventSuccessPlanDoc {
   };
 }
 
-interface EventParticipationDoc {
+interface EventParticipationDocument {
   uid?: string;
   status?: string;
 }
 
-interface EventSuccessPreferenceDoc {
+interface EventSuccessPreferenceDocument {
   uid?: string;
   microPodsOptedOut?: boolean;
 }
@@ -182,7 +182,13 @@ export async function generateEventSuccessPodsHandler(
       "Event-success setup has not been saved.");
   }
 
-  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+
+    eventSnap,
+
+    "EventDocument"
+
+  );
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition",
       "This event has been cancelled.");
@@ -192,15 +198,18 @@ export async function generateEventSuccessPodsHandler(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubHost(club, uid)) {
     throw new HttpsError("permission-denied",
       "Only the club host can generate event pods.");
   }
 
-  const plan = requireDoc<EventSuccessPlanDoc>(
+  const plan = requireDoc<EventSuccessPlanDocument>(
     planSnap,
-    "EventSuccessPlanDoc"
+    "EventSuccessPlanDocument"
   );
   if (plan.eventId !== undefined && plan.eventId !== eventId) {
     throw new HttpsError("failed-precondition",
@@ -222,7 +231,7 @@ export async function generateEventSuccessPodsHandler(
     .get();
   const optedOutUids = await fetchMicroPodsOptOutUids(db, eventId);
   const participants = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDoc)
+    .map((doc) => doc.data() as EventParticipationDocument)
     .map(toActiveParticipant)
     .filter((participant): participant is ActiveParticipant =>
       participant !== null
@@ -309,7 +318,7 @@ export async function overrideEventSuccessGroupsHandler(
     .get();
   const optedOutUids = await fetchMicroPodsOptOutUids(db, payload.eventId);
   const participants = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDoc)
+    .map((doc) => doc.data() as EventParticipationDocument)
     .map(toActiveParticipant)
     .filter((participant): participant is ActiveParticipant =>
       participant !== null
@@ -384,7 +393,7 @@ async function loadGroupEventContext(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   uid: string
-): Promise<{event: EventDoc; plan: EventSuccessPlanDoc}> {
+): Promise<{event: EventDocument; plan: EventSuccessPlanDocument}> {
   const eventRef = db.collection("events").doc(eventId);
   const planRef = db.collection("eventSuccessPlans").doc(eventId);
   const [eventSnap, planSnap] = await Promise.all([
@@ -400,7 +409,13 @@ async function loadGroupEventContext(
       "Event-success setup has not been saved.");
   }
 
-  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+
+    eventSnap,
+
+    "EventDocument"
+
+  );
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition",
       "This event has been cancelled.");
@@ -410,15 +425,18 @@ async function loadGroupEventContext(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubHost(club, uid)) {
     throw new HttpsError("permission-denied",
       "Only the club host can manage event groups.");
   }
 
-  const plan = requireDoc<EventSuccessPlanDoc>(
+  const plan = requireDoc<EventSuccessPlanDocument>(
     planSnap,
-    "EventSuccessPlanDoc"
+    "EventSuccessPlanDocument"
   );
   if (plan.eventId !== undefined && plan.eventId !== eventId) {
     throw new HttpsError("failed-precondition",
@@ -438,11 +456,11 @@ async function loadGroupEventContext(
 
 /**
  * Converts a participation edge into an active pod candidate.
- * @param {EventParticipationDoc} data Participation document data.
+ * @param {EventParticipationDocument} data Participation document data.
  * @return {ActiveParticipant | null} Active participant or null.
  */
 function toActiveParticipant(
-  data: EventParticipationDoc
+  data: EventParticipationDocument
 ): ActiveParticipant | null {
   if (typeof data.uid !== "string" || data.uid.length === 0) return null;
   if (data.status !== "attended" && data.status !== "signedUp") return null;
@@ -465,7 +483,7 @@ async function fetchMicroPodsOptOutUids(
     .get();
   const optedOut = new Set<string>();
   for (const doc of snap.docs) {
-    const preference = doc.data() as EventSuccessPreferenceDoc;
+    const preference = doc.data() as EventSuccessPreferenceDocument;
     if (
       preference.microPodsOptedOut === true &&
       typeof preference.uid === "string" &&
@@ -532,7 +550,9 @@ async function hydrateParticipants(
     )
   );
   return participants.map((participant, index) => {
-    const profile = snaps[index].data() as Partial<UserProfileDoc> | undefined;
+    const profile = snaps[index].data() as
+      | Partial<UserProfileDocument>
+      | undefined;
     if (profile === undefined) return participant;
     return {
       ...participant,
@@ -550,10 +570,10 @@ async function hydrateParticipants(
 
 /**
  * Reads event timing for rotating group assignments.
- * @param {EventDoc} event Firestore event document.
+ * @param {EventDocument} event Firestore event document.
  * @return {EventTiming} Event start and end in millis.
  */
-function eventTimingFor(event: EventDoc): EventTiming {
+function eventTimingFor(event: EventDocument): EventTiming {
   const startMillis = timestampMillis(event.startTime, "startTime");
   const endMillis = timestampMillis(event.endTime, "endTime");
   if (endMillis <= startMillis) {
@@ -797,7 +817,7 @@ async function fetchBlockedPairs(
   const pairs = new Set<string>();
   for (const snap of snaps) {
     for (const doc of snap.docs) {
-      const block = doc.data() as Partial<BlockDoc>;
+      const block = doc.data() as Partial<BlockDocument>;
       if (
         typeof block.blockerUserId !== "string" ||
         typeof block.blockedUserId !== "string" ||

@@ -2,9 +2,9 @@ import {onCall, HttpsError, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
-  EventDoc,
-  PaymentDoc,
-  UserProfileDoc,
+  EventDocument,
+  PaymentDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {requireAuth} from "../shared/auth";
@@ -52,6 +52,7 @@ import {
   quotePriceInPaise,
   rosterFromEvent,
 } from "./eventPolicy";
+import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 
 interface PromotionPush {
   token: string;
@@ -169,8 +170,17 @@ export async function cancelEventSignUpHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
-    const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
+    const user = requireDoc<UserProfileDocument>(
+      userSnap,
+      "UserProfileDocument"
+    );
     const participation = participationSnap.exists ?
         participationSnap.data() as {status?: string; cohortAtSignup?: string} :
       null;
@@ -185,7 +195,10 @@ export async function cancelEventSignUpHandler(
         participation?.cohortAtSignup ?? cohortIdForUser(user);
     const policy = eventPolicyFromEvent(event);
     if (paymentDoc) {
-      const payment = requireDoc<PaymentDoc>(paymentDoc, "PaymentDoc");
+      const payment = requireDoc<PaymentDocument>(
+        paymentDoc,
+        "PaymentDocument"
+      );
       const cancellationQuote = quoteAttendeeCancellation({
         policy,
         paidAmountInPaise: payment.amount,
@@ -240,8 +253,8 @@ export async function cancelEventSignUpHandler(
         continue;
       }
 
-      const waitlistUser = requireDoc<UserProfileDoc>(
-        waitlistUserSnap, "UserProfileDoc (waitlist)"
+      const waitlistUser = requireDoc<UserProfileDocument>(
+        waitlistUserSnap, "UserProfileDocument (waitlist)"
       );
       const wGender = waitlistUser.gender;
       const wCohort = waitlistedParticipation.data.cohortAtSignup ??
@@ -320,6 +333,11 @@ export async function cancelEventSignUpHandler(
       genderCounts: newGenderCounts,
       cohortCounts: newCohortCounts,
       waitlistedCohortCounts: newWaitlistedCohortCounts,
+      ...eventDiscoveryProjection({
+        event,
+        clubLocation: event.discoveryCityName,
+        bookedCount: nextBookedCount,
+      }),
     });
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,

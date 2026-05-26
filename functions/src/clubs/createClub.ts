@@ -3,7 +3,9 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {UserProfileDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  UserProfileDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CreateClubCallablePayload} from
   "../shared/generated/createClubCallablePayload";
@@ -100,7 +102,13 @@ export async function createClubHandler(
       );
     }
 
-    const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    const user = requireDoc<UserProfileDocument>(
+
+      userSnap,
+
+      "UserProfileDocument"
+
+    );
     if (user.profileComplete !== true) {
       throw new HttpsError(
         "failed-precondition",

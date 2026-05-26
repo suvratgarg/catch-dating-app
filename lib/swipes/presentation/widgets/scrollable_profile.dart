@@ -17,6 +17,7 @@ import 'package:catch_dating_app/swipes/presentation/widgets/profile_match_signa
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_section_card.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +58,7 @@ class ScrollableProfile extends ConsumerWidget {
     final palette = ProfileCardPalette.of(context);
     final primaryPhoto = content.primaryPhoto;
     final additionalPhotos = content.additionalPhotos;
+    final running = profile.activityPreferences.running;
     final insightLabel = content.insights.compatibilityReasons.isEmpty
         ? 'Profile signals'
         : 'Why you might click';
@@ -134,9 +136,10 @@ class ScrollableProfile extends ConsumerWidget {
                   ),
                   onReact: onReact,
                 ),
-              if (profile.hasCurrentRunPreferences)
+              if (running.hasCurrentRunPreferences)
                 _RunningIdentityCard(
                   profile: profile,
+                  running: running,
                   tags: content.insights.emotionalRunTags,
                   reactionTarget: _reactionTarget(
                     id: 'running',
@@ -299,12 +302,14 @@ class _PhotoPromptOverlay extends StatelessWidget {
 class _RunningIdentityCard extends StatelessWidget {
   const _RunningIdentityCard({
     required this.profile,
+    required this.running,
     required this.tags,
     this.reactionTarget,
     this.onReact,
   });
 
   final PublicProfile profile;
+  final RunningPreferences running;
   final List<EmotionalRunTag> tags;
   final ProfileReactionTarget? reactionTarget;
   final ProfileReactionCallback? onReact;
@@ -336,15 +341,15 @@ class _RunningIdentityCard extends StatelessWidget {
                 icon: Icons.speed_rounded,
                 label: 'Pace',
                 value: formatPaceRange(
-                  profile.paceMinSecsPerKm,
-                  profile.paceMaxSecsPerKm,
+                  running.paceMinSecsPerKm,
+                  running.paceMaxSecsPerKm,
                 ),
               ),
               gapW8,
               _RunStatPill(
                 icon: Icons.straighten_rounded,
                 label: 'Distance',
-                value: _formatDistanceSummary(profile),
+                value: _formatDistanceSummary(running),
               ),
             ],
           ),
@@ -358,10 +363,10 @@ class _RunningIdentityCard extends StatelessWidget {
               ],
             ),
           ],
-          if (profile.runningReasons.isNotEmpty) ...[
+          if (running.runningReasons.isNotEmpty) ...[
             gapH12,
             Text(
-              profile.runningReasons.map((r) => r.label).join(' · '),
+              running.runningReasons.map((r) => r.label).join(' · '),
               style: CatchTextStyles.bodyLead(
                 context,
                 color: palette.textSecondary,
@@ -463,14 +468,15 @@ class _RunStatPill extends StatelessWidget {
   }
 }
 
-String _formatDistanceSummary(PublicProfile profile) {
-  if (profile.preferredDistances.isEmpty) return 'Any event';
-  return profile.preferredDistances.map((d) => d.label).take(2).join(', ');
+String _formatDistanceSummary(RunningPreferences running) {
+  if (running.preferredDistances.isEmpty) return 'Any event';
+  return running.preferredDistances.map((d) => d.label).take(2).join(', ');
 }
 
 String _formatRunMood(PublicProfile profile) {
-  if (profile.runningReasons.isEmpty) return 'easy miles';
-  final firstReason = profile.runningReasons.first.label.toLowerCase();
+  final running = profile.activityPreferences.running;
+  if (running.runningReasons.isEmpty) return 'easy miles';
+  final firstReason = running.runningReasons.first.label.toLowerCase();
   if (firstReason.startsWith('stay')) return 'feel-good miles';
   return firstReason;
 }
@@ -490,13 +496,14 @@ ProfileReactionTarget _reactionTarget({
 }
 
 String _runningReactionPreview(PublicProfile profile) {
+  final running = profile.activityPreferences.running;
   final pace = formatPaceRange(
-    profile.paceMinSecsPerKm,
-    profile.paceMaxSecsPerKm,
+    running.paceMinSecsPerKm,
+    running.paceMaxSecsPerKm,
   );
-  final distance = _formatDistanceSummary(profile);
-  final reasons = profile.runningReasons.map((r) => r.label).join(' · ');
-  final runTimes = profile.preferredRunTimes.map((t) => t.label).join(' · ');
+  final distance = _formatDistanceSummary(running);
+  final reasons = running.runningReasons.map((r) => r.label).join(' · ');
+  final runTimes = running.preferredRunTimes.map((t) => t.label).join(' · ');
   return [
     'Pace $pace',
     'Distance $distance',

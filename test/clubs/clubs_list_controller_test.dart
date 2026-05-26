@@ -4,11 +4,25 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/saved_event.dart';
+import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
 import 'clubs_test_helpers.dart';
 
@@ -104,16 +118,47 @@ void main() {
       final filters = container.read(clubBrowseFiltersProvider.notifier);
       filters.toggleThisWeekOnly();
       filters.toggleHighRatedOnly();
+      filters.toggleDistanceFilter(ExploreDistanceFilter.threeKm);
       filters.toggleActivityTag('tempo');
       filters.toggleArea('Bandra');
 
       container.read(selectedClubCityProvider.notifier).setCity(_city('delhi'));
 
       final selection = container.read(clubBrowseFiltersProvider);
+      expect(selection.timeFilter, ExploreTimeFilter.thisWeek);
       expect(selection.thisWeekOnly, isTrue);
+      expect(selection.distanceFilter, ExploreDistanceFilter.threeKm);
       expect(selection.highRatedOnly, isTrue);
       expect(selection.activityTag, isNull);
       expect(selection.area, isNull);
+    });
+
+    test('time filters define discovery windows', () {
+      final now = DateTime(2026, 5, 26, 10);
+
+      final tonight = exploreTimeWindowFor(ExploreTimeFilter.tonight, now)!;
+      expect(tonight.start, DateTime(2026, 5, 26, 18));
+      expect(tonight.end, DateTime(2026, 5, 27, 3));
+
+      final tomorrow = exploreTimeWindowFor(ExploreTimeFilter.tomorrow, now)!;
+      expect(tomorrow.start, DateTime(2026, 5, 27));
+      expect(tomorrow.end, DateTime(2026, 5, 28));
+
+      final weekend = exploreTimeWindowFor(ExploreTimeFilter.weekend, now)!;
+      expect(weekend.start, DateTime(2026, 5, 29));
+      expect(weekend.end, DateTime(2026, 6, 1));
+
+      final thisWeek = exploreTimeWindowFor(ExploreTimeFilter.thisWeek, now)!;
+      expect(thisWeek.start, now);
+      expect(thisWeek.end, DateTime(2026, 6, 2, 10));
+    });
+
+    test('distance filter values define proximity radii', () {
+      expect(exploreDistanceFilterKm(ExploreDistanceFilter.any), isNull);
+      expect(exploreDistanceFilterKm(ExploreDistanceFilter.oneKm), 1);
+      expect(exploreDistanceFilterKm(ExploreDistanceFilter.threeKm), 3);
+      expect(exploreDistanceFilterKm(ExploreDistanceFilter.fiveKm), 5);
+      expect(exploreDistanceFilterKm(ExploreDistanceFilter.tenKm), 10);
     });
 
     test('matchesClubSearchQuery matches name, area, host, and tags', () {
@@ -173,7 +218,7 @@ void main() {
       final filtered = applyClubBrowseFilters(
         clubs: [matchingClub, staleEventClub, lowRatedClub, wrongAreaClub],
         filters: const ClubBrowseFilterSelection(
-          thisWeekOnly: true,
+          timeFilter: ExploreTimeFilter.thisWeek,
           highRatedOnly: true,
           joinedOnly: true,
           hostedOnly: true,
@@ -186,6 +231,34 @@ void main() {
       );
 
       expect(filtered.map((club) => club.id), ['matching-club']);
+    });
+
+    test('applyClubBrowseFilters uses the selected time window', () {
+      final now = DateTime(2026, 5, 26, 10);
+      final tonightClub = buildClub(
+        id: 'tonight-club',
+        nextEventAt: DateTime(2026, 5, 26, 19),
+      );
+      final tomorrowClub = buildClub(
+        id: 'tomorrow-club',
+        nextEventAt: DateTime(2026, 5, 27, 8),
+      );
+      final weekendClub = buildClub(
+        id: 'weekend-club',
+        nextEventAt: DateTime(2026, 5, 30, 8),
+      );
+
+      final filtered = applyClubBrowseFilters(
+        clubs: [tonightClub, tomorrowClub, weekendClub],
+        filters: const ClubBrowseFilterSelection(
+          timeFilter: ExploreTimeFilter.weekend,
+        ),
+        joinedClubIds: const {},
+        hostedClubIds: const {},
+        now: now,
+      );
+
+      expect(filtered.map((club) => club.id), ['weekend-club']);
     });
 
     test(
@@ -232,6 +305,11 @@ void main() {
 
         await flushTestEventQueue();
 
+        expect(
+          subscription.read().hasValue,
+          isTrue,
+          reason: '${subscription.read()}',
+        );
         final viewModel = subscription.read().value!;
 
         expect(viewModel.joinedClubs.map((club) => club.id), [
@@ -273,7 +351,9 @@ void main() {
           fireImmediately: true,
         );
         addTearDown(subscription.close);
+        await container.pump();
         await flushTestEventQueue();
+        await container.pump();
 
         final viewModel = subscription.read().value!;
 
@@ -310,6 +390,166 @@ void main() {
 
       expect(subscription.read().value, [ashaClub]);
     });
+
+    test(
+      'exploreFeedViewModelProvider filters events by device distance',
+      () async {
+        final club = buildClub(id: 'club-distance', location: 'mumbai');
+        final near = event_test.buildEvent(
+          id: 'near-event',
+          clubId: club.id,
+          meetingPoint: 'Near plaza',
+          startTime: DateTime.now().add(const Duration(days: 1)),
+          startingPointLat: 19.0,
+          startingPointLng: 72.01,
+        );
+        final far = event_test.buildEvent(
+          id: 'far-event',
+          clubId: club.id,
+          meetingPoint: 'Far park',
+          startTime: DateTime.now().add(const Duration(days: 2)),
+          startingPointLat: 19.0,
+          startingPointLng: 72.09,
+        );
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([club])),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([far, near]),
+            ),
+            deviceLocationProvider.overrideWith(
+              () => _FakeDeviceLocation(const LocationCoordinate(19.0, 72.0)),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+        container
+            .read(clubBrowseFiltersProvider.notifier)
+            .setDistanceFilter(ExploreDistanceFilter.threeKm);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(
+          subscription.read().hasValue,
+          isTrue,
+          reason: '${subscription.read()}',
+        );
+        final viewModel = subscription.read().value!;
+
+        expect(viewModel.items.map((item) => item.event.id), ['near-event']);
+        expect(viewModel.items.single.distanceFromUserKm, lessThan(3));
+        expect(
+          viewModel.items.single.distanceFromUserLabel,
+          contains('km away'),
+        );
+      },
+    );
+
+    test(
+      'exploreFeedViewModelProvider resolves viewer-specific availability',
+      () async {
+        final user = event_test.buildUser(uid: 'runner-1');
+        final club = buildClub(id: 'club-availability', location: 'mumbai');
+        final joinedEvent = event_test.buildEvent(
+          id: 'joined-event',
+          clubId: club.id,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final savedEvent = event_test.buildEvent(
+          id: 'saved-event',
+          clubId: club.id,
+          startTime: DateTime.now().add(const Duration(days: 2)),
+        );
+        final requestEvent = event_test.buildEvent(
+          id: 'request-event',
+          clubId: club.id,
+          startTime: DateTime.now().add(const Duration(days: 3)),
+          eventPolicy: EventPolicyBundle.requestToJoinEvent(
+            capacityLimit: 12,
+            basePriceInPaise: 0,
+          ),
+        );
+        final savedEdge = SavedEvent(
+          id: savedEventId(uid: user.uid, eventId: savedEvent.id),
+          uid: user.uid,
+          eventId: savedEvent.id,
+          savedAt: DateTime(2026, 5, 26),
+        );
+
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([club])),
+            watchActiveClubMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            watchEventParticipationsForUserProvider(user.uid).overrideWith(
+              (ref) => Stream.value([
+                event_test.buildEventParticipation(
+                  event: joinedEvent,
+                  uid: user.uid,
+                ),
+              ]),
+            ),
+            watchSignedUpEventsProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value([joinedEvent])),
+            watchSavedEventsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value([savedEdge])),
+            watchSavedEventDetailsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value([savedEvent])),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([requestEvent, savedEvent]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(
+          subscription.read().hasValue,
+          isTrue,
+          reason: '${subscription.read()}',
+        );
+        final byId = {
+          for (final item in subscription.read().value!.items)
+            item.event.id: item,
+        };
+
+        expect(byId['joined-event']?.status, EventTileStatus.joined);
+        expect(byId['saved-event']?.status, EventTileStatus.saved);
+        expect(
+          byId['request-event']?.availability?.status,
+          ViewerEventAvailabilityStatus.requestRequired,
+        );
+        expect(byId['request-event']?.availabilityLabel, 'Request required');
+      },
+    );
 
     test('clubsListViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
@@ -359,4 +599,25 @@ void main() {
       expect(subscription.read().error, isA<StateError>());
     });
   });
+}
+
+class _FakeDeviceLocation extends DeviceLocation {
+  _FakeDeviceLocation(this.location);
+
+  final LocationCoordinate? location;
+
+  @override
+  Future<LocationCoordinate?> build() async => location;
+}
+
+class _FakeEventDiscoveryRepository extends Fake
+    implements EventDiscoveryRepository {
+  _FakeEventDiscoveryRepository(this.events);
+
+  final List<Event> events;
+
+  @override
+  Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
+    return events;
+  }
 }

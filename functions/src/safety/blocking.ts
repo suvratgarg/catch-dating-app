@@ -3,7 +3,10 @@ import {onCall, CallableRequest, HttpsError} from
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {BlockDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  BlockDocument,
+  MatchDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
@@ -245,7 +248,7 @@ async function closeMatchesForBlockedPair({
   const batch = db.batch();
   let updates = 0;
   for (const doc of snap.docs) {
-    const match = doc.data() as MatchDoc;
+    const match = doc.data() as MatchDocument;
     if (!match.participantIds?.includes(userBId)) continue;
 
     batch.update(doc.ref, {
@@ -276,7 +279,7 @@ export const unblockUser = onCall(appCheckCallableOptions, (request) =>
 export const onBlockCreated = onDocumentCreated(
   "blocks/{blockId}",
   async (event) => {
-    const block = event.data?.data() as BlockDoc | undefined;
+    const block = event.data?.data() as BlockDocument | undefined;
     if (!block) return;
 
     logger.info("Block created", {

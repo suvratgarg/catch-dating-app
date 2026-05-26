@@ -20,11 +20,11 @@ class ClubsSearchField extends ConsumerWidget {
     final query = ref.watch(clubSearchQueryProvider);
 
     return CatchTextField(
-      label: 'Search clubs',
+      label: 'Search events or clubs',
       showLabel: false,
       initialValue: query,
       onChanged: (q) => ref.read(clubSearchQueryProvider.notifier).setQuery(q),
-      hintText: 'Search clubs',
+      hintText: 'Search events or clubs',
       size: CatchTextFieldSize.compact,
       shape: CatchTextFieldShape.pill,
       autofocus: autofocus,

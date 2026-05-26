@@ -10,6 +10,8 @@
     "profiles": {
       "type": "array",
       "items": {
+        "x-wire-shape-extends": "contracts/firestore/public_profiles.schema.json",
+        "x-wire-shape-injects": ["uid"],
         "type": "object",
         "required": ["uid"],
         "properties": {

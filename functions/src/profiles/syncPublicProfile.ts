@@ -1,7 +1,9 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {UserProfileDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  UserProfileDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   publicAvatarUrl,
   publicProfileFromUserProfileDoc,
@@ -21,7 +23,7 @@ export const syncPublicProfile = onDocumentWritten(
   "users/{userId}",
   async (event) => {
     const {userId} = event.params;
-    const user = event.data?.after.data() as UserProfileDoc | undefined;
+    const user = event.data?.after.data() as UserProfileDocument | undefined;
     await syncUserProfileProjectionsHandler(userId, user);
   }
 );
@@ -29,14 +31,14 @@ export const syncPublicProfile = onDocumentWritten(
 /**
  * Syncs public/profile-owned denormalized projections after users/{uid} writes.
  * @param {string} userId User id whose private profile changed.
- * @param {UserProfileDoc | undefined} user Current user profile, undefined
+ * @param {UserProfileDocument | undefined} user Current user profile, undefined
  * when the source document was deleted.
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncUserProfileProjectionsHandler(
   userId: string,
-  user: UserProfileDoc | undefined,
+  user: UserProfileDocument | undefined,
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();

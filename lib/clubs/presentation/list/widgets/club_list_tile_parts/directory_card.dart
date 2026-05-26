@@ -17,6 +17,7 @@ class _DirectoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final visibleTags = _visibleTags(club);
+    final sash = _membershipSash();
 
     return Semantics(
       button: onTap != null,
@@ -24,13 +25,15 @@ class _DirectoryCard extends StatelessWidget {
       child: CatchSurface(
         onTap: onTap,
         borderColor: t.line,
+        radius: CatchRadius.lg,
+        elevation: CatchSurfaceElevation.card,
         clipBehavior: Clip.antiAlias,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 120,
+              height: 140,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -40,99 +43,88 @@ class _DirectoryCard extends StatelessWidget {
                     showFallbackLocationChip: false,
                     showFallbackFooterLabel: false,
                   ),
-                  const DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [0.0, 0.4, 1.0],
-                        colors: [
-                          Color(0x40000000),
-                          Colors.transparent,
-                          Color(0x1A000000),
-                        ],
+                  IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 0.45, 0.78, 1.0],
+                          colors: [
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.32),
+                            Colors.black.withValues(alpha: 0.58),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  if (club.nextEventLabel != null)
+                  if (sash != null)
                     Positioned(
-                      top: 10,
-                      left: 10,
-                      right: 10,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: CatchBadge(
-                          label: 'NEXT: ${club.nextEventLabel}',
-                          tone: CatchBadgeTone.solid,
-                          size: CatchBadgeSize.sm,
-                          uppercase: true,
-                        ),
+                      top: CatchSpacing.s3,
+                      left: CatchSpacing.s3,
+                      child: CatchCornerSash(
+                        label: sash.label,
+                        icon: sash.icon,
+                        tone: sash.tone,
                       ),
                     ),
                   if (club.rating > 0)
                     Positioned(
-                      right: 10,
-                      bottom: 10,
+                      right: CatchSpacing.s3,
+                      bottom: CatchSpacing.s3,
                       child: _RatingBadge(rating: club.rating),
                     ),
+                  Positioned(
+                    left: CatchSpacing.s4,
+                    right: CatchSpacing.s4,
+                    bottom: CatchSpacing.s3,
+                    child: Text(
+                      club.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.cardTitle(
+                        context,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s4,
+                CatchSpacing.s3,
+                CatchSpacing.s4,
+                CatchSpacing.s3,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    club.name,
-                    style: CatchTextStyles.cardTitle(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  gapH2,
-                  Text(
-                    _clubSummaryLabel(club),
-                    style: CatchTextStyles.supporting(context),
+                  CatchMetaDotRow(
+                    entries: _buildClubMetaEntries(club, t),
                   ),
                   if (visibleTags.isNotEmpty) ...[
-                    gapH10,
+                    gapH8,
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: visibleTags.map((tag) {
-                        return CatchBadge(
-                          label: tag,
-                          tone: CatchBadgeTone.brand,
-                          size: CatchBadgeSize.sm,
-                          uppercase: true,
-                        );
-                      }).toList(),
+                      children: visibleTags
+                          .take(3)
+                          .map(
+                            (tag) => CatchBadge(
+                              label: tag,
+                              tone: CatchBadgeTone.brand,
+                              size: CatchBadgeSize.sm,
+                              uppercase: true,
+                            ),
+                          )
+                          .toList(),
                     ),
                   ],
-                  if (_hasMetadataPills(club)) ...[
-                    gapH10,
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        if (club.nextEventLabel != null)
-                          _ClubMetaPill(
-                            icon: Icons.event_available_outlined,
-                            label: 'Next ${club.nextEventLabel}',
-                          ),
-                        if (club.rating > 0 && club.reviewCount > 0)
-                          _ClubMetaPill(
-                            icon: Icons.star_rounded,
-                            iconColor: t.gold,
-                            label:
-                                '${club.rating.toStringAsFixed(1)} · '
-                                '${_reviewCountLabel(club.reviewCount)}',
-                          ),
-                      ],
-                    ),
-                  ],
-                  gapH10,
-                  Container(height: 1, color: t.line),
                   gapH10,
                   Row(
                     children: [
@@ -165,16 +157,55 @@ class _DirectoryCard extends StatelessWidget {
       ),
     );
   }
+
+  _MembershipSash? _membershipSash() {
+    if (isHost) {
+      return _MembershipSash(
+        label: 'You host',
+        icon: CatchIcons.hostBadge,
+        tone: CatchSashTone.solid,
+      );
+    }
+    if (isJoined) {
+      return _MembershipSash(
+        label: 'Joined',
+        icon: CatchIcons.joinedCheck,
+        tone: CatchSashTone.success,
+      );
+    }
+    return null;
+  }
 }
 
-String _clubSummaryLabel(Club club) {
+class _MembershipSash {
+  const _MembershipSash({
+    required this.label,
+    required this.icon,
+    required this.tone,
+  });
+
+  final String label;
+  final IconData icon;
+  final CatchSashTone tone;
+}
+
+List<CatchMetaEntry> _buildClubMetaEntries(Club club, CatchTokens t) {
   final memberLabel = club.memberCount == 1 ? 'member' : 'members';
-  return '${club.area} · ${club.memberCount} $memberLabel';
-}
-
-bool _hasMetadataPills(Club club) {
-  return club.nextEventLabel != null ||
-      (club.rating > 0 && club.reviewCount > 0);
+  return [
+    CatchMetaEntry(icon: CatchIcons.pinOutlined, label: club.area),
+    CatchMetaEntry(
+      icon: CatchIcons.group,
+      label: '${club.memberCount} $memberLabel',
+    ),
+    if (club.rating > 0 && club.reviewCount > 0)
+      CatchMetaEntry(
+        icon: CatchIcons.rated,
+        iconColor: t.gold,
+        label:
+            '${club.rating.toStringAsFixed(1)} · '
+            '${_reviewCountLabel(club.reviewCount)}',
+      ),
+  ];
 }
 
 String _reviewCountLabel(int count) {
@@ -191,46 +222,6 @@ List<String> _visibleTags(Club club) {
       .toList(growable: false);
 }
 
-class _ClubMetaPill extends StatelessWidget {
-  const _ClubMetaPill({
-    required this.icon,
-    required this.label,
-    this.iconColor,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color? iconColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: t.raised,
-      borderColor: t.line,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: iconColor ?? t.ink2),
-          gapW4,
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 220),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.labelS(context, color: t.ink2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _MembershipButton extends StatelessWidget {
   const _MembershipButton({
     required this.clubId,
@@ -244,36 +235,11 @@ class _MembershipButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    if (isHost) {
-      return CatchButton(
-        label: 'Host',
-        onPressed: null,
-        variant: CatchButtonVariant.secondary,
-        size: CatchButtonSize.sm,
-        icon: Icon(Icons.shield_rounded, size: 16, color: t.primary),
-        isInteractive: false,
-        backgroundColor: t.primary.withValues(alpha: 0.10),
-        foregroundColor: t.primary,
-        borderColor: t.primary.withValues(alpha: 0.22),
-      );
+    if (isHost || isJoined) {
+      // Membership state is communicated via the corner sash on the photo
+      // now — no redundant button needed.
+      return const SizedBox.shrink();
     }
-
-    if (isJoined) {
-      return CatchButton(
-        label: 'Joined',
-        onPressed: null,
-        variant: CatchButtonVariant.secondary,
-        size: CatchButtonSize.sm,
-        icon: Icon(Icons.check_rounded, size: 16, color: t.success),
-        isInteractive: false,
-        backgroundColor: t.success.withValues(alpha: 0.10),
-        foregroundColor: t.success,
-        borderColor: t.success.withValues(alpha: 0.22),
-      );
-    }
-
     return _JoinClubButton(clubId: clubId);
   }
 }
@@ -327,19 +293,23 @@ class _RatingBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
-      radius: CatchRadius.pill,
-      backgroundColor: Colors.white.withValues(alpha: 0.94),
-      borderColor: Colors.white.withValues(alpha: 0.75),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s2,
+        vertical: CatchSpacing.micro3,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.star_rounded, size: 13, color: t.gold),
+          Icon(CatchIcons.rated, size: 13, color: t.gold),
           gapW2,
           Text(
             rating.toStringAsFixed(1),
-            style: CatchTextStyles.labelS(context, color: t.ink),
+            style: CatchTextStyles.labelL(context, color: t.ink),
           ),
         ],
       ),

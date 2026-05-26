@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
@@ -24,6 +28,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 typedef EventFocusClubNameBuilder = String? Function(Event event);
 
@@ -398,8 +403,9 @@ class _EventFocusCard extends StatelessWidget {
     return CatchSurface(
       padding: EdgeInsets.zero,
       backgroundColor: t.surface,
-      borderColor: item.isUrgent ? t.primary.withValues(alpha: 0.24) : t.line2,
-      radius: 22,
+      borderColor: item.isUrgent ? t.primary.withValues(alpha: 0.32) : t.line2,
+      radius: CatchRadius.lg,
+      elevation: CatchSurfaceElevation.card,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
@@ -411,10 +417,10 @@ class _EventFocusCard extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [
                     item.isUrgent
-                        ? t.primarySoft.withValues(alpha: 0.82)
-                        : t.primarySoft.withValues(alpha: 0.42),
+                        ? t.primarySoft.withValues(alpha: 0.62)
+                        : t.primarySoft.withValues(alpha: 0.28),
                     t.surface,
-                    t.raised.withValues(alpha: 0.74),
+                    t.raised.withValues(alpha: 0.62),
                   ],
                 ),
               ),
@@ -433,24 +439,23 @@ class _EventFocusCard extends StatelessWidget {
                         spacing: CatchSpacing.s2,
                         runSpacing: CatchSpacing.s1,
                         children: [
-                          CatchBadge(
+                          _EventFocusSashChip(
                             label: item.badgeLabel,
                             tone: item.isUrgent
-                                ? CatchBadgeTone.live
-                                : CatchBadgeTone.brand,
-                            uppercase: true,
+                                ? CatchSashTone.brand
+                                : CatchSashTone.solid,
                           ),
-                          if (item.needsReview)
-                            const CatchBadge(
-                              label: 'Review pending',
-                              tone: CatchBadgeTone.warning,
-                              icon: Icons.rate_review_outlined,
-                            ),
                           if (item.canSwipe)
                             CatchBadge(
-                              label: 'Swipe · ${_swipeCountdown(item.event)}',
+                              label: 'Catch · ${_swipeCountdown(item.event)}',
                               tone: CatchBadgeTone.brand,
-                              icon: Icons.favorite_rounded,
+                              icon: PhosphorIconsFill.heart,
+                            ),
+                          if (item.needsReview)
+                            CatchBadge(
+                              label: 'Review pending',
+                              tone: CatchBadgeTone.warning,
+                              icon: PhosphorIconsRegular.pencilLine,
                             ),
                         ],
                       ),
@@ -464,7 +469,7 @@ class _EventFocusCard extends StatelessWidget {
                     ],
                   ],
                 ),
-                gapH14,
+                gapH12,
                 Text(
                   item.event.title,
                   maxLines: 2,
@@ -472,34 +477,49 @@ class _EventFocusCard extends StatelessWidget {
                   style: CatchTextStyles.displayM(context),
                 ),
                 if (item.clubName != null) ...[
-                  gapH6,
+                  gapH4,
                   Text(
                     item.clubName!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.kicker(context, color: t.ink2),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
                   ),
                 ],
                 gapH12,
-                _EventFocusMetaLine(
-                  icon: Icons.access_time_rounded,
-                  label:
-                      '${EventFormatters.shortWeekday(item.event.startTime)}, '
-                      '${item.event.startTime.day} '
-                      '${EventFormatters.shortMonth(item.event.startTime)} · '
-                      '${item.event.timeRangeLabel}',
+                CatchMetaDotRow(
+                  entries: [
+                    CatchMetaEntry(
+                      icon: CatchIcons.clock,
+                      label:
+                          '${EventFormatters.shortWeekday(item.event.startTime)}, '
+                          '${item.event.startTime.day} '
+                          '${EventFormatters.shortMonth(item.event.startTime)} · '
+                          '${item.event.timeRangeLabel}',
+                    ),
+                  ],
                 ),
                 gapH6,
-                _EventFocusMetaLine(
-                  icon: Icons.location_on_outlined,
-                  label: item.event.locationName,
+                CatchMetaDotRow(
+                  entries: [
+                    CatchMetaEntry(
+                      icon: CatchIcons.pinOutlined,
+                      label: item.event.locationName,
+                    ),
+                  ],
                 ),
                 gapH6,
-                _EventFocusMetaLine(
-                  icon: Icons.route_outlined,
-                  label:
-                      '${item.event.activitySummaryLabel} · '
-                      '${item.event.signedUpCount}/${item.event.capacityLimit} spots',
+                CatchMetaDotRow(
+                  entries: [
+                    CatchMetaEntry(
+                      icon: activityKindGlyph(item.event.activityKind),
+                      label: item.event.activitySummaryLabel,
+                    ),
+                    CatchMetaEntry(
+                      icon: CatchIcons.group,
+                      label:
+                          '${item.event.signedUpCount}/${item.event.capacityLimit}',
+                    ),
+                  ],
                 ),
                 gapH16,
                 _EventFocusActions(
@@ -515,6 +535,21 @@ class _EventFocusCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// Sash-styled chip used at the top of the focus card. Borrows the corner
+/// sash visual without the corner-radius asymmetry so it sits inline next
+/// to other badges in the urgency row.
+class _EventFocusSashChip extends StatelessWidget {
+  const _EventFocusSashChip({required this.label, required this.tone});
+
+  final String label;
+  final CatchSashTone tone;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchCornerSash(label: label, tone: tone);
   }
 }
 
@@ -556,33 +591,6 @@ class _EventFocusActions extends StatelessWidget {
   }
 }
 
-class _EventFocusMetaLine extends StatelessWidget {
-  const _EventFocusMetaLine({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: t.ink3),
-        gapW6,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 enum _EventFocusKind { upcoming, checkIn, afterEvent }
 
 enum _EventFocusAction {
@@ -608,12 +616,12 @@ extension on _EventFocusAction {
 
   IconData get icon {
     return switch (this) {
-      _EventFocusAction.viewEvent => Icons.chevron_right_rounded,
-      _EventFocusAction.checkIn => Icons.location_on_rounded,
-      _EventFocusAction.directions => Icons.directions_outlined,
-      _EventFocusAction.addToCalendar => Icons.calendar_month_outlined,
-      _EventFocusAction.swipe => Icons.favorite_rounded,
-      _EventFocusAction.review => Icons.rate_review_outlined,
+      _EventFocusAction.viewEvent => CatchIcons.forwardArrow,
+      _EventFocusAction.checkIn => CatchIcons.pin,
+      _EventFocusAction.directions => PhosphorIconsRegular.compass,
+      _EventFocusAction.addToCalendar => CatchIcons.calendarAdd,
+      _EventFocusAction.swipe => PhosphorIconsFill.heart,
+      _EventFocusAction.review => PhosphorIconsRegular.pencilLine,
     };
   }
 }

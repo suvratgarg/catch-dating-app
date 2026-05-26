@@ -1,6 +1,9 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {EventDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+  MatchDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {buildFeedbackSignalFact} from "./signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
@@ -11,7 +14,7 @@ const eventSuccessScorecardsCollection = "eventSuccessScorecards";
 const eventSafetyReportsCollection = "eventSafetyReports";
 const MIN_FEEDBACK_FOR_HOST_SAFETY_COUNT = 5;
 
-interface EventSuccessFeedbackDoc {
+interface EventSuccessFeedbackDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -24,7 +27,7 @@ interface EventSuccessFeedbackDoc {
   updatedAt?: FirebaseFirestore.Timestamp;
 }
 
-export interface EventSuccessScorecardDoc {
+export interface EventSuccessScorecardDocument {
   eventId: string;
   clubId: string;
   bookedCount: number;
@@ -64,7 +67,7 @@ export async function refreshEventSuccessScorecard(
   const eventSnap = await db.collection("events").doc(eventId).get();
   if (!eventSnap.exists) return;
 
-  const event = eventSnap.data() as EventDoc;
+  const event = eventSnap.data() as EventDocument;
   const [feedbackSnap, matchesSnap] = await Promise.all([
     db
       .collection(eventSuccessFeedbackCollection)
@@ -74,9 +77,9 @@ export async function refreshEventSuccessScorecard(
   ]);
 
   const feedback = feedbackSnap.docs.map(
-    (doc) => doc.data() as EventSuccessFeedbackDoc
+    (doc) => doc.data() as EventSuccessFeedbackDocument
   );
-  const matches = matchesSnap.docs.map((doc) => doc.data() as MatchDoc);
+  const matches = matchesSnap.docs.map((doc) => doc.data() as MatchDocument);
   const scorecard = buildEventSuccessScorecard({
     eventId,
     event,
@@ -94,15 +97,15 @@ export async function refreshEventSuccessScorecard(
 /**
  * Builds an event-success scorecard document from loaded source data.
  * @param {object} params Source event, feedback, and match data.
- * @return {EventSuccessScorecardDoc} Scorecard payload.
+ * @return {EventSuccessScorecardDocument} Scorecard payload.
  */
 export function buildEventSuccessScorecard(params: {
   eventId: string;
-  event: EventDoc;
-  feedback: EventSuccessFeedbackDoc[];
-  matches: MatchDoc[];
+  event: EventDocument;
+  feedback: EventSuccessFeedbackDocument[];
+  matches: MatchDocument[];
   updatedAt: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp;
-}): EventSuccessScorecardDoc {
+}): EventSuccessScorecardDocument {
   const {eventId, event, feedback, matches, updatedAt} = params;
   const feedbackCount = feedback.length;
   const safetyIncidentCount = feedback.filter((item) => item.safetyConcern)
@@ -134,14 +137,15 @@ export function buildEventSuccessScorecard(params: {
  * Handles feedback writes by refreshing the scorecard and recording one
  * participant feedback fact for future participant-momentum analysis.
  * @param {string} feedbackId Feedback document id.
- * @param {EventSuccessFeedbackDoc | undefined} before Previous feedback doc.
- * @param {EventSuccessFeedbackDoc | undefined} after New feedback doc.
+ * @param {EventSuccessFeedbackDocument | undefined} before Previous feedback
+ * doc.
+ * @param {EventSuccessFeedbackDocument | undefined} after New feedback doc.
  * @param {EventSuccessScorecardDeps} deps Injectable Firebase dependencies.
  */
 export async function onEventSuccessFeedbackWrittenHandler(
   feedbackId: string,
-  before: EventSuccessFeedbackDoc | undefined,
-  after: EventSuccessFeedbackDoc | undefined,
+  before: EventSuccessFeedbackDocument | undefined,
+  after: EventSuccessFeedbackDocument | undefined,
   deps: EventSuccessScorecardDeps = defaultDeps
 ): Promise<void> {
   const eventIds = new Set<string>();
@@ -169,10 +173,10 @@ export const onEventSuccessFeedbackWritten = onDocumentWritten(
   async (event) => {
     const feedbackId = event.params.feedbackId;
     const before = event.data?.before.data() as
-      | EventSuccessFeedbackDoc
+      | EventSuccessFeedbackDocument
       | undefined;
     const after = event.data?.after.data() as
-      | EventSuccessFeedbackDoc
+      | EventSuccessFeedbackDocument
       | undefined;
     await onEventSuccessFeedbackWrittenHandler(feedbackId, before, after);
   }
@@ -197,12 +201,12 @@ function average(values: number[]): number {
 /**
  * Materializes a Catch-private safety review item for event feedback concerns.
  * @param {string} feedbackId Feedback document id.
- * @param {EventSuccessFeedbackDoc} feedback Feedback document.
+ * @param {EventSuccessFeedbackDocument} feedback Feedback document.
  * @param {EventSuccessScorecardDeps} deps Injectable Firebase dependencies.
  */
 export async function writeEventSafetyReportIfNeeded(
   feedbackId: string,
-  feedback: EventSuccessFeedbackDoc,
+  feedback: EventSuccessFeedbackDocument,
   deps: EventSuccessScorecardDeps
 ): Promise<void> {
   if (feedback.safetyConcern !== true) return;

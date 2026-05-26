@@ -32,7 +32,9 @@ import {validateSelfCheckInAttendanceCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
   eventParticipationId,
@@ -114,7 +116,7 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     throw new HttpsError("not-found", "Event not found.");
   }
 
-  const event = eventSnap.data() as EventDoc;
+  const event = eventSnap.data() as EventDocument;
   if (event.status === "cancelled") {
     throw new HttpsError(
       "failed-precondition",

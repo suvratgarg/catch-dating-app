@@ -8,8 +8,8 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.6.13",
-    "updated": "2026-05-25",
+    "version": "2.6.14",
+    "updated": "2026-05-26",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up; historical detail lives in passes.jsonl/files.jsonl."
   },
@@ -22,8 +22,8 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.5",
-    "updated": "2026-05-25",
+    "version": "4.1.6",
+    "updated": "2026-05-26",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -106,8 +106,8 @@
   },
   "data_contracts": {
     "path": "docs/data_contracts.md",
-    "version": "1.1.2",
-    "updated": "2026-05-25",
+    "version": "1.1.5",
+    "updated": "2026-05-26",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation boundaries, schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, relationship documents, data migrations, or rules test execution."
   },
@@ -148,8 +148,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.116",
-    "updated": "2026-05-25",
+    "version": "2.5.126",
+    "updated": "2026-05-26",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -176,8 +176,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.7.0",
-    "updated": "2026-05-22",
+    "version": "1.7.1",
+    "updated": "2026-05-26",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
   },

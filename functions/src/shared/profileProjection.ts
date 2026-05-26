@@ -3,8 +3,8 @@ import {
   ActivityPreferences,
   PhotoPromptAnswer,
   ProfilePromptAnswer,
-  PublicProfileDoc,
-  UserProfileDoc,
+  PublicProfileDocument,
+  UserProfileDocument,
 } from "./generated/firestoreAdminTypes";
 import {DemoMetadata, demoMetadataFromSources} from "./demoMetadata";
 import {
@@ -12,7 +12,7 @@ import {
   profilePromptCatalog,
 } from "./generated/schemaRegistry";
 
-export type PublicProfileProjection = PublicProfileDoc & DemoMetadata;
+export type PublicProfileProjection = PublicProfileDocument & DemoMetadata;
 
 interface StoredProfilePhoto {
   id: string;
@@ -31,7 +31,7 @@ interface StoredProfilePhoto {
   updatedAt: FirebaseFirestore.Timestamp;
 }
 
-type UserProfileWithPhotos = UserProfileDoc & {
+type UserProfileWithPhotos = UserProfileDocument & {
   profilePhotos?: StoredProfilePhoto[];
 };
 
@@ -53,10 +53,10 @@ const maxProfilePhotos = profilePhotoPolicy.maxPhotos;
 
 /**
  * Returns the public-safe display name for denormalized app surfaces.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {string} Editable public display name, with first-name fallback.
  */
-export function publicDisplayName(user: UserProfileDoc): string {
+export function publicDisplayName(user: UserProfileDocument): string {
   const displayName = user.displayName?.trim();
   if (displayName) return displayName;
 
@@ -70,10 +70,10 @@ export function publicDisplayName(user: UserProfileDoc): string {
 
 /**
  * Returns the best public avatar URL for denormalized host/profile surfaces.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {string | null} Thumbnail-first avatar URL.
  */
-export function publicAvatarUrl(user: UserProfileDoc): string | null {
+export function publicAvatarUrl(user: UserProfileDocument): string | null {
   const primaryPhoto = normalizeProfilePhotos(user)[0];
   return primaryPhoto?.thumbnailUrl ??
     primaryPhoto?.url ??
@@ -86,11 +86,11 @@ export function publicAvatarUrl(user: UserProfileDoc): string | null {
  * This function is intentionally pure so Functions triggers, tests, and seed
  * tooling can verify the same public-profile contract without duplicating
  * display-name, prompt, photo, running, and demo-metadata decisions.
- * @param {UserProfileDoc} user Private profile document.
+ * @param {UserProfileDocument} user Private profile document.
  * @return {PublicProfileProjection} Public profile projection.
  */
 export function publicProfileFromUserProfileDoc(
-  user: UserProfileDoc
+  user: UserProfileDocument
 ): PublicProfileProjection {
   const profilePhotos = normalizeProfilePhotos(user);
   const running = runningPreferencesFromUserProfileDoc(user);
@@ -121,14 +121,14 @@ export function publicProfileFromUserProfileDoc(
 /**
  * Returns the current nested running preferences, migrating legacy root fields
  * when older documents are still being read.
- * @param {UserProfileDoc} user Private profile document.
+ * @param {UserProfileDocument} user Private profile document.
  * @return {RunningPreferencesProjection} Running preference projection.
  */
 export function runningPreferencesFromUserProfileDoc(
-  user: UserProfileDoc
+  user: UserProfileDocument
 ): RunningPreferencesProjection {
   const nested = user.activityPreferences?.running;
-  const legacy = user as UserProfileDoc & LegacyRunningPreferenceFields;
+  const legacy = user as UserProfileDocument & LegacyRunningPreferenceFields;
   return {
     paceMinSecsPerKm: nested?.paceMinSecsPerKm ??
       legacy.paceMinSecsPerKm ??
@@ -157,11 +157,11 @@ export function runningPreferencesFromUserProfileDoc(
 
 /**
  * Normalizes stored profile prompts and migrates legacy bios into prompt one.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {ProfilePromptAnswer[]} Public prompt answers.
  */
 export function normalizeProfilePrompts(
-  user: UserProfileDoc
+  user: UserProfileDocument
 ): ProfilePromptAnswer[] {
   const prompts = (user.profilePrompts ?? [])
     .map((prompt) => ({
@@ -177,7 +177,7 @@ export function normalizeProfilePrompts(
 
   if (prompts.length > 0) return prompts.slice(0, 3);
 
-  const legacyUser = user as UserProfileDoc & {bio?: string};
+  const legacyUser = user as UserProfileDocument & {bio?: string};
   const legacyBio = collapseStackedPromptBlankLines(
     legacyUser.bio ?? ""
   ).trim();
@@ -219,11 +219,11 @@ export function normalizePhotoPrompts(
 
 /**
  * Normalizes grouped profile photos.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {StoredProfilePhoto[]} Ordered profile photos.
  */
 export function normalizeProfilePhotos(
-  user: UserProfileDoc
+  user: UserProfileDocument
 ): StoredProfilePhoto[] {
   const userWithPhotos = user as UserProfileWithPhotos;
   const groupedPhotos = (userWithPhotos.profilePhotos ?? [])

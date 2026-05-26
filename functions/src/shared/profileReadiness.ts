@@ -1,6 +1,9 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import {computeAge} from "./dates";
-import {Gender, UserProfileDoc} from "./generated/firestoreAdminTypes";
+import {
+  Gender,
+  UserProfileDocument,
+} from "./generated/firestoreAdminTypes";
 import {
   defaultProfilePromptIds,
   profilePhotoPolicy,
@@ -19,10 +22,10 @@ const knownGenders = new Set<Gender>([
 
 /**
  * Whether a private profile has the minimum identity needed for booking.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {boolean} Whether booking engines can evaluate the profile.
  */
-export function isBookingReadyUserProfile(user: UserProfileDoc): boolean {
+export function isBookingReadyUserProfile(user: UserProfileDocument): boolean {
   return hasBookingReadyName(user) &&
     hasAdultDateOfBirth(user) &&
     typeof user.phoneNumber === "string" &&
@@ -34,9 +37,9 @@ export function isBookingReadyUserProfile(user: UserProfileDoc): boolean {
 
 /**
  * Throws a client-safe error when booking identity is incomplete.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  */
-export function assertBookingReadyUserProfile(user: UserProfileDoc): void {
+export function assertBookingReadyUserProfile(user: UserProfileDocument): void {
   if (isBookingReadyUserProfile(user)) return;
   throw new HttpsError(
     "failed-precondition",
@@ -46,10 +49,10 @@ export function assertBookingReadyUserProfile(user: UserProfileDoc): void {
 
 /**
  * Whether a private profile can appear on social/profile-discovery surfaces.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {boolean} Whether the social profile is complete enough.
  */
-export function isSocialReadyUserProfile(user: UserProfileDoc): boolean {
+export function isSocialReadyUserProfile(user: UserProfileDocument): boolean {
   if (!user.profileComplete || !isBookingReadyUserProfile(user)) return false;
   if (normalizeProfilePhotos(user).length < profilePhotoPolicy.minPhotos) {
     return false;
@@ -65,10 +68,10 @@ export function isSocialReadyUserProfile(user: UserProfileDoc): boolean {
 
 /**
  * Checks whether the date of birth is present and belongs to an adult user.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {boolean} Whether dateOfBirth is usable for booking decisions.
  */
-function hasAdultDateOfBirth(user: UserProfileDoc): boolean {
+function hasAdultDateOfBirth(user: UserProfileDocument): boolean {
   const dateOfBirth = user.dateOfBirth as
     | FirebaseFirestore.Timestamp
     | undefined;
@@ -78,10 +81,10 @@ function hasAdultDateOfBirth(user: UserProfileDoc): boolean {
 
 /**
  * Checks real stored name fields without using display fallbacks.
- * @param {UserProfileDoc} user Private user profile document.
+ * @param {UserProfileDocument} user Private user profile document.
  * @return {boolean} Whether a user-entered name is present.
  */
-function hasBookingReadyName(user: UserProfileDoc): boolean {
+function hasBookingReadyName(user: UserProfileDocument): boolean {
   return hasText(user.name) ||
     hasText(user.firstName) ||
     hasText(user.displayName);

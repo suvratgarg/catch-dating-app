@@ -11,6 +11,8 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/events/domain/saved_event.dart'
+    as saved_domain;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -472,6 +474,7 @@ class FakeEventRepository extends Fake implements EventRepository {
 class FakeEventParticipationRepository extends Fake
     implements EventParticipationRepository {
   final Map<String, List<EventParticipation>> eventParticipations = {};
+  final Map<String, List<EventParticipation>> userParticipations = {};
   String? lastFetchedEventId;
 
   @override
@@ -494,6 +497,11 @@ class FakeEventParticipationRepository extends Fake
   Stream<List<EventParticipation>> watchParticipationsForEvent({
     required String eventId,
   }) => Stream.value(eventParticipations[eventId] ?? const []);
+
+  @override
+  Stream<List<EventParticipation>> watchParticipationsForUser({
+    required String uid,
+  }) => Stream.value(userParticipations[uid] ?? const []);
 }
 
 class FakePaymentRepository extends Fake implements PaymentRepository {
@@ -600,6 +608,7 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
   String? unsavedUid;
   String? unsavedEventId;
   final Map<String, List<Event>> savedEventDetails = {};
+  final Map<String, List<saved_domain.SavedEvent>> savedEvents = {};
 
   @override
   Future<void> saveEvent({required String uid, required String eventId}) async {
@@ -619,4 +628,34 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
   @override
   Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) =>
       Stream.value(savedEventDetails[uid] ?? const []);
+
+  @override
+  Stream<List<saved_domain.SavedEvent>> watchSavedEventsForUser({
+    required String uid,
+  }) {
+    final savedEdges = savedEvents[uid];
+    if (savedEdges != null) return Stream.value(savedEdges);
+    final details = savedEventDetails[uid] ?? const <Event>[];
+    return Stream.value([
+      for (final event in details)
+        saved_domain.SavedEvent(
+          id: saved_domain.savedEventId(uid: uid, eventId: event.id),
+          uid: uid,
+          eventId: event.id,
+          savedAt: DateTime(2026, 1, 1),
+        ),
+    ]);
+  }
+
+  @override
+  Stream<saved_domain.SavedEvent?> watchSavedEvent({
+    required String uid,
+    required String eventId,
+  }) {
+    final edges = savedEvents[uid] ?? const <saved_domain.SavedEvent>[];
+    for (final savedEvent in edges) {
+      if (savedEvent.eventId == eventId) return Stream.value(savedEvent);
+    }
+    return Stream.value(null);
+  }
 }

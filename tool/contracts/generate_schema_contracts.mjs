@@ -603,43 +603,43 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
     pointer: "/definitions/eventConstraints",
   },
   {
-    name: "EventPolicyBundleDoc",
+    name: "EventPolicyBundleDocument",
     source: "shared/event_common.schema.json",
     pointer: "/definitions/eventPolicyBundle",
   },
   {
-    name: "EventPolicyAdmissionDoc",
+    name: "EventPolicyAdmissionDocument",
     source: "shared/event_common.schema.json",
     pointer: "/definitions/eventPolicyBundle/properties/admission",
   },
   {
-    name: "EventPolicyPrivateAccessDoc",
+    name: "EventPolicyPrivateAccessDocument",
     source: "shared/event_common.schema.json",
     pointer:
       "/definitions/eventPolicyBundle/properties/admission/" +
       "properties/privateAccessPolicy",
   },
   {
-    name: "EventPolicyWaitlistDoc",
+    name: "EventPolicyWaitlistDocument",
     source: "shared/event_common.schema.json",
     pointer:
       "/definitions/eventPolicyBundle/properties/admission/" +
       "properties/waitlistPolicy",
   },
   {
-    name: "EventPolicyBalancedRatioDoc",
+    name: "EventPolicyBalancedRatioDocument",
     source: "shared/event_common.schema.json",
     pointer:
       "/definitions/eventPolicyBundle/properties/admission/" +
       "properties/balancedRatioPolicy",
   },
   {
-    name: "EventPolicyPricingDoc",
+    name: "EventPolicyPricingDocument",
     source: "shared/event_common.schema.json",
     pointer: "/definitions/eventPolicyBundle/properties/pricing",
   },
   {
-    name: "EventPolicyDemandPricingRuleDoc",
+    name: "EventPolicyDemandPricingRuleDocument",
     source: "shared/event_common.schema.json",
     pointer:
       "/definitions/eventPolicyBundle/properties/pricing/" +
@@ -648,12 +648,12 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
 ];
 
 const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
-  ["ClubDoc.hostProfiles", "ClubHostProfile[]"],
-  ["ClubDoc.hostDefaults", "ClubHostDefaults"],
-  ["EventDoc.meetingLocation", "EventMeetingLocation | null"],
-  ["EventDoc.eventFormat", "EventFormatSnapshot"],
-  ["EventDoc.constraints", "EventConstraints"],
-  ["EventDoc.eventPolicy", "EventPolicyBundleDoc | null"],
+  ["ClubDocument.hostProfiles", "ClubHostProfile[]"],
+  ["ClubDocument.hostDefaults", "ClubHostDefaults"],
+  ["EventDocument.meetingLocation", "EventMeetingLocation | null"],
+  ["EventDocument.eventFormat", "EventFormatSnapshot"],
+  ["EventDocument.constraints", "EventConstraints"],
+  ["EventDocument.eventPolicy", "EventPolicyBundleDocument | null"],
   ["EventFormatSnapshot.version", "number"],
   [
     "EventFormatSnapshot.eventSuccessPrimitives",
@@ -670,25 +670,25 @@ const FIRESTORE_ADMIN_FIELD_OVERRIDES = new Map([
     "ClubHostDefaults.eventSuccessByActivityKind",
     "Record<string, EventSuccessDefaults>",
   ],
-  ["EventPolicyBundleDoc.version", "number"],
-  ["EventPolicyBundleDoc.admission", "EventPolicyAdmissionDoc"],
-  ["EventPolicyBundleDoc.pricing", "EventPolicyPricingDoc"],
-  ["EventPolicyAdmissionDoc.waitlistPolicy", "EventPolicyWaitlistDoc"],
+  ["EventPolicyBundleDocument.version", "number"],
+  ["EventPolicyBundleDocument.admission", "EventPolicyAdmissionDocument"],
+  ["EventPolicyBundleDocument.pricing", "EventPolicyPricingDocument"],
+  ["EventPolicyAdmissionDocument.waitlistPolicy", "EventPolicyWaitlistDocument"],
   [
-    "EventPolicyAdmissionDoc.privateAccessPolicy",
-    "EventPolicyPrivateAccessDoc",
+    "EventPolicyAdmissionDocument.privateAccessPolicy",
+    "EventPolicyPrivateAccessDocument",
   ],
   [
-    "EventPolicyAdmissionDoc.balancedRatioPolicy",
-    "EventPolicyBalancedRatioDoc | null",
+    "EventPolicyAdmissionDocument.balancedRatioPolicy",
+    "EventPolicyBalancedRatioDocument | null",
   ],
-  ["EventPolicyPricingDoc.demandPricingRules", "EventPolicyDemandPricingRuleDoc[]"],
+  ["EventPolicyPricingDocument.demandPricingRules", "EventPolicyDemandPricingRuleDocument[]"],
 ]);
 
 const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
   ["EventConstraints", ["maxMen", "maxWomen"]],
   [
-    "EventDoc",
+    "EventDocument",
     [
       "startingPointLat",
       "startingPointLng",
@@ -701,7 +701,7 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
     ],
   ],
   [
-    "MatchDoc",
+    "MatchDocument",
     [
       "lastMessageAt",
       "lastMessagePreview",
@@ -711,7 +711,7 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
     ],
   ],
   [
-    "EventPolicyAdmissionDoc",
+    "EventPolicyAdmissionDocument",
     [
       "waitlistPolicy",
       "inviteRequired",
@@ -723,7 +723,7 @@ const FIRESTORE_ADMIN_OPTIONAL_FIELDS = new Map([
     ],
   ],
   [
-    "EventPolicyPricingDoc",
+    "EventPolicyPricingDocument",
     [
       "cohortAdjustmentsInPaise",
       "demandPricingRules",
@@ -814,10 +814,16 @@ async function main() {
       commonSchema: readContractJson("shared/profile_common.schema.json"),
     })
   );
+  const dartSchemaContracts = renderDartSchemaContracts({
+    schemaMap: bundledSchemas,
+  });
   addTextOutput(
     "lib/core/schema_contracts/generated/schema_contracts.g.dart",
-    renderDartSchemaContracts({schemaMap: bundledSchemas})
+    dartSchemaContracts.text
   );
+  for (const file of dartSchemaContracts.files) {
+    addTextOutput(file.path, file.content);
+  }
 
   const dartCallableRequests = renderDartCallableRequestClasses({
     schemaSpecs,
@@ -828,10 +834,17 @@ async function main() {
     "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
     dartCallableRequests.text
   );
+  for (const file of dartCallableRequests.files) {
+    addTextOutput(file.path, file.content);
+  }
+  addTextOutput(
+    "lib/core/schema_contracts/generated/INDEX.md",
+    renderGeneratedIndex({dartSchemaContracts, dartCallableRequests})
+  );
   if (!checkOnly && dartCallableRequests.ungenerable.length > 0) {
     console.log(
       `[callable_request_dtos.g.dart] ${dartCallableRequests.ungenerable.length} ` +
-      `schemas not yet generatable (hand-written in lib/**/data/*_callable_dtos.dart):`
+      `schemas not yet generatable (hand-written callable helpers still own them):`
     );
     for (const entry of dartCallableRequests.ungenerable) {
       console.log(`  - ${entry.name}: ${entry.reason}`);
@@ -839,6 +852,16 @@ async function main() {
   }
 
   const staleFiles = [];
+  if (!checkOnly) {
+    fs.rmSync(
+      path.join(repoRoot, "lib/core/schema_contracts/generated/callables"),
+      {recursive: true, force: true}
+    );
+    fs.rmSync(
+      path.join(repoRoot, "lib/core/schema_contracts/generated/schemas"),
+      {recursive: true, force: true}
+    );
+  }
   for (const file of generatedFiles) {
     const absolutePath = path.join(repoRoot, file.path);
     if (checkOnly) {
@@ -1008,9 +1031,7 @@ function firestoreAdminNamedSchema(spec, profilePhotoPolicy) {
 }
 
 function firestoreAdminTypeName(schemaName) {
-  return schemaName.endsWith("Document") ?
-    `${schemaName.slice(0, -"Document".length)}Doc` :
-    schemaName;
+  return schemaName;
 }
 
 function withAdminTimestamps(schema) {
@@ -1412,11 +1433,33 @@ const schemaUpdateUserProfileCallablePayloadSchema =
 `;
 }
 
+const DART_SCHEMA_OUTPUT_DIR = "lib/core/schema_contracts/generated/schemas";
+
 function renderDartSchemaContracts({schemaMap}) {
-  const schemaConstants = schemaSpecs.map((spec) => {
-    const name = dartSchemaConstName(spec.name);
-    return `const ${name} = ${dartLiteral(schemaMap.get(spec.name))};`;
-  }).join("\n\n");
+  const files = [];
+  const generatedConstants = [];
+  const schemaExports = [];
+
+  for (const spec of schemaSpecs) {
+    const constName = dartSchemaConstName(spec.name);
+    const output = dartSchemaOutputPath(spec.name);
+    generatedConstants.push({
+      constName,
+      schemaName: spec.name,
+      source: spec.source,
+      output,
+    });
+    schemaExports.push(dartSchemaGeneratedExportPath(output));
+    files.push({
+      path: output,
+      content: renderDartSchemaConstantFile({
+        constName,
+        source: spec.source,
+        schema: schemaMap.get(spec.name),
+      }),
+    });
+  }
+
   const definitions = schemaSpecs.map((spec) => {
     const schemaName = dartSchemaConstName(spec.name);
     return `  SchemaContractDefinition(
@@ -1432,7 +1475,22 @@ function renderDartSchemaContracts({schemaMap}) {
     `  ${dartString(spec.source)}: ${dartSchemaConstName(spec.name)},`
   ).join("\n");
 
-  return `${dartGeneratedHeader()}
+  files.push({
+    path: `${DART_SCHEMA_OUTPUT_DIR}/schema_constants.g.dart`,
+    content: `${dartGeneratedHeader()}
+// Barrel for generated Dart JSON Schema constants.
+
+${[...new Set(schemaExports)]
+    .sort()
+    .map((item) => `export '${item}';`)
+    .join("\n")}
+`,
+  });
+
+  files.push({
+    path: `${DART_SCHEMA_OUTPUT_DIR}/schema_registry.g.dart`,
+    content: `${dartGeneratedHeader()}import 'schema_constants.g.dart';
+
 class SchemaContractDefinition {
   const SchemaContractDefinition({
     required this.name,
@@ -1445,8 +1503,6 @@ class SchemaContractDefinition {
   final Map<String, Object?> schema;
 }
 
-${schemaConstants}
-
 const schemaContractDefinitions = <SchemaContractDefinition>[
 ${definitions}
 ];
@@ -1458,6 +1514,101 @@ ${byName}
 const schemaContractsBySource = <String, Map<String, Object?>>{
 ${bySource}
 };
+`,
+  });
+
+  return {
+    text: `${dartGeneratedHeader()}
+// Stable barrel for generated Dart JSON Schema contracts.
+
+export 'schemas/schema_constants.g.dart';
+export 'schemas/schema_registry.g.dart';
+`,
+    files,
+    generatedConstants,
+  };
+}
+
+function dartSchemaOutputPath(name) {
+  return `${DART_SCHEMA_OUTPUT_DIR}/${snakeCase(name)}.g.dart`;
+}
+
+function dartSchemaGeneratedExportPath(outputPath) {
+  return outputPath.replace(`${DART_SCHEMA_OUTPUT_DIR}/`, "");
+}
+
+function renderDartSchemaConstantFile({constName, source, schema}) {
+  return `${dartGeneratedHeader()}
+// JSON Schema constant emitted from ${source}.
+
+const ${constName} = ${dartLiteral(schema)};
+`;
+}
+
+function renderGeneratedIndex({dartSchemaContracts, dartCallableRequests}) {
+  const tsRows = schemaSpecs.map((spec) =>
+    `| ${spec.name} | \`${spec.source}\` | \`${spec.typeOutput}\` |`
+  ).join("\n");
+  const dartSchemaRows = dartSchemaContracts.generatedConstants.map((entry) =>
+    `| \`${entry.constName}\` | ${entry.schemaName} | ` +
+    `\`${entry.source}\` | \`${entry.output}\` |`
+  ).join("\n");
+  const callableRows = dartCallableRequests.generatedClasses.length === 0 ?
+    "| _None_ | _None_ | _None_ | _None_ |" :
+    dartCallableRequests.generatedClasses.map((entry) =>
+      `| ${entry.className} | ${entry.schemaName} | ` +
+      `\`${entry.source}\` | \`${entry.output}\` |`
+    ).join("\n");
+  const ungenerableRows = dartCallableRequests.ungenerable.length === 0 ?
+    "| _None_ | _None_ |" :
+    dartCallableRequests.ungenerable.map((entry) =>
+      `| ${entry.name} | ${entry.reason} |`
+    ).join("\n");
+
+  return `${markdownGeneratedHeader()}# Generated Schema Contracts Index
+
+This file is generated by \`tool/contracts/generate_schema_contracts.mjs\`.
+Do not edit it by hand.
+
+## TypeScript Schema Types
+
+| Generated Type | Source Schema | Output |
+|---|---|---|
+${tsRows}
+
+## Dart Schema Constants
+
+| Dart Constant | Schema Name | Source Schema | Output |
+|---|---|---|---|
+${dartSchemaRows}
+
+## Dart Callable Classes
+
+| Generated Class | Schema Name | Source Schema | Output |
+|---|---|---|---|
+${callableRows}
+
+## Callable Schemas Still Hand-Written In Dart
+
+| Schema | Reason |
+|---|---|
+${ungenerableRows}
+
+## Registry And Validator Outputs
+
+| Output | Purpose |
+|---|---|
+| \`functions/src/shared/generated/schemaRegistry.ts\` | TypeScript schema registry for Functions runtime code. |
+| \`functions/src/shared/generated/schemaValidators.ts\` | Ajv validators compiled from callable/schema contracts. |
+| \`functions/src/shared/generated/firestoreAdminTypes.ts\` | Admin SDK Timestamp-aware Firestore projection types. |
+| \`functions/src/shared/generated/schemaPaths.ts\` | Generated storage/path constants for migrated logical paths. |
+| \`tool/contracts/generated/schema_contract_registry.mjs\` | Node-side schema registry for validation tooling. |
+| \`tool/contracts/generated/schema_contract_validators.mjs\` | Node-side Ajv validators for contract checks. |
+| \`lib/core/schema_contracts/generated/profile_schema_contracts.g.dart\` | Dart profile catalog and storage policy constants. |
+| \`lib/core/schema_contracts/generated/schema_contracts.g.dart\` | Dart schema contract barrel. |
+| \`lib/core/schema_contracts/generated/schemas/*.g.dart\` | One generated Dart JSON Schema constant file per schema, plus lookup registry files. |
+| \`lib/core/schema_contracts/generated/callable_request_dtos.g.dart\` | Generated Dart callable request and patch helper barrel. |
+| \`lib/core/schema_contracts/generated/callables/*.g.dart\` | One generated Dart callable request or patch helper file per schema-owned class. |
 `;
 }
 
@@ -1476,25 +1627,25 @@ function dartSchemaConstName(name) {
 // text — the caller logs it so contributors see what's still hand-written.
 // ────────────────────────────────────────────────────────────────────────────
 
+// Callable schemas whose generated patch helper owns the callable wrapper via
+// toCallableJson(), so emitting a separate *CallableRequest would duplicate the
+// same payload shape:
+//   - schemas with x-callable-shape: patch
+//
 // Callable schemas where the generator's projection would shadow a
 // hand-written class that adds behavior the generator can't reproduce:
-//   - UpdateUserProfileCallablePayload: the feature-local callable request
-//     wrapper still owns the generated typed patch object.
 //   - EventBookingCallablePayload / CreateRazorpayOrderCallablePayload:
 //     hand-written DTOs apply `inviteCode?.trim()` at serialization time.
 //     The schemas exist for validation and as the contract source of truth;
 //     the Dart classes stay hand-written so the trim normalization remains
 //     attached to the boundary.
 const DART_CALLABLE_REQUEST_SKIP = new Set([
-  "UpdateUserProfileCallablePayload",
   "EventBookingCallablePayload",
   "CreateRazorpayOrderCallablePayload",
 ]);
 
-const DART_PATCH_HELPER_SPECS = new Set([
-  "UpdateUserProfileCallablePayload",
-  "UpdateClubCallablePayload",
-]);
+const DART_CALLABLE_REQUEST_OUTPUT_DIR =
+  "lib/core/schema_contracts/generated/callables";
 
 const DART_CALLABLE_FIELD_OVERRIDES = new Map([
   [
@@ -1574,9 +1725,10 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
 ]);
 
 function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}) {
-  const classes = [];
+  const files = [];
+  const barrelExports = [];
   const ungenerable = [];
-  const imports = new Set();
+  const generatedClasses = [];
   const enumTypesBySignature = dartProfileEnumTypesBySignature(commonSchema);
 
   for (const spec of schemaSpecs) {
@@ -1584,48 +1736,115 @@ function renderDartCallableRequestClasses({schemaSpecs, schemaMap, commonSchema}
     const schema = schemaMap.get(spec.name);
     if (!schema) continue;
 
-    if (DART_PATCH_HELPER_SPECS.has(spec.name) && isPatchCallableSchema(schema)) {
-      const patchResult = tryEmitDartPatchClass(spec, schema, enumTypesBySignature);
-      if (patchResult.ok) {
-        for (const item of patchResult.imports ?? []) imports.add(item);
-        classes.push(patchResult.text);
+    const callableShape = schema["x-callable-shape"];
+    const isPatchShape = callableShape === "patch";
+
+    if (isPatchShape) {
+      if (!isPatchCallableSchema(schema)) {
+        ungenerable.push({
+          name: `${spec.name}Patch`,
+          reason: "x-callable-shape patch requires a top-level required fields object",
+        });
       } else {
-        ungenerable.push({name: `${spec.name}Patch`, reason: patchResult.reason});
+        const patchResult = tryEmitDartPatchClass(
+          spec,
+          schema,
+          enumTypesBySignature
+        );
+        if (patchResult.ok) {
+          const output = dartCallableRequestOutputPath(patchResult.className);
+          files.push({
+            path: output,
+            content: renderDartCallableRequestClassFile({
+              imports: patchResult.imports,
+              schemaSource: spec.source,
+              body: patchResult.text,
+            }),
+          });
+          barrelExports.push(dartGeneratedExportPath(output));
+          generatedClasses.push({
+            className: patchResult.className,
+            schemaName: spec.name,
+            source: spec.source,
+            output,
+          });
+        } else {
+          ungenerable.push({
+            name: `${spec.name}Patch`,
+            reason: patchResult.reason,
+          });
+        }
       }
     }
 
-    if (DART_CALLABLE_REQUEST_SKIP.has(spec.name)) continue;
+    if (isPatchShape || DART_CALLABLE_REQUEST_SKIP.has(spec.name)) continue;
 
     const result = tryEmitDartCallableClass(spec, schema);
     if (result.ok) {
-      for (const item of result.imports ?? []) imports.add(item);
-      classes.push(result.text);
+      const output = dartCallableRequestOutputPath(result.className);
+      files.push({
+        path: output,
+        content: renderDartCallableRequestClassFile({
+          imports: result.imports,
+          schemaSource: spec.source,
+          body: result.text,
+        }),
+      });
+      barrelExports.push(dartGeneratedExportPath(output));
+      for (const className of result.classNames) {
+        generatedClasses.push({
+          className,
+          schemaName: spec.name,
+          source: spec.source,
+          output,
+        });
+      }
     } else {
       ungenerable.push({name: spec.name, reason: result.reason});
     }
   }
 
-  const body = classes.length === 0 ?
+  const body = barrelExports.length === 0 ?
     "// No callable request classes are currently generatable.\n" :
-    classes.join("\n\n");
-
-  const importBlock = [...imports].sort().join("\n");
-  const text = `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
+    [...new Set(barrelExports)]
+      .sort()
+      .map((item) => `export '${item}';`)
+      .join("\n");
+  const text = `${dartGeneratedHeader()}
 // Typed callable request DTOs emitted from contracts/callables/ and
 // contracts/patches/. The toJson() output of each class is validated against
 // the corresponding JSON Schema by test/core/callable_dto_contracts_test.dart.
-// Patch helper classes are emitted for configured callable schemas whose
-// wrapper contains an inner fields object.
+// Patch helper classes are emitted for schemas with x-callable-shape: patch.
+// This file is a stable barrel; individual generated classes live under
+// lib/core/schema_contracts/generated/callables/.
 //
-// Hand-written DTOs in lib/**/data/*_callable_dtos.dart may still exist for
-// schemas that this generator cannot yet emit (nested objects, anyOf with
-// multiple non-null branches, Timestamp serialization quirks); see backlog
-// item CONTRACT-DART-GEN-001.
+// Hand-written callable request/response helpers may still exist for schemas
+// that need custom normalization or response parsing beyond generated request
+// toJson() classes.
 
 ${body}
 `;
 
-  return {text, ungenerable};
+  return {text, files, ungenerable, generatedClasses};
+}
+
+function dartCallableRequestOutputPath(className) {
+  return `${DART_CALLABLE_REQUEST_OUTPUT_DIR}/${snakeCase(className)}.g.dart`;
+}
+
+function dartGeneratedExportPath(outputPath) {
+  return outputPath.replace("lib/core/schema_contracts/generated/", "");
+}
+
+function renderDartCallableRequestClassFile({imports, schemaSource, body}) {
+  const importBlock = [...(imports ?? [])].sort().join("\n");
+  const normalizedBody = body.trimEnd();
+  return `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
+// Typed callable request DTO emitted from ${schemaSource}.
+// Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
+
+${normalizedBody}
+`;
 }
 
 function isCallableRequestSpec(spec) {
@@ -1648,7 +1867,7 @@ function tryEmitDartCallableClass(spec, schema) {
   }
 
   // BlockUserCallablePayload → BlockUserCallableRequest
-  // UpdateUserProfileCallablePayload → UpdateUserProfileCallableRequest
+  // CreateClubCallablePayload → CreateClubCallableRequest
   const className = spec.name.replace(/Payload$/, "Request");
   const required = new Set(schema.required ?? []);
 
@@ -1684,10 +1903,13 @@ function tryEmitDartCallableClass(spec, schema) {
 
   const extraText = dartCallableExtraClassText(className);
   const text = formatDartCallableClass(className, fields, schema.description);
+  const extraClassNames = dartCallableExtraClassNames(className);
 
   return {
     ok: true,
+    className,
     imports,
+    classNames: [...extraClassNames, className],
     text: extraText ? `${extraText}\n\n${text}` : text,
   };
 }
@@ -1708,6 +1930,11 @@ final class CreateEventPrivateAccess {
     'inviteCode': ?inviteCode,
   };
 }`;
+}
+
+function dartCallableExtraClassNames(className) {
+  if (className !== "CreateEventCallableRequest") return [];
+  return ["CreateEventPrivateAccess"];
 }
 
 function tryEmitDartPatchClass(spec, schema, enumTypesBySignature) {
@@ -1733,10 +1960,31 @@ function tryEmitDartPatchClass(spec, schema, enumTypesBySignature) {
     fields.push({name: fieldName, ...mapped});
   }
 
+  const callableFields = [];
+  const callableRequired = new Set(schema.required ?? []);
+  for (const [fieldName, prop] of Object.entries(schema.properties ?? {})) {
+    if (fieldName === "fields") continue;
+    const mapped = mapDartType(prop);
+    if (mapped === null) {
+      return {
+        ok: false,
+        reason: `cannot map callable wrapper field "${fieldName}" (${describeSchemaType(prop)})`,
+      };
+    }
+    const isRequired = callableRequired.has(fieldName);
+    const dartType = isRequired || mapped.endsWith("?") ? mapped : `${mapped}?`;
+    callableFields.push({
+      name: fieldName,
+      dartType,
+      isRequired,
+    });
+  }
+
   return {
     ok: true,
+    className: config.className,
     imports: config.imports,
-    text: formatDartPatchClass(config, fields, schema.description),
+    text: formatDartPatchClass(config, fields, callableFields, schema.description),
   };
 }
 
@@ -1748,10 +1996,11 @@ function dartPatchClassConfig(specName) {
     case "UpdateUserProfileCallablePayload":
       return {
         className,
-        sentinelName: "_updateUserProfilePatchUnset",
+        sentinelName: "unsetSentinel",
         jsonValueHelperName: "_updateUserProfilePatchJsonValue",
         includeTimestampJsonHelper: true,
         imports: [
+          "import 'package:catch_dating_app/core/sentinels.dart';",
           "import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';",
           "import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';",
           "import 'package:catch_dating_app/user_profile/domain/user_profile.dart';",
@@ -1766,10 +2015,11 @@ function dartPatchClassConfig(specName) {
     case "UpdateClubCallablePayload":
       return {
         className,
-        sentinelName: "_updateClubPatchUnset",
+        sentinelName: "unsetSentinel",
         jsonValueHelperName: "_updateClubPatchJsonValue",
         includeTimestampJsonHelper: false,
         imports: [
+          "import 'package:catch_dating_app/core/sentinels.dart';",
           "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
         ],
         objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
@@ -1956,9 +2206,18 @@ function pascalCase(value) {
     .join("");
 }
 
-function formatDartPatchClass(config, fields, description) {
+function snakeCase(value) {
+  return String(value)
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/[^A-Za-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .toLowerCase();
+}
+
+function formatDartPatchClass(config, fields, callableFields, description) {
   const helperBlock = fields.some((field) => field.usesJsonValueHelper) ?
-    `\n\n${formatDartPatchJsonValueHelper(config)}` :
+    `\n${formatDartPatchJsonValueHelper(config)}` :
     "";
   const ctorParams = fields.map((field) => {
     const defaultValue = field.nullable ? ` = ${config.sentinelName}` : "";
@@ -1977,6 +2236,7 @@ function formatDartPatchClass(config, fields, description) {
   const docComment = description ?
     `/// Typed patch helper generated from ${description}\n` :
     "/// Typed patch helper generated from the updateUserProfile schema.\n";
+  const callableJsonMethod = formatDartPatchCallableJsonMethod(callableFields);
 
   return `${docComment}final class ${config.className} {
   ${config.className}({
@@ -1999,10 +2259,32 @@ ${jsonEntries}
 
   Map<String, Object?> toFieldsJson() =>
       Map<String, Object?>.unmodifiable(_fields);
+${callableJsonMethod}
 }
 
 ${helperBlock}
-const Object ${config.sentinelName} = Object();`;
+`;
+}
+
+function formatDartPatchCallableJsonMethod(callableFields) {
+  const params = callableFields.map((field) =>
+    `    ${field.isRequired ? "required " : ""}${field.dartType} ${field.name},`
+  ).join("\n");
+  const signature = callableFields.length === 0 ?
+    "toCallableJson()" :
+    `toCallableJson({\n${params}\n  })`;
+  const wrapperEntries = callableFields.map((field) => {
+    const value = field.isRequired ? field.name : `?${field.name}`;
+    return `    ${dartString(field.name)}: ${value},`;
+  }).join("\n");
+  const entries = [
+    wrapperEntries,
+    "    'fields': toFieldsJson(),",
+  ].filter(Boolean).join("\n");
+  return `
+  Map<String, Object?> ${signature} => {
+${entries}
+  };`;
 }
 
 function formatDartPatchJsonValueHelper(config) {
@@ -2237,6 +2519,15 @@ function dartGeneratedHeader() {
   return `// GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
+`;
+}
+
+function markdownGeneratedHeader() {
+  return `<!--
+GENERATED CODE - DO NOT MODIFY BY HAND.
+Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+-->
+
 `;
 }
 

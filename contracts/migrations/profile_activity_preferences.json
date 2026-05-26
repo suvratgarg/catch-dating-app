@@ -26,7 +26,7 @@
       "version": "integer preference schema version"
     }
   },
-  "currentPhase": "local_cutover_cleanup_pending",
+  "currentPhase": "remote_cleanup_complete",
   "reason": "Root-level running preference fields locked the profile document to running while Catch now supports multiple activity kinds. activityPreferences.running preserves existing product behavior while giving the schema a generic parent for future activity-specific preferences.",
   "phases": [
     {
@@ -41,15 +41,37 @@
     },
     {
       "id": "code_cutover",
-      "status": "complete_local",
+      "status": "complete",
       "description": "Dart domain models, UpdateUserProfilePatch, Functions projection/update paths, Firestore rules, validators, demo data, and tests read/write the nested shape. Domain fromJson keeps legacy root-field read tolerance for older documents."
     },
     {
       "id": "cleanup",
-      "status": "pending_remote_apply",
-      "description": "Run tool/data/retire_legacy_profile_fields.mjs per environment to copy any remaining legacy root running fields into activityPreferences.running and delete the root fields."
+      "status": "complete_remote",
+      "description": "tool/data/retire_legacy_profile_fields.mjs copied remaining legacy root running fields into activityPreferences.running and deleted root fields in dev, staging, and prod on 2026-05-26."
     }
   ],
+  "liveApply": {
+    "cleanupTool": "tool/data/retire_legacy_profile_fields.mjs",
+    "appliedAt": "2026-05-26",
+    "dev": {
+      "usersChanged": 73,
+      "publicProfilesChanged": 73,
+      "backfilledActivityPreferences": 146,
+      "verificationChangedAfter": 0
+    },
+    "staging": {
+      "usersChanged": 0,
+      "publicProfilesChanged": 0,
+      "backfilledActivityPreferences": 0,
+      "verificationChangedAfter": 0
+    },
+    "prod": {
+      "usersChanged": 89,
+      "publicProfilesChanged": 86,
+      "backfilledActivityPreferences": 175,
+      "verificationChangedAfter": 0
+    }
+  },
   "guards": [
     "contracts/firestore/users.schema.json and contracts/firestore/public_profiles.schema.json require activityPreferences.",
     "tool/data/validate_firestore_data.mjs validates activityPreferences and warns on retired root profile fields; run with --fail-on-warning after cleanup.",

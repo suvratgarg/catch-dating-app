@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {onSwipeCreatedHandler} from "./onSwipeCreated";
-import {SwipeDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  SwipeDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 test(
   "onSwipeCreatedHandler creates a deterministic reciprocal match",
@@ -175,8 +177,8 @@ function swipe(
   targetId: string,
   eventId: string,
   direction: "like" | "pass",
-  overrides: Partial<SwipeDoc> = {}
-): SwipeDoc {
+  overrides: Partial<SwipeDocument> = {}
+): SwipeDocument {
   return {
     swiperId,
     targetId,

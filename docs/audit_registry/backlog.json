@@ -1,6 +1,6 @@
 {
-  "version": "2.6.13",
-  "updated": "2026-05-25",
+  "version": "2.6.14",
+  "updated": "2026-05-26",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Historical detail lives in passes.jsonl/files.jsonl; do not recreate long markdown trackers for closed work.",
   "scanner_snapshot": {
@@ -93,7 +93,7 @@
       "area": "contracts,repositories",
       "priority": "low",
       "rules": ["CODEGEN-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. The generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, and typed ClubHostDefaults serialization. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, UpdateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code through feature-local re-exports. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: UpdateUserProfileCallableRequest wraps the generated UpdateUserProfilePatch; EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; update callable fields remain dynamic patch maps; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
+      "summary": "Callable request generator migration is on watch. tool/contracts/generate_schema_contracts.mjs emits typed Dart callable request classes from contracts/callables/ and detects callable schemas whose wrapper contains a patch-like fields object. UpdateUserProfilePatch is generated from contracts/patches/update_user_profile.schema.json and UpdateClubPatch is generated from contracts/callables/update_club_payload.schema.json into lib/core/schema_contracts/generated/callable_request_dtos.g.dart; the old domain paths remain compatibility exports for existing callers. Generated patches preserve nullable-field sentinel semantics, enum .name serialization, DateTime -> millis for dateOfBirth, callable-safe serialization of embedded profile photo objects, typed ClubHostDefaults serialization, and `toCallableJson()` wrapper payloads. CreateEventCallableRequest, UpdateEventCallableRequest, CreateClubCallableRequest, CreateEventReviewCallableRequest, and UpdateEventReviewCallableRequest now come from generated code. CreateEventCallableRequest and CreateClubCallableRequest use typed nested/domain fields such as EventMeetingLocation, EventPolicyBundle, EventFormatSnapshot, EventSuccessDefaults, EventConstraints, CreateEventPrivateAccess, and ClubHostDefaults; generated toJson() owns the wire shape. Feature-local adapters now translate domain models into generated constructors without hand-written create-event detail DTOs. Pure feature-local re-export barrels are retired; feature-local callable DTO files remain only where they own response decoders, custom normalization, or feature exceptions. Hand-written request DTOs remain only where they add behavior the generator intentionally does not synthesize: EventBookingCallableRequest and CreateRazorpayOrderCallableRequest trim inviteCode; PlacesAutocompleteCallableRequest flattens LocationCoordinate bias; response decoders remain hand-written by design. Keep on watch when adding new callable schemas or removing the remaining behavioral wrappers.",
       "paths": [
         "tool/contracts/generate_schema_contracts.mjs",
         "lib/core/schema_contracts/generated/callable_request_dtos.g.dart",
@@ -101,11 +101,8 @@
         "lib/events/data/event_callable_dtos.dart",
         "lib/events/data/event_callable_adapters.dart",
         "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_dtos.dart",
         "lib/reviews/data/review_callable_adapters.dart",
-        "lib/safety/data/safety_callable_dtos.dart",
         "lib/locations/data/places_callable_dtos.dart",
-        "lib/user_profile/data/user_profile_callable_dtos.dart",
         "lib/user_profile/domain/update_user_profile_patch.dart",
         "lib/clubs/domain/update_club_patch.dart",
         "test/core/callable_dto_contracts_test.dart",
@@ -173,11 +170,11 @@
     {
       "id": "PROFILE-PHOTO-RETIRE-LEGACY-001",
       "title": "Retire legacy profile photo arrays after app-version floor clears",
-      "status": "implemented_needs_remote_apply",
+      "status": "watch",
       "area": "user_profile,public_profile,migrations",
       "priority": "medium",
       "rules": ["FIRESTORE-RULES-TEST-001"],
-      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. contracts/migrations/profile_photos_storage.json is at currentPhase: retire_legacy_arrays_local. contracts/firestore/users.schema.json, public_profiles.schema.json, update_user_profile.schema.json, Firestore rules, Dart profile/public-profile models, profile upload/update paths, Functions projection/update/moderation/deletion paths, and validators now treat profilePhotos as the canonical field and no longer write photoUrls/photoThumbnailUrls/photoPrompts. tool/data/retire_legacy_profile_fields.mjs owns dry-run-first dev -> staging -> prod cleanup; remote document cleanup is still pending explicit environment apply.",
+      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs; verification dry-runs reported changed: 0 afterward. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
       "paths": [
         "contracts/migrations/profile_photos_storage.json",
         "contracts/firestore/users.schema.json",
@@ -193,11 +190,11 @@
     {
       "id": "SWIPES-RENAME-CONTINUE-001",
       "title": "Continue swipes → profileDecisions rename from dual_write to retire_old",
-      "status": "implemented_needs_remote_cleanup",
+      "status": "watch",
       "area": "swipes,firestore,migrations",
       "priority": "medium",
       "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25. contracts/migrations/swipes_to_profile_decisions.json is at currentPhase: retire_old_local. Dart SwipeRepository, Functions onSwipeCreated trigger metadata/tests, Firestore rules, direct-write contracts, demo/reset tooling, and relationship cleanup tests now use profileDecisions/{uid}/outgoing/{targetId}; swipes/ remains only in legacy migration/backfill validators and historical docs. Remote cleanup of any old swipes data remains a separate destructive environment operation after validation with tool/data/validate_profile_decision_migration.mjs.",
+      "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then tool/data/retire_legacy_profile_decisions.mjs deleted 11 dev, 0 staging, and 138 prod legacy swipes. Post-cleanup verification reports zero legacy swipes in all environments.",
       "paths": [
         "contracts/migrations/swipes_to_profile_decisions.json",
         "tool/data/validate_profile_decision_migration.mjs",
@@ -210,11 +207,11 @@
     {
       "id": "PROFILE-RUN-FIELDS-MIGRATE-001",
       "title": "Migrate run-specific profile fields to activity-generic shape",
-      "status": "implemented_needs_remote_apply",
+      "status": "watch",
       "area": "user_profile,onboarding,swipes",
       "priority": "low",
       "rules": ["CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. contracts/embedded/activity_preferences.schema.json defines the nested object; users/publicProfiles schemas, UpdateUserProfilePatch, Firestore rules, Dart UserProfile/PublicProfile models, onboarding/profile edit writes, Functions profile projection/update/readiness paths, validators, fixtures, demo data, and tests now use activityPreferences.running. Dart fromJson retains legacy root-field tolerance. tool/data/retire_legacy_profile_fields.mjs can backfill nested running preferences and delete root pace/preferred/runPreferencesVersion fields per environment; remote cleanup is pending explicit apply.",
+      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
       "paths": [
         "contracts/firestore/users.schema.json",
         "lib/user_profile/domain/user_profile.dart",
@@ -236,7 +233,7 @@
         "FIRESTORE-RULES-TEST-001",
         "CODEGEN-001"
       ],
-      "summary": "Replace high-friction ad hoc callable maps and response casts with feature-local Dart DTOs. Events, clubs, payments, reviews, safety, places, and user-profile callables now have feature-local Dart DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. Profile inline editors pass typed UpdateUserProfilePatch objects through ProfileEditController instead of constructing ad hoc field maps; the Razorpay order / free-event signup Functions handlers validate against their dedicated generated payload schemas instead of the generic EventIdCallablePayload helper; and SuvbotRepository tests validate both requestSuvbotDemoOperation payloads and listSuvbotDemoActions responses against generated schemas. Most request wrapper classes now come from lib/core/schema_contracts/generated/callable_request_dtos.g.dart and feature-local files re-export them; create-event and create-club generated requests own typed nested/domain object serialization. Hand-written code remains only where it adds boundary behavior the generator intentionally does not synthesize, such as invite-code normalization, location-bias flattening, and UpdateUserProfileCallableRequest.fromPatch. Keep on watch when adding new callable schemas.",
+      "summary": "Replace high-friction ad hoc callable maps and response casts with generated Dart DTOs plus feature-local adapters only where they add behavior. Events, clubs, payments, reviews, safety, places, and user-profile callables now have generated/request DTOs validated against JSON Schema by test/core/callable_dto_contracts_test.dart. Profile inline editors pass typed UpdateUserProfilePatch objects through ProfileEditController instead of constructing ad hoc field maps; the Razorpay order / free-event signup Functions handlers validate against their dedicated generated payload schemas instead of the generic EventIdCallablePayload helper; and SuvbotRepository tests validate both requestSuvbotDemoOperation payloads and listSuvbotDemoActions responses against generated schemas. Most request classes now come directly from lib/core/schema_contracts/generated/callable_request_dtos.g.dart; create-event and create-club generated requests own typed nested/domain object serialization. Generated profile and club patch helpers now own their callable wrapper payloads through toCallableJson(). Hand-written code remains only where it adds boundary behavior the generator intentionally does not synthesize, such as invite-code normalization and location-bias flattening. Keep on watch when adding new callable schemas.",
       "paths": [
         "lib/events/data/event_repository.dart",
         "lib/events/data/event_callable_dtos.dart",
@@ -244,10 +241,8 @@
         "lib/clubs/data/club_callable_dtos.dart",
         "lib/payments/data/payment_repository.dart",
         "lib/payments/data/payment_callable_dtos.dart",
-        "lib/reviews/data/review_callable_dtos.dart",
         "lib/reviews/data/review_callable_adapters.dart",
-        "lib/safety/data/safety_callable_dtos.dart",
-        "lib/user_profile/data/user_profile_callable_dtos.dart",
+        "lib/user_profile/domain/update_user_profile_patch.dart",
         "lib/locations/data/places_callable_dtos.dart",
         "test/core/callable_dto_contracts_test.dart",
         "test/events/event_repository_test.dart",
@@ -670,30 +665,30 @@
     },
     {
       "id": "RUN-SCHEDULE-CONFLICTS-001",
-      "title": "Enforce non-overlapping runs for clubs and users",
-      "status": "implemented_needs_deploy",
-      "area": "runs,functions,business_rules",
+      "title": "Enforce non-overlapping events for clubs and users",
+      "status": "watch",
+      "area": "events,functions,business_rules",
       "priority": "high",
       "rules": [
         "CONTROLLER-BOUNDARY-001",
         "FIRESTORE-RULES-TEST-001",
         "CODEGEN-001"
       ],
-      "summary": "Implemented on 2026-05-09. Run creation and host schedule edits now enforce non-overlapping active runs per run club. User sign-up and waitlist joins now enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional run/participation queries; deterministic per-minute schedule lock docs protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Deploy Functions before relying on this in production, and decide later whether to run a lock backfill for observability even though the query fallback protects existing data.",
+      "summary": "Implemented on 2026-05-09 and deployed to dev, staging, and prod on 2026-05-26. Event creation and host schedule edits enforce non-overlapping active events per club. User sign-up and waitlist joins enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional event/participation queries; deterministic per-minute clubScheduleLocks and userEventScheduleLocks protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Lock backfill remains optional for observability because the query fallback protects existing data.",
       "paths": [
         "tool/contracts/business_rules.json",
         "tool/contracts/generate_business_rules.mjs",
         "tool/check_data_contract.sh",
         "lib/core/business_rules.dart",
-        "lib/runs/presentation/create_run_screen.dart",
-        "lib/runs/domain/run_draft.dart",
-        "lib/runs/presentation/run_arrival_action.dart",
+        "lib/events/presentation/create_event_screen.dart",
+        "lib/events/domain/event_draft.dart",
+        "lib/events/presentation/event_arrival_action.dart",
         "functions/src/shared/businessRules.ts",
-        "functions/src/runs/scheduleConflicts.ts",
-        "functions/src/runs/mutateRun.ts",
-        "functions/src/runs/signUpUserForRun.ts",
-        "functions/src/runs/joinRunWaitlist.ts",
-        "functions/src/runs/cancelRunSignUp.ts",
+        "functions/src/events/scheduleConflicts.ts",
+        "functions/src/events/mutateEvent.ts",
+        "functions/src/events/signUpUserForEvent.ts",
+        "functions/src/events/joinEventWaitlist.ts",
+        "functions/src/events/cancelEventSignUp.ts",
         "functions/src/payments/createRazorpayOrder.ts"
       ]
     },
@@ -789,7 +784,6 @@
     }
   ],
   "next_up": [
-    "RUN-SCHEDULE-CONFLICTS-001",
     "MATCH-CHAT-REMAINING-001",
     "BUSINESS-RULES-CONSOLIDATION-001",
     "HOST-PUBLISHED-EDIT-POLICY-001",

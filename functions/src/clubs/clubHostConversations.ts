@@ -3,7 +3,10 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {ClubDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+  MatchDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {StartClubHostConversationCallablePayload} from
   "../shared/generated/startClubHostConversationCallablePayload";
@@ -82,7 +85,10 @@ export async function startClubHostConversationHandler(
     if (!clubSnap.exists) {
       throw new HttpsError("not-found", "Club not found.");
     }
-    const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+    const club = requireDoc<ClubDocument>(
+      clubSnap,
+      "ClubDocument"
+    );
     if (!clubHostUserIds(club).includes(data.hostUid)) {
       throw new HttpsError(
         "permission-denied",
@@ -97,7 +103,10 @@ export async function startClubHostConversationHandler(
     );
 
     if (matchSnap.exists) {
-      const match = requireDoc<MatchDoc>(matchSnap, "MatchDoc");
+      const match = requireDoc<MatchDocument>(
+        matchSnap,
+        "MatchDocument"
+      );
       if (match.status === "blocked") {
         throw new HttpsError(
           "failed-precondition",
@@ -109,7 +118,7 @@ export async function startClubHostConversationHandler(
 
     const now = deps.serverTimestamp() as unknown as
       FirebaseFirestore.Timestamp;
-    const matchDoc: MatchDoc = {
+    const matchDoc: MatchDocument = {
       user1Id,
       user2Id,
       participantIds: [user1Id, user2Id],

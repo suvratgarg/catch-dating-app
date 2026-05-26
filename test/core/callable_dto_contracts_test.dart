@@ -3,22 +3,40 @@ import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
+import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
+import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show RequestSuvbotDemoOperationCallableRequest;
+    show
+        BlockUserCallableRequest,
+        CancelEventCallableRequest,
+        ClubMembershipCallableRequest,
+        CreateClubCallableRequest,
+        CreateEventCallableRequest,
+        CreateEventPrivateAccess,
+        CreateEventReviewCallableRequest,
+        DeleteClubCallableRequest,
+        DeleteEventReviewCallableRequest,
+        EventIdCallableRequest,
+        MarkEventAttendanceCallableRequest,
+        ReportUserCallableRequest,
+        RequestSuvbotDemoOperationCallableRequest,
+        SetClubNotificationPreferenceCallableRequest,
+        SelfCheckInAttendanceCallableRequest,
+        UnblockUserCallableRequest,
+        UpdateEventCallableRequest,
+        UpdateEventReviewCallableRequest;
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
-import 'package:catch_dating_app/event_success/data/event_success_callable_dtos.dart';
+import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
+import 'package:catch_dating_app/locations/data/places_callable_requests.dart';
+import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
-import 'package:catch_dating_app/reviews/data/review_callable_dtos.dart';
-import 'package:catch_dating_app/safety/data/safety_callable_dtos.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_callable_dtos.dart';
+import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
+import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
@@ -147,13 +165,10 @@ void main() {
       );
       _expectValid(
         'UpdateClubCallablePayload',
-        const UpdateClubCallableRequest(
-          clubId: 'club-1',
-          fields: {
-            'name': 'Cubbon Morning Runners',
-            'tags': ['social', 'beginner'],
-          },
-        ).toJson(),
+        UpdateClubPatch.raw({
+          'name': 'Cubbon Morning Runners',
+          'tags': ['social', 'beginner'],
+        }).toCallableJson(clubId: 'club-1'),
       );
       _expectValid(
         'ClubMembershipCallablePayload',
@@ -271,13 +286,11 @@ void main() {
           ).toJson(),
         );
 
-        final updateProfilePayload = UpdateUserProfileCallableRequest.fromPatch(
-          UpdateUserProfilePatch(
-            name: 'Runner One',
-            dateOfBirth: DateTime.utc(1994, 5, 20),
-            height: 176,
-          ),
-        ).toJson();
+        final updateProfilePayload = UpdateUserProfilePatch(
+          name: 'Runner One',
+          dateOfBirth: DateTime.utc(1994, 5, 20),
+          height: 176,
+        ).toCallableJson();
         _expectValid('UpdateUserProfileCallablePayload', updateProfilePayload);
         expect(
           (updateProfilePayload['fields']!
@@ -303,38 +316,33 @@ void main() {
   });
 
   group('callable response DTO contracts', () {
-    test('response parsers accept data that matches generated schemas', () {
-      final createClubResponse = <String, Object?>{'clubId': 'club-1'};
-      final attendanceResponse = <String, Object?>{'attended': true};
-      final razorpayOrderResponse = <String, Object?>{
-        'orderId': 'order_9A33XWu170gUtm',
-        'amount': 49900,
-        'currency': 'INR',
-      };
-      final placesAutocompleteResponse = <String, Object?>{
-        'predictions': [
-          {
-            'placeId': 'ChIJ2dGMjMMEdkgRqVqkuXQkj7c',
-            'description': 'Cubbon Park, Bengaluru, Karnataka, India',
-            'mainText': 'Cubbon Park',
-            'secondaryText': 'Bengaluru, Karnataka, India',
-          },
-        ],
-      };
-      final placeDetailsResponse = <String, Object?>{
-        'place': {
-          'placeId': 'ChIJ2dGMjMMEdkgRqVqkuXQkj7c',
-          'displayName': 'Cubbon Park',
-          'formattedAddress': 'Cubbon Park, Bengaluru, Karnataka, India',
-          'latitude': 12.9763,
-          'longitude': 77.5929,
-        },
-      };
+    test('response parsers accept on-disk generated-schema fixtures', () {
+      final createClubResponse = _readValidFixtureMap(
+        'create_club_response.json',
+      );
+      final attendanceResponse = _readValidFixtureMap(
+        'mark_event_attendance_response.json',
+      );
+      final razorpayOrderResponse = _readValidFixtureMap(
+        'razorpay_order_response.json',
+      );
+      final placesAutocompleteResponse = _readValidFixtureMap(
+        'places_autocomplete_response.json',
+      );
+      final placeDetailsResponse = _readValidFixtureMap(
+        'place_details_response.json',
+      );
+      final wingmanCandidatesResponse = _readValidFixtureMap(
+        'fetch_event_success_wingman_candidates_response.json',
+      );
+      final suvbotActionsResponse = _readValidFixtureMap(
+        'list_suvbot_demo_actions_response.json',
+      );
 
       _expectValid('CreateClubCallableResponse', createClubResponse);
       expect(
         CreateClubCallableResponse.fromCallableData(createClubResponse).clubId,
-        'club-1',
+        'club-delhi-runners',
       );
       _expectValid('MarkEventAttendanceCallableResponse', attendanceResponse);
       expect(
@@ -367,50 +375,17 @@ void main() {
         ).place.location,
         const LocationCoordinate(12.9763, 77.5929),
       );
-
-      final publicProfileFixture =
-          jsonDecode(
-                File(
-                  'contracts/fixtures/valid/public_profile_doc.json',
-                ).readAsStringSync(),
-              )
-              as Map<String, dynamic>;
-      // Callable wire format: each profile carries its uid (vs the stored doc
-      // shape where uid is the Firestore doc id and is not in the body).
-      final wingmanCandidatesResponse = <String, Object?>{
-        'profiles': [
-          {'uid': 'runner-2', ...publicProfileFixture},
-        ],
-      };
       _expectValid(
         'FetchEventSuccessWingmanCandidatesCallableResponse',
         wingmanCandidatesResponse,
       );
+      _expectWingmanProfilesExtendPublicProfile(wingmanCandidatesResponse);
       expect(
         FetchEventSuccessWingmanCandidatesCallableResponse.fromCallableData(
           wingmanCandidatesResponse,
         ).profiles.single.name,
         'Subrath',
       );
-
-      final suvbotActionsResponse = <String, Object?>{
-        'actions': [
-          {
-            'id': 'checkDemoState',
-            'label': 'Check demo state',
-            'description': 'Show the current demo configuration.',
-            'icon': 'info',
-          },
-          {
-            'id': 'resetChats',
-            'label': 'Reset chats',
-            'description': 'Wipe demo chat history for this account.',
-            'icon': 'delete',
-            'destructive': true,
-            'requiresText': false,
-          },
-        ],
-      };
       _expectValid(
         'ListSuvbotDemoActionsCallableResponse',
         suvbotActionsResponse,
@@ -495,4 +470,23 @@ void _expectValid(String schemaName, Object? payload) {
     isTrue,
     reason: '$schemaName rejected $payload: ${result.errors}',
   );
+}
+
+Map<String, Object?> _readValidFixtureMap(String fileName) {
+  final decoded =
+      jsonDecode(File('contracts/fixtures/valid/$fileName').readAsStringSync())
+          as Map<String, dynamic>;
+  return Map<String, Object?>.from(decoded);
+}
+
+void _expectWingmanProfilesExtendPublicProfile(Map<String, Object?> response) {
+  final profiles = response['profiles'];
+  expect(profiles, isA<List<Object?>>());
+  for (final profile in profiles! as List<Object?>) {
+    expect(profile, isA<Map<Object?, Object?>>());
+    final storedShape = Map<String, Object?>.from(
+      profile! as Map<Object?, Object?>,
+    )..remove('uid');
+    _expectValid('PublicProfileDocument', storedShape);
+  }
 }

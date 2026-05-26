@@ -1,0 +1,64 @@
+{
+  "profiles": [
+    {
+      "uid": "runner-2",
+      "name": "Subrath",
+      "age": 28,
+      "gender": "man",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Easy kilometres, low-pressure conversation, and coffee after."
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "profile_0",
+          "url": "https://example.test/profile.jpg",
+          "thumbnailUrl": "https://example.test/profile-thumb.jpg",
+          "storagePath": "users/user-1/photos/profile_0.jpg",
+          "thumbnailStoragePath": "users/user-1/photoThumbnails/profile_0.jpg",
+          "prompt": {
+            "photoIndex": 0,
+            "promptId": "proofIRun",
+            "prompt": "Proof I actually event"
+          },
+          "moderation": null,
+          "position": 0,
+          "createdAt": {
+            "_seconds": 1715731200,
+            "_nanoseconds": 0
+          },
+          "updatedAt": {
+            "_seconds": 1715731200,
+            "_nanoseconds": 0
+          }
+        }
+      ],
+      "city": "indore",
+      "height": 180,
+      "occupation": "Founder",
+      "company": "Catch",
+      "education": "bachelors",
+      "religion": "nonReligious",
+      "languages": ["english", "hindi"],
+      "relationshipGoal": "relationship",
+      "drinking": "socially",
+      "smoking": "never",
+      "workout": "often",
+      "diet": "vegetarian",
+      "children": "dontHave",
+      "activityPreferences": {
+        "running": {
+          "paceMinSecsPerKm": 300,
+          "paceMaxSecsPerKm": 420,
+          "preferredDistances": ["fiveK", "tenK"],
+          "runningReasons": ["fitness", "social"],
+          "preferredRunTimes": ["morning", "evening"],
+          "version": 1
+        }
+      }
+    }
+  ]
+}

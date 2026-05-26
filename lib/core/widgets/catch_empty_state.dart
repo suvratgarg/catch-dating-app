@@ -72,8 +72,11 @@ class CatchEmptyState extends StatelessWidget {
           ),
         };
 
-        if (!constraints.hasBoundedWidth) return child;
-        return SizedBox(width: constraints.maxWidth, child: child);
+        final constrainedChild = constraints.hasBoundedWidth
+            ? SizedBox(width: constraints.maxWidth, child: child)
+            : child;
+        if (!constraints.hasBoundedHeight) return constrainedChild;
+        return SingleChildScrollView(primary: false, child: constrainedChild);
       },
     );
 

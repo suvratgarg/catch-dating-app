@@ -5,10 +5,10 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
-  ReviewDoc,
-  EventDoc,
-  EventParticipationDoc,
-  UserProfileDoc,
+  ReviewDocument,
+  EventDocument,
+  EventParticipationDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
@@ -97,7 +97,13 @@ export async function createEventReviewHandler(
       data.clubId
     );
 
-    const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    const user = requireDoc<UserProfileDocument>(
+
+      userSnap,
+
+      "UserProfileDocument"
+
+    );
     tx.create(reviewRef, {
       clubId: data.clubId,
       eventId: data.eventId,
@@ -196,7 +202,13 @@ function assertCanWriteReview(
     throw new HttpsError("not-found", "Event not found.");
   }
 
-  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+
+    eventSnap,
+
+    "EventDocument"
+
+  );
   if (event.clubId !== clubId) {
     throw new HttpsError(
       "failed-precondition",
@@ -210,9 +222,9 @@ function assertCanWriteReview(
     );
   }
 
-  const participation = requireDoc<EventParticipationDoc>(
+  const participation = requireDoc<EventParticipationDocument>(
     participationSnap,
-    "EventParticipationDoc"
+    "EventParticipationDocument"
   );
   if (participation.status !== "attended") {
     throw new HttpsError(
@@ -229,7 +241,10 @@ function assertOwnsReview(
   if (!reviewSnap.exists) {
     throw new HttpsError("not-found", "Review not found.");
   }
-  const review = requireDoc<ReviewDoc>(reviewSnap, "ReviewDoc");
+  const review = requireDoc<ReviewDocument>(
+    reviewSnap,
+    "ReviewDocument"
+  );
   if (review.reviewerUserId !== reviewerUserId) {
     throw new HttpsError(
       "permission-denied",

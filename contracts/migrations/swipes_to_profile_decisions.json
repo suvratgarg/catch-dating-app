@@ -5,7 +5,7 @@
   "currentStoragePath": "profileDecisions/{userId}/outgoing/{targetId}",
   "candidatePrimaryStoragePath": "profileDecisions/{userId}/outgoing/{targetId}",
   "selectedFutureName": "profileDecisions",
-  "currentPhase": "retire_old_local",
+  "currentPhase": "retire_old_complete",
   "reason": "The UI has moved from generic swiping to contextual profile decisions. The persisted collection is now profileDecisions after the dual-read, dual-write, backfill, and local retire-old phases.",
   "phases": [
     {
@@ -25,8 +25,8 @@
     },
     {
       "id": "backfill",
-      "status": "verified_noop_2026_05_15",
-      "description": "Dry-event-first tooling copies historical swipes into profileDecisions and compares source/target counts before apply. Dev, staging, and prod had zero current and future decisions on 2026-05-15, so no writes were needed. Rerun before any trigger cutover while legacy clients can still write swipes."
+      "status": "complete_remote",
+      "description": "Dry-run-first tooling copies historical swipes into profileDecisions and compares source/target counts before apply. Dev, staging, and prod had zero current and future decisions on 2026-05-15. On 2026-05-26, a legacy-source collection-group validation found 11 dev and 138 prod legacy swipes; 11 dev and 133 prod profileDecision docs were backfilled before legacy cleanup."
     },
     {
       "id": "new_primary",
@@ -35,19 +35,43 @@
     },
     {
       "id": "freeze_old",
-      "status": "complete_local",
+      "status": "complete",
       "description": "Local client, Functions, rules, demo tooling, and contract metadata no longer create new swipes documents."
     },
     {
       "id": "retire_old",
-      "status": "complete_local_cleanup_pending",
-      "description": "Local swipes fallback reads and rules are removed. Old live swipes data cleanup still requires explicit environment approval after validation."
+      "status": "complete_remote",
+      "description": "Local swipes fallback reads and rules are removed. Old live swipes data was deleted from dev, staging, and prod on 2026-05-26 after parity validation against profileDecisions."
     }
   ],
+  "liveApply": {
+    "validatedAt": "2026-05-26",
+    "validationTool": "tool/data/validate_profile_decision_migration.mjs --legacy-source",
+    "backfillTool": "tool/data/backfill_profile_decisions.mjs",
+    "cleanupTool": "tool/data/retire_legacy_profile_decisions.mjs",
+    "dev": {
+      "legacyDecisionCountBefore": 11,
+      "backfilledProfileDecisions": 11,
+      "deletedLegacySwipes": 11,
+      "legacyDecisionCountAfter": 0
+    },
+    "staging": {
+      "legacyDecisionCountBefore": 0,
+      "backfilledProfileDecisions": 0,
+      "deletedLegacySwipes": 0,
+      "legacyDecisionCountAfter": 0
+    },
+    "prod": {
+      "legacyDecisionCountBefore": 138,
+      "backfilledProfileDecisions": 133,
+      "deletedLegacySwipes": 138,
+      "legacyDecisionCountAfter": 0
+    }
+  },
   "guards": [
     "tool/contracts/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
     "./tool/check_data_contract.sh events the path literal scanner before seed and rules checks.",
-    "tool/data/validate_profile_decision_migration.mjs compares legacy and current storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before live cleanup.",
-    "Old swipes data deletion remains a separate destructive remote operation."
+    "tool/data/validate_profile_decision_migration.mjs --legacy-source compares legacy and current storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before live cleanup.",
+    "tool/data/retire_legacy_profile_decisions.mjs deletes old swipes only after validation reports no missing, stale, or invalid current docs."
   ]
 }

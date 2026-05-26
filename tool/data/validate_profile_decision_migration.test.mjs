@@ -133,6 +133,7 @@ function fakeFirestore(initialData) {
   const data = structuredClone(initialData);
   return {
     collection: (collectionName) => collectionRef(data, collectionName),
+    collectionGroup: (collectionName) => collectionGroupRef(data, collectionName),
   };
 }
 
@@ -161,4 +162,32 @@ function collectionSnapshot(collection, buildDoc) {
     buildDoc(id, value)
   );
   return {size: docs.length, docs};
+}
+
+function collectionGroupRef(data, collectionName) {
+  return {
+    get: async () => {
+      const docs = [];
+      for (const [rootCollection, ownerDocs] of Object.entries(data)) {
+        for (const [ownerId, ownerData] of Object.entries(ownerDocs)) {
+          const subcollection = ownerData?.[collectionName];
+          if (!isRecord(subcollection)) continue;
+          for (const [targetId, value] of Object.entries(subcollection)) {
+            docs.push({
+              id: targetId,
+              ref: {
+                path: `${rootCollection}/${ownerId}/${collectionName}/${targetId}`,
+              },
+              data: () => structuredClone(value),
+            });
+          }
+        }
+      }
+      return {size: docs.length, docs};
+    },
+  };
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }

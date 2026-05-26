@@ -3,6 +3,7 @@
   "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
   "title": "UpdateClubCallablePayload",
   "description": "Callable payload accepted by updateClub.",
+  "x-callable-shape": "patch",
   "type": "object",
   "additionalProperties": false,
   "required": ["clubId", "fields"],

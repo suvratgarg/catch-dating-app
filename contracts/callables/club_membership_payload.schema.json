@@ -3,6 +3,7 @@
   "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
   "title": "ClubMembershipCallablePayload",
   "description": "Callable payload accepted by joinClub and leaveClub.",
+  "x-callable-aliases": ["joinClub", "leaveClub"],
   "type": "object",
   "additionalProperties": false,
   "required": ["clubId"],

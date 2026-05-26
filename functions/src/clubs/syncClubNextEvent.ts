@@ -1,6 +1,8 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubNextEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -39,7 +41,7 @@ export async function refreshClubNextEvent(
     .limit(1)
     .get();
 
-  const nextEvent = nextEventSnap.docs[0]?.data() as EventDoc | undefined;
+  const nextEvent = nextEventSnap.docs[0]?.data() as EventDocument | undefined;
   await clubRef.set({
     nextEventAt: nextEvent?.startTime ?? null,
     nextEventLabel: nextEvent ?
@@ -50,14 +52,14 @@ export async function refreshClubNextEvent(
 
 /**
  * Recomputes club next-event projections affected by an event write.
- * @param {EventDoc | undefined} before Event before state.
- * @param {EventDoc | undefined} after Event after state.
+ * @param {EventDocument | undefined} before Event before state.
+ * @param {EventDocument | undefined} after Event after state.
  * @param {SyncClubNextEventDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncClubNextEventHandler(
-  before: EventDoc | undefined,
-  after: EventDoc | undefined,
+  before: EventDocument | undefined,
+  after: EventDocument | undefined,
   deps: SyncClubNextEventDeps = defaultDeps
 ): Promise<void> {
   const clubIds = new Set<string>();
@@ -79,8 +81,8 @@ export async function syncClubNextEventHandler(
 export const syncClubNextEvent = onDocumentWritten(
   "events/{eventId}",
   async (event) => {
-    const before = event.data?.before.data() as EventDoc | undefined;
-    const after = event.data?.after.data() as EventDoc | undefined;
+    const before = event.data?.before.data() as EventDocument | undefined;
+    const after = event.data?.after.data() as EventDocument | undefined;
     await syncClubNextEventHandler(before, after);
   }
 );

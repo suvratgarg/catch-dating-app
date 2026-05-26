@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/sentinels.dart';
+
 /// Canonical meeting-location object embedded in `events/{eventId}.meetingLocation`
 /// (and accepted by event callables). Mirrors the
 /// `eventMeetingLocation` definition in
@@ -56,23 +58,23 @@ class EventMeetingLocation {
 
   EventMeetingLocation copyWith({
     String? name,
-    Object? address = _sentinel,
-    Object? placeId = _sentinel,
+    Object? address = unsetSentinel,
+    Object? placeId = unsetSentinel,
     double? latitude,
     double? longitude,
-    Object? notes = _sentinel,
+    Object? notes = unsetSentinel,
   }) {
     return EventMeetingLocation(
       name: name ?? this.name,
-      address: identical(address, _sentinel)
+      address: identical(address, unsetSentinel)
           ? this.address
           : address as String?,
-      placeId: identical(placeId, _sentinel)
+      placeId: identical(placeId, unsetSentinel)
           ? this.placeId
           : placeId as String?,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
-      notes: identical(notes, _sentinel) ? this.notes : notes as String?,
+      notes: identical(notes, unsetSentinel) ? this.notes : notes as String?,
     );
   }
 
@@ -96,8 +98,6 @@ class EventMeetingLocation {
     'notes': notes,
   };
 }
-
-const Object _sentinel = Object();
 
 String? _trimToNull(String? value) {
   final normalized = value?.trim();

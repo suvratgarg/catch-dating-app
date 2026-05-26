@@ -1,151 +1,137 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Single-row time + distance filter rail.
+///
+/// The rail is deliberately short: time chips (the primary scope) followed by
+/// a compact distance chip set, a "Joined" toggle, and a contextual Clear.
+/// Activity tag and area chips were removed from this rail — they crowded
+/// the row and pushed the more important time/distance filters off screen.
+/// Bring them back through the search field or a future "More filters" sheet
+/// when the use-case justifies it.
 class ClubsFilterRail extends ConsumerWidget {
   const ClubsFilterRail({super.key});
+
+  static const List<ExploreTimeFilter> _timeFilters = [
+    ExploreTimeFilter.tonight,
+    ExploreTimeFilter.tomorrow,
+    ExploreTimeFilter.weekend,
+    ExploreTimeFilter.thisWeek,
+    ExploreTimeFilter.anytime,
+  ];
+
+  static const List<ExploreDistanceFilter> _distanceFilters = [
+    ExploreDistanceFilter.oneKm,
+    ExploreDistanceFilter.threeKm,
+    ExploreDistanceFilter.fiveKm,
+    ExploreDistanceFilter.tenKm,
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final city = ref.watch(selectedClubCityProvider);
-    final clubs =
-        ref.watch(watchClubsByLocationProvider(city.name)).asData?.value ??
-        const <Club>[];
     final filters = ref.watch(clubBrowseFiltersProvider);
     final filterController = ref.read(clubBrowseFiltersProvider.notifier);
-    final activityTags = _topFilterValues(
-      clubs.expand((club) => club.tags),
-      selected: filters.activityTag,
-    );
-    final areas = _topFilterValues(
-      clubs.map((club) => club.area),
-      selected: filters.area,
-      limit: 5,
-    );
 
-    return SliverToBoxAdapter(
-      child: ColoredBox(
-        color: t.bg,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            0,
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-          ),
-          child: Row(
+    return ColoredBox(
+      color: t.bg,
+      child: SingleChildScrollView(
+        key: const ValueKey('explore-filter-rail-scroll-view'),
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.micro2,
+          CatchSpacing.s5,
+          CatchSpacing.s3,
+        ),
+        child: Row(
             children: [
-              CatchChip(
-                label: 'This week',
-                active: filters.thisWeekOnly,
-                icon: const Icon(Icons.event_available_outlined),
-                onTap: filterController.toggleThisWeekOnly,
-              ),
+              for (final timeFilter in _timeFilters) ...[
+                CatchChip(
+                  label: _timeFilterLabel(timeFilter),
+                  active: filters.timeFilter == timeFilter,
+                  icon: Icon(_timeFilterIcon(timeFilter)),
+                  onTap: () => filterController.toggleTimeFilter(timeFilter),
+                ),
+                gapW8,
+              ],
+              _RailDivider(color: t.line2),
               gapW8,
-              CatchChip(
-                label: 'Rated 4.5+',
-                active: filters.highRatedOnly,
-                icon: const Icon(Icons.star_rounded),
-                onTap: filterController.toggleHighRatedOnly,
-              ),
+              for (final distanceFilter in _distanceFilters) ...[
+                CatchChip(
+                  label: _distanceFilterLabel(distanceFilter),
+                  active: filters.distanceFilter == distanceFilter,
+                  icon: Icon(CatchIcons.nearMeOutlined),
+                  onTap: () =>
+                      filterController.toggleDistanceFilter(distanceFilter),
+                ),
+                gapW8,
+              ],
+              _RailDivider(color: t.line2),
               gapW8,
               CatchChip(
                 label: 'Joined',
                 active: filters.joinedOnly,
-                icon: const Icon(Icons.check_circle_outline_rounded),
+                icon: Icon(CatchIcons.joined),
                 onTap: filterController.toggleJoinedOnly,
               ),
-              gapW8,
-              CatchChip(
-                label: 'Hosted',
-                active: filters.hostedOnly,
-                icon: const Icon(Icons.shield_outlined),
-                onTap: filterController.toggleHostedOnly,
-              ),
-              for (final tag in activityTags) ...[
-                gapW8,
-                CatchChip(
-                  label: _titleCase(tag),
-                  active: _sameDisplayValue(filters.activityTag, tag),
-                  icon: const Icon(Icons.local_fire_department_outlined),
-                  onTap: () => filterController.toggleActivityTag(tag),
-                ),
-              ],
-              for (final area in areas) ...[
-                gapW8,
-                CatchChip(
-                  label: area,
-                  active: _sameDisplayValue(filters.area, area),
-                  icon: const Icon(Icons.location_on_outlined),
-                  onTap: () => filterController.toggleArea(area),
-                ),
-              ],
               if (filters.hasActiveFilters) ...[
                 gapW8,
                 CatchChip(
                   label: 'Clear',
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(CatchIcons.clear),
                   onTap: filterController.clear,
                 ),
               ],
             ],
-          ),
         ),
       ),
     );
   }
 }
 
-List<String> _topFilterValues(
-  Iterable<String?> values, {
-  String? selected,
-  int limit = 4,
-}) {
-  final counts = <String, int>{};
-  final labels = <String, String>{};
+class _RailDivider extends StatelessWidget {
+  const _RailDivider({required this.color});
 
-  for (final value in values) {
-    final label = value?.trim();
-    if (label == null || label.isEmpty) continue;
-    final key = label.toLowerCase();
-    counts[key] = (counts[key] ?? 0) + 1;
-    labels.putIfAbsent(key, () => label);
-  }
+  final Color color;
 
-  final sortedKeys = counts.keys.toList()
-    ..sort((a, b) {
-      final countCompare = counts[b]!.compareTo(counts[a]!);
-      if (countCompare != 0) return countCompare;
-      return labels[a]!.compareTo(labels[b]!);
-    });
-  final result = sortedKeys.map((key) => labels[key]!).take(limit).toList();
-  final selectedValue = selected?.trim();
-  if (selectedValue != null &&
-      selectedValue.isNotEmpty &&
-      !result.any((value) => _sameDisplayValue(value, selectedValue))) {
-    result.insert(0, selectedValue);
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 22, color: color);
   }
-  return result.take(limit).toList(growable: false);
 }
 
-bool _sameDisplayValue(String? left, String right) {
-  return left?.trim().toLowerCase() == right.trim().toLowerCase();
+String _distanceFilterLabel(ExploreDistanceFilter filter) {
+  return switch (filter) {
+    ExploreDistanceFilter.any => 'Any distance',
+    ExploreDistanceFilter.oneKm => '1 km',
+    ExploreDistanceFilter.threeKm => '3 km',
+    ExploreDistanceFilter.fiveKm => '5 km',
+    ExploreDistanceFilter.tenKm => '10 km',
+  };
 }
 
-String _titleCase(String value) {
-  return value
-      .split(RegExp(r'\s+'))
-      .where((part) => part.isNotEmpty)
-      .map((part) {
-        if (part.length == 1) return part.toUpperCase();
-        return '${part[0].toUpperCase()}${part.substring(1)}';
-      })
-      .join(' ');
+String _timeFilterLabel(ExploreTimeFilter filter) {
+  return switch (filter) {
+    ExploreTimeFilter.anytime => 'Anytime',
+    ExploreTimeFilter.tonight => 'Tonight',
+    ExploreTimeFilter.tomorrow => 'Tomorrow',
+    ExploreTimeFilter.weekend => 'Weekend',
+    ExploreTimeFilter.thisWeek => 'This week',
+  };
+}
+
+IconData _timeFilterIcon(ExploreTimeFilter filter) {
+  return switch (filter) {
+    ExploreTimeFilter.anytime => CatchIcons.anytime,
+    ExploreTimeFilter.tonight => CatchIcons.tonight,
+    ExploreTimeFilter.tomorrow => CatchIcons.tomorrow,
+    ExploreTimeFilter.weekend => CatchIcons.weekend,
+    ExploreTimeFilter.thisWeek => CatchIcons.thisWeek,
+  };
 }

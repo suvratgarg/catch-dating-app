@@ -25,16 +25,11 @@ extension UserProfileReadiness on UserProfile {
   }
 
   bool get hasCurrentRunPreferences {
-    return runPreferencesVersion >= currentRunPreferencesVersion ||
-        hasLegacyRunPreferenceSelections;
+    return runningPreferences.hasCurrentRunPreferences;
   }
 
   bool get hasLegacyRunPreferenceSelections {
-    return preferredDistances.isNotEmpty ||
-        runningReasons.isNotEmpty ||
-        preferredRunTimes.isNotEmpty ||
-        paceMinSecsPerKm != defaultPaceMinSecsPerKm ||
-        paceMaxSecsPerKm != defaultPaceMaxSecsPerKm;
+    return runningPreferences.hasLegacyRunPreferenceSelections;
   }
 
   bool get hasMinimumSocialPhotos =>
@@ -45,5 +40,20 @@ extension UserProfileReadiness on UserProfile {
       profilePrompts,
     ).map((answer) => answer.promptId).toSet();
     return defaultProfilePromptIds.every(answeredPromptIds.contains);
+  }
+}
+
+extension RunningPreferencesReadiness on RunningPreferences {
+  bool get hasCurrentRunPreferences {
+    return version >= currentRunPreferencesVersion ||
+        hasLegacyRunPreferenceSelections;
+  }
+
+  bool get hasLegacyRunPreferenceSelections {
+    return preferredDistances.isNotEmpty ||
+        runningReasons.isNotEmpty ||
+        preferredRunTimes.isNotEmpty ||
+        paceMinSecsPerKm != defaultPaceMinSecsPerKm ||
+        paceMaxSecsPerKm != defaultPaceMaxSecsPerKm;
   }
 }

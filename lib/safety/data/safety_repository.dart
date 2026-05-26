@@ -1,8 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show
+        BlockUserCallableRequest,
+        ReportUserCallableRequest,
+        UnblockUserCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/safety/data/safety_callable_dtos.dart';
 import 'package:catch_dating_app/safety/domain/blocked_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';

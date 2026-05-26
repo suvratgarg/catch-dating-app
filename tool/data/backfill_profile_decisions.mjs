@@ -5,6 +5,8 @@ import {createRequire} from "node:module";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
   buildProfileDecisionMigrationPlan,
+  legacySourceMigration,
+  readMigrationContract,
 } from "./validate_profile_decision_migration.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +39,10 @@ export async function main(argv = process.argv.slice(2)) {
   const admin = requireFromFunctions("firebase-admin");
   admin.initializeApp({projectId});
   const firestore = admin.firestore();
-  const plan = await buildProfileDecisionMigrationPlan(firestore);
+  const plan = await buildProfileDecisionMigrationPlan(
+    firestore,
+    {migration: legacySourceMigration(readMigrationContract())}
+  );
   const backfillPlan = buildProfileDecisionBackfillPlan(plan);
 
   if (args.json) {

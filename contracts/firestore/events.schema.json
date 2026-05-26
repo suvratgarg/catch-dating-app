@@ -178,6 +178,91 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "discoveryCityName": {
+      "$ref": "../shared/event_common.schema.json#/definitions/citySlug",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryActivityKind": {
+      "$ref": "../shared/event_common.schema.json#/definitions/activityKind",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryGeoCell": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^-?\\d+:-?\\d+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryHasOpenSpots": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryAvailability": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitlist",
+        "gated",
+        "full",
+        "cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryOpenCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryWaitlistCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryInviteRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMembershipRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryManualApprovalRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMinAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMaxAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },
