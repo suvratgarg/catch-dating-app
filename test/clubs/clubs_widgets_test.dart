@@ -782,7 +782,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.ios_share_rounded));
+      await tester.tap(find.byTooltip('Share club'));
       await _pumpClubUi(tester);
 
       expect(sharedClubId, 'club-1');
