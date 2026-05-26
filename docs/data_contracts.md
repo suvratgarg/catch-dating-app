@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.1.2
-updated: 2026-05-25
+version: 1.1.5
+updated: 2026-05-26
 owner: recursive_audit_loop
 status: active
 ---
@@ -105,6 +105,21 @@ The contract layer owns:
 - migration metadata for path/storage renames;
 - valid and invalid fixtures.
 
+### Optional, Nullable, And Patch Fields
+
+Default DTO, view-model, and document fields to plain nullable values when
+absence and explicit `null` have the same product meaning. Use required
+nullable parameters only when the caller must explicitly confirm that the field
+was considered, and prefer avoiding that shape unless it materially improves the
+API contract.
+
+Use sentinel-backed parameters only for patch/copy APIs where "leave unchanged"
+must be distinguishable from "clear this nullable field." Generated patch
+classes use `unsetSentinel` from `lib/core/sentinels.dart` and compare it with
+`identical`; callers should pass `null` only when the persisted value should be
+cleared. Do not add new ad hoc sentinels outside patch/copy semantics without
+first documenting the same clear-versus-omit distinction.
+
 ### Field Ownership Tags
 
 Per-field ownership lives next to the property in the Firestore schema as
@@ -139,17 +154,18 @@ every callable payload schema (and the `update_user_profile` patch) into
 `lib/core/schema_contracts/generated/callable_request_dtos.g.dart`. Each class
 has a named-parameter constructor, typed fields, and a `toJson()` that the
 existing `test/core/callable_dto_contracts_test.dart` validates against the
-source schema.
+source schema. Generated patch helpers expose `toFieldsJson()` for repository
+tests and `toCallableJson()` for the actual callable payload wrapper.
 
-Feature-level `lib/**/data/*_callable_dtos.dart` files re-export the generated
-classes via `export ... show`, so callers continue to import from a stable
-feature-local path. Hand-written DTO classes remain in those files only when
-the JSON Schema cannot capture the behavior — specifically:
+Feature-level `lib/**/data/*_callable_dtos.dart` files remain only when they
+own hand-written response parsers, normalization, or other behavior. Pure
+re-export barrels should be deleted; callers can import generated request DTOs
+directly from `callable_request_dtos.g.dart` with explicit `show` lists.
+Hand-written DTO classes remain in feature files only when the JSON Schema
+cannot capture the behavior — specifically:
 
 - domain → DTO adapter factories (`CreateEventCallableRequest.fromEvent(Event)`)
   that walk a domain model and convert `DateTime` → `int millis`;
-- Firestore `Timestamp` → millis conversion inside `toJson()` (the
-  `UpdateUserProfileCallableRequest` patch wrapper);
 - serialization-time normalization that the generated class does not yet own
   (`EventBookingCallableRequest` and `CreateRazorpayOrderCallableRequest` trim
   `inviteCode` even though dedicated payload schemas exist);
@@ -160,8 +176,8 @@ the JSON Schema cannot capture the behavior — specifically:
   and feature-local exceptions.
 
 See backlog item `CONTRACT-DART-GEN-001` for the path to migrating the
-remaining cases (Timestamp-aware emit mode, generated patch classes, and typed
-nested classes).
+remaining cases (custom normalization, generated adapters, and response
+decoders).
 
 ## Relationship Documents
 
@@ -188,6 +204,43 @@ rules can prove locally: onboarding drafts, saved events, outgoing profile decis
 match-scoped chat messages, own unread reset, own notification `readAt`, and
 own FCM token. Multi-document product writes belong in callables or triggers.
 
+## Event Discovery Projection
+
+Explore queries `events` directly through callable-owned projection fields
+instead of resolving a city to clubs first. The projection currently covers
+city, activity kind, coarse geo-cell, availability bucket, gate flags, and age
+range:
+
+- `discoveryCityName`, `discoveryActivityKind`, `discoveryGeoCell`;
+- `discoveryHasOpenSpots`, `discoveryAvailability`;
+- `discoveryOpenCohorts`, `discoveryWaitlistCohorts`;
+- `discoveryInviteRequired`, `discoveryMembershipRequired`,
+  `discoveryManualApprovalRequired`;
+- `discoveryMinAge`, `discoveryMaxAge`.
+
+`functions/src/events/eventDiscoveryProjection.ts` owns the write-time
+projection. Event create/update/cancel, paid signup, and signup cancellation
+must refresh these fields whenever event capacity, policy, status, activity, or
+location inputs change. `discoveryOpenCohorts` gives Firestore a coarse
+viewer-cohort open-slot filter for the standard event-policy cohorts; gated
+events still require viewer-specific post-query resolution for invite,
+membership, and manual-approval state. `firestore.indexes.json` owns the
+supporting composite indexes for city, time, activity, geo-cell, coarse
+availability, and open-cohort filters.
+
+Existing remote event docs created before this projection must be repaired with
+`node tool/data/backfill_event_discovery_fields.mjs` before a release depends on
+the direct event index. The repair is dry-run by default and requires
+`--allow-prod` when applying against prod.
+
+Read-only dry-runs on 2026-05-26 found:
+
+| Environment | Events scanned | Repairs needed | Cityless repairs |
+|---|---:|---:|---:|
+| `dev` | 146 | 146 | 0 |
+| `staging` | 0 | 0 | 0 |
+| `prod` | 166 | 166 | 0 |
+
 ## Current Health
 
 Verified in this consolidation pass from current code and registry state:
@@ -203,6 +256,8 @@ Verified in this consolidation pass from current code and registry state:
   relationship docs, social/payment/safety/operational docs, event-success
   documents, callable request payloads, selected responses, direct-write
   payloads, prompt catalogs, seed fixtures, and migration contracts.
+- Event discovery projection fields are schema-owned, callable-owned, and have
+  dry-run-first backfill tooling for older events.
 - `tool/check_data_contract.sh` is the main local gate for generated drift,
   schema validation, Functions checks, rules tests, and focused Flutter
   contract tests.
