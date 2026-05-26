@@ -1,0 +1,288 @@
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
+import 'package:catch_dating_app/events/domain/event_eligibility.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+
+enum ViewerEventAvailabilityStatus {
+  open,
+  saved,
+  hosted,
+  joined,
+  waitlisted,
+  attended,
+  approvedToBook,
+  requestRequired,
+  waitlistAvailable,
+  full,
+  fullForViewer,
+  inviteRequired,
+  membershipRequired,
+  runPreferencesRequired,
+  ageRestricted,
+  past,
+  cancelled,
+}
+
+class ViewerEventAvailability {
+  const ViewerEventAvailability({
+    required this.status,
+    required this.spotsRemaining,
+    required this.isSaved,
+    required this.isHosted,
+    required this.isClubMember,
+    this.eligibility,
+    this.admissionDecision,
+    this.quotedPriceInPaise,
+    this.cohortId,
+    this.cohortLabel,
+    this.ageLimit,
+  });
+
+  final ViewerEventAvailabilityStatus status;
+  final EventEligibility? eligibility;
+  final EventAdmissionDecision? admissionDecision;
+  final int spotsRemaining;
+  final bool isSaved;
+  final bool isHosted;
+  final bool isClubMember;
+  final int? quotedPriceInPaise;
+  final String? cohortId;
+  final String? cohortLabel;
+  final int? ageLimit;
+
+  bool get canBookNow =>
+      status == ViewerEventAvailabilityStatus.open ||
+      status == ViewerEventAvailabilityStatus.saved ||
+      status == ViewerEventAvailabilityStatus.approvedToBook;
+
+  bool get canJoinWaitlist =>
+      status == ViewerEventAvailabilityStatus.waitlistAvailable;
+
+  bool get isBlocked =>
+      status == ViewerEventAvailabilityStatus.full ||
+      status == ViewerEventAvailabilityStatus.fullForViewer ||
+      status == ViewerEventAvailabilityStatus.inviteRequired ||
+      status == ViewerEventAvailabilityStatus.membershipRequired ||
+      status == ViewerEventAvailabilityStatus.runPreferencesRequired ||
+      status == ViewerEventAvailabilityStatus.ageRestricted ||
+      status == ViewerEventAvailabilityStatus.past ||
+      status == ViewerEventAvailabilityStatus.cancelled;
+}
+
+ViewerEventAvailability resolveViewerEventAvailability({
+  required Event event,
+  required UserProfile? userProfile,
+  EventParticipation? participation,
+  bool isSaved = false,
+  bool isHosted = false,
+  bool isClubMember = false,
+  DateTime? now,
+  bool hasValidInvite = false,
+}) {
+  final referenceNow = now ?? DateTime.now();
+  final base = _ViewerEventAvailabilityBuilder(
+    event: event,
+    userProfile: userProfile,
+    isSaved: isSaved,
+    isHosted: isHosted,
+    isClubMember: isClubMember,
+  );
+
+  if (event.isCancelled) {
+    return base.build(ViewerEventAvailabilityStatus.cancelled);
+  }
+
+  switch (participation?.status) {
+    case EventParticipationStatus.attended:
+      return base.build(
+        _hasEventStarted(event, referenceNow)
+            ? ViewerEventAvailabilityStatus.attended
+            : ViewerEventAvailabilityStatus.joined,
+      );
+    case EventParticipationStatus.signedUp:
+      return base.build(ViewerEventAvailabilityStatus.joined);
+    case EventParticipationStatus.waitlisted:
+      if (participation?.hasHostApproval == true) {
+        return base.build(
+          _hasEventStarted(event, referenceNow)
+              ? ViewerEventAvailabilityStatus.past
+              : ViewerEventAvailabilityStatus.approvedToBook,
+          eligibility: _hasEventStarted(event, referenceNow)
+              ? const EventPast()
+              : const Eligible(),
+        );
+      }
+      return base.build(
+        ViewerEventAvailabilityStatus.waitlisted,
+        eligibility: const OnWaitlist(),
+      );
+    case EventParticipationStatus.cancelled:
+    case EventParticipationStatus.deleted:
+    case null:
+      break;
+  }
+
+  if (!event.isUpcomingAt(referenceNow)) {
+    return base.build(
+      ViewerEventAvailabilityStatus.past,
+      eligibility: const EventPast(),
+    );
+  }
+
+  if (isHosted) {
+    return base.build(ViewerEventAvailabilityStatus.hosted);
+  }
+
+  if (userProfile == null) {
+    return base.build(
+      event.isFull
+          ? ViewerEventAvailabilityStatus.full
+          : isSaved
+          ? ViewerEventAvailabilityStatus.saved
+          : ViewerEventAvailabilityStatus.open,
+    );
+  }
+
+  if (userProfile.age < event.constraints.minAge) {
+    return base.build(
+      ViewerEventAvailabilityStatus.ageRestricted,
+      eligibility: AgeTooYoung(event.constraints.minAge),
+      ageLimit: event.constraints.minAge,
+    );
+  }
+  if (userProfile.age > event.constraints.maxAge) {
+    return base.build(
+      ViewerEventAvailabilityStatus.ageRestricted,
+      eligibility: AgeTooOld(event.constraints.maxAge),
+      ageLimit: event.constraints.maxAge,
+    );
+  }
+
+  final policy = event.effectiveEventPolicy;
+  final attendee = EventAttendeeProfile.fromUserProfile(userProfile);
+  final decision = const EventPolicyEngine().decideAdmission(
+    policy: policy,
+    request: EventAdmissionRequest(
+      attendee: attendee,
+      hasValidInvite: hasValidInvite,
+      isClubMember: isClubMember,
+    ),
+    roster: EventRosterSnapshot(
+      bookedCountsByCohort: event.effectiveCohortCounts,
+      waitlistedCountsByCohort: event.effectiveWaitlistedCohortCounts,
+    ),
+  );
+  final quotedPriceInPaise = decision.priceQuote.finalAmount.inPaise;
+  final needsRunPreferences =
+      event.requiresRunPreferences && !userProfile.hasCurrentRunPreferences;
+
+  switch (decision.type) {
+    case EventAdmissionDecisionType.admitted:
+      if (needsRunPreferences) {
+        return base.build(
+          ViewerEventAvailabilityStatus.runPreferencesRequired,
+          eligibility: const Eligible(),
+          admissionDecision: decision,
+          quotedPriceInPaise: quotedPriceInPaise,
+        );
+      }
+      return base.build(
+        isSaved
+            ? ViewerEventAvailabilityStatus.saved
+            : ViewerEventAvailabilityStatus.open,
+        eligibility: const Eligible(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.waitlisted:
+      return base.build(
+        ViewerEventAvailabilityStatus.waitlistAvailable,
+        eligibility: const EventFull(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.manualReviewRequired:
+      return base.build(
+        ViewerEventAvailabilityStatus.requestRequired,
+        eligibility: const GenderCapacityReached(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.inviteRequired:
+      return base.build(
+        ViewerEventAvailabilityStatus.inviteRequired,
+        eligibility: const EventInviteRequired(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.membershipRequired:
+      return base.build(
+        ViewerEventAvailabilityStatus.membershipRequired,
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.soldOut:
+      return base.build(
+        ViewerEventAvailabilityStatus.full,
+        eligibility: const EventFull(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+    case EventAdmissionDecisionType.cohortUnavailable:
+      return base.build(
+        ViewerEventAvailabilityStatus.fullForViewer,
+        eligibility: const GenderCapacityReached(),
+        admissionDecision: decision,
+        quotedPriceInPaise: quotedPriceInPaise,
+      );
+  }
+}
+
+bool _hasEventStarted(Event event, DateTime now) =>
+    !event.startTime.isAfter(now);
+
+class _ViewerEventAvailabilityBuilder {
+  const _ViewerEventAvailabilityBuilder({
+    required this.event,
+    required this.userProfile,
+    required this.isSaved,
+    required this.isHosted,
+    required this.isClubMember,
+  });
+
+  final Event event;
+  final UserProfile? userProfile;
+  final bool isSaved;
+  final bool isHosted;
+  final bool isClubMember;
+
+  ViewerEventAvailability build(
+    ViewerEventAvailabilityStatus status, {
+    EventEligibility? eligibility,
+    EventAdmissionDecision? admissionDecision,
+    int? quotedPriceInPaise,
+    int? ageLimit,
+  }) {
+    final decision = admissionDecision;
+    return ViewerEventAvailability(
+      status: status,
+      eligibility: eligibility,
+      admissionDecision: decision,
+      spotsRemaining: event.spotsRemaining,
+      isSaved: isSaved,
+      isHosted: isHosted,
+      isClubMember: isClubMember,
+      quotedPriceInPaise:
+          quotedPriceInPaise ??
+          (userProfile == null
+              ? event.priceInPaise
+              : event.priceInPaiseFor(userProfile!)),
+      cohortId: decision?.cohort.id,
+      cohortLabel: decision?.cohort.label,
+      ageLimit: ageLimit,
+    );
+  }
+}

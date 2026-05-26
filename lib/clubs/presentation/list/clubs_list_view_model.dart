@@ -5,33 +5,117 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/sentinels.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'clubs_list_view_model.freezed.dart';
 part 'clubs_list_view_model.g.dart';
 
-const Object _unsetFilterValue = Object();
+enum ExploreTimeFilter { anytime, tonight, tomorrow, weekend, thisWeek }
+
+enum ExploreDistanceFilter { any, oneKm, threeKm, fiveKm, tenKm }
+
+double? exploreDistanceFilterKm(ExploreDistanceFilter filter) {
+  return switch (filter) {
+    ExploreDistanceFilter.any => null,
+    ExploreDistanceFilter.oneKm => 1,
+    ExploreDistanceFilter.threeKm => 3,
+    ExploreDistanceFilter.fiveKm => 5,
+    ExploreDistanceFilter.tenKm => 10,
+  };
+}
+
+class ExploreTimeWindow {
+  const ExploreTimeWindow({required this.start, required this.end});
+
+  final DateTime start;
+  final DateTime end;
+
+  bool contains(DateTime value) {
+    return !value.isBefore(start) && value.isBefore(end);
+  }
+}
+
+ExploreTimeWindow? exploreTimeWindowFor(
+  ExploreTimeFilter filter,
+  DateTime now,
+) {
+  switch (filter) {
+    case ExploreTimeFilter.anytime:
+      return null;
+    case ExploreTimeFilter.tonight:
+      final today = _startOfDay(now);
+      final baseDay = now.hour < 3
+          ? today.subtract(const Duration(days: 1))
+          : today;
+      return ExploreTimeWindow(
+        start: baseDay.add(const Duration(hours: 18)),
+        end: baseDay.add(const Duration(days: 1, hours: 3)),
+      );
+    case ExploreTimeFilter.tomorrow:
+      final start = _startOfDay(now).add(const Duration(days: 1));
+      return ExploreTimeWindow(
+        start: start,
+        end: start.add(const Duration(days: 1)),
+      );
+    case ExploreTimeFilter.weekend:
+      final today = _startOfDay(now);
+      final daysFromFriday = now.weekday - DateTime.friday;
+      final start = now.weekday >= DateTime.friday
+          ? today.subtract(Duration(days: daysFromFriday))
+          : today.add(Duration(days: DateTime.friday - now.weekday));
+      return ExploreTimeWindow(
+        start: start,
+        end: start.add(const Duration(days: 3)),
+      );
+    case ExploreTimeFilter.thisWeek:
+      return ExploreTimeWindow(
+        start: now,
+        end: now.add(const Duration(days: 7)),
+      );
+  }
+}
+
+/// Default time scope on cold load. The filter row reads as "live" rather
+/// than empty by default-selecting the broadest useful window. `thisWeek`
+/// catches every upcoming event without making the user act first, while
+/// still narrowing the result set so the feed doesn't sprawl.
+const ExploreTimeFilter defaultExploreTimeFilter = ExploreTimeFilter.thisWeek;
 
 class ClubBrowseFilterSelection {
   const ClubBrowseFilterSelection({
-    this.thisWeekOnly = false,
+    ExploreTimeFilter? timeFilter,
+    bool thisWeekOnly = false,
+    this.distanceFilter = ExploreDistanceFilter.any,
     this.highRatedOnly = false,
     this.joinedOnly = false,
     this.hostedOnly = false,
     this.activityTag,
     this.area,
-  });
+  }) : timeFilter =
+           timeFilter ??
+           (thisWeekOnly
+               ? ExploreTimeFilter.thisWeek
+               : defaultExploreTimeFilter);
 
-  final bool thisWeekOnly;
+  final ExploreTimeFilter timeFilter;
+  final ExploreDistanceFilter distanceFilter;
   final bool highRatedOnly;
   final bool joinedOnly;
   final bool hostedOnly;
   final String? activityTag;
   final String? area;
 
+  bool get thisWeekOnly => timeFilter == ExploreTimeFilter.thisWeek;
+
+  /// True when the user has narrowed scope vs the cold-load default. Used to
+  /// decide whether to show the "Clear" affordance — the default time filter
+  /// is intentionally pre-selected on first load so the chip row reads as
+  /// active, but that doesn't count as a user-applied filter.
   bool get hasActiveFilters =>
-      thisWeekOnly ||
+      timeFilter != defaultExploreTimeFilter ||
+      distanceFilter != ExploreDistanceFilter.any ||
       highRatedOnly ||
       joinedOnly ||
       hostedOnly ||
@@ -39,22 +123,31 @@ class ClubBrowseFilterSelection {
       area != null;
 
   ClubBrowseFilterSelection copyWith({
+    Object? timeFilter = unsetSentinel,
+    Object? distanceFilter = unsetSentinel,
     bool? thisWeekOnly,
     bool? highRatedOnly,
     bool? joinedOnly,
     bool? hostedOnly,
-    Object? activityTag = _unsetFilterValue,
-    Object? area = _unsetFilterValue,
+    Object? activityTag = unsetSentinel,
+    Object? area = unsetSentinel,
   }) {
+    final nextTimeFilter = identical(timeFilter, unsetSentinel)
+        ? _copyWithTimeFilter(this.timeFilter, thisWeekOnly)
+        : timeFilter as ExploreTimeFilter;
+
     return ClubBrowseFilterSelection(
-      thisWeekOnly: thisWeekOnly ?? this.thisWeekOnly,
+      timeFilter: nextTimeFilter,
+      distanceFilter: identical(distanceFilter, unsetSentinel)
+          ? this.distanceFilter
+          : distanceFilter as ExploreDistanceFilter,
       highRatedOnly: highRatedOnly ?? this.highRatedOnly,
       joinedOnly: joinedOnly ?? this.joinedOnly,
       hostedOnly: hostedOnly ?? this.hostedOnly,
-      activityTag: identical(activityTag, _unsetFilterValue)
+      activityTag: identical(activityTag, unsetSentinel)
           ? this.activityTag
           : activityTag as String?,
-      area: identical(area, _unsetFilterValue) ? this.area : area as String?,
+      area: identical(area, unsetSentinel) ? this.area : area as String?,
     );
   }
 
@@ -62,7 +155,8 @@ class ClubBrowseFilterSelection {
   bool operator ==(Object other) {
     return identical(this, other) ||
         other is ClubBrowseFilterSelection &&
-            other.thisWeekOnly == thisWeekOnly &&
+            other.timeFilter == timeFilter &&
+            other.distanceFilter == distanceFilter &&
             other.highRatedOnly == highRatedOnly &&
             other.joinedOnly == joinedOnly &&
             other.hostedOnly == hostedOnly &&
@@ -72,13 +166,22 @@ class ClubBrowseFilterSelection {
 
   @override
   int get hashCode => Object.hash(
-    thisWeekOnly,
+    timeFilter,
+    distanceFilter,
     highRatedOnly,
     joinedOnly,
     hostedOnly,
     activityTag,
     area,
   );
+}
+
+ExploreTimeFilter _copyWithTimeFilter(
+  ExploreTimeFilter current,
+  bool? thisWeekOnly,
+) {
+  if (thisWeekOnly == null) return current;
+  return thisWeekOnly ? ExploreTimeFilter.thisWeek : ExploreTimeFilter.anytime;
 }
 
 @freezed
@@ -189,8 +292,31 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
   @override
   ClubBrowseFilterSelection build() => const ClubBrowseFilterSelection();
 
+  void setTimeFilter(ExploreTimeFilter filter) {
+    state = state.copyWith(timeFilter: filter);
+  }
+
+  void toggleTimeFilter(ExploreTimeFilter filter) {
+    final isCurrentlyActive = state.timeFilter == filter;
+    final next = isCurrentlyActive && filter != defaultExploreTimeFilter
+        ? defaultExploreTimeFilter
+        : filter;
+    setTimeFilter(next);
+  }
+
   void toggleThisWeekOnly() {
-    state = state.copyWith(thisWeekOnly: !state.thisWeekOnly);
+    toggleTimeFilter(ExploreTimeFilter.thisWeek);
+  }
+
+  void setDistanceFilter(ExploreDistanceFilter filter) {
+    state = state.copyWith(distanceFilter: filter);
+  }
+
+  void toggleDistanceFilter(ExploreDistanceFilter filter) {
+    final next = state.distanceFilter == filter
+        ? ExploreDistanceFilter.any
+        : filter;
+    setDistanceFilter(next);
   }
 
   void toggleHighRatedOnly() {
@@ -380,7 +506,7 @@ List<Club> applyClubBrowseFilters({
   final referenceNow = now ?? DateTime.now();
   return clubs
       .where((club) {
-        if (filters.thisWeekOnly && !_hasEventThisWeek(club, referenceNow)) {
+        if (!_clubMatchesTimeFilter(club, filters.timeFilter, referenceNow)) {
           return false;
         }
         if (filters.highRatedOnly && club.rating < 4.5) {
@@ -406,10 +532,15 @@ List<Club> applyClubBrowseFilters({
       .toList(growable: false);
 }
 
-bool _hasEventThisWeek(Club club, DateTime now) {
+bool _clubMatchesTimeFilter(Club club, ExploreTimeFilter filter, DateTime now) {
+  if (filter == ExploreTimeFilter.anytime) return true;
   final nextEventAt = club.nextEventAt;
   if (nextEventAt == null || nextEventAt.isBefore(now)) return false;
-  return nextEventAt.isBefore(now.add(const Duration(days: 7)));
+  return exploreTimeWindowFor(filter, now)?.contains(nextEventAt) ?? true;
+}
+
+DateTime _startOfDay(DateTime value) {
+  return DateTime(value.year, value.month, value.day);
 }
 
 String? _normalizeFilterValue(String? value) {

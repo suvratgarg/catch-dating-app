@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class NameOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final running = profile.activityPreferences.running;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -76,12 +78,12 @@ class NameOverlay extends StatelessWidget {
                 icon: Icons.favorite_border_rounded,
                 label: goal.label,
               ),
-            if (profile.hasCurrentRunPreferences)
+            if (running.hasCurrentRunPreferences)
               _HeroSignalChip(
                 icon: Icons.speed_rounded,
                 label: formatPaceRange(
-                  profile.paceMinSecsPerKm,
-                  profile.paceMaxSecsPerKm,
+                  running.paceMinSecsPerKm,
+                  running.paceMaxSecsPerKm,
                 ),
               ),
           ],

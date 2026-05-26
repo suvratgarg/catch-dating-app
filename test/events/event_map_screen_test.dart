@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -185,7 +186,9 @@ void main() {
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.dark,
         home: EventPinsMap(
-          events: [event],
+          items: [
+            EventMapItem(event: event, status: EventTileStatus.open),
+          ],
           initialCenter: const LocationCoordinate(22.72, 75.86),
         ),
       ),

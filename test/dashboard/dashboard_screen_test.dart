@@ -239,7 +239,7 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
-      expect(find.textContaining('NEXT EVENT'), findsOneWidget);
+      expect(find.textContaining('Next event'), findsOneWidget);
       expect(find.text('Stride Social'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Subrath'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
@@ -598,7 +598,7 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Event Focus'), findsOneWidget);
-      expect(find.textContaining('AFTER THE EVENT'), findsOneWidget);
+      expect(find.textContaining('After the event'), findsOneWidget);
       expect(find.text('Start catching'), findsOneWidget);
       expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
 
@@ -613,14 +613,20 @@ void main() {
         find.text(recommendedRun.title, skipOffstage: false),
         findsOneWidget,
       );
+      // RecommendCard subtitle combines club + meeting point on one line.
       expect(
-        find.text('Race Course Road main gate', skipOffstage: false),
+        find.text(
+          'Bandra Club · Race Course Road main gate',
+          skipOffstage: false,
+        ),
         findsOneWidget,
       );
-      expect(find.text('12km', skipOffstage: false), findsOneWidget);
+      // Activity summary in the meta dot row (distance · pace).
+      expect(find.text('12km · Moderate', skipOffstage: false), findsOneWidget);
+      // Spots are now bare digits in the meta row; no "signed up" suffix.
+      expect(find.text('4/12', skipOffstage: false), findsOneWidget);
       expect(find.text('₹150', skipOffstage: false), findsOneWidget);
-      expect(find.text('Bandra Club', skipOffstage: false), findsOneWidget);
-      expect(find.text('4/12 signed up', skipOffstage: false), findsOneWidget);
+      // The recommender reason rides as the corner sash on the card.
       expect(find.text('Fits your pace', skipOffstage: false), findsOneWidget);
     });
 
@@ -863,10 +869,10 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Event Focus'), findsOneWidget);
-      expect(find.text('CHECK-IN OPEN'), findsOneWidget);
+      expect(find.text('Check-in open'), findsOneWidget);
       expect(find.text('Check in'), findsOneWidget);
       expect(find.text('Directions'), findsOneWidget);
-      expect(find.textContaining('NEXT EVENT'), findsNothing);
+      expect(find.textContaining('Next event'), findsNothing);
 
       await tester.tap(find.text('Check in'));
       await _pumpDashboardUi(tester);
@@ -1054,7 +1060,7 @@ void main() {
         await _pumpDashboardUi(tester);
 
         expect(find.text('Event Focus'), findsOneWidget);
-        expect(find.textContaining('AFTER THE EVENT'), findsOneWidget);
+        expect(find.textContaining('After the event'), findsOneWidget);
         expect(find.text('Start catching'), findsOneWidget);
         expect(find.text('Write review'), findsOneWidget);
         expect(find.text('Review your event'), findsNothing);
@@ -1109,7 +1115,7 @@ void main() {
       expect(find.text('Take attendance'), findsOneWidget);
       expect(find.text('Manage event'), findsNothing);
       expect(find.text('Take Attendance'), findsNothing);
-      expect(find.textContaining('NEXT EVENT'), findsNothing);
+      expect(find.textContaining('Next event'), findsNothing);
     });
 
     testWidgets('shows a paged host tools rail for hosted events', (

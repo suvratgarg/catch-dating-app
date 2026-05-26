@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 enum CatchSurfaceTone { surface, raised, primarySoft, transparent }
 
-enum CatchSurfaceElevation { none, raised, overlay }
+enum CatchSurfaceElevation { none, card, raised, overlay }
 
 /// Canonical Catch surface primitive for cards, panels, and tappable tiles.
 class CatchSurface extends StatelessWidget {
@@ -102,6 +102,7 @@ class CatchSurface extends StatelessWidget {
   List<BoxShadow> get _shadows {
     return switch (elevation) {
       CatchSurfaceElevation.none => CatchElevation.none,
+      CatchSurfaceElevation.card => CatchElevation.card,
       CatchSurfaceElevation.raised => CatchElevation.raised,
       CatchSurfaceElevation.overlay => CatchElevation.overlay,
     };

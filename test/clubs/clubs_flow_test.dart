@@ -76,6 +76,18 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
+      final sheetScrollable = find
+          .descendant(
+            of: find.byKey(const ValueKey('explore-list-scroll-view')),
+            matching: find.byType(Scrollable),
+          )
+          .first;
+      await tester.scrollUntilVisible(
+        find.bySemanticsLabel('Open ${club.name} club'),
+        200,
+        scrollable: sheetScrollable,
+      );
+      await _pumpClubFlow(tester);
       await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
       await _pumpClubFlow(tester);
 
@@ -131,6 +143,21 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
+      // The Explore sheet's directory section can fall below the initial
+      // fold on the small (800x600) test viewport. Scroll the Join button
+      // into view before tapping.
+      final sheetScrollable = find
+          .descendant(
+            of: find.byKey(const ValueKey('explore-list-scroll-view')),
+            matching: find.byType(Scrollable),
+          )
+          .first;
+      await tester.scrollUntilVisible(
+        find.text('Join'),
+        200,
+        scrollable: sheetScrollable,
+      );
+      await _pumpClubFlow(tester);
       await tester.tap(find.text('Join'));
       await _pumpClubFlow(tester);
 

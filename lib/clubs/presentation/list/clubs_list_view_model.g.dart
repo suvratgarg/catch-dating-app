@@ -238,7 +238,7 @@ final class ClubBrowseFiltersProvider
   }
 }
 
-String _$clubBrowseFiltersHash() => r'76ddd38471b74267ac66c65d008817bb5709a1f1';
+String _$clubBrowseFiltersHash() => r'd03ef9bb3b1aa52b5f7f043e9c6c929edc7e22b5';
 
 abstract class _$ClubBrowseFilters
     extends $Notifier<ClubBrowseFilterSelection> {

@@ -35,10 +35,22 @@ class EventMapScreen extends ConsumerWidget {
 }
 
 class EventMapView extends ConsumerStatefulWidget {
-  const EventMapView({super.key, this.enableNetworkTiles = true, this.overlay});
+  const EventMapView({
+    super.key,
+    this.enableNetworkTiles = true,
+    this.overlay,
+    this.showSheet = true,
+    this.onEventSelected,
+    this.viewModel,
+    this.onRetry,
+  });
 
   final bool enableNetworkTiles;
   final Widget? overlay;
+  final bool showSheet;
+  final ValueChanged<Event>? onEventSelected;
+  final AsyncValue<EventMapViewModel>? viewModel;
+  final VoidCallback? onRetry;
 
   @override
   ConsumerState<EventMapView> createState() => _EventMapViewState();
@@ -49,7 +61,8 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
 
   @override
   Widget build(BuildContext context) {
-    final viewModelAsync = ref.watch(eventMapViewModelProvider);
+    final AsyncValue<EventMapViewModel> viewModelAsync =
+        widget.viewModel ?? ref.watch(eventMapViewModelProvider);
     final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
     final selectedCity = ref.watch(selectedClubCityProvider);
     final selectedCityWasUserSelected = ref.watch(
@@ -64,7 +77,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
             error: (error, _) => CatchErrorState.fromError(
               error,
               context: AppErrorContext.event,
-              onRetry: () => ref.invalidate(eventMapViewModelProvider),
+              onRetry:
+                  widget.onRetry ??
+                  () => ref.invalidate(eventMapViewModelProvider),
             ),
             data: (viewModel) {
               final items = viewModel.effectiveItems;
@@ -86,12 +101,13 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                           left: CatchSpacing.s5,
                           right: CatchSpacing.s5,
                           bottom: CatchSpacing.s5,
-                          child: EventMapSheet(
-                            items: items,
-                            selectedEvent: selectedEvent,
-                            onEventSelected: (event) =>
-                                setState(() => _selectedEventId = event.id),
-                          ),
+                          child: widget.showSheet
+                              ? EventMapSheet(
+                                  items: items,
+                                  selectedEvent: selectedEvent,
+                                  onEventSelected: _selectEvent,
+                                )
+                              : const SizedBox.shrink(),
                         ),
                       ],
                     )
@@ -99,25 +115,25 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                       children: [
                         Positioned.fill(
                           child: EventPinsMap(
-                            events: viewModel.pinnedEvents,
+                            items: viewModel.effectivePinnedItems,
                             initialCenter: mapCenter,
                             selectedEventId: _selectedEventId,
                             selectedEventCenter: selectedEventCenter,
                             enableNetworkTiles: widget.enableNetworkTiles,
-                            onEventSelected: (event) =>
-                                setState(() => _selectedEventId = event.id),
+                            onEventSelected: _selectEvent,
                           ),
                         ),
                         Positioned(
                           left: CatchSpacing.s5,
                           right: CatchSpacing.s5,
                           bottom: CatchSpacing.s5,
-                          child: EventMapSheet(
-                            items: items,
-                            selectedEvent: selectedEvent,
-                            onEventSelected: (event) =>
-                                setState(() => _selectedEventId = event.id),
-                          ),
+                          child: widget.showSheet
+                              ? EventMapSheet(
+                                  items: items,
+                                  selectedEvent: selectedEvent,
+                                  onEventSelected: _selectEvent,
+                                )
+                              : const SizedBox.shrink(),
                         ),
                       ],
                     );
@@ -127,6 +143,11 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
         ?widget.overlay,
       ],
     );
+  }
+
+  void _selectEvent(Event event) {
+    setState(() => _selectedEventId = event.id);
+    widget.onEventSelected?.call(event);
   }
 }
 
