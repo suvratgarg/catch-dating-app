@@ -2,10 +2,10 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
-  UserProfileDoc,
-  ChatMessageDoc,
-  MatchDoc,
-  PublicProfileDoc,
+  UserProfileDocument,
+  ChatMessageDocument,
+  MatchDocument,
+  PublicProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   allowsPushPreference,
@@ -51,7 +51,7 @@ export async function onMessageCreatedHandler(
   deps: MessageCreatedDeps = defaultDeps
 ): Promise<void> {
   const {matchId, messageId} = event.params;
-  const message = event.data?.data() as ChatMessageDoc | undefined;
+  const message = event.data?.data() as ChatMessageDocument | undefined;
   if (!message) return;
 
   const db = deps.firestore();
@@ -81,7 +81,7 @@ export async function onMessageCreatedHandler(
       return;
     }
 
-    const match = matchDoc.data() as MatchDoc;
+    const match = matchDoc.data() as MatchDocument;
     if (match.status === "blocked") {
       logger.info("Skipping notification for blocked match", {matchId});
       return;
@@ -90,7 +90,7 @@ export async function onMessageCreatedHandler(
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
     isFirstMessage = match.lastMessageAt == null;
     const senderName =
-      (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ??
+      (senderProfileDoc.data() as PublicProfileDocument | undefined)?.name ??
       "New message";
     notificationTitle = senderName;
     notificationBody = buildMessageBody(message);
@@ -135,7 +135,9 @@ export async function onMessageCreatedHandler(
   }
 
   const recipientUserDoc = await db.collection("users").doc(recipientId).get();
-  const recipientUser = recipientUserDoc.data() as UserProfileDoc | undefined;
+  const recipientUser = recipientUserDoc.data() as
+    | UserProfileDocument
+    | undefined;
   const fcmToken = recipientUser?.fcmToken;
   if (!fcmToken) return;
   if (!allowsPushPreference(recipientUser, "messages")) return;
@@ -159,10 +161,10 @@ export const onMessageCreated = onDocumentCreated(
 /**
  * Builds the match-list preview for the latest chat message.
  *
- * @param {ChatMessageDoc} message Chat message document data.
+ * @param {ChatMessageDocument} message Chat message document data.
  * @return {string} Preview text for the match list.
  */
-function buildMessagePreview(message: ChatMessageDoc): string {
+function buildMessagePreview(message: ChatMessageDocument): string {
   if (message.imageUrl) {
     return "Image";
   }
@@ -173,10 +175,10 @@ function buildMessagePreview(message: ChatMessageDoc): string {
 
 /**
  * Builds the user-facing body for message push and activity notifications.
- * @param {ChatMessageDoc} message Chat message document data.
+ * @param {ChatMessageDocument} message Chat message document data.
  * @return {string} Notification body text.
  */
-function buildMessageBody(message: ChatMessageDoc): string {
+function buildMessageBody(message: ChatMessageDocument): string {
   if (message.imageUrl) return "Sent a photo";
 
   const text = message.text.trim();

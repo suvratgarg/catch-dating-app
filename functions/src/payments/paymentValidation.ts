@@ -1,5 +1,8 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {PaymentStatus, EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  PaymentStatus,
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {razorpayCurrency} from "./razorpay";
 
 interface RazorpayOrderNotes {
@@ -46,7 +49,7 @@ const successfulPaymentStatuses = new Set(["authorized", "captured"]);
  * Builds the trusted Razorpay order payload for a paid event.
  * @param {object} params Input parameters.
  * @param {string} params.eventId Event id being booked.
- * @param {EventDoc} params.event Trusted Firestore event snapshot.
+ * @param {EventDocument} params.event Trusted Firestore event snapshot.
  * @param {string} params.userId Authenticated user id.
  * @param {string|number} params.receiptToken Receipt uniqueness token.
  * @param {number=} params.amountInPaise Optional event-policy quoted amount.
@@ -61,7 +64,7 @@ export function buildOrderCreatePayload({
   inviteVerified = false,
 }: {
   eventId: string;
-  event: EventDoc;
+  event: EventDocument;
   userId: string;
   receiptToken: string | number;
   amountInPaise?: number;

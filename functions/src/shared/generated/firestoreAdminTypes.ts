@@ -293,10 +293,10 @@ export interface EventConstraints {
   maxWomen?: number | null;
 }
 
-export interface EventPolicyBundleDoc {
+export interface EventPolicyBundleDocument {
   version: number;
-  admission: EventPolicyAdmissionDoc;
-  pricing: EventPolicyPricingDoc;
+  admission: EventPolicyAdmissionDocument;
+  pricing: EventPolicyPricingDocument;
   cancellation: {
     policyId: "flexible" | "standard" | "strict";
   };
@@ -305,7 +305,7 @@ export interface EventPolicyBundleDoc {
   };
 }
 
-export interface EventPolicyAdmissionDoc {
+export interface EventPolicyAdmissionDocument {
   format:
     | "open"
     | "inviteOnly"
@@ -314,24 +314,24 @@ export interface EventPolicyAdmissionDoc {
     | "balancedRatio"
     | "membersOnly";
   capacityLimit: number;
-  waitlistPolicy?: EventPolicyWaitlistDoc;
+  waitlistPolicy?: EventPolicyWaitlistDocument;
   inviteRequired?: boolean;
   membershipRequired?: boolean;
   manualApprovalRequired?: boolean;
-  privateAccessPolicy?: EventPolicyPrivateAccessDoc;
+  privateAccessPolicy?: EventPolicyPrivateAccessDocument;
   cohortCapacityLimits?: {
     [k: string]: number;
   };
-  balancedRatioPolicy?: EventPolicyBalancedRatioDoc | null;
+  balancedRatioPolicy?: EventPolicyBalancedRatioDocument | null;
 }
 
-export interface EventPolicyPrivateAccessDoc {
+export interface EventPolicyPrivateAccessDocument {
   mode: "none" | "inviteCode";
   inviteCodeHint: string | null;
   privateLinkEnabled: boolean;
 }
 
-export interface EventPolicyWaitlistDoc {
+export interface EventPolicyWaitlistDocument {
   mode:
     | "disabled"
     | "rankedOffer"
@@ -340,7 +340,7 @@ export interface EventPolicyWaitlistDoc {
   offerWindowMinutes: number;
 }
 
-export type EventPolicyBalancedRatioDoc = {
+export type EventPolicyBalancedRatioDocument = {
   leftCohortId: string;
   rightCohortId: string;
   maxSkew: number;
@@ -362,15 +362,15 @@ export type EventPolicyBalancedRatioDoc = {
     | "reject";
 } | null);
 
-export interface EventPolicyPricingDoc {
+export interface EventPolicyPricingDocument {
   basePriceInPaise: number;
   cohortAdjustmentsInPaise?: {
     [k: string]: number;
   };
-  demandPricingRules?: EventPolicyDemandPricingRuleDoc[];
+  demandPricingRules?: EventPolicyDemandPricingRuleDocument[];
 }
 
-export interface EventPolicyDemandPricingRuleDoc {
+export interface EventPolicyDemandPricingRuleDocument {
   pricedCohortId: string;
   balancingCohortId: string;
   stepAdjustmentInPaise: number;
@@ -382,7 +382,7 @@ export interface EventPolicyDemandPricingRuleDoc {
 /**
  * Public city configuration stored at config/cities.
  */
-export interface ConfigCitiesDoc {
+export interface ConfigCitiesDocument {
   /**
    * @minItems 1
    */
@@ -402,7 +402,7 @@ export interface ConfigCitiesDoc {
 /**
  * Owner-private, intentionally extensible onboarding draft stored at onboarding_drafts/{uid}.
  */
-export interface OnboardingDraftDoc {
+export interface OnboardingDraftDocument {
   step: number;
   draftVersion?: number;
   firstName?: string;
@@ -423,7 +423,7 @@ export interface OnboardingDraftDoc {
 /**
  * Canonical private profile document stored at users/{uid}. The uid is the document id and is not stored in document data.
  */
-export interface UserProfileDoc {
+export interface UserProfileDocument {
   name: string;
   firstName: string;
   lastName: string;
@@ -526,7 +526,7 @@ export interface UserProfileDoc {
 /**
  * Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.
  */
-export interface PublicProfileDoc {
+export interface PublicProfileDocument {
   name: string;
   age: number;
   gender: "man" | "woman" | "nonBinary" | "other";
@@ -602,7 +602,7 @@ export interface PublicProfileDoc {
 /**
  * Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.
  */
-export interface ClubDoc {
+export interface ClubDocument {
   name: string;
   description: string;
   location: string | null;
@@ -642,7 +642,7 @@ export interface ClubDoc {
 /**
  * Canonical club membership edge stored at clubMemberships/{membershipId}.
  */
-export interface ClubMembershipDoc {
+export interface ClubMembershipDocument {
   clubId: string;
   uid: string;
   role: "owner" | "host" | "member";
@@ -656,7 +656,7 @@ export interface ClubMembershipDoc {
 /**
  * Server-owned singleton claim stored at clubHostClaims/{uid} to enforce one hosted club per user.
  */
-export interface ClubHostClaimDoc {
+export interface ClubHostClaimDocument {
   uid: string;
   clubId: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -665,7 +665,7 @@ export interface ClubHostClaimDoc {
 /**
  * Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.
  */
-export interface EventDoc {
+export interface EventDocument {
   clubId: string;
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
@@ -689,7 +689,7 @@ export interface EventDoc {
   cancelledAt?: FirebaseFirestore.Timestamp | null;
   cancellationReason?: string | null;
   constraints: EventConstraints;
-  eventPolicy?: EventPolicyBundleDoc | null;
+  eventPolicy?: EventPolicyBundleDocument | null;
   genderCounts: {
     [k: string]: number;
   };
@@ -699,12 +699,56 @@ export interface EventDoc {
   waitlistedCohortCounts: {
     [k: string]: number;
   };
+  discoveryCityName?: string | null;
+  discoveryActivityKind?:
+    | "socialRun"
+    | "running"
+    | "walking"
+    | "pickleball"
+    | "padel"
+    | "tennis"
+    | "badminton"
+    | "cycling"
+    | "spinClass"
+    | "yoga"
+    | "strengthTraining"
+    | "pubQuiz"
+    | "barCrawl"
+    | "dinner"
+    | "singlesMixer"
+    | "openActivity";
+  discoveryGeoCell?: string | null;
+  discoveryHasOpenSpots?: boolean;
+  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  /**
+   * @maxItems 4
+   */
+  discoveryOpenCohorts?: (
+    | "menInterestedInWomen"
+    | "womenInterestedInMen"
+    | "queerOrOpen"
+    | "nonBinaryOrOther"
+  )[];
+  /**
+   * @maxItems 4
+   */
+  discoveryWaitlistCohorts?: (
+    | "menInterestedInWomen"
+    | "womenInterestedInMen"
+    | "queerOrOpen"
+    | "nonBinaryOrOther"
+  )[];
+  discoveryInviteRequired?: boolean;
+  discoveryMembershipRequired?: boolean;
+  discoveryManualApprovalRequired?: boolean;
+  discoveryMinAge?: number;
+  discoveryMaxAge?: number;
 }
 
 /**
  * Host-private access material for invite-only events stored at eventPrivateAccess/{eventId}.
  */
-export interface EventPrivateAccessDoc {
+export interface EventPrivateAccessDocument {
   eventId: string;
   clubId: string;
   inviteCode: string;
@@ -714,7 +758,7 @@ export interface EventPrivateAccessDoc {
 /**
  * Canonical event roster edge stored at eventParticipations/{participationId}.
  */
-export interface EventParticipationDoc {
+export interface EventParticipationDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -740,7 +784,7 @@ export interface EventParticipationDoc {
 /**
  * Host-owned live event-success setup stored at eventSuccessPlans/{eventId}. The event id is the document id and is also stored for cheap validation and reads.
  */
-export interface EventSuccessPlanDoc {
+export interface EventSuccessPlanDocument {
   eventId: string;
   clubId: string;
   playbookId: string;
@@ -794,7 +838,7 @@ export interface EventSuccessPlanDoc {
 /**
  * Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Raw notes and safety concerns are private to the attendee and backend safety/coaching pipelines.
  */
-export interface EventSuccessFeedbackDoc {
+export interface EventSuccessFeedbackDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -810,7 +854,7 @@ export interface EventSuccessFeedbackDoc {
 /**
  * Attendee-owned opt-out preferences for live event guidance stored at eventSuccessPreferences/{eventId_uid}.
  */
-export interface EventSuccessPreferenceDoc {
+export interface EventSuccessPreferenceDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -823,7 +867,7 @@ export interface EventSuccessPreferenceDoc {
 /**
  * Attendee-owned compatibility questionnaire answers stored at eventSuccessCompatibilityResponses/{eventId_uid}. Hosts cannot read individual answers.
  */
-export interface EventSuccessCompatibilityResponseDoc {
+export interface EventSuccessCompatibilityResponseDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -839,7 +883,7 @@ export interface EventSuccessCompatibilityResponseDoc {
 /**
  * Explicit attendee request for host-visible introduction help stored at eventSuccessWingmanRequests/{eventId_uid}.
  */
-export interface EventSuccessWingmanRequestDoc {
+export interface EventSuccessWingmanRequestDocument {
   eventId: string;
   clubId: string;
   requesterUid: string;
@@ -854,7 +898,7 @@ export interface EventSuccessWingmanRequestDoc {
 /**
  * Server-owned First Hello arrival mission stored at eventSuccessArrivalMissions/{eventId_uid}.
  */
-export interface EventSuccessArrivalMissionDoc {
+export interface EventSuccessArrivalMissionDocument {
   eventId: string;
   clubId: string;
   observerUid: string;
@@ -880,7 +924,7 @@ export interface EventSuccessArrivalMissionDoc {
 /**
  * Server-owned live guidance assignment stored at eventSuccessAssignments/{eventId_moduleId_uid}.
  */
-export interface EventSuccessAssignmentDoc {
+export interface EventSuccessAssignmentDocument {
   eventId: string;
   clubId: string;
   uid: string;
@@ -937,7 +981,7 @@ export interface EventSuccessAssignmentDoc {
 /**
  * Server-owned aggregate event coaching metrics stored at eventSuccessScorecards/{eventId}. Raw attendee feedback remains private.
  */
-export interface EventSuccessScorecardDoc {
+export interface EventSuccessScorecardDocument {
   eventId: string;
   clubId: string;
   bookedCount: number;
@@ -955,7 +999,7 @@ export interface EventSuccessScorecardDoc {
 /**
  * Catch-private safety review item materialized from event feedback concerns.
  */
-export interface EventSafetyReportDoc {
+export interface EventSafetyReportDocument {
   eventId: string;
   clubId: string;
   reporterUserId: string;
@@ -970,7 +1014,7 @@ export interface EventSafetyReportDoc {
 /**
  * Server-owned time-slot claim stored at clubScheduleLocks/{clubId_slot}.
  */
-export interface ClubScheduleLockDoc {
+export interface ClubScheduleLockDocument {
   ownerType: "club";
   ownerId: string;
   slot: number;
@@ -983,7 +1027,7 @@ export interface ClubScheduleLockDoc {
 /**
  * Server-owned time-slot claim stored at userEventScheduleLocks/{uid_slot}.
  */
-export interface UserEventScheduleLockDoc {
+export interface UserEventScheduleLockDocument {
   ownerType: "user";
   ownerId: string;
   slot: number;
@@ -997,7 +1041,7 @@ export interface UserEventScheduleLockDoc {
 /**
  * Canonical saved-event edge stored at savedEvents/{savedEventId}.
  */
-export interface SavedEventDoc {
+export interface SavedEventDocument {
   uid: string;
   eventId: string;
   savedAt: FirebaseFirestore.Timestamp;
@@ -1006,7 +1050,7 @@ export interface SavedEventDoc {
 /**
  * Canonical payment record stored at payments/{paymentId}.
  */
-export interface PaymentDoc {
+export interface PaymentDocument {
   userId: string;
   orderId: string;
   paymentId: string;
@@ -1021,7 +1065,7 @@ export interface PaymentDoc {
 /**
  * Storage contract for contextual profile decisions stored at profileDecisions/{userId}/outgoing/{targetId}.
  */
-export interface SwipeDoc {
+export interface SwipeDocument {
   swiperId: string;
   targetId: string;
   eventId: string;
@@ -1045,7 +1089,7 @@ export interface SwipeDoc {
 /**
  * Canonical match document stored at matches/{matchId}.
  */
-export interface MatchDoc {
+export interface MatchDocument {
   user1Id: string;
   user2Id: string;
   /**
@@ -1074,7 +1118,7 @@ export interface MatchDoc {
 /**
  * Canonical chat message document stored at matches/{matchId}/messages/{messageId}.
  */
-export interface ChatMessageDoc {
+export interface ChatMessageDocument {
   senderId: string;
   text: string;
   imageUrl?: string | null;
@@ -1084,7 +1128,7 @@ export interface ChatMessageDoc {
 /**
  * Canonical durable activity notification stored at notifications/{uid}/items/{notificationId}.
  */
-export interface ActivityNotificationDoc {
+export interface ActivityNotificationDocument {
   uid: string;
   type:
     | "message"
@@ -1109,7 +1153,7 @@ export interface ActivityNotificationDoc {
 /**
  * Canonical attended-event review stored at reviews/{reviewId}.
  */
-export interface ReviewDoc {
+export interface ReviewDocument {
   clubId: string;
   eventId?: string | null;
   reviewerUserId: string;
@@ -1123,7 +1167,7 @@ export interface ReviewDoc {
 /**
  * Canonical safety block edge stored at blocks/{blockId}.
  */
-export interface BlockDoc {
+export interface BlockDocument {
   blockerUserId: string;
   blockedUserId: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -1134,7 +1178,7 @@ export interface BlockDoc {
 /**
  * Canonical safety report stored at reports/{reportId}.
  */
-export interface ReportDoc {
+export interface ReportDocument {
   reporterUserId: string;
   targetUserId: string;
   createdAt: FirebaseFirestore.Timestamp;
@@ -1148,7 +1192,7 @@ export interface ReportDoc {
 /**
  * Canonical moderation ticket stored at moderationFlags/{flagId}.
  */
-export interface ModerationFlagDoc {
+export interface ModerationFlagDocument {
   targetUserId: string;
   flagType: "explicit_photo" | "banned_text" | "underage_content";
   source:
@@ -1171,7 +1215,7 @@ export interface ModerationFlagDoc {
 /**
  * Server-owned account-deletion tombstone stored at deletedUsers/{uid}.
  */
-export interface DeletedUserTombstoneDoc {
+export interface DeletedUserTombstoneDocument {
   uid: string;
   deletedAt: FirebaseFirestore.Timestamp;
   retainedFor?: string[];
@@ -1180,7 +1224,7 @@ export interface DeletedUserTombstoneDoc {
 /**
  * Server-owned callable rate-limit counter stored at rateLimits/{docId}.
  */
-export interface RateLimitDoc {
+export interface RateLimitDocument {
   uid: string;
   action: string;
   windowKey: number;
@@ -1191,7 +1235,7 @@ export interface RateLimitDoc {
 /**
  * Server-owned idempotency receipt stored at functionEventReceipts/{receiptId}.
  */
-export interface FunctionEventReceiptDoc {
+export interface FunctionEventReceiptDocument {
   handler: "onMessageCreated";
   eventId: string;
   matchId: string;
@@ -1202,7 +1246,7 @@ export interface FunctionEventReceiptDoc {
 /**
  * Tool-owned synthetic-data manifest stored at seedEvents/{manifestId}.
  */
-export interface SeedEventManifestDoc {
+export interface SeedEventManifestDocument {
   seedId: string;
   manifestId: string;
   generatedAt: FirebaseFirestore.Timestamp;

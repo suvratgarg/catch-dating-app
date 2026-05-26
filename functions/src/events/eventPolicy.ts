@@ -1,8 +1,8 @@
 /* eslint-disable require-jsdoc */
 import {HttpsError} from "firebase-functions/v2/https";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 export const cohortIds = {
@@ -44,7 +44,7 @@ export type EventCancellationRemedy =
   | "noRefund"
   | "waitlistRelease";
 
-export interface EventPolicyBundleDoc {
+export interface EventPolicyBundleDocument {
   version: number;
   admission: {
     format: EventAdmissionFormat;
@@ -96,16 +96,18 @@ export interface EventRosterSnapshot {
   totalBooked: number;
 }
 
-export function eventPolicyFromEvent(event: EventDoc): EventPolicyBundleDoc {
-  const policy = (event as EventDoc & {
-    eventPolicy?: EventPolicyBundleDoc | null;
+export function eventPolicyFromEvent(
+  event: EventDocument
+): EventPolicyBundleDocument {
+  const policy = (event as EventDocument & {
+    eventPolicy?: EventPolicyBundleDocument | null;
   }).eventPolicy;
   if (policy) return normalizePolicy(policy);
   return legacyPolicyFromEvent(event);
 }
 
-export function normalizePolicy(policy: EventPolicyBundleDoc):
-  EventPolicyBundleDoc {
+export function normalizePolicy(policy: EventPolicyBundleDocument):
+  EventPolicyBundleDocument {
   return {
     version: 1,
     admission: {
@@ -149,7 +151,9 @@ export function normalizePolicy(policy: EventPolicyBundleDoc):
   };
 }
 
-export function legacyPolicyFromEvent(event: EventDoc): EventPolicyBundleDoc {
+export function legacyPolicyFromEvent(
+  event: EventDocument
+): EventPolicyBundleDocument {
   const maxMen = event.constraints?.maxMen;
   const maxWomen = event.constraints?.maxWomen;
   const hasCaps = maxMen != null || maxWomen != null;
@@ -188,7 +192,7 @@ export function legacyPolicyFromEvent(event: EventDoc): EventPolicyBundleDoc {
   };
 }
 
-export function cohortIdForUser(user: UserProfileDoc): EventCohortId {
+export function cohortIdForUser(user: UserProfileDocument): EventCohortId {
   const interests = new Set(user.interestedInGenders ?? []);
   if (user.gender === "man" && interests.size === 1 &&
       interests.has("woman")) {
@@ -204,8 +208,8 @@ export function cohortIdForUser(user: UserProfileDoc): EventCohortId {
   return cohortIds.queerOrOpen;
 }
 
-export function rosterFromEvent(event: EventDoc): EventRosterSnapshot {
-  const storedCohortCounts = (event as EventDoc & {
+export function rosterFromEvent(event: EventDocument): EventRosterSnapshot {
+  const storedCohortCounts = (event as EventDocument & {
     cohortCounts?: Record<string, number> | null;
   }).cohortCounts;
   const bookedCountsByCohort = storedCohortCounts &&
@@ -213,7 +217,7 @@ export function rosterFromEvent(event: EventDoc): EventRosterSnapshot {
     sanitizeCountMap(storedCohortCounts) :
     legacyCohortCounts(event);
   const waitlistedCountsByCohort = sanitizeCountMap(
-    (event as EventDoc & {
+    (event as EventDocument & {
       waitlistedCohortCounts?: Record<string, number> | null;
     }).waitlistedCohortCounts
   );
@@ -223,7 +227,7 @@ export function rosterFromEvent(event: EventDoc): EventRosterSnapshot {
 }
 
 export function quotePriceInPaise(params: {
-  policy: EventPolicyBundleDoc;
+  policy: EventPolicyBundleDocument;
   cohortId: string;
   roster: EventRosterSnapshot;
   includeRequestedAttendee?: boolean;
@@ -253,7 +257,7 @@ export function quotePriceInPaise(params: {
 }
 
 export function quoteAttendeeCancellation(params: {
-  policy: EventPolicyBundleDoc;
+  policy: EventPolicyBundleDocument;
   paidAmountInPaise: number;
   startTimeMillis: number;
   nowMillis: number;
@@ -305,7 +309,7 @@ export function quoteAttendeeCancellation(params: {
 }
 
 export function assertPolicyAllowsSignup(params: {
-  policy: EventPolicyBundleDoc;
+  policy: EventPolicyBundleDocument;
   cohortId: string;
   roster: EventRosterSnapshot;
   hasValidInvite?: boolean;
@@ -378,7 +382,7 @@ export function assertPolicyAllowsSignup(params: {
 export async function hasValidInviteForEvent(params: {
   db: FirebaseFirestore.Firestore;
   eventId: string;
-  policy: EventPolicyBundleDoc;
+  policy: EventPolicyBundleDocument;
   inviteCode?: string | null;
 }): Promise<boolean> {
   if (!params.policy.admission.inviteRequired) return true;
@@ -416,7 +420,7 @@ export function decrementCount(
   return {...counts, [key]: Math.max(0, (counts[key] ?? 0) - 1)};
 }
 
-function legacyCohortCounts(event: EventDoc): Record<string, number> {
+function legacyCohortCounts(event: EventDocument): Record<string, number> {
   const genderCounts = event.genderCounts ?? {};
   const nonBinaryOrOther =
     (genderCounts.nonBinary ?? 0) + (genderCounts.other ?? 0);
@@ -454,9 +458,11 @@ function sanitizeAmountMap(value?: Record<string, number> | null):
 }
 
 function normalizePrivateAccessPolicy(
-  value: EventPolicyBundleDoc["admission"]["privateAccessPolicy"] | undefined,
+  value:
+    | EventPolicyBundleDocument["admission"]["privateAccessPolicy"]
+    | undefined,
   inviteRequired: boolean
-): NonNullable<EventPolicyBundleDoc["admission"]["privateAccessPolicy"]> {
+): NonNullable<EventPolicyBundleDocument["admission"]["privateAccessPolicy"]> {
   if (!inviteRequired) {
     return {
       mode: "none",

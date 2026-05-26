@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   cohortIds,
-  EventPolicyBundleDoc,
+  EventPolicyBundleDocument,
   assertPolicyAllowsSignup,
   quotePriceInPaise,
   quoteAttendeeCancellation,
@@ -108,7 +108,7 @@ test("quotePriceInPaise includes same-cohort waitlist demand", () => {
 });
 
 test("manual approval policy blocks direct signup until host approval", () => {
-  const requestPolicy: EventPolicyBundleDoc = {
+  const requestPolicy: EventPolicyBundleDocument = {
     ...policy("standard"),
     admission: {
       ...policy("standard").admission,
@@ -140,8 +140,8 @@ test("manual approval policy blocks direct signup until host approval", () => {
 });
 
 function policy(
-  policyId: EventPolicyBundleDoc["cancellation"]["policyId"]
-): EventPolicyBundleDoc {
+  policyId: EventPolicyBundleDocument["cancellation"]["policyId"]
+): EventPolicyBundleDocument {
   return {
     version: 1,
     admission: {

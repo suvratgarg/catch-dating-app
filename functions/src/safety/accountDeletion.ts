@@ -7,8 +7,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {
   ProfilePhoto,
-  ClubMembershipDoc,
-  EventParticipationDoc,
+  ClubMembershipDocument,
+  EventParticipationDocument,
 } from "../shared/generated/firestoreAdminTypes";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
@@ -167,7 +167,7 @@ async function queueClubMembershipCleanup(
     .where("uid", "==", uid)
     .get();
   memberships.forEach((doc) => {
-    const membership = doc.data() as ClubMembershipDoc;
+    const membership = doc.data() as ClubMembershipDocument;
     writer.set(doc.ref, {
       status: "deleted",
       deletedAt: now,
@@ -197,7 +197,7 @@ async function queueEventParticipationCleanup(
     .where("uid", "==", uid)
     .get();
   participations.forEach((doc) => {
-    const participation = doc.data() as EventParticipationDoc;
+    const participation = doc.data() as EventParticipationDocument;
     writer.set(doc.ref, {
       status: "deleted",
       updatedAt: now,
@@ -218,7 +218,7 @@ async function queueEventParticipationCleanup(
  */
 function eventParticipationDeletionEventPatch(
   uid: string,
-  participation: EventParticipationDoc
+  participation: EventParticipationDocument
 ): Record<string, unknown> {
   switch (participation.status) {
   case "signedUp": {

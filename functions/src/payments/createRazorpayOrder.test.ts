@@ -4,9 +4,11 @@ import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {createRazorpayOrderHandler} from "./createRazorpayOrder";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
-function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
+function buildEventDoc(overrides: Partial<EventDocument> = {}): EventDocument {
   return {
     clubId: "club-1",
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
@@ -387,7 +389,7 @@ function buildRequest({
 }
 
 function createEventFirestore(
-  event: EventDoc | null,
+  event: EventDocument | null,
   participations: Array<{
     uid: string;
     status: string;
@@ -471,7 +473,7 @@ function createEventFirestore(
   } as unknown as FirebaseFirestore.Firestore;
 }
 
-function demandPricedPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+function demandPricedPolicy(): NonNullable<EventDocument["eventPolicy"]> {
   return {
     version: 1,
     admission: {
@@ -506,7 +508,7 @@ function demandPricedPolicy(): NonNullable<EventDoc["eventPolicy"]> {
   };
 }
 
-function inviteOnlyPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+function inviteOnlyPolicy(): NonNullable<EventDocument["eventPolicy"]> {
   return {
     version: 1,
     admission: {
@@ -534,7 +536,7 @@ function inviteOnlyPolicy(): NonNullable<EventDoc["eventPolicy"]> {
   };
 }
 
-function manualApprovalPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+function manualApprovalPolicy(): NonNullable<EventDocument["eventPolicy"]> {
   return {
     version: 1,
     admission: {

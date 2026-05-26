@@ -1,6 +1,8 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {ReviewDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  ReviewDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubReviewStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -33,7 +35,7 @@ export async function refreshClubReviewStats(
     .where("clubId", "==", clubId)
     .get();
 
-  const reviews = reviewsSnap.docs.map((doc) => doc.data() as ReviewDoc);
+  const reviews = reviewsSnap.docs.map((doc) => doc.data() as ReviewDocument);
   const reviewCount = reviews.length;
   const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
 
@@ -45,14 +47,14 @@ export async function refreshClubReviewStats(
 
 /**
  * Recomputes all club review aggregates affected by a review write.
- * @param {ReviewDoc | undefined} before Review document before state.
- * @param {ReviewDoc | undefined} after Review document after state.
+ * @param {ReviewDocument | undefined} before Review document before state.
+ * @param {ReviewDocument | undefined} after Review document after state.
  * @param {SyncClubReviewStatsDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncClubReviewStatsHandler(
-  before: ReviewDoc | undefined,
-  after: ReviewDoc | undefined,
+  before: ReviewDocument | undefined,
+  after: ReviewDocument | undefined,
   deps: SyncClubReviewStatsDeps = defaultDeps
 ): Promise<void> {
   const clubIds = new Set<string>();
@@ -74,8 +76,8 @@ export async function syncClubReviewStatsHandler(
 export const syncClubReviewStats = onDocumentWritten(
   "reviews/{reviewId}",
   async (event) => {
-    const before = event.data?.before.data() as ReviewDoc | undefined;
-    const after = event.data?.after.data() as ReviewDoc | undefined;
+    const before = event.data?.before.data() as ReviewDocument | undefined;
+    const after = event.data?.after.data() as ReviewDocument | undefined;
     await syncClubReviewStatsHandler(before, after);
   }
 );

@@ -1,4 +1,6 @@
-import {ClubDoc} from "./generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+} from "./generated/firestoreAdminTypes";
 
 export type ClubHostRole = "owner" | "host";
 
@@ -9,7 +11,7 @@ export interface ClubHostProfile {
   role: ClubHostRole;
 }
 
-type MultiHostClubFields = ClubDoc & {
+type MultiHostClubFields = ClubDocument & {
   ownerUserId?: string | null;
   hostUserIds?: string[];
   hostProfiles?: ClubHostProfile[];
@@ -17,20 +19,20 @@ type MultiHostClubFields = ClubDoc & {
 
 /**
  * Returns the canonical club owner id, falling back to legacy hostUserId.
- * @param {ClubDoc} club Club document.
+ * @param {ClubDocument} club Club document.
  * @return {string} Owner user id.
  */
-export function clubOwnerUserId(club: ClubDoc): string {
+export function clubOwnerUserId(club: ClubDocument): string {
   const multiHostClub = club as MultiHostClubFields;
   return multiHostClub.ownerUserId ?? club.hostUserId;
 }
 
 /**
  * Returns every user id with host privileges for this club.
- * @param {ClubDoc} club Club document.
+ * @param {ClubDocument} club Club document.
  * @return {string[]} Owner and co-host ids.
  */
-export function clubHostUserIds(club: ClubDoc): string[] {
+export function clubHostUserIds(club: ClubDocument): string[] {
   const multiHostClub = club as MultiHostClubFields;
   return uniqueStrings([
     club.hostUserId,
@@ -42,30 +44,30 @@ export function clubHostUserIds(club: ClubDoc): string[] {
 
 /**
  * Checks whether a user has host privileges for a club.
- * @param {ClubDoc} club Club document.
+ * @param {ClubDocument} club Club document.
  * @param {string} uid User id to check.
  * @return {boolean} True when the user is owner or co-host.
  */
-export function isClubHost(club: ClubDoc, uid: string): boolean {
+export function isClubHost(club: ClubDocument, uid: string): boolean {
   return clubHostUserIds(club).includes(uid);
 }
 
 /**
  * Checks whether a user is the canonical club owner.
- * @param {ClubDoc} club Club document.
+ * @param {ClubDocument} club Club document.
  * @param {string} uid User id to check.
  * @return {boolean} True when the user owns the club.
  */
-export function isClubOwner(club: ClubDoc, uid: string): boolean {
+export function isClubOwner(club: ClubDocument, uid: string): boolean {
   return clubOwnerUserId(club) === uid;
 }
 
 /**
  * Returns public host profiles, falling back to the legacy single-host shape.
- * @param {ClubDoc} club Club document.
+ * @param {ClubDocument} club Club document.
  * @return {ClubHostProfile[]} Public owner and co-host projections.
  */
-export function clubHostProfiles(club: ClubDoc): ClubHostProfile[] {
+export function clubHostProfiles(club: ClubDocument): ClubHostProfile[] {
   const multiHostClub = club as MultiHostClubFields;
   if (multiHostClub.hostProfiles?.length) {
     return multiHostClub.hostProfiles;

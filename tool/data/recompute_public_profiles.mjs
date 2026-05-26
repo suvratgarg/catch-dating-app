@@ -40,7 +40,11 @@ export async function main(argv = process.argv.slice(2)) {
   const admin = requireFromFunctions("firebase-admin");
   admin.initializeApp({projectId});
   const db = admin.firestore();
-  const plan = await buildPublicProfileRepairPlan(db, loadProfileProjection());
+  const plan = await buildPublicProfileRepairPlan(
+    db,
+    loadProfileProjection(),
+    {isPublicProfileEligible: loadProfileReadiness().isSocialReadyUserProfile}
+  );
 
   if (args.json) {
     const summary = args.summaryOnly ?
@@ -62,7 +66,10 @@ export async function main(argv = process.argv.slice(2)) {
 
 export async function buildPublicProfileRepairPlan(
   firestore,
-  profileProjection
+  profileProjection,
+  {
+    isPublicProfileEligible = null,
+  } = {}
 ) {
   const [usersSnap, publicProfilesSnap] = await Promise.all([
     firestore.collection("users").get(),
@@ -86,7 +93,14 @@ export async function buildPublicProfileRepairPlan(
       if (current) repairs.push(deleteRepair(uid, current, "deletedUser"));
       continue;
     }
-    if (user.profileComplete !== true) {
+    if (isPublicProfileEligible && !isPublicProfileEligible(user)) {
+      if (current) {
+        repairs.push(deleteRepair(uid, current, "notSocialReady"));
+      }
+      continue;
+    }
+
+    if (!isPublicProfileEligible && user.profileComplete !== true) {
       if (current) {
         warnings.push(
           `publicProfiles/${uid} exists but users/${uid} is incomplete.`
@@ -185,6 +199,18 @@ function loadProfileProjection() {
   } catch (error) {
     throw new Error(
       "Could not load functions/lib/shared/profileProjection.js. " +
+      "Event `npm --prefix functions run build` before this repair tool. " +
+      `Original error: ${error.message}`
+    );
+  }
+}
+
+function loadProfileReadiness() {
+  try {
+    return requireFromFunctions("./lib/shared/profileReadiness.js");
+  } catch (error) {
+    throw new Error(
+      "Could not load functions/lib/shared/profileReadiness.js. " +
       "Event `npm --prefix functions run build` before this repair tool. " +
       `Original error: ${error.message}`
     );

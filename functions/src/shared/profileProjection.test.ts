@@ -1,7 +1,9 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {UserProfileDoc} from "./generated/firestoreAdminTypes";
+import {
+  UserProfileDocument,
+} from "./generated/firestoreAdminTypes";
 import {profilePromptCatalog} from "./generated/schemaRegistry";
 import {
   publicDisplayName,
@@ -13,7 +15,9 @@ function timestamp(date: Date) {
   return {toDate: () => date} as FirebaseFirestore.Timestamp;
 }
 
-function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
+function completeUser(
+  overrides: Partial<UserProfileDocument> = {}
+): UserProfileDocument {
   return {
     profileComplete: true,
     name: "Asha Runner",
@@ -124,7 +128,7 @@ test(
       occupation: "Designer",
       company: "Stride Labs",
       relationshipGoal: "relationship",
-    } as Partial<UserProfileDoc>));
+    } as Partial<UserProfileDocument>));
 
     assert.equal(profile.name, "Asha Host");
     assert.equal(profile.synthetic, true);
@@ -162,7 +166,7 @@ test("publicProfileFromUserProfileDoc migrates legacy bio via catalog fallback",
     const profile = publicProfileFromUserProfileDoc(completeUser({
       profilePrompts: [],
       bio: "Old bio\n\n\nstill useful",
-    } as Partial<UserProfileDoc>));
+    } as Partial<UserProfileDocument>));
 
     assert.deepEqual(profile.profilePrompts, [{
       promptId: defaultPrompt.id,

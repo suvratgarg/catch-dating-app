@@ -3785,6 +3785,115 @@ export const eventDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "discoveryCityName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9-]+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryActivityKind": {
+      "type": "string",
+      "enum": [
+        "socialRun",
+        "running",
+        "walking",
+        "pickleball",
+        "padel",
+        "tennis",
+        "badminton",
+        "cycling",
+        "spinClass",
+        "yoga",
+        "strengthTraining",
+        "pubQuiz",
+        "barCrawl",
+        "dinner",
+        "singlesMixer",
+        "openActivity"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryGeoCell": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^-?\\d+:-?\\d+$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryHasOpenSpots": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryAvailability": {
+      "type": "string",
+      "enum": [
+        "open",
+        "waitlist",
+        "gated",
+        "full",
+        "cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryOpenCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryWaitlistCohorts": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "menInterestedInWomen",
+          "womenInterestedInMen",
+          "queerOrOpen",
+          "nonBinaryOrOther"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryInviteRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMembershipRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryManualApprovalRequired": {
+      "type": "boolean",
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMinAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "discoveryMaxAge": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120,
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -7975,6 +8084,7 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
   "$id": "https://catch.app/contracts/patches/update_user_profile.schema.json",
   "title": "UpdateUserProfileCallablePayload",
   "description": "Callable request body for updateUserProfile. Values are normalized before Firestore writes.",
+  "x-callable-shape": "patch",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -9091,6 +9201,7 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
   "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
   "title": "UpdateClubCallablePayload",
   "description": "Callable payload accepted by updateClub.",
+  "x-callable-shape": "patch",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -9805,6 +9916,10 @@ export const clubMembershipCallablePayloadSchema: Record<string, unknown> = {
   "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
   "title": "ClubMembershipCallablePayload",
   "description": "Callable payload accepted by joinClub and leaveClub.",
+  "x-callable-aliases": [
+    "joinClub",
+    "leaveClub"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11185,6 +11300,9 @@ export const eventJoinRequestDecisionCallablePayloadSchema: Record<string, unkno
   "$id": "https://catch.app/contracts/callables/event_join_request_decision_payload.schema.json",
   "title": "EventJoinRequestDecisionCallablePayload",
   "description": "Callable payload accepted by decideEventJoinRequest.",
+  "x-callable-aliases": [
+    "decideEventJoinRequest"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11788,6 +11906,9 @@ export const eventBookingCallablePayloadSchema: Record<string, unknown> = {
   "$id": "https://catch.app/contracts/callables/event_booking_payload.schema.json",
   "title": "EventBookingCallablePayload",
   "description": "Callable payload accepted by signUpForFreeEvent. Same shape as EventIdCallablePayload but distinct so the booking flow can diverge without breaking the generic event-id callables.",
+  "x-callable-aliases": [
+    "signUpForFreeEvent"
+  ],
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -12051,6 +12172,10 @@ export const fetchEventSuccessWingmanCandidatesCallableResponseSchema: Record<st
     "profiles": {
       "type": "array",
       "items": {
+        "x-wire-shape-extends": "contracts/firestore/public_profiles.schema.json",
+        "x-wire-shape-injects": [
+          "uid"
+        ],
         "type": "object",
         "required": [
           "uid"

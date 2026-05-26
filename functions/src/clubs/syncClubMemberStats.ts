@@ -1,6 +1,8 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {ClubMembershipDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubMembershipDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 interface SyncClubMemberStatsDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -41,14 +43,14 @@ export async function refreshClubMemberStats(
 
 /**
  * Recomputes club member counts affected by a membership write.
- * @param {ClubMembershipDoc | undefined} before Membership before state.
- * @param {ClubMembershipDoc | undefined} after Membership after state.
+ * @param {ClubMembershipDocument | undefined} before Membership before state.
+ * @param {ClubMembershipDocument | undefined} after Membership after state.
  * @param {SyncClubMemberStatsDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
 export async function syncClubMemberStatsHandler(
-  before: ClubMembershipDoc | undefined,
-  after: ClubMembershipDoc | undefined,
+  before: ClubMembershipDocument | undefined,
+  after: ClubMembershipDocument | undefined,
   deps: SyncClubMemberStatsDeps = defaultDeps
 ): Promise<void> {
   const clubIds = new Set<string>();
@@ -71,9 +73,9 @@ export const syncClubMemberStats = onDocumentWritten(
   "clubMemberships/{membershipId}",
   async (event) => {
     const before = event.data?.before.data() as
-      ClubMembershipDoc | undefined;
+      ClubMembershipDocument | undefined;
     const after = event.data?.after.data() as
-      ClubMembershipDoc | undefined;
+      ClubMembershipDocument | undefined;
     await syncClubMemberStatsHandler(before, after);
   }
 );

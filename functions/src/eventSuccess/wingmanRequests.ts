@@ -2,11 +2,11 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  EventDoc,
-  EventParticipationDoc,
+  EventDocument,
+  EventParticipationDocument,
   Gender,
-  PublicProfileDoc,
-  UserProfileDoc,
+  PublicProfileDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -37,14 +37,14 @@ interface WingmanRequestDeps {
   ) => Promise<void>;
 }
 
-interface EventSuccessPlanDoc {
+interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
   wingmanRequestsEnabled?: boolean;
 }
 
-interface ExistingWingmanRequestDoc {
+interface ExistingWingmanRequestDocument {
   eventId?: string;
   requesterUid?: string;
   targetUid?: string;
@@ -53,7 +53,7 @@ interface ExistingWingmanRequestDoc {
   createdAt?: unknown;
 }
 
-type WingmanCandidateProfile = PublicProfileDoc & {uid: string};
+type WingmanCandidateProfile = PublicProfileDocument & {uid: string};
 
 const defaultDeps: WingmanRequestDeps = {
   firestore: () => admin.firestore(),
@@ -110,7 +110,10 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
       "Complete your profile before asking the host for help."
     );
   }
-  const viewer = requireDoc<UserProfileDoc>(viewerSnap, "UserProfileDoc");
+  const viewer = requireDoc<UserProfileDocument>(
+    viewerSnap,
+    "UserProfileDocument"
+  );
   const viewerCohortId = cohortIdForUser(viewer);
 
   const participationSnap = await db
@@ -119,9 +122,9 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
     .where("status", "==", "attended")
     .get();
   const candidateIds = participationSnap.docs
-    .map((doc) => requireDoc<EventParticipationDoc>(
+    .map((doc) => requireDoc<EventParticipationDocument>(
       doc,
-      "EventParticipationDoc"
+      "EventParticipationDocument"
     ))
     .filter((candidate) => isEligibleWingmanRequestCandidate({
       viewer,
@@ -184,7 +187,10 @@ async function fetchCandidateProfiles(
   const profiles: WingmanCandidateProfile[] = [];
   snaps.forEach((snap, index) => {
     if (!snap.exists) return;
-    const profile = requireDoc<PublicProfileDoc>(snap, "PublicProfileDoc");
+    const profile = requireDoc<PublicProfileDocument>(
+      snap,
+      "PublicProfileDocument"
+    );
     profiles.push({uid: uids[index], ...profile});
   });
   return profiles;
@@ -273,7 +279,7 @@ export async function submitEventSuccessWingmanRequestHandler(
     }
 
     const existing = existingRequestSnap.exists ?
-      existingRequestSnap.data() as ExistingWingmanRequestDoc :
+      existingRequestSnap.data() as ExistingWingmanRequestDocument :
       null;
     const now = deps.serverTimestamp();
     tx.set(requestRef, {
@@ -323,7 +329,7 @@ export async function withdrawEventSuccessWingmanRequestHandler(
   await db.runTransaction(async (tx) => {
     const snap = await tx.get(requestRef);
     if (!snap.exists) return;
-    const existing = snap.data() as ExistingWingmanRequestDoc;
+    const existing = snap.data() as ExistingWingmanRequestDocument;
     if (existing.eventId !== data.eventId ||
       existing.requesterUid !== requesterUid) {
       throw new HttpsError(
@@ -389,16 +395,19 @@ function normalizeSubmitWingmanPayload(data: unknown): unknown {
  * Requires an active event that has not ended.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Event snapshot.
  * @param {number} nowMillis Current epoch millis.
- * @return {EventDoc} Event document.
+ * @return {EventDocument} Event document.
  */
 function requireActiveWingmanEvent(
   snap: FirebaseFirestore.DocumentSnapshot,
   nowMillis: number
-): EventDoc {
+): EventDocument {
   if (!snap.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }
-  const event = requireDoc<EventDoc>(snap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+    snap,
+    "EventDocument"
+  );
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition", "This event is cancelled.");
   }
@@ -428,7 +437,10 @@ function requireWingmanPlan(
       "The host has not enabled live guidance for this event."
     );
   }
-  const plan = requireDoc<EventSuccessPlanDoc>(snap, "EventSuccessPlanDoc");
+  const plan = requireDoc<EventSuccessPlanDocument>(
+    snap,
+    "EventSuccessPlanDocument"
+  );
   if (
     (plan.eventId !== undefined && plan.eventId !== eventId) ||
     (plan.clubId !== undefined && plan.clubId !== clubId) ||
@@ -457,9 +469,9 @@ function requireAttendedParticipant(
       "Host help is only available to checked-in attendees."
     );
   }
-  const participation = requireDoc<EventParticipationDoc>(
+  const participation = requireDoc<EventParticipationDocument>(
     snap,
-    "EventParticipationDoc"
+    "EventParticipationDocument"
   );
   if (participation.uid !== uid || participation.status !== "attended") {
     throw new HttpsError(
@@ -472,17 +484,17 @@ function requireAttendedParticipant(
 /**
  * Checks whether a checked-in participant can be shown as a host-help target.
  * @param {Object} params Eligibility inputs.
- * @param {UserProfileDoc} params.viewer Caller profile.
+ * @param {UserProfileDocument} params.viewer Caller profile.
  * @param {string} params.viewerUid Caller user id.
  * @param {string} params.viewerCohortId Caller event cohort id.
- * @param {EventParticipationDoc} params.candidate Candidate participation.
+ * @param {EventParticipationDocument} params.candidate Candidate participation.
  * @return {boolean} True when eligible.
  */
 function isEligibleWingmanRequestCandidate(params: {
-  viewer: UserProfileDoc;
+  viewer: UserProfileDocument;
   viewerUid: string;
   viewerCohortId: string;
-  candidate: EventParticipationDoc;
+  candidate: EventParticipationDocument;
 }): boolean {
   const candidate = params.candidate;
   const candidateGender = candidate.genderAtSignup;

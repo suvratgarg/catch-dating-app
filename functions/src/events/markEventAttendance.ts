@@ -2,7 +2,9 @@ import {CallableRequest, onCall, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {MarkEventAttendanceCallablePayload} from
   "../shared/generated/markEventAttendanceCallablePayload";
@@ -24,7 +26,7 @@ import {isClubHost} from "../shared/clubHosts";
 import {
   allowsPushPreference,
   eventCompanionReadyNotificationCopy,
-  NotificationPreferenceDoc,
+  NotificationPreferenceDocument,
   sendFcmNotification,
 } from "../shared/notifications";
 
@@ -88,7 +90,7 @@ export async function markEventAttendanceHandler(
     throw new HttpsError("not-found", "Event not found.");
   }
 
-  const event = eventSnap.data() as EventDoc;
+  const event = eventSnap.data() as EventDocument;
   if (event.status === "cancelled") {
     throw new HttpsError(
       "failed-precondition",
@@ -186,7 +188,7 @@ export const markEventAttendance = onCall(appCheckCallableOptions, async (
  * @param {MarkEventAttendanceDeps} params.deps Injectable dependencies.
  * @param {string} params.eventId Event id.
  * @param {string} params.userId Attendee uid.
- * @param {EventDoc} params.event Event document.
+ * @param {EventDocument} params.event Event document.
  * @return {Promise<void>}
  */
 async function notifyCompanionReadyBestEffort(params: {
@@ -194,7 +196,7 @@ async function notifyCompanionReadyBestEffort(params: {
   deps: MarkEventAttendanceDeps;
   eventId: string;
   userId: string;
-  event: EventDoc;
+  event: EventDocument;
 }): Promise<void> {
   try {
     const [planSnap, userSnap] = await Promise.all([
@@ -213,7 +215,7 @@ async function notifyCompanionReadyBestEffort(params: {
     }
 
     const user = userSnap.data() as (
-      NotificationPreferenceDoc & {fcmToken?: string}
+      NotificationPreferenceDocument & {fcmToken?: string}
     ) | undefined;
     if (!user?.fcmToken ||
         !allowsPushPreference(user, "eventStatusUpdates")) {
@@ -242,13 +244,13 @@ async function notifyCompanionReadyBestEffort(params: {
 /**
  * Returns whether a companion push can land on an active attendee surface.
  * @param {object} params Runtime parameters.
- * @param {EventDoc} params.event Event document.
+ * @param {EventDocument} params.event Event document.
  * @param {EventSuccessPlanLike} params.plan Event-success plan.
  * @param {Date} params.now Current time.
  * @return {boolean} Whether the companion has relevant attendee content.
  */
 function companionHasRelevantSurface(params: {
-  event: EventDoc;
+  event: EventDocument;
   plan: EventSuccessPlanLike;
   now: Date;
 }): boolean {

@@ -37,14 +37,23 @@ export async function main(argv = process.argv.slice(2)) {
   const admin = requireFromFunctions("firebase-admin");
   admin.initializeApp({projectId});
 
-  const plan = await buildProfileDecisionMigrationPlan(admin.firestore());
+  const migration = args.legacySource ?
+    legacySourceMigration(readMigrationContract()) :
+    readMigrationContract();
+  const plan = await buildProfileDecisionMigrationPlan(
+    admin.firestore(),
+    {migration}
+  );
   if (args.json) {
     console.log(JSON.stringify(plan.summary, null, 2));
   } else {
     printSummary(plan);
   }
 
-  if (args.requireParity && !plan.summary.readyForPrimaryCutover) {
+  const parityReady = args.legacySource ?
+    plan.summary.readyForLegacyCleanup :
+    plan.summary.readyForPrimaryCutover;
+  if (args.requireParity && !parityReady) {
     process.exitCode = 1;
   }
 }
@@ -130,6 +139,10 @@ export async function buildProfileDecisionMigrationPlan(
         missingFuture.length === 0 &&
         staleFuture.length === 0 &&
         extraFuture.length === 0,
+      readyForLegacyCleanup:
+        validationErrors.length === 0 &&
+        missingFuture.length === 0 &&
+        staleFuture.length === 0,
       missingFuture: missingFuture.slice(0, 100),
       staleFuture: staleFuture.slice(0, 100),
       extraFuture: extraFuture.slice(0, 100),
@@ -139,33 +152,49 @@ export async function buildProfileDecisionMigrationPlan(
 }
 
 async function listDecisionDocs(firestore, pathParts) {
-  const ownerSnap = await firestore.collection(pathParts.rootCollection).get();
+  const decisionSnap = await firestore
+    .collectionGroup(pathParts.outgoingCollection)
+    .get();
   const decisions = [];
-  let ownersWithDecisions = 0;
+  const ownersWithDecisions = new Set();
 
-  for (const ownerDoc of ownerSnap.docs) {
-    const outgoingSnap = await firestore
-      .collection(pathParts.rootCollection)
-      .doc(ownerDoc.id)
-      .collection(pathParts.outgoingCollection)
-      .get();
-    if (outgoingSnap.size > 0) ownersWithDecisions += 1;
-    for (const decisionDoc of outgoingSnap.docs) {
-      decisions.push({
-        ownerId: ownerDoc.id,
-        targetId: decisionDoc.id,
-        path: decisionPath(pathParts, ownerDoc.id, decisionDoc.id),
-        data: decisionDoc.data(),
-      });
-    }
+  for (const decisionDoc of decisionSnap.docs) {
+    const parsedPath = parseDecisionDocumentPath(
+      pathParts,
+      decisionDoc.ref.path
+    );
+    if (!parsedPath) continue;
+    ownersWithDecisions.add(parsedPath.ownerId);
+    decisions.push({
+      ownerId: parsedPath.ownerId,
+      targetId: parsedPath.targetId,
+      path: parsedPath.path,
+      data: decisionDoc.data(),
+    });
   }
 
   return {
     rootCollection: pathParts.rootCollection,
     outgoingCollection: pathParts.outgoingCollection,
-    ownerDocsScanned: ownerSnap.size,
-    ownersWithDecisions,
+    ownerDocsScanned: ownersWithDecisions.size,
+    ownersWithDecisions: ownersWithDecisions.size,
     decisions,
+  };
+}
+
+function parseDecisionDocumentPath(pathParts, documentPath) {
+  const parts = documentPath.split("/");
+  if (
+    parts.length !== 4 ||
+    parts[0] !== pathParts.rootCollection ||
+    parts[2] !== pathParts.outgoingCollection
+  ) {
+    return null;
+  }
+  return {
+    ownerId: parts[1],
+    targetId: parts[3],
+    path: documentPath,
   };
 }
 
@@ -287,8 +316,19 @@ function parseDecisionPath(pathTemplate) {
   };
 }
 
-function readMigrationContract() {
+export function readMigrationContract() {
   return JSON.parse(fs.readFileSync(migrationContractPath, "utf8"));
+}
+
+export function legacySourceMigration(migration) {
+  if (!migration.legacyStoragePath) {
+    throw new Error("Migration contract has no legacyStoragePath.");
+  }
+  return {
+    ...migration,
+    currentStoragePath: migration.legacyStoragePath,
+    candidatePrimaryStoragePath: migration.currentStoragePath,
+  };
 }
 
 function parseArgs(argv) {
@@ -298,6 +338,7 @@ function parseArgs(argv) {
     emulatorHost: null,
     json: false,
     requireParity: false,
+    legacySource: false,
     help: false,
   };
 
@@ -306,6 +347,7 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--require-parity") parsed.requireParity = true;
+    else if (arg === "--legacy-source") parsed.legacySource = true;
     else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") {
       parsed.emulatorHost = requireValue(argv, ++i, arg);
@@ -391,6 +433,7 @@ schema, and compares counts plus document contents. It never writes data.
 
 Options:
   --require-parity        Exit non-zero unless current and future paths match.
+  --legacy-source         Compare legacy swipes against current profileDecisions.
   --json                  Print summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.

@@ -1,7 +1,10 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {MatchDoc, SwipeDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  MatchDocument,
+  SwipeDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   schemaProfileDecisionCollectionPath,
   schemaProfileDecisionOutgoingSubcollectionPath,
@@ -16,7 +19,7 @@ import {
 interface SwipeCreatedParams {
   swiperId: string;
   targetId: string;
-  swipeData: SwipeDoc | undefined;
+  swipeData: SwipeDocument | undefined;
 }
 
 interface SwipeCreatedDeps {
@@ -80,7 +83,7 @@ export async function onSwipeCreatedHandler(
     .doc(swiperId)
     .get();
 
-  const reverseSwipe = reverseSwipeDoc.data() as SwipeDoc | undefined;
+  const reverseSwipe = reverseSwipeDoc.data() as SwipeDocument | undefined;
   if (!reverseSwipeDoc.exists || reverseSwipe?.direction !== "like") {
     return;
   }
@@ -94,7 +97,7 @@ export async function onSwipeCreatedHandler(
   const matchId = `${id1}_${id2}`;
   const matchRef = db.collection("matches").doc(matchId);
 
-  const matchDoc: MatchDoc = {
+  const matchDoc: MatchDocument = {
     user1Id: id1,
     user2Id: id2,
     participantIds: [id1, id2],
@@ -150,13 +153,13 @@ export async function onSwipeCreatedHandler(
 /**
  * Writes swipe comments as deterministic starter messages after a match.
  * @param {FirebaseFirestore.DocumentReference} matchRef Match document ref.
- * @param {SwipeDoc[]} swipes Reciprocal swipe documents to inspect.
+ * @param {SwipeDocument[]} swipes Reciprocal swipe documents to inspect.
  * @param {SwipeCreatedDeps} deps Injectable Firestore helpers.
  * @return {Promise<void>} Resolves when all comment messages are written.
  */
 async function writeReactionCommentMessages(
   matchRef: FirebaseFirestore.DocumentReference,
-  swipes: SwipeDoc[],
+  swipes: SwipeDocument[],
   deps: SwipeCreatedDeps
 ): Promise<void> {
   const writes: Promise<unknown>[] = [];
@@ -177,10 +180,11 @@ async function writeReactionCommentMessages(
 
 /**
  * Builds a chat-safe message from a profile-section reaction comment.
- * @param {SwipeDoc} swipe Swipe document that may contain reaction context.
+ * @param {SwipeDocument} swipe Swipe document that may contain reaction
+ * context.
  * @return {string | null} Message text, or null when there is no comment.
  */
-function buildReactionCommentText(swipe: SwipeDoc): string | null {
+function buildReactionCommentText(swipe: SwipeDocument): string | null {
   const comment = swipe.comment?.trim();
   if (!comment) return null;
 
@@ -196,7 +200,7 @@ export const onSwipeCreated = onDocumentCreated(
   schemaProfileDecisionTriggerPath,
   async (event) => {
     const {swiperId, targetId} = event.params;
-    const swipeData = event.data?.data() as SwipeDoc | undefined;
+    const swipeData = event.data?.data() as SwipeDocument | undefined;
     await onSwipeCreatedHandler({swiperId, targetId, swipeData});
   }
 );
