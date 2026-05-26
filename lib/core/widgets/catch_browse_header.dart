@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -46,54 +47,66 @@ class CatchBrowseHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    // Clamp text scaling inside the header. The 60 px content slot fits
+    // title + subtitle at scale 1.0; above ~1.15 the subtitle overflows.
+    // We clamp to keep the layout intact while still honouring the user's
+    // larger preference up to that ceiling.
+    final ambientScaler = MediaQuery.textScalerOf(context);
+    final clampedFactor = ambientScaler.scale(1.0).clamp(0.85, 1.15);
+    final clampedScaler = TextScaler.linear(clampedFactor);
+    final contentHeight = _contentHeight * clampedFactor;
 
     return ColoredBox(
       color: t.bg,
       child: Padding(
         padding: padding,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SizedBox(
-              height: _contentHeight,
-              child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(end: searchActive ? 1 : 0),
-                duration: CatchMotion.base,
-                curve: CatchMotion.standardCurve,
-                builder: (context, progress, _) {
-                  return Stack(
-                    alignment: Alignment.centerRight,
-                    children: [
-                      ExcludeSemantics(
-                        excluding: progress > 0.5,
-                        child: IgnorePointer(
-                          ignoring: progress > 0.02,
-                          child: Opacity(
-                            opacity: (1 - (progress * 1.5)).clamp(0.0, 1.0),
-                            child: _TitleLayout(
-                              title: title,
-                              subtitle: subtitle,
-                              leading: leading,
-                              actions: actions,
-                              reserveSearchAction: searchActionVisible,
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: clampedScaler),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SizedBox(
+                height: contentHeight,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(end: searchActive ? 1 : 0),
+                  duration: CatchMotion.base,
+                  curve: CatchMotion.standardCurve,
+                  builder: (context, progress, _) {
+                    return Stack(
+                      alignment: Alignment.centerRight,
+                      children: [
+                        ExcludeSemantics(
+                          excluding: progress > 0.5,
+                          child: IgnorePointer(
+                            ignoring: progress > 0.02,
+                            child: Opacity(
+                              opacity: (1 - (progress * 1.5)).clamp(0.0, 1.0),
+                              child: _TitleLayout(
+                                title: title,
+                                subtitle: subtitle,
+                                leading: leading,
+                                actions: actions,
+                                reserveSearchAction: searchActionVisible,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      if (searchActionVisible || progress > 0)
-                        _MorphingSearchControl(
-                          progress: progress,
-                          maxWidth: constraints.maxWidth,
-                          searchField: searchField,
-                          onOpenSearch: onOpenSearch,
-                          tooltip: searchTooltip,
-                          semanticLabel: searchSemanticLabel ?? searchTooltip,
-                        ),
-                    ],
-                  );
-                },
-              ),
-            );
-          },
+                        if (searchActionVisible || progress > 0)
+                          _MorphingSearchControl(
+                            progress: progress,
+                            maxWidth: constraints.maxWidth,
+                            searchField: searchField,
+                            onOpenSearch: onOpenSearch,
+                            tooltip: searchTooltip,
+                            semanticLabel:
+                                searchSemanticLabel ?? searchTooltip,
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -196,7 +209,7 @@ class _MorphingSearchControl extends StatelessWidget {
                       size: CatchBrowseHeader._searchExtent,
                       onTap: onOpenSearch,
                       background: t.raised,
-                      child: Icon(Icons.search_rounded, size: 20, color: t.ink),
+                      child: Icon(CatchIcons.search, size: 20, color: t.ink),
                     ),
                   ),
                 ),

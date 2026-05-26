@@ -31,7 +31,10 @@ void main() {
         child: const WelcomePage(),
       );
 
-      expect(find.widgetWithText(CatchButton, 'Browse clubs'), findsOneWidget);
+      expect(
+        find.widgetWithText(CatchButton, 'Explore events'),
+        findsOneWidget,
+      );
       expect(
         find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,
@@ -335,9 +338,7 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
-              buildUser(
-                uid: 'runner-1',
-              ).copyWith(
+              buildUser(uid: 'runner-1').copyWith(
                 activityPreferences: const ActivityPreferences(
                   running: RunningPreferences(
                     preferredRunTimes: [PreferredRunTime.morning],

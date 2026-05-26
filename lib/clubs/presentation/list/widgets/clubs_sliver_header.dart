@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/city_picker.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_search_field.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -17,20 +18,25 @@ class ClubsSliverHeader extends CatchSliverHeader {
     : super(
         title: const SizedBox.shrink(),
         bottomHeight: _clubsBrowseHeaderHeight,
-        bottom: _ClubsBrowseHeader(showSearchAction: showSearchField),
+        bottom: ClubsBrowseHeaderContent(showSearchAction: showSearchField),
       );
 }
 
-class _ClubsBrowseHeader extends ConsumerStatefulWidget {
-  const _ClubsBrowseHeader({required this.showSearchAction});
+/// Non-sliver browse header — same content as [ClubsSliverHeader] but
+/// embeddable inside a regular Column. The Explore screen uses this directly
+/// so the top chrome stays outside the draggable sheet (and isn't duplicated
+/// when the sheet snaps to HALF / PEEK).
+class ClubsBrowseHeaderContent extends ConsumerStatefulWidget {
+  const ClubsBrowseHeaderContent({super.key, this.showSearchAction = true});
 
   final bool showSearchAction;
 
   @override
-  ConsumerState<_ClubsBrowseHeader> createState() => _ClubsBrowseHeaderState();
+  ConsumerState<ClubsBrowseHeaderContent> createState() =>
+      _ClubsBrowseHeaderState();
 }
 
-class _ClubsBrowseHeaderState extends ConsumerState<_ClubsBrowseHeader> {
+class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
   bool _searchOpen = false;
 
   @override
@@ -41,8 +47,8 @@ class _ClubsBrowseHeaderState extends ConsumerState<_ClubsBrowseHeader> {
     final searchActive = _searchOpen || query.isNotEmpty;
 
     return CatchBrowseHeader(
-      title: 'Clubs',
-      subtitle: 'Find your people.',
+      title: 'Explore',
+      subtitle: 'Find an event worth showing up for.',
       leading: const CityPicker(),
       searchActive: searchActive,
       searchField: ClubsSearchField(
@@ -52,8 +58,8 @@ class _ClubsBrowseHeaderState extends ConsumerState<_ClubsBrowseHeader> {
       ),
       onOpenSearch: () => setState(() => _searchOpen = true),
       searchActionVisible: widget.showSearchAction,
-      searchTooltip: 'Search clubs',
-      searchSemanticLabel: 'Search clubs',
+      searchTooltip: 'Search events or clubs',
+      searchSemanticLabel: 'Search events or clubs',
       actions: [
         if (canCreate)
           Tooltip(
@@ -64,7 +70,7 @@ class _ClubsBrowseHeaderState extends ConsumerState<_ClubsBrowseHeader> {
               child: IconBtn(
                 size: 44,
                 onTap: () => context.pushNamed(Routes.createClubScreen.name),
-                child: Icon(Icons.add_rounded, size: 20, color: t.ink),
+                child: Icon(CatchIcons.add, size: 20, color: t.ink),
               ),
             ),
           ),

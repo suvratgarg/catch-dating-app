@@ -120,6 +120,8 @@ class EventDetailBody extends ConsumerWidget {
           EventDetailHeroAppBar(
             event: event,
             isSaved: isSaved,
+            isHost: isHost,
+            participation: participation,
             savePending: saveMutation.isPending,
             onBack: () => Navigator.of(context).pop(),
             onShare: shareEvent,

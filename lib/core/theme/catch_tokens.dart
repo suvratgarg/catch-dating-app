@@ -288,6 +288,22 @@ abstract final class CatchRadius {
 abstract final class CatchElevation {
   static const List<BoxShadow> none = <BoxShadow>[];
 
+  /// Subtle lift for content cards that should read as "above the page" while
+  /// keeping the hairline border style. Use for hero event cards, editorial
+  /// picks, and selected map peek tiles.
+  static const List<BoxShadow> card = <BoxShadow>[
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.06),
+      blurRadius: 14,
+      offset: Offset(0, 4),
+    ),
+    BoxShadow(
+      color: Color.fromRGBO(26, 20, 16, 0.04),
+      blurRadius: 2,
+      offset: Offset(0, 1),
+    ),
+  ];
+
   /// Bottom sheets, floating action buttons, popovers.
   static const List<BoxShadow> raised = <BoxShadow>[
     BoxShadow(

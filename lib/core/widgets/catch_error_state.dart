@@ -73,6 +73,12 @@ class CatchErrorState extends StatelessWidget {
           message,
           style: CatchTextStyles.bodyLead(context, color: t.ink2),
           textAlign: TextAlign.center,
+          // Cap message lines — unhandled exceptions can serialise their full
+          // stack trace into `error.toString()`, and an unbounded `Text`
+          // here makes the error surface eat the whole viewport (which can
+          // hide subsequent slivers from sliver layout altogether).
+          maxLines: isCompact ? 4 : 8,
+          overflow: TextOverflow.ellipsis,
         ),
         if (onRetry != null || secondaryAction != null) ...[
           SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),

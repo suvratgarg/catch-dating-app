@@ -73,6 +73,7 @@ dependencies:
   mobile_scanner: ^7.2.0
   qr_flutter: ^4.1.0
   audioplayers: ^6.6.0
+  phosphor_flutter: ^2.1.0
 
 
 dev_dependencies:

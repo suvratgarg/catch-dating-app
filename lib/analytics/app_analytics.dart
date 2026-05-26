@@ -192,6 +192,8 @@ abstract final class AnalyticsEvents {
   static const onboardingCompleted = 'onboarding_completed';
   static const clubViewed = 'club_viewed';
   static const clubJoined = 'club_joined';
+  static const exploreEventOpened = 'explore_event_opened';
+  static const exploreMapEventSelected = 'explore_map_event_selected';
   static const eventViewed = 'event_viewed';
   static const eventBookingStarted = 'run_booking_started';
   static const eventBookingCompleted = 'run_booking_completed';
@@ -213,6 +215,10 @@ abstract final class AnalyticsParameters {
   static const onboardingStep = 'onboarding_step';
   static const clubId = 'club_id';
   static const eventId = 'event_id';
+  static const activityKind = 'activity_kind';
+  static const availabilityStatus = 'availability_status';
+  static const exploreSource = 'explore_source';
+  static const distanceKm = 'distance_km';
   static const matchId = 'match_id';
 
   // Backend error context. Values must be non-PII.

@@ -27,7 +27,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
-//   1  Clubs     (ClubsListScreen)
+//   1  Explore   (ClubsListScreen)
 //   2  Catches   (SwipeHubScreen)
 //   3  Chats     (MatchesListScreen)
 //   4  Profile   (ProfileScreen)
@@ -212,7 +212,7 @@ class _AppShellNavigationBar extends StatelessWidget {
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.person_2),
             activeIcon: Icon(CupertinoIcons.person_2_fill),
-            label: 'Clubs',
+            label: 'Explore',
           ),
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.heart),
@@ -250,11 +250,11 @@ class _AppShellNavigationBar extends StatelessWidget {
           selectedIcon: Icon(Icons.home_rounded),
           label: 'Home',
         ),
-        // 1 — Clubs
+        // 1 — Explore
         const NavigationDestination(
           icon: Icon(Icons.groups_outlined),
           selectedIcon: Icon(Icons.groups_rounded),
-          label: 'Clubs',
+          label: 'Explore',
         ),
         // 2 — Catches
         const NavigationDestination(

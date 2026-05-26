@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +22,7 @@ class ClubAvatarRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchHorizontalRail(
       title: 'Your clubs',
-      height: 112,
+      height: 108,
       spacing: 14,
       itemCount: clubs.length,
       itemBuilder: (context, index) {
@@ -59,19 +58,23 @@ class _CreateClubButton extends StatelessWidget {
         label: 'Create club',
         child: GestureDetector(
           onTap: onTap,
+          behavior: HitTestBehavior.opaque,
           child: SizedBox(
-            width: 82,
+            width: 76,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CatchSurface(
-                  width: 76,
-                  height: 76,
-                  radius: CatchRadius.md,
-                  backgroundColor: t.raised,
-                  borderColor: t.line2,
-                  borderWidth: 1.5,
-                  child: Icon(Icons.add_rounded, size: 24, color: t.ink2),
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: t.raised,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    border: Border.all(color: t.line2),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(Icons.add_rounded, size: 22, color: t.ink2),
                 ),
                 gapH6,
                 Text(

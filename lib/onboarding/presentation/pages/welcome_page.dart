@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,7 +60,7 @@ class WelcomePage extends ConsumerWidget {
                     ),
                     gapH24,
                     CatchButton(
-                      label: 'Browse clubs',
+                      label: 'Explore events',
                       onPressed: () => context.go('/clubs'),
                       variant: CatchButtonVariant.light,
                       size: CatchButtonSize.lg,

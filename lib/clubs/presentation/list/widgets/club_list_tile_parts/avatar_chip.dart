@@ -8,8 +8,16 @@ class _AvatarChip extends StatelessWidget {
   });
 
   final Club club;
+
+  /// Whether the club has an event coming up. Rendered as a discreet brand
+  /// status dot + caption strip — never the loud "LIVE" pill the prior
+  /// implementation used, which read as "streaming video".
   final bool showLiveBadge;
+
   final VoidCallback? onTap;
+
+  static const double _tileSize = 64;
+  static const double _columnWidth = 76;
 
   @override
   Widget build(BuildContext context) {
@@ -21,38 +29,30 @@ class _AvatarChip extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(
-          width: 82,
+          width: _columnWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  CatchSurface(
-                    width: 76,
-                    height: 76,
-                    radius: CatchRadius.md,
-                    borderColor: t.line2,
-                    borderWidth: 1.5,
-                    clipBehavior: Clip.antiAlias,
-                    child: _ClubImage(
-                      club: club,
-                      preferProfileImage: true,
-                      showFallbackFooterLabel: false,
-                    ),
+              Container(
+                width: _tileSize,
+                height: _tileSize,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  border: Border.all(
+                    color: showLiveBadge ? t.primary : t.line2,
+                    width: showLiveBadge ? 2 : 1,
                   ),
-                  if (showLiveBadge)
-                    Positioned(
-                      bottom: -2,
-                      right: -6,
-                      child: CatchBadge(
-                        label: 'LIVE',
-                        tone: CatchBadgeTone.live,
-                        size: CatchBadgeSize.sm,
-                        uppercase: true,
-                      ),
-                    ),
-                ],
+                ),
+                padding: const EdgeInsets.all(2),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  child: _ClubImage(
+                    club: club,
+                    preferProfileImage: true,
+                    showFallbackFooterLabel: false,
+                  ),
+                ),
               ),
               gapH6,
               Text(
@@ -62,6 +62,16 @@ class _AvatarChip extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
+              if (showLiveBadge) ...[
+                gapH2,
+                Text(
+                  'Event soon',
+                  style: CatchTextStyles.labelS(context, color: t.primary),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ],
           ),
         ),

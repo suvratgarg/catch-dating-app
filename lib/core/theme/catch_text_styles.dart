@@ -86,6 +86,59 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
+  /// Caps-tracked kicker, brand-orange by default — used for time-line labels
+  /// like `TONIGHT · 8:50 PM` on hero cards and the day-section header strip.
+  /// Always render the text already upper-cased; this style only sets weight,
+  /// size, tracking, and a tabular feature for any embedded numerals.
+  static TextStyle kickerCaps(BuildContext context, {Color? color}) =>
+      _tabular(
+        GoogleFonts.inter(
+          fontSize: 11,
+          fontWeight: FontWeight.w800,
+          height: 1.15,
+          letterSpacing: 0.8,
+          decoration: TextDecoration.none,
+          color: color ?? CatchTokens.of(context).primary,
+        ),
+      );
+
+  /// Larger caps-tracked kicker for editorial sashes like
+  /// `TONIGHT'S PICK` / `PICKED FOR YOU`.
+  static TextStyle kickerCapsLg(BuildContext context, {Color? color}) =>
+      GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        height: 1.1,
+        letterSpacing: 1.0,
+        decoration: TextDecoration.none,
+        color: color ?? CatchTokens.of(context).primary,
+      );
+
+  /// Tabular numerals for prominent quantities (`6/6`, `2.3 km`, `12 events`).
+  /// Same metrics as [titleM]; use when the number is the noun.
+  static TextStyle numericLarge(BuildContext context, {Color? color}) =>
+      _tabular(
+        _text(
+          context,
+          size: 16,
+          weight: FontWeight.w700,
+          height: 1.2,
+          color: color,
+        ),
+      );
+
+  /// Smaller tabular figure for inline meta like `7 km · 4 min walk`.
+  static TextStyle numericMeta(BuildContext context, {Color? color}) =>
+      _tabular(
+        _text(
+          context,
+          size: 12,
+          weight: FontWeight.w600,
+          height: 1.3,
+          color: color ?? CatchTokens.of(context).ink2,
+        ),
+      );
+
   static TextStyle statusLabel(BuildContext context, {Color? color}) => _text(
     context,
     size: 10,

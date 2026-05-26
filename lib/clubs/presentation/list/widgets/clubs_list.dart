@@ -15,7 +15,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ClubsList extends ConsumerWidget {
-  const ClubsList({super.key});
+  const ClubsList({
+    super.key,
+    this.includeJoinedClubsRail = true,
+    this.includeClubDirectory = true,
+  });
+
+  /// Whether to render the "Your clubs" avatar rail at the top of the body.
+  /// Suppressed when the sheet is at HALF / PEEK so the map-mode list is just
+  /// events.
+  final bool includeJoinedClubsRail;
+
+  /// Whether to render the club directory section below the events. Hidden
+  /// in map snap states for the same reason as [includeJoinedClubsRail].
+  final bool includeClubDirectory;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,7 +78,11 @@ class ClubsList extends ConsumerWidget {
               )
             : MutationErrorSnackbarListener(
                 mutation: ClubMembershipController.joinMutation,
-                child: ClubsListBody(viewModel: value),
+                child: ClubsListBody(
+                  viewModel: value,
+                  includeJoinedClubsRail: includeJoinedClubsRail,
+                  includeClubDirectory: includeClubDirectory,
+                ),
               ),
     };
   }

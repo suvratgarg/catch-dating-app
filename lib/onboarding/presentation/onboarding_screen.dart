@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
