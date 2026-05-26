@@ -1838,11 +1838,12 @@ function dartGeneratedExportPath(outputPath) {
 
 function renderDartCallableRequestClassFile({imports, schemaSource, body}) {
   const importBlock = [...(imports ?? [])].sort().join("\n");
+  const normalizedBody = body.trimEnd();
   return `${dartGeneratedHeader()}${importBlock ? `${importBlock}\n\n` : ""}
 // Typed callable request DTO emitted from ${schemaSource}.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-${body}
+${normalizedBody}
 `;
 }
 
