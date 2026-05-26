@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -144,7 +146,7 @@ class EventPolicyStep extends StatelessWidget {
                   label: 'Max attendees',
                   controller: capacityController,
                   hintText: '20',
-                  prefixIcon: const Icon(Icons.people_outline),
+                  prefixIcon: Icon(CatchIcons.peopleOutline),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -163,7 +165,7 @@ class EventPolicyStep extends StatelessWidget {
                   label: 'Base price ($currencyCode)',
                   controller: priceController,
                   hintText: '0',
-                  prefixIcon: const Icon(Icons.payments_outlined),
+                  prefixIcon: Icon(CatchIcons.paymentsOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -173,9 +175,11 @@ class EventPolicyStep extends StatelessWidget {
                   textInputAction: TextInputAction.next,
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) return 'Required';
-                    final amount = double.tryParse(v.trim());
+                    final amount = parseMajorCurrencyAmountToMinorUnits(
+                      v,
+                      currencyCode: currencyCode,
+                    );
                     if (amount == null) return 'Invalid';
-                    if (amount < 0) return 'Min 0';
                     return null;
                   },
                 ),
@@ -223,7 +227,7 @@ class EventPolicyStep extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.key_outlined, color: t.primary, size: 18),
+                      Icon(CatchIcons.keyOutlined, color: t.primary, size: 18),
                       gapW8,
                       Expanded(
                         child: Text(
@@ -242,7 +246,7 @@ class EventPolicyStep extends StatelessWidget {
                     label: 'Invite code',
                     controller: inviteCodeController,
                     hintText: 'CATCH-DELHI',
-                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    prefixIcon: Icon(CatchIcons.lockOutlineRounded),
                     textInputAction: TextInputAction.next,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
@@ -293,7 +297,7 @@ class EventPolicyStep extends StatelessWidget {
                             isOptional: true,
                             controller: maxMenController,
                             hintText: 'Max men',
-                            prefixIcon: const Icon(Icons.male_outlined),
+                            prefixIcon: Icon(CatchIcons.maleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -312,7 +316,7 @@ class EventPolicyStep extends StatelessWidget {
                             isOptional: true,
                             controller: maxWomenController,
                             hintText: 'Max women',
-                            prefixIcon: const Icon(Icons.female_outlined),
+                            prefixIcon: Icon(CatchIcons.femaleOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -340,7 +344,7 @@ class EventPolicyStep extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.how_to_reg_outlined, color: t.primary, size: 18),
+                  Icon(CatchIcons.howToRegOutlined, color: t.primary, size: 18),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -386,7 +390,7 @@ class EventPolicyStep extends StatelessWidget {
                             label: 'Step ($currencyCode)',
                             controller: dynamicPricingStepController,
                             hintText: '250',
-                            prefixIcon: const Icon(Icons.trending_up_rounded),
+                            prefixIcon: Icon(CatchIcons.trendingUpRounded),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -404,7 +408,7 @@ class EventPolicyStep extends StatelessWidget {
                             label: 'Max ($currencyCode)',
                             controller: dynamicPricingMaxController,
                             hintText: '1500',
-                            prefixIcon: const Icon(Icons.price_change_outlined),
+                            prefixIcon: Icon(CatchIcons.priceChangeOutlined),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -434,7 +438,7 @@ class EventPolicyStep extends StatelessWidget {
                   isOptional: true,
                   controller: minAgeController,
                   hintText: 'Min',
-                  prefixIcon: const Icon(Icons.cake_outlined),
+                  prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -453,7 +457,7 @@ class EventPolicyStep extends StatelessWidget {
                   isOptional: true,
                   controller: maxAgeController,
                   hintText: 'Max',
-                  prefixIcon: const Icon(Icons.cake_outlined),
+                  prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,

@@ -353,6 +353,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     ClubHostDefaultsStep(
                       formKey: _defaultsFormKey,
                       defaults: _hostDefaults,
+                      currencyCode: currencyCodeForCityName(_selectedCity),
                       onChanged: (defaults) =>
                           setState(() => _hostDefaults = defaults),
                     ),

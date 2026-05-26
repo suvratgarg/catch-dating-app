@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -17,11 +18,13 @@ class ClubHostDefaultsStep extends StatelessWidget {
     super.key,
     required this.formKey,
     required this.defaults,
+    required this.currencyCode,
     required this.onChanged,
   });
 
   final GlobalKey<FormState> formKey;
   final ClubHostDefaults defaults;
+  final String currencyCode;
   final ValueChanged<ClubHostDefaults> onChanged;
 
   @override
@@ -38,6 +41,7 @@ class ClubHostDefaultsStep extends StatelessWidget {
         children: [
           _PolicyDefaultsCard(
             defaults: defaults.eventPolicy,
+            currencyCode: currencyCode,
             onChanged: (eventPolicy) =>
                 onChanged(defaults.copyWith(eventPolicy: eventPolicy)),
           ),
@@ -114,9 +118,14 @@ class _DefaultActivityCard extends StatelessWidget {
 }
 
 class _PolicyDefaultsCard extends StatefulWidget {
-  const _PolicyDefaultsCard({required this.defaults, required this.onChanged});
+  const _PolicyDefaultsCard({
+    required this.defaults,
+    required this.currencyCode,
+    required this.onChanged,
+  });
 
   final EventPolicyDefaults defaults;
+  final String currencyCode;
   final ValueChanged<EventPolicyDefaults> onChanged;
 
   @override
@@ -142,11 +151,17 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
   );
   late final TextEditingController _pricingStepController =
       TextEditingController(
-        text: _minorUnitsText(widget.defaults.dynamicPricingStepInPaise),
+        text: _minorUnitsText(
+          widget.defaults.dynamicPricingStepInPaise,
+          currencyCode: widget.currencyCode,
+        ),
       );
   late final TextEditingController _pricingMaxController =
       TextEditingController(
-        text: _minorUnitsText(widget.defaults.dynamicPricingMaxInPaise),
+        text: _minorUnitsText(
+          widget.defaults.dynamicPricingMaxInPaise,
+          currencyCode: widget.currencyCode,
+        ),
       );
 
   @override
@@ -172,17 +187,25 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
       _setText(_maxWomenController, _optionalIntText(defaults.maxWomen));
     }
     if (oldWidget.defaults.dynamicPricingStepInPaise !=
-        defaults.dynamicPricingStepInPaise) {
+            defaults.dynamicPricingStepInPaise ||
+        oldWidget.currencyCode != widget.currencyCode) {
       _setText(
         _pricingStepController,
-        _minorUnitsText(defaults.dynamicPricingStepInPaise),
+        _minorUnitsText(
+          defaults.dynamicPricingStepInPaise,
+          currencyCode: widget.currencyCode,
+        ),
       );
     }
     if (oldWidget.defaults.dynamicPricingMaxInPaise !=
-        defaults.dynamicPricingMaxInPaise) {
+            defaults.dynamicPricingMaxInPaise ||
+        oldWidget.currencyCode != widget.currencyCode) {
       _setText(
         _pricingMaxController,
-        _minorUnitsText(defaults.dynamicPricingMaxInPaise),
+        _minorUnitsText(
+          defaults.dynamicPricingMaxInPaise,
+          currencyCode: widget.currencyCode,
+        ),
       );
     }
   }
@@ -449,9 +472,11 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
         maxWomen: _parseOptionalInt(_maxWomenController),
         dynamicPricingStepInPaise: _parseMajorUnitsToMinor(
           _pricingStepController,
+          currencyCode: widget.currencyCode,
         ),
         dynamicPricingMaxInPaise: _parseMajorUnitsToMinor(
           _pricingMaxController,
+          currencyCode: widget.currencyCode,
         ),
       ),
     );
@@ -523,11 +548,8 @@ EventCancellationPolicy _policyFor(EventCancellationPolicyId id) {
 
 String _optionalIntText(int? value) => value == null ? '' : value.toString();
 
-String _minorUnitsText(int? value) {
-  if (value == null) return '';
-  if (value % 100 == 0) return (value ~/ 100).toString();
-  return (value / 100).toStringAsFixed(2);
-}
+String _minorUnitsText(int? value, {required String currencyCode}) =>
+    minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
 int? _parseOptionalInt(TextEditingController controller) {
   final text = controller.text.trim();
@@ -535,11 +557,13 @@ int? _parseOptionalInt(TextEditingController controller) {
   return int.tryParse(text);
 }
 
-int? _parseMajorUnitsToMinor(TextEditingController controller) {
-  final amount = double.tryParse(controller.text.trim());
-  if (amount == null) return null;
-  return (amount * 100).round();
-}
+int? _parseMajorUnitsToMinor(
+  TextEditingController controller, {
+  required String currencyCode,
+}) => parseMajorCurrencyAmountToMinorUnits(
+  controller.text,
+  currencyCode: currencyCode,
+);
 
 void _setText(TextEditingController controller, String value) {
   if (controller.text == value) return;

@@ -6,7 +6,9 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -96,10 +98,10 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
     }
 
     if (uid == null || !club.isHostedBy(uid)) {
-      return const CatchErrorScaffold(
+      return CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can edit only events that you host.',
-        icon: Icons.block_rounded,
+        icon: CatchIcons.blockRounded,
       );
     }
 
@@ -218,7 +220,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     );
     _descriptionController.text = event.description;
     _capacityController.text = event.capacityLimit.toString();
-    _priceController.text = _minorUnitsText(event.priceInPaise);
+    _priceController.text = _minorUnitsText(
+      event.priceInPaise,
+      currencyCode: event.currency,
+    );
     _minAgeController.text = event.constraints.minAge == 0
         ? ''
         : event.constraints.minAge.toString();
@@ -235,9 +240,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final demandRule = demandRules.isEmpty ? null : demandRules.first;
     _dynamicPricingStepController.text = _minorUnitsText(
       demandRule?.stepAdjustment.inPaise,
+      currencyCode: event.currency,
     );
     _dynamicPricingMaxController.text = _minorUnitsText(
       demandRule?.maxAdjustment.inPaise,
+      currencyCode: event.currency,
     );
     _selectedCancellationPolicyId = policy.cancellationPolicy.id;
   }
@@ -320,7 +327,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
               else ...[
                 PickerTile(
                   key: CreateEventFormKeys.datePicker,
-                  icon: Icons.calendar_today_outlined,
+                  icon: CatchIcons.calendarTodayOutlined,
                   value: _dateController.text,
                   placeholder: 'Select a date',
                   onTap: _pickDate,
@@ -328,7 +335,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 gapH12,
                 PickerTile(
                   key: CreateEventFormKeys.timePicker,
-                  icon: Icons.schedule_outlined,
+                  icon: CatchIcons.scheduleOutlined,
                   value: _startTimeController.text,
                   placeholder: 'Select start time',
                   onTap: _pickStartTime,
@@ -363,7 +370,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 hintText: 'e.g. Bandstand Promenade, Bandra',
                 helperText:
                     'This is what attendees see in event cards and details.',
-                prefixIcon: const Icon(Icons.location_on_outlined),
+                prefixIcon: Icon(CatchIcons.locationOnOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 onChanged: (_) => setState(() {}),
@@ -386,7 +393,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 controller: _locationDetailsController,
                 enabled: _canEdit,
                 hintText: 'e.g. Meet outside the blue gate, third entrance',
-                prefixIcon: const Icon(Icons.info_outline),
+                prefixIcon: Icon(CatchIcons.infoOutline),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.next,
@@ -401,7 +408,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   controller: _distanceController,
                   enabled: _canEdit,
                   hintText: '10',
-                  prefixIcon: const Icon(Icons.straighten_outlined),
+                  prefixIcon: Icon(CatchIcons.straightenOutlined),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -452,7 +459,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 enabled: _canEdit,
                 hintText:
                     'What should attendees expect? Any tips for the route or venue?',
-                prefixIcon: const Icon(Icons.edit_note_outlined),
+                prefixIcon: Icon(CatchIcons.editNoteOutlined),
                 maxLines: 4,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.newline,
@@ -524,7 +531,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             onPressed: !_canEdit || mutation.isPending ? null : _saveChanges,
             isLoading: mutation.isPending,
             fullWidth: true,
-            icon: const Icon(Icons.save_outlined),
+            icon: Icon(CatchIcons.saveOutlined),
           ),
         ),
       ),
@@ -661,7 +668,10 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
           ? int.parse(_capacityController.text.trim())
           : widget.event.capacityLimit,
       priceInPaise: includePolicy
-          ? _currencyControllerValueInMinorUnits(_priceController)!
+          ? _currencyControllerValueInMinorUnits(
+              _priceController,
+              currencyCode: widget.event.currency,
+            )!
           : widget.event.priceInPaise,
       constraints: includePolicy
           ? eventPolicyDefaults!.toConstraints()
@@ -700,9 +710,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     dynamicPricingEnabled: _dynamicPricingEnabled,
     dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
       _dynamicPricingStepController,
+      currencyCode: widget.event.currency,
     ),
     dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
       _dynamicPricingMaxController,
+      currencyCode: widget.event.currency,
     ),
     cancellationPolicyId: _selectedCancellationPolicyId,
   );
@@ -711,6 +723,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
     final capacityLimit = int.parse(_capacityController.text.trim());
     final basePriceInPaise = _currencyControllerValueInMinorUnits(
       _priceController,
+      currencyCode: widget.event.currency,
     )!;
     if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
       return EventPolicyBundle.requestToJoinEvent(
@@ -768,7 +781,9 @@ class _EditScopeNotice extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            isCancelled ? Icons.block_rounded : Icons.info_outline_rounded,
+            isCancelled
+                ? CatchIcons.blockRounded
+                : CatchIcons.infoOutlineRounded,
             color: isCancelled ? t.danger : t.primary,
           ),
           gapW12,
@@ -885,7 +900,10 @@ class _EditablePolicyCard extends StatelessWidget {
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                   ],
-                  validator: _moneyRequiredValidator,
+                  validator: (value) => _moneyRequiredValidator(
+                    value,
+                    currencyCode: currencyCode,
+                  ),
                 ),
               ),
             ],
@@ -929,7 +947,7 @@ class _EditablePolicyCard extends StatelessWidget {
               label: 'Invite code',
               controller: inviteCodeController,
               hintText: 'CATCH-DELHI',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+              prefixIcon: Icon(CatchIcons.lockOutlineRounded),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9_-]')),
               ],
@@ -1242,7 +1260,7 @@ class _DurationStepper extends StatelessWidget {
                   )
                 : null,
             variant: CatchButtonVariant.secondary,
-            icon: const Icon(Icons.remove_rounded),
+            icon: Icon(CatchIcons.removeRounded),
           ),
         ),
         gapW10,
@@ -1273,7 +1291,7 @@ class _DurationStepper extends StatelessWidget {
                   )
                 : null,
             variant: CatchButtonVariant.secondary,
-            icon: const Icon(Icons.add_rounded),
+            icon: Icon(CatchIcons.addRounded),
           ),
         ),
       ],
@@ -1319,17 +1337,16 @@ EventAdmissionDefaultPreset _admissionDefaultPresetFromSelected(
   };
 }
 
-String _minorUnitsText(int? value) {
-  if (value == null) return '';
-  if (value % 100 == 0) return (value ~/ 100).toString();
-  return (value / 100).toStringAsFixed(2);
-}
+String _minorUnitsText(int? value, {required String currencyCode}) =>
+    minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
-int? _currencyControllerValueInMinorUnits(TextEditingController controller) {
-  final amount = double.tryParse(controller.text.trim());
-  if (amount == null) return null;
-  return (amount * 100).round();
-}
+int? _currencyControllerValueInMinorUnits(
+  TextEditingController controller, {
+  required String currencyCode,
+}) => parseMajorCurrencyAmountToMinorUnits(
+  controller.text,
+  currencyCode: currencyCode,
+);
 
 String? _positiveOptionalValidator(String? value) {
   if (value == null || value.trim().isEmpty) return null;
@@ -1345,11 +1362,13 @@ String? _positiveRequiredValidator(String? value) {
   return null;
 }
 
-String? _moneyRequiredValidator(String? value) {
+String? _moneyRequiredValidator(String? value, {required String currencyCode}) {
   if (value == null || value.trim().isEmpty) return 'Required';
-  final amount = double.tryParse(value.trim());
+  final amount = parseMajorCurrencyAmountToMinorUnits(
+    value,
+    currencyCode: currencyCode,
+  );
   if (amount == null) return 'Invalid';
-  if (amount < 0) return 'Min 0';
   return null;
 }
 

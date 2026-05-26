@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -130,6 +131,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       EventCancellationPolicyId.standard;
   EventSuccessDefaults _eventSuccessDefaults = const EventSuccessDefaults();
 
+  String get _eventCurrencyCode =>
+      currencyCodeForCityName(widget.club.location);
+
   DateTime? get _selectedStartDateTime {
     final selectedDate = _selectedDate;
     final selectedStartTime = _selectedStartTime;
@@ -153,17 +157,21 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     dynamicPricingEnabled: _dynamicPricingEnabled,
     dynamicPricingStepInPaise: _currencyControllerValueInMinorUnits(
       _dynamicPricingStepController,
+      currencyCode: _eventCurrencyCode,
     ),
     dynamicPricingMaxInPaise: _currencyControllerValueInMinorUnits(
       _dynamicPricingMaxController,
+      currencyCode: _eventCurrencyCode,
     ),
     cancellationPolicyId: _selectedCancellationPolicyId,
   );
 
   EventPolicyBundle get _eventPolicy {
     final capacityLimit = int.parse(_capacityController.text.trim());
-    final basePriceInPaise = (double.parse(_priceController.text.trim()) * 100)
-        .round();
+    final basePriceInPaise = _currencyControllerValueInMinorUnits(
+      _priceController,
+      currencyCode: _eventCurrencyCode,
+    )!;
     if (_selectedAdmissionPreset == EventAdmissionPreset.requestToJoin) {
       return EventPolicyBundle.requestToJoinEvent(
         capacityLimit: capacityLimit,
@@ -401,7 +409,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             distanceKm: _distanceKmForSelectedActivity(),
             pace: _selectedPace ?? PaceLevel.easy,
             description: _descriptionController.text.trim(),
-            currency: currencyCodeForCityName(widget.club.location),
+            currency: _eventCurrencyCode,
             constraints: _constraints,
             eventPolicy: _eventPolicy,
             inviteCode: _trimmedTextOrNull(_inviteCodeController),
@@ -770,9 +778,11 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _dynamicPricingEnabled = policy.dynamicPricingEnabled;
     _dynamicPricingStepController.text = _minorUnitsText(
       policy.dynamicPricingStepInPaise,
+      currencyCode: _eventCurrencyCode,
     );
     _dynamicPricingMaxController.text = _minorUnitsText(
       policy.dynamicPricingMaxInPaise,
+      currencyCode: _eventCurrencyCode,
     );
     _selectedCancellationPolicyId = policy.cancellationPolicyId;
     _eventSuccessDefaults = defaults.eventSuccessForFormat(
@@ -787,12 +797,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   static int? _currencyControllerValueInMinorUnits(
-    TextEditingController controller,
-  ) {
-    final amount = double.tryParse(controller.text.trim());
-    if (amount == null) return null;
-    return (amount * 100).round();
-  }
+    TextEditingController controller, {
+    required String currencyCode,
+  }) => parseMajorCurrencyAmountToMinorUnits(
+    controller.text,
+    currencyCode: currencyCode,
+  );
 
   double _distanceKmForSelectedActivity() {
     if (!_selectedActivityKind.isDistanceBased) return 0;
@@ -848,11 +858,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     };
   }
 
-  static String _minorUnitsText(int? value) {
-    if (value == null) return '';
-    if (value % 100 == 0) return (value ~/ 100).toString();
-    return (value / 100).toStringAsFixed(2);
-  }
+  static String _minorUnitsText(int? value, {required String currencyCode}) =>
+      minorCurrencyAmountInputText(value, currencyCode: currencyCode);
 
   @override
   Widget build(BuildContext context) {
@@ -955,7 +962,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     formKey: _eventPolicyFormKey,
                     capacityController: _capacityController,
                     priceController: _priceController,
-                    currencyCode: currencyCodeForCityName(widget.club.location),
+                    currencyCode: _eventCurrencyCode,
                     inviteCodeController: _inviteCodeController,
                     dynamicPricingStepController: _dynamicPricingStepController,
                     dynamicPricingMaxController: _dynamicPricingMaxController,
