@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../test_pump_helpers.dart';
 
@@ -116,6 +118,7 @@ void main() {
 
         final future = repository.processPayment(
           eventId: 'event-1',
+          currencyCode: 'INR',
           description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',
@@ -156,8 +159,58 @@ void main() {
       );
 
       expect(lazyRepository.supportsPaidBookings, isTrue);
+      expect(lazyRepository.supportsPaidBookingsForCurrency('INR'), isTrue);
+      expect(lazyRepository.supportsPaidBookingsForCurrency('USD'), isTrue);
       expect(factoryCalls, 0);
     });
+
+    test(
+      'processPayment opens Stripe checkout for non-INR currencies',
+      () async {
+        final openedUrls = <Uri>[];
+        final stripeRepository = PaymentRepository(
+          functions,
+          razorpayFactory: () => razorpay,
+          externalUrlLauncher:
+              (uri, {mode = LaunchMode.platformDefault}) async {
+                openedUrls.add(uri);
+                return true;
+              },
+          isWebOverride: true,
+        );
+        functions.callables['createStripeCheckoutSession'] =
+            TestHttpsCallable('createStripeCheckoutSession')
+              ..resultData = {
+                'sessionId': 'cs_test_123',
+                'paymentId': 'payment-doc-1',
+                'amountMinor': 1999,
+                'currency': 'USD',
+                'checkoutUrl': 'https://checkout.stripe.com/c/pay/cs_test_123',
+                'provider': 'stripe',
+              };
+
+        final data = await stripeRepository.processPayment(
+          eventId: 'event-1',
+          currencyCode: 'USD',
+          description: 'Sunrise Event',
+          userName: 'Priya',
+          userEmail: 'priya@example.com',
+          userContact: '+919876543210',
+          inviteCode: ' CATCH ',
+        );
+
+        expect(
+          functions.callables['createStripeCheckoutSession']!.calls.single,
+          {'eventId': 'event-1', 'inviteCode': 'CATCH'},
+        );
+        expect(openedUrls.single.toString(), contains('checkout.stripe.com'));
+        expect(razorpay.openCalls, isEmpty);
+        expect(data.paymentId, 'payment-doc-1');
+        expect(data.orderId, 'cs_test_123');
+        expect(data.status, PaymentStatus.pending);
+        expect(data.provider, 'stripe');
+      },
+    );
 
     test('bookFreeEvent calls the free-event booking function', () async {
       await repository.bookFreeEvent(eventId: 'event-1');
@@ -226,6 +279,7 @@ void main() {
         await expectLater(
           repository.processPayment(
             eventId: 'event-1',
+            currencyCode: 'INR',
             description: 'Sunrise Event',
             userName: 'Priya',
             userEmail: 'priya@example.com',
@@ -253,6 +307,7 @@ void main() {
         await expectLater(
           repository.processPayment(
             eventId: 'event-1',
+            currencyCode: 'INR',
             description: 'Sunrise Event',
             userName: 'Priya',
             userEmail: 'priya@example.com',
@@ -277,6 +332,7 @@ void main() {
 
         final future = repository.processPayment(
           eventId: 'event-1',
+          currencyCode: 'INR',
           description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',
@@ -306,6 +362,7 @@ void main() {
 
       final future = repository.processPayment(
         eventId: 'event-1',
+        currencyCode: 'INR',
         description: 'Sunrise Event',
         userName: 'Priya',
         userEmail: 'priya@example.com',
@@ -343,6 +400,7 @@ void main() {
 
         final future = repository.processPayment(
           eventId: 'event-1',
+          currencyCode: 'INR',
           description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',

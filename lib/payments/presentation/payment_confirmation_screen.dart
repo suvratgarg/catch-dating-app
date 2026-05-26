@@ -2,15 +2,21 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
@@ -46,8 +52,133 @@ class PaymentConfirmationScreen extends ConsumerWidget {
             ),
           );
         }
+        if (data.isPendingExternalCheckout) {
+          return _PendingCheckoutBody(data: data, event: event);
+        }
         return _ConfirmationBody(data: data, event: event);
       },
+    );
+  }
+}
+
+class _PendingCheckoutBody extends ConsumerWidget {
+  const _PendingCheckoutBody({required this.data, required this.event});
+
+  final PaymentConfirmationData data;
+  final Event event;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final paymentAsync = ref.watch(watchPaymentProvider(data.paymentId));
+    final payment = paymentAsync.asData?.value;
+    if (payment != null &&
+        payment.status == PaymentStatus.completed &&
+        !payment.signUpFailed) {
+      return _ConfirmationBody(
+        data: PaymentConfirmationData(
+          paymentId: payment.paymentId,
+          orderId: payment.orderId,
+          amountInPaise: payment.amount,
+          currency: payment.currency,
+          eventId: payment.eventId,
+          provider: data.provider,
+          status: PaymentStatus.completed,
+          checkoutUrl: data.checkoutUrl,
+        ),
+        event: event,
+      );
+    }
+
+    final failed =
+        payment?.status == PaymentStatus.failed ||
+        payment?.signUpFailed == true;
+    final t = CatchTokens.of(context);
+    final controller = ref.watch(paymentConfirmationControllerProvider);
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(CatchSpacing.s5),
+          children: [
+            gapH24,
+            Icon(
+              failed
+                  ? CatchIcons.errorOutlineRounded
+                  : CatchIcons.receiptLongOutlined,
+              color: failed ? t.danger : t.primary,
+              size: 42,
+            ),
+            gapH16,
+            Text(
+              failed ? 'Payment not completed' : 'Checkout is waiting',
+              style: CatchTextStyles.displayS(context),
+            ),
+            gapH8,
+            Text(
+              failed
+                  ? 'Stripe did not complete this booking. If money moved, it will stay visible in payment history while support resolves it.'
+                  : 'Finish payment in Stripe. Your spot is reserved only after Stripe confirms the payment and Catch writes the booking.',
+              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+            ),
+            gapH20,
+            CatchSurface(
+              padding: const EdgeInsets.all(CatchSpacing.s4),
+              borderColor: t.line,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(event.title, style: CatchTextStyles.titleM(context)),
+                  gapH8,
+                  Text(
+                    EventFormatters.priceInPaise(
+                      data.amountInPaise,
+                      currencyCode: data.currency,
+                    ),
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                  gapH12,
+                  CatchBadge(
+                    label: failed ? 'Failed' : 'Pending',
+                    tone: failed
+                        ? CatchBadgeTone.danger
+                        : CatchBadgeTone.warning,
+                  ),
+                ],
+              ),
+            ),
+            gapH20,
+            if (!failed && data.checkoutUrl != null)
+              CatchButton(
+                label: 'Open Stripe checkout',
+                onPressed: () =>
+                    unawaited(controller.openCheckout(data.checkoutUrl!)),
+                icon: Icon(CatchIcons.openInNewRounded),
+                fullWidth: true,
+              ),
+            if (!failed && data.checkoutUrl != null) gapH12,
+            CatchButton(
+              label: 'View payment history',
+              onPressed: () =>
+                  context.goNamed(Routes.paymentHistoryScreen.name),
+              variant: CatchButtonVariant.secondary,
+              icon: Icon(CatchIcons.receiptLongOutlined),
+              fullWidth: true,
+            ),
+            gapH12,
+            CatchButton(
+              label: 'Back to event',
+              onPressed: () => context.goNamed(
+                Routes.eventDetailScreen.name,
+                pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+                extra: event,
+              ),
+              variant: CatchButtonVariant.secondary,
+              icon: Icon(CatchIcons.eventOutlined),
+              fullWidth: true,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -97,7 +228,7 @@ class _QuickActions extends ConsumerWidget {
         Expanded(
           child: _ActionTile(
             key: PaymentConfirmationKeys.addToCalendar,
-            icon: Icons.calendar_month_outlined,
+            icon: CatchIcons.calendarMonthOutlined,
             label: 'Add to calendar',
             onTap: () => unawaited(controller.addToCalendar(event)),
           ),
@@ -106,7 +237,7 @@ class _QuickActions extends ConsumerWidget {
         Expanded(
           child: _ActionTile(
             key: PaymentConfirmationKeys.directions,
-            icon: Icons.directions_outlined,
+            icon: CatchIcons.directionsOutlined,
             label: 'Get directions',
             onTap: () => unawaited(controller.openDirections(event)),
           ),
@@ -115,7 +246,9 @@ class _QuickActions extends ConsumerWidget {
         Expanded(
           child: _ActionTile(
             key: PaymentConfirmationKeys.inviteFriend,
-            icon: Icons.ios_share_rounded,
+            icon: CatchIcons.platformShare(
+              platform: Theme.of(context).platform,
+            ),
             label: 'Invite friend',
             onTap: () => unawaited(controller.inviteFriend(event)),
           ),
@@ -213,7 +346,7 @@ class _ReferralBanner extends ConsumerWidget {
       borderWidth: 1.5,
       child: Row(
         children: [
-          Icon(Icons.group_add_outlined, color: t.primary),
+          Icon(CatchIcons.groupAddOutlined, color: t.primary),
           gapW12,
           Expanded(
             child: Column(

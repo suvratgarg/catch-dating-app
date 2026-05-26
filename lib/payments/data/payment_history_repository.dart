@@ -55,6 +55,18 @@ class PaymentHistoryRepository {
         ),
       );
 
+  Stream<Payment?> watchPayment(String paymentId) => withBackendErrorStream(
+    () => _paymentsRef
+        .doc(paymentId)
+        .snapshots()
+        .map((snap) => snap.exists ? snap.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch payment',
+      resource: _collectionPath,
+    ),
+  );
+
   /// Returns the payment record for a specific event, if any.
   Future<Payment?> fetchPaymentForEvent({
     required String userId,
@@ -97,3 +109,7 @@ PaymentHistoryRepository paymentHistoryRepository(Ref ref) =>
 @riverpod
 Stream<List<Payment>> watchPaymentsForUser(Ref ref, String userId) =>
     ref.watch(paymentHistoryRepositoryProvider).watchPaymentsForUser(userId);
+
+@riverpod
+Stream<Payment?> watchPayment(Ref ref, String paymentId) =>
+    ref.watch(paymentHistoryRepositoryProvider).watchPayment(paymentId);

@@ -132,3 +132,73 @@ final class WatchPaymentsForUserFamily extends $Family
   @override
   String toString() => r'watchPaymentsForUserProvider';
 }
+
+@ProviderFor(watchPayment)
+final watchPaymentProvider = WatchPaymentFamily._();
+
+final class WatchPaymentProvider
+    extends
+        $FunctionalProvider<AsyncValue<Payment?>, Payment?, Stream<Payment?>>
+    with $FutureModifier<Payment?>, $StreamProvider<Payment?> {
+  WatchPaymentProvider._({
+    required WatchPaymentFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchPaymentProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchPaymentHash();
+
+  @override
+  String toString() {
+    return r'watchPaymentProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Payment?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Payment?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchPayment(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchPaymentProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchPaymentHash() => r'a1add75d02a9d3fb0ce41f6f327b658c52f4da84';
+
+final class WatchPaymentFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Payment?>, String> {
+  WatchPaymentFamily._()
+    : super(
+        retry: null,
+        name: r'watchPaymentProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchPaymentProvider call(String paymentId) =>
+      WatchPaymentProvider._(argument: paymentId, from: this);
+
+  @override
+  String toString() => r'watchPaymentProvider';
+}

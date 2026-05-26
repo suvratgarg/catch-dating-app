@@ -3,6 +3,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -45,8 +46,8 @@ class EventBookingController extends _$EventBookingController {
   /// Books the user into [event].
   ///
   /// For free events, calls the [signUpForFreeEvent] Cloud Function directly.
-  /// For paid events, opens the Razorpay checkout sheet; on success the
-  /// [verifyRazorpayPayment] Cloud Function atomically signs the user up.
+  /// For paid events, starts the currency-appropriate payment flow; successful
+  /// provider confirmation atomically signs the user up.
   ///
   /// Returns [PaymentConfirmationData] for paid events so the caller can
   /// navigate to the confirmation screen. Returns `null` for free events.
@@ -66,8 +67,14 @@ class EventBookingController extends _$EventBookingController {
       );
       return null;
     } else {
+      if (!paymentRepo.supportsPaidBookingsForCurrency(event.currency)) {
+        throw PaidBookingUnsupportedException(
+          message: 'Paid bookings in ${event.currency} are not available yet.',
+        );
+      }
       return paymentRepo.processPayment(
         eventId: event.id,
+        currencyCode: event.currency,
         description: '${event.title} · ${event.shortDateLabel}',
         userName: user.name,
         userEmail: user.email,

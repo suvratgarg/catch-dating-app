@@ -2,16 +2,19 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
+import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'payment_repository.g.dart';
 
@@ -21,14 +24,20 @@ class PaymentRepository {
   PaymentRepository(
     this._functions, {
     RazorpayFactory? razorpayFactory,
+    ExternalUrlLauncher? externalUrlLauncher,
     bool? isWebOverride,
     TargetPlatform? targetPlatformOverride,
   }) : _razorpayFactory = razorpayFactory ?? Razorpay.new,
+       _externalUrlLauncher =
+           externalUrlLauncher ??
+           ((uri, {mode = LaunchMode.platformDefault}) =>
+               launchUrl(uri, mode: mode)),
        _isWebOverride = isWebOverride,
        _targetPlatformOverride = targetPlatformOverride;
 
   final FirebaseFunctions _functions;
   final RazorpayFactory _razorpayFactory;
+  final ExternalUrlLauncher _externalUrlLauncher;
   final bool? _isWebOverride;
   final TargetPlatform? _targetPlatformOverride;
   Razorpay? _razorpay;
@@ -51,6 +60,12 @@ class PaymentRepository {
     };
   }
 
+  bool supportsPaidBookingsForCurrency(String currencyCode) {
+    final normalized = currencyCode.trim().toUpperCase();
+    if (normalized == defaultCurrencyCode) return supportsPaidBookings;
+    return normalized.length == 3;
+  }
+
   // ── Paid event booking ──────────────────────────────────────────────────────
 
   /// Initiates the full Razorpay payment + sign-up flow for a paid event.
@@ -61,6 +76,28 @@ class PaymentRepository {
   /// Returns [PaymentConfirmationData] with the payment details for the
   /// confirmation screen.
   Future<PaymentConfirmationData> processPayment({
+    required String eventId,
+    required String currencyCode,
+    required String description,
+    required String userName,
+    required String userEmail,
+    required String userContact,
+    String? inviteCode,
+  }) async {
+    if (currencyCode.trim().toUpperCase() != defaultCurrencyCode) {
+      return _processStripeCheckout(eventId: eventId, inviteCode: inviteCode);
+    }
+    return _processRazorpayPayment(
+      eventId: eventId,
+      description: description,
+      userName: userName,
+      userEmail: userEmail,
+      userContact: userContact,
+      inviteCode: inviteCode,
+    );
+  }
+
+  Future<PaymentConfirmationData> _processRazorpayPayment({
     required String eventId,
     required String description,
     required String userName,
@@ -134,6 +171,44 @@ class PaymentRepository {
     }
   }
 
+  Future<PaymentConfirmationData> _processStripeCheckout({
+    required String eventId,
+    String? inviteCode,
+  }) async {
+    final result = await _createStripeCheckoutSession(
+      eventId: eventId,
+      inviteCode: inviteCode,
+    );
+    final session = _parseStripeCheckoutResponse(result.data);
+    final opened = await withBackendErrorContext(
+      () => _externalUrlLauncher(
+        session.checkoutUrl,
+        mode: LaunchMode.externalApplication,
+      ),
+      context: const BackendErrorContext(
+        service: BackendService.external,
+        action: 'open Stripe checkout',
+        resource: 'payments',
+      ),
+      mapper: _paymentErrorMapper(
+        fallbackMessage: 'Unable to open Stripe checkout.',
+      ),
+    );
+    if (!opened) {
+      throw const PaymentFailedException('Unable to open Stripe checkout.');
+    }
+    return PaymentConfirmationData(
+      paymentId: session.paymentId,
+      orderId: session.sessionId,
+      amountInPaise: session.amountMinor,
+      currency: session.currency,
+      eventId: eventId,
+      provider: 'stripe',
+      status: PaymentStatus.pending,
+      checkoutUrl: session.checkoutUrl,
+    );
+  }
+
   // ── Free event booking ──────────────────────────────────────────────────────
 
   /// Signs the current user up for a free event via the [signUpForFreeEvent]
@@ -200,6 +275,8 @@ class PaymentRepository {
           amountInPaise: _pendingAmountInPaise ?? 0,
           currency: _pendingCurrency ?? defaultCurrencyCode,
           eventId: _pendingEventId ?? '',
+          provider: 'razorpay',
+          status: PaymentStatus.completed,
         ),
       );
     } catch (e, st) {
@@ -257,10 +334,42 @@ class PaymentRepository {
     ),
   );
 
+  Future<HttpsCallableResult<Object?>> _createStripeCheckoutSession({
+    required String eventId,
+    String? inviteCode,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('createStripeCheckoutSession')
+        .call<Object?>(
+          CreateStripeCheckoutSessionCallableRequest(
+            eventId: eventId,
+            inviteCode: inviteCode?.trim(),
+          ).toJson(),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create Stripe checkout session',
+      resource: 'payments',
+    ),
+    mapper: _paymentErrorMapper(
+      fallbackMessage: 'Unable to start Stripe checkout.',
+    ),
+  );
+
   RazorpayOrderCallableResponse _parseOrderResponse(Object? data) {
     try {
       return RazorpayOrderCallableResponse.fromCallableData(data);
     } on RazorpayOrderCallableResponseFormatException {
+      throw const PaymentVerificationFailedException();
+    }
+  }
+
+  StripeCheckoutSessionCallableResponse _parseStripeCheckoutResponse(
+    Object? data,
+  ) {
+    try {
+      return StripeCheckoutSessionCallableResponse.fromCallableData(data);
+    } on StripeCheckoutSessionCallableResponseFormatException {
       throw const PaymentVerificationFailedException();
     }
   }
@@ -362,7 +471,10 @@ BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
 
 @Riverpod(keepAlive: true)
 PaymentRepository paymentRepository(Ref ref) {
-  final repo = PaymentRepository(ref.watch(firebaseFunctionsProvider));
+  final repo = PaymentRepository(
+    ref.watch(firebaseFunctionsProvider),
+    externalUrlLauncher: ref.watch(externalUrlLauncherProvider),
+  );
   ref.onDispose(repo.dispose);
   return repo;
 }

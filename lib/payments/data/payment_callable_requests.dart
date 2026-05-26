@@ -1,5 +1,8 @@
 export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show VerifyRazorpayPaymentCallableRequest;
+    show
+        CreateStripeCheckoutSessionCallableRequest,
+        CreateStripeHostOnboardingLinkCallableRequest,
+        VerifyRazorpayPaymentCallableRequest;
 
 // EventBookingCallableRequest and CreateRazorpayOrderCallableRequest are
 // hand-written because they normalize inviteCode via .trim() before

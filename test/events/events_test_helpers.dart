@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -43,6 +44,7 @@ Event buildEvent({
   int capacityLimit = 20,
   String description = 'Easy paced seaside event.',
   int priceInPaise = 0,
+  String currency = defaultCurrencyCode,
   int? bookedCount,
   int? checkedInCount,
   int? waitlistedCount,
@@ -78,6 +80,7 @@ Event buildEvent({
     capacityLimit: capacityLimit,
     description: description,
     priceInPaise: priceInPaise,
+    currency: currency,
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
@@ -519,6 +522,10 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   @override
   bool get supportsPaidBookings => supportsPaid;
 
+  @override
+  bool supportsPaidBookingsForCurrency(String currencyCode) =>
+      currencyCode.trim().toUpperCase() == 'INR' ? supportsPaid : true;
+
   String? bookedFreeEventInviteCode;
 
   @override
@@ -537,6 +544,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   @override
   Future<PaymentConfirmationData> processPayment({
     required String eventId,
+    required String currencyCode,
     required String description,
     required String userName,
     required String userEmail,
@@ -552,6 +560,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     processPaymentCalled = true;
     lastProcessPaymentCall = ProcessPaymentCall(
       eventId: eventId,
+      currencyCode: currencyCode,
       description: description,
       userName: userName,
       userEmail: userEmail,
@@ -563,7 +572,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
           paymentId: 'pay_test',
           orderId: 'order_test',
           amountInPaise: 0,
-          currency: 'INR',
+          currency: currencyCode,
           eventId: eventId,
         );
   }
@@ -575,6 +584,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
 class ProcessPaymentCall {
   const ProcessPaymentCall({
     required this.eventId,
+    required this.currencyCode,
     required this.description,
     required this.userName,
     required this.userEmail,
@@ -583,6 +593,7 @@ class ProcessPaymentCall {
   });
 
   final String eventId;
+  final String currencyCode;
   final String description;
   final String userName;
   final String userEmail;
