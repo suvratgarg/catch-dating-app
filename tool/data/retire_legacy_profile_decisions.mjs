@@ -25,10 +25,11 @@ export async function main(argv = process.argv.slice(2)) {
     printHelp();
     return;
   }
+
   const projectId = resolveProjectId(args);
   if (args.apply && isProductionTarget(args, projectId) && !args.allowProd) {
     throw new Error(
-      "Refusing to backfill prod without --allow-prod. " +
+      "Refusing to delete legacy swipes in prod without --allow-prod. " +
       "Run a dry run first, then rerun with --apply --allow-prod."
     );
   }
@@ -43,78 +44,75 @@ export async function main(argv = process.argv.slice(2)) {
     firestore,
     {migration: legacySourceMigration(readMigrationContract())}
   );
-  const backfillPlan = buildProfileDecisionBackfillPlan(plan);
+  const retirementPlan = buildProfileDecisionRetirementPlan(plan, {
+    projectId,
+    apply: args.apply,
+  });
 
   if (args.json) {
-    console.log(JSON.stringify(backfillPlan.summary, null, 2));
+    console.log(JSON.stringify(retirementPlan.summary, null, 2));
   } else {
-    printSummary(backfillPlan.summary);
+    printSummary(retirementPlan.summary);
   }
 
   if (!args.apply) {
-    console.log("\nDry run only. Re-run with --apply to write backfill docs.");
+    console.log("\nDry run only. Re-run with --apply to delete legacy swipes.");
     return;
   }
-  if (backfillPlan.summary.validationErrorCount > 0) {
-    throw new Error("Refusing to backfill while decision validation errors exist.");
+  if (!retirementPlan.summary.safeToDeleteLegacy) {
+    throw new Error(
+      "Refusing to delete legacy swipes before parity validation passes."
+    );
   }
 
-  await applyProfileDecisionBackfill(firestore, backfillPlan);
-  console.log("\nApplied profile decision backfill.");
+  await applyProfileDecisionRetirement(firestore, retirementPlan);
+  console.log("\nDeleted legacy swipes profile decision documents.");
 }
 
-export function buildProfileDecisionBackfillPlan(plan) {
-  const sourceByKey = new Map(
-    plan.current.decisions.map((decision) => [
-      decisionKey(decision.ownerId, decision.targetId),
-      decision,
-    ])
-  );
-  const writes = [];
-  for (const item of [...plan.missingFuture, ...plan.staleFuture]) {
-    const source = sourceByKey.get(item.key);
-    if (!source) continue;
-    writes.push({
-      key: item.key,
-      op: "set",
-      reason: plan.missingFuture.includes(item) ? "missingFuture" : "staleFuture",
-      currentPath: source.path,
-      futurePath: item.futurePath,
-      data: source.data,
-    });
-  }
+export function buildProfileDecisionRetirementPlan(plan, {
+  projectId = null,
+  apply = false,
+} = {}) {
+  const deleteDocs = plan.current.decisions.map((decision) => ({
+    path: decision.path,
+    key: `${decision.ownerId}/${decision.targetId}`,
+  }));
+  const safeToDeleteLegacy =
+    plan.summary.validationErrorCount === 0 &&
+    plan.summary.missingFutureCount === 0 &&
+    plan.summary.staleFutureCount === 0;
 
   return {
-    writes,
+    deleteDocs,
     summary: {
-      currentDecisionCount: plan.summary.currentDecisionCount,
-      futureDecisionCount: plan.summary.futureDecisionCount,
-      writesNeeded: writes.length,
-      missingFutureCount: plan.summary.missingFutureCount,
-      staleFutureCount: plan.summary.staleFutureCount,
-      extraFutureCount: plan.summary.extraFutureCount,
+      mode: apply ? "apply" : "dry-run",
+      projectId,
+      legacyStoragePath: plan.summary.currentStoragePath,
+      currentStoragePath: plan.summary.candidatePrimaryStoragePath,
+      legacyDecisionCount: plan.summary.currentDecisionCount,
+      currentDecisionCount: plan.summary.futureDecisionCount,
+      deletesNeeded: deleteDocs.length,
+      missingCurrentCount: plan.summary.missingFutureCount,
+      staleCurrentCount: plan.summary.staleFutureCount,
+      extraCurrentCount: plan.summary.extraFutureCount,
       validationErrorCount: plan.summary.validationErrorCount,
-      readyToApply:
-        plan.summary.validationErrorCount === 0 &&
-        writes.length > 0,
-      extraFuture: plan.extraFuture.slice(0, 100),
+      safeToDeleteLegacy,
+      sampleDeletes: deleteDocs.slice(0, 100),
+      missingCurrent: plan.missingFuture.slice(0, 100),
+      staleCurrent: plan.staleFuture.slice(0, 100),
       validationErrors: plan.validationErrors.slice(0, 100),
     },
   };
 }
 
-export async function applyProfileDecisionBackfill(firestore, plan) {
-  for (let i = 0; i < plan.writes.length; i += 450) {
+export async function applyProfileDecisionRetirement(firestore, plan) {
+  for (let i = 0; i < plan.deleteDocs.length; i += 450) {
     const batch = firestore.batch();
-    for (const write of plan.writes.slice(i, i + 450)) {
-      batch.set(firestore.doc(write.futurePath), write.data);
+    for (const doc of plan.deleteDocs.slice(i, i + 450)) {
+      batch.delete(firestore.doc(doc.path));
     }
     await batch.commit();
   }
-}
-
-function decisionKey(ownerId, targetId) {
-  return `${ownerId}/${targetId}`;
 }
 
 function parseArgs(argv) {
@@ -184,25 +182,30 @@ function readFirebaseRc() {
 }
 
 function printSummary(summary) {
-  console.log("Profile decision backfill plan");
+  console.log("Legacy profile decision retirement plan");
+  console.log(`Project: ${summary.projectId}`);
+  console.log(`Legacy path: ${summary.legacyStoragePath}`);
+  console.log(`Current path: ${summary.currentStoragePath}`);
+  console.log(`Legacy decisions: ${summary.legacyDecisionCount}`);
   console.log(`Current decisions: ${summary.currentDecisionCount}`);
-  console.log(`Future decisions: ${summary.futureDecisionCount}`);
-  console.log(`Writes needed: ${summary.writesNeeded}`);
-  console.log(`Missing future docs: ${summary.missingFutureCount}`);
-  console.log(`Stale future docs: ${summary.staleFutureCount}`);
-  console.log(`Extra future docs: ${summary.extraFutureCount}`);
+  console.log(`Deletes needed: ${summary.deletesNeeded}`);
+  console.log(`Missing current docs: ${summary.missingCurrentCount}`);
+  console.log(`Stale current docs: ${summary.staleCurrentCount}`);
+  console.log(`Extra current docs: ${summary.extraCurrentCount}`);
   console.log(`Validation errors: ${summary.validationErrorCount}`);
+  console.log(`Safe to delete legacy: ${summary.safeToDeleteLegacy ? "yes" : "no"}`);
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/data/backfill_profile_decisions.mjs [options]
+  console.log(`Usage: node tool/data/retire_legacy_profile_decisions.mjs [options]
 
-Dry-run-first backfill for the swipes -> profileDecisions storage migration.
-The script copies missing or stale legacy swipes into profileDecisions. It never
-deletes either path.
+Dry-run-first cleanup for the swipes -> profileDecisions storage migration.
+The script compares legacy swipes/{uid}/outgoing/{targetId} documents against
+profileDecisions/{uid}/outgoing/{targetId}. It deletes legacy swipes only when
+all legacy documents validate and each one has a matching current document.
 
 Options:
-  --apply                 Write missing/stale future docs. Default is dry-run.
+  --apply                 Delete legacy swipes. Default is dry-run.
   --allow-prod            Required with --apply against prod.
   --json                  Print compact summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.

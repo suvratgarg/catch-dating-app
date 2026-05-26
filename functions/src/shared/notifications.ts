@@ -1,5 +1,7 @@
 import * as admin from "firebase-admin";
-import {EventDoc} from "./generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "./generated/firestoreAdminTypes";
 
 export interface FcmParams {
   token: string;
@@ -47,7 +49,7 @@ export type NotificationPreference =
   | "eventStatusUpdates"
   | "clubUpdates";
 
-export interface NotificationPreferenceDoc {
+export interface NotificationPreferenceDocument {
   prefsNewCatches?: boolean;
   prefsMessages?: boolean;
   prefsEventReminders?: boolean;
@@ -61,12 +63,12 @@ export interface NotificationPreferenceDoc {
  * Durable in-app activity is controlled by the producer; this helper only
  * gates FCM delivery. Missing fields default to true so existing beta profiles
  * continue receiving expected notifications until their settings are saved.
- * @param {NotificationPreferenceDoc | undefined} user User preference doc.
+ * @param {NotificationPreferenceDocument | undefined} user User preference doc.
  * @param {NotificationPreference} preference Notification category.
  * @return {boolean} Whether FCM delivery is enabled.
  */
 export function allowsPushPreference(
-  user: NotificationPreferenceDoc | undefined,
+  user: NotificationPreferenceDocument | undefined,
   preference: NotificationPreference
 ): boolean {
   if (!user) return false;
@@ -177,12 +179,12 @@ export async function createActivityNotificationIfAbsent(
 /**
  * Builds user-facing copy for event participation notifications.
  * @param {ActivityNotificationType} type Notification type.
- * @param {EventDoc} event Event document that caused the notification.
+ * @param {EventDocument} event Event document that caused the notification.
  * @return {{title: string, body: string}} Title and body copy.
  */
 export function eventActivityNotificationCopy(
   type: ActivityNotificationType,
-  event: EventDoc
+  event: EventDocument
 ): {title: string; body: string} {
   const eventLabel = `${formatDistance(event.distanceKm)} event`;
   const locationName = event.meetingLocation?.name ?? event.meetingPoint;
@@ -224,11 +226,11 @@ export function eventActivityNotificationCopy(
 
 /**
  * Builds user-facing copy for the companion-ready push notification.
- * @param {EventDoc} event Event whose live companion is ready.
+ * @param {EventDocument} event Event whose live companion is ready.
  * @return {object} Title and body copy.
  */
 export function eventCompanionReadyNotificationCopy(
-  event: EventDoc
+  event: EventDocument
 ): {title: string; body: string} {
   const eventLabel = `${formatDistance(event.distanceKm)} event`;
   const locationName = event.meetingLocation?.name ?? event.meetingPoint;

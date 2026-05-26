@@ -1,8 +1,8 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
@@ -30,6 +30,7 @@ import {
   incrementCount,
   rosterFromEvent,
 } from "./eventPolicy";
+import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid events)
@@ -91,14 +92,23 @@ export async function signUpUserForEvent(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
         "This event has been cancelled."
       );
     }
-    const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    const user = requireDoc<UserProfileDocument>(
+      userSnap,
+      "UserProfileDocument"
+    );
     assertBookingReadyUserProfile(user);
     assertRunPreferencesReadyForEvent(user, event);
     const existingParticipation = participationSnap.exists ?
@@ -168,6 +178,7 @@ export async function signUpUserForEvent(
     });
 
     const wasWaitlisted = existingParticipation?.status === "waitlisted";
+    const nextBookedCount = currentBookedCount + 1;
     const notificationType = wasWaitlisted ?
       "waitlistPromotion" :
       "eventSignup";
@@ -177,6 +188,11 @@ export async function signUpUserForEvent(
       bookedCount: admin.firestore.FieldValue.increment(1),
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
       cohortCounts: incrementCount(event.cohortCounts ?? {}, cohortId),
+      ...eventDiscoveryProjection({
+        event,
+        clubLocation: event.discoveryCityName,
+        bookedCount: nextBookedCount,
+      }),
     };
     if (wasWaitlisted) {
       eventUpdate.waitlistedCount = admin.firestore.FieldValue.increment(-1);

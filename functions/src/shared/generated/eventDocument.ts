@@ -194,6 +194,50 @@ export interface EventDocument {
   waitlistedCohortCounts: {
     [k: string]: number;
   };
+  discoveryCityName?: string | null;
+  discoveryActivityKind?:
+    | "socialRun"
+    | "running"
+    | "walking"
+    | "pickleball"
+    | "padel"
+    | "tennis"
+    | "badminton"
+    | "cycling"
+    | "spinClass"
+    | "yoga"
+    | "strengthTraining"
+    | "pubQuiz"
+    | "barCrawl"
+    | "dinner"
+    | "singlesMixer"
+    | "openActivity";
+  discoveryGeoCell?: string | null;
+  discoveryHasOpenSpots?: boolean;
+  discoveryAvailability?: "open" | "waitlist" | "gated" | "full" | "cancelled";
+  /**
+   * @maxItems 4
+   */
+  discoveryOpenCohorts?: (
+    | "menInterestedInWomen"
+    | "womenInterestedInMen"
+    | "queerOrOpen"
+    | "nonBinaryOrOther"
+  )[];
+  /**
+   * @maxItems 4
+   */
+  discoveryWaitlistCohorts?: (
+    | "menInterestedInWomen"
+    | "womenInterestedInMen"
+    | "queerOrOpen"
+    | "nonBinaryOrOther"
+  )[];
+  discoveryInviteRequired?: boolean;
+  discoveryMembershipRequired?: boolean;
+  discoveryManualApprovalRequired?: boolean;
+  discoveryMinAge?: number;
+  discoveryMaxAge?: number;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

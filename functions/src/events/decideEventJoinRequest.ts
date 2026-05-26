@@ -2,8 +2,8 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {isClubHost} from "../shared/clubHosts";
@@ -114,10 +114,16 @@ export async function decideEventJoinRequestHandler(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
-    const requester = requireDoc<UserProfileDoc>(
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
+    const requester = requireDoc<UserProfileDocument>(
       requesterSnap,
-      "UserProfileDoc (join request)"
+      "UserProfileDocument (join request)"
     );
     if (event.status === "cancelled") {
       throw new HttpsError(
@@ -291,10 +297,10 @@ export async function decideEventJoinRequestHandler(
 function queueRequestDecisionNotification(params: {
   tx: FirebaseFirestore.Transaction;
   db: FirebaseFirestore.Firestore;
-  event: EventDoc;
+  event: EventDocument;
   eventId: string;
   userId: string;
-  requester: UserProfileDoc;
+  requester: UserProfileDocument;
   decision: "approved" | "declined";
   pushNotifications: FcmParams[];
 }) {
@@ -327,12 +333,12 @@ function queueRequestDecisionNotification(params: {
 
 /**
  * Builds user-facing request decision copy for activity and push surfaces.
- * @param {EventDoc} event Event document.
+ * @param {EventDocument} event Event document.
  * @param {string} decision Host decision.
  * @return {object} Notification copy.
  */
 function requestDecisionCopy(
-  event: EventDoc,
+  event: EventDocument,
   decision: "approved" | "declined"
 ): {title: string; body: string} {
   const locationName = event.meetingLocation?.name ?? event.meetingPoint;

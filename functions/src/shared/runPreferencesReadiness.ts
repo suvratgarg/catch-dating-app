@@ -1,5 +1,8 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc, UserProfileDoc} from "./generated/firestoreAdminTypes";
+import {
+  EventDocument,
+  UserProfileDocument,
+} from "./generated/firestoreAdminTypes";
 import {runningPreferencesFromUserProfileDoc} from "./profileProjection";
 
 export const currentRunPreferencesVersion = 1;
@@ -11,20 +14,20 @@ type RunningPreferences = ReturnType<
 
 /**
  * Returns whether an event needs run-domain preferences before signup.
- * @param {EventDoc} event Event document.
+ * @param {EventDocument} event Event document.
  * @return {boolean} Whether run preferences are required.
  */
-export function eventRequiresRunPreferences(event: EventDoc): boolean {
+export function eventRequiresRunPreferences(event: EventDocument): boolean {
   const activityKind = event.eventFormat?.activityKind ?? "socialRun";
   return activityKind === "socialRun" || activityKind === "running";
 }
 
 /**
  * Returns whether a profile has completed the current run preference gate.
- * @param {UserProfileDoc} user Private profile document.
+ * @param {UserProfileDocument} user Private profile document.
  * @return {boolean} Whether current run preferences are complete.
  */
-export function hasCurrentRunPreferences(user: UserProfileDoc): boolean {
+export function hasCurrentRunPreferences(user: UserProfileDocument): boolean {
   const running = runningPreferencesFromUserProfileDoc(user);
   return (
     running.version >= currentRunPreferencesVersion ||
@@ -34,12 +37,12 @@ export function hasCurrentRunPreferences(user: UserProfileDoc): boolean {
 
 /**
  * Enforces run preferences only for run-like events.
- * @param {UserProfileDoc} user Private profile document.
- * @param {EventDoc} event Event document.
+ * @param {UserProfileDocument} user Private profile document.
+ * @param {EventDocument} event Event document.
  */
 export function assertRunPreferencesReadyForEvent(
-  user: UserProfileDoc,
-  event: EventDoc
+  user: UserProfileDocument,
+  event: EventDocument
 ): void {
   if (!eventRequiresRunPreferences(event)) return;
   if (hasCurrentRunPreferences(user)) return;

@@ -2,9 +2,9 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
-  MatchDoc,
-  PublicProfileDoc,
-  UserProfileDoc,
+  MatchDocument,
+  PublicProfileDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   allowsPushPreference,
@@ -49,7 +49,7 @@ export async function onMatchCreatedHandler(
   deps: MatchCreatedDeps = defaultDeps
 ): Promise<void> {
   const {matchId} = event.params;
-  const match = event.data?.data() as MatchDoc | undefined;
+  const match = event.data?.data() as MatchDocument | undefined;
   if (!match) return;
   if (match.conversationType && match.conversationType !== "match") {
     logger.info("Skipping non-match conversation notification", {matchId});
@@ -65,12 +65,14 @@ export async function onMatchCreatedHandler(
     db.collection("publicProfiles").doc(user2Id).get(),
   ]);
 
-  const user1 = user1Doc.data() as UserProfileDoc | undefined;
-  const user2 = user2Doc.data() as UserProfileDoc | undefined;
+  const user1 = user1Doc.data() as UserProfileDocument | undefined;
+  const user2 = user2Doc.data() as UserProfileDocument | undefined;
   const profile1Name =
-    (profile1Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
+    (profile1Doc.data() as PublicProfileDocument | undefined)?.name ??
+      "Someone";
   const profile2Name =
-    (profile2Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
+    (profile2Doc.data() as PublicProfileDocument | undefined)?.name ??
+      "Someone";
   const latestEventId = latestMatchEventId(match);
 
   if (deps.recordSignalFacts) {
@@ -145,18 +147,18 @@ export async function onMatchCreatedHandler(
   );
 }
 
-type LegacyMatchDoc = MatchDoc & {eventId?: string | null};
+type LegacyMatchDocument = MatchDocument & {eventId?: string | null};
 
 /**
  * Returns the newest shared event id for a match, including legacy eventId
  * docs.
  *
- * @param {MatchDoc} match Match document data.
+ * @param {MatchDocument} match Match document data.
  * @return {string | undefined} Latest event id when one is available.
  */
-function latestMatchEventId(match: MatchDoc): string | undefined {
+function latestMatchEventId(match: MatchDocument): string | undefined {
   const eventIds = match.eventIds ?? [];
-  const legacyEventId = (match as LegacyMatchDoc).eventId;
+  const legacyEventId = (match as LegacyMatchDocument).eventId;
   return eventIds.at(-1) ?? legacyEventId ?? undefined;
 }
 

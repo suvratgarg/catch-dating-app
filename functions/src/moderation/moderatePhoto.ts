@@ -41,7 +41,9 @@ import {onObjectFinalized} from "firebase-functions/v2/storage";
 import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import * as vision from "@google-cloud/vision";
-import type {ModerationFlagDoc} from "../shared/generated/firestoreAdminTypes";
+import type {
+  ModerationFlagDocument,
+} from "../shared/generated/firestoreAdminTypes";
 
 // ── Client ─────────────────────────────────────────────────────────────────
 
@@ -253,7 +255,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
         source: (
           isProfilePhoto ? "profile_photo" :
             isClubImage ? "club_image" : "chat_message"
-        ) as ModerationFlagDoc["source"],
+        ) as ModerationFlagDocument["source"],
         status: "pending" as const,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         contextId: filePath,

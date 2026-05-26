@@ -139,6 +139,40 @@ test("buildPublicProfileRepairPlan warns and skips invalid projections",
   }
 );
 
+test("buildPublicProfileRepairPlan deletes profiles that fail eligibility",
+  async () => {
+    const firestore = fakeFirestore({
+      users: {
+        "runner-1": {
+          profileComplete: true,
+          displayName: "Runner One",
+          age: 30,
+        },
+      },
+      publicProfiles: {
+        "runner-1": validPublicProfile({name: "Runner One", age: 30}),
+      },
+    });
+
+    const plan = await buildPublicProfileRepairPlan(firestore, projection, {
+      isPublicProfileEligible: () => false,
+    });
+
+    assert.deepEqual(
+      plan.repairs.map((repair) => ({
+        path: repair.path,
+        op: repair.op,
+        reason: repair.reason,
+      })),
+      [{
+        path: "publicProfiles/runner-1",
+        op: "delete",
+        reason: "notSocialReady",
+      }]
+    );
+  }
+);
+
 function validPublicProfile({name, age}) {
   return {
     name,

@@ -8,9 +8,9 @@ import {
 } from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
-  PaymentDoc,
-  ClubDoc,
-  EventDoc,
+  PaymentDocument,
+  ClubDocument,
+  EventDocument,
   EventConstraints,
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
@@ -58,10 +58,11 @@ import {
   normalizeUpdateEventPayload,
 } from "./eventPayloadNormalization";
 import {
-  EventPolicyBundleDoc,
+  EventPolicyBundleDocument,
   normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
+import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {isClubHost} from "../shared/clubHosts";
 import {
   effectiveInteractionModelFor,
@@ -116,7 +117,7 @@ type MeetingLocationInput = {
   notes?: unknown;
 };
 type CreateEventPayloadWithPolicy = CreateEventCallablePayload & {
-  eventPolicy?: EventPolicyBundleDoc;
+  eventPolicy?: EventPolicyBundleDocument;
   eventFormat?: EventFormatSnapshot;
   privateAccess?: {
     inviteCode?: string | null;
@@ -124,14 +125,14 @@ type CreateEventPayloadWithPolicy = CreateEventCallablePayload & {
 };
 type EventHostUpdateFields = UpdateEventCallablePayload["fields"];
 
-type NotificationUserDoc = {
+type NotificationUserDocument = {
   fcmToken?: string;
   prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
   prefsClubUpdates?: boolean;
 };
 
-type ClubMembershipNotificationDoc = {
+type ClubMembershipNotificationDocument = {
   uid?: string;
   pushNotificationsEnabled?: boolean;
 };
@@ -181,7 +182,7 @@ export async function createEventHandler(
   const clubRef = db.collection("clubs").doc(data.clubId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
-  let createdEvent: EventDoc | null = null;
+  let createdEvent: EventDocument | null = null;
   let clubName = "Your club";
 
   await db.runTransaction(async (tx) => {
@@ -195,9 +196,12 @@ export async function createEventHandler(
       throw new HttpsError("already-exists", "Event already exists.");
     }
     assertCanMutateClub(clubSnap, deletedUserSnap, hostUserId);
-    const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+    const club = requireDoc<ClubDocument>(
+      clubSnap,
+      "ClubDocument"
+    );
     clubName = club.name;
-    const event = {
+    const eventBase: EventDocument = {
       ...buildCreateEventDoc(data, deps),
       clubId: data.clubId,
       bookedCount: 0,
@@ -207,6 +211,13 @@ export async function createEventHandler(
       cancelledAt: null,
       cancellationReason: null,
       genderCounts: {},
+    };
+    const event: EventDocument = {
+      ...eventBase,
+      ...eventDiscoveryProjection({
+        event: eventBase,
+        clubLocation: club.location,
+      }),
     };
     const eventPolicy = event.eventPolicy;
     if (!eventPolicy) {
@@ -301,7 +312,7 @@ export async function updateEventHandler(
     .collection("eventPrivateAccess")
     .doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
-  let updatedEvent: EventDoc | null = null;
+  let updatedEvent: EventDocument | null = null;
   let affectedClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
@@ -315,7 +326,13 @@ export async function updateEventHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -334,6 +351,7 @@ export async function updateEventHandler(
         tx.get(privateAccessRef),
       ]);
     assertCanMutateClub(clubSnap, deletedUserSnap, hostUserId);
+    const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
     assertValidMergedRunUpdate(event, data.fields);
     assertValidEventConstraints(data.fields.constraints);
     if (hasScheduleTimeChange(data.fields) && activeParticipations.length > 0) {
@@ -349,7 +367,14 @@ export async function updateEventHandler(
       );
     }
 
-    const patch = buildUpdateEventPatch(event, data.fields, deps);
+    let patch = buildUpdateEventPatch(event, data.fields, deps);
+    patch = {
+      ...patch,
+      ...eventDiscoveryProjection({
+        event: {...event, ...patch},
+        clubLocation: club.location,
+      }),
+    };
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
     if (hasScheduleTimeChange(data.fields)) {
       await replaceClubScheduleInTransaction(tx, db, {
@@ -423,7 +448,7 @@ export async function cancelEventHandler(
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
-  let cancelledEvent: EventDoc | null = null;
+  let cancelledEvent: EventDocument | null = null;
   let affectedClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
@@ -437,7 +462,13 @@ export async function cancelEventHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
     const clubRef = db.collection("clubs").doc(event.clubId);
     const [clubSnap, participantEdges] = await Promise.all([
       tx.get(clubRef),
@@ -447,6 +478,7 @@ export async function cancelEventHandler(
       ]),
     ]);
     assertCanMutateClub(clubSnap, deletedUserSnap, hostUserId);
+    const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
 
     if (event.status === "cancelled") {
       cancelledEvent = event;
@@ -456,10 +488,17 @@ export async function cancelEventHandler(
 
     const cancelledAt = deps.serverTimestamp?.() ??
       admin.firestore.FieldValue.serverTimestamp();
-    tx.update(eventRef, {
+    const cancelledPatch = {
       status: "cancelled",
       cancelledAt,
       cancellationReason: data.reason ?? null,
+    };
+    tx.update(eventRef, {
+      ...cancelledPatch,
+      ...eventDiscoveryProjection({
+        event: {...event, status: "cancelled" as const},
+        clubLocation: club.location,
+      }),
     });
     releaseClubScheduleInTransaction(tx, db, {
       clubId: event.clubId,
@@ -527,7 +566,10 @@ async function refundCompletedPaymentsForCancelledEvent(
     .get();
 
   await Promise.all(payments.docs.map(async (paymentDoc) => {
-    const payment = requireDoc<PaymentDoc>(paymentDoc, "PaymentDoc");
+    const payment = requireDoc<PaymentDocument>(
+      paymentDoc,
+      "PaymentDocument"
+    );
     try {
       await deps.refundPayment?.(payment.paymentId, payment.amount);
       await paymentDoc.ref.update({status: "refunded"});
@@ -573,7 +615,13 @@ export async function deleteEventHandler(
       throw new HttpsError("not-found", "Event not found.");
     }
 
-    const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+    const event = requireDoc<EventDocument>(
+
+      eventSnap,
+
+      "EventDocument"
+
+    );
     const clubRef = db.collection("clubs").doc(event.clubId);
     const [
       clubSnap,
@@ -637,7 +685,7 @@ export async function deleteEventHandler(
 function buildCreateEventDoc(
   data: CreateEventCallablePayload,
   deps: EventMutationDeps
-): Omit<EventDoc, "clubId" | "genderCounts" |
+): Omit<EventDocument, "clubId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason"> {
   const meetingLocation = normalizeMeetingLocationForCreate(data);
   const maxMen = data.constraints?.maxMen;
@@ -703,7 +751,7 @@ function buildCreateEventDoc(
 function buildCreateEventSuccessPlanDoc(params: {
   data: CreateEventCallablePayload;
   eventId: string;
-  event: EventDoc;
+  event: EventDocument;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
 }): Record<string, unknown> | null {
   const defaults = params.data.eventSuccessDefaults;
@@ -1024,12 +1072,13 @@ function defaultEventSuccessStructureConfigFor(
 /**
  * Validates and returns invite-only access material for the host-private doc.
  * @param {CreateEventCallablePayload} data Validated create payload.
- * @param {EventPolicyBundleDoc} eventPolicy Normalized public policy snapshot.
+ * @param {EventPolicyBundleDocument} eventPolicy Normalized public policy
+ * snapshot.
  * @return {string|null} Invite code to store in eventPrivateAccess/{eventId}.
  */
 function normalizedInviteCodeForCreate(
   data: CreateEventCallablePayload,
-  eventPolicy: EventPolicyBundleDoc
+  eventPolicy: EventPolicyBundleDocument
 ): string | null {
   if (!eventPolicy.admission.inviteRequired) return null;
 
@@ -1119,12 +1168,12 @@ function normalizeMeetingLocationForCreate(
 
 /**
  * Merges legacy where fields or the structured field into one location object.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @param {object} fields Host update fields.
  * @return {EventMeetingLocation|undefined} Normalized update location.
  */
 function normalizeMeetingLocationForUpdate(
-  event: EventDoc,
+  event: EventDocument,
   fields: EventHostUpdateFields
 ): EventMeetingLocation | undefined {
   if (fields.meetingLocation !== undefined) {
@@ -1177,11 +1226,11 @@ function normalizeMeetingLocation(
 
 /**
  * Reads a canonical location from new docs or legacy location fields.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @return {EventMeetingLocation|null} Effective meeting location.
  */
 function effectiveMeetingLocation(
-  event: EventDoc
+  event: EventDocument
 ): EventMeetingLocation | null {
   if (event.meetingLocation) {
     return normalizeMeetingLocation(event.meetingLocation);
@@ -1199,10 +1248,10 @@ function effectiveMeetingLocation(
 
 /**
  * Returns the attendee-facing location name with legacy fallback.
- * @param {EventDoc} event Event document.
+ * @param {EventDocument} event Event document.
  * @return {string} Location name.
  */
-function eventLocationName(event: EventDoc): string {
+function eventLocationName(event: EventDocument): string {
   return event.meetingLocation?.name ?? event.meetingPoint;
 }
 
@@ -1261,17 +1310,17 @@ function defaultInteractionModelFor(
 
 /**
  * Converts host-editable callable fields into Firestore update fields.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @param {object} fields Update fields.
  * @param {EventMutationDeps} deps Injectable dependencies.
- * @return {Partial<EventDoc>} Firestore update patch.
+ * @return {Partial<EventDocument>} Firestore update patch.
  */
 function buildUpdateEventPatch(
-  event: EventDoc,
+  event: EventDocument,
   fields: EventHostUpdateFields,
   deps: EventMutationDeps
-): Partial<EventDoc> {
-  const patch: Partial<EventDoc> = {};
+): Partial<EventDocument> {
+  const patch: Partial<EventDocument> = {};
   const meetingLocation = normalizeMeetingLocationForUpdate(event, fields);
   if (fields.startTimeMillis !== undefined) {
     patch.startTime = deps.timestampFromMillis(fields.startTimeMillis);
@@ -1374,7 +1423,7 @@ function syncPrivateAccessForPolicyUpdate(params: {
   eventId: string;
   clubId: string;
   fields: EventHostUpdateFields;
-  eventPolicy: EventPolicyBundleDoc;
+  eventPolicy: EventPolicyBundleDocument;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
 }) {
   if (!params.eventPolicy.admission.inviteRequired) {
@@ -1409,12 +1458,12 @@ function syncPrivateAccessForPolicyUpdate(params: {
 
 /**
  * Applies partial schedule edits to an event start time.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @param {object} fields Update fields.
  * @return {number} Merged start time in epoch milliseconds.
  */
 function fieldsStartTimeMillis(
-  event: EventDoc,
+  event: EventDocument,
   fields: EventHostUpdateFields
 ): number {
   return fields.startTimeMillis ?? event.startTime.toMillis();
@@ -1422,12 +1471,12 @@ function fieldsStartTimeMillis(
 
 /**
  * Applies partial schedule edits to an event end time.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @param {object} fields Update fields.
  * @return {number} Merged end time in epoch milliseconds.
  */
 function fieldsEndTimeMillis(
-  event: EventDoc,
+  event: EventDocument,
   fields: EventHostUpdateFields
 ): number {
   return fields.endTimeMillis ?? event.endTime.toMillis();
@@ -1491,7 +1540,10 @@ function assertCanMutateClub(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubHost(club, hostUserId)) {
     throw new HttpsError(
       "permission-denied",
@@ -1502,11 +1554,11 @@ function assertCanMutateClub(
 
 /**
  * Validates timing and coordinate invariants after applying a partial update.
- * @param {EventDoc} event Current event document.
+ * @param {EventDocument} event Current event document.
  * @param {object} fields Update fields.
  */
 function assertValidMergedRunUpdate(
-  event: EventDoc,
+  event: EventDocument,
   fields: EventHostUpdateFields
 ) {
   const startTimeMillis = fields.startTimeMillis ??
@@ -1557,7 +1609,7 @@ function assertValidCoordinatePair(
  * @param {string} params.clubId Club id.
  * @param {string} params.hostUserId Host user id to exclude.
  * @param {string} params.clubName Club display name.
- * @param {EventDoc} params.event Created event document.
+ * @param {EventDocument} params.event Created event document.
  */
 async function notifyClubMembersForNewEvent(params: {
   db: FirebaseFirestore.Firestore;
@@ -1566,7 +1618,7 @@ async function notifyClubMembersForNewEvent(params: {
   clubId: string;
   hostUserId: string;
   clubName: string;
-  event: EventDoc;
+  event: EventDocument;
 }) {
   try {
     const members = await params.db
@@ -1575,10 +1627,10 @@ async function notifyClubMembersForNewEvent(params: {
       .where("status", "==", "active")
       .get();
     const memberEntries = members.docs
-      .map((doc) => doc.data() as ClubMembershipNotificationDoc)
+      .map((doc) => doc.data() as ClubMembershipNotificationDocument)
       .filter((membership): membership is
-        Required<Pick<ClubMembershipNotificationDoc, "uid">> &
-        ClubMembershipNotificationDoc =>
+        Required<Pick<ClubMembershipNotificationDocument, "uid">> &
+        ClubMembershipNotificationDocument =>
         typeof membership.uid === "string" &&
         membership.uid !== params.hostUserId
       );
@@ -1594,7 +1646,7 @@ async function notifyClubMembersForNewEvent(params: {
     await Promise.all(userSnaps.map(async (snap, index) => {
       const membership = memberEntries[index];
       const uid = membership.uid;
-      const user = snap.data() as NotificationUserDoc | undefined;
+      const user = snap.data() as NotificationUserDocument | undefined;
       if (!user) return;
       await setActivityNotification(params.db, {
         id: activityNotificationId("clubUpdate", params.eventId),
@@ -1641,14 +1693,14 @@ async function notifyClubMembersForNewEvent(params: {
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {EventMutationDeps} params.deps Injectable dependencies.
  * @param {string} params.eventId Event id.
- * @param {EventDoc} params.event Event document used for copy.
+ * @param {EventDocument} params.event Event document used for copy.
  * @param {"eventUpdated"|"eventCancelled"} params.type Notification type.
  */
 async function notifyEventParticipants(params: {
   db: FirebaseFirestore.Firestore;
   deps: EventMutationDeps;
   eventId: string;
-  event: EventDoc;
+  event: EventDocument;
   type: "eventUpdated" | "eventCancelled";
 }) {
   try {
@@ -1676,7 +1728,7 @@ async function notifyEventParticipants(params: {
 
     await Promise.all(userSnaps.map(async (snap, index) => {
       const uid = uids[index];
-      const user = snap.data() as NotificationUserDoc | undefined;
+      const user = snap.data() as NotificationUserDocument | undefined;
       if (!user) return;
       await setActivityNotification(params.db, {
         id: activityNotificationId(params.type, params.eventId),
@@ -1712,12 +1764,12 @@ async function notifyEventParticipants(params: {
 /**
  * Builds user-facing copy for a newly hosted club event.
  * @param {string} clubName Club display name.
- * @param {EventDoc} event Created event.
+ * @param {EventDocument} event Created event.
  * @return {{title: string, body: string}} Notification copy.
  */
 function newClubEventNotificationCopy(
   clubName: string,
-  event: EventDoc
+  event: EventDocument
 ): {title: string; body: string} {
   return {
     title: `${clubName} posted an event`,

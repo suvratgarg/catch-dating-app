@@ -1,8 +1,8 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
@@ -83,8 +83,8 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const event = eventSnap.data() as EventDoc;
-    const user = userSnap.data() as UserProfileDoc;
+    const event = eventSnap.data() as EventDocument;
+    const user = userSnap.data() as UserProfileDocument;
     if (event.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -204,7 +204,7 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
       throw new HttpsError("not-found", "Event not found.");
     }
 
-    const event = eventSnap.data() as EventDoc;
+    const event = eventSnap.data() as EventDocument;
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;

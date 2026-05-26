@@ -1,6 +1,8 @@
 /* eslint-disable require-jsdoc */
 import {HttpsError} from "firebase-functions/v2/https";
-import {EventDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   EVENT_MAX_DURATION_MINUTES,
   EVENT_SCHEDULE_LOCK_SLOT_MINUTES,
@@ -37,7 +39,7 @@ interface ReleaseUserScheduleParams extends ScheduleWindow {
   eventId: string;
 }
 
-interface ScheduleLockDoc {
+interface ScheduleLockDocument {
   ownerType: LockOwner;
   ownerId: string;
   slot: number;
@@ -225,8 +227,9 @@ export async function assertNoUserEventScheduleConflict(
   const refs = userLockRefs(db, params.uid, params);
   const lockSnaps = await Promise.all(refs.map(({ref}) => ref.get()));
   if (lockSnaps.some((snap) =>
-    snap.exists && (snap.data() as ScheduleLockDoc | undefined)?.eventId !==
-      params.eventId
+    snap.exists &&
+      (snap.data() as ScheduleLockDocument | undefined)?.eventId !==
+        params.eventId
   )) {
     throw new HttpsError(
       "failed-precondition",
@@ -249,7 +252,7 @@ export async function assertNoUserEventScheduleConflict(
   );
   if (eventSnaps.some((snap) =>
     snap.exists &&
-    eventDocOverlaps(snap.data() as EventDoc, params.startTimeMillis,
+    eventDocOverlaps(snap.data() as EventDocument, params.startTimeMillis,
       params.endTimeMillis)
   )) {
     throw new HttpsError(
@@ -301,13 +304,13 @@ async function claimLocksInTransaction(
   refs: Array<{slot: number; ref: FirebaseFirestore.DocumentReference}>,
   eventId: string,
   conflictMessage: string,
-  buildDoc: (slot: number) => ScheduleLockDoc
+  buildDoc: (slot: number) => ScheduleLockDocument
 ) {
   void db;
   const snaps = await Promise.all(refs.map(({ref}) => tx.get(ref)));
   for (const snap of snaps) {
     const existing = snap.exists ?
-      snap.data() as ScheduleLockDoc :
+      snap.data() as ScheduleLockDocument :
       null;
     if (existing && existing.eventId !== eventId) {
       throw new HttpsError("failed-precondition", conflictMessage);
@@ -330,7 +333,7 @@ async function assertNoClubConflictByEventsQuery(
 
   for (const doc of snap.docs) {
     if (doc.id === params.eventId) continue;
-    const event = doc.data() as EventDoc;
+    const event = doc.data() as EventDocument;
     if (eventDocOverlaps(event, params.startTimeMillis, params.endTimeMillis)) {
       throw new HttpsError(
         "failed-precondition",
@@ -355,7 +358,7 @@ async function assertNoUserConflictByParticipationQuery(
     if (typeof eventId !== "string" || eventId === params.eventId) continue;
     const eventSnap = await tx.get(db.collection("events").doc(eventId));
     if (!eventSnap.exists) continue;
-    const event = eventSnap.data() as EventDoc;
+    const event = eventSnap.data() as EventDocument;
     if (eventDocOverlaps(event, params.startTimeMillis, params.endTimeMillis)) {
       throw new HttpsError(
         "failed-precondition",
@@ -366,7 +369,7 @@ async function assertNoUserConflictByParticipationQuery(
 }
 
 function eventDocOverlaps(
-  event: EventDoc,
+  event: EventDocument,
   startTimeMillis: number,
   endTimeMillis: number
 ): boolean {

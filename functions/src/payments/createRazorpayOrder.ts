@@ -6,8 +6,8 @@ import {
 import * as admin from "firebase-admin";
 import Razorpay from "razorpay";
 import {
-  EventDoc,
-  UserProfileDoc,
+  EventDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {buildOrderCreatePayload} from "./paymentValidation";
 import {
@@ -89,8 +89,17 @@ export async function createRazorpayOrderHandler(
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
-  const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+  const event = requireDoc<EventDocument>(
+
+    eventSnap,
+
+    "EventDocument"
+
+  );
+  const user = requireDoc<UserProfileDocument>(
+    userSnap,
+    "UserProfileDocument"
+  );
   const participation = participationSnap.exists ?
     participationSnap.data() as {status?: string} :
     null;

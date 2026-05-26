@@ -213,6 +213,16 @@
       "checks": ["node --check tool/data/recompute_event_aggregate_counts.mjs", "node --test tool/data/recompute_event_aggregate_counts.test.mjs"]
     },
     {
+      "id": "data:backfill-event-discovery",
+      "category": "data",
+      "path": "tool/data/backfill_event_discovery_fields.mjs",
+      "command": "node tool/data/backfill_event_discovery_fields.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "description": "Backfills event discovery projection fields for Explore's direct event index.",
+      "checks": ["node --check tool/data/backfill_event_discovery_fields.mjs", "node --test tool/data/backfill_event_discovery_fields.test.mjs"]
+    },
+    {
       "id": "data:repair-future-attendance",
       "category": "data",
       "path": "tool/data/repair_future_event_attendance.mjs",
@@ -241,6 +251,16 @@
       "status": "active",
       "description": "Backfills profile decision documents from legacy swipe docs.",
       "checks": ["node --check tool/data/backfill_profile_decisions.mjs", "node --test tool/data/backfill_profile_decisions.test.mjs"]
+    },
+    {
+      "id": "data:retire-legacy-profile-decisions",
+      "category": "data",
+      "path": "tool/data/retire_legacy_profile_decisions.mjs",
+      "command": "node tool/data/retire_legacy_profile_decisions.mjs",
+      "safety": "remote-destructive-apply-guarded",
+      "status": "active",
+      "description": "Deletes legacy swipes profile decision docs after parity validation.",
+      "checks": ["node --check tool/data/retire_legacy_profile_decisions.mjs", "node --test tool/data/retire_legacy_profile_decisions.test.mjs"]
     },
     {
       "id": "data:backfill-profile-photos",

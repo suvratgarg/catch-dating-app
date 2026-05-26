@@ -4,7 +4,9 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {ClubDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {ArchiveClubCallablePayload} from
   "../shared/generated/archiveClubCallablePayload";
@@ -190,7 +192,10 @@ function assertCanMutateClub(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubOwner(club, hostUserId)) {
     throw new HttpsError(
       "permission-denied",
@@ -214,7 +219,10 @@ function assertCanUpdateClub(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (isClubOwner(club, hostUserId)) return;
   if (
     isClubHost(club, hostUserId) &&

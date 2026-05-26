@@ -2,9 +2,9 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
-  EventDoc,
-  EventParticipationDoc,
-  UserProfileDoc,
+  EventDocument,
+  EventParticipationDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   activityNotificationId,
@@ -61,7 +61,7 @@ export async function sendEventRemindersHandler(
         db,
         deps,
         eventId: eventSnap.id,
-        event: eventSnap.data() as EventDoc,
+        event: eventSnap.data() as EventDocument,
       })
     )
   );
@@ -83,13 +83,13 @@ export async function sendEventRemindersHandler(
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {EventReminderDeps} params.deps Injectable dependencies.
  * @param {string} params.eventId Event id.
- * @param {EventDoc} params.event Event document.
+ * @param {EventDocument} params.event Event document.
  */
 async function fanOutEventReminder(params: {
   db: FirebaseFirestore.Firestore;
   deps: EventReminderDeps;
   eventId: string;
-  event: EventDoc;
+  event: EventDocument;
 }) {
   const participationsSnap = await params.db
     .collection("eventParticipations")
@@ -99,7 +99,7 @@ async function fanOutEventReminder(params: {
   if (participationsSnap.empty) return;
 
   const uidList = Array.from(new Set(participationsSnap.docs
-    .map((doc) => (doc.data() as EventParticipationDoc).uid)
+    .map((doc) => (doc.data() as EventParticipationDocument).uid)
     .filter((uid): uid is string => typeof uid === "string")));
   if (uidList.length === 0) return;
 
@@ -110,7 +110,7 @@ async function fanOutEventReminder(params: {
 
   await Promise.allSettled(userSnaps.map(async (userSnap, index) => {
     const uid = uidList[index];
-    const user = userSnap.data() as UserProfileDoc | undefined;
+    const user = userSnap.data() as UserProfileDocument | undefined;
     if (!user) return;
 
     const created = await createActivityNotificationIfAbsent(params.db, {

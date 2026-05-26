@@ -3,11 +3,11 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {
-  EventDoc,
-  EventParticipationDoc,
+  EventDocument,
+  EventParticipationDocument,
   Gender,
-  PublicProfileDoc,
-  UserProfileDoc,
+  PublicProfileDocument,
+  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {StartEventSuccessFirstHelloMissionCallablePayload} from
@@ -57,7 +57,7 @@ interface FirstHelloDeps {
   ) => Promise<void>;
 }
 
-interface EventSuccessPlanDoc {
+interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
@@ -68,7 +68,7 @@ interface FirstHelloAnswerOption {
   label: string;
 }
 
-interface FirstHelloMissionDoc {
+interface FirstHelloMissionDocument {
   eventId: string;
   clubId: string;
   observerUid: string;
@@ -84,9 +84,9 @@ interface FirstHelloMissionDoc {
   completedAt?: unknown;
 }
 
-type FirstHelloCandidate = EventParticipationDoc & {
+type FirstHelloCandidate = EventParticipationDocument & {
   uid: string;
-  profile: PublicProfileDoc;
+  profile: PublicProfileDocument;
 };
 
 const defaultDeps: FirstHelloDeps = {
@@ -172,10 +172,13 @@ export async function startEventSuccessFirstHelloMissionHandler(
       "Complete your profile before starting First Hello."
     );
   }
-  const viewer = requireDoc<UserProfileDoc>(viewerSnap, "UserProfileDoc");
+  const viewer = requireDoc<UserProfileDocument>(
+    viewerSnap,
+    "UserProfileDocument"
+  );
 
   if (existingMissionSnap.exists) {
-    const existing = requireDoc<FirstHelloMissionDoc>(
+    const existing = requireDoc<FirstHelloMissionDocument>(
       existingMissionSnap,
       "EventSuccessArrivalMissionDocument"
     );
@@ -286,7 +289,7 @@ export async function completeEventSuccessFirstHelloMissionHandler(
         "Start First Hello before completing check-in."
       );
     }
-    const mission = requireDoc<FirstHelloMissionDoc>(
+    const mission = requireDoc<FirstHelloMissionDocument>(
       missionSnap,
       "EventSuccessArrivalMissionDocument"
     );
@@ -385,14 +388,14 @@ export const completeEventSuccessFirstHelloMission = onCall(
  * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
  * @param {string} params.eventId Event id.
  * @param {string} params.observerUid Caller user id.
- * @param {UserProfileDoc} params.viewer Caller profile.
+ * @param {UserProfileDocument} params.viewer Caller profile.
  * @return {Promise<FirstHelloCandidate>} Selected target.
  */
 async function chooseFirstHelloTarget(params: {
   db: FirebaseFirestore.Firestore;
   eventId: string;
   observerUid: string;
-  viewer: UserProfileDoc;
+  viewer: UserProfileDocument;
 }): Promise<FirstHelloCandidate> {
   const {db, eventId, observerUid, viewer} = params;
   const participationSnap = await db
@@ -403,9 +406,9 @@ async function chooseFirstHelloTarget(params: {
   const viewerCohortId = cohortIdForUser(viewer);
   const blockedUids = await fetchUidsBlockedWithViewer(db, observerUid);
   const candidateParticipations = participationSnap.docs
-    .map((doc) => requireDoc<EventParticipationDoc>(
+    .map((doc) => requireDoc<EventParticipationDocument>(
       doc,
-      "EventParticipationDoc"
+      "EventParticipationDocument"
     ))
     .filter((candidate) => isEligibleFirstHelloCandidate({
       viewer,
@@ -432,9 +435,9 @@ async function chooseFirstHelloTarget(params: {
   for (let i = 0; i < candidateParticipations.length; i++) {
     const profileSnap = profileSnaps[i];
     if (!profileSnap.exists) continue;
-    const profile = requireDoc<PublicProfileDoc>(
+    const profile = requireDoc<PublicProfileDocument>(
       profileSnap,
-      "PublicProfileDoc"
+      "PublicProfileDocument"
     );
     return {...candidateParticipations[i], profile};
   }
@@ -474,18 +477,18 @@ async function fetchUidsBlockedWithViewer(
 /**
  * Checks whether a checked-in participant can be assigned.
  * @param {object} params Eligibility inputs.
- * @param {UserProfileDoc} params.viewer Caller profile.
+ * @param {UserProfileDocument} params.viewer Caller profile.
  * @param {string} params.observerUid Caller user id.
  * @param {string} params.viewerCohortId Caller event cohort id.
- * @param {EventParticipationDoc} params.candidate Candidate participation.
+ * @param {EventParticipationDocument} params.candidate Candidate participation.
  * @param {Set<string>} params.blockedUids Blocked user ids.
  * @return {boolean} True when assignable.
  */
 function isEligibleFirstHelloCandidate(params: {
-  viewer: UserProfileDoc;
+  viewer: UserProfileDocument;
   observerUid: string;
   viewerCohortId: string;
-  candidate: EventParticipationDoc;
+  candidate: EventParticipationDocument;
   blockedUids: Set<string>;
 }): boolean {
   const candidate = params.candidate;
@@ -547,7 +550,7 @@ function candidateCohortCanIncludeViewer(
  * @param {string} params.observerUid Caller user id.
  * @param {FirstHelloCandidate} params.target Selected target.
  * @param {FirebaseFirestore.FieldValue} params.now Server timestamp.
- * @return {FirstHelloMissionDoc} Mission document.
+ * @return {FirstHelloMissionDocument} Mission document.
  */
 function buildFirstHelloMission(params: {
   eventId: string;
@@ -555,7 +558,7 @@ function buildFirstHelloMission(params: {
   observerUid: string;
   target: FirstHelloCandidate;
   now: FirebaseFirestore.FieldValue;
-}): FirstHelloMissionDoc {
+}): FirstHelloMissionDocument {
   return {
     eventId: params.eventId,
     clubId: params.clubId,
@@ -574,14 +577,17 @@ function buildFirstHelloMission(params: {
 /**
  * Requires an active event document.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Event snapshot.
- * @return {EventDoc} Event document.
+ * @return {EventDocument} Event document.
  */
 function requireFirstHelloEvent(snap: FirebaseFirestore.DocumentSnapshot):
-  EventDoc {
+  EventDocument {
   if (!snap.exists) {
     throw new HttpsError("not-found", "Event not found.");
   }
-  const event = requireDoc<EventDoc>(snap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+    snap,
+    "EventDocument"
+  );
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition", "This event is cancelled.");
   }
@@ -605,7 +611,10 @@ function requireFirstHelloPlan(
       "The host has not enabled live guidance for this event."
     );
   }
-  const plan = requireDoc<EventSuccessPlanDoc>(snap, "EventSuccessPlanDoc");
+  const plan = requireDoc<EventSuccessPlanDocument>(
+    snap,
+    "EventSuccessPlanDocument"
+  );
   if (
     (plan.eventId !== undefined && plan.eventId !== eventId) ||
     (plan.clubId !== undefined && plan.clubId !== clubId) ||
@@ -622,21 +631,21 @@ function requireFirstHelloPlan(
  * Requires a signed-up or already-attended participant.
  * @param {FirebaseFirestore.DocumentSnapshot} snap Participation snapshot.
  * @param {string} uid Expected uid.
- * @return {EventParticipationDoc} Participation document.
+ * @return {EventParticipationDocument} Participation document.
  */
 function requireSignedUpParticipant(
   snap: FirebaseFirestore.DocumentSnapshot,
   uid: string
-): EventParticipationDoc {
+): EventParticipationDocument {
   if (!snap.exists) {
     throw new HttpsError(
       "failed-precondition",
       "You must be signed up for this event to use First Hello."
     );
   }
-  const participation = requireDoc<EventParticipationDoc>(
+  const participation = requireDoc<EventParticipationDocument>(
     snap,
-    "EventParticipationDoc"
+    "EventParticipationDocument"
   );
   if (
     participation.uid !== uid ||
@@ -666,9 +675,9 @@ function requireAttendedTarget(
       "This First Hello partner is no longer available."
     );
   }
-  const participation = requireDoc<EventParticipationDoc>(
+  const participation = requireDoc<EventParticipationDocument>(
     snap,
-    "EventParticipationDoc"
+    "EventParticipationDocument"
   );
   if (participation.uid !== uid || participation.status !== "attended") {
     throw new HttpsError(
@@ -680,13 +689,13 @@ function requireAttendedTarget(
 
 /**
  * Validates mission ownership, active state, and answer option.
- * @param {FirstHelloMissionDoc} mission Mission document.
+ * @param {FirstHelloMissionDocument} mission Mission document.
  * @param {string} eventId Expected event id.
  * @param {string} observerUid Expected observer uid.
  * @param {string} answerId Selected answer id.
  */
 function requireOwnedActiveMission(
-  mission: FirstHelloMissionDoc,
+  mission: FirstHelloMissionDocument,
   eventId: string,
   observerUid: string,
   answerId: string
@@ -711,10 +720,10 @@ function requireOwnedActiveMission(
 
 /**
  * Enforces the shared event check-in time window.
- * @param {EventDoc} event Event document.
+ * @param {EventDocument} event Event document.
  * @param {number} nowMillis Current epoch millis.
  */
-function requireCheckInWindow(event: EventDoc, nowMillis: number) {
+function requireCheckInWindow(event: EventDocument, nowMillis: number) {
   const startMillis = event.startTime.toMillis();
   const windowStartMillis = startMillis -
     EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES * 60 * 1000;
@@ -737,12 +746,12 @@ function requireCheckInWindow(event: EventDoc, nowMillis: number) {
 
 /**
  * Enforces the tighter First Hello venue radius when event coordinates exist.
- * @param {EventDoc} event Event document.
+ * @param {EventDocument} event Event document.
  * @param {number|null|undefined} latitude Caller latitude.
  * @param {number|null|undefined} longitude Caller longitude.
  */
 function requireVenueProximity(
-  event: EventDoc,
+  event: EventDocument,
   latitude: number | null | undefined,
   longitude: number | null | undefined
 ) {

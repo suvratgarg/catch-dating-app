@@ -1,7 +1,9 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {SwipeDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  SwipeDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   buildAttendanceSignalFact,
   buildChatSignalFacts,
@@ -169,8 +171,8 @@ test("buildAttendanceSignalFact distinguishes attend and removal", () => {
 function swipe(
   swiperId: string,
   targetId: string,
-  overrides: Partial<SwipeDoc> = {}
-): SwipeDoc {
+  overrides: Partial<SwipeDocument> = {}
+): SwipeDocument {
   return {
     swiperId,
     targetId,

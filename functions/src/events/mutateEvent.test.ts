@@ -261,6 +261,7 @@ function request(
 function club(overrides: FakeData = {}): FakeData {
   return {
     hostUserId: "host-1",
+    location: "mumbai",
     ...overrides,
   };
 }
@@ -355,6 +356,23 @@ test("createEventHandler creates a server-owned event for the club host",
       pace: "easy",
       capacityLimit: 20,
       description: "Easy seaside event.",
+      discoveryCityName: "mumbai",
+      discoveryActivityKind: "socialRun",
+      discoveryGeoCell: "238:910",
+      discoveryHasOpenSpots: true,
+      discoveryAvailability: "open",
+      discoveryOpenCohorts: [
+        "menInterestedInWomen",
+        "womenInterestedInMen",
+        "queerOrOpen",
+        "nonBinaryOrOther",
+      ],
+      discoveryWaitlistCohorts: [],
+      discoveryInviteRequired: false,
+      discoveryMembershipRequired: false,
+      discoveryManualApprovalRequired: false,
+      discoveryMinAge: 21,
+      discoveryMaxAge: 35,
       priceInPaise: 0,
       currency: "INR",
       bookedCount: 0,

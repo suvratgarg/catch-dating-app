@@ -12,6 +12,111 @@
       "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryOpenCohorts", "arrayConfig": "CONTAINS"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryGeoCell", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "discoveryCityName", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryAvailability", "mode": "ASCENDING"},
+        {"fieldPath": "discoveryActivityKind", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}

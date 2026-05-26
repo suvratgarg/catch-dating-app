@@ -245,6 +245,33 @@ test("signUpUserForEvent writes a signup activity notification", async () => {
   );
 });
 
+test("signUpUserForEvent updates event discovery availability", async () => {
+  const db = firestore({
+    "events/event-1": event({
+      capacityLimit: 1,
+      discoveryCityName: "mumbai",
+      discoveryAvailability: "open",
+      discoveryHasOpenSpots: true,
+    }),
+    "users/runner-1": user(),
+  });
+
+  await signUpUserForEvent(db, "event-1", "runner-1");
+
+  const fake = db as unknown as FakeFirestore;
+  const updatedEvent = fake.get("events/event-1");
+  assert.equal(updatedEvent?.discoveryCityName, "mumbai");
+  assert.equal(updatedEvent?.discoveryHasOpenSpots, false);
+  assert.equal(updatedEvent?.discoveryAvailability, "waitlist");
+  assert.deepEqual(updatedEvent?.discoveryOpenCohorts, []);
+  assert.deepEqual(updatedEvent?.discoveryWaitlistCohorts, [
+    "menInterestedInWomen",
+    "womenInterestedInMen",
+    "queerOrOpen",
+    "nonBinaryOrOther",
+  ]);
+});
+
 test("signUpUserForEvent writes a waitlist promotion notification", async (
 ) => {
   const db = firestore({

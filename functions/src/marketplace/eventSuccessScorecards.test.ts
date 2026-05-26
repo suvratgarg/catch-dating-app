@@ -1,7 +1,10 @@
 /* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
-import {EventDoc, MatchDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  EventDocument,
+  MatchDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {
   buildEventSuccessScorecard,
   writeEventSafetyReportIfNeeded,
@@ -14,7 +17,7 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
       clubId: "club-1",
       bookedCount: 10,
       checkedInCount: 8,
-    } as EventDoc,
+    } as EventDocument,
     feedback: [
       {
         eventId: "event-1",
@@ -65,7 +68,7 @@ test("buildEventSuccessScorecard exposes safety count after sample", () => {
       clubId: "club-1",
       bookedCount: 10,
       checkedInCount: 8,
-    } as EventDoc,
+    } as EventDocument,
     feedback: Array.from({length: 5}, (_, index) => ({
       eventId: "event-1",
       clubId: "club-1",
@@ -126,7 +129,7 @@ test("writeEventSafetyReportIfNeeded stores safety review", async () => {
 function match(
   id: string,
   lastMessageAt: FirebaseFirestore.Timestamp | null
-): MatchDoc {
+): MatchDocument {
   return {
     user1Id: `${id}-a`,
     user2Id: `${id}-b`,

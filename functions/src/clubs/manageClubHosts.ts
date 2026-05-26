@@ -3,7 +3,10 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {ClubDoc, UserProfileDoc} from "../shared/generated/firestoreAdminTypes";
+import {
+  ClubDocument,
+  UserProfileDocument,
+} from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {AddClubHostCallablePayload} from
   "../shared/generated/addClubHostCallablePayload";
@@ -96,8 +99,17 @@ export async function addClubHostHandler(
       );
     }
 
-    const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
-    const user = requireDoc<UserProfileDoc>(targetUserSnap, "UserProfileDoc");
+    const club = requireDoc<ClubDocument>(
+
+      clubSnap,
+
+      "ClubDocument"
+
+    );
+    const user = requireDoc<UserProfileDocument>(
+      targetUserSnap,
+      "UserProfileDocument"
+    );
     if (user.profileComplete !== true) {
       throw new HttpsError(
         "failed-precondition",
@@ -191,16 +203,22 @@ export async function transferClubOwnershipHandler(
       );
     }
 
-    const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+    const club = requireDoc<ClubDocument>(
+
+      clubSnap,
+
+      "ClubDocument"
+
+    );
     if (!clubHostUserIds(club).includes(data.uid)) {
       throw new HttpsError(
         "failed-precondition",
         "Ownership can be transferred only to an existing co-host."
       );
     }
-    const targetUser = requireDoc<UserProfileDoc>(
+    const targetUser = requireDoc<UserProfileDocument>(
       targetUserSnap,
-      "UserProfileDoc"
+      "UserProfileDocument"
     );
     const targetProfile = hostProfileForUser(data.uid, targetUser);
     const profiles = clubHostProfiles(club).map((host) => {
@@ -274,7 +292,10 @@ export async function removeClubHostHandler(
     ]);
 
     assertCanManageHostTeam(clubSnap, callerDeletedSnap, callerUid);
-    const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+    const club = requireDoc<ClubDocument>(
+      clubSnap,
+      "ClubDocument"
+    );
     if (isClubOwner(club, data.uid)) {
       throw new HttpsError(
         "failed-precondition",
@@ -319,7 +340,10 @@ function assertCanManageHostTeam(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubOwner(club, callerUid)) {
     throw new HttpsError(
       "permission-denied",
@@ -331,12 +355,12 @@ function assertCanManageHostTeam(
 /**
  * Builds the public co-host projection stored on the club document.
  * @param {string} uid Co-host user id.
- * @param {UserProfileDoc} user Private user profile.
+ * @param {UserProfileDocument} user Private user profile.
  * @return {ClubHostProfile} Public host profile projection.
  */
 function hostProfileForUser(
   uid: string,
-  user: UserProfileDoc
+  user: UserProfileDocument
 ): ClubHostProfile {
   return {
     uid,

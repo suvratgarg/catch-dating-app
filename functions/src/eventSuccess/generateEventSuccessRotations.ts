@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {EventDoc, ClubDoc, BlockDoc, UserProfileDoc} from
+import {EventDocument, ClubDocument, BlockDocument, UserProfileDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {requireAuth} from "../shared/auth";
 import {EventIdCallablePayload} from
@@ -55,7 +55,7 @@ interface EventSuccessRotationsDeps {
   ) => Promise<void>;
 }
 
-interface EventSuccessPlanDoc {
+interface EventSuccessPlanDocument {
   eventId?: string;
   clubId?: string;
   selectedModuleIds?: unknown;
@@ -68,17 +68,17 @@ interface EventSuccessPlanDoc {
   };
 }
 
-interface EventParticipationDoc {
+interface EventParticipationDocument {
   uid?: string;
   status?: string;
 }
 
-interface EventSuccessPreferenceDoc {
+interface EventSuccessPreferenceDocument {
   uid?: string;
   guidedRotationsOptedOut?: boolean;
 }
 
-interface EventSuccessCompatibilityResponseDoc {
+interface EventSuccessCompatibilityResponseDocument {
   uid?: string;
   eventId?: string;
   answerIds?: unknown;
@@ -263,7 +263,7 @@ async function loadRotationEventContext(
   eventId: string,
   uid: string
 ): Promise<{
-  event: EventDoc;
+  event: EventDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
 }> {
@@ -282,7 +282,13 @@ async function loadRotationEventContext(
       "Event-success setup has not been saved.");
   }
 
-  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+  const event = requireDoc<EventDocument>(
+
+    eventSnap,
+
+    "EventDocument"
+
+  );
   if (event.status === "cancelled") {
     throw new HttpsError("failed-precondition",
       "This event has been cancelled.");
@@ -292,15 +298,18 @@ async function loadRotationEventContext(
   if (!clubSnap.exists) {
     throw new HttpsError("not-found", "Club not found.");
   }
-  const club = requireDoc<ClubDoc>(clubSnap, "ClubDoc");
+  const club = requireDoc<ClubDocument>(
+    clubSnap,
+    "ClubDocument"
+  );
   if (!isClubHost(club, uid)) {
     throw new HttpsError("permission-denied",
       "Only the club host can manage event rotations.");
   }
 
-  const plan = requireDoc<EventSuccessPlanDoc>(
+  const plan = requireDoc<EventSuccessPlanDocument>(
     planSnap,
-    "EventSuccessPlanDoc"
+    "EventSuccessPlanDocument"
   );
   if (plan.eventId !== undefined && plan.eventId !== eventId) {
     throw new HttpsError("failed-precondition",
@@ -354,7 +363,7 @@ async function loadEligibleRotationParticipants(
     fetchGuidedRotationOptOutUids(db, eventId),
   ]);
   const activeEdges = participationsSnap.docs
-    .map((doc) => doc.data() as EventParticipationDoc)
+    .map((doc) => doc.data() as EventParticipationDocument)
     .map(toActiveParticipant)
     .filter((participant): participant is {
       uid: string;
@@ -387,11 +396,11 @@ function moduleSelected(selectedModuleIds: unknown, moduleId: string): boolean {
 
 /**
  * Converts a participation edge into an active rotation candidate.
- * @param {EventParticipationDoc} data Participation document data.
+ * @param {EventParticipationDocument} data Participation document data.
  * @return {?object} Active candidate or null.
  */
 function toActiveParticipant(
-  data: EventParticipationDoc
+  data: EventParticipationDocument
 ): {uid: string; status: typeof ACTIVE_STATUSES[number]} | null {
   if (typeof data.uid !== "string" || data.uid.length === 0) return null;
   if (data.status !== "attended" && data.status !== "signedUp") return null;
@@ -426,7 +435,7 @@ async function fetchGuidedRotationOptOutUids(
     .get();
   const optedOut = new Set<string>();
   for (const doc of snap.docs) {
-    const preference = doc.data() as EventSuccessPreferenceDoc;
+    const preference = doc.data() as EventSuccessPreferenceDocument;
     if (
       preference.guidedRotationsOptedOut === true &&
       typeof preference.uid === "string" &&
@@ -455,7 +464,7 @@ async function hydrateParticipants(
   );
   snaps.forEach((snap, index) => {
     if (!snap.exists) return;
-    const profile = snap.data() as Partial<UserProfileDoc>;
+    const profile = snap.data() as Partial<UserProfileDocument>;
     if (
       typeof profile.gender !== "string" ||
       !Array.isArray(profile.interestedInGenders)
@@ -491,7 +500,7 @@ async function fetchCompatibilityAnswerIdsByUid(
     .get();
   const answerIdsByUid = new Map<string, string[]>();
   for (const doc of snap.docs) {
-    const response = doc.data() as EventSuccessCompatibilityResponseDoc;
+    const response = doc.data() as EventSuccessCompatibilityResponseDocument;
     if (
       typeof response.uid !== "string" ||
       response.uid.length === 0 ||
@@ -536,7 +545,7 @@ async function fetchBlockedPairs(
   const pairs = new Set<string>();
   for (const snap of snaps) {
     for (const doc of snap.docs) {
-      const block = doc.data() as Partial<BlockDoc>;
+      const block = doc.data() as Partial<BlockDocument>;
       if (
         typeof block.blockerUserId !== "string" ||
         typeof block.blockedUserId !== "string" ||

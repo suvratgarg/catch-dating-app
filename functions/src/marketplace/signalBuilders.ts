@@ -1,7 +1,7 @@
 import {
-  ChatMessageDoc,
-  MatchDoc,
-  SwipeDoc,
+  ChatMessageDocument,
+  MatchDocument,
+  SwipeDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   ParticipantSignalFactInput,
@@ -20,13 +20,13 @@ interface EventSuccessFeedbackLike {
  * Builds participant facts for a profile decision.
  * @param {string} swiperId User who made the decision.
  * @param {string} targetId Profile target.
- * @param {SwipeDoc} swipeData Swipe document.
+ * @param {SwipeDocument} swipeData Swipe document.
  * @return {ParticipantSignalFactInput[]} Facts for both sides of the signal.
  */
 export function buildSwipeSignalFacts(
   swiperId: string,
   targetId: string,
-  swipeData: SwipeDoc
+  swipeData: SwipeDocument
 ): ParticipantSignalFactInput[] {
   if (swipeData.direction !== "like") return [];
 
@@ -102,12 +102,12 @@ export function buildSwipeSignalFacts(
 /**
  * Builds participant facts for a newly created match.
  * @param {string} matchId Match document id.
- * @param {MatchDoc} match Match document.
+ * @param {MatchDocument} match Match document.
  * @return {ParticipantSignalFactInput[]} Facts for both participants.
  */
 export function buildMatchSignalFacts(
   matchId: string,
-  match: MatchDoc
+  match: MatchDocument
 ): ParticipantSignalFactInput[] {
   const latestEventId = match.eventIds?.at(-1);
   return [
@@ -144,7 +144,7 @@ export function buildMatchSignalFacts(
 export function buildChatSignalFacts(params: {
   matchId: string;
   messageId: string;
-  message: ChatMessageDoc;
+  message: ChatMessageDocument;
   recipientId: string;
   isFirstMessage: boolean;
 }): ParticipantSignalFactInput[] {
@@ -271,15 +271,15 @@ export function buildFeedbackSignalFact(
 
 /**
  * Detects private-crush profile decisions from reaction metadata.
- * @param {SwipeDoc} swipeData Profile decision document.
+ * @param {SwipeDocument} swipeData Profile decision document.
  * @return {boolean} Whether the decision is private interest.
  */
 /**
  * Detects the post-event private-interest reaction used by companion flows.
- * @param {SwipeDoc} swipeData Swipe document.
+ * @param {SwipeDocument} swipeData Swipe document.
  * @return {boolean} True when this swipe carries private-interest context.
  */
-function isPrivateInterest(swipeData: SwipeDoc): boolean {
+function isPrivateInterest(swipeData: SwipeDocument): boolean {
   return (
     swipeData.reactionTargetLabel === "Private crush" ||
     swipeData.reactionTargetPreview === "Private post-event interest"
