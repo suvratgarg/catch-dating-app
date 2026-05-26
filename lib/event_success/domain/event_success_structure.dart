@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/sentinels.dart';
 
 enum EventSuccessUnitKind implements Labelled {
   wholeGroup('Whole group'),
@@ -224,15 +225,17 @@ class EventSuccessStructureConfig {
   EventSuccessStructureConfig copyWith({
     EventSuccessUnitKind? unitKind,
     int? unitSize,
-    Object? unitCount = _sentinel,
-    Object? rotationIntervalMinutes = _sentinel,
+    Object? unitCount = unsetSentinel,
+    Object? rotationIntervalMinutes = unsetSentinel,
     int? revealCountdownSeconds,
   }) {
     return EventSuccessStructureConfig(
       unitKind: unitKind ?? this.unitKind,
       unitSize: unitSize ?? this.unitSize,
-      unitCount: unitCount == _sentinel ? this.unitCount : unitCount as int?,
-      rotationIntervalMinutes: rotationIntervalMinutes == _sentinel
+      unitCount: identical(unitCount, unsetSentinel)
+          ? this.unitCount
+          : unitCount as int?,
+      rotationIntervalMinutes: identical(rotationIntervalMinutes, unsetSentinel)
           ? this.rotationIntervalMinutes
           : rotationIntervalMinutes as int?,
       revealCountdownSeconds:
@@ -287,8 +290,6 @@ class EventSuccessStructureEstimate {
 
   bool get isEven => minPeoplePerUnit == maxPeoplePerUnit;
 }
-
-const _sentinel = Object();
 
 int _intInRange(
   Object? value, {
