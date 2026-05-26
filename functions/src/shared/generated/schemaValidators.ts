@@ -31,6 +31,7 @@ import {ClubScheduleLockDocument} from "./clubScheduleLockDocument";
 import {UserEventScheduleLockDocument} from "./userEventScheduleLockDocument";
 import {SavedEventDocument} from "./savedEventDocument";
 import {PaymentDocument} from "./paymentDocument";
+import {HostPaymentAccountDocument} from "./hostPaymentAccountDocument";
 import {SwipeDocument} from "./swipeDocument";
 import {MatchDocument} from "./matchDocument";
 import {ChatMessageDocument} from "./chatMessageDocument";
@@ -81,6 +82,11 @@ import {VerifyRazorpayPaymentCallablePayload} from "./verifyRazorpayPaymentCalla
 import {EventBookingCallablePayload} from "./eventBookingCallablePayload";
 import {CreateRazorpayOrderCallablePayload} from "./createRazorpayOrderCallablePayload";
 import {RazorpayOrderCallableResponse} from "./razorpayOrderCallableResponse";
+import {CreateStripeCheckoutSessionCallablePayload} from "./createStripeCheckoutSessionCallablePayload";
+import {StripeCheckoutSessionCallableResponse} from "./stripeCheckoutSessionCallableResponse";
+import {CreateStripeHostOnboardingLinkCallablePayload} from "./createStripeHostOnboardingLinkCallablePayload";
+import {RefreshStripeHostPaymentAccountCallablePayload} from "./refreshStripeHostPaymentAccountCallablePayload";
+import {StripeHostOnboardingLinkCallableResponse} from "./stripeHostOnboardingLinkCallableResponse";
 import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePayload";
 import {PlacesAutocompleteCallableResponse} from "./placesAutocompleteCallableResponse";
 import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
@@ -120,6 +126,7 @@ import {
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
   paymentDocumentSchema,
+  hostPaymentAccountDocumentSchema,
   swipeDocumentSchema,
   matchDocumentSchema,
   chatMessageDocumentSchema,
@@ -170,6 +177,11 @@ import {
   eventBookingCallablePayloadSchema,
   createRazorpayOrderCallablePayloadSchema,
   razorpayOrderCallableResponseSchema,
+  createStripeCheckoutSessionCallablePayloadSchema,
+  stripeCheckoutSessionCallableResponseSchema,
+  createStripeHostOnboardingLinkCallablePayloadSchema,
+  refreshStripeHostPaymentAccountCallablePayloadSchema,
+  stripeHostOnboardingLinkCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
   placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
@@ -294,6 +306,10 @@ export const validatePaymentDocument:
   ValidateFunction<PaymentDocument> =
     ajv.compile(paymentDocumentSchema) as
       ValidateFunction<PaymentDocument>;
+export const validateHostPaymentAccountDocument:
+  ValidateFunction<HostPaymentAccountDocument> =
+    ajv.compile(hostPaymentAccountDocumentSchema) as
+      ValidateFunction<HostPaymentAccountDocument>;
 export const validateSwipeDocument:
   ValidateFunction<SwipeDocument> =
     ajv.compile(swipeDocumentSchema) as
@@ -494,6 +510,26 @@ export const validateRazorpayOrderCallableResponse:
   ValidateFunction<RazorpayOrderCallableResponse> =
     ajv.compile(razorpayOrderCallableResponseSchema) as
       ValidateFunction<RazorpayOrderCallableResponse>;
+export const validateCreateStripeCheckoutSessionCallablePayload:
+  ValidateFunction<CreateStripeCheckoutSessionCallablePayload> =
+    ajv.compile(createStripeCheckoutSessionCallablePayloadSchema) as
+      ValidateFunction<CreateStripeCheckoutSessionCallablePayload>;
+export const validateStripeCheckoutSessionCallableResponse:
+  ValidateFunction<StripeCheckoutSessionCallableResponse> =
+    ajv.compile(stripeCheckoutSessionCallableResponseSchema) as
+      ValidateFunction<StripeCheckoutSessionCallableResponse>;
+export const validateCreateStripeHostOnboardingLinkCallablePayload:
+  ValidateFunction<CreateStripeHostOnboardingLinkCallablePayload> =
+    ajv.compile(createStripeHostOnboardingLinkCallablePayloadSchema) as
+      ValidateFunction<CreateStripeHostOnboardingLinkCallablePayload>;
+export const validateRefreshStripeHostPaymentAccountCallablePayload:
+  ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload> =
+    ajv.compile(refreshStripeHostPaymentAccountCallablePayloadSchema) as
+      ValidateFunction<RefreshStripeHostPaymentAccountCallablePayload>;
+export const validateStripeHostOnboardingLinkCallableResponse:
+  ValidateFunction<StripeHostOnboardingLinkCallableResponse> =
+    ajv.compile(stripeHostOnboardingLinkCallableResponseSchema) as
+      ValidateFunction<StripeHostOnboardingLinkCallableResponse>;
 export const validatePlacesAutocompleteCallablePayload:
   ValidateFunction<PlacesAutocompleteCallablePayload> =
     ajv.compile(placesAutocompleteCallablePayloadSchema) as

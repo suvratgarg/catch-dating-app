@@ -782,7 +782,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.ios_share_rounded));
+      await tester.tap(find.byTooltip('Share club'));
       await _pumpClubUi(tester);
 
       expect(sharedClubId, 'club-1');
@@ -1006,18 +1006,22 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      expect(find.text('Booked'), findsOneWidget);
       expect(find.text('Join club'), findsNothing);
       expect(find.text('Leave club'), findsNothing);
-      expect(find.text('HOST TOOLS'), findsOneWidget);
-      expect(find.byIcon(Icons.ios_share_rounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
-      expect(find.text('Edit club'), findsOneWidget);
-      expect(find.text('Add event'), findsOneWidget);
       expect(find.text('Hosted by Asha Host'), findsOneWidget);
       expect(find.text('View profile'), findsOneWidget);
       expect(find.text('Club host'), findsNothing);
       expect(find.text('Hosts events in Saket'), findsNothing);
+
+      await tester.scrollUntilVisible(find.text('Booked'), 240);
+      await _pumpClubUi(tester);
+
+      expect(find.text('Booked'), findsOneWidget);
+      expect(find.text('HOST TOOLS'), findsOneWidget);
+      expect(find.text('Edit club'), findsOneWidget);
+      expect(find.text('Add event'), findsOneWidget);
 
       await tester.ensureVisible(find.text('Edit club'));
       await _pumpClubUi(tester);
@@ -1249,6 +1253,9 @@ void main() {
           ),
         ),
       );
+      await _pumpClubUi(tester);
+
+      await tester.scrollUntilVisible(find.text('Host team'), 240);
       await _pumpClubUi(tester);
 
       expect(find.text('Host team'), findsOneWidget);

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -48,7 +49,7 @@ class ClubHeroAppBar extends StatelessWidget {
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: CatchTopBarIconAction(
-          icon: Icons.arrow_back_ios_new_rounded,
+          icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
           backgroundColor: Colors.black.withValues(alpha: 0.35),
           foregroundColor: Colors.white,
@@ -60,7 +61,9 @@ class ClubHeroAppBar extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
-              icon: Icons.ios_share_rounded,
+              icon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
               tooltip: 'Share club',
               backgroundColor: Colors.black.withValues(alpha: 0.35),
               foregroundColor: Colors.white,
@@ -109,8 +112,8 @@ class ClubHeroAppBar extends StatelessWidget {
                   gapH8,
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on_outlined,
+                      Icon(
+                        CatchIcons.locationOnOutlined,
                         size: 16,
                         color: Colors.white70,
                       ),

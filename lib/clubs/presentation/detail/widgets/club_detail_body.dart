@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -22,6 +23,7 @@ import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
+import 'package:catch_dating_app/payments/presentation/host_payment_account_card.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -85,6 +87,8 @@ class ClubDetailBody extends StatelessWidget {
               ),
               gapH16,
               if (isOwner) ...[
+                HostPaymentAccountCard(club: club),
+                gapH16,
                 _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
                 gapH16,
               ],
@@ -305,12 +309,12 @@ class _ClubHostRow extends StatelessWidget {
           IconButton.filledTonal(
             tooltip: 'Message host',
             onPressed: onMessage,
-            icon: const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+            icon: Icon(CatchIcons.chatBubbleOutlineRounded, size: 20),
           ),
         ],
         if (showChevron) ...[
           gapW8,
-          Icon(Icons.chevron_right_rounded, size: 24, color: t.ink3),
+          Icon(CatchIcons.chevronRightRounded, size: 24, color: t.ink3),
         ],
       ],
     );
@@ -355,7 +359,7 @@ class _ClubOwnerHostManagementSection extends ConsumerWidget {
                 onPressed: actionPending
                     ? null
                     : () => unawaited(_showAddHostSheet(context)),
-                icon: const Icon(Icons.person_add_alt_1_rounded),
+                icon: Icon(CatchIcons.personAddAlt1Rounded),
               ),
             ],
           ),
@@ -495,7 +499,7 @@ class _OwnerHostRow extends StatelessWidget {
         PopupMenuButton<String>(
           tooltip: 'Host actions',
           enabled: canManage,
-          icon: Icon(Icons.more_horiz_rounded, color: t.ink2),
+          icon: Icon(CatchIcons.moreHorizRounded, color: t.ink2),
           onSelected: (value) {
             if (value == 'transfer') onTransfer();
             if (value == 'remove') onRemove();
@@ -554,7 +558,7 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
         onPressed: mutation.isPending ? null : () => unawaited(_submit()),
         isLoading: mutation.isPending,
         fullWidth: true,
-        icon: const Icon(Icons.person_add_alt_1_rounded),
+        icon: Icon(CatchIcons.personAddAlt1Rounded),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -562,7 +566,7 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
           CatchTextField(
             label: 'Phone number',
             controller: _controller,
-            prefixIcon: const Icon(Icons.phone_outlined),
+            prefixIcon: Icon(CatchIcons.phoneOutlined),
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.done,
             onSubmitted: (_) => unawaited(_submit()),
@@ -597,7 +601,7 @@ class _ClubContactSection extends ConsumerWidget {
           gapH12,
           if (club.instagramHandle != null)
             _ContactRow(
-              icon: Icons.alternate_email_rounded,
+              icon: CatchIcons.alternateEmailRounded,
               label: club.instagramHandle!,
               onTap: () => unawaited(
                 links.openExternal(_instagramUri(club.instagramHandle!)),
@@ -605,13 +609,13 @@ class _ClubContactSection extends ConsumerWidget {
             ),
           if (club.phoneNumber != null)
             _ContactRow(
-              icon: Icons.call_outlined,
+              icon: CatchIcons.callOutlined,
               label: club.phoneNumber!,
               onTap: () => unawaited(links.open(_phoneUri(club.phoneNumber!))),
             ),
           if (club.email != null)
             _ContactRow(
-              icon: Icons.email_outlined,
+              icon: CatchIcons.emailOutlined,
               label: club.email!,
               onTap: () => unawaited(links.open(_emailUri(club.email!))),
             ),
@@ -664,7 +668,7 @@ class _ContactRow extends StatelessWidget {
                     style: CatchTextStyles.bodyLead(context, color: t.ink),
                   ),
                 ),
-                Icon(Icons.open_in_new_rounded, size: 14, color: t.ink3),
+                Icon(CatchIcons.openInNewRounded, size: 14, color: t.ink3),
               ],
             ),
           ),

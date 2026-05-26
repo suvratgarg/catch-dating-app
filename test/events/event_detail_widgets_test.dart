@@ -336,7 +336,7 @@ void main() {
         ],
       );
 
-      expect(find.text('Unavailable on this platform'), findsOneWidget);
+      expect(find.text('Paid booking unavailable'), findsOneWidget);
       expect(
         tester.widget<CatchButton>(find.byType(CatchButton)).onPressed,
         isNull,

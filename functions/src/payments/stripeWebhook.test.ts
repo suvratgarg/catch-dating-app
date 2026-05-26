@@ -1,0 +1,375 @@
+/* eslint-disable require-jsdoc */
+import assert from "node:assert/strict";
+import * as crypto from "node:crypto";
+import test from "node:test";
+import {HttpsError} from "firebase-functions/v2/https";
+import {stripeWebhookHandler} from "./stripeWebhook";
+import {
+  StripeCheckoutSessionSnapshot,
+  StripeClient,
+} from "./stripe";
+
+test("stripeWebhookHandler signs up and completes trusted checkout sessions",
+  async () => {
+    const firestore = new FakeFirestore({
+      "payments/payment_1": {
+        status: "pending",
+        createdAt: "created-at",
+      },
+    });
+    const signUps: Array<{
+      eventId: string;
+      userId: string;
+      paymentId: string;
+      options: Record<string, unknown>;
+    }> = [];
+    const payload = checkoutEventPayload("checkout.session.completed");
+
+    await stripeWebhookHandler(
+      payload,
+      stripeSignature(payload),
+      "whsec_test",
+      {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        stripe: () => stripeClient({
+          retrieveCheckoutSession: async () => checkoutSession(),
+        }),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async (_db, eventId, userId, paymentId, options) => {
+          if (paymentId === undefined) {
+            throw new Error("paymentId is required.");
+          }
+          signUps.push({eventId, userId, paymentId, options: options ?? {}});
+        },
+      }
+    );
+
+    assert.deepEqual(signUps, [{
+      eventId: "event-1",
+      userId: "runner-1",
+      paymentId: "payment_1",
+      options: {hasValidInvite: false},
+    }]);
+    assert.deepEqual(firestore.data["payments/payment_1"], {
+      status: "completed",
+      createdAt: "created-at",
+      orderId: "cs_test_123",
+      paymentId: "payment_1",
+      eventId: "event-1",
+      userId: "runner-1",
+      amount: 3500,
+      amountMinor: 3500,
+      currency: "USD",
+      provider: "stripe",
+      providerPaymentId: "pi_test_123",
+      checkoutSessionId: "cs_test_123",
+      signUpFailed: false,
+      updatedAt: "server-now",
+    });
+  });
+
+test("stripeWebhookHandler refunds when booking loses the race after payment",
+  async () => {
+    const firestore = new FakeFirestore({
+      "payments/payment_1": {
+        status: "pending",
+        createdAt: "created-at",
+      },
+    });
+    const refunds: Array<{paymentIntentId: string; amountMinor: number}> = [];
+    const payload = checkoutEventPayload("checkout.session.completed");
+
+    await assert.rejects(
+      stripeWebhookHandler(payload, stripeSignature(payload), "whsec_test", {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        stripe: () => stripeClient({
+          retrieveCheckoutSession: async () => checkoutSession(),
+          createRefund: async (input) => {
+            refunds.push(input);
+          },
+        }),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          throw new HttpsError("failed-precondition", "This event is full.");
+        },
+      }),
+      isHttpsError("failed-precondition", "This event is full.")
+    );
+
+    assert.deepEqual(refunds, [{
+      paymentIntentId: "pi_test_123",
+      amountMinor: 3500,
+    }]);
+    assert.equal(
+      (firestore.data["payments/payment_1"] as Record<string, unknown>).status,
+      "refunded"
+    );
+    assert.equal(
+      (firestore.data["payments/payment_1"] as Record<string, unknown>)
+        .signUpFailed,
+      true
+    );
+  });
+
+test("stripeWebhookHandler marks expired checkout sessions as failed",
+  async () => {
+    const firestore = new FakeFirestore({
+      "payments/payment_1": {
+        status: "pending",
+        checkoutSessionId: "cs_test_123",
+        createdAt: "created-at",
+      },
+    });
+    const payload = checkoutEventPayload("checkout.session.expired");
+
+    await stripeWebhookHandler(
+      payload,
+      stripeSignature(payload),
+      "whsec_test",
+      {
+        firestore: () => firestore as unknown as FirebaseFirestore.Firestore,
+        stripe: () => stripeClient({}),
+        serverTimestamp: () => "server-now",
+        signUpForEvent: async () => {
+          throw new Error("signUpForEvent should not be called.");
+        },
+      }
+    );
+
+    assert.deepEqual(firestore.data["payments/payment_1"], {
+      status: "failed",
+      checkoutSessionId: "cs_test_123",
+      createdAt: "created-at",
+      updatedAt: "server-now",
+    });
+  });
+
+test("stripeWebhookHandler rejects invalid webhook signatures", async () => {
+  const payload = checkoutEventPayload("checkout.session.completed");
+
+  await assert.rejects(
+    stripeWebhookHandler(payload, "t=123,v1=bad", "whsec_test", {
+      firestore: () => new FakeFirestore({}) as unknown as
+        FirebaseFirestore.Firestore,
+      stripe: () => stripeClient({}),
+      serverTimestamp: () => "server-now",
+      signUpForEvent: async () => undefined,
+    }),
+    /Invalid Stripe webhook signature/
+  );
+});
+
+function checkoutEventPayload(type: string): Buffer {
+  return Buffer.from(JSON.stringify({
+    id: "evt_test_123",
+    type,
+    data: {
+      object: {
+        id: "cs_test_123",
+      },
+    },
+  }));
+}
+
+function stripeSignature(payload: Buffer): string {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const digest = crypto
+    .createHmac("sha256", "whsec_test")
+    .update(`${timestamp}.`)
+    .update(payload)
+    .digest("hex");
+  return `t=${timestamp},v1=${digest}`;
+}
+
+function checkoutSession(
+  overrides: Partial<StripeCheckoutSessionSnapshot> = {}
+): StripeCheckoutSessionSnapshot {
+  return {
+    id: "cs_test_123",
+    url: null,
+    paymentStatus: "paid",
+    amountTotal: 3500,
+    currency: "USD",
+    paymentIntentId: "pi_test_123",
+    metadata: {
+      paymentId: "payment_1",
+      eventId: "event-1",
+      userId: "runner-1",
+      amountMinor: "3500",
+      currency: "USD",
+      inviteVerified: "false",
+    },
+    ...overrides,
+  };
+}
+
+function stripeClient(overrides: Partial<StripeClient>): StripeClient {
+  return {
+    createConnectedAccount: async () => {
+      throw new Error("createConnectedAccount should not be called.");
+    },
+    retrieveConnectedAccount: async () => {
+      throw new Error("retrieveConnectedAccount should not be called.");
+    },
+    createAccountLink: async () => {
+      throw new Error("createAccountLink should not be called.");
+    },
+    createCheckoutSession: async () => {
+      throw new Error("createCheckoutSession should not be called.");
+    },
+    retrieveCheckoutSession: async () => {
+      throw new Error("retrieveCheckoutSession should not be called.");
+    },
+    createRefund: async () => {
+      throw new Error("createRefund should not be called.");
+    },
+    ...overrides,
+  };
+}
+
+function isHttpsError(expectedCode: string, expectedMessage: string) {
+  return (error: unknown) =>
+    error instanceof HttpsError &&
+    error.code === expectedCode &&
+    error.message === expectedMessage;
+}
+
+interface QueryFilter {
+  field: string;
+  op: FirebaseFirestore.WhereFilterOp;
+  value: unknown;
+}
+
+class FakeFirestore {
+  constructor(readonly data: Record<string, unknown>) {}
+
+  collection(collectionPath: string) {
+    return new FakeCollectionRef(this, collectionPath);
+  }
+}
+
+class FakeCollectionRef {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly collectionPath: string
+  ) {}
+
+  doc(id: string) {
+    return new FakeDocRef(this.firestore, this.collectionPath, id);
+  }
+
+  where(
+    field: string,
+    op: FirebaseFirestore.WhereFilterOp,
+    value: unknown
+  ) {
+    return new FakeQuery(this.firestore, this.collectionPath, [{
+      field,
+      op,
+      value,
+    }]);
+  }
+}
+
+class FakeQuery {
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly collectionPath: string,
+    private readonly filters: QueryFilter[],
+    private readonly limitCount?: number
+  ) {}
+
+  limit(limitCount: number) {
+    return new FakeQuery(
+      this.firestore,
+      this.collectionPath,
+      this.filters,
+      limitCount
+    );
+  }
+
+  async get() {
+    const prefix = `${this.collectionPath}/`;
+    let docs = Object.entries(this.firestore.data)
+      .filter(([path]) => path.startsWith(prefix) &&
+        !path.slice(prefix.length).includes("/"))
+      .map(([path, data]) => new FakeQueryDocSnapshot(
+        this.firestore,
+        this.collectionPath,
+        path.slice(prefix.length),
+        data
+      ))
+      .filter((doc) => this.filters.every((filter) =>
+        matchesFilter(doc.data(), filter)
+      ));
+    if (this.limitCount !== undefined) docs = docs.slice(0, this.limitCount);
+    return {
+      docs,
+      empty: docs.length === 0,
+    };
+  }
+}
+
+class FakeDocRef {
+  readonly path: string;
+
+  constructor(
+    private readonly firestore: FakeFirestore,
+    collectionPath: string,
+    readonly id: string
+  ) {
+    this.path = `${collectionPath}/${id}`;
+  }
+
+  async get() {
+    return new FakeDocSnapshot(
+      this,
+      this.firestore.data[this.path]
+    );
+  }
+
+  async set(data: Record<string, unknown>, options?: {merge?: boolean}) {
+    this.firestore.data[this.path] = options?.merge === true ?
+      {
+        ...(this.firestore.data[this.path] as Record<string, unknown>),
+        ...data,
+      } :
+      data;
+  }
+}
+
+class FakeDocSnapshot {
+  constructor(
+    readonly ref: FakeDocRef,
+    private readonly value: unknown
+  ) {}
+
+  get id(): string {
+    return this.ref.id;
+  }
+
+  get exists(): boolean {
+    return this.value !== undefined;
+  }
+
+  data() {
+    return this.value;
+  }
+}
+
+class FakeQueryDocSnapshot extends FakeDocSnapshot {
+  constructor(
+    firestore: FakeFirestore,
+    collectionPath: string,
+    id: string,
+    value: unknown
+  ) {
+    super(new FakeDocRef(firestore, collectionPath, id), value);
+  }
+}
+
+function matchesFilter(data: unknown, filter: QueryFilter): boolean {
+  const value = (data as Record<string, unknown>)[filter.field];
+  if (filter.op === "==") return value === filter.value;
+  throw new Error(`Unsupported fake query op ${filter.op}`);
+}

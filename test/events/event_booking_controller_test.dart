@@ -94,6 +94,7 @@ void main() {
         fakePaymentRepository.lastProcessPaymentCall!.userContact,
         '+919876543210',
       );
+      expect(fakePaymentRepository.lastProcessPaymentCall!.currencyCode, 'INR');
       expect(fakePaymentRepository.lastProcessPaymentCall!.inviteCode, isNull);
       expect(fakePaymentRepository.bookFreeEventCalled, isFalse);
     });
@@ -146,6 +147,30 @@ void main() {
         throwsA(isA<PaidBookingUnsupportedException>()),
       );
       expect(fakePaymentRepository.processPaymentCalled, isFalse);
+    });
+
+    test('routes non-INR paid bookings to the payment repository', () async {
+      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
+      final container = ProviderContainer(
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      final controller = container.read(
+        eventBookingControllerProvider.notifier,
+      );
+
+      await controller.book(
+        event: buildEvent(priceInPaise: 50000, currency: 'USD'),
+        user: buildUser(),
+      );
+
+      expect(fakePaymentRepository.processPaymentCalled, isTrue);
+      expect(fakePaymentRepository.lastProcessPaymentCall!.currencyCode, 'USD');
     });
 
     test('throws before booking when the user is not signed in', () async {

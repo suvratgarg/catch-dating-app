@@ -30,6 +30,7 @@ import {
   userEventScheduleLockDocumentSchema,
   savedEventDocumentSchema,
   paymentDocumentSchema,
+  hostPaymentAccountDocumentSchema,
   swipeDocumentSchema,
   matchDocumentSchema,
   chatMessageDocumentSchema,
@@ -80,6 +81,11 @@ import {
   eventBookingCallablePayloadSchema,
   createRazorpayOrderCallablePayloadSchema,
   razorpayOrderCallableResponseSchema,
+  createStripeCheckoutSessionCallablePayloadSchema,
+  stripeCheckoutSessionCallableResponseSchema,
+  createStripeHostOnboardingLinkCallablePayloadSchema,
+  refreshStripeHostPaymentAccountCallablePayloadSchema,
+  stripeHostOnboardingLinkCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
   placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
@@ -129,6 +135,7 @@ export const validateClubScheduleLockDocument = ajv.compile(clubScheduleLockDocu
 export const validateUserEventScheduleLockDocument = ajv.compile(userEventScheduleLockDocumentSchema);
 export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
 export const validatePaymentDocument = ajv.compile(paymentDocumentSchema);
+export const validateHostPaymentAccountDocument = ajv.compile(hostPaymentAccountDocumentSchema);
 export const validateSwipeDocument = ajv.compile(swipeDocumentSchema);
 export const validateMatchDocument = ajv.compile(matchDocumentSchema);
 export const validateChatMessageDocument = ajv.compile(chatMessageDocumentSchema);
@@ -179,6 +186,11 @@ export const validateVerifyRazorpayPaymentCallablePayload = ajv.compile(verifyRa
 export const validateEventBookingCallablePayload = ajv.compile(eventBookingCallablePayloadSchema);
 export const validateCreateRazorpayOrderCallablePayload = ajv.compile(createRazorpayOrderCallablePayloadSchema);
 export const validateRazorpayOrderCallableResponse = ajv.compile(razorpayOrderCallableResponseSchema);
+export const validateCreateStripeCheckoutSessionCallablePayload = ajv.compile(createStripeCheckoutSessionCallablePayloadSchema);
+export const validateStripeCheckoutSessionCallableResponse = ajv.compile(stripeCheckoutSessionCallableResponseSchema);
+export const validateCreateStripeHostOnboardingLinkCallablePayload = ajv.compile(createStripeHostOnboardingLinkCallablePayloadSchema);
+export const validateRefreshStripeHostPaymentAccountCallablePayload = ajv.compile(refreshStripeHostPaymentAccountCallablePayloadSchema);
+export const validateStripeHostOnboardingLinkCallableResponse = ajv.compile(stripeHostOnboardingLinkCallableResponseSchema);
 export const validatePlacesAutocompleteCallablePayload = ajv.compile(placesAutocompleteCallablePayloadSchema);
 export const validatePlacesAutocompleteCallableResponse = ajv.compile(placesAutocompleteCallableResponseSchema);
 export const validatePlaceDetailsCallablePayload = ajv.compile(placeDetailsCallablePayloadSchema);

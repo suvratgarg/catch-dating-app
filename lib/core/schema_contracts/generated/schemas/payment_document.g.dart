@@ -65,10 +65,24 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       'maximum': 100000000,
       'x-catch-ownership': 'callable-owned',
     },
+    'amountMinor': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100000000,
+      'x-catch-ownership': 'callable-owned',
+    },
     'currency': <String, Object?>{
       'type': 'string',
       'minLength': 3,
       'maxLength': 3,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'provider': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'razorpay',
+        'stripe',
+      ],
       'x-catch-ownership': 'callable-owned',
     },
     'status': <String, Object?>{
@@ -79,6 +93,42 @@ const schemaPaymentDocumentSchema = <String, Object?>{
         'failed',
         'refunded',
       ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'providerPaymentId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'checkoutSessionId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'hostUserId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'stripeAccountId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'applicationFeeAmount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100000000,
       'x-catch-ownership': 'callable-owned',
     },
     'signUpFailed': <String, Object?>{

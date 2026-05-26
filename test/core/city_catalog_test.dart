@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -34,6 +35,26 @@ void main() {
     test('unknown city labels fall back to title case', () {
       expect(cityLabel('race-course-road'), 'Race Course Road');
       expect(cityOptionByName('unknown-city'), isNull);
+    });
+
+    test('parses currency amounts using each currency exponent', () {
+      expect(
+        parseMajorCurrencyAmountToMinorUnits('249.50', currencyCode: 'INR'),
+        24950,
+      );
+      expect(
+        parseMajorCurrencyAmountToMinorUnits('19.99', currencyCode: 'USD'),
+        1999,
+      );
+      expect(
+        parseMajorCurrencyAmountToMinorUnits('2500', currencyCode: 'JPY'),
+        2500,
+      );
+      expect(
+        parseMajorCurrencyAmountToMinorUnits('2500.25', currencyCode: 'JPY'),
+        isNull,
+      );
+      expect(minorCurrencyAmountInputText(1999, currencyCode: 'USD'), '19.99');
     });
   });
 }

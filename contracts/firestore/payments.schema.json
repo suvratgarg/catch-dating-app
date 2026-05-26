@@ -55,10 +55,24 @@
       "maximum": 100000000,
       "x-catch-ownership": "callable-owned"
     },
+    "amountMinor": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
     "currency": {
       "type": "string",
       "minLength": 3,
       "maxLength": 3,
+      "x-catch-ownership": "callable-owned"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "razorpay",
+        "stripe"
+      ],
       "x-catch-ownership": "callable-owned"
     },
     "status": {
@@ -69,6 +83,40 @@
         "failed",
         "refunded"
       ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "providerPaymentId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "checkoutSessionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostUserId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "stripeAccountId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "applicationFeeAmount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000,
       "x-catch-ownership": "callable-owned"
     },
     "signUpFailed": {

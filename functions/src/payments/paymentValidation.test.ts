@@ -241,7 +241,9 @@ test("buildPaymentRecord always writes signUpFailed explicitly", () => {
       paymentId: "pay_123",
       eventId: "event-1",
       amount: 25000,
+      amountMinor: 25000,
       currency: "INR",
+      provider: "razorpay",
       status: "completed",
       signUpFailed: false,
     }

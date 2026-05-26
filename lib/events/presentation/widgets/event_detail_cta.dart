@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -63,7 +64,7 @@ class EventDetailCta extends ConsumerWidget {
         requiresHostApproval && eligibility is GenderCapacityReached;
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
-        .supportsPaidBookings;
+        .supportsPaidBookingsForCurrency(event.currency);
     final quotedPriceInPaise = event.priceInPaiseFor(userProfile);
     final isFreeForViewer = quotedPriceInPaise == 0;
     final needsRunPreferences =
@@ -116,7 +117,7 @@ class EventDetailCta extends ConsumerWidget {
           switch (status) {
             EventSignUpStatus.eligible => BottomCTA(
               label: !isFreeForViewer && !supportsPaid
-                  ? 'Unavailable on this platform'
+                  ? 'Paid booking unavailable'
                   : needsRunPreferences
                   ? 'Set run preferences'
                   : hasApprovedJoinRequest
@@ -355,7 +356,7 @@ class BookedLeading extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.check_circle_rounded, color: t.primary, size: 18),
+        Icon(CatchIcons.checkCircleRounded, color: t.primary, size: 18),
         gapW6,
         Text("You're in!", style: CatchTextStyles.labelL(context)),
       ],
@@ -372,7 +373,7 @@ class AttendedLeading extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.directions_run_rounded, color: t.primary, size: 18),
+        Icon(CatchIcons.directionsRunRounded, color: t.primary, size: 18),
         gapW6,
         Text('Completed', style: CatchTextStyles.labelL(context)),
       ],

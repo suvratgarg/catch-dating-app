@@ -11,8 +11,15 @@ export interface PaymentDocument {
   paymentId: string;
   eventId: string;
   amount: number;
+  amountMinor?: number;
   currency: string;
+  provider?: "razorpay" | "stripe";
   status: "pending" | "completed" | "failed" | "refunded";
+  providerPaymentId?: string | null;
+  checkoutSessionId?: string | null;
+  hostUserId?: string;
+  stripeAccountId?: string | null;
+  applicationFeeAmount?: number;
   signUpFailed: boolean;
   /**
    * Serialized Firestore Timestamp fixture shape.

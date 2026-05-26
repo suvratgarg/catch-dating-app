@@ -218,13 +218,14 @@ class PaymentVerificationFailedException extends AppException {
 
 class PaidBookingUnsupportedException extends AppException {
   const PaidBookingUnsupportedException({
+    String message = 'Paid bookings are only available on Android and iOS.',
     String? debugMessage,
     Object? cause,
     StackTrace? stackTrace,
     BackendErrorContext? context,
   }) : super(
          'paid-booking-unsupported',
-         'Paid bookings are only available on Android and iOS.',
+         message,
          debugMessage: debugMessage,
          cause: cause,
          stackTrace: stackTrace,

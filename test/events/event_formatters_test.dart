@@ -43,6 +43,11 @@ void main() {
         EventFormatters.priceInPaise(50000, currencyCode: 'NPR'),
         'Rs 500',
       );
+      expect(EventFormatters.priceInPaise(2500, currencyCode: 'JPY'), '¥2,500');
+      expect(
+        EventFormatters.priceInPaise(1999, currencyCode: 'ZAR'),
+        'ZAR 19.99',
+      );
       expect(EventFormatters.durationMinutes(45), '45m');
       expect(EventFormatters.durationMinutes(120), '2h');
       expect(EventFormatters.durationMinutes(90), '1h 30m');

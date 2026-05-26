@@ -35,6 +35,9 @@ class PaymentConfirmationController {
   Future<bool> openDirections(Event event) =>
       _links.openExternal(directionsUri(event));
 
+  Future<bool> openCheckout(Uri checkoutUrl) =>
+      _links.openExternal(checkoutUrl);
+
   Future<void> inviteFriend(Event event) =>
       _share.shareText(text: inviteText(event), subject: inviteSubject(event));
 

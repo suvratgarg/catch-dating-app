@@ -1056,10 +1056,48 @@ export interface PaymentDocument {
   paymentId: string;
   eventId: string;
   amount: number;
+  amountMinor?: number;
   currency: string;
+  provider?: "razorpay" | "stripe";
   status: "pending" | "completed" | "failed" | "refunded";
+  providerPaymentId?: string | null;
+  checkoutSessionId?: string | null;
+  hostUserId?: string;
+  stripeAccountId?: string | null;
+  applicationFeeAmount?: number;
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned payment provider account state for a host. Stored at hostPaymentAccounts/{uid}.
+ */
+export interface HostPaymentAccountDocument {
+  userId: string;
+  provider: "stripe";
+  country: string;
+  defaultCurrency: string;
+  stripeAccountId: string;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
+  detailsSubmitted: boolean;
+  onboardingStatus: "notStarted" | "pending" | "complete" | "restricted";
+  disabledReason?: string | null;
+  /**
+   * @maxItems 80
+   */
+  requirementsCurrentlyDue: string[];
+  /**
+   * @maxItems 80
+   */
+  requirementsPastDue: string[];
+  /**
+   * @maxItems 80
+   */
+  requirementsPendingVerification: string[];
+  lastStripeEventId?: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

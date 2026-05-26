@@ -13,6 +13,7 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
       "clubId",
       "meetingPoint",
       "description",
+      "currency",
     ],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
@@ -25,6 +26,9 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     payload.meetingLocation = normalizeMeetingLocation(
       payload.meetingLocation
     );
+  }
+  if (typeof payload.currency === "string") {
+    payload.currency = payload.currency.toUpperCase();
   }
   if (isRecord(payload.eventSuccessDefaults)) {
     payload.eventSuccessDefaults = normalizeEventSuccessDefaults(

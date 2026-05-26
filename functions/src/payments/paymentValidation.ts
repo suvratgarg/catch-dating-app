@@ -220,7 +220,9 @@ export function buildPaymentRecord({
     paymentId,
     eventId,
     amount: amountInPaise,
+    amountMinor: amountInPaise,
     currency,
+    provider: "razorpay" as const,
     status,
     signUpFailed,
   };
