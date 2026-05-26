@@ -112,23 +112,6 @@ extension PublicProfilePhotos on PublicProfile {
 
 extension PublicProfileRunPreferences on PublicProfile {
   RunningPreferences get runningPreferences => activityPreferences.running;
-  int get paceMinSecsPerKm => runningPreferences.paceMinSecsPerKm;
-  int get paceMaxSecsPerKm => runningPreferences.paceMaxSecsPerKm;
-  List<PreferredDistance> get preferredDistances =>
-      runningPreferences.preferredDistances;
-  List<RunReason> get runningReasons => runningPreferences.runningReasons;
-  List<PreferredRunTime> get preferredRunTimes =>
-      runningPreferences.preferredRunTimes;
-  int get runPreferencesVersion => runningPreferences.version;
-
-  bool get hasCurrentRunPreferences {
-    return runPreferencesVersion >= currentRunPreferencesVersion ||
-        preferredDistances.isNotEmpty ||
-        runningReasons.isNotEmpty ||
-        preferredRunTimes.isNotEmpty ||
-        paceMinSecsPerKm != defaultPaceMinSecsPerKm ||
-        paceMaxSecsPerKm != defaultPaceMaxSecsPerKm;
-  }
 }
 
 void _migrateActivityPreferences(Map<String, dynamic> migrated) {

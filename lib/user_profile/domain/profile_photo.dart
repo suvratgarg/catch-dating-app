@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/sentinels.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -84,8 +85,8 @@ class ProfilePhoto {
     String? thumbnailUrl,
     String? storagePath,
     String? thumbnailStoragePath,
-    Object? prompt = _sentinel,
-    Object? moderation = _sentinel,
+    Object? prompt = unsetSentinel,
+    Object? moderation = unsetSentinel,
     int? position,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -96,10 +97,10 @@ class ProfilePhoto {
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       storagePath: storagePath ?? this.storagePath,
       thumbnailStoragePath: thumbnailStoragePath ?? this.thumbnailStoragePath,
-      prompt: identical(prompt, _sentinel)
+      prompt: identical(prompt, unsetSentinel)
           ? this.prompt
           : prompt as PhotoPromptAnswer?,
-      moderation: identical(moderation, _sentinel)
+      moderation: identical(moderation, unsetSentinel)
           ? this.moderation
           : moderation as ProfilePhotoModeration?,
       position: position ?? this.position,
@@ -412,5 +413,3 @@ String _stripExtension(String fileName) {
   final dot = fileName.lastIndexOf('.');
   return dot <= 0 ? fileName : fileName.substring(0, dot);
 }
-
-const Object _sentinel = Object();
