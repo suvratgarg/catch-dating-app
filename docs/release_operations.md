@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.0
-updated: 2026-05-22
+version: 1.7.1
+updated: 2026-05-26
 owner: recursive_audit_loop
 status: active
 ---
@@ -314,6 +314,39 @@ After production Functions deploys, sync callable invokers if needed:
 npm --prefix functions run sync:callable-invokers -- \
   catchdates-dev catchdates-staging catch-dating-app-64e51
 ```
+
+### Explore Event Discovery Rollout
+
+When a release depends on direct event discovery, do the safe checks before any
+write:
+
+```bash
+node tool/data/backfill_event_discovery_fields.mjs --env dev --summary-only
+node tool/data/backfill_event_discovery_fields.mjs --env staging --summary-only
+node tool/data/backfill_event_discovery_fields.mjs --env prod --summary-only
+firebase firestore:indexes --project catchdates-dev --pretty
+firebase firestore:indexes --project catchdates-staging --pretty
+firebase firestore:indexes --project catch-dating-app-64e51 --pretty
+```
+
+Read-only index listings on 2026-05-26 showed dev, staging, and prod still had
+only the legacy `events` indexes (`status/startTime` and `clubId/startTime`).
+Deploy `firestore:indexes` and wait for every discovery index to become
+`READY` before enabling an app build that relies on the direct event query.
+
+Then deploy Functions and indexes before applying any backfill. Apply the
+backfill only after reviewing the dry-run counts for that environment:
+
+```bash
+./tool/deploy_firebase_targets.sh dev functions,firestore:indexes
+node tool/data/backfill_event_discovery_fields.mjs --env dev --apply
+```
+
+Repeat for staging, then prod. Production backfill requires `--allow-prod`.
+After each environment, smoke test Explore with city, time, activity, distance,
+map pin, saved-event, signed-up-event, hosted-event, and club-metadata cases.
+In a release-like build with observability enabled, verify
+`explore_event_opened` and `explore_map_event_selected` in Analytics DebugView.
 
 ## Smoke Tests
 
