@@ -358,6 +358,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
   '\$id': 'https://catch.app/contracts/patches/update_user_profile.schema.json',
   'title': 'UpdateUserProfileCallablePayload',
   'description': 'Callable request body for updateUserProfile. Values are normalized before Firestore writes.',
+  'x-callable-shape': 'patch',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[

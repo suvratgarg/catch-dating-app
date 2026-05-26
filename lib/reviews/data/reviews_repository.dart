@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
+    show DeleteEventReviewCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/reviews/data/review_callable_adapters.dart';
-import 'package:catch_dating_app/reviews/data/review_callable_dtos.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';

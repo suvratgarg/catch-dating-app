@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "logicalName": "profilePhoto",
-  "currentPhase": "retire_legacy_arrays_local",
+  "currentPhase": "retire_legacy_arrays_complete",
   "reason": "Profile photos were historically represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape was easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and per-photo analytics because every consumer had to keep indexes aligned.",
   "legacyShape": {
     "userProfileFields": [
@@ -85,8 +85,8 @@
     },
     {
       "id": "retire_legacy_arrays",
-      "status": "complete_local",
-      "description": "Remote Config min_version is 1.0.1. Local contracts, Dart models, Functions projections, rules, validators, and demo/data tooling now treat profilePhotos as the only canonical profile photo field. Live document cleanup remains dry-run-first through tool/data/retire_legacy_profile_fields.mjs."
+      "status": "complete_remote",
+      "description": "Remote Config min_version is 1.0.1. Local contracts, Dart models, Functions projections, rules, validators, and demo/data tooling now treat profilePhotos as the only canonical profile photo field. Live document cleanup was applied dry-run-first in dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs."
     }
   ],
   "knownConsumers": [
@@ -133,9 +133,26 @@
     },
     "retireLegacyArrays": {
       "localCutoverAt": "2026-05-25",
+      "remoteCleanupAt": "2026-05-26",
       "remoteConfigMinVersion": "1.0.1",
       "cleanupTool": "tool/data/retire_legacy_profile_fields.mjs",
-      "remoteDataCleanup": "pending explicit environment apply"
+      "remoteDataCleanup": {
+        "dev": {
+          "usersChanged": 73,
+          "publicProfilesChanged": 73,
+          "verificationChangedAfter": 0
+        },
+        "staging": {
+          "usersChanged": 0,
+          "publicProfilesChanged": 0,
+          "verificationChangedAfter": 0
+        },
+        "prod": {
+          "usersChanged": 89,
+          "publicProfilesChanged": 86,
+          "verificationChangedAfter": 0
+        }
+      }
     }
   }
 }

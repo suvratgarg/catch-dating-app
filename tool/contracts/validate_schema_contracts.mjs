@@ -29,6 +29,8 @@ function main() {
 
   checkSchemaFiles(parsed);
   checkLocalRefs(parsed);
+  checkCallableShapeMarkers(parsed);
+  checkWireShapeExtensions(parsed);
   checkPromptCatalogs(parsed);
   checkFixturePlacement(parsed);
   checkCurrentCodeDrift(parsed);
@@ -51,6 +53,136 @@ function checkSchemaFiles(parsed) {
       fail(`${relative(file)}: missing string $id.`);
     }
   }
+}
+
+function checkCallableShapeMarkers(parsed) {
+  for (const [file, json] of parsed.entries()) {
+    if (!file.endsWith(".schema.json")) continue;
+    const shape = json["x-callable-shape"];
+    if (shape === undefined) continue;
+    if (shape !== "patch") {
+      fail(`${relative(file)}: x-callable-shape must be "patch" when present.`);
+      continue;
+    }
+    if (!isCallableSchemaPath(file)) {
+      fail(
+        `${relative(file)}: x-callable-shape is only valid under ` +
+        `contracts/callables/ or contracts/patches/.`
+      );
+    }
+    if (
+      json.type !== "object" ||
+      !Array.isArray(json.required) ||
+      !json.required.includes("fields") ||
+      json.properties?.fields?.type !== "object" ||
+      !json.properties?.fields?.properties
+    ) {
+      fail(
+        `${relative(file)}: x-callable-shape "patch" requires a top-level ` +
+        `required fields object.`
+      );
+    }
+  }
+}
+
+function isCallableSchemaPath(file) {
+  return file.startsWith(path.join(contractRoot, "callables") + path.sep) ||
+    file.startsWith(path.join(contractRoot, "patches") + path.sep);
+}
+
+function checkWireShapeExtensions(parsed) {
+  for (const [file, json] of parsed.entries()) {
+    if (!file.endsWith(".schema.json")) continue;
+    visitWireShapeNode(json, file, "#", parsed);
+  }
+}
+
+function visitWireShapeNode(node, file, pointer, parsed) {
+  if (Array.isArray(node)) {
+    node.forEach((item, index) => {
+      visitWireShapeNode(item, file, `${pointer}/${index}`, parsed);
+    });
+    return;
+  }
+  if (!node || typeof node !== "object") return;
+
+  if (
+    node["x-wire-shape-extends"] !== undefined ||
+    node["x-wire-shape-injects"] !== undefined
+  ) {
+    validateWireShapeNode(node, file, pointer, parsed);
+  }
+
+  for (const [key, value] of Object.entries(node)) {
+    visitWireShapeNode(value, file, `${pointer}/${escapeJsonPointer(key)}`, parsed);
+  }
+}
+
+function validateWireShapeNode(node, file, pointer, parsed) {
+  const label = `${relative(file)}${pointer}`;
+  const extendsPath = node["x-wire-shape-extends"];
+  const injects = node["x-wire-shape-injects"];
+
+  if (typeof extendsPath !== "string" || extendsPath.length === 0) {
+    fail(`${label}: x-wire-shape-extends must be a non-empty string.`);
+    return;
+  }
+  if (!Array.isArray(injects) || injects.length === 0) {
+    fail(`${label}: x-wire-shape-injects must be a non-empty array.`);
+    return;
+  }
+
+  const targetPath = resolveContractMetadataPath(extendsPath, file);
+  const target = parsed.get(targetPath);
+  if (!target) {
+    fail(`${label}: x-wire-shape-extends target not found: ${extendsPath}`);
+    return;
+  }
+  if (target.type !== "object" || !target.properties) {
+    fail(`${label}: x-wire-shape-extends target must be an object schema.`);
+  }
+  if (node.type !== "object" || !node.properties) {
+    fail(`${label}: wire extension node must be an object with properties.`);
+    return;
+  }
+
+  const required = new Set(node.required ?? []);
+  const seen = new Set();
+  for (const field of injects) {
+    if (typeof field !== "string" || field.length === 0) {
+      fail(`${label}: x-wire-shape-injects contains a non-string field.`);
+      continue;
+    }
+    if (seen.has(field)) {
+      fail(`${label}: duplicate injected wire field ${field}.`);
+      continue;
+    }
+    seen.add(field);
+    if (!node.properties[field]) {
+      fail(`${label}: injected wire field ${field} is not declared.`);
+    }
+    if (!required.has(field)) {
+      fail(`${label}: injected wire field ${field} must be required.`);
+    }
+    if (target.properties?.[field]) {
+      fail(
+        `${label}: injected wire field ${field} already exists in ` +
+        `${extendsPath}.`
+      );
+    }
+  }
+}
+
+function resolveContractMetadataPath(value, fromFile) {
+  if (/^[a-z]+:\/\//i.test(value)) return value;
+  if (value.startsWith("contracts/")) {
+    return path.join(repoRoot, value);
+  }
+  return path.resolve(path.dirname(fromFile), value);
+}
+
+function escapeJsonPointer(value) {
+  return value.replace(/~/g, "~0").replace(/\//g, "~1");
 }
 
 function checkLocalRefs(parsed) {

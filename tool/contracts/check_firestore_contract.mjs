@@ -79,6 +79,7 @@ for (const collection of contract.collections ?? []) {
 }
 
 validateCallableAliases();
+validateDartCallableRoutes();
 
 if (errors.length > 0) {
   console.error("Firestore contract check failed:");
@@ -91,33 +92,147 @@ if (errors.length > 0) {
 console.log("Firestore contract check passed.");
 
 function validateCallableAliases() {
-  const callablesDir = path.join(contractRoot, "callables");
-  if (!fs.existsSync(callablesDir)) return;
-  for (const entry of fs.readdirSync(callablesDir)) {
-    if (!entry.endsWith(".schema.json")) continue;
-    const schema = readJson(path.join(callablesDir, entry));
-    const aliases = schema["x-callable-aliases"];
-    if (aliases === undefined) continue;
-    const label = `contracts/callables/${entry}`;
-    if (!Array.isArray(aliases)) {
-      errors.push(`${label}: x-callable-aliases must be an array when present`);
-      continue;
-    }
-    const seen = new Set();
-    for (const name of aliases) {
-      if (typeof name !== "string" || name.length === 0) {
-        errors.push(`${label}: x-callable-aliases contains a non-string value`);
+  for (const {dir, labelPrefix} of callableSchemaDirs()) {
+    if (!fs.existsSync(dir)) continue;
+    for (const entry of fs.readdirSync(dir)) {
+      if (!entry.endsWith(".schema.json")) continue;
+      const schema = readJson(path.join(dir, entry));
+      const aliases = schema["x-callable-aliases"];
+      if (aliases === undefined) continue;
+      const label = `${labelPrefix}/${entry}`;
+      if (!Array.isArray(aliases)) {
+        errors.push(`${label}: x-callable-aliases must be an array when present`);
         continue;
       }
-      assertUnique(seen, name, `${label}.x-callable-aliases.${name}`);
-      if (!hasNamedExport(name)) {
-        errors.push(
-          `${label}: x-callable-aliases lists "${name}" but ` +
-          `functions/src/index.ts does not export it`
-        );
+      const seen = new Set();
+      for (const name of aliases) {
+        if (typeof name !== "string" || name.length === 0) {
+          errors.push(`${label}: x-callable-aliases contains a non-string value`);
+          continue;
+        }
+        assertUnique(seen, name, `${label}.x-callable-aliases.${name}`);
+        if (!hasNamedExport(name)) {
+          errors.push(
+            `${label}: x-callable-aliases lists "${name}" but ` +
+            `functions/src/index.ts does not export it`
+          );
+        }
       }
     }
   }
+}
+
+function validateDartCallableRoutes() {
+  const callableContracts = collectCallableContractNames();
+  const uses = collectDartHttpsCallableUses();
+  for (const use of uses) {
+    if (!callableContracts.has(use.name)) {
+      errors.push(
+        `${use.location}: httpsCallable("${use.name}") is not declared by ` +
+        `a callable schema title, x-callable-aliases, or Firestore contract ` +
+        `operation.function`
+      );
+      continue;
+    }
+    if (!hasNamedExport(use.name)) {
+      errors.push(
+        `${use.location}: httpsCallable("${use.name}") has a contract ` +
+        `declaration but functions/src/index.ts does not export it`
+      );
+    }
+  }
+}
+
+function collectCallableContractNames() {
+  const names = new Map();
+  for (const collection of contract.collections ?? []) {
+    for (const operation of collection.operations ?? []) {
+      if (typeof operation.function === "string" && operation.function.length > 0) {
+        names.set(operation.function, `${collection.id}.${operation.id}`);
+      }
+    }
+  }
+
+  for (const {dir, labelPrefix} of callableSchemaDirs()) {
+    if (!fs.existsSync(dir)) continue;
+    for (const entry of fs.readdirSync(dir)) {
+      if (!entry.endsWith(".schema.json")) continue;
+      const schema = readJson(path.join(dir, entry));
+      const label = `${labelPrefix}/${entry}`;
+      const canonicalName = canonicalCallableName(schema.title);
+      if (canonicalName) names.set(canonicalName, label);
+      for (const alias of schema["x-callable-aliases"] ?? []) {
+        if (typeof alias === "string" && alias.length > 0) {
+          names.set(alias, `${label}.x-callable-aliases`);
+        }
+      }
+    }
+  }
+
+  return names;
+}
+
+function callableSchemaDirs() {
+  return [
+    {
+      dir: path.join(contractRoot, "callables"),
+      labelPrefix: "contracts/callables",
+    },
+    {
+      dir: path.join(contractRoot, "callable_responses"),
+      labelPrefix: "contracts/callable_responses",
+    },
+  ];
+}
+
+function canonicalCallableName(title) {
+  if (typeof title !== "string" || title.length === 0) return null;
+  for (const suffix of ["CallablePayload", "CallableResponse"]) {
+    if (!title.endsWith(suffix)) continue;
+    const base = title.slice(0, -suffix.length);
+    if (base.length === 0) return null;
+    return `${base[0].toLowerCase()}${base.slice(1)}`;
+  }
+  return null;
+}
+
+function collectDartHttpsCallableUses() {
+  const libDir = path.join(repoRoot, "lib");
+  if (!fs.existsSync(libDir)) return [];
+  const uses = [];
+  const pattern = /httpsCallable\(\s*['"]([^'"]+)['"]/g;
+  for (const file of walkFiles(libDir)) {
+    if (!file.endsWith(".dart") ||
+        file.endsWith(".g.dart") ||
+        file.endsWith(".freezed.dart")) {
+      continue;
+    }
+    const source = readText(file);
+    for (const match of source.matchAll(pattern)) {
+      uses.push({
+        name: match[1],
+        location: `${relative(file)}:${lineNumber(source, match.index ?? 0)}`,
+      });
+    }
+  }
+  return uses;
+}
+
+function walkFiles(dir) {
+  const files = [];
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...walkFiles(fullPath));
+    } else if (entry.isFile()) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+function lineNumber(source, index) {
+  return source.slice(0, index).split(/\r\n|\r|\n/).length;
 }
 
 function readJson(filePath) {
@@ -126,6 +241,10 @@ function readJson(filePath) {
 
 function readText(filePath) {
   return fs.readFileSync(filePath, "utf8");
+}
+
+function relative(filePath) {
+  return path.relative(repoRoot, filePath);
 }
 
 function loadFirestoreSchemas() {

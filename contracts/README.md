@@ -57,6 +57,10 @@ Schema:
 - `x-callable-aliases` records callable names that intentionally reuse a shared
   payload schema. For example, simple event-id callables can share
   `event_id_payload.schema.json` without inventing duplicate schemas.
+- `x-callable-shape` records special callable payload shapes. The current
+  supported value is `patch`, meaning the top-level payload wraps a required
+  `fields` object whose nullable values must distinguish "omit" from
+  "explicitly clear".
 - `x-firestore-operation` records the direct client-write operation kind
   (`create`, `update`, or `delete`) for schemas under `contracts/client_writes/`.
 - `x-logical-name` gives a direct-write schema a stable logical name when the
@@ -83,6 +87,9 @@ Schema:
 - `x-intentionally-excluded-fields` lists document fields intentionally omitted
   from a patch/callable contract because clients must not write them through
   that boundary.
+- `x-wire-shape-extends` and `x-wire-shape-injects` record response objects
+  that intentionally carry a stored document shape plus injected wire-only
+  fields, such as a `publicProfiles/{uid}` body plus the document id.
 
 ## Directory Map
 
