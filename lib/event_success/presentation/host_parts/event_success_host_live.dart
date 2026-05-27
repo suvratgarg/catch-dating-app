@@ -53,8 +53,8 @@ class _LiveTab extends ConsumerWidget {
         children: [
           _NoticeCard(
             icon: isPreEvent
-                ? Icons.cloud_upload_outlined
-                : Icons.lock_clock_rounded,
+                ? CatchIcons.cloudUploadOutlined
+                : CatchIcons.lockClockRounded,
             title: isPreEvent
                 ? 'Live mode needs saved setup'
                 : 'Live mode was not configured',
@@ -96,8 +96,8 @@ class _LiveTab extends ConsumerWidget {
         physics: physics,
         padding: padding,
         children: [
-          const _NoticeCard(
-            icon: Icons.rule_folder_outlined,
+          _NoticeCard(
+            icon: CatchIcons.ruleFolderOutlined,
             title: 'No live steps selected',
             body:
                 'This saved setup does not include any tools the host can use during the event.',
@@ -397,7 +397,7 @@ class _LiveNowConsole extends StatelessWidget {
                   CatchBadge(
                     label: 'Live now',
                     tone: CatchBadgeTone.live,
-                    icon: Icons.auto_awesome_rounded,
+                    icon: CatchIcons.autoAwesomeRounded,
                     backgroundColor: t.surface.withValues(alpha: 0.14),
                     foregroundColor: t.surface,
                     borderColor: t.surface.withValues(alpha: 0.18),
@@ -448,7 +448,7 @@ class _LiveNowConsole extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      Icons.phone_iphone_rounded,
+                      CatchIcons.phoneIphoneRounded,
                       size: 18,
                       color: t.surface.withValues(alpha: 0.82),
                     ),
@@ -509,7 +509,7 @@ class _LiveCheckInQrCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.qr_code_2_rounded, color: t.primary),
+              Icon(CatchIcons.qrCode2Rounded, color: t.primary),
               gapW10,
               Expanded(
                 child: Text(
@@ -602,7 +602,7 @@ class _LiveStepNavigation extends StatelessWidget {
           child: CatchButton(
             key: const ValueKey('eventSuccessPreviousStepButton'),
             label: 'Previous',
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: Icon(CatchIcons.arrowBackRounded),
             variant: CatchButtonVariant.secondary,
             onPressed: onPrevious,
             fullWidth: true,
@@ -614,7 +614,7 @@ class _LiveStepNavigation extends StatelessWidget {
           child: CatchButton(
             key: const ValueKey('eventSuccessNextStepButton'),
             label: nextLabel,
-            icon: const Icon(Icons.arrow_forward_rounded),
+            icon: Icon(CatchIcons.arrowForwardRounded),
             onPressed: onNext,
             fullWidth: true,
           ),

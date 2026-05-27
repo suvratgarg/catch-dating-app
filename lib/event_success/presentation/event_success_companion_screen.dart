@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -57,7 +58,7 @@ part 'companion_parts/event_success_companion_afterglow.dart';
 AppBar _companionAppBar(BuildContext context) => AppBar(
   title: Text('Event companion', style: CatchTextStyles.titleL(context)),
   leading: IconButton(
-    icon: const Icon(Icons.arrow_back_rounded),
+    icon: Icon(CatchIcons.arrowBackRounded),
     tooltip: 'Back',
     onPressed: _companionCanPop(context) ? () => _popCompanion(context) : null,
   ),

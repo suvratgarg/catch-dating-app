@@ -27,7 +27,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               _StageSectionLabel(
-                icon: Icons.auto_awesome_rounded,
+                icon: CatchIcons.autoAwesomeRounded,
                 label: 'Private afterglow',
                 color: t.primary,
               ),
@@ -48,19 +48,19 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
           _AfterglowBeatGrid(
             beats: [
               _AfterglowBeat(
-                icon: Icons.event_available_outlined,
+                icon: CatchIcons.eventAvailableOutlined,
                 label: 'You showed up',
                 value: '${event.longDateLabel} | ${event.activitySummaryLabel}',
               ),
               _AfterglowBeat(
-                icon: Icons.forum_outlined,
+                icon: CatchIcons.forumOutlined,
                 label: openersEnabled ? 'Openers ready' : 'Memory saved',
                 value: openersEnabled
                     ? 'Use the shared event context when a match opens.'
                     : 'Keep the useful parts of the room for yourself.',
               ),
               _AfterglowBeat(
-                icon: Icons.favorite_border_rounded,
+                icon: CatchIcons.favoriteBorderRounded,
                 label: feedback == null ? 'Your read' : 'Your read saved',
                 value: feedback == null
                     ? feedbackEnabled
@@ -79,7 +79,7 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.lock_outline_rounded, size: 18, color: t.primary),
+                Icon(CatchIcons.lockOutlineRounded, size: 18, color: t.primary),
                 gapW8,
                 Expanded(
                   child: Text(

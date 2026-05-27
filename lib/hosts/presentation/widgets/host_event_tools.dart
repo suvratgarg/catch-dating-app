@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -269,7 +270,7 @@ class HostEventToolCard extends StatelessWidget {
                             label: item.attendanceState.badgeLabel,
                             tone: item.attendanceState.badgeTone,
                             icon: item.canTakeAttendance
-                                ? Icons.checklist_rounded
+                                ? CatchIcons.checklistRounded
                                 : null,
                           ),
                         ],
@@ -294,17 +295,17 @@ class HostEventToolCard extends StatelessWidget {
                 ),
                 gapH12,
                 _HostEventMetaLine(
-                  icon: Icons.access_time_rounded,
+                  icon: CatchIcons.accessTimeRounded,
                   label: '${event.shortDateLabel} · ${event.timeRangeLabel}',
                 ),
                 gapH6,
                 _HostEventMetaLine(
-                  icon: Icons.location_on_outlined,
+                  icon: CatchIcons.locationOnOutlined,
                   label: event.locationName,
                 ),
                 gapH6,
                 _HostEventMetaLine(
-                  icon: Icons.groups_outlined,
+                  icon: CatchIcons.groupsOutlined,
                   label:
                       '${event.signedUpCount}/${event.capacityLimit} booked · '
                       '${event.waitlistCount} waitlist',
@@ -476,9 +477,9 @@ _HostEventAction _hostEventActionForState(HostEventAttendanceState state) {
 extension on _HostEventAction {
   IconData get icon {
     return switch (this) {
-      _HostEventAction.manage => Icons.tune_rounded,
-      _HostEventAction.takeAttendance => Icons.checklist_rounded,
-      _HostEventAction.viewReport => Icons.insights_outlined,
+      _HostEventAction.manage => CatchIcons.tuneRounded,
+      _HostEventAction.takeAttendance => CatchIcons.checklistRounded,
+      _HostEventAction.viewReport => CatchIcons.insightsOutlined,
     };
   }
 

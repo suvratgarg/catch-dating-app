@@ -170,7 +170,7 @@ class _AttendeeCountdown extends StatelessWidget {
                       CatchBadge(
                         label: 'Room hold',
                         tone: CatchBadgeTone.live,
-                        icon: Icons.lock_clock_rounded,
+                        icon: CatchIcons.lockClockRounded,
                         backgroundColor: Colors.white.withValues(alpha: 0.14),
                         foregroundColor: Colors.white,
                         borderColor: Colors.white.withValues(alpha: 0.16),
@@ -350,10 +350,10 @@ class _CountdownBeatRail extends StatelessWidget {
         : 0;
     return Row(
       children: [
-        for (final entry in const [
-          (label: 'Hold', icon: Icons.pan_tool_alt_outlined),
-          (label: 'Watch', icon: Icons.visibility_outlined),
-          (label: 'Move', icon: Icons.bolt_rounded),
+        for (final entry in [
+          (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
+          (label: 'Watch', icon: CatchIcons.visibilityOutlined),
+          (label: 'Move', icon: CatchIcons.boltRounded),
         ].indexed) ...[
           Expanded(
             child: _CountdownBeatPill(
@@ -433,14 +433,14 @@ class _CountdownCueStack extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _CountdownCuePill(
-          icon: Icons.visibility_off_outlined,
+        _CountdownCuePill(
+          icon: CatchIcons.visibilityOffOutlined,
           title: 'No names shown yet',
           body: 'Partner details stay locked until the shared release.',
         ),
         gapH8,
         _CountdownCuePill(
-          icon: Icons.tips_and_updates_outlined,
+          icon: CatchIcons.tipsAndUpdatesOutlined,
           title: 'Clue is live',
           body: clue,
         ),
@@ -682,7 +682,7 @@ class _WaitingRevealCue extends StatelessWidget {
         padding: const EdgeInsets.all(CatchSpacing.s3),
         child: Row(
           children: [
-            Icon(Icons.lock_clock_rounded, color: t.primary),
+            Icon(CatchIcons.lockClockRounded, color: t.primary),
             gapW10,
             Expanded(
               child: Column(
@@ -729,20 +729,20 @@ class _VisiblePodAssignment extends StatelessWidget {
           CatchBadge(
             label: '${assignment.peerUids.length + 1} people',
             tone: CatchBadgeTone.neutral,
-            icon: Icons.group_outlined,
+            icon: CatchIcons.groupOutlined,
           ),
           if (peersLoading)
-            const CatchBadge(
+            CatchBadge(
               label: 'Loading podmates',
               tone: CatchBadgeTone.neutral,
-              icon: Icons.hourglass_empty_rounded,
+              icon: CatchIcons.hourglassEmptyRounded,
             )
           else
             for (final profile in peerProfiles)
               CatchBadge(
                 label: profile.name,
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.person_outline_rounded,
+                icon: CatchIcons.personOutlineRounded,
               ),
         ],
       ),
@@ -764,10 +764,10 @@ class _VisibleRotationSlots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (peersLoading) {
-      return const CatchBadge(
+      return CatchBadge(
         label: 'Loading partners',
         tone: CatchBadgeTone.neutral,
-        icon: Icons.hourglass_empty_rounded,
+        icon: CatchIcons.hourglassEmptyRounded,
       );
     }
     return _AssignmentUnlockedShell(
@@ -799,10 +799,10 @@ class _VisibleGroupRotationSlots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (peersLoading) {
-      return const CatchBadge(
+      return CatchBadge(
         label: 'Loading group members',
         tone: CatchBadgeTone.neutral,
-        icon: Icons.hourglass_empty_rounded,
+        icon: CatchIcons.hourglassEmptyRounded,
       );
     }
     return _AssignmentUnlockedShell(
@@ -839,7 +839,7 @@ class _AssignmentUnlockedShell extends StatelessWidget {
           CatchBadge(
             label: title,
             tone: CatchBadgeTone.success,
-            icon: Icons.auto_awesome_rounded,
+            icon: CatchIcons.autoAwesomeRounded,
           ),
           gapH10,
           child,
@@ -888,7 +888,7 @@ class _RevealGroupSlotRow extends StatelessWidget {
                 CatchBadge(
                   label: slot.unitLabel,
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.table_restaurant_outlined,
+                  icon: CatchIcons.tableRestaurantOutlined,
                 ),
               ],
             ),
@@ -907,19 +907,19 @@ class _RevealGroupSlotRow extends StatelessWidget {
                 CatchBadge(
                   label: '${slot.peerUids.length + 1} people',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.group_outlined,
+                  icon: CatchIcons.groupOutlined,
                 ),
                 for (final name in peerNames)
                   CatchBadge(
                     label: name,
                     tone: CatchBadgeTone.neutral,
-                    icon: Icons.person_outline_rounded,
+                    icon: CatchIcons.personOutlineRounded,
                   ),
                 if (peerNames.isEmpty)
-                  const CatchBadge(
+                  CatchBadge(
                     label: 'Names loading',
                     tone: CatchBadgeTone.neutral,
-                    icon: Icons.hourglass_empty_rounded,
+                    icon: CatchIcons.hourglassEmptyRounded,
                   ),
               ],
             ),

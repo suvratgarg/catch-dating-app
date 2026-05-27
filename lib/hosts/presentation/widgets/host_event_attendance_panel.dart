@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -91,10 +92,10 @@ class HostEventParticipantsPanel extends ConsumerWidget {
       ),
       data: (viewModel) {
         if (viewModel == null) {
-          return const Padding(
+          return Padding(
             padding: EdgeInsets.symmetric(vertical: CatchSpacing.s5),
             child: CatchEmptyState(
-              icon: Icons.event_busy_outlined,
+              icon: CatchIcons.eventBusyOutlined,
               title: 'Event not found',
               message: 'This event is no longer available.',
               surface: false,
@@ -814,7 +815,7 @@ class _RosterSearchBar extends StatelessWidget {
       size: CatchTextFieldSize.compact,
       shape: CatchTextFieldShape.pill,
       textInputAction: TextInputAction.search,
-      prefixIcon: const Icon(Icons.search_rounded),
+      prefixIcon: Icon(CatchIcons.searchRounded),
       showClearButton: true,
       onChanged: onChanged,
     );
@@ -1056,7 +1057,7 @@ class _TableEmptyState extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(Icons.group_outlined, color: t.ink3, size: 22),
+        Icon(CatchIcons.groupOutlined, color: t.ink3, size: 22),
         gapW10,
         Expanded(
           child: Column(
@@ -1204,7 +1205,7 @@ class _DecisionControls extends StatelessWidget {
             iconSize: 18,
             color: t.ink2,
             onPressed: () => _openPublicProfile(context, uid),
-            icon: const Icon(Icons.person_search_outlined),
+            icon: Icon(CatchIcons.personSearchOutlined),
           ),
         ),
         Tooltip(
@@ -1214,7 +1215,7 @@ class _DecisionControls extends StatelessWidget {
             iconSize: 18,
             color: t.success,
             onPressed: isPending ? null : onApprove,
-            icon: const Icon(Icons.check_circle_outline_rounded),
+            icon: Icon(CatchIcons.checkCircleOutlineRounded),
           ),
         ),
         Tooltip(
@@ -1224,7 +1225,7 @@ class _DecisionControls extends StatelessWidget {
             iconSize: 18,
             color: t.danger,
             onPressed: isPending ? null : onDecline,
-            icon: const Icon(Icons.cancel_outlined),
+            icon: Icon(CatchIcons.cancelOutlined),
           ),
         ),
       ],
@@ -1436,7 +1437,9 @@ class _ExportReportButtonState extends State<_ExportReportButton> {
       variant: widget.primary
           ? CatchButtonVariant.primary
           : CatchButtonVariant.secondary,
-      icon: const Icon(Icons.ios_share_rounded),
+      icon: Icon(
+        CatchIcons.platformShare(platform: Theme.of(context).platform),
+      ),
       fullWidth: true,
     );
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -449,16 +450,16 @@ class _ManualQaHero extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: const [
+            children: [
               CatchBadge(
                 label: 'Manual QA',
                 tone: CatchBadgeTone.live,
-                icon: Icons.fact_check_outlined,
+                icon: CatchIcons.factCheckOutlined,
               ),
               CatchBadge(
                 label: 'Fixture data',
                 tone: CatchBadgeTone.solid,
-                icon: Icons.data_object_rounded,
+                icon: CatchIcons.dataObjectRounded,
               ),
             ],
           ),
@@ -825,13 +826,13 @@ class _AttendeeQaControls extends StatelessWidget {
             CatchChip(
               label: 'Micro-pods opt-out',
               active: microPodsOptedOut,
-              icon: const Icon(Icons.visibility_off_outlined),
+              icon: Icon(CatchIcons.visibilityOffOutlined),
               onTap: () => onMicroPodsOptOutChanged(!microPodsOptedOut),
             ),
             CatchChip(
               label: 'Rotations opt-out',
               active: guidedRotationsOptedOut,
-              icon: const Icon(Icons.block_outlined),
+              icon: Icon(CatchIcons.blockOutlined),
               onTap: () =>
                   onGuidedRotationsOptOutChanged(!guidedRotationsOptedOut),
             ),
@@ -845,7 +846,7 @@ class _AttendeeQaControls extends StatelessWidget {
                 tone: firstHelloCompleted
                     ? CatchBadgeTone.success
                     : CatchBadgeTone.live,
-                icon: Icons.waving_hand_outlined,
+                icon: CatchIcons.wavingHandOutlined,
               ),
           ],
         ),
@@ -903,10 +904,10 @@ enum _ManualQaScenario {
   };
 
   IconData get icon => switch (this) {
-    _ManualQaScenario.socialRun => Icons.directions_run_rounded,
-    _ManualQaScenario.racketPairs => Icons.sports_tennis_rounded,
-    _ManualQaScenario.quizTeams => Icons.quiz_outlined,
-    _ManualQaScenario.singlesMixer => Icons.favorite_border_rounded,
+    _ManualQaScenario.socialRun => CatchIcons.directionsRunRounded,
+    _ManualQaScenario.racketPairs => CatchIcons.sportsTennisRounded,
+    _ManualQaScenario.quizTeams => CatchIcons.quizOutlined,
+    _ManualQaScenario.singlesMixer => CatchIcons.favoriteBorderRounded,
   };
 
   ActivityKind get activityKind => switch (this) {

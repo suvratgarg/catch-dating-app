@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -89,19 +90,19 @@ class _LabHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Wrap(
+        Wrap(
           spacing: CatchSpacing.s2,
           runSpacing: CatchSpacing.s1,
           children: [
             CatchBadge(
               label: 'In development',
               tone: CatchBadgeTone.warning,
-              icon: Icons.science_outlined,
+              icon: CatchIcons.scienceOutlined,
             ),
             CatchBadge(
               label: 'No live writes',
               tone: CatchBadgeTone.success,
-              icon: Icons.lock_outline_rounded,
+              icon: CatchIcons.lockOutlineRounded,
             ),
           ],
         ),
@@ -121,22 +122,22 @@ class _LabHeader extends StatelessWidget {
             final compact = constraints.maxWidth < 560;
             final children = [
               _MetricTile(
-                icon: Icons.group_outlined,
+                icon: CatchIcons.groupOutlined,
                 label: 'Capacity',
                 value: '${policy.capacityLimit}',
               ),
               _MetricTile(
-                icon: Icons.confirmation_number_outlined,
+                icon: CatchIcons.confirmationNumberOutlined,
                 label: 'Base',
                 value: _formatPaise(pricing.basePrice.inPaise),
               ),
               _MetricTile(
-                icon: Icons.event_seat_outlined,
+                icon: CatchIcons.eventSeatOutlined,
                 label: 'Booked',
                 value: '${scenario.roster.totalBooked}',
               ),
               _MetricTile(
-                icon: Icons.schedule_outlined,
+                icon: CatchIcons.scheduleOutlined,
                 label: 'Waitlist',
                 value: '${scenario.roster.totalWaitlisted}',
               ),
@@ -223,7 +224,7 @@ class _ScenarioPicker extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionTitle(
-          icon: Icons.tune_rounded,
+          icon: CatchIcons.tuneRounded,
           title: 'Host configuration',
           trailing: Text(
             '${EventPolicyPreviewCatalog.defaultScenarios.length} fixtures',
@@ -325,7 +326,7 @@ class _PolicySummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(icon: Icons.rule_rounded, title: 'Policy shape'),
+        _SectionTitle(icon: CatchIcons.ruleRounded, title: 'Policy shape'),
         gapH10,
         CatchSurface(
           padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -333,36 +334,36 @@ class _PolicySummary extends StatelessWidget {
           child: Column(
             children: [
               _PolicyLine(
-                icon: Icons.event_available_outlined,
+                icon: CatchIcons.eventAvailableOutlined,
                 label: 'Admission',
                 value: _formatAdmissionFormat(admission.format),
               ),
               _DividerLine(color: t.line),
               _PolicyLine(
-                icon: Icons.queue_outlined,
+                icon: CatchIcons.queueOutlined,
                 label: 'Waitlist',
                 value: _formatWaitlist(admission.waitlistPolicy.mode),
               ),
               if (admission.inviteRequired) ...[
                 _DividerLine(color: t.line),
-                const _PolicyLine(
-                  icon: Icons.key_outlined,
+                _PolicyLine(
+                  icon: CatchIcons.keyOutlined,
                   label: 'Invite',
                   value: 'Required',
                 ),
               ],
               if (admission.membershipRequired) ...[
                 _DividerLine(color: t.line),
-                const _PolicyLine(
-                  icon: Icons.card_membership_outlined,
+                _PolicyLine(
+                  icon: CatchIcons.cardMembershipOutlined,
                   label: 'Membership',
                   value: 'Required',
                 ),
               ],
               if (admission.manualApprovalRequired) ...[
                 _DividerLine(color: t.line),
-                const _PolicyLine(
-                  icon: Icons.fact_check_outlined,
+                _PolicyLine(
+                  icon: CatchIcons.factCheckOutlined,
                   label: 'Host review',
                   value: 'Required',
                 ),
@@ -370,7 +371,7 @@ class _PolicySummary extends StatelessWidget {
               if (admission.cohortCapacityLimits.isNotEmpty) ...[
                 _DividerLine(color: t.line),
                 _PolicyLine(
-                  icon: Icons.groups_2_outlined,
+                  icon: CatchIcons.groups2Outlined,
                   label: 'Cohort caps',
                   value: _formatCohortCaps(admission.cohortCapacityLimits),
                 ),
@@ -378,14 +379,14 @@ class _PolicySummary extends StatelessWidget {
               if (ratio != null) ...[
                 _DividerLine(color: t.line),
                 _PolicyLine(
-                  icon: Icons.balance_outlined,
+                  icon: CatchIcons.balanceOutlined,
                   label: 'Ratio',
                   value:
                       '${_formatCohortId(ratio.leftCohortId)} / ${_formatCohortId(ratio.rightCohortId)} · ±${ratio.maxSkew}',
                 ),
                 _DividerLine(color: t.line),
                 _PolicyLine(
-                  icon: Icons.diversity_3_outlined,
+                  icon: CatchIcons.diversity3Outlined,
                   label: 'Out-of-ratio',
                   value: _formatOutOfRatio(ratio.outOfRatioCohortPolicy),
                 ),
@@ -393,7 +394,7 @@ class _PolicySummary extends StatelessWidget {
               if (pricing.cohortAdjustments.isNotEmpty) ...[
                 _DividerLine(color: t.line),
                 _PolicyLine(
-                  icon: Icons.discount_outlined,
+                  icon: CatchIcons.discountOutlined,
                   label: 'Cohort pricing',
                   value: pricing.cohortAdjustments.entries
                       .map(
@@ -406,7 +407,7 @@ class _PolicySummary extends StatelessWidget {
               if (pricing.demandPricingRules.isNotEmpty) ...[
                 _DividerLine(color: t.line),
                 _PolicyLine(
-                  icon: Icons.trending_up_rounded,
+                  icon: CatchIcons.trendingUpRounded,
                   label: 'Demand pricing',
                   value: pricing.demandPricingRules
                       .map(
@@ -418,19 +419,19 @@ class _PolicySummary extends StatelessWidget {
               ],
               _DividerLine(color: t.line),
               _PolicyLine(
-                icon: Icons.event_busy_outlined,
+                icon: CatchIcons.eventBusyOutlined,
                 label: 'Cancellation',
                 value: cancellation.title,
               ),
               _DividerLine(color: t.line),
               _PolicyLine(
-                icon: Icons.assignment_return_outlined,
+                icon: CatchIcons.assignmentReturnOutlined,
                 label: 'Attendee terms',
                 value: cancellation.attendeeSummary,
               ),
               _DividerLine(color: t.line),
               _PolicyLine(
-                icon: Icons.payments_outlined,
+                icon: CatchIcons.paymentsOutlined,
                 label: 'Host payout',
                 value: settlement.title,
               ),
@@ -454,7 +455,7 @@ class _ResultRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionTitle(
-          icon: Icons.table_rows_outlined,
+          icon: CatchIcons.tableRowsOutlined,
           title: 'Preview outcomes',
           trailing: Text(
             '${result.rows.length} probes',
@@ -522,17 +523,17 @@ class _ResultRow extends StatelessWidget {
               CatchBadge(
                 label: _formatReason(row.decisionReason),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.info_outline,
+                icon: CatchIcons.infoOutline,
               ),
               CatchBadge(
                 label: _formatWaitlist(row.waitlistMode),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.queue_outlined,
+                icon: CatchIcons.queueOutlined,
               ),
               CatchBadge(
                 label: _formatPaise(row.finalPriceInPaise),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.payments_outlined,
+                icon: CatchIcons.paymentsOutlined,
               ),
             ],
           ),
@@ -563,7 +564,7 @@ class _CancellationRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionTitle(
-          icon: Icons.assignment_return_outlined,
+          icon: CatchIcons.assignmentReturnOutlined,
           title: 'Cancellation outcomes',
           trailing: Text(
             '${result.cancellationRows.length} probes',
@@ -633,23 +634,23 @@ class _CancellationRow extends StatelessWidget {
               CatchBadge(
                 label: _formatCancellationRemedy(row.remedy),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.rule_outlined,
+                icon: CatchIcons.ruleOutlined,
               ),
               CatchBadge(
                 label: 'Refund ${_formatPaise(row.refundAmountInPaise)}',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.payments_outlined,
+                icon: CatchIcons.paymentsOutlined,
               ),
               CatchBadge(
                 label: 'Credit ${_formatPaise(row.creditAmountInPaise)}',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.account_balance_wallet_outlined,
+                icon: CatchIcons.accountBalanceWalletOutlined,
               ),
               if (row.isWaitlisted)
-                const CatchBadge(
+                CatchBadge(
                   label: 'Waitlist',
                   tone: CatchBadgeTone.brand,
-                  icon: Icons.queue_outlined,
+                  icon: CatchIcons.queueOutlined,
                 ),
             ],
           ),
@@ -677,10 +678,7 @@ class _DebugOutput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionTitle(
-          icon: Icons.data_object_rounded,
-          title: 'Debug map',
-        ),
+        _SectionTitle(icon: CatchIcons.dataObjectRounded, title: 'Debug map'),
         gapH10,
         CatchSurface(
           padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -786,12 +784,12 @@ class _DividerLine extends StatelessWidget {
 
 IconData _formatIcon(EventAdmissionFormat format) {
   return switch (format) {
-    EventAdmissionFormat.open => Icons.lock_open_outlined,
-    EventAdmissionFormat.inviteOnly => Icons.key_outlined,
-    EventAdmissionFormat.manualApproval => Icons.fact_check_outlined,
-    EventAdmissionFormat.fixedCohortCaps => Icons.groups_2_outlined,
-    EventAdmissionFormat.balancedRatio => Icons.balance_outlined,
-    EventAdmissionFormat.membersOnly => Icons.card_membership_outlined,
+    EventAdmissionFormat.open => CatchIcons.lockOpenOutlined,
+    EventAdmissionFormat.inviteOnly => CatchIcons.keyOutlined,
+    EventAdmissionFormat.manualApproval => CatchIcons.factCheckOutlined,
+    EventAdmissionFormat.fixedCohortCaps => CatchIcons.groups2Outlined,
+    EventAdmissionFormat.balancedRatio => CatchIcons.balanceOutlined,
+    EventAdmissionFormat.membersOnly => CatchIcons.cardMembershipOutlined,
   };
 }
 

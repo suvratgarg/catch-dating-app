@@ -35,9 +35,9 @@ class _ReportTab extends StatelessWidget {
         primary: shrinkWrap ? false : null,
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           _NoticeCard(
-            icon: Icons.insights_outlined,
+            icon: CatchIcons.insightsOutlined,
             title: 'No event report yet',
             body:
                 'The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.',
@@ -57,9 +57,9 @@ class _ReportTab extends StatelessWidget {
         primary: shrinkWrap ? false : null,
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           _NoticeCard(
-            icon: Icons.insights_outlined,
+            icon: CatchIcons.insightsOutlined,
             title: 'Post-event insights are off',
             body:
                 'This event guide does not include post-event coaching for the host.',
@@ -75,9 +75,9 @@ class _ReportTab extends StatelessWidget {
         primary: shrinkWrap ? false : null,
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           _NoticeCard(
-            icon: Icons.insights_outlined,
+            icon: CatchIcons.insightsOutlined,
             title: 'Waiting for attendee feedback',
             body:
                 'The post-event report appears once checked-in attendees '
@@ -104,7 +104,7 @@ class _ReportTab extends StatelessWidget {
       padding: padding,
       children: [
         _NoticeCard(
-          icon: Icons.assignment_turned_in_outlined,
+          icon: CatchIcons.assignmentTurnedInOutlined,
           title:
               '$feedbackCount attendee feedback response${feedbackCount == 1 ? '' : 's'}',
           body:
@@ -137,7 +137,7 @@ class _HostReportSignalGrid extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.query_stats_rounded, color: t.primary),
+              Icon(CatchIcons.queryStatsRounded, color: t.primary),
               gapW12,
               Expanded(
                 child: Column(
@@ -189,22 +189,22 @@ class _HostReportSignalGrid extends StatelessWidget {
                 label:
                     '${scorecard.feedbackResponseCount}/${scorecard.checkedInCount} feedback',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.rate_review_outlined,
+                icon: CatchIcons.rateReviewOutlined,
               ),
               CatchBadge(
                 label: '${scorecard.assignmentParticipantCount} assigned',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.groups_2_outlined,
+                icon: CatchIcons.groups2Outlined,
               ),
               CatchBadge(
                 label: '${scorecard.assignmentOptOutCount} opted out',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.visibility_off_outlined,
+                icon: CatchIcons.visibilityOffOutlined,
               ),
               CatchBadge(
                 label: '${scorecard.wingmanRequestCount} host-help requests',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.volunteer_activism_outlined,
+                icon: CatchIcons.volunteerActivismOutlined,
               ),
             ],
           ),

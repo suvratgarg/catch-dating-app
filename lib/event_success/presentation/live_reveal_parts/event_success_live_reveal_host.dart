@@ -113,7 +113,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
               CatchBadge(
                 label: 'Synchronized partner reveal',
                 tone: CatchBadgeTone.live,
-                icon: Icons.bolt_rounded,
+                icon: CatchIcons.boltRounded,
                 backgroundColor: t.surface.withValues(alpha: 0.14),
                 foregroundColor: t.surface,
               ),

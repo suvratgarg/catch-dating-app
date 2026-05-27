@@ -116,7 +116,7 @@ class _SetupTabState extends State<_SetupTab> {
           children: [
             if (unsavedFrozen) ...[
               _NoticeCard(
-                icon: Icons.lock_clock_rounded,
+                icon: CatchIcons.lockClockRounded,
                 title: eventHasStarted
                     ? 'Event started without a saved guide'
                     : 'Live guide can no longer be saved',
@@ -127,7 +127,7 @@ class _SetupTabState extends State<_SetupTab> {
               gapH16,
             ] else if (!widget.planIsPersisted) ...[
               _NoticeCard(
-                icon: Icons.cloud_upload_outlined,
+                icon: CatchIcons.cloudUploadOutlined,
                 title: 'Setup not saved yet',
                 body:
                     'This default plan is visible here only. Save it so the Live tab is ready when the event starts.',
@@ -136,7 +136,7 @@ class _SetupTabState extends State<_SetupTab> {
             ],
             if (setupFrozen && widget.planIsPersisted) ...[
               _NoticeCard(
-                icon: Icons.lock_clock_rounded,
+                icon: CatchIcons.lockClockRounded,
                 title: 'Settings are locked',
                 body: hasParticipantActivity
                     ? 'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'
@@ -324,7 +324,11 @@ class _ReadinessIssues extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.error_outline_rounded, color: t.warning, size: 16),
+                  Icon(
+                    CatchIcons.errorOutlineRounded,
+                    color: t.warning,
+                    size: 16,
+                  ),
                   gapW6,
                   Expanded(
                     child: Text(
@@ -382,7 +386,7 @@ class _UnsavedChangesPill extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.fiber_manual_record, size: 8, color: t.warning),
+        Icon(CatchIcons.fiberManualRecord, size: 8, color: t.warning),
         gapW6,
         Text(
           'Unsaved changes',

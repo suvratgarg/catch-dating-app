@@ -45,7 +45,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.groups_2_outlined,
+                CatchIcons.groups2Outlined,
                 color: CatchTokens.of(context).primary,
               ),
               gapW10,
@@ -66,15 +66,15 @@ class _MicroPodsHostCard extends ConsumerWidget {
                 CatchBadge(
                   label: '$optedOutCount opted out',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.visibility_off_outlined,
+                  icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                const CatchBadge(
+                CatchBadge(
                   label: 'Host edited',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.edit_outlined,
+                  icon: CatchIcons.editOutlined,
                 ),
               ],
             ],
@@ -101,7 +101,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
             CatchButton(
               key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
               label: 'Generate micro-pods',
-              icon: const Icon(Icons.auto_awesome_outlined),
+              icon: Icon(CatchIcons.autoAwesomeOutlined),
               isLoading: onGenerate == null && mutation.isPending,
               onPressed: mutation.isPending
                   ? null
@@ -122,7 +122,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
                   child: CatchButton(
                     key: const ValueKey('eventSuccessGenerateMicroPodsButton'),
                     label: 'Regenerate',
-                    icon: const Icon(Icons.auto_awesome_outlined),
+                    icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
                     isLoading: onGenerate == null && mutation.isPending,
                     onPressed: mutation.isPending
@@ -146,7 +146,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
                 Expanded(
                   child: CatchButton(
                     label: 'Edit groups',
-                    icon: const Icon(Icons.edit_outlined),
+                    icon: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showGroupOverrideSheet(
                       context: context,
                       event: event,
@@ -242,7 +242,7 @@ class _GroupOverrideSheetState extends ConsumerState<_GroupOverrideSheet> {
           ],
           CatchButton(
             label: 'Save overrides',
-            icon: const Icon(Icons.check_rounded),
+            icon: Icon(CatchIcons.checkRounded),
             isLoading: widget.onOverride == null && mutation.isPending,
             onPressed: mutation.isPending || validationError != null
                 ? null
@@ -411,7 +411,7 @@ class _GroupOverrideRoundEditor extends StatelessWidget {
               ),
               CatchButton(
                 label: 'Add group',
-                icon: const Icon(Icons.add_rounded),
+                icon: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddGroup,
@@ -492,7 +492,7 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
                 gapW8,
                 IconButton(
                   tooltip: 'Remove group',
-                  icon: const Icon(Icons.delete_outline_rounded),
+                  icon: Icon(CatchIcons.deleteOutlineRounded),
                   onPressed: onRemoveGroup,
                 ),
               ],
@@ -517,7 +517,7 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
             ],
             CatchButton(
               label: 'Add attendee',
-              icon: const Icon(Icons.person_add_alt_1_rounded),
+              icon: Icon(CatchIcons.personAddAlt1Rounded),
               size: CatchButtonSize.sm,
               variant: CatchButtonVariant.secondary,
               onPressed: onAddMember,
@@ -560,7 +560,7 @@ class _GroupOverrideMemberEditor extends StatelessWidget {
         ),
         IconButton(
           tooltip: 'Remove attendee',
-          icon: const Icon(Icons.close_rounded),
+          icon: Icon(CatchIcons.closeRounded),
           onPressed: onRemove,
         ),
       ],
@@ -614,7 +614,7 @@ class _RotationsHostCard extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.sync_alt_rounded,
+                CatchIcons.syncAltRounded,
                 color: CatchTokens.of(context).primary,
               ),
               gapW10,
@@ -635,15 +635,15 @@ class _RotationsHostCard extends ConsumerWidget {
                 CatchBadge(
                   label: '$optedOutCount opted out',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.visibility_off_outlined,
+                  icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                const CatchBadge(
+                CatchBadge(
                   label: 'Host edited',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.edit_outlined,
+                  icon: CatchIcons.editOutlined,
                 ),
               ],
             ],
@@ -664,13 +664,13 @@ class _RotationsHostCard extends ConsumerWidget {
                 CatchBadge(
                   label: '${activeAssignments.length} assigned',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.people_outline_rounded,
+                  icon: CatchIcons.peopleOutlineRounded,
                 ),
                 CatchBadge(
                   label:
                       '${_eventRotationCapacity(event, rotationIntervalMinutes)} possible',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.schedule_rounded,
+                  icon: CatchIcons.scheduleRounded,
                 ),
               ],
             ),
@@ -684,7 +684,7 @@ class _RotationsHostCard extends ConsumerWidget {
             CatchButton(
               key: const ValueKey('eventSuccessGenerateRotationsButton'),
               label: 'Generate rotations',
-              icon: const Icon(Icons.auto_awesome_outlined),
+              icon: Icon(CatchIcons.autoAwesomeOutlined),
               isLoading: onGenerate == null && mutation.isPending,
               onPressed: mutation.isPending
                   ? null
@@ -706,7 +706,7 @@ class _RotationsHostCard extends ConsumerWidget {
                   child: CatchButton(
                     key: const ValueKey('eventSuccessGenerateRotationsButton'),
                     label: 'Regenerate',
-                    icon: const Icon(Icons.auto_awesome_outlined),
+                    icon: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
                     isLoading: onGenerate == null && mutation.isPending,
                     onPressed: mutation.isPending
@@ -732,7 +732,7 @@ class _RotationsHostCard extends ConsumerWidget {
                 Expanded(
                   child: CatchButton(
                     label: 'Edit rotations',
-                    icon: const Icon(Icons.edit_outlined),
+                    icon: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showRotationOverrideSheet(
                       context: context,
                       event: event,
@@ -829,7 +829,7 @@ class _RotationOverrideSheetState
           ],
           CatchButton(
             label: 'Save overrides',
-            icon: const Icon(Icons.check_rounded),
+            icon: Icon(CatchIcons.checkRounded),
             isLoading: widget.onOverride == null && mutation.isPending,
             onPressed: mutation.isPending || validationError != null
                 ? null
@@ -971,7 +971,7 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
               ),
               CatchButton(
                 label: 'Add pair',
-                icon: const Icon(Icons.add_rounded),
+                icon: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddPair,
@@ -1049,7 +1049,7 @@ class _RotationOverridePairEditor extends StatelessWidget {
         ),
         IconButton(
           tooltip: 'Remove pair',
-          icon: const Icon(Icons.delete_outline_rounded),
+          icon: Icon(CatchIcons.deleteOutlineRounded),
           onPressed: onRemove,
         ),
       ],
@@ -1073,7 +1073,7 @@ class _PodGroupSummary extends StatelessWidget {
           CatchBadge(
             label: '${entry.key} · ${entry.value} assigned',
             tone: CatchBadgeTone.neutral,
-            icon: Icons.group_outlined,
+            icon: CatchIcons.groupOutlined,
           ),
       ],
     );

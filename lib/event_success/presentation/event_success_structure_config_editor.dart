@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -36,13 +37,13 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             CatchBadge(
               label: '${value.unitSize} per ${value.unitKind.singularLabel}',
               tone: CatchBadgeTone.neutral,
-              icon: Icons.groups_2_outlined,
+              icon: CatchIcons.groups2Outlined,
             ),
             CatchBadge(
               label:
                   '$estimatedUnitCount ${value.unitKind.label.toLowerCase()}',
               tone: CatchBadgeTone.neutral,
-              icon: Icons.grid_view_rounded,
+              icon: CatchIcons.gridViewRounded,
             ),
           ],
         ),
