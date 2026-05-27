@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -37,9 +38,9 @@ class PaymentHistoryScreen extends ConsumerWidget {
         ),
         data: (uid) {
           if (uid == null) {
-            return const Center(
+            return Center(
               child: CatchEmptyState(
-                icon: Icons.lock_outline_rounded,
+                icon: CatchIcons.lockOutlineRounded,
                 title: 'Sign in required',
                 message: 'Sign in again to view payment history.',
                 surface: false,
@@ -72,9 +73,9 @@ class _PaymentList extends ConsumerWidget {
       ),
       data: (payments) {
         if (payments.isEmpty) {
-          return const Center(
+          return Center(
             child: CatchEmptyState(
-              icon: Icons.receipt_long_outlined,
+              icon: CatchIcons.receiptLongOutlined,
               title: 'No payments yet',
               message: 'Event bookings and refunds will appear here.',
               surface: false,
@@ -266,7 +267,7 @@ class _PaymentTile extends ConsumerWidget {
                             ),
                           );
                         },
-                        icon: const Icon(Icons.help_outline_rounded, size: 18),
+                        icon: Icon(CatchIcons.helpOutlineRounded, size: 18),
                         label: const Text('Get help with this booking'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: t.warning,

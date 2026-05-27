@@ -1,13 +1,12 @@
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:flutter/material.dart';
 
-/// Hero photo for the event detail screen.
+/// Hero visual for the event detail screen.
 ///
-/// Wraps [CatchEventThumbnail] so the fallback (when `Event.photoUrl` is
-/// null or fails to load) is a pace-themed gradient with the activity glyph
-/// rather than a generic backdrop — matches the look of the redesigned
-/// Explore cards.
+/// Wraps [CatchEventThumbnail] with activity artwork preferred so the detail
+/// header stays color-coded by the same mutable visual schema as Explore cards.
 class EventPhotoHeader extends StatelessWidget {
   const EventPhotoHeader({super.key, required this.event});
 
@@ -15,11 +14,16 @@ class EventPhotoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchEventThumbnail(
-      photoUrl: event.photoUrl,
-      pace: event.pace,
-      activityKind: event.activityKind,
-      scrim: CatchEventThumbnailScrim.bottom,
+    return Hero(
+      tag: eventPhotoHeroTag(event.id),
+      transitionOnUserGestures: true,
+      child: CatchEventThumbnail(
+        photoUrl: event.photoUrl,
+        pace: event.pace,
+        activityKind: event.activityKind,
+        scrim: CatchEventThumbnailScrim.bottom,
+        preferActivityArtwork: true,
+      ),
     );
   }
 }

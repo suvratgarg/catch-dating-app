@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
@@ -727,14 +728,14 @@ class _ProfileHeightStepperControls extends StatelessWidget {
       children: [
         _ProfileHeightStepButton(
           tooltip: 'Decrease height',
-          icon: Icons.remove_rounded,
+          icon: CatchIcons.removeRounded,
           enabled: canDecrease,
           onPressed: () => onChanged(value - 1),
         ),
         gapW4,
         _ProfileHeightStepButton(
           tooltip: 'Increase height',
-          icon: Icons.add_rounded,
+          icon: CatchIcons.addRounded,
           enabled: canIncrease,
           onPressed: () => onChanged(value + 1),
         ),
@@ -1110,7 +1111,7 @@ class _ProfileMultiChipValueEditor<T extends Labelled> extends StatelessWidget {
           CatchChip(
             label: value.label,
             active: true,
-            icon: const Icon(Icons.check_rounded),
+            icon: Icon(CatchIcons.checkRounded),
             enabled: enabled,
             onTap: () => onSelectedTap(value),
           ),

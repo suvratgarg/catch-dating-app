@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.d
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -139,7 +140,7 @@ class ClubsList extends ConsumerWidget {
         }
       },
       variant: CatchButtonVariant.secondary,
-      icon: const Icon(Icons.close_rounded),
+      icon: Icon(CatchIcons.closeRounded),
     );
   }
 }

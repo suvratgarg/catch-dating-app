@@ -121,6 +121,18 @@ void main() {
       );
     });
 
+    test('unauthenticated users can open the Explore concept lab', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/dev/explore-concept-lab',
+          matchedLocation: Routes.exploreConceptLabScreen.path,
+        ),
+        null,
+      );
+    });
+
     test('unauthenticated users can open the dev event success lab', () {
       expect(
         _redirect(

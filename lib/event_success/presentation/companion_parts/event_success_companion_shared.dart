@@ -247,7 +247,7 @@ class _StageNav extends StatelessWidget {
             backgroundColor: foreground.withValues(alpha: 0.12),
           ),
           onPressed: canPop ? () => _popCompanion(context) : null,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(CatchIcons.arrowBackRounded),
         ),
         gapW8,
         Expanded(
@@ -265,7 +265,7 @@ class _StageNav extends StatelessWidget {
           width: 48,
           height: 48,
           child: Icon(
-            Icons.radio_button_checked_rounded,
+            CatchIcons.radioButtonCheckedRounded,
             color: foreground.withValues(alpha: 0.34),
           ),
         ),
@@ -310,7 +310,9 @@ class _CompanionHero extends StatelessWidget {
                 eventEnded: eventEnded,
               ),
               tone: attended ? CatchBadgeTone.success : CatchBadgeTone.live,
-              icon: attended ? Icons.check_rounded : Icons.qr_code_2_rounded,
+              icon: attended
+                  ? CatchIcons.checkRounded
+                  : CatchIcons.qrCode2Rounded,
               backgroundColor: fg.withValues(alpha: 0.12),
               foregroundColor: fg,
               borderColor: fg.withValues(alpha: 0.18),
@@ -449,7 +451,7 @@ class _StagePrivacyLine extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            Icons.lock_outline_rounded,
+            CatchIcons.lockOutlineRounded,
             size: 18,
             color: stageTheme.foreground.withValues(alpha: 0.82),
           ),
@@ -906,7 +908,7 @@ class _StageMotifPainter extends CustomPainter {
 }
 
 class EventSuccessMomentPresentation {
-  const EventSuccessMomentPresentation({
+  EventSuccessMomentPresentation({
     required this.badgeLabel,
     required this.headline,
     required this.body,
@@ -943,7 +945,7 @@ class EventSuccessMomentPresentation {
             'When check-in opens, this screen turns into the live guide for ${event.locationName}.',
         privacyLine:
             'Pre-event details stay informational until the host starts the room.',
-        icon: Icons.event_available_outlined,
+        icon: CatchIcons.eventAvailableOutlined,
         badgeTone: CatchBadgeTone.live,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
         ambientBed: EventSuccessAmbientBed.theatrical,
@@ -956,32 +958,32 @@ class EventSuccessMomentPresentation {
               'One tap tells the host you are in the room and ready for the live flow.',
           privacyLine:
               'Check-in only updates attendance and the event companion flow.',
-          icon: Icons.qr_code_2_rounded,
+          icon: CatchIcons.qrCode2Rounded,
           badgeTone: CatchBadgeTone.warning,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
           ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn =>
-        const EventSuccessMomentPresentation(
+        EventSuccessMomentPresentation(
           badgeLabel: 'First Hello',
           headline: 'Your first arrival mission is live.',
           body:
               'Find one person, ask one tiny question, and let the room start with permission instead of pressure.',
           privacyLine:
               'This checks you in. Hosts do not see the individual answer.',
-          icon: Icons.waving_hand_outlined,
+          icon: CatchIcons.wavingHandOutlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
           ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire =>
-        const EventSuccessMomentPresentation(
+        EventSuccessMomentPresentation(
           badgeLabel: 'Match clues',
           headline: 'Add a few clues before the room moves.',
           body:
               'Quick answers help Catch shape prompts without turning the event into a form.',
           privacyLine: 'Hosts do not see individual match clue answers.',
-          icon: Icons.tune_rounded,
+          icon: CatchIcons.tuneRounded,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
           ambientBed: EventSuccessAmbientBed.theatrical,
@@ -995,7 +997,7 @@ class EventSuccessMomentPresentation {
               'The host is pacing the room from live mode.',
           privacyLine:
               'Everyone sees the same room cue; personal details stay scoped to you.',
-          icon: Icons.location_on_outlined,
+          icon: CatchIcons.locationOnOutlined,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
           ambientBed: EventSuccessAmbientBed.pulse,
@@ -1009,7 +1011,7 @@ class EventSuccessMomentPresentation {
               'Use it if the room needs an easy next line.',
           privacyLine:
               'Prompts are shared guidance, not a public record of what you say.',
-          icon: Icons.chat_bubble_outline_rounded,
+          icon: CatchIcons.chatBubbleOutlineRounded,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
           ambientBed: EventSuccessAmbientBed.pulse,
@@ -1023,7 +1025,7 @@ class EventSuccessMomentPresentation {
               'These are light nudges for the current event moment.',
           privacyLine:
               'Conversation cues are suggestions only; nothing is sent for you.',
-          icon: Icons.forum_outlined,
+          icon: CatchIcons.forumOutlined,
           badgeTone: CatchBadgeTone.live,
           effectKind: EventSuccessLiveEffectKind.stepChange,
           ambientBed: EventSuccessAmbientBed.pulse,
@@ -1034,7 +1036,7 @@ class EventSuccessMomentPresentation {
         body:
             'Use it as a nudge into the next interaction, then let the room breathe.',
         privacyLine: 'Only your own assignment details appear on this screen.',
-        icon: Icons.groups_2_outlined,
+        icon: CatchIcons.groups2Outlined,
         badgeTone: CatchBadgeTone.success,
         effectKind: EventSuccessLiveEffectKind.stepChange,
         ambientBed: EventSuccessAmbientBed.pulse,
@@ -1046,7 +1048,7 @@ class EventSuccessMomentPresentation {
             'The host controls the timing so the room unlocks together instead of leaking awkwardly.',
         privacyLine:
             'Your details stay hidden on this screen until the shared reveal moment.',
-        icon: Icons.bolt_rounded,
+        icon: CatchIcons.boltRounded,
         badgeTone: CatchBadgeTone.live,
         effectKind: _revealHeroEffect(plan),
         // Cinematic owns the soundscape during anticipation/climax; the bed
@@ -1054,31 +1056,30 @@ class EventSuccessMomentPresentation {
         ambientBed: EventSuccessAmbientBed.silent,
       ),
       EventSuccessAttendeeMomentKind.wingmanRequest =>
-        const EventSuccessMomentPresentation(
+        EventSuccessMomentPresentation(
           badgeLabel: 'Host help',
           headline: 'Ask for one specific intro.',
           body:
               'Choose someone you want help meeting and the host can use that as live facilitation context.',
           privacyLine:
               'Only the host sees this request; the other attendee is not notified.',
-          icon: Icons.volunteer_activism_outlined,
+          icon: CatchIcons.volunteerActivismOutlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.stepChange,
           ambientBed: EventSuccessAmbientBed.pulse,
         ),
-      EventSuccessAttendeeMomentKind.postEvent =>
-        const EventSuccessMomentPresentation(
-          badgeLabel: 'Afterglow',
-          headline: 'Your afterglow is ready.',
-          body:
-              'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.',
-          privacyLine:
-              'This recap is private to you. Hosts only see safe aggregate coaching.',
-          icon: Icons.nightlight_round,
-          badgeTone: CatchBadgeTone.success,
-          effectKind: EventSuccessLiveEffectKind.guideComplete,
-          ambientBed: EventSuccessAmbientBed.sunrise,
-        ),
+      EventSuccessAttendeeMomentKind.postEvent => EventSuccessMomentPresentation(
+        badgeLabel: 'Afterglow',
+        headline: 'Your afterglow is ready.',
+        body:
+            'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.',
+        privacyLine:
+            'This recap is private to you. Hosts only see safe aggregate coaching.',
+        icon: CatchIcons.nightlightRound,
+        badgeTone: CatchBadgeTone.success,
+        effectKind: EventSuccessLiveEffectKind.guideComplete,
+        ambientBed: EventSuccessAmbientBed.sunrise,
+      ),
       EventSuccessAttendeeMomentKind.none => EventSuccessMomentPresentation(
         badgeLabel: eventEnded
             ? 'Wrapped'
@@ -1095,7 +1096,7 @@ class EventSuccessMomentPresentation {
             'The host is running the room. Your next prompt or reveal appears here when it is time.',
         privacyLine:
             'Catch only shows the live details that are relevant to this event moment.',
-        icon: Icons.event_outlined,
+        icon: CatchIcons.eventOutlined,
         badgeTone: CatchBadgeTone.neutral,
         effectKind: attended ? EventSuccessLiveEffectKind.liveEntry : null,
         ambientBed: eventEnded
@@ -1211,20 +1212,20 @@ class _PrivacyBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (audience) {
-      _PrivacyAudience.privateToYou => const CatchBadge(
+      _PrivacyAudience.privateToYou => CatchBadge(
         label: 'Private to you',
         tone: CatchBadgeTone.neutral,
-        icon: Icons.lock_outline_rounded,
+        icon: CatchIcons.lockOutlineRounded,
       ),
-      _PrivacyAudience.hostCanSee => const CatchBadge(
+      _PrivacyAudience.hostCanSee => CatchBadge(
         label: 'Host can see',
         tone: CatchBadgeTone.neutral,
-        icon: Icons.visibility_outlined,
+        icon: CatchIcons.visibilityOutlined,
       ),
-      _PrivacyAudience.catchPrivate => const CatchBadge(
+      _PrivacyAudience.catchPrivate => CatchBadge(
         label: 'Catch private',
         tone: CatchBadgeTone.neutral,
-        icon: Icons.shield_outlined,
+        icon: CatchIcons.shieldOutlined,
       ),
     };
   }
@@ -1587,7 +1588,7 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.groups_3_outlined, size: 16, color: t.primary),
+                Icon(CatchIcons.groups3Outlined, size: 16, color: t.primary),
                 gapW6,
                 Text(
                   count == 1
@@ -1661,7 +1662,7 @@ class _NoCompanionActionsCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.event_outlined, color: t.primary),
+          Icon(CatchIcons.eventOutlined, color: t.primary),
           gapW12,
           Expanded(
             child: Column(

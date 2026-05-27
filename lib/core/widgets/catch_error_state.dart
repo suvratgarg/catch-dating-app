@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -13,12 +14,12 @@ class CatchErrorState extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.error_outline_rounded,
+    IconData? icon,
     this.onRetry,
     this.retryLabel = 'Try again',
     this.secondaryAction,
     this.mode = CatchErrorStateMode.fullScreen,
-  });
+  }) : _icon = icon;
 
   factory CatchErrorState.fromError(
     Object error, {
@@ -45,11 +46,13 @@ class CatchErrorState extends StatelessWidget {
 
   final String title;
   final String message;
-  final IconData icon;
+  final IconData? _icon;
   final VoidCallback? onRetry;
   final String retryLabel;
   final Widget? secondaryAction;
   final CatchErrorStateMode mode;
+
+  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +95,7 @@ class CatchErrorState extends StatelessWidget {
                   label: retryLabel,
                   onPressed: onRetry,
                   size: isCompact ? CatchButtonSize.sm : CatchButtonSize.md,
-                  icon: const Icon(Icons.refresh_rounded),
+                  icon: Icon(CatchIcons.refreshRounded),
                 ),
               ...?(secondaryAction == null ? null : [secondaryAction]),
             ],
@@ -129,9 +132,9 @@ class CatchErrorScaffold extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    this.icon = Icons.error_outline_rounded,
+    IconData? icon,
     this.backgroundColor,
-  });
+  }) : _icon = icon;
 
   factory CatchErrorScaffold.fromError(
     Object error, {
@@ -156,8 +159,10 @@ class CatchErrorScaffold extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData icon;
+  final IconData? _icon;
   final Color? backgroundColor;
+
+  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -183,9 +188,9 @@ class CatchSliverErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    this.icon = Icons.error_outline_rounded,
+    IconData? icon,
     this.fillRemaining = true,
-  });
+  }) : _icon = icon;
 
   factory CatchSliverErrorState.fromError(
     Object error, {
@@ -212,8 +217,10 @@ class CatchSliverErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData icon;
+  final IconData? _icon;
   final bool fillRemaining;
+
+  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -240,9 +247,9 @@ class CatchInlineErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    this.icon = Icons.error_outline_rounded,
+    IconData? icon,
     this.compact = false,
-  });
+  }) : _icon = icon;
 
   factory CatchInlineErrorState.fromError(
     Object error, {
@@ -269,8 +276,10 @@ class CatchInlineErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData icon;
+  final IconData? _icon;
   final bool compact;
+
+  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -89,10 +90,10 @@ class HostEventManageRouteScreen extends ConsumerWidget {
     }
 
     if (uid == null || !club.isHostedBy(uid)) {
-      return const CatchErrorScaffold(
+      return CatchErrorScaffold(
         title: 'Action unavailable',
         message: 'You can manage only events that you host.',
-        icon: Icons.block_rounded,
+        icon: CatchIcons.blockRounded,
       );
     }
 
@@ -171,7 +172,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 IconBtn(
                   onTap: onBackToSuccess,
                   child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
+                    CatchIcons.arrowBackIosNewRounded,
                     size: 18,
                     color: t.ink,
                   ),
@@ -208,7 +209,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 radius: CatchRadius.lg,
                 child: Row(
                   children: [
-                    Icon(Icons.lock_rounded, color: t.surface, size: 18),
+                    Icon(CatchIcons.lockRounded, color: t.surface, size: 18),
                     gapW10,
                     Text(
                       'FULL',
@@ -332,9 +333,9 @@ extension on HostEventManageSection {
 
   IconData get icon {
     return switch (this) {
-      HostEventManageSection.setup => Icons.tune_rounded,
-      HostEventManageSection.live => Icons.play_circle_outline_rounded,
-      HostEventManageSection.report => Icons.insights_outlined,
+      HostEventManageSection.setup => CatchIcons.tuneRounded,
+      HostEventManageSection.live => CatchIcons.playCircleOutlineRounded,
+      HostEventManageSection.report => CatchIcons.insightsOutlined,
     };
   }
 }
@@ -426,7 +427,7 @@ class _PrivateAccessBody extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.key_outlined, color: t.primary),
+              Icon(CatchIcons.keyOutlined, color: t.primary),
               gapW10,
               Expanded(
                 child: Column(
@@ -452,13 +453,13 @@ class _PrivateAccessBody extends ConsumerWidget {
           if (inviteCode != null && inviteCode.isNotEmpty) ...[
             gapH14,
             _HostEventSummaryRow(
-              icon: Icons.password_rounded,
+              icon: CatchIcons.passwordRounded,
               label: 'Code',
               value: inviteCode,
             ),
             if (inviteLink != null)
               _HostEventSummaryRow(
-                icon: Icons.link_rounded,
+                icon: CatchIcons.linkRounded,
                 label: 'Link',
                 value: inviteLink,
                 showDivider: false,
@@ -471,7 +472,9 @@ class _PrivateAccessBody extends ConsumerWidget {
                   : () =>
                         unawaited(_sharePrivateLink(context, ref, inviteLink)),
               variant: CatchButtonVariant.secondary,
-              icon: const Icon(Icons.ios_share_rounded),
+              icon: Icon(
+                CatchIcons.platformShare(platform: Theme.of(context).platform),
+              ),
               fullWidth: true,
             ),
           ],
@@ -546,7 +549,7 @@ class _HostEventActionsCard extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.admin_panel_settings_outlined, color: t.ink2),
+              Icon(CatchIcons.adminPanelSettingsOutlined, color: t.ink2),
               gapW10,
               Expanded(
                 child: Column(
@@ -595,7 +598,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                       extra: event,
                     ),
               variant: CatchButtonVariant.secondary,
-              icon: const Icon(Icons.edit_outlined),
+              icon: Icon(CatchIcons.editOutlined),
               fullWidth: true,
             ),
           if (!event.isCancelled) gapH10,
@@ -606,7 +609,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                   ? null
                   : () => _confirmCancelEvent(context, ref),
               variant: CatchButtonVariant.danger,
-              icon: const Icon(Icons.cancel_outlined),
+              icon: Icon(CatchIcons.cancelOutlined),
               isLoading: cancelMutation.isPending,
               fullWidth: true,
             ),
@@ -623,7 +626,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                   ? null
                   : () => _confirmDeleteEvent(context, ref),
               variant: CatchButtonVariant.secondary,
-              icon: const Icon(Icons.delete_outline_rounded),
+              icon: Icon(CatchIcons.deleteOutlineRounded),
               isLoading: deleteMutation.isPending,
               fullWidth: true,
               foregroundColor: t.danger,
@@ -727,22 +730,22 @@ class _HostEventSummaryCard extends StatelessWidget {
       child: Column(
         children: [
           _HostEventSummaryRow(
-            icon: Icons.groups_rounded,
+            icon: CatchIcons.groupsRounded,
             label: 'Club',
             value: club.name,
           ),
           _HostEventSummaryRow(
-            icon: Icons.location_on_outlined,
+            icon: CatchIcons.locationOnOutlined,
             label: 'Meet',
             value: event.locationName,
           ),
           _HostEventSummaryRow(
-            icon: Icons.route_rounded,
+            icon: CatchIcons.routeRounded,
             label: 'Event',
             value: event.activitySummaryLabel,
           ),
           _HostEventSummaryRow(
-            icon: Icons.payments_outlined,
+            icon: CatchIcons.paymentsOutlined,
             label: 'Price',
             value: price,
             showDivider: false,

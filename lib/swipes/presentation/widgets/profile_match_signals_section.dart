@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
@@ -138,22 +139,23 @@ class _CompatibilityReasonRow extends StatelessWidget {
 
 IconData _confidenceIcon(ProfileConfidenceSignalKind kind) {
   return switch (kind) {
-    ProfileConfidenceSignalKind.completeProfile => Icons.verified_rounded,
-    ProfileConfidenceSignalKind.sharedRun => Icons.directions_run_rounded,
+    ProfileConfidenceSignalKind.completeProfile => CatchIcons.verifiedRounded,
+    ProfileConfidenceSignalKind.sharedRun => CatchIcons.directionsRunRounded,
     ProfileConfidenceSignalKind.easyOpeners =>
-      Icons.chat_bubble_outline_rounded,
+      CatchIcons.chatBubbleOutlineRounded,
   };
 }
 
 IconData _compatibilityIcon(CompatibilityReasonKind kind) {
   return switch (kind) {
-    CompatibilityReasonKind.sharedRun => Icons.event_available_rounded,
-    CompatibilityReasonKind.relationshipGoal => Icons.favorite_border_rounded,
-    CompatibilityReasonKind.runningReason => Icons.directions_run_rounded,
-    CompatibilityReasonKind.runTime => Icons.wb_twilight_rounded,
-    CompatibilityReasonKind.distance => Icons.straighten_rounded,
-    CompatibilityReasonKind.pace => Icons.speed_rounded,
-    CompatibilityReasonKind.language => Icons.translate_rounded,
-    CompatibilityReasonKind.easyOpener => Icons.chat_bubble_outline_rounded,
+    CompatibilityReasonKind.sharedRun => CatchIcons.eventAvailableRounded,
+    CompatibilityReasonKind.relationshipGoal =>
+      CatchIcons.favoriteBorderRounded,
+    CompatibilityReasonKind.runningReason => CatchIcons.directionsRunRounded,
+    CompatibilityReasonKind.runTime => CatchIcons.wbTwilightRounded,
+    CompatibilityReasonKind.distance => CatchIcons.straightenRounded,
+    CompatibilityReasonKind.pace => CatchIcons.speedRounded,
+    CompatibilityReasonKind.language => CatchIcons.translateRounded,
+    CompatibilityReasonKind.easyOpener => CatchIcons.chatBubbleOutlineRounded,
   };
 }

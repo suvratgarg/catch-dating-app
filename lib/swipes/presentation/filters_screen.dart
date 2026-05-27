@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -93,7 +94,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         appBar: CatchTopBar(
           title: 'Filters',
           leading: CatchTopBarIconAction(
-            icon: Icons.close_rounded,
+            icon: CatchIcons.closeRounded,
             tooltip: 'Close filters',
             onPressed: () => context.pop(),
           ),

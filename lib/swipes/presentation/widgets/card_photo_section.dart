@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
@@ -90,7 +91,7 @@ class _PhotoFallback extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.person_rounded,
+              CatchIcons.personRounded,
               color: palette.textMuted.withValues(alpha: 0.72),
               size: 52,
             ),

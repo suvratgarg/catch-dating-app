@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -12,12 +13,14 @@ part 'catch_notice.g.dart';
 
 enum CatchNoticeTone { status, success, warning, danger, event }
 
+enum _AppNoticeFallbackIcon { status, offline }
+
 class AppNotice {
   const AppNotice({
     required this.id,
     required this.title,
     this.message,
-    this.icon = Icons.info_outline_rounded,
+    IconData? icon,
     this.tone = CatchNoticeTone.status,
     this.actionLabel,
     this.onAction,
@@ -25,13 +28,15 @@ class AppNotice {
     this.dedupeKey,
     this.priority = 0,
     this.dismissible = true,
-  });
+  }) : _icon = icon,
+       _fallbackIcon = _AppNoticeFallbackIcon.status;
 
   const AppNotice.offline()
     : id = 'connectivity.offline',
       title = "You're offline",
       message = 'Some content may be out of date.',
-      icon = Icons.cloud_off_rounded,
+      _icon = null,
+      _fallbackIcon = _AppNoticeFallbackIcon.offline,
       tone = CatchNoticeTone.warning,
       actionLabel = null,
       onAction = null,
@@ -43,7 +48,8 @@ class AppNotice {
   final String id;
   final String title;
   final String? message;
-  final IconData icon;
+  final IconData? _icon;
+  final _AppNoticeFallbackIcon _fallbackIcon;
   final CatchNoticeTone tone;
   final String? actionLabel;
   final VoidCallback? onAction;
@@ -51,6 +57,13 @@ class AppNotice {
   final String? dedupeKey;
   final int priority;
   final bool dismissible;
+
+  IconData get icon =>
+      _icon ??
+      switch (_fallbackIcon) {
+        _AppNoticeFallbackIcon.status => CatchIcons.infoOutlineRounded,
+        _AppNoticeFallbackIcon.offline => CatchIcons.cloudOffRounded,
+      };
 
   bool get isPersistent => duration == null;
 }
@@ -275,7 +288,7 @@ class CatchNotice extends StatelessWidget {
                 tooltip: 'Dismiss',
                 onPressed: onDismiss,
                 icon: Icon(
-                  Icons.close_rounded,
+                  CatchIcons.closeRounded,
                   color: palette.secondary,
                   size: 18,
                 ),

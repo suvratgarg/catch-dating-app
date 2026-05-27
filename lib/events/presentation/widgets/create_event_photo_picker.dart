@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -45,7 +46,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
                             bottom: 8,
                             right: 8,
                             child: CatchIconTile(
-                              icon: Icons.edit_outlined,
+                              icon: CatchIcons.editOutlined,
                               iconColor: t.ink,
                               backgroundColor: t.surface.withValues(
                                 alpha: 0.85,
@@ -65,7 +66,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.add_photo_alternate_outlined,
+                                CatchIcons.addPhotoAlternateOutlined,
                                 size: 40,
                                 color: t.ink2,
                               ),

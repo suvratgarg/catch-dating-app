@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -113,8 +114,8 @@ class _ClubBellButton extends StatelessWidget {
               )
             : Icon(
                 enabled
-                    ? Icons.notifications_active_rounded
-                    : Icons.notifications_none_rounded,
+                    ? CatchIcons.notificationsActiveRounded
+                    : CatchIcons.notificationsNoneRounded,
                 color: foreground,
               ),
       ),

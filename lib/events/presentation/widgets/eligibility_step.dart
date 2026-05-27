@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -83,7 +84,7 @@ class EligibilityStep extends StatelessWidget {
                   isOptional: true,
                   controller: minAgeController,
                   hintText: 'Min (e.g. 18)',
-                  prefixIcon: const Icon(Icons.cake_outlined),
+                  prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -102,7 +103,7 @@ class EligibilityStep extends StatelessWidget {
                   isOptional: true,
                   controller: maxAgeController,
                   hintText: 'Max (e.g. 35)',
-                  prefixIcon: const Icon(Icons.cake_outlined),
+                  prefixIcon: Icon(CatchIcons.cakeOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -127,7 +128,7 @@ class EligibilityStep extends StatelessWidget {
                   isOptional: true,
                   controller: maxMenController,
                   hintText: 'Max men',
-                  prefixIcon: const Icon(Icons.male_outlined),
+                  prefixIcon: Icon(CatchIcons.maleOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -147,7 +148,7 @@ class EligibilityStep extends StatelessWidget {
                   isOptional: true,
                   controller: maxWomenController,
                   hintText: 'Max women',
-                  prefixIcon: const Icon(Icons.female_outlined),
+                  prefixIcon: Icon(CatchIcons.femaleOutlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.done,

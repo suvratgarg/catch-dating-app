@@ -6,6 +6,7 @@ import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -324,7 +325,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       await tester.enterText(find.byType(TextField), '  Hello Taylor  ');
-      await tester.tap(find.byIcon(Icons.send_rounded));
+      await tester.tap(find.byIcon(CatchIcons.sendRounded));
       await pumpFeatureUi(tester);
 
       expect(conversationRepository.sendCalls, hasLength(1));
@@ -370,7 +371,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       await tester.enterText(find.byType(TextField), '  Still here  ');
-      await tester.tap(find.byIcon(Icons.send_rounded));
+      await tester.tap(find.byIcon(CatchIcons.sendRounded));
       await pumpFeatureUi(tester);
 
       expect(conversationRepository.sendCalls, hasLength(1));
@@ -517,8 +518,8 @@ void main() {
       expect(find.text('Reset...'), findsOneWidget);
       expect(find.text('YOU BOTH RAN'), findsNothing);
       expect(find.byType(TextField), findsNothing);
-      expect(find.byIcon(Icons.image_outlined), findsNothing);
-      expect(find.byIcon(Icons.send_rounded), findsNothing);
+      expect(find.byIcon(CatchIcons.imageOutlined), findsNothing);
+      expect(find.byIcon(CatchIcons.sendRounded), findsNothing);
 
       await tester.tap(find.text('Check setup'));
       await pumpFeatureUi(tester);

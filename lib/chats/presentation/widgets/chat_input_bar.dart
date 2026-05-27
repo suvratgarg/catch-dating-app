@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -46,7 +47,7 @@ class ChatInputBar extends StatelessWidget {
                       height: 20,
                       child: CatchLoadingIndicator(strokeWidth: 2),
                     )
-                  : Icon(Icons.image_outlined, color: t.ink2),
+                  : Icon(CatchIcons.imageOutlined, color: t.ink2),
               tooltip: 'Send an image',
             ),
           Expanded(
@@ -76,7 +77,7 @@ class ChatInputBar extends StatelessWidget {
                     height: 20,
                     child: CatchLoadingIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.send_rounded),
+                : Icon(CatchIcons.sendRounded),
           ),
         ],
       ),

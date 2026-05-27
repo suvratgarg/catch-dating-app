@@ -38,9 +38,9 @@ extension on EventSuccessHostTab {
 
   IconData get icon {
     return switch (this) {
-      EventSuccessHostTab.setup => Icons.tune_rounded,
-      EventSuccessHostTab.live => Icons.play_circle_outline_rounded,
-      EventSuccessHostTab.report => Icons.insights_outlined,
+      EventSuccessHostTab.setup => CatchIcons.tuneRounded,
+      EventSuccessHostTab.live => CatchIcons.playCircleOutlineRounded,
+      EventSuccessHostTab.report => CatchIcons.insightsOutlined,
     };
   }
 }
@@ -116,7 +116,7 @@ class _HostActivitySummary extends StatelessWidget {
               CatchBadge(
                 label: profile.formatLabel,
                 tone: CatchBadgeTone.brand,
-                icon: Icons.auto_awesome_outlined,
+                icon: CatchIcons.autoAwesomeOutlined,
               ),
               CatchBadge(
                 label: profile.interactionModel.label,
@@ -156,7 +156,7 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.psychology_alt_outlined, color: t.primary),
+          Icon(CatchIcons.psychologyAltOutlined, color: t.primary),
           gapW12,
           Expanded(
             child: Column(
@@ -181,8 +181,8 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
                       label: pack.title,
                       tone: CatchBadgeTone.neutral,
                       icon: pack.custom
-                          ? Icons.edit_note_rounded
-                          : Icons.style_outlined,
+                          ? CatchIcons.editNoteRounded
+                          : CatchIcons.styleOutlined,
                     ),
                   ],
                 ),
@@ -226,7 +226,7 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.qr_code_2_rounded, color: t.primary),
+              Icon(CatchIcons.qrCode2Rounded, color: t.primary),
               gapW10,
               Expanded(
                 child: Text(
@@ -255,21 +255,21 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
                 tone: bookedCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.brand,
-                icon: Icons.confirmation_number_outlined,
+                icon: CatchIcons.confirmationNumberOutlined,
               ),
               CatchBadge(
                 label: '$checkedInCount checked in',
                 tone: checkedInCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.success,
-                icon: Icons.check_circle_outline_rounded,
+                icon: CatchIcons.checkCircleOutlineRounded,
               ),
               CatchBadge(
                 label: '$waitlistCount waitlist',
                 tone: waitlistCount == 0
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.warning,
-                icon: Icons.hourglass_empty_rounded,
+                icon: CatchIcons.hourglassEmptyRounded,
               ),
             ],
           ),
@@ -356,7 +356,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.volunteer_activism_outlined, color: t.primary),
+              Icon(CatchIcons.volunteerActivismOutlined, color: t.primary),
               gapW10,
               Expanded(
                 child: Text(
@@ -369,7 +369,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
                 tone: activeRequests.isEmpty
                     ? CatchBadgeTone.neutral
                     : CatchBadgeTone.live,
-                icon: Icons.visibility_outlined,
+                icon: CatchIcons.visibilityOutlined,
               ),
             ],
           ),
@@ -430,7 +430,7 @@ class _WingmanRequestHostRow extends StatelessWidget {
           trailing: CatchBadge(
             label: 'Host visible',
             tone: CatchBadgeTone.live,
-            icon: Icons.visibility_outlined,
+            icon: CatchIcons.visibilityOutlined,
           ),
         ),
         if (request.note != null && request.note!.trim().isNotEmpty) ...[

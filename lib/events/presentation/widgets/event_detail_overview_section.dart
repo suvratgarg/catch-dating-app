@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -118,14 +119,14 @@ class _EventPolicySummary extends StatelessWidget {
           Text('Booking policy', style: CatchTextStyles.sectionTitle(context)),
           gapH10,
           _PolicyLine(
-            icon: Icons.group_outlined,
+            icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
             body: _admissionSummary(policy.admissionPolicy),
           ),
           if (policy.usesDemandPricing) ...[
             gapH10,
             _PolicyLine(
-              icon: Icons.trending_up_rounded,
+              icon: CatchIcons.trendingUpRounded,
               title: 'Demand pricing',
               body: _dynamicPricingSummary(
                 policy.pricingPolicy,
@@ -135,13 +136,13 @@ class _EventPolicySummary extends StatelessWidget {
           ],
           gapH10,
           _PolicyLine(
-            icon: Icons.receipt_long_outlined,
+            icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
           ),
           gapH10,
           _PolicyLine(
-            icon: Icons.verified_user_outlined,
+            icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,
             body: policy.settlementPolicy.summary,
           ),
@@ -196,8 +197,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
       title: _activityExpectationTitle(event),
       body: _activityExpectationBody(event),
     ),
-    const _ExpectationItem(
-      icon: Icons.qr_code_2_outlined,
+    _ExpectationItem(
+      icon: CatchIcons.qrCode2Outlined,
       title: 'Attendance matters',
       body:
           'Check-in or host-marked attendance decides who can use post-event follow-up and feedback.',
@@ -206,8 +207,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
 
   if (policy.admissionPolicy.manualApprovalRequired) {
     items.add(
-      const _ExpectationItem(
-        icon: Icons.pending_actions_outlined,
+      _ExpectationItem(
+        icon: CatchIcons.pendingActionsOutlined,
         title: 'Host review',
         body:
             'Request a spot first. The host can review your public profile before confirming the roster.',
@@ -216,8 +217,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
   } else if (policy.admissionPolicy.format ==
       EventAdmissionFormat.balancedRatio) {
     items.add(
-      const _ExpectationItem(
-        icon: Icons.balance_outlined,
+      _ExpectationItem(
+        icon: CatchIcons.balanceOutlined,
         title: 'Balanced booking',
         body:
             'Some bookings may move through the waitlist so the event does not become too skewed.',
@@ -225,8 +226,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
     );
   } else if (policy.admissionPolicy.waitlistPolicy.isEnabled) {
     items.add(
-      const _ExpectationItem(
-        icon: Icons.pending_actions_outlined,
+      _ExpectationItem(
+        icon: CatchIcons.pendingActionsOutlined,
         title: 'Waitlist available',
         body:
             'If the event fills up, the waitlist can reopen spots when capacity changes.',
@@ -239,8 +240,8 @@ List<_ExpectationItem> _expectationItems(Event event) {
 
 IconData _activityExpectationIcon(Event event) {
   return event.eventFormat.isDistanceBased
-      ? Icons.directions_run_outlined
-      : Icons.event_available_outlined;
+      ? CatchIcons.directionsRunOutlined
+      : CatchIcons.eventAvailableOutlined;
 }
 
 String _activityExpectationTitle(Event event) {

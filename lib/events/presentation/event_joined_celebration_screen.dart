@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -39,23 +40,23 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
           'Your spot is confirmed for ${event.title}${clubName == null ? '' : ' with $clubName'}.',
       details: [
         CelebrationDetail(
-          icon: Icons.calendar_month_outlined,
+          icon: CatchIcons.calendarMonthOutlined,
           label: 'When',
           value: '${event.longDateLabel} · ${event.timeRangeLabel}',
         ),
         CelebrationDetail(
-          icon: Icons.location_on_outlined,
+          icon: CatchIcons.locationOnOutlined,
           label: 'Where',
           value: event.locationName,
         ),
         CelebrationDetail(
-          icon: Icons.directions_run_rounded,
+          icon: CatchIcons.directionsRunRounded,
           label: 'Event',
           value: event.activitySummaryLabel,
         ),
         if (paymentData != null) ...[
           CelebrationDetail(
-            icon: Icons.payments_outlined,
+            icon: CatchIcons.paymentsOutlined,
             label: 'Paid',
             value: EventFormatters.priceInPaise(
               paymentData.amountInPaise,
@@ -63,7 +64,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
             ),
           ),
           CelebrationDetail(
-            icon: Icons.receipt_long_outlined,
+            icon: CatchIcons.receiptLongOutlined,
             label: 'Payment ID',
             value: paymentData.paymentId,
           ),
@@ -76,7 +77,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
         key: viewEventKey,
         label: 'View event',
         onPressed: onViewEvent,
-        icon: const Icon(Icons.directions_run_rounded),
+        icon: Icon(CatchIcons.directionsRunRounded),
       ),
       secondaryAction: CelebrationAction(
         key: backHomeKey,

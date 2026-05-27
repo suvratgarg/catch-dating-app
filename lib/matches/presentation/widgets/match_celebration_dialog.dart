@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -70,7 +71,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       eyebrow: 'New catch',
       title: "It's a Catch.",
       message: 'You and $name both liked each other.',
-      icon: Icons.favorite_rounded,
+      icon: CatchIcons.favoriteRounded,
       visual: PersonAvatar(
         size: 108,
         name: name,
@@ -80,7 +81,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       ),
       details: [
         CelebrationDetail(
-          icon: Icons.favorite_border_rounded,
+          icon: CatchIcons.favoriteBorderRounded,
           label: 'Match',
           value: '$name liked you back.',
         ),
@@ -90,7 +91,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       primaryAction: CelebrationAction(
         label: 'Send a message',
         onPressed: onSendMessage,
-        icon: const Icon(Icons.send_rounded),
+        icon: Icon(CatchIcons.sendRounded),
       ),
       secondaryAction: CelebrationAction(
         label: 'Keep swiping',

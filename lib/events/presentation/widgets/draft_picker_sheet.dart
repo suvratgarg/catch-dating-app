@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -117,8 +118,8 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_drafts.isEmpty)
-            const CatchEmptyState(
-              icon: Icons.edit_note_rounded,
+            CatchEmptyState(
+              icon: CatchIcons.editNoteRounded,
               title: 'No drafts yet',
               message: 'Saved drafts for this club will appear here.',
               surface: false,
@@ -203,7 +204,7 @@ class _DraftCard extends StatelessWidget {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : Icon(
-                    Icons.delete_outline_rounded,
+                    CatchIcons.deleteOutlineRounded,
                     size: 20,
                     color: CatchTokens.of(context).ink2,
                   ),

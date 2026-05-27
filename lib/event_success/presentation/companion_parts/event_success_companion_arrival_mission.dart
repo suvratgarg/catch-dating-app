@@ -61,7 +61,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 _StageSectionLabel(
-                  icon: Icons.waving_hand_outlined,
+                  icon: CatchIcons.wavingHandOutlined,
                   label: 'First Hello',
                   color: t.primary,
                 ),
@@ -83,7 +83,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.near_me_outlined, size: 18, color: t.primary),
+                  Icon(CatchIcons.nearMeOutlined, size: 18, color: t.primary),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -101,7 +101,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                 children: [
                   CatchButton(
                     label: 'Start First Hello',
-                    icon: const Icon(Icons.play_arrow_rounded),
+                    icon: Icon(CatchIcons.playArrowRounded),
                     isLoading: _starting,
                     onPressed: _starting || widget.onStart == null
                         ? null
@@ -112,7 +112,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                   CatchButton(
                     label: 'Use normal check-in',
                     variant: CatchButtonVariant.ghost,
-                    icon: const Icon(Icons.qr_code_2_rounded),
+                    icon: Icon(CatchIcons.qrCode2Rounded),
                     onPressed: _starting ? null : widget.onSkip,
                     fullWidth: true,
                   ),
@@ -180,7 +180,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             _StageSectionLabel(
-              icon: Icons.waving_hand_outlined,
+              icon: CatchIcons.wavingHandOutlined,
               label: 'First Hello',
               color: t.primary,
             ),
@@ -202,7 +202,11 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.question_answer_outlined, size: 18, color: t.primary),
+              Icon(
+                CatchIcons.questionAnswerOutlined,
+                size: 18,
+                color: t.primary,
+              ),
               gapW8,
               Expanded(
                 child: Text(
@@ -240,7 +244,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
             children: [
               CatchButton(
                 label: 'Complete check-in',
-                icon: const Icon(Icons.check_rounded),
+                icon: Icon(CatchIcons.checkRounded),
                 isLoading: _saving,
                 onPressed:
                     selectedAnswerId == null ||
@@ -254,7 +258,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               CatchButton(
                 label: 'Can\'t find them',
                 variant: CatchButtonVariant.ghost,
-                icon: const Icon(Icons.swap_horiz_rounded),
+                icon: Icon(CatchIcons.swapHorizRounded),
                 onPressed: _saving ? null : widget.onSkip,
                 fullWidth: true,
               ),

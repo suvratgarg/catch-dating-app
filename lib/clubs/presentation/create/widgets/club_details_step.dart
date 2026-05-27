@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/create/widgets/create_club_contact_fields.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class ClubDetailsStep extends StatelessWidget {
             CatchTextField(
               label: 'Description',
               controller: descriptionController,
-              prefixIcon: const Icon(Icons.edit_note_outlined),
+              prefixIcon: Icon(CatchIcons.editNoteOutlined),
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.newline,

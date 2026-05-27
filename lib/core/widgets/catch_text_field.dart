@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -314,7 +315,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
           }
           return IconButton(
             tooltip: 'Clear ${widget.label}',
-            icon: const Icon(Icons.close_rounded, size: 16),
+            icon: Icon(CatchIcons.closeRounded, size: 16),
             onPressed: () {
               _controller.clear();
               widget.onChanged?.call('');

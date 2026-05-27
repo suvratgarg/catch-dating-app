@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -53,25 +54,25 @@ class EventRailTile extends StatelessWidget {
             gapH8,
             if (data.clubName != null) ...[
               EventTileMetaRow(
-                icon: Icons.groups_2_outlined,
+                icon: CatchIcons.groups2Outlined,
                 label: data.clubName!,
                 emphasize: true,
               ),
               gapH6,
             ],
             EventTileMetaRow(
-              icon: Icons.schedule,
+              icon: CatchIcons.schedule,
               label: '${data.dateLabel} · ${data.timeRangeLabel}',
             ),
             gapH6,
             EventTileMetaRow(
-              icon: Icons.location_on_outlined,
+              icon: CatchIcons.locationOnOutlined,
               label: data.meetingPoint,
               maxLines: 2,
             ),
             gapH10,
             EventTileMetaRow(
-              icon: Icons.person_add_alt_1_outlined,
+              icon: CatchIcons.personAddAlt1Outlined,
               label: data.signupLabel,
               emphasize: true,
             ),

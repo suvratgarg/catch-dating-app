@@ -30,7 +30,7 @@ class _MicroPodCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.groups_2_outlined,
+            icon: CatchIcons.groups2Outlined,
             label: 'Starter group',
             color: t.primary,
           ),
@@ -53,10 +53,10 @@ class _MicroPodCard extends ConsumerWidget {
             gapH14,
             if (groupSlots.isNotEmpty)
               if (peersLoading)
-                const CatchBadge(
+                CatchBadge(
                   label: 'Loading group members',
                   tone: CatchBadgeTone.neutral,
-                  icon: Icons.hourglass_empty_rounded,
+                  icon: CatchIcons.hourglassEmptyRounded,
                 )
               else
                 Column(
@@ -142,7 +142,7 @@ class _GroupRotationSlotRow extends StatelessWidget {
                   CatchBadge(
                     label: slot.unitLabel,
                     tone: CatchBadgeTone.neutral,
-                    icon: Icons.table_restaurant_outlined,
+                    icon: CatchIcons.tableRestaurantOutlined,
                   ),
                 ],
               ),
@@ -156,13 +156,13 @@ class _GroupRotationSlotRow extends StatelessWidget {
                   CatchBadge(
                     label: '${slot.peerUids.length + 1} people',
                     tone: CatchBadgeTone.neutral,
-                    icon: Icons.group_outlined,
+                    icon: CatchIcons.groupOutlined,
                   ),
                   for (final name in peerNames)
                     CatchBadge(
                       label: name,
                       tone: CatchBadgeTone.neutral,
-                      icon: Icons.person_outline_rounded,
+                      icon: CatchIcons.personOutlineRounded,
                     ),
                 ],
               ),
@@ -204,7 +204,7 @@ class _RotationScheduleCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.sync_alt_rounded,
+            icon: CatchIcons.syncAltRounded,
             label: 'Timed rotations',
             color: t.primary,
           ),
@@ -226,10 +226,10 @@ class _RotationScheduleCard extends ConsumerWidget {
           if (assigned != null) ...[
             gapH14,
             if (peersLoading)
-              const CatchBadge(
+              CatchBadge(
                 label: 'Loading partner names',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.hourglass_empty_rounded,
+                icon: CatchIcons.hourglassEmptyRounded,
               )
             else
               Column(
@@ -324,7 +324,7 @@ class _LiveStepContextCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.location_on_outlined,
+            icon: CatchIcons.locationOnOutlined,
             label: activeStep?.stage.label ?? 'Live cue',
             color: t.primary,
           ),
@@ -367,28 +367,28 @@ class _PreCheckInPlanningCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final entries = <_PreviewLine>[
       if (microPodsEnabled)
-        const _PreviewLine(
-          icon: Icons.groups_2_outlined,
+        _PreviewLine(
+          icon: CatchIcons.groups2Outlined,
           text: 'Small starter group when you check in.',
         ),
       if (guidedRotationsEnabled)
-        const _PreviewLine(
-          icon: Icons.sync_alt_rounded,
+        _PreviewLine(
+          icon: CatchIcons.syncAltRounded,
           text: 'Timed partner rotations during the event.',
         ),
       if (liveRevealEnabled)
-        const _PreviewLine(
-          icon: Icons.bolt_rounded,
+        _PreviewLine(
+          icon: CatchIcons.boltRounded,
           text: 'Synchronized partner reveals as the event unfolds.',
         ),
       if (socialMissionsEnabled)
-        const _PreviewLine(
-          icon: Icons.chat_bubble_outline_rounded,
+        _PreviewLine(
+          icon: CatchIcons.chatBubbleOutlineRounded,
           text: 'Live conversation prompts from the host.',
         ),
       if (wingmanRequestsEnabled)
-        const _PreviewLine(
-          icon: Icons.volunteer_activism_outlined,
+        _PreviewLine(
+          icon: CatchIcons.volunteerActivismOutlined,
           text: 'You can ask the host for an intro to someone specific.',
         ),
     ];
@@ -397,7 +397,7 @@ class _PreCheckInPlanningCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.event_available_outlined,
+            icon: CatchIcons.eventAvailableOutlined,
             label: 'Preview',
             color: t.primary,
           ),
@@ -486,7 +486,7 @@ class _SelfCheckInCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.qr_code_2_rounded,
+            icon: CatchIcons.qrCode2Rounded,
             label: 'Arrival',
             color: t.primary,
           ),
@@ -504,7 +504,7 @@ class _SelfCheckInCard extends ConsumerWidget {
               children: [
                 CatchButton(
                   label: 'Scan host QR',
-                  icon: const Icon(Icons.qr_code_scanner_rounded),
+                  icon: Icon(CatchIcons.qrCodeScannerRounded),
                   isLoading: mutation.isPending,
                   onPressed: mutation.isPending
                       ? null
@@ -596,7 +596,7 @@ class _EventCheckInQrScannerSheetState
           children: [
             Row(
               children: [
-                Icon(Icons.qr_code_scanner_rounded, color: t.primary),
+                Icon(CatchIcons.qrCodeScannerRounded, color: t.primary),
                 gapW10,
                 Expanded(
                   child: Text(
@@ -605,7 +605,7 @@ class _EventCheckInQrScannerSheetState
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: Icon(CatchIcons.closeRounded),
                   tooltip: 'Close',
                   onPressed: () => Navigator.of(context).maybePop(false),
                 ),
@@ -697,7 +697,7 @@ class _StagePromptCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StageSectionLabel(
-            icon: Icons.chat_bubble_outline_rounded,
+            icon: CatchIcons.chatBubbleOutlineRounded,
             label: title,
             color: t.primary,
           ),
@@ -730,8 +730,8 @@ class _StageConversationCueCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final moment = cues.first.moment;
     final icon = switch (moment) {
-      EventSuccessConversationCueMoment.live => Icons.forum_outlined,
-      EventSuccessConversationCueMoment.postEvent => Icons.chat_outlined,
+      EventSuccessConversationCueMoment.live => CatchIcons.forumOutlined,
+      EventSuccessConversationCueMoment.postEvent => CatchIcons.chatOutlined,
     };
     return _StagePanel(
       child: Column(
@@ -788,7 +788,7 @@ class _StageCueLine extends StatelessWidget {
                             EventSuccessConversationCueMoment.postEvent
                         ? 'Copy opener'
                         : 'Copy cue',
-                    icon: const Icon(Icons.content_copy_rounded, size: 18),
+                    icon: Icon(CatchIcons.contentCopyRounded, size: 18),
                     onPressed: () => _copyCue(context, cue),
                   ),
                 ],
@@ -879,20 +879,20 @@ class _PeopleTokenRow extends StatelessWidget {
         CatchBadge(
           label: countLabel,
           tone: CatchBadgeTone.neutral,
-          icon: Icons.group_outlined,
+          icon: CatchIcons.groupOutlined,
         ),
         if (loading)
           CatchBadge(
             label: loadingLabel,
             tone: CatchBadgeTone.neutral,
-            icon: Icons.hourglass_empty_rounded,
+            icon: CatchIcons.hourglassEmptyRounded,
           )
         else
           for (final profile in profiles)
             CatchBadge(
               label: profile.name,
               tone: CatchBadgeTone.neutral,
-              icon: Icons.person_outline_rounded,
+              icon: CatchIcons.personOutlineRounded,
             ),
       ],
     );

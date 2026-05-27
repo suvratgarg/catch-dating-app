@@ -109,7 +109,7 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
                 CatchBadge(
                   label: kind.label,
                   tone: CatchBadgeTone.live,
-                  icon: Icons.bolt_rounded,
+                  icon: CatchIcons.boltRounded,
                 ),
                 if (assigned != null)
                   CatchBadge(

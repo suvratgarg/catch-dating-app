@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -170,7 +171,7 @@ class StrideCard extends StatelessWidget {
               children: [
                 if (onConnect != null)
                   _StrideActionButton(
-                    icon: Icons.favorite_outline_rounded,
+                    icon: CatchIcons.favoriteOutlineRounded,
                     label: isConnecting
                         ? 'Connecting...'
                         : 'Connect ${snapshot.platformLabel}',
@@ -179,7 +180,7 @@ class StrideCard extends StatelessWidget {
                   ),
                 if (onInstallHealthConnect != null)
                   _StrideActionButton(
-                    icon: Icons.download_rounded,
+                    icon: CatchIcons.downloadRounded,
                     label: isInstallingHealthConnect
                         ? 'Opening...'
                         : 'Install Health Connect',
@@ -316,7 +317,7 @@ class _StrideSectionStateCard extends StatelessWidget {
               child: CatchLoadingIndicator(strokeWidth: 2),
             )
           else
-            Icon(Icons.error_outline_rounded, color: t.primary, size: 18),
+            Icon(CatchIcons.errorOutlineRounded, color: t.primary, size: 18),
           gapW10,
           Expanded(
             child: Text(

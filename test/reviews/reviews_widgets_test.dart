@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -65,7 +66,7 @@ void main() {
     );
 
     final iconRight = tester
-        .getTopRight(find.byIcon(Icons.rate_review_outlined))
+        .getTopRight(find.byIcon(CatchIcons.rateReviewOutlined))
         .dx;
     final titleLeft = tester.getTopLeft(find.text('No reviews yet')).dx;
 

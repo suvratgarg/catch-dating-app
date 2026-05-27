@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,9 @@ class StarRating extends StatelessWidget {
       children: List.generate(
         5,
         (i) => Icon(
-          i < clampedRating ? Icons.star_rounded : Icons.star_outline_rounded,
+          i < clampedRating
+              ? CatchIcons.starRounded
+              : CatchIcons.starOutlineRounded,
           size: size,
           color: t.gold,
         ),
@@ -64,8 +67,8 @@ class StarRatingPicker extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Icon(
                   i < clampedRating
-                      ? Icons.star_rounded
-                      : Icons.star_outline_rounded,
+                      ? CatchIcons.starRounded
+                      : CatchIcons.starOutlineRounded,
                   size: size,
                   color: t.gold,
                 ),

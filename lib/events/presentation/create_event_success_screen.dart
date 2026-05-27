@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
@@ -44,34 +45,34 @@ class CreateEventSuccessScreen extends StatelessWidget {
       message: message,
       details: [
         CelebrationDetail(
-          icon: Icons.calendar_month_outlined,
+          icon: CatchIcons.calendarMonthOutlined,
           label: 'When',
           value: '${event.longDateLabel} · ${event.timeRangeLabel}',
         ),
         CelebrationDetail(
-          icon: Icons.location_on_outlined,
+          icon: CatchIcons.locationOnOutlined,
           label: 'Where',
           value: event.locationName,
         ),
         CelebrationDetail(
-          icon: Icons.directions_run_rounded,
+          icon: CatchIcons.directionsRunRounded,
           label: 'Event',
           value: event.activitySummaryLabel,
         ),
         CelebrationDetail(
-          icon: Icons.group_outlined,
+          icon: CatchIcons.groupOutlined,
           label: 'Capacity',
           value: '${event.capacityLimit} attendees',
         ),
         if (normalizedInviteCode != null && normalizedInviteCode.isNotEmpty)
           CelebrationDetail(
-            icon: Icons.key_outlined,
+            icon: CatchIcons.keyOutlined,
             label: 'Invite code',
             value: normalizedInviteCode,
           ),
         if (inviteLink != null)
           CelebrationDetail(
-            icon: Icons.link_outlined,
+            icon: CatchIcons.linkOutlined,
             label: 'Private link',
             value: inviteLink,
           ),
@@ -80,7 +81,7 @@ class CreateEventSuccessScreen extends StatelessWidget {
       primaryAction: CelebrationAction(
         label: 'Manage event',
         onPressed: onManageEvent,
-        icon: const Icon(Icons.tune_rounded),
+        icon: Icon(CatchIcons.tuneRounded),
       ),
       secondaryAction: CelebrationAction(
         label: 'Back to club',

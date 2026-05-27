@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -49,7 +50,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _BlockHeader(
-            icon: Icons.tune_rounded,
+            icon: CatchIcons.tuneRounded,
             title: 'Host setup flow',
             subtitle:
                 'Choose the format, event structure, assignment tools, and safety gates before an event goes live.',
@@ -132,8 +133,8 @@ class EventSuccessLiveHostMode extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _BlockHeader(
-            icon: Icons.play_circle_outline_rounded,
+          _BlockHeader(
+            icon: CatchIcons.playCircleOutlineRounded,
             title: 'Live host mode',
             subtitle:
                 'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.',
@@ -215,8 +216,8 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _BlockHeader(
-            icon: Icons.phone_iphone_rounded,
+          _BlockHeader(
+            icon: CatchIcons.phoneIphoneRounded,
             title: 'Attendee companion',
             subtitle:
                 'The attendee sees only what helps them participate: check-in, assignment, prompt, and host help.',
@@ -235,7 +236,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
                   tone: resolvedState.checkedIn
                       ? CatchBadgeTone.success
                       : CatchBadgeTone.warning,
-                  icon: Icons.qr_code_2_rounded,
+                  icon: CatchIcons.qrCode2Rounded,
                 ),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
@@ -283,7 +284,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _BlockHeader(
-            icon: Icons.insights_outlined,
+            icon: CatchIcons.insightsOutlined,
             title: 'Post-event host report',
             subtitle:
                 'A concrete report surface that turns event outcomes into the next change the host should make.',
@@ -328,7 +329,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
                   CatchBadge(
                     label: strength,
                     tone: CatchBadgeTone.success,
-                    icon: Icons.check_rounded,
+                    icon: CatchIcons.checkRounded,
                   ),
               ],
             ),
@@ -412,7 +413,7 @@ class _PlaybookSummaryCard extends StatelessWidget {
               CatchBadge(
                 label: '${draft.targetAttendeeCount} target attendees',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.confirmation_number_outlined,
+                icon: CatchIcons.confirmationNumberOutlined,
               ),
               CatchBadge(
                 label: draft.playbook.socialIntensity.label,
@@ -511,7 +512,7 @@ class _IssueList extends StatelessWidget {
           CatchBadge(
             label: 'Before launch',
             tone: CatchBadgeTone.warning,
-            icon: Icons.warning_amber_rounded,
+            icon: CatchIcons.warningAmberRounded,
           ),
           const SizedBox(height: CatchSpacing.s2),
           for (final issue in issues)
@@ -595,10 +596,10 @@ class _LiveStepRow extends StatelessWidget {
         children: [
           Icon(
             complete
-                ? Icons.check_circle_rounded
+                ? CatchIcons.checkCircleRounded
                 : active
-                ? Icons.radio_button_checked_rounded
-                : Icons.radio_button_unchecked_rounded,
+                ? CatchIcons.radioButtonCheckedRounded
+                : CatchIcons.radioButtonUncheckedRounded,
             color: color,
             size: CatchIcon.md,
           ),
@@ -643,7 +644,7 @@ class EventSuccessPromptCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.chat_bubble_outline_rounded, color: t.primary),
+          Icon(CatchIcons.chatBubbleOutlineRounded, color: t.primary),
           const SizedBox(width: CatchSpacing.s3),
           Expanded(
             child: Column(
@@ -680,8 +681,8 @@ class EventSuccessConversationCueCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final moment = cues.first.moment;
     final icon = switch (moment) {
-      EventSuccessConversationCueMoment.live => Icons.forum_outlined,
-      EventSuccessConversationCueMoment.postEvent => Icons.chat_outlined,
+      EventSuccessConversationCueMoment.live => CatchIcons.forumOutlined,
+      EventSuccessConversationCueMoment.postEvent => CatchIcons.chatOutlined,
     };
 
     return CatchSurface(
@@ -756,7 +757,11 @@ class _ConversationCueRow extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: Icon(Icons.arrow_forward_rounded, size: 16, color: t.ink3),
+            child: Icon(
+              CatchIcons.arrowForwardRounded,
+              size: 16,
+              color: t.ink3,
+            ),
           ),
           const SizedBox(width: CatchSpacing.s2),
           Expanded(
@@ -803,8 +808,8 @@ class _WingmanCandidateRow extends StatelessWidget {
         children: [
           Icon(
             candidate.marked
-                ? Icons.volunteer_activism_rounded
-                : Icons.volunteer_activism_outlined,
+                ? CatchIcons.volunteerActivismRounded
+                : CatchIcons.volunteerActivismOutlined,
             color: candidate.marked ? t.primary : t.ink3,
           ),
           const SizedBox(width: CatchSpacing.s3),
@@ -836,11 +841,11 @@ class _WingmanCandidateRow extends StatelessWidget {
 }
 
 class EventSuccessRecommendationTile extends StatelessWidget {
-  const EventSuccessRecommendationTile({
+  EventSuccessRecommendationTile({
     super.key,
     required this.recommendation,
-    this.icon = Icons.tips_and_updates_outlined,
-  });
+    IconData? icon,
+  }) : icon = icon ?? CatchIcons.tipsAndUpdatesOutlined;
 
   final EventSuccessRecommendation recommendation;
   final IconData icon;

@@ -27,9 +27,14 @@ class ClubsSliverHeader extends CatchSliverHeader {
 /// so the top chrome stays outside the draggable sheet (and isn't duplicated
 /// when the sheet snaps to HALF / PEEK).
 class ClubsBrowseHeaderContent extends ConsumerStatefulWidget {
-  const ClubsBrowseHeaderContent({super.key, this.showSearchAction = true});
+  const ClubsBrowseHeaderContent({
+    super.key,
+    this.showSearchAction = true,
+    this.backgroundColor,
+  });
 
   final bool showSearchAction;
+  final Color? backgroundColor;
 
   @override
   ConsumerState<ClubsBrowseHeaderContent> createState() =>
@@ -75,6 +80,7 @@ class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
             ),
           ),
       ],
+      backgroundColor: widget.backgroundColor,
     );
   }
 

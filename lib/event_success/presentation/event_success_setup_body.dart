@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -448,7 +449,7 @@ class _FoundationLine extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.check_rounded, size: 18, color: t.primary),
+            child: Icon(CatchIcons.checkRounded, size: 18, color: t.primary),
           ),
           gapW8,
           Expanded(
@@ -582,7 +583,7 @@ class _AttendeePromptPreview extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.visibility_outlined, size: 14, color: t.ink2),
+            child: Icon(CatchIcons.visibilityOutlined, size: 14, color: t.ink2),
           ),
           gapW6,
           Expanded(
@@ -608,7 +609,7 @@ class _SafetyFooter extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.shield_outlined, size: 18, color: t.ink2),
+          Icon(CatchIcons.shieldOutlined, size: 18, color: t.ink2),
           gapW8,
           Expanded(
             child: Text(
@@ -675,7 +676,7 @@ class _PresetReviewCard extends StatelessWidget {
               CatchBadge(
                 label: profile.formatLabel,
                 tone: CatchBadgeTone.brand,
-                icon: Icons.auto_awesome_outlined,
+                icon: CatchIcons.autoAwesomeOutlined,
               ),
               CatchBadge(
                 label: profile.interactionModel.label,
@@ -684,7 +685,7 @@ class _PresetReviewCard extends StatelessWidget {
               CatchBadge(
                 label: _capacitySummary(draft),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.groups_2_outlined,
+                icon: CatchIcons.groups2Outlined,
               ),
             ],
           ),

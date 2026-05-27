@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -195,9 +196,9 @@ class _ProfileUnavailableBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CatchEmptyState(
-        icon: Icons.person_off_outlined,
+        icon: CatchIcons.personOffOutlined,
         title: 'Profile not available',
         message: 'Finish onboarding or sign in again to load your profile.',
         surface: false,

@@ -1,16 +1,14 @@
 import 'package:catch_dating_app/analytics/app_analytics.dart';
+import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_day_section_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_card_compact.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_card_hero.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -26,8 +24,13 @@ import 'package:go_router/go_router.dart';
 /// because nested groups with [SliverPersistentHeader(pinned: true)] inside
 /// trigger a Flutter layout assertion ("layoutExtent exceeds paintExtent")
 /// when the pinned header is partially clipped by a parent group.
-List<Widget> buildExploreEventsSlivers(WidgetRef ref) {
+List<Widget> buildExploreEventsSlivers(
+  WidgetRef ref, {
+  bool pinnedDayHeaders = true,
+}) {
   final feedAsync = ref.watch(exploreFeedViewModelProvider);
+  final filters = ref.watch(clubBrowseFiltersProvider);
+  final searchQuery = ref.watch(clubSearchQueryProvider).trim();
 
   return switch (feedAsync) {
     AsyncLoading() => const [_ExploreEventsLoadingSliver()],
@@ -66,8 +69,13 @@ List<Widget> buildExploreEventsSlivers(WidgetRef ref) {
     ],
     AsyncData(:final value) =>
       value.isEmpty
-          ? const [_ExploreEventsEmptySliver()]
-          : _exploreContentSlivers(value),
+          ? [
+              _ExploreEventsEmptySliver(
+                filters: filters,
+                searchQuery: searchQuery,
+              ),
+            ]
+          : _exploreContentSlivers(value, pinnedDayHeaders: pinnedDayHeaders),
   };
 }
 
@@ -80,13 +88,16 @@ class ExploreEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final slivers = buildExploreEventsSlivers(ref);
+    final slivers = buildExploreEventsSlivers(ref, pinnedDayHeaders: false);
     if (slivers.length == 1) return slivers.single;
     return SliverMainAxisGroup(slivers: slivers);
   }
 }
 
-List<Widget> _exploreContentSlivers(ExploreFeedViewModel viewModel) {
+List<Widget> _exploreContentSlivers(
+  ExploreFeedViewModel viewModel, {
+  required bool pinnedDayHeaders,
+}) {
   final featured = viewModel.featuredItem;
   final dayGroups = viewModel.dayGroupsExcludingFeatured();
   return [
@@ -102,24 +113,29 @@ List<Widget> _exploreContentSlivers(ExploreFeedViewModel viewModel) {
           child: _ExploreHero(item: featured),
         ),
       ),
-    for (final group in dayGroups) ..._buildDayGroupSlivers(group),
+    for (final group in dayGroups)
+      ..._buildDayGroupSlivers(group, pinnedHeader: pinnedDayHeaders),
     const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
   ];
 }
 
-List<Widget> _buildDayGroupSlivers(ExploreEventDayGroup group) {
-  // We deliberately do NOT use `SliverPersistentHeader(pinned: true)` for the
-  // day-section headers — pinned headers nested inside a `SliverMainAxisGroup`
-  // hit the upstream Flutter bug where `layoutExtent` can exceed
-  // `paintExtent` when the header is partially clipped, throwing an assertion
-  // in `SliverGeometry.debugAssertIsValid`. See
-  // https://github.com/flutter/flutter/issues/146867. Inline headers still
-  // give the day-grouping value the user wanted; tracking the sticky-headers
-  // re-introduction in [docs/ui_modernization_backlog.md].
+List<Widget> _buildDayGroupSlivers(
+  ExploreEventDayGroup group, {
+  required bool pinnedHeader,
+}) {
   return [
-    SliverToBoxAdapter(
-      child: CatchDaySectionHeader(label: group.label, count: group.count),
-    ),
+    if (pinnedHeader)
+      SliverPersistentHeader(
+        pinned: true,
+        delegate: CatchDaySectionHeaderDelegate(
+          label: group.label,
+          count: group.count,
+        ),
+      )
+    else
+      SliverToBoxAdapter(
+        child: CatchDaySectionHeader(label: group.label, count: group.count),
+      ),
     SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
@@ -146,21 +162,17 @@ class _ExploreHero extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CatchEventCardHero(
+    final event = item.event;
+    return CatchEventSpotlightCard(
       title: item.event.title,
-      subtitle: '${item.club.name} · ${item.event.locationName}',
-      kickerLabel: _heroKickerLabel(item.event.startTime),
-      kickerTrailing: _heroKickerTrailing(item.event.startTime),
-      meta: _buildHeroMeta(item),
-      distanceTrailing: _buildDistanceEntry(item),
-      photoUrl: item.event.photoUrl,
-      pace: item.event.pace,
-      activityKind: item.event.activityKind,
-      sash: _sashForStatus(item.status),
-      editorialSash: _editorialSashFor(item),
+      supportingLabel: _supportingLabel(item),
+      timeLabel: EventFormatters.time(event.startTime),
+      countdownLabel: _heroCountdownLabel(event.startTime),
       priceLabel: item.priceLabel,
+      capacityLabel: _capacityLabel(item),
+      activityKind: event.activityKind,
+      kicker: _spotlightKickerFor(item),
       onTap: () => _openEvent(context, ref, item, 'featured'),
-      aspectRatio: 5 / 4,
     );
   }
 }
@@ -172,18 +184,17 @@ class _ExploreCompactCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CatchEventCardCompact(
-      title: item.event.title,
-      subtitle: '${item.club.name} · ${item.event.locationName}',
-      kickerLabel: _compactKickerLabel(item.event.startTime),
-      kickerTrailing: _compactKickerTrailing(item.event.startTime),
-      meta: _buildCompactMeta(item),
-      distanceTrailing: _buildDistanceEntry(item),
-      photoUrl: item.event.photoUrl,
-      pace: item.event.pace,
-      activityKind: item.event.activityKind,
-      sash: _sashForStatus(item.status),
+    final event = item.event;
+    return CatchEventTicketCard(
+      title: event.title,
+      subtitle: '${item.club.name} - ${event.locationName}',
+      timeLabel: EventFormatters.time(event.startTime),
+      countdownLabel: _compactCountdownLabel(event.startTime),
       priceLabel: item.priceLabel,
+      capacityLabel: _capacityLabel(item),
+      activityKind: event.activityKind,
+      statusLabel: _cardStatusLabel(item),
+      clockTime: TimeOfDay.fromDateTime(event.startTime),
       onTap: () => _openEvent(context, ref, item, 'list'),
     );
   }
@@ -215,11 +226,21 @@ class _ExploreEventsLoadingSliver extends StatelessWidget {
   }
 }
 
-class _ExploreEventsEmptySliver extends StatelessWidget {
-  const _ExploreEventsEmptySliver();
+class _ExploreEventsEmptySliver extends ConsumerWidget {
+  const _ExploreEventsEmptySliver({
+    required this.filters,
+    required this.searchQuery,
+  });
+
+  final ClubBrowseFilterSelection filters;
+  final String searchQuery;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final emptyState = _emptyStateFor(
+      filters.timeFilter,
+      hasSearch: searchQuery.isNotEmpty,
+    );
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
@@ -230,9 +251,25 @@ class _ExploreEventsEmptySliver extends StatelessWidget {
         ),
         child: CatchEmptyState(
           icon: CatchIcons.eventAvailable,
-          title: 'No upcoming events match this view',
-          message:
-              'Try a broader time window, a different area, or check the club directory below.',
+          title: emptyState.title,
+          message: emptyState.message,
+          action: CatchButton(
+            label: emptyState.actionLabel,
+            icon: Icon(emptyState.actionIcon),
+            variant: CatchButtonVariant.secondary,
+            onPressed: () {
+              final controller = ref.read(clubBrowseFiltersProvider.notifier);
+              if (emptyState.clearSearch) {
+                ref.read(clubSearchQueryProvider.notifier).clear();
+              }
+              final nextFilter = emptyState.nextFilter;
+              if (nextFilter == null) {
+                controller.clear();
+              } else {
+                controller.setTimeFilter(nextFilter);
+              }
+            },
+          ),
           layout: CatchEmptyStateLayout.inline,
           iconStyle: CatchEmptyStateIconStyle.plain,
         ),
@@ -241,45 +278,77 @@ class _ExploreEventsEmptySliver extends StatelessWidget {
   }
 }
 
-// ── shared helpers ─────────────────────────────────────────────────────────
-
-CatchEventSashSpec? _sashForStatus(EventTileStatus status) {
-  return switch (status) {
-    EventTileStatus.joined => CatchEventSashSpec(
-      label: "You're in",
-      icon: CatchIcons.joinedCheck,
-      tone: CatchSashTone.success,
+_ExploreEmptyStateCopy _emptyStateFor(
+  ExploreTimeFilter filter, {
+  required bool hasSearch,
+}) {
+  if (hasSearch) {
+    return _ExploreEmptyStateCopy(
+      title: 'No events match this search',
+      message: 'Clear the search and filters to see every upcoming event.',
+      actionLabel: 'Clear search and filters',
+      actionIcon: CatchIcons.clear,
+      clearSearch: true,
+    );
+  }
+  return switch (filter) {
+    ExploreTimeFilter.tonight => _ExploreEmptyStateCopy(
+      title: 'Nothing tonight',
+      message: 'The next good fit may be over the weekend.',
+      actionLabel: 'See weekend',
+      actionIcon: CatchIcons.thisWeek,
+      nextFilter: ExploreTimeFilter.weekend,
     ),
-    EventTileStatus.hosted => CatchEventSashSpec(
-      label: 'You host',
-      icon: CatchIcons.hostBadge,
-      tone: CatchSashTone.solid,
+    ExploreTimeFilter.tomorrow => _ExploreEmptyStateCopy(
+      title: 'Nothing tomorrow',
+      message: 'Open up the weekend to catch more event slots.',
+      actionLabel: 'See weekend',
+      actionIcon: CatchIcons.thisWeek,
+      nextFilter: ExploreTimeFilter.weekend,
     ),
-    EventTileStatus.saved => CatchEventSashSpec(
-      label: 'Saved',
-      icon: CatchIcons.saved,
-      tone: CatchSashTone.solid,
+    ExploreTimeFilter.weekend => _ExploreEmptyStateCopy(
+      title: 'Nothing this weekend',
+      message: 'This week has the broader event slate.',
+      actionLabel: 'See this week',
+      actionIcon: CatchIcons.thisWeek,
+      nextFilter: ExploreTimeFilter.thisWeek,
     ),
-    EventTileStatus.waitlisted => CatchEventSashSpec(
-      label: 'Waitlisted',
-      icon: CatchIcons.waitlisted,
-      tone: CatchSashTone.solid,
+    ExploreTimeFilter.thisWeek => _ExploreEmptyStateCopy(
+      title: 'Nothing this week',
+      message: 'Remove the time window to see every upcoming event.',
+      actionLabel: 'See anytime',
+      actionIcon: CatchIcons.clear,
+      nextFilter: ExploreTimeFilter.anytime,
     ),
-    EventTileStatus.attended => const CatchEventSashSpec(
-      label: 'Attended',
-      tone: CatchSashTone.success,
+    ExploreTimeFilter.anytime => _ExploreEmptyStateCopy(
+      title: 'No upcoming events match this view',
+      message:
+          'Try a different area, a wider distance, or check the club directory below.',
+      actionLabel: 'Clear filters',
+      actionIcon: CatchIcons.clear,
     ),
-    EventTileStatus.full => const CatchEventSashSpec(
-      label: 'Full',
-      tone: CatchSashTone.solid,
-    ),
-    EventTileStatus.recommended ||
-    EventTileStatus.open ||
-    EventTileStatus.past ||
-    EventTileStatus.ineligible ||
-    EventTileStatus.cancelled => null,
   };
 }
+
+class _ExploreEmptyStateCopy {
+  const _ExploreEmptyStateCopy({
+    required this.title,
+    required this.message,
+    required this.actionLabel,
+    required this.actionIcon,
+    this.nextFilter,
+    this.clearSearch = false,
+  });
+
+  final String title;
+  final String message;
+  final String actionLabel;
+  final IconData actionIcon;
+  final ExploreTimeFilter? nextFilter;
+  final bool clearSearch;
+}
+
+// ── shared helpers ─────────────────────────────────────────────────────────
 
 String? _editorialSashFor(ExploreEventItem item) {
   final now = DateTime.now();
@@ -293,88 +362,94 @@ String? _editorialSashFor(ExploreEventItem item) {
   return null;
 }
 
-String _heroKickerLabel(DateTime startTime) {
+String _spotlightKickerFor(ExploreEventItem item) {
+  final status = _cardStatusLabel(item);
+  if (status != null && item.status != EventTileStatus.open) return status;
+  return _editorialSashFor(item) ?? "This week's pick";
+}
+
+String _supportingLabel(ExploreEventItem item) {
+  final event = item.event;
+  final distance = item.distanceFromUserLabel;
+  return [
+    item.club.name,
+    event.locationName,
+    event.activitySummaryLabel,
+    ?distance,
+  ].join(' - ');
+}
+
+String _capacityLabel(ExploreEventItem item) {
+  final event = item.event;
+  final availability = item.availabilityLabel;
+  final base = '${event.signedUpCount} going';
+  if (event.spotsRemaining <= 0) return '$base - full';
+  if (availability != null &&
+      availability.isNotEmpty &&
+      availability.toLowerCase() != 'open') {
+    return '$base - $availability';
+  }
+  if (event.spotsRemaining > 0) return '$base - ${event.spotsRemaining} left';
+  return base;
+}
+
+String _heroCountdownLabel(DateTime startTime) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
   final eventDay = DateTime(startTime.year, startTime.month, startTime.day);
   final diffDays = eventDay.difference(today).inDays;
-  final time = EventFormatters.time(startTime);
   return switch (diffDays) {
-    0 => 'Tonight · $time',
-    1 => 'Tomorrow · $time',
-    _ => '${EventFormatters.shortWeekday(startTime).toUpperCase()} · $time',
+    0 => _relativeCountdownLabel(startTime) ?? 'Tonight',
+    1 => 'Tomorrow',
+    _ => EventFormatters.shortWeekday(startTime),
   };
 }
 
-String? _heroKickerTrailing(DateTime startTime) {
-  final delta = startTime.difference(DateTime.now());
-  if (delta.inMinutes <= 0 || delta.inHours >= 24) return null;
-  if (delta.inHours < 1) {
-    return 'in ${delta.inMinutes}m';
-  }
-  final minutes = delta.inMinutes.remainder(60);
-  if (minutes == 0) return 'in ${delta.inHours}h';
-  return 'in ${delta.inHours}h ${minutes}m';
+String _compactCountdownLabel(DateTime startTime) {
+  final relative = _relativeCountdownLabel(startTime);
+  if (relative != null) return relative;
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final eventDay = DateTime(startTime.year, startTime.month, startTime.day);
+  final diffDays = eventDay.difference(today).inDays;
+  return switch (diffDays) {
+    0 => 'Today',
+    1 => 'Tomorrow',
+    _ => EventFormatters.shortWeekday(startTime),
+  };
 }
 
-String _compactKickerLabel(DateTime startTime) {
-  return EventFormatters.time(startTime);
-}
-
-String? _compactKickerTrailing(DateTime startTime) {
+String? _relativeCountdownLabel(DateTime startTime) {
   final delta = startTime.difference(DateTime.now());
   if (delta.inMinutes <= 0 || delta.inHours >= 6) return null;
-  if (delta.inHours < 1) return 'in ${delta.inMinutes}m';
+  if (delta.inHours < 1) return 'In ${delta.inMinutes}m';
   final minutes = delta.inMinutes.remainder(60);
-  if (minutes == 0) return 'in ${delta.inHours}h';
-  return 'in ${delta.inHours}h ${minutes}m';
+  if (minutes == 0) return 'In ${delta.inHours}h';
+  return 'In ${delta.inHours}h ${minutes}m';
 }
 
-List<CatchMetaEntry> _buildHeroMeta(ExploreEventItem item) {
-  final event = item.event;
-  return [
-    CatchMetaEntry(
-      icon: activityKindGlyph(event.activityKind),
-      label: event.activitySummaryLabel,
-    ),
-    CatchMetaEntry(
-      icon: CatchIcons.group,
-      label: '${event.signedUpCount}/${event.capacityLimit}',
-    ),
-    ?_buildAvailabilityEntry(item),
-  ];
+String? _cardStatusLabel(ExploreEventItem item) {
+  return switch (item.status) {
+    EventTileStatus.open => _availabilityStatusLabel(item),
+    EventTileStatus.recommended => 'Picked',
+    EventTileStatus.joined ||
+    EventTileStatus.saved ||
+    EventTileStatus.hosted ||
+    EventTileStatus.waitlisted ||
+    EventTileStatus.attended ||
+    EventTileStatus.past ||
+    EventTileStatus.full ||
+    EventTileStatus.ineligible ||
+    EventTileStatus.cancelled => eventTileStatusLabel(item.status),
+  };
 }
 
-List<CatchMetaEntry> _buildCompactMeta(ExploreEventItem item) {
-  final event = item.event;
-  return [
-    CatchMetaEntry(
-      icon: activityKindGlyph(event.activityKind),
-      label: event.activitySummaryLabel,
-    ),
-    CatchMetaEntry(
-      icon: CatchIcons.group,
-      label: '${event.signedUpCount}/${event.capacityLimit}',
-    ),
-    ?_buildAvailabilityEntry(item),
-  ];
-}
-
-CatchMetaEntry? _buildAvailabilityEntry(ExploreEventItem item) {
-  final label = item.availabilityLabel;
-  if (label == null || label.trim().isEmpty) return null;
-  return CatchMetaEntry(icon: CatchIcons.spots, label: label);
-}
-
-CatchMetaEntry? _buildDistanceEntry(ExploreEventItem item) {
-  final distance = item.distanceFromUserKm;
-  if (distance == null) return null;
-  final label = distance < 1
-      ? '${(distance * 1000).round()} m'
-      : (distance >= 10
-            ? '${distance.round()} km'
-            : '${distance.toStringAsFixed(1)} km');
-  return CatchMetaEntry(icon: CatchIcons.nearMe, label: label);
+String? _availabilityStatusLabel(ExploreEventItem item) {
+  final label = item.availabilityLabel?.trim();
+  if (label == null || label.isEmpty || label.toLowerCase() == 'open') {
+    return null;
+  }
+  return label;
 }
 
 void _openEvent(

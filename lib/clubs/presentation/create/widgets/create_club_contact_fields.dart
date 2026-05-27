@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class CreateClubContactFields extends StatelessWidget {
           label: 'Instagram handle',
           controller: instagramController,
           isOptional: true,
-          prefixIcon: const Icon(Icons.alternate_email_rounded),
+          prefixIcon: Icon(CatchIcons.alternateEmailRounded),
           hintText: '@yourclub',
           keyboardType: TextInputType.text,
           textInputAction: TextInputAction.next,
@@ -39,7 +40,7 @@ class CreateClubContactFields extends StatelessWidget {
           label: 'Phone number',
           controller: phoneController,
           isOptional: true,
-          prefixIcon: const Icon(Icons.call_outlined),
+          prefixIcon: Icon(CatchIcons.callOutlined),
           hintText: '98765 43210',
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
@@ -53,7 +54,7 @@ class CreateClubContactFields extends StatelessWidget {
           label: 'Email',
           controller: emailController,
           isOptional: true,
-          prefixIcon: const Icon(Icons.email_outlined),
+          prefixIcon: Icon(CatchIcons.emailOutlined),
           hintText: 'hello@yourclub.com',
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,

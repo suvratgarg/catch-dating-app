@@ -35,6 +35,7 @@ class CatchEventCardHero extends StatelessWidget {
     this.editorialSash,
     this.onTap,
     this.aspectRatio = 4 / 5,
+    this.photoHeroTag,
   });
 
   final String title;
@@ -59,21 +60,30 @@ class CatchEventCardHero extends StatelessWidget {
 
   final VoidCallback? onTap;
   final double aspectRatio;
+  final Object? photoHeroTag;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final thumbnail = CatchEventThumbnail(
+      photoUrl: photoUrl,
+      pace: pace,
+      activityKind: activityKind,
+      scrim: CatchEventThumbnailScrim.bottom,
+    );
+    final photo = photoHeroTag == null
+        ? thumbnail
+        : Hero(
+            tag: photoHeroTag!,
+            transitionOnUserGestures: true,
+            child: thumbnail,
+          );
     final scaffold = AspectRatio(
       aspectRatio: aspectRatio,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CatchEventThumbnail(
-            photoUrl: photoUrl,
-            pace: pace,
-            activityKind: activityKind,
-            scrim: CatchEventThumbnailScrim.bottom,
-          ),
+          photo,
           Positioned(
             left: CatchSpacing.s4,
             right: CatchSpacing.s4,
@@ -188,9 +198,8 @@ class _PriceTag extends StatelessWidget {
   }
 }
 
-/// Lightweight spec for the corner sash, kept inside this file because the
-/// hero card is its primary caller; reuse [CatchCornerSash] directly for
-/// other surfaces.
+/// Lightweight spec for event hero corner sashes shared by feed cards and
+/// detail heroes. Reuse [CatchCornerSash] directly for non-event surfaces.
 class CatchEventSashSpec {
   const CatchEventSashSpec({
     required this.label,

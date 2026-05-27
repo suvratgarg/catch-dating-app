@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -16,10 +17,10 @@ class SwipeEmptyContent {
   final IconData icon;
 }
 
-const defaultSwipeEmptyContent = SwipeEmptyContent(
+final defaultSwipeEmptyContent = SwipeEmptyContent(
   title: 'No more attendees',
   message: 'Join more events to meet new people',
-  icon: Icons.directions_run_rounded,
+  icon: CatchIcons.directionsRunRounded,
 );
 
 SwipeEmptyContent buildSwipeEmptyContent({
@@ -28,42 +29,42 @@ SwipeEmptyContent buildSwipeEmptyContent({
   required EventParticipation? currentUserParticipation,
 }) {
   if (event == null) {
-    return const SwipeEmptyContent(
+    return SwipeEmptyContent(
       title: 'Catch unavailable',
       message: 'This event could not be found.',
-      icon: Icons.search_off_rounded,
+      icon: CatchIcons.searchOffRounded,
     );
   }
 
   if (currentUser == null) {
-    return const SwipeEmptyContent(
+    return SwipeEmptyContent(
       title: 'Sign in required',
       message: 'Sign in again to swipe on fellow attendees.',
-      icon: Icons.lock_outline_rounded,
+      icon: CatchIcons.lockOutlineRounded,
     );
   }
 
   if (currentUserParticipation?.status != EventParticipationStatus.attended) {
-    return const SwipeEmptyContent(
+    return SwipeEmptyContent(
       title: 'Catch unavailable',
       message: 'You can only swipe on attendees from events you attended.',
-      icon: Icons.verified_user_outlined,
+      icon: CatchIcons.verifiedUserOutlined,
     );
   }
 
   if (event.isUpcoming) {
-    return const SwipeEmptyContent(
+    return SwipeEmptyContent(
       title: 'Event in progress',
       message: 'Swiping unlocks for 24 hours after the event finishes.',
-      icon: Icons.schedule_rounded,
+      icon: CatchIcons.scheduleRounded,
     );
   }
 
   if (!hasOpenSwipeWindow(event)) {
-    return const SwipeEmptyContent(
+    return SwipeEmptyContent(
       title: 'Swipe window closed',
       message: 'This event is past the 24-hour catch window.',
-      icon: Icons.hourglass_disabled_rounded,
+      icon: CatchIcons.hourglassDisabledRounded,
     );
   }
 

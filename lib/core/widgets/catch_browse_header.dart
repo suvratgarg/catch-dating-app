@@ -21,6 +21,7 @@ class CatchBrowseHeader extends StatelessWidget {
     this.searchActionVisible = true,
     this.searchTooltip = 'Search',
     this.searchSemanticLabel,
+    this.backgroundColor,
     this.padding = const EdgeInsets.fromLTRB(
       CatchSpacing.s5,
       CatchSpacing.s4,
@@ -39,6 +40,7 @@ class CatchBrowseHeader extends StatelessWidget {
   final bool searchActionVisible;
   final String searchTooltip;
   final String? searchSemanticLabel;
+  final Color? backgroundColor;
   final EdgeInsetsGeometry padding;
 
   static const double _contentHeight = 60;
@@ -57,7 +59,7 @@ class CatchBrowseHeader extends StatelessWidget {
     final contentHeight = _contentHeight * clampedFactor;
 
     return ColoredBox(
-      color: t.bg,
+      color: backgroundColor ?? t.bg,
       child: Padding(
         padding: padding,
         child: MediaQuery(
@@ -97,8 +99,7 @@ class CatchBrowseHeader extends StatelessWidget {
                             searchField: searchField,
                             onOpenSearch: onOpenSearch,
                             tooltip: searchTooltip,
-                            semanticLabel:
-                                searchSemanticLabel ?? searchTooltip,
+                            semanticLabel: searchSemanticLabel ?? searchTooltip,
                           ),
                       ],
                     );

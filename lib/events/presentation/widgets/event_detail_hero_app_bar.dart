@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
-import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_card_hero.dart';
 import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -42,10 +42,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final width = MediaQuery.of(context).size.width;
-    final hasPhoto = CatchDetailHeroBackdrop.hasImage(event.photoUrl);
-    final expandedHeight = width > 600
-        ? (hasPhoto ? 220.0 : 172.0)
-        : (hasPhoto ? 300.0 : 220.0);
+    final expandedHeight = width > 600 ? 220.0 : 300.0;
     final sash = _sashSpec(
       isHost: isHost,
       isSaved: isSaved,
@@ -72,7 +69,9 @@ class EventDetailHeroAppBar extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
-              icon: CatchIcons.share,
+              icon: CatchIcons.platformShare(
+                platform: Theme.of(context).platform,
+              ),
               tooltip: 'Share event',
               backgroundColor: Colors.black.withValues(alpha: 0.35),
               onPressed: () => onShare(buttonContext),
@@ -164,13 +163,13 @@ class EventDetailHeroAppBar extends StatelessWidget {
   }
 }
 
-_HeroSashSpec? _sashSpec({
+CatchEventSashSpec? _sashSpec({
   required bool isHost,
   required bool isSaved,
   required EventParticipation? participation,
 }) {
   if (isHost) {
-    return _HeroSashSpec(
+    return CatchEventSashSpec(
       label: 'You host',
       icon: CatchIcons.hostBadge,
       tone: CatchSashTone.solid,
@@ -178,19 +177,19 @@ _HeroSashSpec? _sashSpec({
   }
   switch (participation?.status) {
     case EventParticipationStatus.signedUp:
-      return _HeroSashSpec(
+      return CatchEventSashSpec(
         label: "You're in",
         icon: CatchIcons.joinedCheck,
         tone: CatchSashTone.success,
       );
     case EventParticipationStatus.waitlisted:
-      return _HeroSashSpec(
+      return CatchEventSashSpec(
         label: 'Waitlisted',
         icon: CatchIcons.waitlisted,
         tone: CatchSashTone.solid,
       );
     case EventParticipationStatus.attended:
-      return _HeroSashSpec(
+      return const CatchEventSashSpec(
         label: 'Attended',
         tone: CatchSashTone.success,
       );
@@ -200,19 +199,11 @@ _HeroSashSpec? _sashSpec({
       break;
   }
   if (isSaved) {
-    return _HeroSashSpec(
+    return CatchEventSashSpec(
       label: 'Saved',
       icon: CatchIcons.saved,
       tone: CatchSashTone.solid,
     );
   }
   return null;
-}
-
-class _HeroSashSpec {
-  const _HeroSashSpec({required this.label, this.icon, required this.tone});
-
-  final String label;
-  final IconData? icon;
-  final CatchSashTone tone;
 }

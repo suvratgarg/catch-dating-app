@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -46,7 +47,7 @@ enum EventSuccessRevealAssignmentKind {
   };
 
   IconData get icon => switch (this) {
-    EventSuccessRevealAssignmentKind.microPods => Icons.groups_2_outlined,
-    EventSuccessRevealAssignmentKind.rotations => Icons.sync_alt_rounded,
+    EventSuccessRevealAssignmentKind.microPods => CatchIcons.groups2Outlined,
+    EventSuccessRevealAssignmentKind.rotations => CatchIcons.syncAltRounded,
   };
 }

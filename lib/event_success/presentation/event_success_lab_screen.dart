@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -133,16 +134,16 @@ class _LabHero extends StatelessWidget {
             Wrap(
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
-              children: const [
+              children: [
                 CatchBadge(
                   label: 'Work in progress',
                   tone: CatchBadgeTone.live,
-                  icon: Icons.construction_rounded,
+                  icon: CatchIcons.constructionRounded,
                 ),
                 CatchBadge(
                   label: 'Preview only',
                   tone: CatchBadgeTone.solid,
-                  icon: Icons.visibility_outlined,
+                  icon: CatchIcons.visibilityOutlined,
                 ),
               ],
             ),
@@ -197,7 +198,7 @@ class _PromiseGrid extends StatelessWidget {
             SizedBox(
               width: width,
               child: _PromiseCard(
-                icon: Icons.favorite_border_rounded,
+                icon: CatchIcons.favoriteBorderRounded,
                 title: 'Attendees',
                 body: playbook.attendeePromise,
               ),
@@ -205,15 +206,15 @@ class _PromiseGrid extends StatelessWidget {
             SizedBox(
               width: width,
               child: _PromiseCard(
-                icon: Icons.groups_2_outlined,
+                icon: CatchIcons.groups2Outlined,
                 title: 'Hosts',
                 body: playbook.hostPromise,
               ),
             ),
             SizedBox(
               width: width,
-              child: const _PromiseCard(
-                icon: Icons.science_outlined,
+              child: _PromiseCard(
+                icon: CatchIcons.scienceOutlined,
                 title: 'Catch',
                 body:
                     'Learn which live structures improve check-in, mixing, matches, chat starts, repeats, and safety.',
@@ -340,7 +341,7 @@ class _CapacityRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.confirmation_number_outlined, color: t.accent),
+          Icon(CatchIcons.confirmationNumberOutlined, color: t.accent),
           const SizedBox(width: CatchSpacing.s3),
           Expanded(
             child: Column(
@@ -564,7 +565,7 @@ class _CoachPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.insights_outlined, color: t.primary),
+              Icon(CatchIcons.insightsOutlined, color: t.primary),
               const SizedBox(width: CatchSpacing.s2),
               Expanded(
                 child: Text(
@@ -684,29 +685,29 @@ class _Section extends StatelessWidget {
 }
 
 IconData _activityIcon(ActivityKind type) => switch (type) {
-  ActivityKind.socialRun => Icons.directions_run_rounded,
-  ActivityKind.running => Icons.directions_run_rounded,
-  ActivityKind.walking => Icons.directions_walk_rounded,
-  ActivityKind.pickleball => Icons.sports_tennis_rounded,
-  ActivityKind.padel => Icons.sports_tennis_rounded,
-  ActivityKind.tennis => Icons.sports_tennis_rounded,
-  ActivityKind.badminton => Icons.sports_tennis_rounded,
-  ActivityKind.cycling => Icons.directions_bike_rounded,
-  ActivityKind.spinClass => Icons.fitness_center_rounded,
-  ActivityKind.yoga => Icons.self_improvement_rounded,
-  ActivityKind.strengthTraining => Icons.fitness_center_rounded,
-  ActivityKind.pubQuiz => Icons.quiz_outlined,
-  ActivityKind.barCrawl => Icons.local_bar_outlined,
-  ActivityKind.dinner => Icons.restaurant_outlined,
-  ActivityKind.singlesMixer => Icons.favorite_border_rounded,
-  ActivityKind.openActivity => Icons.event_available_outlined,
+  ActivityKind.socialRun => CatchIcons.directionsRunRounded,
+  ActivityKind.running => CatchIcons.directionsRunRounded,
+  ActivityKind.walking => CatchIcons.directionsWalkRounded,
+  ActivityKind.pickleball => CatchIcons.sportsTennisRounded,
+  ActivityKind.padel => CatchIcons.sportsTennisRounded,
+  ActivityKind.tennis => CatchIcons.sportsTennisRounded,
+  ActivityKind.badminton => CatchIcons.sportsTennisRounded,
+  ActivityKind.cycling => CatchIcons.directionsBikeRounded,
+  ActivityKind.spinClass => CatchIcons.fitnessCenterRounded,
+  ActivityKind.yoga => CatchIcons.selfImprovementRounded,
+  ActivityKind.strengthTraining => CatchIcons.fitnessCenterRounded,
+  ActivityKind.pubQuiz => CatchIcons.quizOutlined,
+  ActivityKind.barCrawl => CatchIcons.localBarOutlined,
+  ActivityKind.dinner => CatchIcons.restaurantOutlined,
+  ActivityKind.singlesMixer => CatchIcons.favoriteBorderRounded,
+  ActivityKind.openActivity => CatchIcons.eventAvailableOutlined,
 };
 
 IconData _priorityIcon(EventRecommendationPriority priority) =>
     switch (priority) {
       EventRecommendationPriority.critical =>
-        Icons.report_gmailerrorred_rounded,
-      EventRecommendationPriority.high => Icons.priority_high_rounded,
-      EventRecommendationPriority.medium => Icons.tune_rounded,
-      EventRecommendationPriority.low => Icons.check_circle_outline_rounded,
+        CatchIcons.reportGmailerrorredRounded,
+      EventRecommendationPriority.high => CatchIcons.priorityHighRounded,
+      EventRecommendationPriority.medium => CatchIcons.tuneRounded,
+      EventRecommendationPriority.low => CatchIcons.checkCircleOutlineRounded,
     };

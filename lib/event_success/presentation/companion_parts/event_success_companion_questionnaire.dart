@@ -76,14 +76,14 @@ class _CompatibilityQuestionnaireSectionState
                     ? CatchBadgeTone.success
                     : CatchBadgeTone.neutral,
                 icon: rankingOn
-                    ? Icons.auto_awesome_rounded
-                    : Icons.lightbulb_outline_rounded,
+                    ? CatchIcons.autoAwesomeRounded
+                    : CatchIcons.lightbulbOutlineRounded,
               ),
               if (widget.response != null)
-                const CatchBadge(
+                CatchBadge(
                   label: 'Saved',
                   tone: CatchBadgeTone.success,
-                  icon: Icons.check_rounded,
+                  icon: CatchIcons.checkRounded,
                 ),
             ],
           ),

@@ -198,7 +198,9 @@ class _RatingRow extends StatelessWidget {
           IconButton(
             tooltip: '$label $i',
             icon: Icon(
-              i <= value ? Icons.star_rounded : Icons.star_border_rounded,
+              i <= value
+                  ? CatchIcons.starRounded
+                  : CatchIcons.starBorderRounded,
             ),
             onPressed: () => onChanged(i),
           ),
@@ -225,13 +227,13 @@ class _CounterRow extends StatelessWidget {
         ),
         IconButton(
           tooltip: 'Decrease people met',
-          icon: const Icon(Icons.remove_circle_outline_rounded),
+          icon: Icon(CatchIcons.removeCircleOutlineRounded),
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
         ),
         Text('$value', style: CatchTextStyles.titleM(context)),
         IconButton(
           tooltip: 'Increase people met',
-          icon: const Icon(Icons.add_circle_outline_rounded),
+          icon: Icon(CatchIcons.addCircleOutlineRounded),
           onPressed: () => onChanged(value + 1),
         ),
       ],

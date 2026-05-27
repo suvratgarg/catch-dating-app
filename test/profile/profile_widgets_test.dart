@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -393,12 +394,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
+        home: Scaffold(
           body: Center(
             child: SizedBox(
               width: 180,
               child: ProfileInfoTile(
-                icon: Icons.email_outlined,
+                icon: CatchIcons.emailOutlined,
                 label: 'Email',
                 value: 'averylongemailaddress@examplecatchdatingapp.com',
               ),
@@ -1330,7 +1331,7 @@ void main() {
     );
     expect(selectedLanguageChip.active, isTrue);
     expect(selectedLanguageChip.icon, isA<Icon>());
-    expect((selectedLanguageChip.icon! as Icon).icon, Icons.check_rounded);
+    expect((selectedLanguageChip.icon! as Icon).icon, CatchIcons.checkRounded);
 
     await tester.tap(_catchChip(Language.english.label));
     await _pumpProfileSheet(tester);

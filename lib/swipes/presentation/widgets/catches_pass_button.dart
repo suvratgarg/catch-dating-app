@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class CatchesPassButton extends StatelessWidget {
             onTap: onPressed,
             child: SizedBox.square(
               dimension: 64,
-              child: Icon(Icons.close_rounded, color: passColor, size: 34),
+              child: Icon(CatchIcons.closeRounded, color: passColor, size: 34),
             ),
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -28,34 +29,34 @@ class ProfileCardContent {
 
     final attributes = <ProfileCardFact>[
       if (profile.height != null)
-        (icon: Icons.straighten_rounded, text: '${profile.height} cm'),
+        (icon: CatchIcons.straightenRounded, text: '${profile.height} cm'),
       if (occupation != null)
         (
-          icon: Icons.work_outline_rounded,
+          icon: CatchIcons.workOutlineRounded,
           text: company != null ? '$occupation at $company' : occupation,
         ),
       if (profile.education != null)
-        (icon: Icons.school_outlined, text: profile.education!.label),
+        (icon: CatchIcons.schoolOutlined, text: profile.education!.label),
       if (profile.religion != null)
-        (icon: Icons.brightness_3_outlined, text: profile.religion!.label),
+        (icon: CatchIcons.brightness3Outlined, text: profile.religion!.label),
       if (profile.languages.isNotEmpty)
         (
-          icon: Icons.translate_rounded,
+          icon: CatchIcons.translateRounded,
           text: profile.languages.map((language) => language.label).join(', '),
         ),
     ];
 
     final lifestyle = <ProfileCardFact>[
       if (profile.drinking != null)
-        (icon: Icons.local_bar_outlined, text: profile.drinking!.label),
+        (icon: CatchIcons.localBarOutlined, text: profile.drinking!.label),
       if (profile.smoking != null)
-        (icon: Icons.smoke_free_rounded, text: profile.smoking!.label),
+        (icon: CatchIcons.smokeFreeRounded, text: profile.smoking!.label),
       if (profile.workout != null)
-        (icon: Icons.fitness_center_rounded, text: profile.workout!.label),
+        (icon: CatchIcons.fitnessCenterRounded, text: profile.workout!.label),
       if (profile.diet != null)
-        (icon: Icons.eco_outlined, text: profile.diet!.label),
+        (icon: CatchIcons.ecoOutlined, text: profile.diet!.label),
       if (profile.children != null)
-        (icon: Icons.child_friendly_outlined, text: profile.children!.label),
+        (icon: CatchIcons.childFriendlyOutlined, text: profile.children!.label),
     ];
 
     final additionalPhotos = photos.indexed

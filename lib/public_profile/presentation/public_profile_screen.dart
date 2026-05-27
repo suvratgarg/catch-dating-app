@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
@@ -155,16 +156,16 @@ class PublicProfileScreen extends ConsumerWidget {
                       );
                     }
                   },
-                  items: const [
+                  items: [
                     CatchActionMenuItem(
                       value: 'report',
                       label: 'Report',
-                      icon: Icons.flag_outlined,
+                      icon: CatchIcons.flagOutlined,
                     ),
                     CatchActionMenuItem(
                       value: 'block',
                       label: 'Block',
-                      icon: Icons.block_rounded,
+                      icon: CatchIcons.blockRounded,
                       isDestructive: true,
                     ),
                   ],
@@ -263,7 +264,7 @@ class _ReportReasonTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(label),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      trailing: Icon(CatchIcons.chevronRightRounded),
       onTap: () => Navigator.of(context).pop(value),
     );
   }

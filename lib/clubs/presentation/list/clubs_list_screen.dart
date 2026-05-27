@@ -4,16 +4,19 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/list/explore_map_motion_reveal.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_filter_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_sliver_header.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -21,26 +24,34 @@ import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.d
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const double _exploreSheetPeekSize = 0.16;
-const double _exploreSheetHalfSize = 0.55;
-const double _exploreSheetFullSize = 0.92;
+const double _exploreSheetPeekSize = 0.11;
+const double _exploreSheetMapSize = 0.70;
+const double _exploreSheetFullSize = 1.0;
+const double _exploreMotionRevealOvershootSize = 0.655;
+const double _exploreHeaderContentHeight = 60;
+const double _exploreFilterRailHeight = 52;
+const Duration _exploreMotionRevealDropDuration = Duration(milliseconds: 280);
+const Duration _exploreMotionRevealSettleDuration = Duration(milliseconds: 170);
 
 /// Explore screen — multi-modal discovery surface.
 ///
 /// Three snap states share one canvas:
 /// * FULL  — event feed with editorial hero + day sections + clubs avatar rail.
-/// * HALF  — map visible above, event feed inside the sheet (no chrome
-///           duplication; the top bar lives above the map).
-/// * PEEK  — map dominant, peek rail in the sheet.
+/// * MAP   — map visible above, with selected map events promoted into a
+///           tappable event card at the top of the sheet.
+/// * PEEK  — map dominant, with only a handle and aggregate result summary.
 ///
-/// The persistent top chrome (city + headline + search + filter rail) lives
-/// in the [Scaffold] body *above* the map, not inside the sheet — so the
-/// filter row is always visible regardless of snap state, and the sheet body
-/// contains only the relevant content per snap.
+/// The persistent top chrome (city + headline + search + filter rail) floats
+/// above the map/sheet canvas. The map owns the full viewport, including the
+/// status-bar/notch area, while the controls stay safe-area aligned. FULL keeps
+/// the sheet behind opaque chrome with an equal internal spacer; MAP fades
+/// that chrome away and collapses the spacer so content sits close to the
+/// lowered sheet edge.
 class ClubsListScreen extends ConsumerStatefulWidget {
   const ClubsListScreen({super.key, this.enableEventMapNetworkTiles = true});
 
@@ -56,19 +67,39 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
 
   double _sheetSize = _exploreSheetFullSize;
   String? _selectedMapEventId;
+  LocationCoordinate? _mapCameraCenter;
+  Timer? _sheetSettleTimer;
+  StreamSubscription<DeviceMotionSample>? _motionRevealSubscription;
+  final _motionRevealRecognizer = ExploreMapMotionRevealRecognizer();
+  bool _settlingSheet = false;
+  bool _motionRevealAvailable = true;
 
   bool get _isFull => _sheetSize >= _exploreSheetFullSize - 0.02;
+  bool get _isPeek => _sheetSize <= _exploreSheetPeekSize + 0.09;
+  double get _mapRevealProgress {
+    final range = _exploreSheetFullSize - _exploreSheetMapSize;
+    return ((_exploreSheetFullSize - _sheetSize) / range)
+        .clamp(0.0, 1.0)
+        .toDouble();
+  }
 
   @override
   void initState() {
     super.initState();
     _sheetController.addListener(_handleSheetSizeChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _syncMotionRevealListener();
+    });
   }
 
   @override
   void dispose() {
     _sheetController.removeListener(_handleSheetSizeChanged);
     _sheetController.dispose();
+    _sheetSettleTimer?.cancel();
+    unawaited(_motionRevealSubscription?.cancel() ?? Future<void>.value());
+    _motionRevealSubscription = null;
     super.dispose();
   }
 
@@ -77,122 +108,180 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final feedCount = feedAsync.asData?.value.count;
+    final filters = ref.watch(clubBrowseFiltersProvider);
+    final distanceRingRadiusKm = exploreDistanceFilterKm(
+      filters.distanceFilter,
+    );
     final mapLabel = feedCount == null || feedCount == 0
         ? 'Map'
         : 'Map · $feedCount';
     final exploreMapViewModel = feedAsync.whenData(
       _mapViewModelFromExploreFeed,
     );
+    final mapRevealProgress = _mapRevealProgress;
+    final lidProgress = Curves.easeOutCubic.transform(mapRevealProgress);
+    final spacerProgress = Curves.easeInOutCubic.transform(mapRevealProgress);
+    final topInset = MediaQuery.paddingOf(context).top;
+    final chromeHeight = topInset + _exploreChromeHeightFor(context);
+    final chromeBackground = t.bg.withValues(alpha: 1 - lidProgress);
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            ColoredBox(
-              color: t.bg,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const _ExploreBrowseHeader(),
-                  const ClubsFilterRail(),
-                ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: EventMapView(
+              enableNetworkTiles: widget.enableEventMapNetworkTiles,
+              showSheet: false,
+              viewModel: exploreMapViewModel,
+              distanceRingRadiusKm: distanceRingRadiusKm,
+              onRetry: () => ref.invalidate(exploreFeedViewModelProvider),
+              onEventSelected: _selectMapEvent,
+              onCameraCenterChanged: _handleMapCameraCenterChanged,
+              onDistanceRingTapped: _cycleDistanceFilter,
+            ),
+          ),
+          DraggableScrollableSheet(
+            controller: _sheetController,
+            initialChildSize: _exploreSheetFullSize,
+            minChildSize: _exploreSheetPeekSize,
+            maxChildSize: _exploreSheetFullSize,
+            snap: false,
+            // Use a single, stable scrollable across all snap states. The
+            // lead sliver changes from summary -> selected card -> nearby
+            // rail, but the sheet controller remains bound to the same
+            // CustomScrollView during gestures.
+            builder: (context, scrollController) {
+              return NotificationListener<ScrollEndNotification>(
+                onNotification: _handleSheetScrollEnd,
+                child: CatchDraggableSheetShell(
+                  showShadow: lidProgress > 0.05,
+                  showHandle: !_isFull,
+                  handleOpacity: lidProgress,
+                  topRadius: CatchRadius.lg * lidProgress,
+                  child: _ExploreSheetFeed(
+                    scrollController: scrollController,
+                    isPeek: _isPeek,
+                    topContentInset: chromeHeight * (1 - spacerProgress),
+                    selectedEventId: _selectedMapEventId,
+                    mapCameraCenter: _mapCameraCenter,
+                    onPeekEventTapped: _selectMapEvent,
+                    onSeeAll: _showList,
+                  ),
+                ),
+              );
+            },
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: _ExploreFloatingChrome(backgroundColor: chromeBackground),
+            ),
+          ),
+          Positioned(
+            left: CatchSpacing.s5,
+            bottom: CatchSpacing.s5,
+            child: SafeArea(
+              top: false,
+              child: _ExploreSnapToggle(
+                mapLabel: mapLabel,
+                isFull: _isFull,
+                onShowMap: _showMap,
               ),
             ),
-            Expanded(
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: EventMapView(
-                      enableNetworkTiles: widget.enableEventMapNetworkTiles,
-                      showSheet: false,
-                      viewModel: exploreMapViewModel,
-                      onRetry: () =>
-                          ref.invalidate(exploreFeedViewModelProvider),
-                      onEventSelected: _selectMapEvent,
-                    ),
-                  ),
-                  DraggableScrollableSheet(
-                    controller: _sheetController,
-                    initialChildSize: _exploreSheetFullSize,
-                    minChildSize: _exploreSheetPeekSize,
-                    maxChildSize: _exploreSheetFullSize,
-                    snap: true,
-                    snapSizes: const [
-                      _exploreSheetPeekSize,
-                      _exploreSheetHalfSize,
-                      _exploreSheetFullSize,
-                    ],
-                    // Use a single, stable scrollable across all snap
-                    // states. Previously this builder swapped between
-                    // `ExplorePeekRail` and `_ExploreSheetFeed` based on
-                    // `_isPeek`, which detached the sheet's scroll
-                    // controller from one scrollable and re-attached it to
-                    // another mid-gesture — the sheet would jitter or
-                    // stall when the user dragged up from PEEK. The
-                    // "events near you" rail now lives as the top sliver
-                    // of the feed, so the experience at PEEK is
-                    // unchanged but the drag-up to HALF/FULL is smooth.
-                    builder: (context, scrollController) {
-                      return _ExploreSheetSurface(
-                        showShadow: !_isFull,
-                        child: _ExploreSheetFeed(
-                          scrollController: scrollController,
-                          selectedEventId: _selectedMapEventId,
-                          onPeekEventTapped: _selectMapEvent,
-                          onSeeAll: _showList,
-                        ),
-                      );
-                    },
-                  ),
-                  Positioned(
-                    left: CatchSpacing.s5,
-                    bottom: CatchSpacing.s5,
-                    child: SafeArea(
-                      top: false,
-                      child: _ExploreSnapToggle(
-                        mapLabel: mapLabel,
-                        isFull: _isFull,
-                        onShowMap: _showMap,
-                        onShowList: _showList,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   void _showMap() {
     HapticFeedback.selectionClick();
-    _snapTo(_exploreSheetHalfSize);
+    _stopMotionRevealListener();
+    unawaited(
+      _snapTo(
+        _exploreSheetMapSize,
+        duration: CatchMotion.slow,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+  }
+
+  void _showMapFromMotionReveal() {
+    _stopMotionRevealListener();
+    unawaited(_snapToMapWithMomentum());
+  }
+
+  Future<void> _snapToMapWithMomentum() async {
+    if (!_sheetController.isAttached || _settlingSheet) return;
+
+    _settlingSheet = true;
+    unawaited(HapticFeedback.lightImpact());
+    try {
+      await _snapTo(
+        _exploreMotionRevealOvershootSize,
+        duration: _exploreMotionRevealDropDuration,
+        curve: const Cubic(0.08, 0.82, 0.14, 1.0),
+      );
+      if (!mounted || !_sheetController.isAttached) return;
+      await _snapTo(
+        _exploreSheetMapSize,
+        duration: _exploreMotionRevealSettleDuration,
+        curve: CatchMotion.springCurve,
+      );
+    } finally {
+      _settlingSheet = false;
+    }
   }
 
   void _showList() {
     HapticFeedback.selectionClick();
-    _snapTo(_exploreSheetFullSize);
+    if (_selectedMapEventId != null) {
+      setState(() => _selectedMapEventId = null);
+    }
+    unawaited(_snapTo(_exploreSheetFullSize));
+    _syncMotionRevealListener();
   }
 
   void _selectMapEvent(Event event) {
     HapticFeedback.selectionClick();
     setState(() => _selectedMapEventId = event.id);
-    _snapTo(_exploreSheetPeekSize);
+    unawaited(_snapTo(_exploreSheetMapSize));
   }
 
-  void _snapTo(double size) {
-    if (!_sheetController.isAttached) return;
-    unawaited(
-      _sheetController.animateTo(
-        size,
-        duration: CatchMotion.base,
-        curve: CatchMotion.springCurve,
-      ),
-    );
+  void _handleMapCameraCenterChanged(LocationCoordinate center) {
+    final current = _mapCameraCenter;
+    if (current != null &&
+        current.latitude == center.latitude &&
+        current.longitude == center.longitude) {
+      return;
+    }
+    setState(() => _mapCameraCenter = center);
+  }
+
+  void _cycleDistanceFilter() {
+    HapticFeedback.selectionClick();
+    final controller = ref.read(clubBrowseFiltersProvider.notifier);
+    final current = ref.read(clubBrowseFiltersProvider).distanceFilter;
+    controller.setDistanceFilter(switch (current) {
+      ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
+      ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
+      ExploreDistanceFilter.threeKm => ExploreDistanceFilter.fiveKm,
+      ExploreDistanceFilter.fiveKm => ExploreDistanceFilter.tenKm,
+      ExploreDistanceFilter.tenKm => ExploreDistanceFilter.any,
+    });
+  }
+
+  Future<void> _snapTo(
+    double size, {
+    Duration duration = CatchMotion.base,
+    Curve curve = CatchMotion.springCurve,
+  }) {
+    if (!_sheetController.isAttached) return Future<void>.value();
+    return _sheetController.animateTo(size, duration: duration, curve: curve);
   }
 
   void _handleSheetSizeChanged() {
@@ -200,70 +289,110 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
     final nextSize = _sheetController.size;
     if ((nextSize - _sheetSize).abs() < 0.005) return;
     setState(() => _sheetSize = nextSize);
+    _syncMotionRevealListener();
+    if (!_settlingSheet) {
+      _scheduleSheetSettle();
+    }
   }
-}
 
-class _ExploreBrowseHeader extends StatelessWidget {
-  const _ExploreBrowseHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return const ClubsBrowseHeaderContent();
+  void _syncMotionRevealListener() {
+    final shouldListen =
+        mounted &&
+        _motionRevealAvailable &&
+        _isFull &&
+        _selectedMapEventId == null;
+    if (shouldListen) {
+      _startMotionRevealListener();
+    } else {
+      _stopMotionRevealListener();
+    }
   }
-}
 
-class _ExploreSheetSurface extends StatelessWidget {
-  const _ExploreSheetSurface({required this.child, required this.showShadow});
+  void _startMotionRevealListener() {
+    if (_motionRevealSubscription != null) return;
+    _motionRevealRecognizer.reset();
+    _motionRevealSubscription = ref
+        .read(deviceMotionSourceProvider)
+        .watchMotion()
+        .listen(
+          _handleMotionRevealSample,
+          onError: (Object error, StackTrace stackTrace) {
+            _motionRevealAvailable = false;
+            _stopMotionRevealListener();
+          },
+        );
+  }
 
-  final Widget child;
-  final bool showShadow;
+  void _stopMotionRevealListener() {
+    final subscription = _motionRevealSubscription;
+    if (subscription == null) return;
+    _motionRevealSubscription = null;
+    _motionRevealRecognizer.reset();
+    unawaited(subscription.cancel());
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return AnimatedContainer(
-      duration: CatchMotion.fast,
-      curve: CatchMotion.standardCurve,
-      decoration: BoxDecoration(
-        color: t.bg,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(CatchRadius.lg),
-        ),
-        border: Border.all(color: t.line),
-        boxShadow: showShadow ? CatchElevation.raised : CatchElevation.none,
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          const _ExploreSheetHandle(),
-          Expanded(child: child),
-        ],
-      ),
+  void _handleMotionRevealSample(DeviceMotionSample sample) {
+    if (!_isFull || _selectedMapEventId != null) return;
+    if (!_motionRevealRecognizer.handle(sample)) return;
+    _showMapFromMotionReveal();
+  }
+
+  bool _handleSheetScrollEnd(ScrollEndNotification notification) {
+    if (notification.metrics.axis != Axis.vertical) return false;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _settleSheet());
+    return false;
+  }
+
+  void _scheduleSheetSettle() {
+    _sheetSettleTimer?.cancel();
+    _sheetSettleTimer = Timer(const Duration(milliseconds: 180), _settleSheet);
+  }
+
+  void _settleSheet() {
+    if (!mounted || !_sheetController.isAttached || _settlingSheet) return;
+    final size = _sheetController.size;
+    final target = switch (size) {
+      < _exploreSheetPeekSize + 0.18 => _exploreSheetPeekSize,
+      > _exploreSheetFullSize - 0.06 => _exploreSheetFullSize,
+      _ when (size - _exploreSheetMapSize).abs() < 0.06 => _exploreSheetMapSize,
+      _ => null,
+    };
+    if (target == null || (size - target).abs() < 0.005) return;
+
+    _settlingSheet = true;
+    unawaited(
+      _snapTo(
+        target,
+        duration: CatchMotion.fast,
+        curve: CatchMotion.standardCurve,
+      ).whenComplete(() => _settlingSheet = false),
     );
   }
 }
 
-class _ExploreSheetHandle extends StatelessWidget {
-  const _ExploreSheetHandle();
+double _exploreChromeHeightFor(BuildContext context) {
+  final textScale = MediaQuery.textScalerOf(
+    context,
+  ).scale(1.0).clamp(0.85, 1.15);
+  return CatchSpacing.s4 +
+      (_exploreHeaderContentHeight * textScale) +
+      CatchSpacing.s3 +
+      _exploreFilterRailHeight;
+}
+
+class _ExploreFloatingChrome extends StatelessWidget {
+  const _ExploreFloatingChrome({required this.backgroundColor});
+
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: CatchSpacing.s2,
-        bottom: CatchSpacing.s1,
-      ),
-      child: Center(
-        child: Container(
-          width: 48,
-          height: 5,
-          decoration: BoxDecoration(
-            color: t.line2,
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-          ),
-        ),
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ClubsBrowseHeaderContent(backgroundColor: backgroundColor),
+        ClubsFilterRail(backgroundColor: backgroundColor),
+      ],
     );
   }
 }
@@ -271,13 +400,19 @@ class _ExploreSheetHandle extends StatelessWidget {
 class _ExploreSheetFeed extends ConsumerWidget {
   const _ExploreSheetFeed({
     required this.scrollController,
+    required this.isPeek,
+    required this.topContentInset,
     required this.selectedEventId,
+    required this.mapCameraCenter,
     required this.onPeekEventTapped,
     required this.onSeeAll,
   });
 
   final ScrollController scrollController;
+  final bool isPeek;
+  final double topContentInset;
   final String? selectedEventId;
+  final LocationCoordinate? mapCameraCenter;
   final ValueChanged<Event> onPeekEventTapped;
   final VoidCallback onSeeAll;
 
@@ -296,14 +431,38 @@ class _ExploreSheetFeed extends ConsumerWidget {
         0;
     final hasSourceClubs = sourceClubCount > 0;
 
-    // "Events near you" sliver — always present at the top so the PEEK
-    // snap shows it naturally. Falls back to its own loading/empty handling.
-    final nearbySlivers = buildExploreNearbySlivers(
+    final nearbySlivers = buildExploreMapSheetLeadSlivers(
       ref: ref,
       selectedEventId: selectedEventId,
+      cameraCenter: mapCameraCenter,
+      filters: filters,
+      scopeLabel: exploreMapScopeLabel(
+        city: city,
+        cameraCenter: mapCameraCenter,
+      ),
+      leadMode: isPeek && selectedEventId == null
+          ? ExploreMapSheetLeadMode.collapsedSummary
+          : selectedEventId != null
+          ? ExploreMapSheetLeadMode.selectedEvent
+          : ExploreMapSheetLeadMode.nearbyRail,
       onEventTapped: onPeekEventTapped,
       onSeeAll: onSeeAll,
     );
+
+    if (isPeek && selectedEventId == null) {
+      return MutationErrorSnackbarListener(
+        mutation: ClubMembershipController.joinMutation,
+        child: CustomScrollView(
+          key: const ValueKey('explore-list-scroll-view'),
+          controller: scrollController,
+          slivers: [
+            if (topContentInset > 0)
+              SliverToBoxAdapter(child: SizedBox(height: topContentInset)),
+            ...nearbySlivers,
+          ],
+        ),
+      );
+    }
 
     final bodySlivers = switch (viewModelAsync) {
       AsyncLoading() => const <Widget>[
@@ -361,7 +520,12 @@ class _ExploreSheetFeed extends ConsumerWidget {
         // tree so semantic lookups and screen-reader navigation work
         // straight away.
         cacheExtent: 1600,
-        slivers: [...nearbySlivers, ...bodySlivers],
+        slivers: [
+          if (topContentInset > 0)
+            SliverToBoxAdapter(child: SizedBox(height: topContentInset)),
+          ...nearbySlivers,
+          ...bodySlivers,
+        ],
       ),
     );
   }
@@ -419,7 +583,7 @@ Widget _clearAction(
       }
     },
     variant: CatchButtonVariant.secondary,
-    icon: const Icon(Icons.close_rounded),
+    icon: Icon(CatchIcons.clear),
   );
 }
 
@@ -445,21 +609,19 @@ class _ExploreSnapToggle extends StatelessWidget {
     required this.mapLabel,
     required this.isFull,
     required this.onShowMap,
-    required this.onShowList,
   });
 
   final String mapLabel;
   final bool isFull;
   final VoidCallback onShowMap;
-  final VoidCallback onShowList;
 
   @override
   Widget build(BuildContext context) {
-    final showMap = isFull;
+    if (!isFull) return const SizedBox.shrink();
     return _FloatingActionPill(
-      label: showMap ? mapLabel : 'List',
-      icon: showMap ? CatchIcons.map : CatchIcons.list,
-      onPressed: showMap ? onShowMap : onShowList,
+      label: mapLabel,
+      icon: CatchIcons.map,
+      onPressed: onShowMap,
     );
   }
 }

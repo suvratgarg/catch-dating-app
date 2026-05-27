@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,7 @@ class _RemoveButton extends StatelessWidget {
       onTap: onRemove,
       child: Padding(
         padding: const EdgeInsets.all(2),
-        child: Icon(Icons.close_rounded, color: color, size: CatchIcon.sm),
+        child: Icon(CatchIcons.closeRounded, color: color, size: CatchIcon.sm),
       ),
     );
   }

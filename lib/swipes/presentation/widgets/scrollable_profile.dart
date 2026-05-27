@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -338,7 +339,7 @@ class _RunningIdentityCard extends StatelessWidget {
           Row(
             children: [
               _RunStatPill(
-                icon: Icons.speed_rounded,
+                icon: CatchIcons.speedRounded,
                 label: 'Pace',
                 value: formatPaceRange(
                   running.paceMinSecsPerKm,
@@ -347,7 +348,7 @@ class _RunningIdentityCard extends StatelessWidget {
               ),
               gapW8,
               _RunStatPill(
-                icon: Icons.straighten_rounded,
+                icon: CatchIcons.straightenRounded,
                 label: 'Distance',
                 value: _formatDistanceSummary(running),
               ),
@@ -538,19 +539,19 @@ String _factsPreview(List<ProfileCardFact> facts) {
 
 IconData _runTagIcon(EmotionalRunTagKind kind) {
   return switch (kind) {
-    EmotionalRunTagKind.morningRegular => Icons.wb_sunny_outlined,
-    EmotionalRunTagKind.eveningRunner => Icons.nights_stay_outlined,
-    EmotionalRunTagKind.middayMiles => Icons.light_mode_outlined,
-    EmotionalRunTagKind.easyMiles => Icons.self_improvement_rounded,
-    EmotionalRunTagKind.tempoEnergy => Icons.bolt_rounded,
-    EmotionalRunTagKind.flexiblePace => Icons.swap_horiz_rounded,
-    EmotionalRunTagKind.fiveKRegular => Icons.looks_5_rounded,
-    EmotionalRunTagKind.tenKReady => Icons.filter_9_plus_rounded,
-    EmotionalRunTagKind.longRunPerson => Icons.route_rounded,
-    EmotionalRunTagKind.socialMiles => Icons.groups_2_outlined,
-    EmotionalRunTagKind.headspaceRunner => Icons.spa_outlined,
-    EmotionalRunTagKind.trainingEnergy => Icons.flag_outlined,
-    EmotionalRunTagKind.feelGoodMiles => Icons.favorite_border_rounded,
+    EmotionalRunTagKind.morningRegular => CatchIcons.wbSunnyOutlined,
+    EmotionalRunTagKind.eveningRunner => CatchIcons.nightsStayOutlined,
+    EmotionalRunTagKind.middayMiles => CatchIcons.lightModeOutlined,
+    EmotionalRunTagKind.easyMiles => CatchIcons.selfImprovementRounded,
+    EmotionalRunTagKind.tempoEnergy => CatchIcons.boltRounded,
+    EmotionalRunTagKind.flexiblePace => CatchIcons.swapHorizRounded,
+    EmotionalRunTagKind.fiveKRegular => CatchIcons.looks5Rounded,
+    EmotionalRunTagKind.tenKReady => CatchIcons.filter9PlusRounded,
+    EmotionalRunTagKind.longRunPerson => CatchIcons.routeRounded,
+    EmotionalRunTagKind.socialMiles => CatchIcons.groups2Outlined,
+    EmotionalRunTagKind.headspaceRunner => CatchIcons.spaOutlined,
+    EmotionalRunTagKind.trainingEnergy => CatchIcons.flagOutlined,
+    EmotionalRunTagKind.feelGoodMiles => CatchIcons.favoriteBorderRounded,
   };
 }
 

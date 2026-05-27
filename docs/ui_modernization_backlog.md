@@ -18,7 +18,9 @@ Keep entries small and self-describing — one line is fine.
 - `CatchEventCardHero` — full-bleed photo + scrim + caps time + meta row. See [catch_event_card_hero.dart](../lib/core/widgets/catch_event_card_hero.dart).
 - `CatchEventCardCompact` — list-row variant for day-grouped feeds. See [catch_event_card_compact.dart](../lib/core/widgets/catch_event_card_compact.dart).
 - `CatchEventCardPeek` — image-left thumb card for the map peek rail. See [catch_event_card_peek.dart](../lib/core/widgets/catch_event_card_peek.dart).
-- `CatchEventThumbnail` — shared photo+gradient fallback for any event surface. See [catch_event_thumbnail.dart](../lib/core/widgets/catch_event_thumbnail.dart).
+- `EventActivityVisualSpec` / `EventActivityBackdrop` — mutable production activity visual schema keyed by `ActivityKind`, shared by Explore cards, peek imagery, and event detail headers. See [event_activity_visuals.dart](../lib/events/presentation/event_activity_visuals.dart).
+- `CatchEventTicketCard` / `CatchEventSpotlightCard` — activity-art production event cards migrated from the Explore concept lab and backed by `EventActivityVisualSpec`. See [catch_event_activity_cards.dart](../lib/core/widgets/catch_event_activity_cards.dart).
+- `CatchEventThumbnail` — shared photo + activity-art fallback for any event surface; callers can set `preferActivityArtwork` when the activity palette should override uploaded photos. See [catch_event_thumbnail.dart](../lib/core/widgets/catch_event_thumbnail.dart).
 - `CatchTextStyles.kickerCaps` — caps-tracked label style.
 - `CatchTextStyles.numericLarge` — tabular numerals for counts/distances on cards.
 
@@ -27,7 +29,7 @@ Keep entries small and self-describing — one line is fine.
 - [ ] **Dashboard / Home** ([lib/dashboard/presentation/](../lib/dashboard/presentation/)) — `EventFocusRail`, `RecommendCard`, hero card. Move to `CatchEventCardHero` for hero, `CatchEventCardCompact` for rail items.
 - [ ] **Saved events** ([lib/events/presentation/saved_events_screen.dart](../lib/events/presentation/saved_events_screen.dart)) — rebuild with day-grouped feed using `CatchDaySectionHeader` + `CatchEventCardCompact`.
 - [ ] **Club detail upcoming events** ([lib/clubs/presentation/detail/](../lib/clubs/presentation/detail/)) — replace `EventAgendaTile` usage with `CatchEventCardCompact`.
-- [ ] **Event detail** ([lib/events/presentation/event_detail_screen.dart](../lib/events/presentation/event_detail_screen.dart)) — hero treatment should adopt the new scrim + caps-time pattern from `CatchEventCardHero`.
+- [x] **Event detail** ([lib/events/presentation/event_detail_screen.dart](../lib/events/presentation/event_detail_screen.dart)) — detail headers now prefer the shared activity artwork from `EventActivityVisualSpec`, so event detail, Explore spotlight cards, and map-selected cards use the same type palette.
 - [ ] **Club discover list** ([lib/clubs/presentation/list/widgets/club_discover_list.dart](../lib/clubs/presentation/list/widgets/club_discover_list.dart)) — the directory club tile is now the weakest visual on the screen; needs a peer redesign (photo + tag chips refined, drop the "NEXT" sash now that events are first-class above).
 - [ ] **Event success / wingman screens** ([lib/event_success/presentation/](../lib/event_success/presentation/)) — currently use ad-hoc layouts; adopt `CatchDaySectionHeader` and the corner sash pattern.
 
@@ -41,31 +43,29 @@ Keep entries small and self-describing — one line is fine.
 ## Icon set
 
 - [x] **`CatchIcons` facade landed** — [lib/core/theme/catch_icons.dart](../lib/core/theme/catch_icons.dart) wraps `phosphor_flutter`. The Explore screen, browse header, filter rail, event cards, and peek rail all reference `CatchIcons.*` instead of `Icons.*`. The facade keeps screens decoupled from the underlying package, so a future swap (e.g. to Lucide or to a custom brand set) is a one-file change.
-- [ ] **Migrate the rest of the app** off `Icons.*` to `CatchIcons.*`. Scope: every `lib/**/*.dart` outside the Explore feature. Strategy:
-  - Run `grep -rn 'Icons\.' lib --include='*.dart'` to find candidates.
-  - For icons that don't yet have a `CatchIcons` entry, add a new constant in the facade rather than reaching into `phosphor_flutter` directly.
-  - Test files that locate widgets via `find.byIcon(Icons.foo)` need the same migration.
+- [x] **App-wide `Icons.*` migration complete** — `lib/**/*.dart` and `test/**/*.dart` now route Material icon usage through `CatchIcons.*`, with the only direct `Icons.*` references centralized in [catch_icons.dart](../lib/core/theme/catch_icons.dart). The Material-named facade entries are transitional compatibility aliases; new code should prefer semantic Catch-named getters and add facade entries instead of importing Material `Icons` directly.
 - [ ] **Audit Phosphor weights**. The facade currently mixes Duotone (time pills, activity glyphs), Regular (filters, search), Bold (navigation chrome), and Fill (selected/active states). That distinction is intentional — duotone reads as expressive moments, regular as functional controls, bold for navigation, fill for active/saved — but the rest of the app should follow the same convention. Document it in the facade if a code reviewer ever questions a particular weight choice.
 
 ## Map
 
-- [ ] **Map pin clustering** — `EventPinsMap` does not cluster. Add `google_maps_cluster_manager` or render clusters server-side when density >5 pins/visible viewport.
-- [ ] **Distance ring** around user GPS pin on the map (visual aid + filter affordance).
-- [ ] **User-location pin styling** — currently the default Google blue dot. Could be styled to match brand.
-- [ ] **Re-order PEEK rail by distance** as the user pans/zooms the map (the rail is currently chronologically sorted; it should re-sort to be distance-from-camera-center on idle).
-- [ ] **Distance ring filter affordance** — tap the ring to cycle through 1/3/5/10 km.
+- [x] **Map pin clustering** — `EventPinsMap` now clusters dense pins with an app-rendered count marker below close zooms, then expands back to individual time pins at street-level zoom.
+- [x] **Distance ring** around user GPS pin on the map (visual aid + filter affordance).
+- [x] **User-location pin styling** — the map uses app-owned user-location circles instead of relying on the native blue-dot styling.
+- [x] **Re-order PEEK rail by distance** as the user pans/zooms the map; the rail now re-sorts by distance from the latest camera center on idle.
+- [x] **Distance ring filter affordance** — tapping the ring cycles through 1/3/5/10 km and back to any distance.
 
 ## Sheet & motion
 
-- [ ] **Sticky day-section headers** — currently inlined (non-pinned) because `SliverPersistentHeader(pinned: true)` nested inside a `SliverMainAxisGroup` hits a Flutter layout assertion when the header is partially clipped (upstream [flutter#146867](https://github.com/flutter/flutter/issues/146867)). When the bug is fixed (or we restructure to avoid `SliverMainAxisGroup` here), swap `SliverToBoxAdapter(child: CatchDaySectionHeader(...))` back to `SliverPersistentHeader(pinned: true, delegate: CatchDaySectionHeaderDelegate(...))` in [explore_events_section.dart](../lib/clubs/presentation/list/widgets/explore_events_section.dart).
-- [x] **Spring-curve sheet snap** — `_snapTo` uses `CatchMotion.springCurve`. ([clubs_list_screen.dart:189](../lib/clubs/presentation/list/clubs_list_screen.dart:189))
-- [x] **Haptic light-tap on pin tap + sheet snap** — `_showMap`, `_showList`, `_selectMapEvent` all fire `HapticFeedback.selectionClick()`. ([clubs_list_screen.dart:168](../lib/clubs/presentation/list/clubs_list_screen.dart:168))
+- [x] **Wrist-lift map reveal** — Explore wraps `sensors_plus` behind `DeviceMotionSource`, runs a conservative pitch/acceleration recognizer only while the full sheet is active, and uses a distinct light-impact, overshoot-and-settle animation for the physical reveal.
+- [x] **Sticky day-section headers** — the primary Explore sheet now spreads flat slivers and uses `SliverPersistentHeader(pinned: true)` with `CatchDaySectionHeaderDelegate`. The legacy single-widget `ExploreEventsSection` compatibility wrapper keeps inline headers to avoid the `SliverMainAxisGroup` assertion path.
+- [x] **Spring-curve sheet snap** — `_snapTo` uses `CatchMotion.springCurve`. ([clubs_list_screen.dart](../lib/clubs/presentation/list/clubs_list_screen.dart))
+- [x] **Haptic light-tap on pin tap + sheet snap** — `_showMap`, `_showList`, `_selectMapEvent` all fire `HapticFeedback.selectionClick()`. ([clubs_list_screen.dart](../lib/clubs/presentation/list/clubs_list_screen.dart))
 - [x] **Animated count ticker** on day-section header — `CatchDaySectionHeader` slides + fades the count when it changes. ([catch_day_section_header.dart](../lib/core/widgets/catch_day_section_header.dart))
 
 ## Catch primitives — additions worth considering
 
 - [ ] **`CatchSegmentedControl`** already exists but isn't used on Explore; once we want a "Events / Clubs" lens toggle, adopt it.
-- [ ] **`CatchEmptyState`** — current `_ExploreEventsEmptyState` is generic; should grow time-aware copy ("Nothing tonight — see this weekend?") with a one-tap shift.
+- [x] **`CatchEmptyState`** — Explore event empty states now use time-aware copy with one-tap shifts such as "Nothing tonight" → "See weekend" and "Nothing this week" → "See anytime".
 - [ ] **Skeleton library** ([catch_skeleton.dart](../lib/core/widgets/catch_skeleton.dart)) — the current shimmer styles assume Sunset cream. Audit dark-mode rendering.
 - [ ] **`CatchSurface`** — add `elevation: CatchSurfaceElevation.floating` between `raised` and `overlay` for cards that hover but aren't quite overlays (selected map pin, peek rail "now" card).
 

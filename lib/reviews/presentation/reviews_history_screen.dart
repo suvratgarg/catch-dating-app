@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -150,7 +151,7 @@ class _ReviewsHistoryEmpty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s5),
         child: CatchEmptyState(
-          icon: Icons.rate_review_outlined,
+          icon: CatchIcons.rateReviewOutlined,
           title: title,
           message: message,
           surface: false,

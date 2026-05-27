@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -171,16 +172,16 @@ class _EventPreviewHero extends StatelessWidget {
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: const [
+            children: [
               CatchBadge(
                 label: 'Preview only',
                 tone: CatchBadgeTone.solid,
-                icon: Icons.visibility_outlined,
+                icon: CatchIcons.visibilityOutlined,
               ),
               CatchBadge(
                 label: 'Dev/staging',
                 tone: CatchBadgeTone.live,
-                icon: Icons.science_outlined,
+                icon: CatchIcons.scienceOutlined,
               ),
             ],
           ),
@@ -243,7 +244,7 @@ class _IntegrationNotesCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.account_tree_outlined, color: t.primary),
+              Icon(CatchIcons.accountTreeOutlined, color: t.primary),
               gapW10,
               Expanded(
                 child: Text(
@@ -258,7 +259,7 @@ class _IntegrationNotesCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.check_rounded, size: 18, color: t.success),
+                Icon(CatchIcons.checkRounded, size: 18, color: t.success),
                 gapW8,
                 Expanded(
                   child: Text(

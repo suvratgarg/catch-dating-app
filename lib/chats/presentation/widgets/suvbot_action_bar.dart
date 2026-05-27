@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -106,7 +107,7 @@ class _SuvbotControls extends StatelessWidget {
             ),
             if (helpAction != null)
               _CircleActionButton(
-                icon: Icons.help_outline_rounded,
+                icon: CatchIcons.helpOutlineRounded,
                 label: helpAction.label,
                 pending: pending,
                 onPressed: () => unawaited(onAction(helpAction)),
@@ -183,7 +184,7 @@ class _SuvbotControls extends StatelessWidget {
               Expanded(
                 child: _SuvbotButton(
                   label: 'Reset...',
-                  icon: Icons.cleaning_services_rounded,
+                  icon: CatchIcons.cleaningServicesRounded,
                   pending: pending,
                   destructive: true,
                   onPressed: () => _showResetSheet(
@@ -348,7 +349,7 @@ class _SuvbotLoadError extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SuvbotButton(
       label: 'Reload controls',
-      icon: Icons.sync_rounded,
+      icon: CatchIcons.syncRounded,
       pending: false,
       onPressed: onRetry,
     );
@@ -495,7 +496,7 @@ class _MatchTesterSheetState extends State<_MatchTesterSheet> {
           const SizedBox(height: CatchSpacing.s3),
           CatchButton(
             onPressed: widget.pending ? null : _submit,
-            icon: const Icon(Icons.person_add_alt_1_rounded),
+            icon: Icon(CatchIcons.personAddAlt1Rounded),
             label: 'Create match',
             fullWidth: true,
           ),
@@ -521,17 +522,17 @@ String _shortWarmLabel(SuvbotActionItem action) => switch (action.id) {
 };
 
 IconData _iconFor(String icon) => switch (icon) {
-  'refresh' => Icons.refresh_rounded,
-  'clean' => Icons.cleaning_services_rounded,
-  'event' => Icons.event_available_rounded,
-  'flag' => Icons.flag_rounded,
-  'chat' => Icons.forum_rounded,
-  'payment' => Icons.payments_rounded,
-  'chatReset' => Icons.forum_outlined,
-  'eventReset' => Icons.event_busy_rounded,
-  'notifications' => Icons.notifications_off_rounded,
-  'personAdd' => Icons.person_add_alt_1_rounded,
-  'check' => Icons.fact_check_outlined,
-  'help' => Icons.help_outline_rounded,
-  _ => Icons.auto_awesome_rounded,
+  'refresh' => CatchIcons.refreshRounded,
+  'clean' => CatchIcons.cleaningServicesRounded,
+  'event' => CatchIcons.eventAvailableRounded,
+  'flag' => CatchIcons.flagRounded,
+  'chat' => CatchIcons.forumRounded,
+  'payment' => CatchIcons.paymentsRounded,
+  'chatReset' => CatchIcons.forumOutlined,
+  'eventReset' => CatchIcons.eventBusyRounded,
+  'notifications' => CatchIcons.notificationsOffRounded,
+  'personAdd' => CatchIcons.personAddAlt1Rounded,
+  'check' => CatchIcons.factCheckOutlined,
+  'help' => CatchIcons.helpOutlineRounded,
+  _ => CatchIcons.autoAwesomeRounded,
 };

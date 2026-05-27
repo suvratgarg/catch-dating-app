@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -209,7 +210,7 @@ class _CatchesTopOverlay extends StatelessWidget {
             children: [
               _OverlayIconButton(
                 tooltip: 'Back to Catches',
-                icon: Icons.arrow_back_ios_new_rounded,
+                icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
               ),
               gapW10,
@@ -242,7 +243,7 @@ class _CatchesTopOverlay extends StatelessWidget {
               gapW10,
               _OverlayIconButton(
                 tooltip: 'Filters',
-                icon: Icons.tune_rounded,
+                icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,
               ),
             ],

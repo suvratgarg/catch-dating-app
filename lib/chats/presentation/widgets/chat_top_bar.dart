@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -56,16 +57,16 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
                 default:
               }
             },
-            items: const [
+            items: [
               CatchActionMenuItem(
                 value: 'report',
                 label: 'Report',
-                icon: Icons.flag_outlined,
+                icon: CatchIcons.flagOutlined,
               ),
               CatchActionMenuItem(
                 value: 'block',
                 label: 'Block',
-                icon: Icons.block_rounded,
+                icon: CatchIcons.blockRounded,
                 isDestructive: true,
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -116,7 +117,7 @@ class _SavedEventsMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: CatchEmptyState(
-        icon: Icons.bookmark_border_rounded,
+        icon: CatchIcons.bookmarkBorderRounded,
         title: title,
         message: message,
         surface: false,

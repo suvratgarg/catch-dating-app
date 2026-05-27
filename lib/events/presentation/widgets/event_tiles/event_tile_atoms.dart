@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -134,15 +135,15 @@ CatchBadgeTone eventTileStatusTone(EventTileStatus status) {
 
 IconData? eventTileStatusIcon(EventTileStatus status) {
   return switch (status) {
-    EventTileStatus.joined => Icons.check_rounded,
-    EventTileStatus.saved => Icons.bookmark_rounded,
-    EventTileStatus.recommended => Icons.auto_awesome_rounded,
-    EventTileStatus.hosted => Icons.admin_panel_settings_outlined,
-    EventTileStatus.waitlisted => Icons.schedule_rounded,
-    EventTileStatus.attended => Icons.directions_run_rounded,
-    EventTileStatus.full => Icons.group_off_outlined,
-    EventTileStatus.ineligible => Icons.block_rounded,
-    EventTileStatus.cancelled => Icons.close_rounded,
+    EventTileStatus.joined => CatchIcons.checkRounded,
+    EventTileStatus.saved => CatchIcons.bookmarkRounded,
+    EventTileStatus.recommended => CatchIcons.autoAwesomeRounded,
+    EventTileStatus.hosted => CatchIcons.adminPanelSettingsOutlined,
+    EventTileStatus.waitlisted => CatchIcons.scheduleRounded,
+    EventTileStatus.attended => CatchIcons.directionsRunRounded,
+    EventTileStatus.full => CatchIcons.groupOffOutlined,
+    EventTileStatus.ineligible => CatchIcons.blockRounded,
+    EventTileStatus.cancelled => CatchIcons.closeRounded,
     EventTileStatus.open || EventTileStatus.past => null,
   };
 }

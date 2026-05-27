@@ -3,6 +3,7 @@ import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -159,7 +160,7 @@ void main() {
     final expandedSearchWidth = tester.getSize(find.byType(TextField)).width;
     expect(expandedSearchWidth, greaterThan(morphingSearchWidth));
     expect(find.byType(TextField), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_hide_rounded), findsNothing);
+    expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
     expect(
       tester.widget<TextField>(find.byType(TextField)).textInputAction,
       TextInputAction.done,
@@ -170,7 +171,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(container.read(chatSearchQueryProvider), 'taylor');
 
-    await tester.tap(find.byIcon(Icons.close_rounded));
+    await tester.tap(find.byIcon(CatchIcons.closeRounded));
     await tester.pump();
 
     expect(tester.takeException(), isNull);

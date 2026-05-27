@@ -8,9 +8,11 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_concept/explore_concept_widgets.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -22,6 +24,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_lab_sc
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
@@ -99,6 +102,7 @@ enum Routes {
   settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history'),
   paymentConfirmationScreen('/payment-confirmation'),
+  exploreConceptLabScreen('/dev/explore-concept-lab'),
   eventPolicyLabScreen('/dev/event-policy-lab'),
   eventSuccessLabScreen('/dev/event-success-lab'),
   eventSuccessManualQaScreen('/dev/event-success-manual-qa'),
@@ -114,6 +118,60 @@ HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
     'report' => HostEventManageSection.report,
     _ => HostEventManageSection.setup,
   };
+}
+
+Event? _eventDetailInitialEvent(GoRouterState state) {
+  return switch (state.extra) {
+    EventDetailRouteExtra(:final initialEvent) => initialEvent,
+    final Event event => event,
+    _ => null,
+  };
+}
+
+EventDetailRouteTransition _eventDetailTransition(GoRouterState state) {
+  return switch (state.extra) {
+    EventDetailRouteExtra(:final transition) => transition,
+    _ => EventDetailRouteTransition.platform,
+  };
+}
+
+EventDetailScreen _eventDetailScreen(GoRouterState state) {
+  return EventDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    eventId: state.pathParameters['eventId']!,
+    inviteCode: state.uri.queryParameters['invite'],
+    initialEvent: _eventDetailInitialEvent(state),
+  );
+}
+
+Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
+  final child = _eventDetailScreen(state);
+  if (_eventDetailTransition(state) !=
+      EventDetailRouteTransition.mapSelectedCard) {
+    return MaterialPage<void>(key: state.pageKey, child: child);
+  }
+
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: CatchMotion.slow,
+    reverseTransitionDuration: CatchMotion.base,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: CatchMotion.standardCurve,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final offset = Tween<Offset>(
+        begin: const Offset(0, 0.035),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+      return FadeTransition(
+        opacity: curvedAnimation,
+        child: SlideTransition(position: offset, child: child),
+      );
+    },
+  );
 }
 
 // Navigator keys are file-level so they are created once for the app lifetime.
@@ -189,15 +247,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.calendarEventDetailScreen.path,
         name: Routes.calendarEventDetailScreen.name,
-        builder: (context, state) => EventDetailScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          inviteCode: state.uri.queryParameters['invite'],
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
-        ),
+        builder: (context, state) => _eventDetailScreen(state),
       ),
       GoRoute(
         path: Routes.savedEventsScreen.path,
@@ -207,15 +257,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.savedEventDetailScreen.path,
         name: Routes.savedEventDetailScreen.name,
-        builder: (context, state) => EventDetailScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          inviteCode: state.uri.queryParameters['invite'],
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
-        ),
+        builder: (context, state) => _eventDetailScreen(state),
       ),
       GoRoute(
         path: Routes.filtersScreen.path,
@@ -237,15 +279,7 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.dashboardEventDetailScreen.path,
         name: Routes.dashboardEventDetailScreen.name,
-        builder: (context, state) => EventDetailScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          inviteCode: state.uri.queryParameters['invite'],
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
-        ),
+        builder: (context, state) => _eventDetailScreen(state),
       ),
       GoRoute(
         path: Routes.dashboardHostEventManageScreen.path,
@@ -315,6 +349,12 @@ GoRouter goRouter(Ref ref) {
           return PaymentConfirmationScreen(data: data);
         },
       ),
+      if (AppConfig.enableEventPolicyLab)
+        GoRoute(
+          path: Routes.exploreConceptLabScreen.path,
+          name: Routes.exploreConceptLabScreen.name,
+          builder: (context, state) => const ExploreConceptPreviewScreen(),
+        ),
       if (AppConfig.enableEventPolicyLab)
         GoRoute(
           path: Routes.eventPolicyLabScreen.path,
@@ -416,15 +456,7 @@ GoRouter goRouter(Ref ref) {
                       GoRoute(
                         path: 'events/:eventId',
                         name: Routes.eventDetailScreen.name,
-                        builder: (context, state) => EventDetailScreen(
-                          clubId: state.pathParameters['clubId']!,
-                          eventId: state.pathParameters['eventId']!,
-                          inviteCode: state.uri.queryParameters['invite'],
-                          initialEvent: switch (state.extra) {
-                            final Event event => event,
-                            _ => null,
-                          },
-                        ),
+                        pageBuilder: _eventDetailPage,
                         routes: [
                           GoRoute(
                             path: 'attendance',
@@ -581,6 +613,10 @@ String _initialLocationFromPlatform() {
 
 /// Routes that unauthenticated users may access for read-only browsing.
 bool _isPublicRoute(String matchedLocation) {
+  if (AppConfig.enableEventPolicyLab &&
+      matchedLocation == Routes.exploreConceptLabScreen.path) {
+    return true;
+  }
   if (AppConfig.enableEventPolicyLab &&
       matchedLocation == Routes.eventPolicyLabScreen.path) {
     return true;

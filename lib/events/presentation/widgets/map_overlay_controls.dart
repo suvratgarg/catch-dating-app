@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class MapOverlayControls extends StatelessWidget {
             Row(
               children: [
                 CatchTopBarIconAction(
-                  icon: Icons.arrow_back_ios_new_rounded,
+                  icon: CatchIcons.arrowBackIosNewRounded,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   backgroundColor: CatchTokens.of(
                     context,

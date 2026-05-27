@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -221,7 +222,7 @@ class _ProfilePhotoEditorScreenState
               value: selectedPromptChoice,
               itemLabel: (choice) => choice.label,
               semanticLabel: 'Photo prompt',
-              prefixIcon: const Icon(Icons.auto_awesome_outlined),
+              prefixIcon: Icon(CatchIcons.autoAwesomeOutlined),
               onChanged: _saving || _deleting
                   ? null
                   : (choice) => setState(() => _promptId = choice?.id),
@@ -237,7 +238,7 @@ class _ProfilePhotoEditorScreenState
             CatchButton(
               label: widget.photo == null ? 'Choose photo' : 'Change photo',
               onPressed: _saving || _deleting ? null : _replaceImage,
-              icon: const Icon(Icons.photo_library_outlined),
+              icon: Icon(CatchIcons.photoLibraryOutlined),
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
             ),
@@ -247,7 +248,7 @@ class _ProfilePhotoEditorScreenState
                 label: _deleting ? 'Deleting' : 'Delete photo',
                 onPressed: canDelete ? _deletePhoto : null,
                 isLoading: _deleting,
-                icon: const Icon(Icons.delete_outline_rounded),
+                icon: Icon(CatchIcons.deleteOutlineRounded),
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
                 semanticsLabel: canDelete
@@ -320,7 +321,7 @@ class _PhotoEditorPreview extends StatelessWidget {
     return ColoredBox(
       color: t.primarySoft,
       child: Center(
-        child: Icon(Icons.add_photo_alternate_outlined, color: t.primary),
+        child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
       ),
     );
   }

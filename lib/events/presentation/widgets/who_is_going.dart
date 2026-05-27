@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -127,18 +128,18 @@ class _WhoIsGoingContent extends ConsumerWidget {
           gapH12,
           if (event.isUpcoming)
             _SwipeWindowBanner(
-              icon: Icons.lock_outline_rounded,
+              icon: CatchIcons.lockOutlineRounded,
               message: 'Swiping unlocks for 24 hours after the event finishes.',
             )
           else if (hasActiveSwipeWindow)
             _SwipeWindowBanner(
-              icon: Icons.favorite_rounded,
+              icon: CatchIcons.favoriteRounded,
               message:
                   'The swipe window is open for 24 hours after the event finishes.',
             )
           else
             _SwipeWindowBanner(
-              icon: Icons.schedule_rounded,
+              icon: CatchIcons.scheduleRounded,
               message: 'The swipe window for this event has closed.',
             ),
         ],
@@ -163,7 +164,7 @@ class _EmptyRosterMessage extends StatelessWidget {
       borderColor: t.line,
       child: Row(
         children: [
-          Icon(Icons.groups_2_outlined, size: 20, color: t.ink3),
+          Icon(CatchIcons.groups2Outlined, size: 20, color: t.ink3),
           gapW12,
           Expanded(
             child: Column(

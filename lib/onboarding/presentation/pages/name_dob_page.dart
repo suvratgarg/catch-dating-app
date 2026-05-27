@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -145,7 +146,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              prefixIcon: const Icon(Icons.calendar_today_outlined),
+              prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
               suffixText: age != null ? 'Age $age' : null,
               validator: (_) => validateRequiredDateOfBirth(_selectedDate),
             ),
@@ -157,9 +158,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
-              prefixIcon: const Icon(Icons.phone_outlined),
+              prefixIcon: Icon(CatchIcons.phoneOutlined),
               prefixText: '${data.countryCode} ',
-              suffixIcon: const Icon(Icons.verified_rounded),
+              suffixIcon: Icon(CatchIcons.verifiedRounded),
               helperText: 'Verified via OTP',
               helperTone: CatchTextFieldSupportTone.success,
               validator: validateRequiredPhoneNumber,

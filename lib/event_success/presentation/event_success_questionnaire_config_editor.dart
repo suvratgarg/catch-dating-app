@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -54,7 +55,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
                 active:
                     !normalized.usesCustom &&
                     normalized.templateId == template.id,
-                icon: const Icon(Icons.style_outlined),
+                icon: Icon(CatchIcons.styleOutlined),
                 enabled: enabled,
                 onTap: () => onChanged(
                   EventSuccessQuestionnaireConfig(templateId: template.id),
@@ -63,7 +64,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
             CatchChip(
               label: 'Custom',
               active: normalized.usesCustom,
-              icon: const Icon(Icons.edit_note_rounded),
+              icon: Icon(CatchIcons.editNoteRounded),
               enabled: enabled,
               onTap: () => onChanged(
                 normalized.usesCustom
@@ -83,13 +84,13 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
               label: pack.title,
               tone: CatchBadgeTone.neutral,
               icon: pack.custom
-                  ? Icons.edit_note_rounded
-                  : Icons.style_outlined,
+                  ? CatchIcons.editNoteRounded
+                  : CatchIcons.styleOutlined,
             ),
             CatchBadge(
               label: '${pack.questions.length} questions',
               tone: CatchBadgeTone.neutral,
-              icon: Icons.quiz_outlined,
+              icon: CatchIcons.quizOutlined,
             ),
           ],
         ),
@@ -103,7 +104,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           if (useBottomSheetForCustom)
             CatchButton(
               label: 'Edit custom questions',
-              icon: const Icon(Icons.edit_note_rounded),
+              icon: Icon(CatchIcons.editNoteRounded),
               variant: CatchButtonVariant.secondary,
               onPressed: enabled
                   ? () => _openCustomQuestionnaireSheet(
@@ -278,7 +279,7 @@ class _CustomQuestionnaireFields extends StatelessWidget {
             Expanded(
               child: CatchButton(
                 label: 'Add question',
-                icon: const Icon(Icons.add_rounded),
+                icon: Icon(CatchIcons.addRounded),
                 variant: CatchButtonVariant.secondary,
                 onPressed: enabled && questions.length < 8
                     ? () => onChanged(
@@ -296,7 +297,7 @@ class _CustomQuestionnaireFields extends StatelessWidget {
             Expanded(
               child: CatchButton(
                 label: 'Reset',
-                icon: const Icon(Icons.refresh_rounded),
+                icon: Icon(CatchIcons.refreshRounded),
                 variant: CatchButtonVariant.ghost,
                 onPressed: enabled
                     ? () => onChanged(
@@ -344,7 +345,7 @@ class _CustomQuestionFields extends StatelessWidget {
             if (onRemove != null)
               IconButton(
                 tooltip: 'Remove question',
-                icon: const Icon(Icons.delete_outline_rounded),
+                icon: Icon(CatchIcons.deleteOutlineRounded),
                 color: t.danger,
                 onPressed: enabled ? onRemove : null,
               ),

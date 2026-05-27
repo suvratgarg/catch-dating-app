@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -98,14 +99,12 @@ class EventLocationMapScreen extends ConsumerWidget {
         children: [
           Positioned.fill(
             child: EventPinsMap(
-              items: [
-                EventMapItem(event: event, status: EventTileStatus.open),
-              ],
+              items: [EventMapItem(event: event, status: EventTileStatus.open)],
               initialCenter: point,
               initialZoom: 15.5,
               selectedEventId: event.id,
               enableNetworkTiles: enableNetworkTiles,
-              markerIcon: Icons.location_on_rounded,
+              markerIcon: CatchIcons.locationOnRounded,
             ),
           ),
           Positioned(
@@ -132,7 +131,7 @@ class EventLocationMapScreen extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
-                            Icons.location_on_outlined,
+                            CatchIcons.locationOnOutlined,
                             color: t.primary,
                             size: 22,
                           ),
@@ -166,7 +165,7 @@ class EventLocationMapScreen extends ConsumerWidget {
                     const SizedBox(height: CatchSpacing.s3),
                     CatchButton(
                       label: 'Get directions',
-                      icon: const Icon(Icons.directions_outlined, size: 18),
+                      icon: Icon(CatchIcons.directionsOutlined, size: 18),
                       fullWidth: true,
                       onPressed: () => unawaited(
                         ref

@@ -5,7 +5,8 @@ import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter/material.dart';
 
 class SwipeEmptyState extends StatelessWidget {
-  const SwipeEmptyState({super.key, this.content = defaultSwipeEmptyContent});
+  SwipeEmptyState({super.key, SwipeEmptyContent? content})
+    : content = content ?? defaultSwipeEmptyContent;
 
   final SwipeEmptyContent content;
 

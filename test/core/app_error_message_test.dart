@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,7 +15,7 @@ void main() {
 
       expect(descriptor.title, 'Connection issue');
       expect(descriptor.message, 'The request timed out. Please try again.');
-      expect(descriptor.icon, Icons.wifi_off_rounded);
+      expect(descriptor.icon, CatchIcons.wifiOffRounded);
       expect(descriptor.retryable, isTrue);
       expect(descriptor.retryLabel, 'Try again');
       expect(descriptor.severity, AppErrorSeverity.warning);
@@ -31,7 +31,7 @@ void main() {
 
       expect(descriptor.title, 'Check your details');
       expect(descriptor.message, 'Please enter a valid phone number.');
-      expect(descriptor.icon, Icons.edit_note_rounded);
+      expect(descriptor.icon, CatchIcons.editNoteRounded);
       expect(descriptor.retryable, isFalse);
     });
 
@@ -115,14 +115,14 @@ void main() {
         ),
       );
       expect(upload.title, 'Upload failed');
-      expect(upload.icon, Icons.cloud_upload_outlined);
+      expect(upload.icon, CatchIcons.cloudUploadOutlined);
       expect(upload.retryLabel, 'Try upload again');
 
       final external = appErrorDescriptor(
         const ExternalActionException('Could not open that link.'),
       );
       expect(external.title, 'Action failed');
-      expect(external.icon, Icons.open_in_new_rounded);
+      expect(external.icon, CatchIcons.openInNewRounded);
       expect(external.retryable, isFalse);
     });
 

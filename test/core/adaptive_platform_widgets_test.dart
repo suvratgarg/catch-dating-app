@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -74,7 +75,7 @@ void main() {
 
       expect(find.byType(CupertinoDatePicker), findsOneWidget);
       expect(find.text('Start time'), findsOneWidget);
-      expect(find.byIcon(Icons.keyboard_outlined), findsNothing);
+      expect(find.byIcon(CatchIcons.keyboardOutlined), findsNothing);
 
       await tester.tap(find.text('Done'));
       await pumpFeatureUi(tester);

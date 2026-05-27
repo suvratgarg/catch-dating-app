@@ -27,8 +27,8 @@ import 'package:flutter/material.dart';
 /// // With icons
 /// CatchSegmentedControl<String>(
 ///   segments: [
-///     CatchSegment(value: 'grid', icon: Icons.grid_view_rounded),
-///     CatchSegment(value: 'list', icon: Icons.list_rounded),
+///     CatchSegment(value: 'grid', icon: CatchIcons.gridViewRounded),
+///     CatchSegment(value: 'list', icon: CatchIcons.listRounded),
 ///   ],
 ///   selected: _layout,
 ///   onChanged: (v) => setState(() => _layout = v),

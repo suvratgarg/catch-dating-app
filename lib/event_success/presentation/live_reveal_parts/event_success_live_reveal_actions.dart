@@ -32,7 +32,7 @@ class _HostRevealActions extends ConsumerWidget {
     if (roundCount == 0) {
       return CatchButton(
         label: 'Generate assignments first',
-        icon: const Icon(Icons.auto_awesome_outlined),
+        icon: Icon(CatchIcons.autoAwesomeOutlined),
         onPressed: null,
         fullWidth: true,
       );
@@ -43,7 +43,7 @@ class _HostRevealActions extends ConsumerWidget {
           Expanded(
             child: CatchButton(
               label: 'Reveal now',
-              icon: const Icon(Icons.visibility_outlined),
+              icon: Icon(CatchIcons.visibilityOutlined),
               isLoading: isLoading,
               onPressed: isLoading ? null : () => _reveal(ref, activeRound),
               fullWidth: true,
@@ -53,7 +53,7 @@ class _HostRevealActions extends ConsumerWidget {
           Expanded(
             child: CatchButton(
               label: 'Reset',
-              icon: const Icon(Icons.restart_alt_rounded),
+              icon: Icon(CatchIcons.restartAltRounded),
               variant: CatchButtonVariant.secondary,
               isLoading: isLoading,
               onPressed: isLoading ? null : () => _reset(ref),
@@ -66,7 +66,7 @@ class _HostRevealActions extends ConsumerWidget {
     if (allRevealed) {
       return CatchButton(
         label: 'Reset reveal',
-        icon: const Icon(Icons.restart_alt_rounded),
+        icon: Icon(CatchIcons.restartAltRounded),
         variant: CatchButtonVariant.secondary,
         isLoading: isLoading,
         onPressed: isLoading ? null : () => _reset(ref),
@@ -81,7 +81,7 @@ class _HostRevealActions extends ConsumerWidget {
             label: countdownSeconds == 0
                 ? 'Reveal round ${roundIndex + 1}'
                 : 'Drop ${countdownSeconds}s countdown',
-            icon: const Icon(Icons.timer_outlined),
+            icon: Icon(CatchIcons.timerOutlined),
             isLoading: isLoading,
             onPressed: isLoading
                 ? null
@@ -99,7 +99,7 @@ class _HostRevealActions extends ConsumerWidget {
         Expanded(
           child: CatchButton(
             label: 'Reveal now',
-            icon: const Icon(Icons.visibility_outlined),
+            icon: Icon(CatchIcons.visibilityOutlined),
             variant: CatchButtonVariant.secondary,
             isLoading: isLoading,
             onPressed: isLoading ? null : () => _reveal(ref, roundIndex),

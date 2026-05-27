@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
@@ -55,7 +56,7 @@ class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
         (shouldShowBack
             ? CatchTopBarIconAction(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                icon: Icons.arrow_back_ios_new_rounded,
+                icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack ?? () => Navigator.of(context).maybePop(),
               )
             : null);
@@ -275,14 +276,16 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
-    this.icon = Icons.more_horiz_rounded,
-  });
+    IconData? icon,
+  }) : _icon = icon;
 
   final List<CatchActionMenuItem<T>> items;
   final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
-  final IconData icon;
+  final IconData? _icon;
+
+  IconData get icon => _icon ?? CatchIcons.moreHorizRounded;
 
   @override
   Widget build(BuildContext context) {
