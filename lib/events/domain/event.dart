@@ -245,6 +245,6 @@ abstract class Event with _$Event {
         : hour < 17
         ? 'Afternoon'
         : 'Evening';
-    return '$weekday $period Event';
+    return '$weekday $period ${eventFormat.eventTitleLabel}';
   }
 }

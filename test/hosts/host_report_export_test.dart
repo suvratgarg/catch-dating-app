@@ -40,10 +40,10 @@ void main() {
       ],
     );
 
-    expect(export.fileName, 'monday-evening-event-2026-05-25-revenue.csv');
+    expect(export.fileName, 'monday-evening-run-2026-05-25-revenue.csv');
     expect(export.csv, contains('exported_at'));
     expect(export.csv, contains('2026-05-26T09:00:00.000Z'));
-    expect(export.csv, contains('Monday Evening Event'));
+    expect(export.csv, contains('Monday Evening Run'));
     expect(export.csv, contains('Asha,runner-1,attended,checked_in,booked'));
     expect(export.csv, contains('Kabir,runner-2,signedUp,not_checked_in'));
     expect(
@@ -82,7 +82,7 @@ void main() {
       ],
     );
 
-    expect(export.fileName, 'monday-afternoon-event-2026-05-25-ops.csv');
+    expect(export.fileName, 'monday-afternoon-run-2026-05-25-ops.csv');
     expect(export.csv, contains('arrival_order'));
     expect(export.csv, contains('Asha,runner-1,attended,checked_in,,1'));
     expect(export.csv, contains('Kabir,runner-2,attended,checked_in,,2'));

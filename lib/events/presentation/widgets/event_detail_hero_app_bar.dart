@@ -54,6 +54,12 @@ class EventDetailHeroAppBar extends StatelessWidget {
       pinned: true,
       backgroundColor: t.surface,
       elevation: 0,
+      centerTitle: false,
+      titleSpacing: 0,
+      title: CatchCollapsedSliverTitle(
+        title: event.title,
+        textKey: const ValueKey('event-detail-collapsed-title'),
+      ),
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: CatchTopBarIconAction(

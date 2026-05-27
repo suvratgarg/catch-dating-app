@@ -163,7 +163,7 @@ void main() {
         expect(find.text('Wednesday, 23 Apr'), findsOneWidget);
         expect(find.text('Bandra Fort'), findsOneWidget);
         expect(find.text('Meet by the parking lot'), findsOneWidget);
-        expect(find.text('Wednesday Morning Event'), findsNothing);
+        expect(find.text('Wednesday Morning Run'), findsNothing);
         expect(find.text('3/20 spots'), findsNothing);
         expect(find.text('5.5km'), findsNothing);
       },

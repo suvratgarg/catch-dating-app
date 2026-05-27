@@ -224,7 +224,7 @@ void main() {
     );
     final marker = googleMap.markers.single;
 
-    expect(marker.infoWindow.title, '5:42 PM · Wednesday Evening Event');
+    expect(marker.infoWindow.title, '5:42 PM · Wednesday Evening Run');
     expect(marker.infoWindow.snippet, 'Race Course Road main gate');
   });
 

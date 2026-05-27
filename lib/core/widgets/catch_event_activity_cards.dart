@@ -89,7 +89,11 @@ class CatchEventTicketCard extends StatelessWidget {
                       Positioned(
                         top: CatchSpacing.s3,
                         right: CatchSpacing.s3,
-                        child: _DarkMiniPill(label: status),
+                        left: CatchSpacing.s3,
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: _DarkMiniPill(label: status),
+                        ),
                       ),
                   ],
                 ),

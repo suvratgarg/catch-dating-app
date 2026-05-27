@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
+import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -67,6 +68,9 @@ void main() {
             watchActiveClubMembershipsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            exploreFeedViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreFeedViewModel(items: [])),
+            ),
           ],
           child: MaterialApp.router(
             theme: AppTheme.light,
@@ -83,12 +87,12 @@ void main() {
           )
           .first;
       await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Open ${club.name} club'),
+        find.text(club.name),
         200,
         scrollable: sheetScrollable,
       );
       await _pumpClubFlow(tester);
-      await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
+      await tester.tap(find.text(club.name));
       await _pumpClubFlow(tester);
 
       expect(find.text('Club ${club.id}'), findsOneWidget);
@@ -115,9 +119,11 @@ void main() {
               GoRoute(
                 path: ':clubId',
                 name: Routes.clubDetailScreen.name,
-                builder: (_, state) => Text(
-                  'Club ${state.pathParameters['clubId']}',
-                  textDirection: TextDirection.ltr,
+                builder: (_, state) => ClubDetailScreen(
+                  clubId: state.pathParameters['clubId']!,
+                  initialClub: state.extra is Club
+                      ? state.extra! as Club
+                      : null,
                 ),
               ),
             ],
@@ -134,6 +140,18 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
+            watchClubProvider(
+              club.id,
+            ).overrideWith((ref) => Stream.value(club)),
+            watchEventsForClubProvider(
+              club.id,
+            ).overrideWith((ref) => Stream.value(const <Event>[])),
+            watchReviewsForClubProvider(
+              club.id,
+            ).overrideWith((ref) => Stream.value(const <Review>[])),
+            exploreFeedViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreFeedViewModel(items: [])),
+            ),
           ],
           child: MaterialApp.router(
             theme: AppTheme.light,
@@ -143,9 +161,6 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
-      // The Explore sheet's directory section can fall below the initial
-      // fold on the small (800x600) test viewport. Scroll the Join button
-      // into view before tapping.
       final sheetScrollable = find
           .descendant(
             of: find.byKey(const ValueKey('explore-list-scroll-view')),
@@ -153,12 +168,16 @@ void main() {
           )
           .first;
       await tester.scrollUntilVisible(
-        find.text('Join'),
+        find.text(club.name),
         200,
         scrollable: sheetScrollable,
       );
       await _pumpClubFlow(tester);
-      await tester.tap(find.text('Join'));
+      await tester.tap(find.text(club.name));
+      await _pumpClubFlow(tester);
+      await tester.scrollUntilVisible(find.text('Sign in to join'), 200);
+      await _pumpClubFlow(tester);
+      await tester.tap(find.text('Sign in to join'));
       await _pumpClubFlow(tester);
 
       expect(find.text('Auth /clubs/${club.id}'), findsOneWidget);

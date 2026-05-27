@@ -14,10 +14,16 @@ class ClubAvatarRail extends StatelessWidget {
     super.key,
     required this.clubs,
     this.showCreateButton = true,
+    this.headerPadding,
+    this.listPadding,
+    this.showDivider = true,
   });
 
   final List<Club> clubs;
   final bool showCreateButton;
+  final EdgeInsets? headerPadding;
+  final EdgeInsetsGeometry? listPadding;
+  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +31,13 @@ class ClubAvatarRail extends StatelessWidget {
       title: 'Your clubs',
       height: 108,
       spacing: 14,
+      showDivider: showDivider,
+      headerPadding:
+          headerPadding ??
+          const EdgeInsets.fromLTRB(CatchSpacing.s5, 14, CatchSpacing.s5, 8),
+      listPadding:
+          listPadding ??
+          const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
       itemCount: clubs.length,
       itemBuilder: (context, index) {
         final club = clubs[index];

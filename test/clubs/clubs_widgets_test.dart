@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_controller.dart';
@@ -21,6 +20,7 @@ import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.d
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/city_picker.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/club_list_tile.dart';
+import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_filter_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_sliver_header.dart';
@@ -36,6 +36,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -257,31 +258,31 @@ void main() {
       expect(container.read(clubBrowseFiltersProvider).hasActiveFilters, false);
     });
 
-    testWidgets('ClubsContent renders avatar rail and discover sections', (
-      tester,
-    ) async {
-      await _pumpClubsSlivers(tester, [
-        ClubsListBody(
-          viewModel: ClubsListViewModel(
-            joinedClubs: [
-              buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-            ],
-            allClubs: [
-              buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
-              buildClub(id: 'discover-1'),
-            ],
-            joinedClubIds: {'joined-1'},
-            hostedClubIds: {'joined-1'},
+    testWidgets(
+      'ClubsContent renders personal rail and mixed discovery cards',
+      (tester) async {
+        await _pumpClubsSlivers(tester, [
+          ClubsListBody(
+            includeClubDirectory: false,
+            viewModel: ClubsListViewModel(
+              joinedClubs: [
+                buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+              ],
+              allClubs: [
+                buildClub(id: 'joined-1', nextEventLabel: 'Sat 6:30 AM'),
+                buildClub(id: 'discover-1'),
+              ],
+              joinedClubIds: {'joined-1'},
+              hostedClubIds: {'joined-1'},
+            ),
           ),
-        ),
-      ]);
+        ]);
 
-      expect(find.text('Your clubs'), findsOneWidget);
-      expect(find.text('Club directory'), findsOneWidget);
-      // Hosted state is conveyed via the "You host" corner sash on the
-      // directory card photo instead of a redundant button.
-      expect(find.text('You host'), findsOneWidget);
-    });
+        expect(find.text('Your clubs'), findsOneWidget);
+        expect(find.text('Club directory'), findsNothing);
+        expect(find.text('You host'), findsNothing);
+      },
+    );
 
     testWidgets('ExploreEventsSection renders event-first content', (
       tester,
@@ -812,6 +813,8 @@ void main() {
         name: 'Night Pacers',
         location: 'indore',
         tags: const ['social', 'Indore'],
+        imageUrl: 'https://example.com/club-cover.jpg',
+        profileImageUrl: 'https://example.com/club-logo.jpg',
         rating: 4.8,
         reviewCount: 12,
         nextEventLabel: 'Race Course Road Main Gate',
@@ -837,23 +840,41 @@ void main() {
         ),
       );
 
-      // The redesigned directory card splits meta into discrete entries in
-      // a CatchMetaDotRow (area / members / rating · reviews), shows
-      // membership state via a corner sash on the photo, and drops the
-      // verbose "NEXT: …" sash now that events are first-class above.
+      // The directory card keeps cover art and club identity separate:
+      // imageUrl is the cover, profileImageUrl is the logo crest. Rating
+      // belongs with the title, not as a duplicate review/meta row.
       expect(find.text('Night Pacers'), findsNWidgets(2));
       expect(find.text('Joined'), findsOneWidget); // corner sash
       expect(find.text('Join'), findsNothing);
       expect(find.text('SOCIAL'), findsOneWidget); // tag chip
       expect(find.text('INDORE'), findsNothing);
-      expect(find.text('Bandra'), findsOneWidget); // area meta entry
-      expect(find.text('1 member'), findsOneWidget); // members meta entry
-      expect(find.text('NEXT: RACE COURSE ROAD MAIN GATE'), findsNothing);
+      expect(find.text('1\nmember'), findsOneWidget); // member seal
+      expect(find.text('RACE COURSE ROAD MAIN GATE'), findsOneWidget);
       expect(
         find.text('4.8 · 12 reviews'),
-        findsOneWidget,
-      ); // rating meta entry
-      expect(find.text('4.8'), findsOneWidget); // rating badge on photo
+        findsNothing,
+      ); // removed duplicate review/meta row
+      expect(find.text('4.8'), findsOneWidget); // title rating
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Image &&
+              widget.image is NetworkImage &&
+              (widget.image as NetworkImage).url ==
+                  'https://example.com/club-cover.jpg',
+        ),
+        findsWidgets,
+      );
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Image &&
+              widget.image is NetworkImage &&
+              (widget.image as NetworkImage).url ==
+                  'https://example.com/club-logo.jpg',
+        ),
+        findsWidgets,
+      );
     });
 
     testWidgets('ClubListTile labels hosted clubs distinctly from joined', (
@@ -1116,6 +1137,46 @@ void main() {
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
     });
 
+    testWidgets(
+      'ClubHeroAppBar reveals the club name in the collapsed toolbar',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(430, 800);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+
+        await pumpTestApp(
+          tester,
+          CustomScrollView(
+            slivers: [
+              ClubHeroAppBar(
+                club: buildClub(
+                  name: 'Vijay Nagar Event Collective',
+                  imageUrl: 'https://example.com/club.jpg',
+                ),
+                isHost: false,
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 900)),
+            ],
+          ),
+        );
+
+        expect(
+          find.byKey(const ValueKey('club-detail-collapsed-title')),
+          findsNothing,
+        );
+
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
+        await _pumpClubUi(tester);
+
+        final collapsedTitle = find.byKey(
+          const ValueKey('club-detail-collapsed-title'),
+        );
+        expect(collapsedTitle, findsOneWidget);
+        expect(tester.getTopLeft(collapsedTitle).dy, lessThan(96));
+      },
+    );
+
     testWidgets('ClubListTile variants navigate to detail routes', (
       tester,
     ) async {
@@ -1195,9 +1256,9 @@ void main() {
       expect(find.byType(ClubCoverFallback), findsOneWidget);
       expect(find.text('NC'), findsNothing);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
-      // Directory cards still show area once in the metadata row; the fallback
-      // itself should not add a duplicate footer or location chip.
-      expect(find.text('Signal Hill'), findsOneWidget);
+      // Directory cards use the area as the caption when no next event is set;
+      // the fallback crest itself should not add a duplicate footer label.
+      expect(find.text('SIGNAL HILL / MUMBAI'), findsOneWidget);
     });
 
     testWidgets('ClubDetailBody host view exposes edit and create navigation', (
@@ -1641,62 +1702,36 @@ void main() {
       expect(find.text('Event event-42'), findsOneWidget);
     });
 
-    testWidgets('ClubsListScreen follow button uses the repository', (
-      tester,
-    ) async {
-      final fakeRepository = FakeClubsRepository();
-      final container = ProviderContainer(
-        retry: (_, _) => null,
-        overrides: [
-          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+    testWidgets(
+      'ClubsListScreen renders club discovery without directory join',
+      (tester) async {
+        final club = buildClub(id: 'club-99', name: 'Pace Social');
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              uidProvider.overrideWith((ref) => Stream.value(null)),
+              watchClubsByLocationProvider(
+                club.location,
+              ).overrideWith((ref) => Stream.value([club])),
+              _emptyExploreFeedOverride,
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ClubsListScreen(),
+            ),
           ),
-          watchActiveClubMembershipsForUserProvider(
-            'runner-1',
-          ).overrideWith((ref) => Stream.value(const [])),
-          watchClubsByLocationProvider(
-            buildClub().location,
-          ).overrideWith((ref) => Stream.value([buildClub(id: 'club-99')])),
-          _emptyExploreFeedOverride,
-        ],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
+        );
+        await _pumpClubUi(tester);
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: const ClubsListScreen(),
-          ),
-        ),
-      );
-      await _pumpClubUi(tester);
-
-      await tester.scrollUntilVisible(
-        _catchButtonWithLabel('Join'),
-        500,
-        scrollable: _exploreListScrollable(),
-      );
-      await _pumpClubUi(tester);
-      await tester.ensureVisible(_catchButtonWithLabel('Join'));
-      await _pumpClubUi(tester);
-      await tester.drag(_exploreListScrollable(), const Offset(0, 180));
-      await _pumpClubUi(tester);
-      await tester.tap(_catchButtonWithLabel('Join'));
-      await _pumpClubUi(tester);
-
-      expect(fakeRepository.joinedClubId, 'club-99');
-    });
+        expect(find.text('Pace Social'), findsOneWidget);
+        expect(find.text('Club directory'), findsNothing);
+        expect(find.text('Your clubs'), findsNothing);
+        expect(_catchButtonWithLabel('Join'), findsNothing);
+      },
+    );
 
     testWidgets('ClubsListScreen shows skeleton cards while loading', (
       tester,
@@ -1816,7 +1851,7 @@ void main() {
       expect(find.text('Anytime'), findsOneWidget);
       expect(find.text('Joined'), findsOneWidget);
       expect(find.text('Rated 4.5+'), findsNothing);
-      expect(find.text('Bandra Pacers'), findsOneWidget);
+      expect(find.text('Tempo Queens'), findsOneWidget);
 
       // Default time filter selection means the Clear chip should appear
       // only once the user has changed something. Toggle tonight to make
@@ -1891,6 +1926,97 @@ void main() {
       expect(find.text('Explore'), findsOneWidget);
       expect(find.text('Bandra Pacers'), findsOneWidget);
     });
+
+    testWidgets(
+      'ClubsListScreen keeps the closed feed below safe-area chrome',
+      (tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final club = buildClub(id: 'club-safe-area', name: 'Bandra Pacers');
+        final event = event_test.buildEvent(
+          id: 'event-safe-area',
+          clubId: club.id,
+          startTime: DateTime(2026, 5, 28, 7),
+          meetingPoint: 'Race Course Road main gate',
+          startingPointLat: 19.07,
+          startingPointLng: 72.88,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              cityListProvider.overrideWith((ref) async => _testCities),
+              deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+              uidProvider.overrideWith((ref) => Stream.value(null)),
+              watchClubsByLocationProvider(
+                'mumbai',
+              ).overrideWith((ref) => Stream.value([club])),
+              exploreFeedViewModelProvider.overrideWithValue(
+                AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      ExploreEventItem(
+                        event: event,
+                        club: club,
+                        availability: resolveViewerEventAvailability(
+                          event: event,
+                          userProfile: null,
+                        ),
+                        status: EventTileStatus.open,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: MediaQuery(
+                data: const MediaQueryData(
+                  size: Size(390, 844),
+                  padding: EdgeInsets.only(top: 54),
+                  viewPadding: EdgeInsets.only(top: 54),
+                ),
+                child: const ClubsListScreen(enableEventMapNetworkTiles: false),
+              ),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        final shellTop = tester
+            .getTopLeft(find.byType(CatchDraggableSheetShell))
+            .dy;
+        final chromeBottom = tester
+            .getBottomLeft(find.byType(ClubsFilterRail))
+            .dy;
+        final topLidRect = tester.getRect(
+          find.byKey(const ValueKey('explore-top-lid')),
+        );
+        expect(topLidRect.top, 0);
+        expect(topLidRect.bottom, greaterThanOrEqualTo(chromeBottom));
+        expect(shellTop, greaterThanOrEqualTo(chromeBottom));
+
+        await tester.drag(_exploreListScrollable(), const Offset(0, -520));
+        await _pumpClubUi(tester);
+
+        expect(
+          tester.getTopLeft(find.byType(CatchDraggableSheetShell)).dy,
+          greaterThanOrEqualTo(chromeBottom),
+        );
+
+        await tester.tap(find.widgetWithText(InkWell, 'Map · 1'));
+        await _pumpClubUi(tester);
+
+        expect(
+          tester.getTopLeft(find.byType(CatchDraggableSheetShell)).dy,
+          greaterThan(chromeBottom),
+        );
+      },
+    );
 
     testWidgets('ClubsListScreen reveals map after wrist-lift motion', (
       tester,

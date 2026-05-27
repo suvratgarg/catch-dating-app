@@ -46,6 +46,12 @@ class ClubHeroAppBar extends StatelessWidget {
       pinned: true,
       backgroundColor: t.surface,
       elevation: 0,
+      centerTitle: false,
+      titleSpacing: 0,
+      title: CatchCollapsedSliverTitle(
+        title: club.name,
+        textKey: const ValueKey('club-detail-collapsed-title'),
+      ),
       leading: Padding(
         padding: const EdgeInsets.all(8),
         child: CatchTopBarIconAction(

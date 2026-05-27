@@ -19,6 +19,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -148,7 +149,7 @@ void main() {
         ],
       );
 
-      expect(find.text('Wednesday Evening Event'), findsWidgets);
+      expect(find.text('Wednesday Evening Run'), findsWidgets);
       await tester.scrollUntilVisible(
         find.text('What to expect'),
         400,
@@ -700,6 +701,67 @@ void main() {
       expect(find.text('Must be 18+ to join'), findsOneWidget);
       expect(find.text('Must be 40 or younger'), findsOneWidget);
       expect(find.text('Join waitlist'), findsOneWidget);
+    });
+  });
+
+  group('EventDetailHeroAppBar', () {
+    testWidgets('reveals the event title in the collapsed toolbar', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final event = buildEvent(
+        startTime: DateTime(2026, 5, 28, 1, 42),
+        endTime: DateTime(2026, 5, 28, 2, 42),
+      );
+      var saved = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                EventDetailHeroAppBar(
+                  event: event,
+                  isSaved: false,
+                  isHost: false,
+                  participation: null,
+                  savePending: false,
+                  onBack: () {},
+                  onShare: (_) {},
+                  showAddToCalendar: false,
+                  onAddToCalendar: (_) {},
+                  onToggleSaved: () => saved = true,
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 900)),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('event-detail-collapsed-title')),
+        findsNothing,
+      );
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -320));
+      await tester.pump();
+
+      final collapsedTitle = find.byKey(
+        const ValueKey('event-detail-collapsed-title'),
+      );
+      expect(collapsedTitle, findsOneWidget);
+      expect(tester.getTopLeft(collapsedTitle).dy, lessThan(96));
+
+      await tester.tap(find.byTooltip('Save event'));
+      await tester.pump();
+      expect(saved, true);
     });
   });
 

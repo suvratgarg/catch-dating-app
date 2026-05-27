@@ -16,7 +16,7 @@ class _DirectoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sash = _membershipSashFor(isHost: isHost, isJoined: isJoined);
-    final hasCoverImage = _hasClubImage(club);
+    final hasCoverImage = _hasCoverImage(club);
 
     return Semantics(
       button: onTap != null,
@@ -79,10 +79,9 @@ class _DirectoryPhotoCard extends StatelessWidget {
           gapH10,
           _DirectoryMonoLabel(_directoryCaption(club), color: t.ink3),
           gapH4,
-          Text(
-            club.name,
+          _ClubTitleLine(
+            club: club,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: _directorySerif(context, size: 30, height: 0.98),
           ),
           gapH4,
@@ -93,13 +92,11 @@ class _DirectoryPhotoCard extends StatelessWidget {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH10,
-          CatchMetaDotRow(entries: _buildClubMetaEntries(club, t.gold)),
+          _ClubHostActionRow(club: club, isJoined: isJoined, isHost: isHost),
           if (visibleTags.isNotEmpty) ...[
             gapH10,
             _ClubTagWrap(tags: visibleTags.take(3).toList(growable: false)),
           ],
-          gapH14,
-          _ClubHostActionRow(club: club, isJoined: isJoined, isHost: isHost),
         ],
       ),
     );
@@ -160,10 +157,9 @@ class _DirectoryIdentityCard extends StatelessWidget {
                             color: t.ink3,
                           ),
                           gapH4,
-                          Text(
-                            club.name,
+                          _ClubTitleLine(
+                            club: club,
                             maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                             style: _directorySerif(
                               context,
                               size: 30,
@@ -191,10 +187,6 @@ class _DirectoryIdentityCard extends StatelessWidget {
                           label: _memberCountLabel(club),
                           accent: palette.accent,
                         ),
-                        if (club.rating > 0) ...[
-                          gapH8,
-                          _RatingBadge(rating: club.rating),
-                        ],
                       ],
                     ),
                   ],
@@ -202,21 +194,19 @@ class _DirectoryIdentityCard extends StatelessWidget {
                 gapH18,
                 _ClubRule(color: t.line),
                 gapH14,
-                CatchMetaDotRow(entries: _buildClubMetaEntries(club, t.gold)),
-                if (visibleTags.isNotEmpty) ...[
-                  gapH12,
-                  _ClubTagWrap(
-                    tags: visibleTags.take(3).toList(growable: false),
-                  ),
-                ],
-                gapH16,
-                _ClubRule(color: t.line),
-                gapH14,
                 _ClubHostActionRow(
                   club: club,
                   isJoined: isJoined,
                   isHost: isHost,
                 ),
+                if (visibleTags.isNotEmpty) ...[
+                  gapH16,
+                  _ClubRule(color: t.line),
+                  gapH14,
+                  _ClubTagWrap(
+                    tags: visibleTags.take(3).toList(growable: false),
+                  ),
+                ],
               ],
             ),
           ),
@@ -263,6 +253,7 @@ class _ClubPhotoMedia extends StatelessWidget {
             children: [
               _ClubImage(
                 club: club,
+                coverOnly: true,
                 fallbackCompact: false,
                 showFallbackLocationChip: false,
                 showFallbackFooterLabel: false,
@@ -271,14 +262,24 @@ class _ClubPhotoMedia extends StatelessWidget {
               Positioned(
                 top: CatchSpacing.s3,
                 left: CatchSpacing.s3,
-                child: sash == null
-                    ? _MiniClubCrest(color: palette.accent)
-                    : CatchCornerSash(
-                        label: sash!.label,
-                        icon: sash!.icon,
-                        tone: sash!.tone,
-                      ),
+                child: _ClubLogoCrest(
+                  club: club,
+                  palette: palette,
+                  size: 38,
+                  borderColor: Colors.white,
+                  borderWidth: 2,
+                ),
               ),
+              if (sash != null)
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: CatchCornerSash(
+                    label: sash!.label,
+                    icon: sash!.icon,
+                    tone: sash!.tone,
+                  ),
+                ),
               Positioned(
                 top: CatchSpacing.s3,
                 right: CatchSpacing.s3,
@@ -288,12 +289,6 @@ class _ClubPhotoMedia extends StatelessWidget {
                   compact: true,
                 ),
               ),
-              if (club.rating > 0)
-                Positioned(
-                  left: CatchSpacing.s3,
-                  bottom: CatchSpacing.s3,
-                  child: _RatingBadge(rating: club.rating),
-                ),
             ],
           ),
         );
@@ -326,23 +321,42 @@ class _ClubPhotoScrim extends StatelessWidget {
   }
 }
 
-class _MiniClubCrest extends StatelessWidget {
-  const _MiniClubCrest({required this.color});
+class _ClubLogoCrest extends StatelessWidget {
+  const _ClubLogoCrest({
+    required this.club,
+    required this.palette,
+    required this.size,
+    required this.borderColor,
+    required this.borderWidth,
+  });
 
-  final Color color;
+  final Club club;
+  final ClubCoverVisualPalette palette;
+  final double size;
+  final Color borderColor;
+  final double borderWidth;
 
   @override
   Widget build(BuildContext context) {
+    final logoUrl = club.profileImageUrl?.trim();
     return Container(
-      width: 38,
-      height: 38,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: color,
-        border: Border.all(color: Colors.white, width: 2),
+        color: palette.accent,
+        border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: CatchElevation.card,
       ),
-      child: Icon(CatchIcons.wbSunnyOutlined, color: Colors.white, size: 19),
+      child: ClipOval(
+        child: logoUrl != null && logoUrl.isNotEmpty
+            ? Image.network(
+                logoUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _ClubLogoFallback(club: club),
+              )
+            : _ClubLogoFallback(club: club),
+      ),
     );
   }
 }
@@ -355,22 +369,28 @@ class _ClubFallbackCrest extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 74,
-      height: 74,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: palette.iconBorder, width: 3),
-        boxShadow: CatchElevation.card,
-      ),
-      child: ClipOval(
-        child: ClubCoverFallback(
-          club: club,
-          compact: true,
-          showLocationChip: false,
-          showFooterLabel: false,
-        ),
-      ),
+    return _ClubLogoCrest(
+      club: club,
+      palette: palette,
+      size: 74,
+      borderColor: palette.iconBorder,
+      borderWidth: 3,
+    );
+  }
+}
+
+class _ClubLogoFallback extends StatelessWidget {
+  const _ClubLogoFallback({required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClubCoverFallback(
+      club: club,
+      compact: true,
+      showLocationChip: false,
+      showFooterLabel: false,
     );
   }
 }
@@ -521,9 +541,8 @@ class _ClubHostActionRow extends StatelessWidget {
   }
 }
 
-bool _hasClubImage(Club club) {
-  return (club.imageUrl?.trim().isNotEmpty ?? false) ||
-      (club.profileImageUrl?.trim().isNotEmpty ?? false);
+bool _hasCoverImage(Club club) {
+  return club.imageUrl?.trim().isNotEmpty ?? false;
 }
 
 String _directoryCaption(Club club) {
@@ -585,28 +604,9 @@ class _MembershipSash {
   final CatchSashTone tone;
 }
 
-List<CatchMetaEntry> _buildClubMetaEntries(Club club, Color ratingIconColor) {
-  return [
-    CatchMetaEntry(icon: CatchIcons.pinOutlined, label: club.area),
-    CatchMetaEntry(icon: CatchIcons.group, label: _memberCountLabel(club)),
-    if (club.rating > 0 && club.reviewCount > 0)
-      CatchMetaEntry(
-        icon: CatchIcons.rated,
-        iconColor: ratingIconColor,
-        label:
-            '${club.rating.toStringAsFixed(1)} · '
-            '${_reviewCountLabel(club.reviewCount)}',
-      ),
-  ];
-}
-
 String _memberCountLabel(Club club) {
   final memberLabel = club.memberCount == 1 ? 'member' : 'members';
   return '${club.memberCount} $memberLabel';
-}
-
-String _reviewCountLabel(int count) {
-  return count == 1 ? '1 review' : '$count reviews';
 }
 
 List<String> _visibleTags(Club club) {
@@ -685,8 +685,44 @@ class _JoinClubButton extends ConsumerWidget {
   }
 }
 
-class _RatingBadge extends StatelessWidget {
-  const _RatingBadge({required this.rating});
+class _ClubTitleLine extends StatelessWidget {
+  const _ClubTitleLine({
+    required this.club,
+    required this.style,
+    required this.maxLines,
+  });
+
+  final Club club;
+  final TextStyle style;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Text(
+            club.name,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+            style: style,
+          ),
+        ),
+        if (club.rating > 0) ...[
+          gapW8,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: _TitleRatingPill(rating: club.rating),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _TitleRatingPill extends StatelessWidget {
+  const _TitleRatingPill({required this.rating});
 
   final double rating;
 
@@ -700,8 +736,9 @@ class _RatingBadge extends StatelessWidget {
         vertical: CatchSpacing.micro3,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.94),
+        color: t.gold.withValues(alpha: 0.13),
         borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: t.gold.withValues(alpha: 0.30)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

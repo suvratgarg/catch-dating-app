@@ -83,7 +83,7 @@ void main() {
       );
       expect(
         fakePaymentRepository.lastProcessPaymentCall!.description,
-        'Thursday Morning Event · Thu, 2 Jan',
+        'Thursday Morning Run · Thu, 2 Jan',
       );
       expect(fakePaymentRepository.lastProcessPaymentCall!.userName, 'Priya');
       expect(
