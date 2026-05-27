@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -25,7 +26,7 @@ class ClubCoverFallback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final palette = _ClubCoverPalette.forSeed('${club.id}:${club.name}');
+    final palette = ClubCoverVisualPalette.forClub(club);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -42,7 +43,7 @@ class ClubCoverFallback extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: CatchIconTile(
-              icon: Icons.location_on_rounded,
+              icon: CatchIcons.locationOnRounded,
               iconColor: palette.icon,
               backgroundColor: palette.iconFill,
               borderColor: palette.iconBorder,
@@ -68,7 +69,7 @@ class ClubCoverFallback extends StatelessWidget {
               left: CatchSpacing.s4,
               top: CatchSpacing.s4,
               child: _CoverChip(
-                icon: Icons.location_on_outlined,
+                icon: CatchIcons.locationOnOutlined,
                 label: cityLabel(club.location),
               ),
             ),
@@ -124,7 +125,7 @@ class _CoverChip extends StatelessWidget {
 class _ClubCoverPatternPainter extends CustomPainter {
   const _ClubCoverPatternPainter(this.palette);
 
-  final _ClubCoverPalette palette;
+  final ClubCoverVisualPalette palette;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -215,8 +216,8 @@ class _ClubCoverPatternPainter extends CustomPainter {
       oldDelegate.palette != palette;
 }
 
-class _ClubCoverPalette {
-  const _ClubCoverPalette({
+class ClubCoverVisualPalette {
+  const ClubCoverVisualPalette({
     required this.start,
     required this.end,
     required this.line,
@@ -238,9 +239,12 @@ class _ClubCoverPalette {
   final Color icon;
   final Color text;
 
-  static _ClubCoverPalette forSeed(String seed) {
+  static ClubCoverVisualPalette forClub(Club club) =>
+      forSeed('${club.id}:${club.name}');
+
+  static ClubCoverVisualPalette forSeed(String seed) {
     final palettes = [
-      _ClubCoverPalette(
+      ClubCoverVisualPalette(
         start: const Color(0xFFFFF6EF),
         end: const Color(0xFFEAF4EF),
         line: const Color(0xFF7C978B).withValues(alpha: 0.24),
@@ -251,7 +255,7 @@ class _ClubCoverPalette {
         icon: const Color(0xFFFF5A36),
         text: const Color(0xFF5A4A40),
       ),
-      _ClubCoverPalette(
+      ClubCoverVisualPalette(
         start: const Color(0xFFF4F0FF),
         end: const Color(0xFFEAF4FA),
         line: const Color(0xFF7E8FA7).withValues(alpha: 0.25),
@@ -262,7 +266,7 @@ class _ClubCoverPalette {
         icon: const Color(0xFF4A7BC5),
         text: const Color(0xFF464A5B),
       ),
-      _ClubCoverPalette(
+      ClubCoverVisualPalette(
         start: const Color(0xFFFFF7DE),
         end: const Color(0xFFEFF6E8),
         line: const Color(0xFF969C74).withValues(alpha: 0.25),
@@ -273,7 +277,7 @@ class _ClubCoverPalette {
         icon: const Color(0xFFD28A23),
         text: const Color(0xFF554D35),
       ),
-      _ClubCoverPalette(
+      ClubCoverVisualPalette(
         start: const Color(0xFFEFF8F6),
         end: const Color(0xFFFFF0EA),
         line: const Color(0xFF769D97).withValues(alpha: 0.25),

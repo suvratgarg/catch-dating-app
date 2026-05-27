@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -43,7 +44,7 @@ class ClubScheduleSection extends StatelessWidget {
             ),
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
-                icon: Icons.calendar_month_outlined,
+                icon: CatchIcons.calendarMonthOutlined,
                 title: 'No events scheduled',
                 message: isHost
                     ? 'Publish an event when this club is ready to meet.'

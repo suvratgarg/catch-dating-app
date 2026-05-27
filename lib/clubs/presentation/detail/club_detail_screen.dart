@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
@@ -123,10 +124,10 @@ class ClubDetailScreen extends ConsumerWidget {
           context: AppErrorContext.club,
           onRetry: () => ref.invalidate(clubDetailViewModelProvider(clubId)),
         ),
-        data: (_) => const CatchErrorState(
+        data: (_) => CatchErrorState(
           title: 'Club not found',
           message: 'This club is no longer available.',
-          icon: Icons.groups_outlined,
+          icon: CatchIcons.groupsOutlined,
         ),
       ),
     );

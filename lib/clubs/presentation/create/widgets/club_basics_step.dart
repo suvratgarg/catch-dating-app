@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/clubs/presentation/create/widgets/create_club_cover_picker.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -65,7 +66,7 @@ class ClubBasicsStep extends StatelessWidget {
             CatchTextField(
               label: 'Club name',
               controller: nameController,
-              prefixIcon: const Icon(Icons.group_outlined),
+              prefixIcon: Icon(CatchIcons.groupOutlined),
               enabled: detailsEnabled,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
@@ -80,7 +81,7 @@ class ClubBasicsStep extends StatelessWidget {
             CatchDropdownField<CityOption>(
               values: defaultCityOptions,
               label: 'City',
-              prefixIcon: const Icon(Icons.location_city_outlined),
+              prefixIcon: Icon(CatchIcons.locationCityOutlined),
               value: selectedCity,
               enabled: detailsEnabled,
               onChanged: onCityChanged,
@@ -91,7 +92,7 @@ class ClubBasicsStep extends StatelessWidget {
             CatchTextField(
               label: 'Area / neighbourhood',
               controller: areaController,
-              prefixIcon: const Icon(Icons.location_on_outlined),
+              prefixIcon: Icon(CatchIcons.locationOnOutlined),
               enabled: detailsEnabled,
               hintText: 'e.g. Bandra, Koramangala',
               textCapitalization: TextCapitalization.words,

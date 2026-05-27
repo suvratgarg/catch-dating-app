@@ -16,6 +16,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 part 'club_list_tile_parts/avatar_chip.dart';
 part 'club_list_tile_parts/club_image.dart';

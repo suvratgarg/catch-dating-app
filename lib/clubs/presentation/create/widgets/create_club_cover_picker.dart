@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -55,7 +56,7 @@ class CreateClubCoverPicker extends StatelessWidget {
                             bottom: 8,
                             right: 8,
                             child: CatchIconTile(
-                              icon: Icons.edit_outlined,
+                              icon: CatchIcons.editOutlined,
                               iconColor: t.ink,
                               backgroundColor: t.surface.withValues(
                                 alpha: 0.85,
@@ -74,7 +75,7 @@ class CreateClubCoverPicker extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.add_photo_alternate_outlined,
+                              CatchIcons.addPhotoAlternateOutlined,
                               size: 40,
                               color: t.ink2,
                             ),
@@ -152,7 +153,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                             bottom: 8,
                             right: 8,
                             child: CatchIconTile(
-                              icon: Icons.edit_outlined,
+                              icon: CatchIcons.editOutlined,
                               iconColor: t.ink,
                               backgroundColor: t.surface.withValues(
                                 alpha: 0.85,
@@ -171,7 +172,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Icons.add_photo_alternate_outlined,
+                              CatchIcons.addPhotoAlternateOutlined,
                               size: 30,
                               color: t.ink2,
                             ),
