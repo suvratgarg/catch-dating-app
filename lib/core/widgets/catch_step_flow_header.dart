@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
@@ -46,7 +47,7 @@ class CatchStepFlowHeader extends StatelessWidget {
                         child: Tooltip(
                           message: 'Back',
                           child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
+                            CatchIcons.arrowBackIosNewRounded,
                             size: 18,
                             color: t.ink,
                           ),

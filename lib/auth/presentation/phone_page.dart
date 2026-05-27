@@ -5,6 +5,7 @@ import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -229,7 +230,7 @@ class _CountryCodeSelector extends StatelessWidget {
               borderSide: BorderSide(color: t.primary),
             ),
           ),
-          closeIcon: Icon(Icons.close_rounded, color: t.ink2),
+          closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
           padding: const EdgeInsets.symmetric(horizontal: 8),
           margin: const EdgeInsets.only(right: 6),
           flagWidth: 24,

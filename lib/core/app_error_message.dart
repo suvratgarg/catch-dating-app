@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/backend_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -134,34 +135,38 @@ String _contextTitle(AppErrorContext context) {
 }
 
 IconData _iconFor(Object error, AppException? appException) {
-  if (_isNetworkError(error, appException)) return Icons.wifi_off_rounded;
-  if (_isAuthError(error, appException)) return Icons.lock_outline_rounded;
-  if (_isPermissionError(error, appException)) return Icons.block_rounded;
-  if (_isNotFoundError(error, appException)) return Icons.search_off_rounded;
-  if (appException is ValidationException) return Icons.edit_note_rounded;
+  if (_isNetworkError(error, appException)) return CatchIcons.wifiOffRounded;
+  if (_isAuthError(error, appException)) return CatchIcons.lockOutlineRounded;
+  if (_isPermissionError(error, appException)) return CatchIcons.blockRounded;
+  if (_isNotFoundError(error, appException)) return CatchIcons.searchOffRounded;
+  if (appException is ValidationException) return CatchIcons.editNoteRounded;
   if (appException is PaymentCancelledException ||
       appException is PaymentFailedException ||
       appException is PaymentVerificationFailedException ||
       appException is PaidBookingUnsupportedException) {
-    return Icons.credit_card_off_rounded;
+    return CatchIcons.creditCardOffRounded;
   }
   if (appException is EventBookingFailedException) {
-    return Icons.directions_run_rounded;
+    return CatchIcons.directionsRunRounded;
   }
-  if (appException is StorageException) return Icons.cloud_upload_outlined;
-  if (appException is ExternalActionException) return Icons.open_in_new_rounded;
+  if (appException is StorageException) {
+    return CatchIcons.cloudUploadOutlined;
+  }
+  if (appException is ExternalActionException) {
+    return CatchIcons.openInNewRounded;
+  }
   if (appException is BackendOperationException) {
     final backendContext = appException.context;
     return switch (backendContext?.service) {
-      BackendService.auth => Icons.lock_outline_rounded,
-      BackendService.storage => Icons.cloud_upload_outlined,
-      BackendService.messaging => Icons.notifications_off_outlined,
-      BackendService.payments => Icons.credit_card_off_rounded,
-      BackendService.external => Icons.open_in_new_rounded,
-      _ => Icons.error_outline_rounded,
+      BackendService.auth => CatchIcons.lockOutlineRounded,
+      BackendService.storage => CatchIcons.cloudUploadOutlined,
+      BackendService.messaging => CatchIcons.notificationsOffOutlined,
+      BackendService.payments => CatchIcons.creditCardOffRounded,
+      BackendService.external => CatchIcons.openInNewRounded,
+      _ => CatchIcons.errorOutlineRounded,
     };
   }
-  return Icons.error_outline_rounded;
+  return CatchIcons.errorOutlineRounded;
 }
 
 String _retryLabelFor(AppException? appException, AppErrorContext context) {

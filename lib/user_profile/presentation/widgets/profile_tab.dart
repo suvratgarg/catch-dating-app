@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -132,7 +133,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final basics = [
       _textEntry(
         context: context,
-        icon: Icons.person_outlined,
+        icon: CatchIcons.personOutlined,
         label: 'Display name',
         value: user.publicDisplayName,
         currentValue: user.publicDisplayName,
@@ -148,19 +149,19 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         toFieldValue: (value) => value.trim(),
       ),
       ProfileInfoEntry(
-        icon: Icons.cake_outlined,
+        icon: CatchIcons.cakeOutlined,
         label: 'Date of birth',
         value:
             '${user.dateOfBirth.day.toString().padLeft(2, '0')}/${user.dateOfBirth.month.toString().padLeft(2, '0')}/${user.dateOfBirth.year}  (${user.age} years)',
       ),
       ProfileInfoEntry(
-        icon: Icons.wc_outlined,
+        icon: CatchIcons.wcOutlined,
         label: 'Gender',
         value: user.gender.label,
       ),
       _textEntry(
         context: context,
-        icon: Icons.phone_outlined,
+        icon: CatchIcons.phoneOutlined,
         label: 'Phone',
         value: user.phoneNumber,
         title: 'Phone number',
@@ -173,7 +174,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _textEntry(
         context: context,
-        icon: Icons.email_outlined,
+        icon: CatchIcons.emailOutlined,
         label: 'Email',
         value: user.email.isNotEmpty ? user.email : 'Email',
         currentValue: user.email,
@@ -187,7 +188,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _textEntry(
         context: context,
-        icon: Icons.alternate_email_outlined,
+        icon: CatchIcons.alternateEmailOutlined,
         label: 'Instagram',
         value: user.instagramHandle?.isNotEmpty == true
             ? '@${user.instagramHandle}'
@@ -209,7 +210,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ProfileInfoEntry(
         builder: (_) => ProfileInlineHeightEditor(
           key: const ValueKey('inline-height-editor'),
-          icon: Icons.height_outlined,
+          icon: CatchIcons.heightOutlined,
           label: 'Height',
           value: user.height != null ? '${user.height} cm' : 'Height',
           currentValue: user.height,
@@ -220,7 +221,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           onSaved: _collapseField,
           onCancel: _collapseField,
         ),
-        icon: Icons.height_outlined,
+        icon: CatchIcons.heightOutlined,
         label: 'Height',
         value: user.height != null ? '${user.height} cm' : 'Height',
       ),
@@ -228,7 +229,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final background = [
       _textEntry(
         context: context,
-        icon: Icons.work_outline,
+        icon: CatchIcons.workOutline,
         label: 'Job title',
         value: user.occupation ?? 'Job title',
         currentValue: user.occupation ?? '',
@@ -239,7 +240,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _textEntry(
         context: context,
-        icon: Icons.business_outlined,
+        icon: CatchIcons.businessOutlined,
         label: 'Company',
         value: user.company ?? 'Company',
         currentValue: user.company ?? '',
@@ -250,7 +251,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<EducationLevel>(
         context: context,
-        icon: Icons.school_outlined,
+        icon: CatchIcons.schoolOutlined,
         label: 'Education',
         values: EducationLevel.values,
         value: user.education,
@@ -259,7 +260,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<Religion>(
         context: context,
-        icon: Icons.volunteer_activism_outlined,
+        icon: CatchIcons.volunteerActivismOutlined,
         label: 'Religion',
         values: Religion.values,
         value: user.religion,
@@ -268,7 +269,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _multiEnumEntry<Language>(
         context: context,
-        icon: Icons.language_outlined,
+        icon: CatchIcons.languageOutlined,
         label: 'Languages',
         values: Language.values,
         selected: user.languages,
@@ -280,7 +281,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final intentions = [
       _singleEnumEntry<RelationshipGoal>(
         context: context,
-        icon: Icons.favorite_outline,
+        icon: CatchIcons.favoriteOutline,
         label: 'Looking for',
         values: RelationshipGoal.values,
         value: user.relationshipGoal,
@@ -292,7 +293,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final lifestyle = [
       _singleEnumEntry<DrinkingHabit>(
         context: context,
-        icon: Icons.local_bar_outlined,
+        icon: CatchIcons.localBarOutlined,
         label: 'Drinking',
         values: DrinkingHabit.values,
         value: user.drinking,
@@ -301,7 +302,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<SmokingHabit>(
         context: context,
-        icon: Icons.smoke_free_outlined,
+        icon: CatchIcons.smokeFreeOutlined,
         label: 'Smoking',
         values: SmokingHabit.values,
         value: user.smoking,
@@ -310,7 +311,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<WorkoutFrequency>(
         context: context,
-        icon: Icons.fitness_center_outlined,
+        icon: CatchIcons.fitnessCenterOutlined,
         label: 'Workout',
         values: WorkoutFrequency.values,
         value: user.workout,
@@ -319,7 +320,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<DietaryPreference>(
         context: context,
-        icon: Icons.restaurant_outlined,
+        icon: CatchIcons.restaurantOutlined,
         label: 'Diet',
         values: DietaryPreference.values,
         value: user.diet,
@@ -328,7 +329,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _singleEnumEntry<ChildrenStatus>(
         context: context,
-        icon: Icons.child_care_outlined,
+        icon: CatchIcons.childCareOutlined,
         label: 'Children',
         values: ChildrenStatus.values,
         value: user.children,
@@ -339,7 +340,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final location = [
       _singleEnumEntry<CityOption>(
         context: context,
-        icon: Icons.location_on_outlined,
+        icon: CatchIcons.locationOnOutlined,
         label: 'City',
         values: defaultCityOptions,
         value: cityOptionByName(user.city),
@@ -351,7 +352,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ProfileInfoEntry(
         builder: (_) => ProfileInlineRangeEditor(
           key: const ValueKey('inline-pace-range-editor'),
-          icon: Icons.speed_outlined,
+          icon: CatchIcons.speedOutlined,
           title: 'Pace range',
           value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
           currentMin: user.paceMinSecsPerKm,
@@ -376,13 +377,13 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           onSaved: _collapseField,
           onCancel: _collapseField,
         ),
-        icon: Icons.speed_outlined,
+        icon: CatchIcons.speedOutlined,
         label: 'Pace range',
         value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
       ),
       _multiEnumEntry<PreferredDistance>(
         context: context,
-        icon: Icons.straighten_outlined,
+        icon: CatchIcons.straightenOutlined,
         label: 'Preferred distances',
         values: PreferredDistance.values,
         selected: user.preferredDistances,
@@ -399,7 +400,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _multiEnumEntry<RunReason>(
         context: context,
-        icon: Icons.directions_run_outlined,
+        icon: CatchIcons.directionsRunOutlined,
         label: 'Why I event',
         values: RunReason.values,
         selected: user.runningReasons,
@@ -416,7 +417,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       _multiEnumEntry<PreferredRunTime>(
         context: context,
-        icon: Icons.wb_twilight_outlined,
+        icon: CatchIcons.wbTwilightOutlined,
         label: 'Favorite event times',
         values: PreferredRunTime.values,
         selected: user.preferredRunTimes,
@@ -597,7 +598,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final text = answer?.answer ?? '';
     return _textEntry(
       context: context,
-      icon: Icons.format_quote_rounded,
+      icon: CatchIcons.formatQuoteRounded,
       label: definition.title,
       value: text.isNotEmpty ? text : definition.placeholder,
       currentValue: text,
@@ -798,7 +799,7 @@ class _ProfileQualitySuggestionRow extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 2),
           child: Icon(
-            Icons.add_circle_outline_rounded,
+            CatchIcons.addCircleOutlineRounded,
             size: 16,
             color: t.primary,
           ),

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -236,7 +237,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
               child: CatchLoadingIndicator(strokeWidth: 2),
             ),
           ] else ...[
-            Icon(Icons.error_outline_rounded, color: t.primary, size: 18),
+            Icon(CatchIcons.errorOutlineRounded, color: t.primary, size: 18),
           ],
           gapW10,
           Expanded(

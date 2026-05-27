@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ void main() {
           onBack: () => backTaps++,
           actions: [
             CatchTopBarIconAction(
-              icon: Icons.settings_outlined,
+              icon: CatchIcons.settingsOutlined,
               tooltip: 'Settings',
               onPressed: () => actionTaps++,
             ),
@@ -52,11 +53,11 @@ void main() {
 
     expect(find.byType(IconBtn), findsNWidgets(2));
 
-    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+    await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
     await tester.pump();
     expect(backTaps, 1);
 
-    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.tap(find.byIcon(CatchIcons.settingsOutlined));
     await tester.pump();
     expect(actionTaps, 1);
   });
@@ -98,7 +99,7 @@ void main() {
   ) async {
     await tester.pumpWidget(_wrap(const CatchTopBar(showBackButton: true)));
 
-    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
     expect(find.byType(IconBtn), findsOneWidget);
   });
 
@@ -147,7 +148,7 @@ void main() {
     expect(find.text('Profile'), findsNWidgets(2));
     expect(find.text('Preview'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.more_horiz_rounded));
+    await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Edit profile'));
     await pumpFeatureUi(tester);

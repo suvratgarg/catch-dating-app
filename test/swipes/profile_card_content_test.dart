@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
@@ -10,14 +10,13 @@ import '../events/events_test_helpers.dart';
 ActivityPreferences runningPrefs({
   List<PreferredDistance> preferredDistances = const [],
   List<RunReason> runningReasons = const [],
-}) =>
-    ActivityPreferences(
-      running: RunningPreferences(
-        preferredDistances: preferredDistances,
-        runningReasons: runningReasons,
-        version: currentRunPreferencesVersion,
-      ),
-    );
+}) => ActivityPreferences(
+  running: RunningPreferences(
+    preferredDistances: preferredDistances,
+    runningReasons: runningReasons,
+    version: currentRunPreferencesVersion,
+  ),
+);
 
 void main() {
   group('ProfileCardContent', () {
@@ -27,7 +26,7 @@ void main() {
       final content = ProfileCardContent.fromProfile(profile);
 
       final hasDistance = content.attributes.any(
-        (a) => a.icon == Icons.near_me_outlined,
+        (a) => a.icon == CatchIcons.nearMeOutlined,
       );
       expect(hasDistance, isFalse);
     });
@@ -42,34 +41,34 @@ void main() {
         ],
       );
       final profile = base.copyWith(
-            profilePrompts: normalizeProfilePromptAnswers(
-              const [],
-              legacyBio: '  Long events and filter coffee.  ',
+        profilePrompts: normalizeProfilePromptAnswers(
+          const [],
+          legacyBio: '  Long events and filter coffee.  ',
+        ),
+        profilePhotos: [
+          base.profilePhotos[0],
+          base.profilePhotos[1].copyWith(
+            prompt: const PhotoPromptAnswer(
+              photoIndex: 1,
+              promptId: 'finishLine',
+              prompt: 'After the finish line',
+              caption: '  Filter coffee stop.  ',
             ),
-            profilePhotos: [
-              base.profilePhotos[0],
-              base.profilePhotos[1].copyWith(
-                prompt: const PhotoPromptAnswer(
-                  photoIndex: 1,
-                  promptId: 'finishLine',
-                  prompt: 'After the finish line',
-                  caption: '  Filter coffee stop.  ',
-                ),
-              ),
-              base.profilePhotos[2],
-            ],
-            height: 170,
-            occupation: '  Designer  ',
-            company: '  Catch  ',
-            education: EducationLevel.masters,
-            religion: Religion.hindu,
-            languages: const [Language.english, Language.hindi],
-            drinking: DrinkingHabit.socially,
-            smoking: SmokingHabit.never,
-            workout: WorkoutFrequency.often,
-            diet: DietaryPreference.vegetarian,
-            children: ChildrenStatus.wantSomeday,
-          );
+          ),
+          base.profilePhotos[2],
+        ],
+        height: 170,
+        occupation: '  Designer  ',
+        company: '  Catch  ',
+        education: EducationLevel.masters,
+        religion: Religion.hindu,
+        languages: const [Language.english, Language.hindi],
+        drinking: DrinkingHabit.socially,
+        smoking: SmokingHabit.never,
+        workout: WorkoutFrequency.often,
+        diet: DietaryPreference.vegetarian,
+        children: ChildrenStatus.wantSomeday,
+      );
 
       final content = ProfileCardContent.fromProfile(profile);
 

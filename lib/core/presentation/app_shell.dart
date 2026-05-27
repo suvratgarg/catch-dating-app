@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_dock.dart';
@@ -245,21 +246,21 @@ class _AppShellNavigationBar extends StatelessWidget {
       onDestinationSelected: onDestinationSelected,
       destinations: [
         // 0 — Home
-        const NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home_rounded),
+        NavigationDestination(
+          icon: Icon(CatchIcons.homeOutlined),
+          selectedIcon: Icon(CatchIcons.homeRounded),
           label: 'Home',
         ),
         // 1 — Explore
-        const NavigationDestination(
-          icon: Icon(Icons.groups_outlined),
-          selectedIcon: Icon(Icons.groups_rounded),
+        NavigationDestination(
+          icon: Icon(CatchIcons.groupsOutlined),
+          selectedIcon: Icon(CatchIcons.groupsRounded),
           label: 'Explore',
         ),
         // 2 — Catches
-        const NavigationDestination(
-          icon: Icon(Icons.favorite_outline_rounded),
-          selectedIcon: Icon(Icons.favorite_rounded),
+        NavigationDestination(
+          icon: Icon(CatchIcons.favoriteOutlineRounded),
+          selectedIcon: Icon(CatchIcons.favoriteRounded),
           label: 'Catches',
         ),
         // 3 — Chats
@@ -267,21 +268,21 @@ class _AppShellNavigationBar extends StatelessWidget {
           icon: unreadCount > 0
               ? AppShellNavigationBadge(
                   count: unreadCount,
-                  child: const Icon(Icons.chat_bubble_outline_rounded),
+                  child: Icon(CatchIcons.chatBubbleOutlineRounded),
                 )
-              : const Icon(Icons.chat_bubble_outline_rounded),
+              : Icon(CatchIcons.chatBubbleOutlineRounded),
           selectedIcon: unreadCount > 0
               ? AppShellNavigationBadge(
                   count: unreadCount,
-                  child: const Icon(Icons.chat_bubble_rounded),
+                  child: Icon(CatchIcons.chatBubbleRounded),
                 )
-              : const Icon(Icons.chat_bubble_rounded),
+              : Icon(CatchIcons.chatBubbleRounded),
           label: 'Chats',
         ),
         // 4 — Profile
-        const NavigationDestination(
-          icon: Icon(Icons.person_outline_rounded),
-          selectedIcon: Icon(Icons.person_rounded),
+        NavigationDestination(
+          icon: Icon(CatchIcons.personOutlineRounded),
+          selectedIcon: Icon(CatchIcons.personRounded),
           label: 'Profile',
         ),
       ],

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -109,7 +110,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                   ),
                   trailingIcon: item == widget.value
                       ? Icon(
-                          Icons.check_rounded,
+                          CatchIcons.checkRounded,
                           color: t.primary,
                           size: CatchIcon.sm,
                         )
@@ -170,8 +171,8 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                       const SizedBox(width: CatchSpacing.s1),
                       Icon(
                         controller.isOpen
-                            ? Icons.expand_less_rounded
-                            : Icons.expand_more_rounded,
+                            ? CatchIcons.expandLessRounded
+                            : CatchIcons.expandMoreRounded,
                         size: CatchIcon.md,
                         color: widget.enabled ? t.ink3 : t.ink3,
                       ),

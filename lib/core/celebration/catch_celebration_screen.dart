@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -49,7 +50,7 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     required this.message,
     required this.primaryAction,
     this.eyebrow,
-    this.icon = Icons.check_rounded,
+    IconData? icon,
     this.visual,
     this.details = const [],
     this.note,
@@ -57,13 +58,13 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     this.secondaryAction,
     this.onClose,
     this.playEffects = true,
-  });
+  }) : _icon = icon;
 
   final CelebrationMomentKind kind;
   final String? eyebrow;
   final String title;
   final String message;
-  final IconData icon;
+  final IconData? _icon;
   final Widget? visual;
   final List<CelebrationDetail> details;
   final String? note;
@@ -72,6 +73,8 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
   final CelebrationAction? secondaryAction;
   final VoidCallback? onClose;
   final bool playEffects;
+
+  IconData get icon => _icon ?? CatchIcons.checkRounded;
 
   @override
   ConsumerState<CatchCelebrationScreen> createState() =>
@@ -133,8 +136,8 @@ class _CatchCelebrationScreenState
                                     alpha: 0.22,
                                   ),
                                   onTap: widget.onClose,
-                                  child: const Icon(
-                                    Icons.close_rounded,
+                                  child: Icon(
+                                    CatchIcons.closeRounded,
                                     color: _celebrationInk,
                                   ),
                                 ),
@@ -337,7 +340,7 @@ class _CelebrationNote extends StatelessWidget {
         padding: const EdgeInsets.all(CatchSpacing.s4),
         child: Row(
           children: [
-            const Icon(Icons.bolt_rounded, color: _celebrationInk, size: 18),
+            Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
             gapW10,
             Expanded(
               child: Text(

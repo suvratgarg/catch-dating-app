@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -166,7 +167,7 @@ class _ChatLayout extends StatelessWidget {
           gapH2,
           Row(
             children: [
-              Icon(Icons.directions_run_rounded, size: 11, color: t.ink3),
+              Icon(CatchIcons.directionsRunRounded, size: 11, color: t.ink3),
               gapW3,
               Expanded(
                 child: Text(
@@ -255,7 +256,7 @@ class _RosterLayout extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.directions_run_rounded,
+                CatchIcons.directionsRunRounded,
                 size: 11,
                 color: CatchTokens.of(context).ink3,
               ),

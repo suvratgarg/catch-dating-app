@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -203,7 +204,7 @@ class ReviewsPreviewSection extends StatelessWidget {
         // ── Review list ──────────────────────────────────────────────────────
         if (reviews.isEmpty)
           CatchEmptyState(
-            icon: Icons.rate_review_outlined,
+            icon: CatchIcons.rateReviewOutlined,
             title: 'No reviews yet',
             message:
                 emptyMessage ??
@@ -296,7 +297,7 @@ class ReviewCard extends StatelessWidget {
                     key: ReviewKeys.editReviewButton(review.id),
                     onTap: onEdit!,
                     child: Icon(
-                      Icons.edit_outlined,
+                      CatchIcons.editOutlined,
                       size: 16,
                       color: t.primary,
                     ),

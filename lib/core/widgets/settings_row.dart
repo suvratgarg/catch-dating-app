@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -11,14 +12,14 @@ import 'package:flutter/material.dart';
 /// ```dart
 /// SettingsRow(
 ///   label: 'Phone', value: '+91 9876543210',
-///   icon: Icons.phone_outlined, onTap: () {...},
+///   icon: CatchIcons.phoneOutlined, onTap: () {...},
 /// )
 /// SettingsRow(
-///   label: 'Delete account', icon: Icons.delete_outline,
+///   label: 'Delete account', icon: CatchIcons.deleteOutline,
 ///   danger: true, onTap: _confirmDelete,
 /// )
 /// SettingsRow(
-///   label: 'Show me on map', icon: Icons.map_outlined,
+///   label: 'Show me on map', icon: CatchIcons.mapOutlined,
 ///   trailing: Switch(...),
 /// )
 /// ```
@@ -79,7 +80,7 @@ class SettingsRow extends StatelessWidget {
             ],
             if (onTap != null) ...[
               gapW6,
-              Icon(Icons.chevron_right_rounded, color: t.ink3),
+              Icon(CatchIcons.chevronRightRounded, color: t.ink3),
             ],
           ],
         ],

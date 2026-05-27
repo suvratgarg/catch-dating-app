@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -34,7 +35,7 @@ class ChatEventContextHeader extends StatelessWidget {
         child: Row(
           children: [
             CatchIconTile(
-              icon: Icons.directions_run_rounded,
+              icon: CatchIcons.directionsRunRounded,
               iconColor: t.primary,
               backgroundColor: t.surface,
               borderColor: Colors.transparent,

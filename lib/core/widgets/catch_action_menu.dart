@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -26,14 +27,16 @@ class CatchActionMenu<T> extends StatefulWidget {
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
-    this.icon = Icons.more_horiz_rounded,
-  });
+    IconData? icon,
+  }) : _icon = icon;
 
   final List<CatchActionMenuItem<T>> items;
   final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
-  final IconData icon;
+  final IconData? _icon;
+
+  IconData get icon => _icon ?? CatchIcons.moreHorizRounded;
 
   @override
   State<CatchActionMenu<T>> createState() => _CatchActionMenuState<T>();

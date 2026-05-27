@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -141,7 +142,7 @@ class _CatchesHeader extends StatelessWidget {
           ),
         ),
         CatchIconTile(
-          icon: Icons.favorite_rounded,
+          icon: CatchIcons.favoriteRounded,
           iconColor: t.primary,
           backgroundColor: t.primarySoft,
           borderColor: Colors.transparent,
@@ -180,7 +181,7 @@ class _CatchesIntroCard extends StatelessWidget {
             right: -34,
             top: -42,
             child: Icon(
-              Icons.favorite_rounded,
+              CatchIcons.favoriteRounded,
               size: 156,
               color: Colors.white.withValues(alpha: 0.13),
             ),
@@ -297,7 +298,7 @@ class _CatchesEmptyState extends StatelessWidget {
           const _CatchesHeader(),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
           CatchEmptyState(
-            icon: Icons.directions_run_rounded,
+            icon: CatchIcons.directionsRunRounded,
             title: 'No active catches',
             message:
                 'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
@@ -315,7 +316,7 @@ class _CatchesEmptyState extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.lock_clock_rounded, color: t.accent, size: 20),
+                Icon(CatchIcons.lockClockRounded, color: t.accent, size: 20),
                 gapW10,
                 Expanded(
                   child: Text(

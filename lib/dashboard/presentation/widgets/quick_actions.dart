@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -15,12 +16,12 @@ class QuickActions extends StatelessWidget {
 
   static final _actions = [
     _QuickAction(
-      icon: Icons.calendar_month_outlined,
+      icon: CatchIcons.calendarMonthOutlined,
       label: 'Calendar',
       route: Routes.calendarScreen.path,
     ),
     _QuickAction(
-      icon: Icons.bookmark_border_rounded,
+      icon: CatchIcons.bookmarkBorderRounded,
       label: 'Saved events',
       route: Routes.savedEventsScreen.path,
     ),

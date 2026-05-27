@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -210,8 +211,8 @@ class _NotificationBellButton extends StatelessWidget {
           alignment: Alignment.center,
           child: CatchTopBarIconAction(
             icon: unreadCount > 0
-                ? Icons.notifications_rounded
-                : Icons.notifications_none_rounded,
+                ? CatchIcons.notificationsRounded
+                : CatchIcons.notificationsNoneRounded,
             tooltip: 'Notifications',
             onPressed: onPressed,
           ),

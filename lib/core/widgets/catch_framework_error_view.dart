@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -94,7 +95,7 @@ class _ErrorIcon extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Icon(
-          Icons.error_outline_rounded,
+          CatchIcons.errorOutlineRounded,
           color: tokens.danger,
           size: 30,
         ),

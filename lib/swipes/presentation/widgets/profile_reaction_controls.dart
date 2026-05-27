@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -37,13 +38,13 @@ class ProfileReactionControls extends StatelessWidget {
     final children = [
       _ReactionControlButton(
         tooltip: 'Like ${target.label}',
-        icon: Icons.favorite_border_rounded,
+        icon: CatchIcons.favoriteBorderRounded,
         onPressed: () => unawaited(Future.sync(() => onReact(target, null))),
         style: style,
       ),
       _ReactionControlButton(
         tooltip: 'Comment on ${target.label}',
-        icon: Icons.chat_bubble_outline_rounded,
+        icon: CatchIcons.chatBubbleOutlineRounded,
         onPressed: () => unawaited(_commentThenReact(context)),
         style: style,
       ),
@@ -141,7 +142,7 @@ class _ProfileReactionCommentSheetState
           const Spacer(),
           CatchButton(
             label: 'Send like',
-            icon: const Icon(Icons.favorite_border_rounded, size: 18),
+            icon: Icon(CatchIcons.favoriteBorderRounded, size: 18),
             onPressed: _canSend ? _submit : null,
             size: CatchButtonSize.sm,
           ),

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,9 +26,9 @@ void main() {
             eyebrow: 'Booking confirmed',
             title: "You're in.",
             message: 'Your spot is confirmed.',
-            details: const [
+            details: [
               CelebrationDetail(
-                icon: Icons.location_on_outlined,
+                icon: CatchIcons.locationOnOutlined,
                 label: 'Where',
                 value: 'Carter Road',
               ),
@@ -55,15 +56,15 @@ void main() {
     expect(find.text('Carter Road'), findsOneWidget);
     expect(find.text('Arrive by the meeting time.'), findsOneWidget);
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.check_rounded)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.checkRounded)).color,
       Colors.white,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.location_on_outlined)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.locationOnOutlined)).color,
       Colors.white,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(Icons.bolt_rounded)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.boltRounded)).color,
       Colors.white,
     );
     expect(

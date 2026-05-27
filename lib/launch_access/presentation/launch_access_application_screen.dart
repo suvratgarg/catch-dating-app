@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -177,7 +178,7 @@ class _LaunchAccessApplicationFormState
                     hintText: 'Select city',
                     semanticLabel: 'City',
                     hasError: field.hasError,
-                    prefixIcon: const Icon(Icons.location_city_outlined),
+                    prefixIcon: Icon(CatchIcons.locationCityOutlined),
                     onChanged: (city) {
                       final next = city?.name ?? '';
                       field.didChange(city);
@@ -270,7 +271,7 @@ class _LaunchAccessApplicationFormState
               isOptional: true,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
-              prefixIcon: const Icon(Icons.confirmation_number_outlined),
+              prefixIcon: Icon(CatchIcons.confirmationNumberOutlined),
               onChanged: (value) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref
@@ -358,8 +359,8 @@ class _LaunchAccessStatusView extends StatelessWidget {
     return Center(
       child: CatchEmptyState(
         icon: application.status.unlocksProfileCreation
-            ? Icons.check_circle_outline_rounded
-            : Icons.hourglass_top_rounded,
+            ? CatchIcons.checkCircleOutlineRounded
+            : CatchIcons.hourglassTopRounded,
         title: application.status.label,
         message: application.status.unlocksProfileCreation
             ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
@@ -375,9 +376,9 @@ class _LaunchAccessDisabledView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CatchEmptyState(
-        icon: Icons.lock_open_rounded,
+        icon: CatchIcons.lockOpenRounded,
         title: 'Access gate is off',
         message: 'Remote Config has not enabled launch access for this build.',
         surface: false,
@@ -391,9 +392,9 @@ class _LaunchAccessSignedOutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CatchEmptyState(
-        icon: Icons.phone_android_rounded,
+        icon: CatchIcons.phoneAndroidRounded,
         title: 'Verify your phone',
         message: 'Phone verification is required before applying for access.',
         surface: false,

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -27,7 +28,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.system_update_outlined, size: 72, color: t.primary),
+              Icon(CatchIcons.systemUpdateOutlined, size: 72, color: t.primary),
               gapH32,
               Text(
                 'Update required',
@@ -60,7 +61,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
                     );
                   }
                 },
-                icon: const Icon(Icons.open_in_new),
+                icon: Icon(CatchIcons.openInNew),
                 fullWidth: true,
               ),
             ],

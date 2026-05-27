@@ -126,10 +126,9 @@ class CatchDaySectionHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return CatchDaySectionHeader(
-      label: label,
-      count: count,
-      sticky: true,
+    return SizedBox(
+      height: height,
+      child: CatchDaySectionHeader(label: label, count: count, sticky: true),
     );
   }
 

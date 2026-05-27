@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -28,7 +29,7 @@ class ChatsEmptyState extends StatelessWidget {
         children: [
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.10),
           CatchEmptyState(
-            icon: Icons.favorite_rounded,
+            icon: CatchIcons.favoriteRounded,
             title: title,
             message: message,
             titleStyle: CatchTextStyles.displayM(context),

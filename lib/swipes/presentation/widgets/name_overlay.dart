@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -53,7 +54,7 @@ class NameOverlay extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.location_on_outlined,
+                CatchIcons.locationOnOutlined,
                 size: 16,
                 color: Colors.white.withValues(alpha: 0.86),
               ),
@@ -75,12 +76,12 @@ class NameOverlay extends StatelessWidget {
           children: [
             if (profile.relationshipGoal case final goal?)
               _HeroSignalChip(
-                icon: Icons.favorite_border_rounded,
+                icon: CatchIcons.favoriteBorderRounded,
                 label: goal.label,
               ),
             if (running.hasCurrentRunPreferences)
               _HeroSignalChip(
-                icon: Icons.speed_rounded,
+                icon: CatchIcons.speedRounded,
                 label: formatPaceRange(
                   running.paceMinSecsPerKm,
                   running.paceMaxSecsPerKm,
@@ -146,7 +147,7 @@ class GoalPill extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.favorite_rounded, color: palette.accent, size: 14),
+          Icon(CatchIcons.favoriteRounded, color: palette.accent, size: 14),
           gapW6,
           Text(
             goal.label,

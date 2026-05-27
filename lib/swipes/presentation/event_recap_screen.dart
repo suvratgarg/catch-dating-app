@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -45,7 +46,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       appBar: CatchTopBar(
         title: 'Event recap',
         leading: CatchTopBarIconAction(
-          icon: Icons.close_rounded,
+          icon: CatchIcons.closeRounded,
           tooltip: 'Close recap',
           onPressed: () => context.pop(),
         ),
@@ -311,7 +312,7 @@ class _VibeTile extends ConsumerWidget {
                       radius: 14,
                       backgroundColor: t.primary,
                       child: Icon(
-                        Icons.check_rounded,
+                        CatchIcons.checkRounded,
                         size: 16,
                         color: t.primaryInk,
                       ),
@@ -338,7 +339,7 @@ class _ProfilePhoto extends StatelessWidget {
       return Container(
         color: CatchTokens.of(context).primarySoft,
         alignment: Alignment.center,
-        child: const Icon(Icons.person_rounded, size: 38),
+        child: Icon(CatchIcons.personRounded, size: 38),
       );
     }
     return Image.network(photoUrl, fit: BoxFit.cover);
@@ -350,8 +351,8 @@ class _EmptyRoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchEmptyState(
-      icon: Icons.group_off_rounded,
+    return CatchEmptyState(
+      icon: CatchIcons.groupOffRounded,
       title: 'No runners to tag',
       message: 'No other checked-in runners are attached to this event yet.',
       surface: true,

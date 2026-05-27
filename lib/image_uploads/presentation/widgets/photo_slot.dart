@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
@@ -54,7 +55,11 @@ class PhotoSlot extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) => ColoredBox(
           color: t.raised,
           child: Center(
-            child: Icon(Icons.broken_image_outlined, size: 28, color: t.ink2),
+            child: Icon(
+              CatchIcons.brokenImageOutlined,
+              size: 28,
+              color: t.ink2,
+            ),
           ),
         ),
       );
@@ -62,7 +67,7 @@ class PhotoSlot extends StatelessWidget {
       content = Container(
         color: t.primarySoft,
         child: Center(
-          child: Icon(Icons.add_rounded, size: 36, color: t.primary),
+          child: Icon(CatchIcons.addRounded, size: 36, color: t.primary),
         ),
       );
     } else {
@@ -103,7 +108,7 @@ class PhotoSlot extends StatelessWidget {
                         bottom: 6,
                         right: 6,
                         child: CatchIconTile(
-                          icon: Icons.edit_outlined,
+                          icon: CatchIcons.editOutlined,
                           iconColor: t.ink,
                           backgroundColor: t.surface.withValues(alpha: 0.85),
                           borderColor: Colors.transparent,
@@ -168,7 +173,7 @@ class PhotoSlot extends StatelessWidget {
                         child: SizedBox.square(
                           dimension: 28,
                           child: Icon(
-                            Icons.close_rounded,
+                            CatchIcons.closeRounded,
                             size: 18,
                             color: t.ink,
                           ),

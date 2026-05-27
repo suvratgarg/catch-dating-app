@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +35,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Center(
+        home: Center(
           child: AppShellNavigationBadge(
             count: 3,
-            child: Icon(Icons.chat_bubble_outline_rounded),
+            child: Icon(CatchIcons.chatBubbleOutlineRounded),
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -29,10 +30,10 @@ class ActivitySignedOutState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.all(CatchSpacing.s5),
       child: CatchEmptyState(
-        icon: Icons.notifications_none_rounded,
+        icon: CatchIcons.notificationsNoneRounded,
         title: 'No activity yet',
         message: 'Sign in and book an event to start seeing updates here.',
         surface: false,
@@ -113,7 +114,7 @@ class ActivitySection extends ConsumerWidget {
         ] else if (upcomingEvents.isEmpty && notificationItems.isEmpty) ...[
           if (showEmptyState)
             CatchEmptyState(
-              icon: Icons.notifications_none_rounded,
+              icon: CatchIcons.notificationsNoneRounded,
               title: 'No new activity',
               message:
                   'New catches, bookings, and event reminders will collect here.',
@@ -247,7 +248,7 @@ class _UpcomingEventTile extends StatelessWidget {
             ),
           ),
           gapW8,
-          Icon(Icons.chevron_right_rounded, size: 20, color: t.ink3),
+          Icon(CatchIcons.chevronRightRounded, size: 20, color: t.ink3),
         ],
       ),
     );
@@ -376,7 +377,7 @@ class _NotificationTile extends StatelessWidget {
             ),
             if (item.route != null) ...[
               gapW8,
-              Icon(Icons.chevron_right_rounded, size: 20, color: t.ink3),
+              Icon(CatchIcons.chevronRightRounded, size: 20, color: t.ink3),
             ],
           ],
         ),
@@ -445,60 +446,60 @@ class _NotificationVisual {
 
     return switch (type) {
       ActivityNotificationType.message => visual(
-        icon: Icons.chat_bubble_outline_rounded,
+        icon: CatchIcons.chatBubbleOutlineRounded,
         label: 'Message',
         tone: CatchBadgeTone.neutral,
         accent: t.ink2,
-        badgeIcon: Icons.chat_bubble_outline_rounded,
+        badgeIcon: CatchIcons.chatBubbleOutlineRounded,
       ),
       ActivityNotificationType.match => visual(
-        icon: Icons.favorite_rounded,
+        icon: CatchIcons.favoriteRounded,
         label: 'Catch',
         tone: CatchBadgeTone.brand,
         accent: t.primary,
-        badgeIcon: Icons.favorite_rounded,
+        badgeIcon: CatchIcons.favoriteRounded,
       ),
       ActivityNotificationType.eventReminder => visual(
-        icon: Icons.notifications_active_outlined,
+        icon: CatchIcons.notificationsActiveOutlined,
         label: 'Reminder',
         tone: CatchBadgeTone.live,
         accent: t.primary,
-        badgeIcon: Icons.notifications_active_outlined,
+        badgeIcon: CatchIcons.notificationsActiveOutlined,
       ),
       ActivityNotificationType.eventSignup => visual(
-        icon: Icons.check_circle_outline_rounded,
+        icon: CatchIcons.checkCircleOutlineRounded,
         label: 'Booked',
         tone: CatchBadgeTone.success,
         accent: t.success,
-        badgeIcon: Icons.check_rounded,
+        badgeIcon: CatchIcons.checkRounded,
       ),
       ActivityNotificationType.waitlistPromotion => visual(
-        icon: Icons.event_available_rounded,
+        icon: CatchIcons.eventAvailableRounded,
         label: 'Waitlist',
         tone: CatchBadgeTone.warning,
         accent: t.warning,
-        badgeIcon: Icons.schedule_rounded,
+        badgeIcon: CatchIcons.scheduleRounded,
       ),
       ActivityNotificationType.eventCancelled => visual(
-        icon: Icons.event_busy_rounded,
+        icon: CatchIcons.eventBusyRounded,
         label: 'Cancelled',
         tone: CatchBadgeTone.danger,
         accent: t.danger,
-        badgeIcon: Icons.close_rounded,
+        badgeIcon: CatchIcons.closeRounded,
       ),
       ActivityNotificationType.eventUpdated => visual(
-        icon: Icons.update_rounded,
+        icon: CatchIcons.updateRounded,
         label: 'Updated',
         tone: CatchBadgeTone.neutral,
         accent: t.accent,
-        badgeIcon: Icons.update_rounded,
+        badgeIcon: CatchIcons.updateRounded,
       ),
       ActivityNotificationType.clubUpdate => visual(
-        icon: Icons.groups_rounded,
+        icon: CatchIcons.groupsRounded,
         label: 'Club',
         tone: CatchBadgeTone.neutral,
         accent: t.accent,
-        badgeIcon: Icons.groups_rounded,
+        badgeIcon: CatchIcons.groupsRounded,
       ),
     };
   }

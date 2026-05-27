@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -67,7 +68,7 @@ class PhotosPage extends ConsumerWidget {
           gapH8,
           Row(
             children: [
-              Icon(Icons.bolt, size: 16, color: t.accent),
+              Icon(CatchIcons.bolt, size: 16, color: t.accent),
               gapW8,
               Expanded(
                 child: Text(

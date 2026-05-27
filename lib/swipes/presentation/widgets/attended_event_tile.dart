@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -39,7 +40,7 @@ class AttendedEventTile extends StatelessWidget {
               gradient: t.heroGrad,
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(Icons.favorite_rounded, color: t.primaryInk),
+            child: Icon(CatchIcons.favoriteRounded, color: t.primaryInk),
           ),
           gapW14,
           Expanded(

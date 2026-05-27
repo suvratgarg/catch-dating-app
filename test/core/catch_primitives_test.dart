@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
@@ -242,12 +243,12 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const SizedBox(
+        SizedBox(
           width: 360,
           child: SettingsRow(
             label: 'Help & support',
             value: 'Contact us',
-            icon: Icons.help_outline,
+            icon: CatchIcons.helpOutline,
             onTap: null,
           ),
         ),
@@ -357,7 +358,7 @@ void main() {
     expect(find.text('171 cm'), findsOneWidget);
 
     final disabledIncrease = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, Icons.add_rounded),
+      find.widgetWithIcon(IconButton, CatchIcons.addRounded),
     );
     expect(disabledIncrease.onPressed, isNull);
 
@@ -444,7 +445,7 @@ void main() {
     await tester.pump();
     expect(tapped, isTrue);
 
-    await tester.tap(find.byIcon(Icons.close_rounded));
+    await tester.tap(find.byIcon(CatchIcons.closeRounded));
     await tester.pump();
     expect(removed, isTrue);
   });
@@ -464,21 +465,21 @@ void main() {
               expanded: true,
               style: CatchSegmentedControlStyle.surface,
               onChanged: (value) => setState(() => selected = value),
-              segments: const [
+              segments: [
                 CatchSegment(
                   value: 'setup',
                   label: 'Setup',
-                  icon: Icons.tune_rounded,
+                  icon: CatchIcons.tuneRounded,
                 ),
                 CatchSegment(
                   value: 'live',
                   label: 'Live',
-                  icon: Icons.play_circle_outline_rounded,
+                  icon: CatchIcons.playCircleOutlineRounded,
                 ),
                 CatchSegment(
                   value: 'report',
                   label: 'Report',
-                  icon: Icons.insights_outlined,
+                  icon: CatchIcons.insightsOutlined,
                 ),
               ],
             ),
@@ -491,7 +492,7 @@ void main() {
       tester.getSize(find.byType(CatchSegmentedControl<String>)).width,
       360,
     );
-    expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
     expect(find.text('Setup'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
@@ -608,7 +609,7 @@ void main() {
     expect(selectedChip.icon, isA<Icon>());
     expect(unselectedChip.active, isFalse);
     expect(unselectedChip.icon, isNull);
-    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
   });
 
   testWidgets('ChipField required multi select keeps the last chip selected', (
@@ -1041,7 +1042,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const Center(
+        Center(
           child: SizedBox(
             width: 320,
             child: CatchTextField(
@@ -1050,7 +1051,7 @@ void main() {
               hintText: 'Search by name',
               size: CatchTextFieldSize.compact,
               shape: CatchTextFieldShape.pill,
-              prefixIcon: Icon(Icons.search_rounded, size: 18),
+              prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
             ),
           ),
         ),
@@ -1059,7 +1060,7 @@ void main() {
 
     final fieldRect = tester.getRect(find.byType(TextField));
     final hintRect = tester.getRect(find.text('Search by name'));
-    final iconRect = tester.getRect(find.byIcon(Icons.search_rounded));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.searchRounded));
 
     expect(
       (hintRect.center.dy - fieldRect.center.dy).abs(),
@@ -1096,7 +1097,7 @@ void main() {
     await tester.pump();
     expect(find.text('Please select a city'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.expand_more_rounded));
+    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Mumbai').hitTestable());
     await pumpFeatureUi(tester);
@@ -1118,7 +1119,7 @@ void main() {
             values: defaultCityOptions,
             value: selected,
             itemLabel: (city) => city.label,
-            prefixIcon: const Icon(Icons.location_on_outlined),
+            prefixIcon: Icon(CatchIcons.locationOnOutlined),
             shape: CatchSelectMenuShape.pill,
             onChanged: (value) => selected = value,
           ),
@@ -1126,7 +1127,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byIcon(Icons.expand_more_rounded));
+    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
     await pumpFeatureUi(tester);
 
     expect(find.byType(MenuItemButton), findsWidgets);

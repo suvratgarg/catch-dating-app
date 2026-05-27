@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -30,14 +31,14 @@ class ChatMessageList extends StatelessWidget {
       error: (e, _) => CatchErrorState(
         title: 'Messages unavailable',
         message: 'Unable to load messages.',
-        icon: Icons.chat_bubble_outline_rounded,
+        icon: CatchIcons.chatBubbleOutlineRounded,
         onRetry: onRetry,
       ),
       data: (messages) {
         if (messages.isEmpty) {
           return Center(
             child: CatchEmptyState(
-              icon: Icons.chat_bubble_outline_rounded,
+              icon: CatchIcons.chatBubbleOutlineRounded,
               title: 'Say hi',
               message: 'Say hi to $otherName!',
               surface: false,

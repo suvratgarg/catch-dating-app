@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -58,7 +59,7 @@ class CatchNumberStepper extends StatelessWidget {
         children: [
           IconButton(
             tooltip: decreaseTooltip,
-            icon: Icon(Icons.remove_rounded, color: t.ink),
+            icon: Icon(CatchIcons.removeRounded, color: t.ink),
             onPressed: _decrease,
             constraints: const BoxConstraints.tightFor(
               width: CatchControlMetrics.stepperIconExtent,
@@ -77,7 +78,7 @@ class CatchNumberStepper extends StatelessWidget {
           ),
           IconButton(
             tooltip: increaseTooltip,
-            icon: Icon(Icons.add_rounded, color: t.ink),
+            icon: Icon(CatchIcons.addRounded, color: t.ink),
             onPressed: _increase,
             constraints: const BoxConstraints.tightFor(
               width: CatchControlMetrics.stepperIconExtent,

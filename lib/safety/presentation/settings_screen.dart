@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -167,13 +168,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         label: 'Phone',
                         value: _formatPhoneForDisplay(phoneNumber),
-                        icon: Icons.phone_outlined,
+                        icon: CatchIcons.phoneOutlined,
                       ),
                       SettingsRow(
                         key: SettingsKeys.reviewHistoryRow,
                         label: 'Review history',
                         value: 'Events you reviewed',
-                        icon: Icons.rate_review_outlined,
+                        icon: CatchIcons.rateReviewOutlined,
                         onTap: () =>
                             context.pushNamed(Routes.reviewsHistoryScreen.name),
                       ),
@@ -181,7 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         key: SettingsKeys.paymentHistoryRow,
                         label: 'Payment history',
                         value: 'Bookings and receipts',
-                        icon: Icons.receipt_long_outlined,
+                        icon: CatchIcons.receiptLongOutlined,
                         onTap: () =>
                             context.pushNamed(Routes.paymentHistoryScreen.name),
                       ),
@@ -189,7 +190,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         key: SettingsKeys.signOutRow,
                         label: 'Sign out',
                         value: 'Leave this device',
-                        icon: Icons.logout_rounded,
+                        icon: CatchIcons.logoutRounded,
                         danger: true,
                         trailing: signingOut
                             ? const SizedBox.square(
@@ -212,7 +213,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             key: SettingsKeys.eventPolicyLabRow,
                             label: 'Event policy lab',
                             value: 'Static booking policy previews',
-                            icon: Icons.science_outlined,
+                            icon: CatchIcons.scienceOutlined,
                             onTap: () => context.pushNamed(
                               Routes.eventPolicyLabScreen.name,
                             ),
@@ -222,7 +223,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             key: SettingsKeys.eventSuccessLabRow,
                             label: 'Event success lab',
                             value: 'Host, attendee, and report previews',
-                            icon: Icons.auto_graph_rounded,
+                            icon: CatchIcons.autoGraphRounded,
                             onTap: () => context.pushNamed(
                               Routes.eventSuccessLabScreen.name,
                             ),
@@ -232,7 +233,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             key: SettingsKeys.eventSuccessManualQaRow,
                             label: 'Event success manual QA',
                             value: 'Host and attendee side by side',
-                            icon: Icons.splitscreen_rounded,
+                            icon: CatchIcons.splitscreenRounded,
                             onTap: () => context.pushNamed(
                               Routes.eventSuccessManualQaScreen.name,
                             ),
@@ -247,11 +248,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         label: 'Who can see me',
                         value: 'Runners on my events',
-                        icon: Icons.visibility_outlined,
+                        icon: CatchIcons.visibilityOutlined,
                       ),
                       SettingsRow(
                         label: 'Show me on map',
-                        icon: Icons.map_outlined,
+                        icon: CatchIcons.mapOutlined,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.showOnMapSwitch,
                           value: _showOnMap,
@@ -273,7 +274,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       SettingsRow(
                         label: 'Matches and catches',
-                        icon: Icons.favorite_outline,
+                        icon: CatchIcons.favoriteOutline,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.newCatchesSwitch,
                           value: _newCatches,
@@ -289,7 +290,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       SettingsRow(
                         label: 'Messages',
-                        icon: Icons.chat_bubble_outline_rounded,
+                        icon: CatchIcons.chatBubbleOutlineRounded,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.messagesSwitch,
                           value: _messages,
@@ -305,7 +306,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       SettingsRow(
                         label: 'Event reminders',
-                        icon: Icons.directions_run_outlined,
+                        icon: CatchIcons.directionsRunOutlined,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.eventRemindersSwitch,
                           value: _eventReminders,
@@ -321,7 +322,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       SettingsRow(
                         label: 'Event changes and cancellations',
-                        icon: Icons.event_repeat_outlined,
+                        icon: CatchIcons.eventRepeatOutlined,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.eventStatusUpdatesSwitch,
                           value: _eventStatusUpdates,
@@ -338,7 +339,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       SettingsRow(
                         label: 'Club announcements',
-                        icon: Icons.notifications_active_outlined,
+                        icon: CatchIcons.notificationsActiveOutlined,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.clubUpdatesSwitch,
                           value: _clubUpdates,
@@ -354,7 +355,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                       SettingsRow(
                         label: 'Weekly digest',
-                        icon: Icons.mark_email_read_outlined,
+                        icon: CatchIcons.markEmailReadOutlined,
                         trailing: Switch.adaptive(
                           key: SettingsKeys.weeklyDigestSwitch,
                           value: _weeklyDigest,
@@ -381,7 +382,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         label: 'Help & support',
                         value: 'Contact us',
-                        icon: Icons.help_outline,
+                        icon: CatchIcons.helpOutline,
                         onTap: () => _openExternal(
                           Uri.parse('https://catchdates.com/help'),
                         ),
@@ -389,7 +390,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         label: 'Privacy',
                         value: 'Policy',
-                        icon: Icons.lock_outline,
+                        icon: CatchIcons.lockOutline,
                         onTap: () => _openExternal(
                           Uri.parse('https://catchdates.com/privacy'),
                         ),
@@ -397,7 +398,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         label: 'Terms',
                         value: 'Legal',
-                        icon: Icons.description_outlined,
+                        icon: CatchIcons.descriptionOutlined,
                         onTap: () => _openExternal(
                           Uri.parse('https://catchdates.com/terms'),
                         ),
@@ -411,7 +412,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         key: SettingsKeys.deleteAccountRow,
                         label: 'Delete account',
                         value: 'Remove your profile',
-                        icon: Icons.delete_outline,
+                        icon: CatchIcons.deleteOutline,
                         danger: true,
                         trailing: deleting
                             ? const SizedBox.square(
@@ -510,7 +511,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
           error: (_, _) => Padding(
             padding: const EdgeInsets.all(CatchSpacing.s4),
             child: CatchEmptyState(
-              icon: Icons.block_outlined,
+              icon: CatchIcons.blockOutlined,
               title: 'Unable to load blocked accounts',
               message: 'Try again in a moment.',
               surface: false,
@@ -524,7 +525,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
               return Padding(
                 padding: const EdgeInsets.all(CatchSpacing.s4),
                 child: CatchEmptyState(
-                  icon: Icons.verified_user_outlined,
+                  icon: CatchIcons.verifiedUserOutlined,
                   title: 'No blocked accounts',
                   message: 'People you block will appear here.',
                   surface: false,

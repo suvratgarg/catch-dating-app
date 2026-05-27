@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -73,7 +74,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
                 label: v.label,
                 active: isSelected,
                 icon: multiSelect && isSelected
-                    ? const Icon(Icons.check_rounded)
+                    ? Icon(CatchIcons.checkRounded)
                     : null,
                 enabled: enabled,
                 onTap: () {

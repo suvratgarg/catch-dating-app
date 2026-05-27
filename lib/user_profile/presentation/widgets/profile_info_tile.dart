@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -135,7 +136,7 @@ class _ProfileInfoChevron extends StatelessWidget {
         turns: isExpanded ? -0.25 : 0,
         duration: CatchMotion.base,
         curve: CatchMotion.standardCurve,
-        child: Icon(Icons.chevron_right_rounded, color: t.ink3, size: 20),
+        child: Icon(CatchIcons.chevronRightRounded, color: t.ink3, size: 20),
       ),
     );
 

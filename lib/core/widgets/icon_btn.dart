@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 ///
 /// Usage:
 /// ```dart
-/// IconBtn(onTap: () {}, child: Icon(Icons.notifications_outlined))
+/// IconBtn(onTap: () {}, child: Icon(CatchIcons.notificationsOutlined))
 ///
 /// // Solid dark variant (map filter button)
-/// IconBtn(background: t.ink, child: Icon(Icons.tune, color: t.surface))
+/// IconBtn(background: t.ink, child: Icon(CatchIcons.tune, color: t.surface))
 ///
 /// // Frosted-glass (over hero photos) — pass semi-transparent bg
 /// IconBtn(background: Colors.white.withOpacity(0.9), child: ...)
