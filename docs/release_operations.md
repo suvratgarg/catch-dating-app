@@ -260,6 +260,48 @@ Before rules or Functions depend on them, each Firebase/GCP environment needs:
   measurement IDs refreshed, GA4 BigQuery export enabled where needed, and
   DebugView evidence captured for the target app id.
 
+### Payment Provider Setup TODO
+
+Do not treat international paid events as launch-ready until these items are
+complete for each target environment (`dev`, `staging`, and `prod`):
+
+- [ ] Create environment-owned Stripe platform credentials. Keep test and live
+  mode keys separate, and do not reuse another environment's secret key.
+- [ ] Set the Stripe Functions secrets in each Firebase project:
+  `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+- [ ] Configure Stripe webhook endpoints per environment for the exported
+  `stripeWebhook` HTTPS Function. Subscribe at minimum to Checkout Session
+  completion and expiration events used by the backend booking flow, then copy
+  the endpoint signing secret into `STRIPE_WEBHOOK_SECRET`.
+- [ ] Confirm the Stripe Connect platform responsibilities before enabling
+  host onboarding. The current backend creates Accounts v2 connected accounts,
+  requests merchant card-payment capability, and uses destination Checkout
+  Sessions with `transfer_data.destination` and `on_behalf_of`.
+- [ ] Decide and configure the platform fee policy through
+  `STRIPE_APPLICATION_FEE_BPS` per environment. Leave it at `0` only when
+  Catch is intentionally not taking an application fee.
+- [ ] Set production-safe redirect URLs for Stripe onboarding and checkout:
+  `STRIPE_CONNECT_RETURN_URL`, `STRIPE_CONNECT_REFRESH_URL`,
+  `STRIPE_CHECKOUT_SUCCESS_URL`, and `STRIPE_CHECKOUT_CANCEL_URL`. The checked-in
+  defaults point at `catchdates.com` and should be reviewed before staging/prod
+  rollout.
+- [ ] Create environment-owned Razorpay credentials before live INR payments.
+  Current non-prod/prod state has reused test-mode Razorpay secrets; replace
+  them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per
+  Firebase project.
+- [ ] Deploy Functions after secrets and params are present:
+  `./tool/deploy_firebase_targets.sh <env> functions`.
+- [ ] After callable Functions deploy, run
+  `npm --prefix functions run sync:callable-invokers -- <project-id>` for the
+  deployed project if callable invoker bindings were not part of the deploy.
+- [ ] Smoke test the full paid-event matrix in the target environment:
+  free booking, INR Razorpay checkout success/cancel/refund, non-INR Stripe host
+  onboarding, non-INR Stripe checkout success/cancel/expiration webhook, payment
+  history, booking count projections, waitlist/race-loss refund behavior, and
+  host cancellation refund behavior.
+- [ ] Record the smoke evidence in the release notes before enabling production
+  host-created international paid events.
+
 ## Firebase Deploy Order
 
 For backend/schema-affecting releases, deploy in this order per environment:
