@@ -1,9 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_card_compact.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_card_hero.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -13,13 +8,18 @@ import 'package:go_router/go_router.dart';
 
 /// Dashboard recommendation card.
 ///
-/// Wraps [CatchEventCardCompact] so the dashboard rail visually matches the
-/// Explore feed — same caps-time kicker, photo + scrim, dot-separated
-/// meta. The recommender's "reason" (e.g. *From your clubs*, *Top rated*)
-/// becomes the corner sash so each rail card has a single curatorial mark
-/// instead of competing chips.
+/// Wraps [CatchEventTicketCard] so the dashboard rail uses the same activity
+/// artwork and ticket shape as the Explore event feed. Recommendation reason
+/// stays visible in the media label while distance, pace, and capacity are
+/// folded into the ticket's bottom mono line.
 class RecommendCard extends StatelessWidget {
-  const RecommendCard({super.key, required this.event, this.clubName, this.reasonLabel, this.width});
+  const RecommendCard({
+    super.key,
+    required this.event,
+    this.clubName,
+    this.reasonLabel,
+    this.width,
+  });
 
   factory RecommendCard.fromRecommendation({
     Key? key,
@@ -57,37 +57,21 @@ class RecommendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = width;
-    final card = CatchEventCardCompact(
+    final card = CatchEventTicketCard(
       title: event.title,
       subtitle: _buildSubtitle(),
-      kickerLabel: _kickerLabel(),
-      kickerTrailing: _kickerTrailing(),
-      meta: [
-        CatchMetaEntry(
-          icon: activityKindGlyph(event.activityKind),
-          label: event.activitySummaryLabel,
-        ),
-        CatchMetaEntry(
-          icon: CatchIcons.group,
-          label: '${event.signedUpCount}/${event.capacityLimit}',
-        ),
-      ],
-      distanceTrailing: null,
-      photoUrl: event.photoUrl,
-      pace: event.pace,
-      activityKind: event.activityKind,
-      sash: reasonLabel == null
-          ? null
-          : CatchEventSashSpec(
-              label: reasonLabel!,
-              tone: CatchSashTone.brand,
-            ),
+      timeLabel: EventFormatters.time(event.startTime),
+      countdownLabel: _countdownLabel(),
       priceLabel: event.isFree
           ? 'Free'
           : EventFormatters.priceInPaise(
               event.priceInPaise,
               currencyCode: event.currency,
             ),
+      capacityLabel: _capacityLabel(),
+      activityKind: event.activityKind,
+      statusLabel: reasonLabel,
+      clockTime: TimeOfDay.fromDateTime(event.startTime),
       onTap: () => context.pushNamed(
         Routes.dashboardEventDetailScreen.name,
         pathParameters: {'clubId': event.clubId, 'eventId': event.id},
@@ -105,26 +89,33 @@ class RecommendCard extends StatelessWidget {
     return '$club · ${event.locationName}';
   }
 
-  String _kickerLabel() {
+  String _countdownLabel() {
     final start = event.startTime;
+    final relative = _relativeCountdownLabel(start);
+    if (relative != null) return relative;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final eventDay = DateTime(start.year, start.month, start.day);
-    final time = EventFormatters.time(start);
     final diffDays = eventDay.difference(today).inDays;
     return switch (diffDays) {
-      0 => 'Today · $time',
-      1 => 'Tomorrow · $time',
-      _ => '${EventFormatters.shortWeekday(start)} · $time',
+      0 => 'Today',
+      1 => 'Tomorrow',
+      _ => EventFormatters.shortWeekday(start),
     };
   }
 
-  String? _kickerTrailing() {
-    final delta = event.startTime.difference(DateTime.now());
+  String? _relativeCountdownLabel(DateTime startTime) {
+    final delta = startTime.difference(DateTime.now());
     if (delta.inMinutes <= 0 || delta.inHours >= 24) return null;
-    if (delta.inHours < 1) return 'in ${delta.inMinutes}m';
+    if (delta.inHours < 1) return 'In ${delta.inMinutes}m';
     final minutes = delta.inMinutes.remainder(60);
-    if (minutes == 0) return 'in ${delta.inHours}h';
-    return 'in ${delta.inHours}h ${minutes}m';
+    if (minutes == 0) return 'In ${delta.inHours}h';
+    return 'In ${delta.inHours}h ${minutes}m';
+  }
+
+  String _capacityLabel() {
+    final base = '${event.activitySummaryLabel} - ${event.signedUpCount} going';
+    if (event.spotsRemaining <= 0) return '$base - full';
+    return '$base - ${event.spotsRemaining} left';
   }
 }

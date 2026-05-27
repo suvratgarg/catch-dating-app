@@ -255,6 +255,14 @@ class EventFormatSnapshot {
   final Map<String, Object?> activityDetails;
 
   String get label => customActivityLabel ?? activityKind.label;
+  String get eventTitleLabel {
+    final customLabel = customActivityLabel?.trim();
+    if (customLabel != null && customLabel.isNotEmpty) {
+      return _titleCaseWords(customLabel);
+    }
+    return activityKind.eventTitleLabel;
+  }
+
   ActivityKind get healthActivityKind => activityKind.healthActivityKind;
   bool get isPhysical => activityKind.isPhysical;
   bool get isDistanceBased => activityKind.isDistanceBased;
@@ -313,4 +321,22 @@ T _enumByName<T extends Enum>(List<T> values, String? name, T fallback) {
     if (value.name == name) return value;
   }
   return fallback;
+}
+
+extension ActivityKindEventTitleX on ActivityKind {
+  String get eventTitleLabel => switch (this) {
+    ActivityKind.socialRun || ActivityKind.running => 'Run',
+    ActivityKind.walking => 'Walk',
+    ActivityKind.cycling => 'Ride',
+    _ => _titleCaseWords(label),
+  };
+}
+
+String _titleCaseWords(String value) {
+  return value
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .map((word) => word[0].toUpperCase() + word.substring(1))
+      .join(' ');
 }

@@ -26,7 +26,7 @@ Keep entries small and self-describing — one line is fine.
 
 ## Screens to migrate to the new event card primitives
 
-- [ ] **Dashboard / Home** ([lib/dashboard/presentation/](../lib/dashboard/presentation/)) — `EventFocusRail`, `RecommendCard`, hero card. Move to `CatchEventCardHero` for hero, `CatchEventCardCompact` for rail items.
+- [ ] **Dashboard / Home** ([lib/dashboard/presentation/](../lib/dashboard/presentation/)) — `RecommendCard` now uses `CatchEventTicketCard`; `EventFocusRail` and the hero card still need migration to the newer event-card primitives.
 - [ ] **Saved events** ([lib/events/presentation/saved_events_screen.dart](../lib/events/presentation/saved_events_screen.dart)) — rebuild with day-grouped feed using `CatchDaySectionHeader` + `CatchEventCardCompact`.
 - [ ] **Club detail upcoming events** ([lib/clubs/presentation/detail/](../lib/clubs/presentation/detail/)) — replace `EventAgendaTile` usage with `CatchEventCardCompact`.
 - [x] **Event detail** ([lib/events/presentation/event_detail_screen.dart](../lib/events/presentation/event_detail_screen.dart)) — detail headers now prefer the shared activity artwork from `EventActivityVisualSpec`, so event detail, Explore spotlight cards, and map-selected cards use the same type palette.

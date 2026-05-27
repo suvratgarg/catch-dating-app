@@ -13,6 +13,7 @@ import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -202,6 +203,7 @@ void main() {
         name: 'Manan Sethi',
         displayName: 'Subrath',
       );
+      final joinedClub = buildClub(id: 'club-1', name: 'Home Run Club');
       final nextEvent = buildEvent(
         bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
@@ -220,6 +222,9 @@ void main() {
             dashboardRecommendedEventsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(_noRecommendationCandidates),
+            watchClubProvider(
+              joinedClub.id,
+            ).overrideWith((ref) => Stream.value(joinedClub)),
             _membershipsOverride(user, joinedClubIds),
             _activityNotificationsOverride(user),
             eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
@@ -245,6 +250,30 @@ void main() {
       expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
       expect(find.byType(TabBar), findsNothing);
       expect(find.byTooltip('Notifications'), findsOneWidget);
+    });
+
+    testWidgets('dashboard clubs rail renders joined clubs from club ids', (
+      tester,
+    ) async {
+      final joinedClub = buildClub(id: 'club-1', name: 'Home Run Club');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchClubProvider(
+              joinedClub.id,
+            ).overrideWith((ref) => Stream.value(joinedClub)),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(body: DashboardClubsRail(clubIds: ['club-1'])),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Your clubs'), findsOneWidget);
+      expect(find.text('Home Run Club'), findsOneWidget);
     });
 
     testWidgets('shows notification action with unread badge instead of tabs', (
@@ -621,13 +650,14 @@ void main() {
         ),
         findsOneWidget,
       );
-      // Activity summary in the meta dot row (distance · pace).
-      expect(find.text('12km · Moderate', skipOffstage: false), findsOneWidget);
-      // Spots are now bare digits in the meta row; no "signed up" suffix.
-      expect(find.text('4/12', skipOffstage: false), findsOneWidget);
+      // Activity summary and capacity stay visible in the ticket meta line.
+      expect(
+        find.text('12km · Moderate - 4 going - 8 left', skipOffstage: false),
+        findsOneWidget,
+      );
       expect(find.text('₹150', skipOffstage: false), findsOneWidget);
-      // The recommender reason rides as the corner sash on the card.
-      expect(find.text('Fits your pace', skipOffstage: false), findsOneWidget);
+      // The recommender reason rides as the ticket media label.
+      expect(find.text('FITS YOUR PACE', skipOffstage: false), findsOneWidget);
     });
 
     testWidgets('shows connected weekly running activity from health data', (
@@ -988,15 +1018,15 @@ void main() {
 
         await _pumpDashboardUi(tester);
 
-        expect(find.text('Thursday Morning Event'), findsOneWidget);
-        expect(find.text('Friday Morning Event'), findsNothing);
+        expect(find.text('Thursday Morning Run'), findsOneWidget);
+        expect(find.text('Friday Morning Run'), findsNothing);
         expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
 
         final railWidth = tester
             .getSize(find.byKey(EventFocusRail.railKey))
             .width;
         final cardWidth = tester
-            .getSize(_runFocusCardSurface('Thursday Morning Event'))
+            .getSize(_runFocusCardSurface('Thursday Morning Run'))
             .width;
         expect(cardWidth, railWidth);
         expect(
@@ -1009,14 +1039,14 @@ void main() {
         );
 
         await tester.drag(
-          find.text('Thursday Morning Event'),
+          find.text('Thursday Morning Run'),
           const Offset(-420, 0),
         );
         await tester.pump();
         await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
 
-        expect(find.text('Thursday Morning Event'), findsNothing);
-        expect(find.text('Friday Morning Event'), findsOneWidget);
+        expect(find.text('Thursday Morning Run'), findsNothing);
+        expect(find.text('Friday Morning Run'), findsOneWidget);
       },
     );
 

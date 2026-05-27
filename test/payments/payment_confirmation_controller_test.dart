@@ -14,7 +14,7 @@ void main() {
 
     final calendarEvent = PaymentConfirmationController.calendarEvent(event);
 
-    expect(calendarEvent.title, 'Tuesday Evening Event');
+    expect(calendarEvent.title, 'Tuesday Evening Run');
     expect(calendarEvent.startTime, DateTime.utc(2026, 5, 5, 18, 30));
     expect(calendarEvent.endTime, DateTime.utc(2026, 5, 5, 19, 30));
     expect(calendarEvent.location, 'Marine Drive, South entrance');

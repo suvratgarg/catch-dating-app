@@ -37,8 +37,8 @@ class ClubsListBody extends ConsumerWidget {
   }
 }
 
-/// Returns the slivers that make up the Explore feed body — joined-clubs
-/// rail, events feed, club directory — as a flat list so they can be
+/// Returns the slivers that make up the Explore feed body — mixed event/club
+/// discovery feed, optional legacy club rails, and browse prompts — as a flat list so they can be
 /// spread directly into a parent `CustomScrollView.slivers` without
 /// triggering nested-group layout pathologies.
 List<Widget> buildClubsListBodySlivers({
@@ -64,6 +64,9 @@ List<Widget> buildClubsListBodySlivers({
     if (viewModel.allClubs.isNotEmpty)
       ...buildExploreEventsSlivers(
         ref,
+        candidateClubs: viewModel.allClubs,
+        joinedClubIds: viewModel.joinedClubIds,
+        hostedClubIds: viewModel.hostedClubIds,
         pinnedDayHeaders: pinnedExploreDayHeaders,
       ),
     if (includeClubDirectory && viewModel.allClubs.isNotEmpty)

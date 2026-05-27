@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.144
+version: 2.5.149
 updated: 2026-05-27
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,43 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.149
+
+- Explore's closed/list state now paints an explicit top lid across the
+  status-bar/notch area plus header/filter chrome. The map can remain mounted
+  behind the sheet for continuity, but it is only allowed to show through the
+  safe area after the map reveal starts and that lid fades away.
+
+### 2.5.148
+
+- Production Explore now uses a mixed discovery feed instead of separate
+  personal-club, event, spotlight, and club-directory blocks. The full sheet
+  interleaves compact activity-coded event rows, an Instax-like club
+  recommendation, the editor spotlight event, and compact club rows before the
+  bottom `ExploreEventTypeBrowseGrid`; the personal `Your clubs` rail now
+  lives on Home through `DashboardClubsRail`.
+
+### 2.5.147
+
+- Dashboard recommended events now use the production `CatchEventTicketCard`
+  activity-art ticket instead of the older compact event rail tile. The ticket
+  keeps the recommendation reason in the media label and folds distance, pace,
+  booked count, and remaining spots into the bottom mono line.
+
+### 2.5.146
+
+- Explore's floating chrome now owns the top safe-area boundary separately from
+  the map canvas. The map remains full-bleed, while the closed draggable sheet
+  starts below the header/filter chrome so feed cards cannot scroll behind the
+  Dynamic Island or status bar.
+
+### 2.5.145
+
+- Explore club directory cards now formalize the production media contract:
+  `Club.imageUrl` is the cover photo, `Club.profileImageUrl` is the circular
+  logo crest from the first club profile image, and club ratings render beside
+  the title without restoring the old reviews/meta row.
 
 ### 2.5.144
 
@@ -1878,18 +1915,19 @@ Generated 2026-05-06.
 |---|---|---|
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:21` | Home tab. Watches the user's profile, active club memberships, signed-up events, and Home unread notification count only while Home is active. Renders one `CustomScrollView` with a scroll-away greeting/empty header, top-right Notifications bell, red unread badge, and dashboard sliver body; it no longer owns a route-local tab controller or Dashboard/Activity tab row. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
-| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:80` | Sliver body for the populated Home dashboard: consolidated attendee `EventFocusRail`, consolidated host tools carousel, `StrideCard`, `QuickActions`, and recommended events. It joins club names for committed events through `clubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
+| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:86` | Sliver body for the populated Home dashboard: consolidated attendee `EventFocusRail`, consolidated host tools carousel, `StrideCard`, `QuickActions`, the personal `DashboardClubsRail`, and recommended events. It joins club names for committed events through `clubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
 | `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:170` | Dashboard adapter for shared `HostEventToolsCarousel`. Converts `DashboardHostEventTool` availability into host-tool items and owns route navigation for Manage, Attendance, and Report without adding header/count/bucket chrome around the card. |
 | `EventFocusRail` | `lib/dashboard/presentation/widgets/event_focus_rail.dart:28` | Consolidated Home rail for attendee committed-event actions. Builds full-width snapping event cards for upcoming, check-in, catch-window, and review states; stacks actions such as View event, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. |
+| `DashboardClubsRail` | `lib/dashboard/presentation/widgets/dashboard_clubs_rail.dart:10` | Home-owned personal club rail. Resolves followed club IDs through `watchClubProvider`, reuses `ClubAvatarRail` without create/directory chrome, and stays hidden when no club data is available so Explore can keep club recommendations discovery-oriented instead of user-owned. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:18` | Route-level Notifications screen opened from the Home header bell. Uses `CatchTopBar(title: 'Notifications')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and automatically delegates unread notification docs to `ActivityController.markAllRead` when the screen opens. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:43` | Reusable notifications body. Separates signed-up upcoming events from backend-owned recent updates, renders event rows as `CatchSurface` tiles, groups notification history by recency, and uses typed `CatchBadge`/icon-chip treatments for match, club, booking, reminder, update, waitlist, and cancellation items. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height horizontal rail of `RecommendCard` widgets for recommended events from the user's followed clubs. |
-| `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:8` | Compatibility wrapper around shared `EventRailTile` for dashboard recommended events. It surfaces activity metadata, price, title, club, date/time, meeting point, signed-up count, and recommendation reason without fake imagery. |
+| `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:8` | Dashboard recommended-event adapter around `CatchEventTicketCard`. It uses the shared activity-art ticket shape, keeps the recommender reason in the media label, and preserves price, title, club, date/time, meeting point, distance/pace, booked count, and remaining spots. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
 | `StrideBarColumn` | `lib/dashboard/presentation/widgets/stride_card.dart:105` | Single bar column for the stride card — day label and filled bar. |
 | `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Responsive dashboard quick-action grid for Calendar and Saved events. Spatial discovery lives under Clubs, so the dashboard no longer exposes Map view. Avoids hardcoded tile heights so labels can wrap without clipping on narrow screens. |
 | `DashboardEmpty` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:10` | Standalone empty-dashboard wrapper used by focused tests/non-tab embedding. Renders the empty dashboard header plus `DashboardEmptySliverBody`. |
-| `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:116` | Sliver body for the empty Home dashboard. Keeps the existing "book your first run" education flow without embedding activity updates. |
+| `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:60` | Sliver body for the empty Home dashboard. Keeps the existing "book your first run" education flow, can show the personal `DashboardClubsRail`, and avoids embedding activity updates. |
 | `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first event. Its solid-white CTA uses `CatchButtonVariant.light` so the pill stays legible in dark mode. |
 | `DashedAvatar` | `lib/dashboard/presentation/widgets/dashed_avatar.dart:7` | Dashed-border circular avatar placeholder used in empty-state layouts. |
 | `StaticMapDark` | `lib/dashboard/presentation/widgets/static_map_dark.dart:3` | Static map image widget with dark mode support. |
@@ -2200,9 +2238,9 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The map fills the full viewport, including the status-bar/notch area, while the Explore chrome stays safe-area aligned. The full/list state covers the map with a full-height sheet and a chrome-height internal spacer, so the Explore header and quick-filter rail read as normal page chrome with no map sliver. The `Map` pill appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins promote into a full-width event hero card. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
-| `ClubsListBody` | `lib/clubs/presentation/list/widgets/clubs_list_body.dart:8` | Sliver-native data body for the Explore tab. Composes the joined-club horizontal rail, event-first `ExploreEventsSection`, club directory sliver list, and bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. |
-| `ExploreEventsSection` | `lib/clubs/presentation/list/widgets/explore_events_section.dart:21` | Event-first Explore section above the club directory. Watches the event discovery feed, renders a featured `CatchEventSpotlightCard`, day-grouped `CatchEventTicketCard` rows, viewer availability labels, compact skeleton/error/empty states, and routes event taps to `Routes.eventDetailScreen`. Primary Explore sheet call sites should spread `buildExploreEventsSlivers` directly to get pinned day headers; the legacy single-widget wrapper keeps inline headers for nested sliver groups. |
+| `ClubsListScreen` | `lib/clubs/presentation/list/clubs_list_screen.dart:31` | Explore tab route. Owns the persistent sheet-over-map browse surface: `EventMapView` stays mounted behind a draggable sheet and receives its map view model from the same filtered event discovery feed used by the list. The map can fill the full viewport, but the full/list state paints an opaque top lid over the status-bar/notch area and header/filter chrome while the sheet begins below that chrome, so the closed page does not show map content in the safe area. The `Map` pill appears only in this full/list state; after opening, users close or resize by dragging the handle. Programmatic map open lands on a higher detent just under the filter strip, fades the top lid/header/filter backgrounds transparent, and keeps the city/search/filter controls floating over the map while the sheet edge rounds and selected map pins promote into a full-width event hero card. User drags use soft settling zones: releases near the shorter bottom extent, map detent, or full/list state animate into those anchors, while the middle range can rest naturally. The peek state renders only aggregate result summary copy. Selecting a map pin stores the selected event id and snaps to the map selected-card state. The screen also listens for map camera-center changes so nearby event ordering can remain spatial, and a distance-ring tap cycles the active distance filter. |
+| `ClubsListBody` | `lib/clubs/presentation/list/widgets/clubs_list_body.dart:10` | Sliver-native data body for the Explore tab. Production `ClubsListScreen` disables the old personal rail and directory stack, then composes the mixed `ExploreEventsSection` with the bottom-of-page `ExploreEventTypeBrowseGrid` without embedding a vertical `ListView` inside the parent `CustomScrollView`. Legacy callers can still opt into the joined-club rail or club directory through explicit flags. |
+| `ExploreEventsSection` | `lib/clubs/presentation/list/widgets/explore_events_section.dart:101` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ClubsListBody`, interleaves compact activity-coded event rows, an Instax-like club spotlight, the editor-pick event spotlight, and compact club rows, then routes event taps to `Routes.eventDetailScreen` and club taps to `Routes.clubDetailScreen`. Skeleton/error/empty states still belong to the event discovery feed, with club-only fallback content allowed when events are empty. |
 | `ExploreEventTypeBrowseGrid` | `lib/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart:13` | Bottom-of-page Browse by event type surface. Reads the current Explore feed and `clubBrowseFiltersProvider`, renders `primaryBrowseActivityKinds` with the shared activity palette and visible-feed counts, and toggles `activityTag` filters from each tile. |
 | `ExplorePeekRail` | `lib/clubs/presentation/list/widgets/explore_peek_rail.dart:13` | Lead sliver builder for the Explore map sheet. `buildExploreMapSheetLeadSlivers` renders aggregate count/scope copy in collapsed mode, a full-width `CatchEventSpotlightCard` with a shared activity-art Hero in selected-pin mode, and the compact nearby rail with spatial reordering plus a semantic "See all" action in unselected half/full mode. |
 | `ExploreConceptPreviewScreen` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_preview_screen.dart:14` | Dev-only static lab for the next Explore visual direction. It renders presentation-only concept data through isolated ticket event cards, the mixed This week list, spotlight event and club cards, an activity color-system board, detail header treatment, map pin treatment, and browse-by-type grid without reading live events, clubs, memberships, or booking state. |
@@ -2217,7 +2255,7 @@ Generated 2026-05-06.
 | `ClubDiscoverList` | `lib/clubs/presentation/list/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubListTile` | `lib/clubs/presentation/list/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language: image-backed clubs get a bounded photo card with member seal, serif title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
 | `ClubsEmptyState` | `lib/clubs/presentation/list/widgets/clubs_empty_state.dart:4` | Empty state for empty-city, search-empty, filter-empty, and combined search/filter-empty cases. Uses `CatchEmptyState` with recovery copy and optional clear actions owned by `ClubsList`. |
-| `ClubAvatarRail` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:9` | Horizontal rail of the user's joined clubs plus a create-club tile. Uses larger rounded image chips so no-photo fallback marks and live badges remain legible. |
+| `ClubAvatarRail` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:12` | Horizontal rail of the user's joined clubs plus an optional create-club tile. Uses larger rounded image chips so no-photo fallback marks and live badges remain legible, and exposes padding/divider controls so Home can reuse the rail without Explore-specific chrome. |
 | `_CreateClubButton` | `lib/clubs/presentation/list/widgets/club_avatar_rail.dart:36` | Rounded-square create tile at the end of the avatar rail to create a new club. |
 | `ClubsBrowseHeaderContent` | `lib/clubs/presentation/list/widgets/clubs_sliver_header.dart:23` | Explore-specific wrapper around `CatchBrowseHeader`. It can render in the pinned sliver slot or inside Explore's floating chrome layer, owns temporary search-open state, wires city picker/search/create actions, accepts an optional background color, and keeps query state in `clubSearchQueryProvider` for event and club search. |
 | `ClubHeroAppBar` | `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart:16` | Club detail identity hero with cover-photo support, shared branded fallback, name, area/city, back, and share. Rating and host-only ownership cues stay out of the hero, and no-photo headers use a shorter height. |

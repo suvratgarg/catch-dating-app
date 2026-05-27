@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -57,9 +58,14 @@ class DashboardEmpty extends StatelessWidget {
 }
 
 class DashboardEmptySliverBody extends StatelessWidget {
-  const DashboardEmptySliverBody({super.key, this.weeklyActivitySection});
+  const DashboardEmptySliverBody({
+    super.key,
+    this.weeklyActivitySection,
+    this.followedClubIds = const <String>[],
+  });
 
   final DashboardSectionModel<WeeklyActivitySnapshot>? weeklyActivitySection;
+  final List<String> followedClubIds;
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +87,10 @@ class DashboardEmptySliverBody extends StatelessWidget {
             gapH20,
           ],
           const QuickActions(),
+          if (followedClubIds.isNotEmpty) ...[
+            gapH20,
+            DashboardClubsRail(clubIds: followedClubIds),
+          ],
           gapH20,
           Text('How Catch works', style: CatchTextStyles.titleL(context)),
           gapH10,

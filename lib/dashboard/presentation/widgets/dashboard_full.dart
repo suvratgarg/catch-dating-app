@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_clubs_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -70,7 +71,11 @@ class DashboardFull extends ConsumerWidget {
               eyebrow: dayCity(cityLabel(user.city)).toUpperCase(),
               title: '${greeting()}, $firstName',
             ).buildSlivers(context),
-            DashboardFullSliverBody(viewModel: viewModel, user: user),
+            DashboardFullSliverBody(
+              viewModel: viewModel,
+              user: user,
+              followedClubIds: followedClubIds,
+            ),
           ],
         ),
       ),
@@ -83,10 +88,12 @@ class DashboardFullSliverBody extends ConsumerWidget {
     super.key,
     required this.viewModel,
     required this.user,
+    this.followedClubIds = const <String>[],
   });
 
   final DashboardFullViewModel viewModel;
   final UserProfile user;
+  final List<String> followedClubIds;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -129,6 +136,10 @@ class DashboardFullSliverBody extends ConsumerWidget {
           DashboardStrideSection(section: viewModel.weeklyActivitySection),
           gapH18,
           const QuickActions(),
+          if (followedClubIds.isNotEmpty) ...[
+            gapH18,
+            DashboardClubsRail(clubIds: followedClubIds),
+          ],
           ..._buildRecommendedEventsSection(
             recommendationsSection: viewModel.recommendationsSection,
           ),

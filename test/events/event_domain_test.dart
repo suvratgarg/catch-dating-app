@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,6 +15,7 @@ void main() {
     int? checkedInCount,
     int? waitlistedCount,
     EventLifecycleStatus status = EventLifecycleStatus.active,
+    EventFormatSnapshot eventFormat = const EventFormatSnapshot.socialRun(),
   }) {
     final start = startTime ?? DateTime.now().add(const Duration(hours: 1));
     return Event(
@@ -22,6 +24,7 @@ void main() {
       startTime: start,
       endTime: endTime ?? start.add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road',
+      eventFormat: eventFormat,
       distanceKm: 5.0,
       pace: PaceLevel.easy,
       capacityLimit: capacityLimit,
@@ -37,23 +40,23 @@ void main() {
   // ── #1-2: title ────────────────────────────────────────────────────────────
 
   group('Event.title', () {
-    test('#1 Saturday 6 AM → "Saturday Morning Event"', () {
+    test('#1 Saturday 6 AM -> "Saturday Morning Run"', () {
       // Find the next Saturday 06:00
       var dt = DateTime(2025, 1, 1, 6, 0); // 2025-01-01 is a Wednesday
       while (dt.weekday != DateTime.saturday) {
         dt = dt.add(const Duration(days: 1));
       }
       final event = buildEvent(startTime: dt);
-      expect(event.title, 'Saturday Morning Event');
+      expect(event.title, 'Saturday Morning Run');
     });
 
-    test('#2 Wednesday 14:00 → "Wednesday Afternoon Event"', () {
+    test('#2 Wednesday 14:00 -> "Wednesday Afternoon Run"', () {
       var dt = DateTime(2025, 1, 1, 14, 0);
       while (dt.weekday != DateTime.wednesday) {
         dt = dt.add(const Duration(days: 1));
       }
       final event = buildEvent(startTime: dt);
-      expect(event.title, 'Wednesday Afternoon Event');
+      expect(event.title, 'Wednesday Afternoon Run');
     });
 
     test('Evening period for 18:00', () {
@@ -62,7 +65,30 @@ void main() {
         dt = dt.add(const Duration(days: 1));
       }
       final event = buildEvent(startTime: dt);
-      expect(event.title, 'Friday Evening Event');
+      expect(event.title, 'Friday Evening Run');
+    });
+
+    test('uses activity kind for non-run event formats', () {
+      final event = buildEvent(
+        startTime: DateTime(2026, 5, 29, 14),
+        eventFormat: EventFormatSnapshot.fromActivityKind(
+          ActivityKind.pickleball,
+        ),
+      );
+
+      expect(event.title, 'Friday Afternoon Pickleball');
+    });
+
+    test('uses custom activity labels for open event formats', () {
+      final event = buildEvent(
+        startTime: DateTime(2026, 5, 27, 18),
+        eventFormat: EventFormatSnapshot.custom(
+          label: 'salsa night',
+          interactionModel: EventInteractionModel.freeFormMixer,
+        ),
+      );
+
+      expect(event.title, 'Wednesday Evening Salsa Night');
     });
   });
 

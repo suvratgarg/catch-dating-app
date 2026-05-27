@@ -9,6 +9,7 @@ void main() {
         EventInteractionModel.pacePods,
       );
       expect(ActivityKind.socialRun.healthActivityKind, ActivityKind.running);
+      expect(ActivityKind.socialRun.eventTitleLabel, 'Run');
       expect(ActivityKind.running.isHealthImportSupported, isTrue);
       expect(ActivityKind.socialRun.isHealthImportSupported, isFalse);
     });
@@ -55,6 +56,7 @@ void main() {
       expect(snapshot.activityKind, ActivityKind.pickleball);
       expect(snapshot.interactionModel, EventInteractionModel.pairedRotations);
       expect(snapshot.defaultPlaybookId, 'pickleball_rotations');
+      expect(snapshot.eventTitleLabel, 'Pickleball');
     });
 
     test('does not infer a playbook when reading a saved custom format', () {
@@ -86,6 +88,7 @@ void main() {
 
         expect(snapshot.activityKind, ActivityKind.openActivity);
         expect(snapshot.label, 'Salsa night');
+        expect(snapshot.eventTitleLabel, 'Salsa Night');
         expect(
           snapshot.interactionModel,
           EventInteractionModel.pairedRotations,

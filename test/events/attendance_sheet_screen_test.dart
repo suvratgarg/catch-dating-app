@@ -188,7 +188,7 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(shares.single.fileNameOverrides, [
-      'monday-evening-event-2026-05-25-revenue.csv',
+      'monday-evening-run-2026-05-25-revenue.csv',
     ]);
     final revenueCsv = await shares.single.files!.single.readAsString();
     expect(revenueCsv, contains('TOTAL_ESTIMATED_ACTIVE_REVENUE'));
@@ -199,7 +199,7 @@ void main() {
     await _settleAttendanceSheet(tester);
 
     expect(shares.last.fileNameOverrides, [
-      'monday-evening-event-2026-05-25-ops.csv',
+      'monday-evening-run-2026-05-25-ops.csv',
     ]);
     final opsCsv = await shares.last.files!.single.readAsString();
     expect(opsCsv, contains('arrival_order'));

@@ -47,11 +47,11 @@ const Duration _exploreMotionRevealSettleDuration = Duration(milliseconds: 170);
 /// * PEEK  — map dominant, with only a handle and aggregate result summary.
 ///
 /// The persistent top chrome (city + headline + search + filter rail) floats
-/// above the map/sheet canvas. The map owns the full viewport, including the
-/// status-bar/notch area, while the controls stay safe-area aligned. FULL keeps
-/// the sheet behind opaque chrome with an equal internal spacer; MAP fades
-/// that chrome away and collapses the spacer so content sits close to the
-/// lowered sheet edge.
+/// above the map/sheet canvas. The map stays mounted behind the surface, but
+/// FULL covers the status-bar/notch area and chrome with an opaque top lid so
+/// the closed feed reads as a normal page. MAP fades that lid away and
+/// collapses the sheet exclusion so the map becomes truly full-bleed only once
+/// it is exposed.
 class ClubsListScreen extends ConsumerStatefulWidget {
   const ClubsListScreen({super.key, this.enableEventMapNetworkTiles = true});
 
@@ -123,7 +123,8 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
     final spacerProgress = Curves.easeInOutCubic.transform(mapRevealProgress);
     final topInset = MediaQuery.paddingOf(context).top;
     final chromeHeight = topInset + _exploreChromeHeightFor(context);
-    final chromeBackground = t.bg.withValues(alpha: 1 - lidProgress);
+    final sheetTopExclusion = chromeHeight * (1 - spacerProgress);
+    final chromeLidColor = t.bg.withValues(alpha: 1 - lidProgress);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -152,21 +153,24 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
             // rail, but the sheet controller remains bound to the same
             // CustomScrollView during gestures.
             builder: (context, scrollController) {
-              return NotificationListener<ScrollEndNotification>(
-                onNotification: _handleSheetScrollEnd,
-                child: CatchDraggableSheetShell(
-                  showShadow: lidProgress > 0.05,
-                  showHandle: !_isFull,
-                  handleOpacity: lidProgress,
-                  topRadius: CatchRadius.lg * lidProgress,
-                  child: _ExploreSheetFeed(
-                    scrollController: scrollController,
-                    isPeek: _isPeek,
-                    topContentInset: chromeHeight * (1 - spacerProgress),
-                    selectedEventId: _selectedMapEventId,
-                    mapCameraCenter: _mapCameraCenter,
-                    onPeekEventTapped: _selectMapEvent,
-                    onSeeAll: _showList,
+              return Padding(
+                padding: EdgeInsets.only(top: sheetTopExclusion),
+                child: NotificationListener<ScrollEndNotification>(
+                  onNotification: _handleSheetScrollEnd,
+                  child: CatchDraggableSheetShell(
+                    showShadow: lidProgress > 0.05,
+                    showHandle: !_isFull,
+                    handleOpacity: lidProgress,
+                    topRadius: CatchRadius.lg * lidProgress,
+                    child: _ExploreSheetFeed(
+                      scrollController: scrollController,
+                      isFull: _isFull,
+                      isPeek: _isPeek,
+                      selectedEventId: _selectedMapEventId,
+                      mapCameraCenter: _mapCameraCenter,
+                      onPeekEventTapped: _selectMapEvent,
+                      onSeeAll: _showList,
+                    ),
                   ),
                 ),
               );
@@ -176,9 +180,13 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
             top: 0,
             left: 0,
             right: 0,
-            child: SafeArea(
-              bottom: false,
-              child: _ExploreFloatingChrome(backgroundColor: chromeBackground),
+            child: ColoredBox(
+              key: const ValueKey('explore-top-lid'),
+              color: chromeLidColor,
+              child: SafeArea(
+                bottom: false,
+                child: _ExploreFloatingChrome(backgroundColor: chromeLidColor),
+              ),
             ),
           ),
           Positioned(
@@ -400,8 +408,8 @@ class _ExploreFloatingChrome extends StatelessWidget {
 class _ExploreSheetFeed extends ConsumerWidget {
   const _ExploreSheetFeed({
     required this.scrollController,
+    required this.isFull,
     required this.isPeek,
-    required this.topContentInset,
     required this.selectedEventId,
     required this.mapCameraCenter,
     required this.onPeekEventTapped,
@@ -409,8 +417,8 @@ class _ExploreSheetFeed extends ConsumerWidget {
   });
 
   final ScrollController scrollController;
+  final bool isFull;
   final bool isPeek;
-  final double topContentInset;
   final String? selectedEventId;
   final LocationCoordinate? mapCameraCenter;
   final ValueChanged<Event> onPeekEventTapped;
@@ -431,23 +439,26 @@ class _ExploreSheetFeed extends ConsumerWidget {
         0;
     final hasSourceClubs = sourceClubCount > 0;
 
-    final nearbySlivers = buildExploreMapSheetLeadSlivers(
-      ref: ref,
-      selectedEventId: selectedEventId,
-      cameraCenter: mapCameraCenter,
-      filters: filters,
-      scopeLabel: exploreMapScopeLabel(
-        city: city,
-        cameraCenter: mapCameraCenter,
-      ),
-      leadMode: isPeek && selectedEventId == null
-          ? ExploreMapSheetLeadMode.collapsedSummary
-          : selectedEventId != null
-          ? ExploreMapSheetLeadMode.selectedEvent
-          : ExploreMapSheetLeadMode.nearbyRail,
-      onEventTapped: onPeekEventTapped,
-      onSeeAll: onSeeAll,
-    );
+    final shouldShowMapLead = !isFull || selectedEventId != null;
+    final nearbySlivers = shouldShowMapLead
+        ? buildExploreMapSheetLeadSlivers(
+            ref: ref,
+            selectedEventId: selectedEventId,
+            cameraCenter: mapCameraCenter,
+            filters: filters,
+            scopeLabel: exploreMapScopeLabel(
+              city: city,
+              cameraCenter: mapCameraCenter,
+            ),
+            leadMode: isPeek && selectedEventId == null
+                ? ExploreMapSheetLeadMode.collapsedSummary
+                : selectedEventId != null
+                ? ExploreMapSheetLeadMode.selectedEvent
+                : ExploreMapSheetLeadMode.nearbyRail,
+            onEventTapped: onPeekEventTapped,
+            onSeeAll: onSeeAll,
+          )
+        : const <Widget>[];
 
     if (isPeek && selectedEventId == null) {
       return MutationErrorSnackbarListener(
@@ -455,11 +466,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
         child: CustomScrollView(
           key: const ValueKey('explore-list-scroll-view'),
           controller: scrollController,
-          slivers: [
-            if (topContentInset > 0)
-              SliverToBoxAdapter(child: SizedBox(height: topContentInset)),
-            ...nearbySlivers,
-          ],
+          slivers: nearbySlivers,
         ),
       );
     }
@@ -505,6 +512,8 @@ class _ExploreSheetFeed extends ConsumerWidget {
                 context: context,
                 ref: ref,
                 viewModel: value,
+                includeJoinedClubsRail: false,
+                includeClubDirectory: false,
               ),
     };
 
@@ -514,18 +523,12 @@ class _ExploreSheetFeed extends ConsumerWidget {
         key: const ValueKey('explore-list-scroll-view'),
         controller: scrollController,
         // Sheet content is constrained to the sheet's visible height; the
-        // default viewport cache extent (250 px) is small enough that the
-        // club-directory cards below the events feed never build until the
-        // user scrolls. A generous cache extent keeps them in the widget
-        // tree so semantic lookups and screen-reader navigation work
-        // straight away.
+        // default viewport cache extent (250 px) is small enough that mixed
+        // feed cards below the first viewport may not build until the user
+        // scrolls. A generous cache extent keeps them in the widget tree so
+        // semantic lookups and screen-reader navigation work straight away.
         cacheExtent: 1600,
-        slivers: [
-          if (topContentInset > 0)
-            SliverToBoxAdapter(child: SizedBox(height: topContentInset)),
-          ...nearbySlivers,
-          ...bodySlivers,
-        ],
+        slivers: [...nearbySlivers, ...bodySlivers],
       ),
     );
   }

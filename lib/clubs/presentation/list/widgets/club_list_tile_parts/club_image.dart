@@ -4,6 +4,7 @@ class _ClubImage extends StatelessWidget {
   const _ClubImage({
     required this.club,
     this.preferProfileImage = false,
+    this.coverOnly = false,
     this.fallbackCompact = true,
     this.showFallbackLocationChip,
     this.showFallbackFooterLabel,
@@ -11,15 +12,22 @@ class _ClubImage extends StatelessWidget {
 
   final Club club;
   final bool preferProfileImage;
+  final bool coverOnly;
   final bool fallbackCompact;
   final bool? showFallbackLocationChip;
   final bool? showFallbackFooterLabel;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = preferProfileImage
-        ? club.profileImageUrl ?? club.imageUrl
-        : club.imageUrl ?? club.profileImageUrl;
+    final String? imageUrl;
+    if (coverOnly) {
+      imageUrl = club.imageUrl;
+    } else if (preferProfileImage) {
+      imageUrl = club.profileImageUrl ?? club.imageUrl;
+    } else {
+      imageUrl = club.imageUrl ?? club.profileImageUrl;
+    }
+
     if (imageUrl != null && imageUrl.isNotEmpty) {
       return Image.network(
         imageUrl,
