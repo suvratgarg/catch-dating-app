@@ -1,0 +1,205 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:flutter/material.dart';
+
+class EventActionCard extends StatelessWidget {
+  const EventActionCard({
+    super.key,
+    required this.event,
+    required this.badges,
+    required this.metaRows,
+    required this.actions,
+    this.title,
+    this.subtitle,
+    this.indexLabel,
+    this.headerAccessory,
+    this.urgent = false,
+    this.backgroundColor,
+    this.borderColor,
+    this.gradientColors,
+    this.radius = CatchRadius.lg,
+  });
+
+  final Event event;
+  final List<EventActionCardBadge> badges;
+  final List<List<CatchMetaEntry>> metaRows;
+  final List<EventActionCardAction> actions;
+  final String? title;
+  final String? subtitle;
+  final String? indexLabel;
+  final Widget? headerAccessory;
+  final bool urgent;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final List<Color>? gradientColors;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final effectiveGradientColors =
+        gradientColors ??
+        [
+          urgent
+              ? t.primarySoft.withValues(alpha: 0.62)
+              : t.primarySoft.withValues(alpha: 0.28),
+          t.surface,
+          t.raised.withValues(alpha: 0.62),
+        ];
+
+    return CatchSurface(
+      padding: EdgeInsets.zero,
+      backgroundColor: backgroundColor ?? t.surface,
+      borderColor:
+          borderColor ?? (urgent ? t.primary.withValues(alpha: 0.32) : t.line2),
+      radius: radius,
+      elevation: CatchSurfaceElevation.card,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: effectiveGradientColors,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.micro18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _EventActionCardHeader(badges: badges, indexLabel: indexLabel),
+            if (headerAccessory != null) ...[gapH10, headerAccessory!],
+            gapH12,
+            Text(
+              title ?? event.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: CatchTextStyles.displayM(context),
+            ),
+            if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
+              gapH4,
+              Text(
+                subtitle!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+            if (metaRows.isNotEmpty) ...[
+              gapH12,
+              for (var index = 0; index < metaRows.length; index += 1) ...[
+                if (index > 0) gapH6,
+                CatchMetaDotRow(entries: metaRows[index]),
+              ],
+            ],
+            if (actions.isNotEmpty) ...[
+              gapH16,
+              _EventActionCardActions(actions: actions),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EventActionCardBadge {
+  const EventActionCardBadge({
+    required this.label,
+    required this.tone,
+    this.icon,
+  });
+
+  final String label;
+  final CatchBadgeTone tone;
+  final IconData? icon;
+}
+
+class EventActionCardAction {
+  const EventActionCardAction({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.variant = CatchButtonVariant.secondary,
+    this.isLoading = false,
+    this.semanticsLabel,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final CatchButtonVariant variant;
+  final bool isLoading;
+  final String? semanticsLabel;
+}
+
+class _EventActionCardHeader extends StatelessWidget {
+  const _EventActionCardHeader({
+    required this.badges,
+    required this.indexLabel,
+  });
+
+  final List<EventActionCardBadge> badges;
+  final String? indexLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveIndex = indexLabel?.trim();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s1,
+            children: [
+              for (final badge in badges)
+                CatchBadge(
+                  label: badge.label,
+                  tone: badge.tone,
+                  icon: badge.icon,
+                ),
+            ],
+          ),
+        ),
+        if (effectiveIndex != null && effectiveIndex.isNotEmpty) ...[
+          gapW8,
+          CatchBadge(label: effectiveIndex, tone: CatchBadgeTone.neutral),
+        ],
+      ],
+    );
+  }
+}
+
+class _EventActionCardActions extends StatelessWidget {
+  const _EventActionCardActions({required this.actions});
+
+  final List<EventActionCardAction> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var index = 0; index < actions.length; index += 1) ...[
+          if (index > 0) gapH10,
+          CatchButton(
+            label: actions[index].label,
+            icon: Icon(actions[index].icon, size: 18),
+            variant: actions[index].variant,
+            fullWidth: true,
+            isLoading: actions[index].isLoading,
+            semanticsLabel: actions[index].semanticsLabel,
+            onPressed: actions[index].isLoading
+                ? null
+                : actions[index].onPressed,
+          ),
+        ],
+      ],
+    );
+  }
+}

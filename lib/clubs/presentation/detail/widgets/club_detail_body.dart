@@ -6,20 +6,19 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
+import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
@@ -262,10 +261,10 @@ class _ClubHostRow extends StatelessWidget {
 
     return Row(
       children: [
-        PersonAvatar(
-          size: 54,
+        ClubHostAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
+          size: 54,
           borderWidth: 2,
           borderColor: borderColor,
         ),
@@ -284,12 +283,7 @@ class _ClubHostRow extends StatelessWidget {
               gapH6,
               Row(
                 children: [
-                  CatchBadge(
-                    label: host.role == ClubHostRole.owner ? 'Owner' : 'Host',
-                    tone: host.role == ClubHostRole.owner
-                        ? CatchBadgeTone.brand
-                        : CatchBadgeTone.neutral,
-                  ),
+                  ClubHostRoleBadge(role: host.role),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -470,10 +464,10 @@ class _OwnerHostRow extends StatelessWidget {
 
     return Row(
       children: [
-        PersonAvatar(
-          size: 42,
+        ClubHostAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
+          size: 42,
         ),
         gapW10,
         Expanded(
@@ -487,12 +481,7 @@ class _OwnerHostRow extends StatelessWidget {
                 style: CatchTextStyles.sectionTitle(context),
               ),
               gapH4,
-              CatchBadge(
-                label: host.role == ClubHostRole.owner ? 'Owner' : 'Host',
-                tone: host.role == ClubHostRole.owner
-                    ? CatchBadgeTone.brand
-                    : CatchBadgeTone.neutral,
-              ),
+              ClubHostRoleBadge(role: host.role),
             ],
           ),
         ),

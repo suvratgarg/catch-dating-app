@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -90,9 +91,16 @@ class ExploreConceptEventTicketCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        _ClockMark(
+                        EventClockMark(
                           accent: visual.accent,
                           time: _clockTimeFor(event),
+                          size: 38,
+                          ringColor: t.ink2,
+                          hourStrokeWidth: 2.2,
+                          minuteStrokeWidth: 1.7,
+                          hourLengthFactor: 0.52,
+                          minuteLengthFactor: 0.78,
+                          centerDotRadius: 2.2,
                         ),
                         gapW10,
                         Expanded(
@@ -526,11 +534,18 @@ class _ThisWeekEventRow extends StatelessWidget {
                 gapH8,
                 Row(
                   children: [
-                    _TinyClockMark(
+                    EventClockMark(
                       accent: visual.accent,
                       time:
                           event.clockTime ??
                           _parseClockTimeLabel(event.timeLabel),
+                      size: 22,
+                      ringColor: t.ink3,
+                      hourStrokeWidth: 2.2,
+                      minuteStrokeWidth: 1.7,
+                      hourLengthFactor: 0.52,
+                      minuteLengthFactor: 0.78,
+                      centerDotRadius: 2.2,
                     ),
                     gapW8,
                     Flexible(
@@ -570,7 +585,7 @@ class _ThisWeekEventRow extends StatelessWidget {
                     ),
                     gapW12,
                     Expanded(
-                      child: _ThisWeekProgress(
+                      child: EventCapacityProgress(
                         color: visual.accent,
                         value: event.progress,
                       ),
@@ -711,54 +726,6 @@ class _ThisWeekClubStamp extends StatelessWidget {
         boxShadow: CatchElevation.card,
       ),
       child: Icon(visual.icon, color: Colors.white, size: 32),
-    );
-  }
-}
-
-class _TinyClockMark extends StatelessWidget {
-  const _TinyClockMark({required this.accent, required this.time});
-
-  final Color accent;
-  final TimeOfDay time;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SizedBox.square(
-      dimension: 22,
-      child: CustomPaint(
-        painter: _ClockPainter(ring: t.ink3, hand: accent, time: time),
-      ),
-    );
-  }
-}
-
-class _ThisWeekProgress extends StatelessWidget {
-  const _ThisWeekProgress({required this.color, required this.value});
-
-  final Color color;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final clamped = value.clamp(0, 1).toDouble();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
-      child: SizedBox(
-        height: 5,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ColoredBox(color: t.line.withValues(alpha: 0.55)),
-            FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: clamped,
-              child: ColoredBox(color: color),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -942,24 +909,6 @@ class _SoftIconBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(CatchRadius.md),
       ),
       child: Icon(icon, size: 20, color: t.ink),
-    );
-  }
-}
-
-class _ClockMark extends StatelessWidget {
-  const _ClockMark({required this.accent, required this.time});
-
-  final Color accent;
-  final TimeOfDay time;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SizedBox.square(
-      dimension: 38,
-      child: CustomPaint(
-        painter: _ClockPainter(ring: t.ink2, hand: accent, time: time),
-      ),
     );
   }
 }
@@ -1619,63 +1568,6 @@ class _TicketPerforationPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _TicketPerforationPainter oldDelegate) {
     return oldDelegate.lineColor != lineColor;
-  }
-}
-
-class _ClockPainter extends CustomPainter {
-  const _ClockPainter({
-    required this.ring,
-    required this.hand,
-    required this.time,
-  });
-
-  final Color ring;
-  final Color hand;
-  final TimeOfDay time;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide / 2 - 2;
-    final ringPaint = Paint()
-      ..color = ring
-      ..strokeWidth = 1.4
-      ..style = PaintingStyle.stroke;
-    final handPaint = Paint()
-      ..color = hand
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-    final minuteHandPaint = Paint()
-      ..color = hand
-      ..strokeWidth = 1.7
-      ..strokeCap = StrokeCap.round;
-    final hourAngle =
-        (((time.hour % 12) * 60 + time.minute) / 720) * math.pi * 2 -
-        math.pi / 2;
-    final minuteAngle = (time.minute / 60) * math.pi * 2 - math.pi / 2;
-    Offset handOffset(double length, double angle) {
-      return Offset(math.cos(angle) * length, math.sin(angle) * length);
-    }
-
-    canvas.drawCircle(center, radius, ringPaint);
-    canvas.drawLine(
-      center,
-      center + handOffset(radius * 0.52, hourAngle),
-      handPaint,
-    );
-    canvas.drawLine(
-      center,
-      center + handOffset(radius * 0.78, minuteAngle),
-      minuteHandPaint,
-    );
-    canvas.drawCircle(center, 2.2, Paint()..color = hand);
-  }
-
-  @override
-  bool shouldRepaint(covariant _ClockPainter oldDelegate) {
-    return oldDelegate.ring != ring ||
-        oldDelegate.hand != hand ||
-        oldDelegate.time != time;
   }
 }
 

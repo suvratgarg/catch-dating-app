@@ -2,45 +2,22 @@ import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.d
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_map_sheet.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
-import 'package:catch_dating_app/events/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-class EventMapScreen extends ConsumerWidget {
-  const EventMapScreen({super.key, this.enableNetworkTiles = true});
-
-  final bool enableNetworkTiles;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: EventMapView(
-        enableNetworkTiles: enableNetworkTiles,
-        overlay: const MapOverlayControls(),
-      ),
-    );
-  }
-}
 
 class EventMapView extends ConsumerStatefulWidget {
   const EventMapView({
     super.key,
     this.enableNetworkTiles = true,
     this.overlay,
-    this.showSheet = true,
     this.onEventSelected,
     this.onCameraCenterChanged,
     this.onDistanceRingTapped,
@@ -51,7 +28,6 @@ class EventMapView extends ConsumerStatefulWidget {
 
   final bool enableNetworkTiles;
   final Widget? overlay;
-  final bool showSheet;
   final ValueChanged<Event>? onEventSelected;
   final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
   final VoidCallback? onDistanceRingTapped;
@@ -89,7 +65,6 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                   () => ref.invalidate(eventMapViewModelProvider),
             ),
             data: (viewModel) {
-              final items = viewModel.effectiveItems;
               final selectedEvent = viewModel.selectedEvent(_selectedEventId);
               final selectedEventCenter = _startingPointFor(selectedEvent);
               final mapCenter = resolveEventMapInitialCenter(
@@ -101,23 +76,7 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
               return viewModel.isEmpty
                   ? const _MapEmptyState()
                   : !viewModel.hasPinnedEvents
-                  ? Stack(
-                      children: [
-                        const Positioned.fill(child: _NoPinnedEventsState()),
-                        Positioned(
-                          left: CatchSpacing.s5,
-                          right: CatchSpacing.s5,
-                          bottom: CatchSpacing.s5,
-                          child: widget.showSheet
-                              ? EventMapSheet(
-                                  items: items,
-                                  selectedEvent: selectedEvent,
-                                  onEventSelected: _selectEvent,
-                                )
-                              : const SizedBox.shrink(),
-                        ),
-                      ],
-                    )
+                  ? const _NoPinnedEventsState()
                   : Stack(
                       children: [
                         Positioned.fill(
@@ -133,18 +92,6 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                             onCameraCenterChanged: widget.onCameraCenterChanged,
                             onDistanceRingTapped: widget.onDistanceRingTapped,
                           ),
-                        ),
-                        Positioned(
-                          left: CatchSpacing.s5,
-                          right: CatchSpacing.s5,
-                          bottom: CatchSpacing.s5,
-                          child: widget.showSheet
-                              ? EventMapSheet(
-                                  items: items,
-                                  selectedEvent: selectedEvent,
-                                  onEventSelected: _selectEvent,
-                                )
-                              : const SizedBox.shrink(),
                         ),
                       ],
                     );

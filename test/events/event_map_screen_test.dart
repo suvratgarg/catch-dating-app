@@ -7,11 +7,9 @@ import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import 'events_test_helpers.dart';
@@ -22,7 +20,7 @@ void main() {
   ) async {
     await pumpEventsTestApp(
       tester,
-      const EventMapScreen(enableNetworkTiles: false),
+      const EventMapView(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) =>
@@ -37,91 +35,36 @@ void main() {
     expect(find.text('Nearby events'), findsNothing);
   });
 
-  testWidgets(
-    'keeps event sheet visible when upcoming events have no exact pins',
-    (tester) async {
-      final unpinned = buildEvent(
-        id: 'unpinned',
-        meetingPoint: 'Race Course Road main gate',
-        startTime: DateTime.now().add(const Duration(days: 1)),
-      );
-
-      await pumpEventsTestApp(
-        tester,
-        const EventMapScreen(enableNetworkTiles: false),
-        overrides: [
-          eventMapViewModelProvider.overrideWith(
-            (ref) => AsyncData(
-              EventMapViewModel(events: [unpinned], pinnedEvents: const []),
-            ),
-          ),
-          deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
-          selectedClubCityProvider.overrideWithValue(_mumbai),
-        ],
-      );
-
-      expect(find.text('No exact pins yet'), findsOneWidget);
-      expect(find.text('Nearby events'), findsOneWidget);
-      expect(find.text('Race Course Road main gate'), findsOneWidget);
-      expect(find.text('No pin'), findsOneWidget);
-    },
-  );
-
-  testWidgets('view event opens the club event detail route', (tester) async {
-    final event = buildEvent(
-      id: 'event-map-1',
-      clubId: 'club-map-1',
+  testWidgets('shows no-pinned state without a nearby-events sheet', (
+    tester,
+  ) async {
+    final unpinned = buildEvent(
+      id: 'unpinned',
       meetingPoint: 'Race Course Road main gate',
       startTime: DateTime.now().add(const Duration(days: 1)),
-      startingPointLat: 22.72,
-      startingPointLng: 75.86,
     );
-    final router = GoRouter(
-      initialLocation: Routes.eventMapScreen.path,
-      routes: [
-        GoRoute(
-          path: Routes.eventMapScreen.path,
-          name: Routes.eventMapScreen.name,
-          builder: (_, _) => const EventMapScreen(enableNetworkTiles: false),
-        ),
-        GoRoute(
-          path: Routes.eventDetailScreen.path,
-          name: Routes.eventDetailScreen.name,
-          builder: (_, state) => Scaffold(
-            body: Text(
-              'Event detail ${state.pathParameters['clubId']}/'
-              '${state.pathParameters['eventId']}',
-            ),
+
+    await pumpEventsTestApp(
+      tester,
+      const EventMapView(enableNetworkTiles: false),
+      overrides: [
+        eventMapViewModelProvider.overrideWith(
+          (ref) => AsyncData(
+            EventMapViewModel(events: [unpinned], pinnedEvents: const []),
           ),
         ),
+        deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
+        selectedClubCityProvider.overrideWithValue(_mumbai),
       ],
     );
-    addTearDown(router.dispose);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          eventMapViewModelProvider.overrideWith(
-            (ref) => AsyncData(
-              EventMapViewModel(events: [event], pinnedEvents: [event]),
-            ),
-          ),
-          deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
-          selectedClubCityProvider.overrideWithValue(_mumbai),
-        ],
-        child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
-      ),
-    );
-    await tester.pump();
-    await tester.tap(find.text('View event'));
-    await tester.pump();
-    expect(tester.takeException(), isNull);
-    await tester.pump();
-
-    expect(find.text('Event detail club-map-1/event-map-1'), findsOneWidget);
+    expect(find.text('No exact pins yet'), findsOneWidget);
+    expect(find.text('Nearby events'), findsNothing);
+    expect(find.text('Race Course Road main gate'), findsNothing);
+    expect(find.text('No pin'), findsNothing);
   });
 
-  testWidgets('selecting a nearby event makes its pin the camera target', (
+  testWidgets('selecting a map marker makes its pin the camera target', (
     tester,
   ) async {
     final firstRun = buildEvent(
@@ -139,7 +82,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      const EventMapScreen(enableNetworkTiles: false),
+      const EventMapView(enableNetworkTiles: false),
       overrides: [
         eventMapViewModelProvider.overrideWith(
           (ref) => AsyncData(
@@ -161,7 +104,7 @@ void main() {
       isNull,
     );
 
-    await tester.tap(find.text('Vijay Nagar main gate'));
+    await tester.tap(find.bySemanticsLabel('Select Vijay Nagar main gate'));
     await tester.pump();
 
     final map = tester.widget<EventPinsMap>(find.byType(EventPinsMap));

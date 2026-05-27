@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
@@ -144,18 +144,18 @@ void main() {
       expect(find.text('7:15 AM'), findsAtLeastNWidgets(1));
 
       await tester.scrollUntilVisible(
-        find.text('Carter Road Promenade'),
+        find.text(events[1].title),
         180,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
       expect(find.text(_agendaDayLabel(firstEventStart, now)), findsOneWidget);
-      expect(find.text('Carter Road Promenade'), findsOneWidget);
-      expect(find.text('Juhu Beach Gate'), findsOneWidget);
-      expect(find.text('Stride Social'), findsAtLeastNWidgets(1));
-      expect(find.text('5km · Easy · 1/20 spots'), findsOneWidget);
-      expect(find.text('8km · Moderate · 2/12 spots'), findsOneWidget);
+      expect(find.text(events[1].title), findsOneWidget);
+      expect(find.text(events[0].title), findsOneWidget);
+      expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
+      expect(find.text('1 going - 19 left'), findsOneWidget);
+      expect(find.text('2 going - 10 left'), findsOneWidget);
     });
 
     testWidgets('includes future saved events as planned calendar rows', (
@@ -199,14 +199,14 @@ void main() {
       expect(find.text('Old Saved Start'), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text('Saved Start'),
+        find.text(savedFutureEvent.title),
         180,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
-      expect(find.text('Saved Start'), findsOneWidget);
-      expect(find.text('Booked Promenade'), findsOneWidget);
+      expect(find.text(savedFutureEvent.title), findsOneWidget);
+      expect(find.text(signedUpEvent.title), findsOneWidget);
       expect(find.text('SAVED'), findsOneWidget);
       expect(find.text('JOINED'), findsOneWidget);
     });
@@ -219,6 +219,7 @@ void main() {
         id: 'past-event',
         startTime: now.subtract(const Duration(days: 4, hours: -6)),
         meetingPoint: 'Old Beach',
+        eventFormat: _eventFormat('Old Beach'),
         distanceKm: 5,
         pace: PaceLevel.easy,
       );
@@ -226,6 +227,7 @@ void main() {
         id: 'future-event',
         startTime: now.add(const Duration(days: 3, hours: 2)),
         meetingPoint: 'Future Park',
+        eventFormat: _eventFormat('Future Park'),
         distanceKm: 8,
         pace: PaceLevel.moderate,
       );
@@ -245,8 +247,8 @@ void main() {
         findsAtLeastNWidgets(1),
       );
       expect(
-        tester.getTopLeft(find.text('Future Park')).dy,
-        lessThan(tester.getTopLeft(find.text('Old Beach')).dy),
+        tester.getTopLeft(find.text(futureEvent.title)).dy,
+        lessThan(tester.getTopLeft(find.text(pastEvent.title)).dy),
       );
     });
 
@@ -278,7 +280,7 @@ void main() {
         expect(find.text(_monthYearLabel(now)), findsOneWidget);
         expect(find.text('Next'), findsOneWidget);
         expect(find.text('None'), findsOneWidget);
-        expect(find.text('Past Month Park'), findsOneWidget);
+        expect(find.text(oldEvent.title), findsOneWidget);
       },
     );
 
@@ -297,10 +299,12 @@ void main() {
           id: 'event-$index',
           startTime: now.add(Duration(days: index + 1)),
           meetingPoint: 'Future Event $index',
+          eventFormat: _eventFormat('Future Event $index'),
           distanceKm: 5,
           pace: PaceLevel.easy,
         ),
       );
+      final targetEventLabel = events.last.title;
 
       await _pumpCalendar(
         tester,
@@ -311,17 +315,17 @@ void main() {
         ],
       );
 
-      expect(find.text('Future Event 7'), findsOneWidget);
-      expect(find.text('Future Event 7').hitTestable(), findsNothing);
+      expect(find.text(targetEventLabel), findsOneWidget);
+      expect(find.text(targetEventLabel).hitTestable(), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text('Future Event 7'),
+        find.text(targetEventLabel),
         300,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
-      expect(find.text('Future Event 7').hitTestable(), findsOneWidget);
+      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
     });
 
     testWidgets('tapping a week date scrolls to that agenda day', (
@@ -342,11 +346,13 @@ void main() {
           id: 'week-event-$index',
           startTime: monday.add(Duration(days: index, hours: 7)),
           meetingPoint: 'Week Event $index',
+          eventFormat: _eventFormat('Week Event $index'),
           distanceKm: 5,
           pace: PaceLevel.easy,
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
+      final targetEventLabel = events.last.title;
 
       await _pumpCalendar(
         tester,
@@ -357,13 +363,13 @@ void main() {
         ],
       );
 
-      expect(find.text('Week Event 6'), findsOneWidget);
-      expect(find.text('Week Event 6').hitTestable(), findsNothing);
+      expect(find.text(targetEventLabel), findsOneWidget);
+      expect(find.text(targetEventLabel).hitTestable(), findsNothing);
 
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
       await pumpFeatureUi(tester);
 
-      expect(find.text('Week Event 6').hitTestable(), findsOneWidget);
+      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
     });
 
     testWidgets(
@@ -524,11 +530,14 @@ void main() {
           id: 'sticky-week-event-$index',
           startTime: monday.add(Duration(days: index, hours: 7)),
           meetingPoint: 'Sticky Week Event $index',
+          eventFormat: _eventFormat('Sticky Week Event $index'),
           distanceKm: 5,
           pace: PaceLevel.easy,
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
+      final targetEventLabel = events.last.title;
+      final firstEventLabel = events.first.title;
 
       await _pumpCalendar(
         tester,
@@ -542,7 +551,7 @@ void main() {
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
       await pumpFeatureUi(tester);
 
-      expect(find.text('Sticky Week Event 6').hitTestable(), findsOneWidget);
+      expect(find.text(targetEventLabel).hitTestable(), findsOneWidget);
       expect(
         find.text(_monthYearLabel(targetDate)).hitTestable(),
         findsOneWidget,
@@ -555,7 +564,7 @@ void main() {
       await tester.tap(find.byKey(_calendarWeekDayKey(monday)));
       await pumpFeatureUi(tester);
 
-      expect(find.text('Sticky Week Event 0').hitTestable(), findsOneWidget);
+      expect(find.text(firstEventLabel).hitTestable(), findsOneWidget);
     });
 
     testWidgets(
@@ -647,10 +656,7 @@ void main() {
 
         await _scrollCalendarDown(tester);
 
-        final eventCard = find.byType(EventAgendaCard);
-        expect(tester.widget<EventAgendaCard>(eventCard).onTap, isNotNull);
-
-        tester.widget<EventAgendaCard>(eventCard).onTap!.call();
+        await tester.tap(find.text(event.title));
         expect(tester.takeException(), isNull);
         await _pumpRouterFrame(tester);
 
@@ -724,6 +730,11 @@ EventParticipation _participation({
 }
 
 String _timeLabel(DateTime date) => EventFormatters.time(date);
+
+EventFormatSnapshot _eventFormat(String label) => EventFormatSnapshot.custom(
+  label: label,
+  interactionModel: EventInteractionModel.openFormat,
+);
 
 Key _calendarWeekDayKey(DateTime date) {
   return ValueKey<String>('calendar-week-day-${_dateKey(date)}');

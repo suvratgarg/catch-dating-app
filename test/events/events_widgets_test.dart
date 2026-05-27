@@ -2,19 +2,21 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_hero_tile.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/picker_tile.dart';
@@ -25,7 +27,6 @@ import 'package:catch_dating_app/events/presentation/widgets/when_where_card.dar
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -415,9 +416,11 @@ void main() {
       );
 
       expect(find.text('TODAY'), findsOneWidget);
-      expect(find.text('8:00 AM'), findsOneWidget);
-      expect(find.text('7km · Easy · 2/20 spots'), findsOneWidget);
-      expect(find.text('VIEW'), findsOneWidget);
+      expect(find.text('CARTER ROAD'), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('8:00 AM / Free'), findsOneWidget);
+      expect(find.text('2 going - 18 left'), findsOneWidget);
+      expect(find.text('VIEW'), findsNothing);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule event'), findsNothing);
       expect(
@@ -427,7 +430,7 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.text('7km · Easy · 2/20 spots'));
+      await tester.tap(find.text(event.title));
       await tester.tap(find.text('Next'));
       await tester.pump();
 
@@ -514,18 +517,18 @@ void main() {
       );
 
       expect(
-        tester.getTopLeft(find.text('Sooner start')).dy <
-            tester.getTopLeft(find.text('Later start')).dy,
+        tester.getTopLeft(find.text('SOONER START')).dy <
+            tester.getTopLeft(find.text('LATER START')).dy,
         isTrue,
       );
 
-      await tester.tap(find.text('Sooner start'));
+      await tester.tap(find.text('SOONER START'));
       await tester.pump();
 
       expect(tappedEventId, 'event-sooner');
     });
 
-    testWidgets('agenda list renders provided club names by default', (
+    testWidgets('agenda list renders provided club names in global context', (
       tester,
     ) async {
       final now = DateTime(2026, 5, 5);
@@ -543,20 +546,21 @@ void main() {
             child: EventAgendaList(
               events: [event],
               today: now,
+              showClubName: true,
               clubNameBuilder: (_) => 'Stride Social',
             ),
           ),
         ),
       );
 
-      expect(find.text('Global surface start'), findsOneWidget);
-      expect(find.text('Stride Social'), findsOneWidget);
+      expect(find.text('GLOBAL SURFACE START'), findsNothing);
+      expect(find.text('STRIDE SOCIAL'), findsOneWidget);
+      expect(find.text(event.title), findsOneWidget);
     });
 
-    testWidgets('event hero tile renders key details and forwards taps', (
+    testWidgets('event compact row renders details and forwards taps', (
       tester,
     ) async {
-      final surfaceKey = UniqueKey();
       var tapped = false;
       final event = buildEvent(
         startTime: DateTime.now().add(const Duration(days: 3)),
@@ -569,33 +573,79 @@ void main() {
         Scaffold(
           body: SizedBox(
             width: 360,
-            child: EventHeroTile(
-              surfaceKey: surfaceKey,
-              data: EventTileData.fromEvent(
-                event: event,
-                status: EventTileStatus.recommended,
-                clubName: 'Stride Social',
-                positionLabel: 'FEATURED',
-              ),
-              viewerInterestedInGenders: const [Gender.woman],
+            child: EventCompactRow(
+              event: event,
+              statusLabel: 'Saved',
               onTap: () => tapped = true,
             ),
           ),
         ),
       );
 
-      expect(find.textContaining('NEXT EVENT'), findsOneWidget);
       expect(find.text(event.title), findsOneWidget);
-      expect(find.text('Stride Social'), findsOneWidget);
       expect(find.text('Sea Link promenade'), findsOneWidget);
       expect(find.text('8km · Easy'), findsOneWidget);
-      expect(find.text('0 attendees confirmed'), findsOneWidget);
-      expect(find.text('FEATURED'), findsOneWidget);
+      expect(find.text('0 going - 20 left'), findsOneWidget);
+      expect(find.text('Saved'), findsOneWidget);
 
-      await tester.tap(find.byKey(surfaceKey));
+      await tester.tap(find.byType(EventCompactRow));
       await tester.pump();
 
       expect(tapped, isTrue);
+    });
+
+    testWidgets('event action card renders badges, meta, and actions', (
+      tester,
+    ) async {
+      var actionTapped = false;
+      final event = buildEvent(
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        meetingPoint: 'Race Course Road',
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          body: SizedBox(
+            width: 380,
+            child: EventActionCard(
+              event: event,
+              subtitle: 'Stride Social',
+              badges: const [
+                EventActionCardBadge(
+                  label: 'Next event',
+                  tone: CatchBadgeTone.brand,
+                ),
+              ],
+              metaRows: [
+                [
+                  CatchMetaEntry(
+                    icon: CatchIcons.clock,
+                    label: event.timeRangeLabel,
+                  ),
+                ],
+              ],
+              actions: [
+                EventActionCardAction(
+                  label: 'View event',
+                  icon: CatchIcons.forwardArrow,
+                  onPressed: () => actionTapped = true,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text(event.title), findsOneWidget);
+      expect(find.text('Stride Social'), findsOneWidget);
+      expect(find.text('Next event'), findsOneWidget);
+      expect(find.text('View event'), findsOneWidget);
+
+      await tester.tap(find.text('View event'));
+      await tester.pump();
+
+      expect(actionTapped, isTrue);
     });
 
     testWidgets(

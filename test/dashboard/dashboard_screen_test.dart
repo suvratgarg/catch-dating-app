@@ -397,9 +397,9 @@ void main() {
 
       expect(find.text('Upcoming events'), findsOneWidget);
       expect(find.text('Recent updates'), findsOneWidget);
+      expect(find.text(upcomingEvent.title), findsOneWidget);
       expect(find.text('India Gate lawns east side'), findsOneWidget);
-      expect(find.text('7km'), findsOneWidget);
-      expect(find.text('Fast'), findsOneWidget);
+      expect(find.text('7km · Fast'), findsOneWidget);
       expect(find.text("It's a catch"), findsOneWidget);
       expect(find.text('Catch'), findsOneWidget);
       expect(find.text('Upcoming event'), findsNothing);

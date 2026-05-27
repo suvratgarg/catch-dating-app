@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
@@ -125,7 +126,7 @@ class EventDetailCta extends ConsumerWidget {
                         ? 'Join approved event'
                         : 'Complete approved booking'
                   : isFreeForViewer
-                  ? 'Join event — ${event.spotsRemaining} spots left'
+                  ? 'Join event — ${EventCapacityPresenter(event).joinCtaAvailabilityLabel}'
                   : 'Book event',
               onPressed:
                   bookMutation.isPending || (!isFreeForViewer && !supportsPaid)

@@ -15,7 +15,7 @@ import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
@@ -127,7 +127,10 @@ class ActivitySection extends ConsumerWidget {
           if (upcomingEvents.isNotEmpty) ...[
             const SectionHeader(title: 'Upcoming events', heavy: true),
             for (final entry in upcomingEvents.indexed) ...[
-              _UpcomingEventTile(event: entry.$2),
+              EventCompactRow(
+                event: entry.$2,
+                onTap: () => context.push(_eventRoute(entry.$2)),
+              ),
               if (entry.$1 != upcomingEvents.length - 1) gapH10,
             ],
             if (notificationItems.isNotEmpty) gapH24,
@@ -189,102 +192,6 @@ class ActivitySection extends ConsumerWidget {
         showCatchErrorSnackBar(context, error);
       }
     }
-  }
-}
-
-class _UpcomingEventTile extends StatelessWidget {
-  const _UpcomingEventTile({required this.event});
-
-  final Event event;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      onTap: () => context.push(_eventRoute(event)),
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _EventDatePill(date: event.startTime),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event.locationName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
-                ),
-                gapH4,
-                Text(
-                  '${EventFormatters.shortDate(event.startTime)} · '
-                  '${event.compactTimeRangeLabel}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-                gapH8,
-                Wrap(
-                  spacing: CatchSpacing.s1,
-                  runSpacing: CatchSpacing.s1,
-                  children: [
-                    CatchBadge(
-                      label: event.distanceLabel,
-                      tone: CatchBadgeTone.brand,
-                    ),
-                    CatchBadge(
-                      label: event.pace.label,
-                      tone: CatchBadgeTone.neutral,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          gapW8,
-          Icon(CatchIcons.chevronRightRounded, size: 20, color: t.ink3),
-        ],
-      ),
-    );
-  }
-}
-
-class _EventDatePill extends StatelessWidget {
-  const _EventDatePill({required this.date});
-
-  final DateTime date;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      width: 52,
-      height: 58,
-      radius: CatchRadius.md,
-      backgroundColor: t.primarySoft.withValues(alpha: 0.64),
-      borderColor: t.primary.withValues(alpha: 0.16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            EventFormatters.shortMonth(date).toUpperCase(),
-            style: CatchTextStyles.labelS(context, color: t.primary),
-          ),
-          gapH2,
-          Text(
-            '${date.day}',
-            style: CatchTextStyles.titleL(context, color: t.ink),
-          ),
-        ],
-      ),
-    );
   }
 }
 

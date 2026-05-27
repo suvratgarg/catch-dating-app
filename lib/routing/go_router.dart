@@ -27,7 +27,6 @@ import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -67,7 +66,6 @@ enum Routes {
   savedEventsScreen('/saved-events'),
   savedEventDetailScreen('/saved-events/clubs/:clubId/events/:eventId'),
   filtersScreen('/filters'),
-  eventMapScreen('/map'),
   dashboardEventDetailScreen('/dashboard/clubs/:clubId/events/:eventId'),
   dashboardHostEventManageScreen(
     '/dashboard/clubs/:clubId/events/:eventId/manage',
@@ -263,11 +261,6 @@ GoRouter goRouter(Ref ref) {
         path: Routes.filtersScreen.path,
         name: Routes.filtersScreen.name,
         builder: (context, state) => const FiltersScreen(),
-      ),
-      GoRoute(
-        path: Routes.eventMapScreen.path,
-        name: Routes.eventMapScreen.name,
-        builder: (context, state) => const EventMapScreen(),
       ),
       GoRoute(
         path: Routes.eventLocationMapScreen.path,

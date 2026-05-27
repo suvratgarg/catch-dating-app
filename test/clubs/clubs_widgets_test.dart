@@ -37,6 +37,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -331,7 +332,7 @@ void main() {
       );
       await tester.pump();
 
-      // Activity-art card layout: event title, club + meeting point + type
+      // Activity-art spotlight layout: event title, club + meeting point + type
       // subtitle, and capacity copy from the same availability model.
       expect(find.textContaining(event.title), findsWidgets);
       expect(find.textContaining('Pace Social - People Plaza'), findsOneWidget);
@@ -1696,7 +1697,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await _pumpClubUi(tester);
 
-      await tester.tap(find.text('Start'));
+      await tester.tap(find.text('START'));
       await _pumpClubUi(tester);
 
       expect(find.text('Event event-42'), findsOneWidget);
@@ -2233,23 +2234,106 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        // Pin selection animates the sheet upward to the selected event card
-        // instead of hiding the focus inside the collapsed peek rail.
+        // Pin selection animates the sheet upward to the selected event ticket
+        // instead of promoting every selected pin into spotlight styling.
         expect(
           find.byKey(ValueKey('explore-selected-${selectedEvent.id}')),
           findsOneWidget,
         );
+        expect(find.byType(CatchEventTicketCard), findsOneWidget);
         expect(
           find.byWidgetPredicate(
             (widget) =>
                 widget is Hero &&
                 widget.tag == eventPhotoHeroTag(selectedEvent.id),
           ),
-          findsOneWidget,
+          findsNothing,
         );
         expect(find.text('6 events nearby'), findsNothing);
       },
     );
+
+    testWidgets('selected spotlight pin keeps spotlight styling', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-selected-spotlight',
+        name: 'Spotlight Club',
+      );
+      final spotlight = event_test.buildEvent(
+        id: 'event-spotlight-pin',
+        clubId: club.id,
+        meetingPoint: 'Spotlight Point',
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+      final other = event_test.buildEvent(
+        id: 'event-other-pin',
+        clubId: club.id,
+        meetingPoint: 'Other Point',
+        startTime: DateTime.now().add(const Duration(days: 2)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: spotlight,
+                      club: club,
+                      status: EventTileStatus.recommended,
+                    ),
+                    ExploreEventItem(
+                      event: other,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) {
+              return MaterialApp(
+                theme: AppTheme.light,
+                home: Scaffold(
+                  body: CustomScrollView(
+                    slivers: buildExploreMapSheetLeadSlivers(
+                      ref: ref,
+                      selectedEventId: spotlight.id,
+                      cameraCenter: null,
+                      filters: const ClubBrowseFilterSelection(),
+                      scopeLabel: 'Mumbai',
+                      leadMode: ExploreMapSheetLeadMode.selectedEvent,
+                      onEventTapped: (_) {},
+                      onSeeAll: () {},
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(ValueKey('explore-selected-${spotlight.id}')),
+        findsOneWidget,
+      );
+      expect(find.byType(CatchEventSpotlightCard), findsOneWidget);
+      expect(find.byType(CatchEventTicketCard), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Hero && widget.tag == eventPhotoHeroTag(spotlight.id),
+        ),
+        findsOneWidget,
+      );
+    });
 
     test('explore map summary switches to map area after a large pan', () {
       final mumbai = _testCities.first;

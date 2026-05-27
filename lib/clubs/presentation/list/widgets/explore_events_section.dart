@@ -1,10 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_cover_fallback.dart';
+import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -16,7 +15,6 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -288,117 +286,14 @@ class _ExploreFeedEventRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final event = item.event;
-    final visual = eventActivityVisual(event.activityKind);
-    final capacityProgress = event.capacityLimit <= 0
-        ? 0.0
-        : (event.signedUpCount / event.capacityLimit).clamp(0.0, 1.0);
-    final status = _cardStatusLabel(item);
-    return CatchSurface(
+    return EventDateRailCard(
+      event: event,
+      kicker: item.club.name,
+      priceLabel: item.priceLabel,
+      capacityLabel: _capacityLabel(item),
+      statusLabel: _cardStatusLabel(item),
       onTap: () => _openEvent(context, ref, item, 'mixed_row'),
-      radius: CatchRadius.md,
-      borderColor: t.line2,
-      elevation: CatchSurfaceElevation.card,
-      padding: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ExploreFeedDateBadge(startTime: event.startTime),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s4,
-                  CatchSpacing.s4,
-                  CatchSpacing.s3,
-                  CatchSpacing.s4,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _ExploreFeedActivityStamp(visual: visual),
-                    gapW12,
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _ExploreMonoLabel(
-                                  item.club.name.toUpperCase(),
-                                  color: t.ink3,
-                                ),
-                              ),
-                              if (status != null) ...[
-                                gapW8,
-                                _ExploreStatusPill(
-                                  label: status,
-                                  color: visual.accent,
-                                ),
-                              ],
-                            ],
-                          ),
-                          gapH6,
-                          Text(
-                            event.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: _exploreSerif(context, size: 27, height: 1),
-                          ),
-                          gapH8,
-                          Row(
-                            children: [
-                              _ExploreTinyClockMark(
-                                accent: visual.accent,
-                                time: TimeOfDay.fromDateTime(event.startTime),
-                              ),
-                              gapW8,
-                              Flexible(
-                                child: Text(
-                                  '${EventFormatters.time(event.startTime)} / ${item.priceLabel}',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: CatchTextStyles.mono(
-                                    context,
-                                    color: t.ink2,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          gapH8,
-                          Row(
-                            children: [
-                              Flexible(
-                                child: _ExploreMonoLabel(
-                                  _capacityLabel(item),
-                                  color: t.ink2,
-                                ),
-                              ),
-                              gapW12,
-                              Expanded(
-                                child: _ExploreCapacityProgress(
-                                  color: visual.accent,
-                                  value: capacityProgress,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            _ExploreAccentRail(color: visual.accent),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -436,7 +331,9 @@ class _ExploreClubPolaroidCard extends StatelessWidget {
                     Positioned(
                       top: CatchSpacing.s3,
                       right: CatchSpacing.s3,
-                      child: _ExploreDarkPill(label: _memberCountLabel(club)),
+                      child: _ExploreDarkPill(
+                        label: clubMemberCountLabel(club),
+                      ),
                     ),
                   ],
                 ),
@@ -533,205 +430,6 @@ class _ExploreFeedClubRow extends StatelessWidget {
   }
 }
 
-class _ExploreFeedDateBadge extends StatelessWidget {
-  const _ExploreFeedDateBadge({required this.startTime});
-
-  final DateTime startTime;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      width: 58,
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s4),
-      decoration: BoxDecoration(
-        color: t.raised,
-        border: Border(right: BorderSide(color: t.line)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            EventFormatters.shortWeekday(startTime).toUpperCase(),
-            style: CatchTextStyles.mono(context, color: t.ink3).copyWith(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0,
-            ),
-          ),
-          gapH4,
-          Text(
-            '${startTime.day}',
-            style: _exploreSerif(context, size: 30, height: 0.9),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ExploreFeedActivityStamp extends StatelessWidget {
-  const _ExploreFeedActivityStamp({required this.visual});
-
-  final EventActivityVisualSpec visual;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 42,
-      height: 42,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: visual.soft.withValues(alpha: 0.72),
-        border: Border.all(color: visual.accent.withValues(alpha: 0.54)),
-      ),
-      alignment: Alignment.center,
-      child: Icon(visual.icon, size: 22, color: visual.deep),
-    );
-  }
-}
-
-class _ExploreTinyClockMark extends StatelessWidget {
-  const _ExploreTinyClockMark({required this.accent, required this.time});
-
-  final Color accent;
-  final TimeOfDay time;
-
-  @override
-  Widget build(BuildContext context) {
-    final minuteTurns = time.minute / 60;
-    final hourTurns = ((time.hour % 12) + minuteTurns) / 12;
-    return SizedBox.square(
-      dimension: 18,
-      child: CustomPaint(
-        painter: _TinyClockPainter(
-          color: CatchTokens.of(context).line2,
-          accent: accent,
-          hourTurns: hourTurns,
-          minuteTurns: minuteTurns,
-        ),
-      ),
-    );
-  }
-}
-
-class _TinyClockPainter extends CustomPainter {
-  const _TinyClockPainter({
-    required this.color,
-    required this.accent,
-    required this.hourTurns,
-    required this.minuteTurns,
-  });
-
-  final Color color;
-  final Color accent;
-  final double hourTurns;
-  final double minuteTurns;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = size.center(Offset.zero);
-    final radius = size.shortestSide / 2;
-    final ringPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4
-      ..color = color;
-    canvas.drawCircle(center, radius - 1, ringPaint);
-    _drawHand(canvas, center, radius * 0.44, hourTurns, accent, 2.0);
-    _drawHand(canvas, center, radius * 0.62, minuteTurns, accent, 1.5);
-  }
-
-  void _drawHand(
-    Canvas canvas,
-    Offset center,
-    double length,
-    double turns,
-    Color color,
-    double strokeWidth,
-  ) {
-    final angle = turns * 6.283185307179586 - 1.5707963267948966;
-    final end =
-        center + Offset(length * math.cos(angle), length * math.sin(angle));
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(center, end, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _TinyClockPainter oldDelegate) =>
-      oldDelegate.color != color ||
-      oldDelegate.accent != accent ||
-      oldDelegate.hourTurns != hourTurns ||
-      oldDelegate.minuteTurns != minuteTurns;
-}
-
-class _ExploreCapacityProgress extends StatelessWidget {
-  const _ExploreCapacityProgress({required this.color, required this.value});
-
-  final Color color;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
-      child: LinearProgressIndicator(
-        minHeight: 5,
-        value: value,
-        color: color,
-        backgroundColor: t.line,
-      ),
-    );
-  }
-}
-
-class _ExploreAccentRail extends StatelessWidget {
-  const _ExploreAccentRail({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 7,
-      child: DecoratedBox(decoration: BoxDecoration(color: color)),
-    );
-  }
-}
-
-class _ExploreStatusPill extends StatelessWidget {
-  const _ExploreStatusPill({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(
-          label.toUpperCase(),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.mono(context, color: color).copyWith(
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ExploreClubCover extends StatelessWidget {
   const _ExploreClubCover({required this.club, this.compact = false});
 
@@ -770,31 +468,14 @@ class _ExploreClubTags extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final tags = club.tags.take(2).toList(growable: false);
+    final tags = visibleClubTags(club, limit: 2);
     if (tags.isEmpty) {
       return _ExploreMonoLabel(
-        _memberCountLabel(club).toUpperCase(),
+        clubMemberCountLabel(club).toUpperCase(),
         color: t.ink3,
       );
     }
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        for (final tag in tags)
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.raised,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              border: Border.all(color: t.line2),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-              child: _ExploreMonoLabel(tag.toUpperCase(), color: t.ink2),
-            ),
-          ),
-      ],
-    );
+    return ClubTagWrap(tags: tags, uppercase: true);
   }
 }
 
@@ -868,15 +549,8 @@ String _clubSupportingLabel(Club club) {
     return 'Next: $nextEvent';
   }
   final area = club.area.trim();
-  if (area.isNotEmpty) return '${_memberCountLabel(club)} - $area';
-  return _memberCountLabel(club);
-}
-
-String _memberCountLabel(Club club) {
-  final count = club.memberCount;
-  if (count == 1) return '1 member';
-  if (count > 0) return '$count members';
-  return 'New club';
+  if (area.isNotEmpty) return '${clubMemberCountLabel(club)} - $area';
+  return clubMemberCountLabel(club);
 }
 
 void _openClub(BuildContext context, Club club) {
@@ -1067,17 +741,9 @@ String _supportingLabel(ExploreEventItem item) {
 }
 
 String _capacityLabel(ExploreEventItem item) {
-  final event = item.event;
-  final availability = item.availabilityLabel;
-  final base = '${event.signedUpCount} going';
-  if (event.spotsRemaining <= 0) return '$base - full';
-  if (availability != null &&
-      availability.isNotEmpty &&
-      availability.toLowerCase() != 'open') {
-    return '$base - $availability';
-  }
-  if (event.spotsRemaining > 0) return '$base - ${event.spotsRemaining} left';
-  return base;
+  return EventCapacityPresenter(
+    item.event,
+  ).goingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
 String _heroCountdownLabel(DateTime startTime) {

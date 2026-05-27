@@ -133,7 +133,6 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
           Positioned.fill(
             child: EventMapView(
               enableNetworkTiles: widget.enableEventMapNetworkTiles,
-              showSheet: false,
               viewModel: exploreMapViewModel,
               distanceRingRadiusKm: distanceRingRadiusKm,
               onRetry: () => ref.invalidate(exploreFeedViewModelProvider),

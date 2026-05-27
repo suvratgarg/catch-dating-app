@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
@@ -514,9 +513,10 @@ class _WeekStrip extends StatelessWidget {
             child: Builder(
               builder: (context) {
                 final date = DateUtils.dateOnly(monday.add(Duration(days: i)));
-                return _WeekDay(
+                return EventDateMarker(
                   key: _calendarWeekDayKey(date),
                   date: date,
+                  layout: EventDateMarkerLayout.weekStrip,
                   active: DateUtils.isSameDay(date, selectedDate),
                   hasEvent: eventDays.contains(date),
                   onTap: () => onDateSelected(date),
@@ -527,71 +527,6 @@ class _WeekStrip extends StatelessWidget {
           if (i < 6) gapW4,
         ],
       ],
-    );
-  }
-}
-
-class _WeekDay extends StatelessWidget {
-  const _WeekDay({
-    super.key,
-    required this.date,
-    required this.active,
-    required this.hasEvent,
-    required this.onTap,
-  });
-
-  final DateTime date;
-  final bool active;
-  final bool hasEvent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final day = const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
-
-    return Semantics(
-      button: true,
-      selected: active,
-      label: '$day ${date.day}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  day,
-                  style: CatchTextStyles.statusLabel(
-                    context,
-                    color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
-                  ),
-                ),
-                gapH2,
-                Text(
-                  '${date.day}',
-                  style: CatchTextStyles.statCompact(
-                    context,
-                    color: active ? t.surface : t.ink,
-                  ),
-                ),
-                gapH4,
-                CatchStatusDot(
-                  color: hasEvent ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -651,10 +586,11 @@ class _MonthGrid extends StatelessWidget {
                         ),
                       );
                       final inMonth = date.month == selectedDate.month;
-                      return _MonthDay(
+                      return EventDateMarker(
                         key: inMonth ? _calendarMonthDayKey(date) : null,
                         date: date,
-                        inMonth: inMonth,
+                        layout: EventDateMarkerLayout.monthGrid,
+                        enabled: inMonth,
                         active: DateUtils.isSameDay(date, selectedDate),
                         today: DateUtils.isSameDay(date, summary.today),
                         hasEvent: eventDays.contains(date),
@@ -668,71 +604,6 @@ class _MonthGrid extends StatelessWidget {
           if (week < 5) gapH6,
         ],
       ],
-    );
-  }
-}
-
-class _MonthDay extends StatelessWidget {
-  const _MonthDay({
-    super.key,
-    required this.date,
-    required this.inMonth,
-    required this.active,
-    required this.today,
-    required this.hasEvent,
-    required this.onTap,
-  });
-
-  final DateTime date;
-  final bool inMonth;
-  final bool active;
-  final bool today;
-  final bool hasEvent;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final textColor = active
-        ? t.surface
-        : inMonth
-        ? t.ink
-        : t.ink3.withValues(alpha: 0.36);
-    final dayText = Text(
-      '${date.day}',
-      style: CatchTextStyles.labelL(context, color: textColor),
-    );
-
-    return Semantics(
-      button: inMonth,
-      selected: active,
-      label: '${date.day}',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: inMonth ? onTap : null,
-          borderRadius: BorderRadius.circular(12),
-          child: Ink(
-            height: 40,
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              border: today && !active ? Border.all(color: t.line2) : null,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                inMonth ? dayText : Opacity(opacity: 0, child: dayText),
-                gapH4,
-                CatchStatusDot(
-                  color: hasEvent && inMonth ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
