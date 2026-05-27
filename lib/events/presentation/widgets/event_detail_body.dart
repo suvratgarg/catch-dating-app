@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -227,7 +228,10 @@ class _EventInviteLoopCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.ios_share_rounded, color: t.primary),
+          Icon(
+            CatchIcons.platformShare(platform: Theme.of(context).platform),
+            color: t.primary,
+          ),
           gapW12,
           Expanded(
             child: Column(
@@ -247,7 +251,7 @@ class _EventInviteLoopCard extends StatelessWidget {
                   builder: (buttonContext) => CatchButton(
                     label: 'Invite a friend',
                     variant: CatchButtonVariant.secondary,
-                    icon: const Icon(Icons.send_rounded),
+                    icon: Icon(CatchIcons.sendRounded),
                     onPressed: () => onShare(buttonContext),
                     fullWidth: true,
                   ),
@@ -309,7 +313,7 @@ class _EventCompanionCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.auto_awesome_outlined, color: t.primary),
+          Icon(CatchIcons.autoAwesomeOutlined, color: t.primary),
           gapW12,
           Expanded(
             child: Column(
@@ -328,7 +332,7 @@ class _EventCompanionCard extends StatelessWidget {
                 CatchButton(
                   label: 'Open companion',
                   variant: CatchButtonVariant.secondary,
-                  icon: const Icon(Icons.phone_iphone_rounded),
+                  icon: Icon(CatchIcons.phoneIphoneRounded),
                   onPressed: () => context.pushNamed(
                     Routes.eventSuccessCompanionScreen.name,
                     pathParameters: {'clubId': clubId, 'eventId': event.id},
@@ -508,7 +512,7 @@ class _GuestBookCta extends StatelessWidget {
               },
             ).toString(),
           ),
-          icon: Icon(Icons.lock_outline_rounded, size: 18, color: t.primary),
+          icon: Icon(CatchIcons.lockOutlineRounded, size: 18, color: t.primary),
           fullWidth: true,
         ),
       ),

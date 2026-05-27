@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -514,6 +516,9 @@ void main() {
             watchSavedEventDetailsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value([savedEvent])),
+            watchEventsByIdsProvider(
+              EventsByIdQuery([joinedEvent.id]),
+            ).overrideWith((ref) => Stream.value([joinedEvent])),
             eventDiscoveryRepositoryProvider.overrideWithValue(
               _FakeEventDiscoveryRepository([requestEvent, savedEvent]),
             ),
@@ -548,6 +553,81 @@ void main() {
           ViewerEventAvailabilityStatus.requestRequired,
         );
         expect(byId['request-event']?.availabilityLabel, 'Request required');
+      },
+    );
+
+    test(
+      'exploreFeedViewModelProvider does not block on personal event enrichment',
+      () async {
+        final user = event_test.buildUser(uid: 'runner-enrichment');
+        final club = buildClub(id: 'club-enrichment', location: 'mumbai');
+        final joinedEvent = event_test.buildEvent(
+          id: 'joined-enrichment',
+          clubId: club.id,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+        );
+        final discoverableEvent = event_test.buildEvent(
+          id: 'discoverable-enrichment',
+          clubId: club.id,
+          startTime: DateTime.now().add(const Duration(days: 2)),
+        );
+        final personalEvents = StreamController<List<Event>>();
+        addTearDown(personalEvents.close);
+
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([club])),
+            watchActiveClubMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
+            watchEventParticipationsForUserProvider(user.uid).overrideWith(
+              (ref) => Stream.value([
+                event_test.buildEventParticipation(
+                  event: joinedEvent,
+                  uid: user.uid,
+                ),
+              ]),
+            ),
+            watchSavedEventsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <SavedEvent>[])),
+            watchEventsByIdsProvider(
+              EventsByIdQuery([joinedEvent.id]),
+            ).overrideWith((ref) => personalEvents.stream),
+            eventDiscoveryRepositoryProvider.overrideWithValue(
+              _FakeEventDiscoveryRepository([discoverableEvent]),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          exploreFeedViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(subscription.read().hasValue, isTrue);
+        expect(subscription.read().value!.items.map((item) => item.event.id), [
+          'discoverable-enrichment',
+        ]);
+
+        personalEvents.add([joinedEvent]);
+        await flushTestEventQueue();
+        await container.pump();
+
+        expect(subscription.read().value!.items.map((item) => item.event.id), [
+          'joined-enrichment',
+          'discoverable-enrichment',
+        ]);
       },
     );
 

@@ -122,6 +122,76 @@ class EventRepository {
         statuses: const {EventParticipationStatus.signedUp},
       );
 
+  Stream<List<Event>> watchEventsByIds({required List<String> eventIds}) {
+    final uniqueIds = eventIds.toSet().toList()..sort();
+    if (uniqueIds.isEmpty) return Stream.value(const []);
+
+    var eventSubs = <StreamSubscription<QuerySnapshot<Event>>>[];
+    var closed = false;
+    late final StreamController<List<Event>> controller;
+
+    void emitSortedEvents({
+      required Map<int, List<Event>> eventsByChunk,
+      required int chunkCount,
+    }) {
+      if (eventsByChunk.length < chunkCount || controller.isClosed) return;
+      final byId = <String, Event>{};
+      for (final events in eventsByChunk.values) {
+        for (final event in events) {
+          byId[event.id] = event;
+        }
+      }
+      final events = [
+        for (final id in uniqueIds)
+          if (byId[id] != null) byId[id]!,
+      ]..sort((a, b) => a.startTime.compareTo(b.startTime));
+      controller.add(events);
+    }
+
+    controller = StreamController<List<Event>>(
+      onListen: () {
+        final chunks = _chunks(uniqueIds, 10).toList(growable: false);
+        final eventsByChunk = <int, List<Event>>{};
+        for (var i = 0; i < chunks.length; i += 1) {
+          final chunk = chunks[i];
+          final sub = _eventsRef
+              .where(FieldPath.documentId, whereIn: chunk)
+              .snapshots()
+              .listen((eventSnap) {
+                if (closed) return;
+                eventsByChunk[i] = eventSnap.docs
+                    .map((doc) => doc.data())
+                    .toList();
+                emitSortedEvents(
+                  eventsByChunk: eventsByChunk,
+                  chunkCount: chunks.length,
+                );
+              }, onError: controller.addError);
+          eventSubs.add(sub);
+        }
+      },
+      onCancel: () async {
+        closed = true;
+        for (final sub in eventSubs) {
+          await sub.cancel();
+        }
+        eventSubs = [];
+        if (!controller.isClosed) {
+          await controller.close();
+        }
+      },
+    );
+
+    return withBackendErrorStream(
+      () => controller.stream,
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch events by id',
+        resource: _collectionPath,
+      ),
+    );
+  }
+
   Stream<List<Event>> _watchEventsForParticipationStatuses({
     required String uid,
     required Set<EventParticipationStatus> statuses,
@@ -513,6 +583,32 @@ Stream<List<Event>> watchAttendedEvents(Ref ref, String uid) =>
 @riverpod
 Stream<List<Event>> watchSignedUpEvents(Ref ref, String uid) =>
     ref.watch(eventRepositoryProvider).watchSignedUpEvents(uid: uid);
+
+@riverpod
+Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref
+    .watch(eventRepositoryProvider)
+    .watchEventsByIds(eventIds: query.eventIds);
+
+class EventsByIdQuery {
+  EventsByIdQuery._(Iterable<String> eventIds)
+    : eventIds = List.unmodifiable(eventIds.toSet().toList()..sort());
+
+  factory EventsByIdQuery(Iterable<String> eventIds) =>
+      EventsByIdQuery._(eventIds);
+
+  static const _equality = ListEquality<String>();
+
+  final List<String> eventIds;
+
+  @override
+  bool operator ==(Object other) {
+    return other is EventsByIdQuery &&
+        _equality.equals(other.eventIds, eventIds);
+  }
+
+  @override
+  int get hashCode => _equality.hash(eventIds);
+}
 
 class RecommendedEventsQuery {
   RecommendedEventsQuery._(Iterable<String> followedClubIds)

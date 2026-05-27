@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:flutter/material.dart';
@@ -23,20 +24,20 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
       eyebrow: 'Checked in',
       title: 'Checked in.',
       message: "You're on the roster. Have a great event.",
-      icon: Icons.location_on_rounded,
+      icon: CatchIcons.locationOnRounded,
       details: [
         CelebrationDetail(
-          icon: Icons.directions_run_rounded,
+          icon: CatchIcons.directionsRunRounded,
           label: 'Event',
           value: event.title,
         ),
         CelebrationDetail(
-          icon: Icons.schedule_rounded,
+          icon: CatchIcons.scheduleRounded,
           label: 'Starts',
           value: event.timeRangeLabel,
         ),
         CelebrationDetail(
-          icon: Icons.location_on_outlined,
+          icon: CatchIcons.locationOnOutlined,
           label: 'Meet point',
           value: event.locationName,
         ),
@@ -44,7 +45,7 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
       primaryAction: CelebrationAction(
         label: 'View event',
         onPressed: onViewEvent,
-        icon: const Icon(Icons.directions_run_rounded),
+        icon: Icon(CatchIcons.directionsRunRounded),
       ),
       secondaryAction: CelebrationAction(
         label: 'Back to home',

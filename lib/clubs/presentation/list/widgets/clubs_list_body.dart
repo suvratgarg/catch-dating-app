@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/club_discover_list.dart';
+import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +21,9 @@ class ClubsListBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Multi-sliver body; callers spread it into a parent slivers list.
-    // We deliberately do NOT wrap in `SliverMainAxisGroup` — nesting
-    // groups can cause downstream sliver layout to skip the directory
-    // section when an upstream sibling has a large scroll extent.
+    // Compatibility wrapper for call sites that still expect one sliver. Keep
+    // Explore day headers inline here because pinned headers inside a
+    // SliverMainAxisGroup can violate Flutter's sliver geometry contract.
     return SliverMainAxisGroup(
       slivers: buildClubsListBodySlivers(
         context: context,
@@ -31,6 +31,7 @@ class ClubsListBody extends ConsumerWidget {
         viewModel: viewModel,
         includeJoinedClubsRail: includeJoinedClubsRail,
         includeClubDirectory: includeClubDirectory,
+        pinnedExploreDayHeaders: false,
       ),
     );
   }
@@ -46,6 +47,7 @@ List<Widget> buildClubsListBodySlivers({
   required ClubsListViewModel viewModel,
   bool includeJoinedClubsRail = true,
   bool includeClubDirectory = true,
+  bool pinnedExploreDayHeaders = true,
 }) {
   final canCreateClub = viewModel.joinedClubs.isEmpty
       ? false
@@ -59,7 +61,11 @@ List<Widget> buildClubsListBodySlivers({
           showCreateButton: canCreateClub,
         ),
       ),
-    if (viewModel.allClubs.isNotEmpty) ...buildExploreEventsSlivers(ref),
+    if (viewModel.allClubs.isNotEmpty)
+      ...buildExploreEventsSlivers(
+        ref,
+        pinnedDayHeaders: pinnedExploreDayHeaders,
+      ),
     if (includeClubDirectory && viewModel.allClubs.isNotEmpty)
       ...buildClubDirectorySlivers(
         context: context,
@@ -67,6 +73,8 @@ List<Widget> buildClubsListBodySlivers({
         joinedClubIds: viewModel.joinedClubIds,
         hostedClubIds: viewModel.hostedClubIds,
       ),
+    if (viewModel.allClubs.isNotEmpty)
+      const SliverToBoxAdapter(child: ExploreEventTypeBrowseGrid()),
     const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
   ];
 }

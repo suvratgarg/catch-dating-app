@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
@@ -48,13 +49,13 @@ void main() {
             children: [
               const FieldLabel('Distance'),
               PickerTile(
-                icon: Icons.calendar_today_outlined,
+                icon: CatchIcons.calendarTodayOutlined,
                 value: null,
                 placeholder: 'Select a date',
                 onTap: () => pickerTapped = true,
               ),
               PickerTile(
-                icon: Icons.schedule_outlined,
+                icon: CatchIcons.scheduleOutlined,
                 value: '23/04/2026',
                 placeholder: 'Unused',
                 onTap: () {},
@@ -212,7 +213,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
 
       await tester.tap(find.text('Race Course Road main gate'));
       await tester.pump();
@@ -235,7 +236,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.chevron_right_rounded), findsNothing);
+      expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
 
       await tester.tap(find.text('Race Course Road main gate'));
       await tester.pump();
@@ -260,7 +261,7 @@ void main() {
 
       expect(find.text('Event location'), findsNothing);
       expect(find.byTooltip('Back'), findsOneWidget);
-      expect(find.byIcon(Icons.location_on_rounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
         find.text('Look for the Catch demo pacer near the entrance.'),
@@ -615,7 +616,7 @@ void main() {
         );
         await tester.pump();
 
-        expect(find.byIcon(Icons.directions_run), findsNothing);
+        expect(find.byIcon(CatchIcons.directionsRun), findsNothing);
         expect(find.byType(Image), findsNothing);
       },
     );
@@ -640,14 +641,14 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byIcon(Icons.sports_tennis), findsNothing);
+      expect(find.byIcon(CatchIcons.sportsTennis), findsNothing);
       expect(find.text(event.title), findsNothing);
       expect(find.text('Deuce'), findsNothing);
       expect(find.text('Pickleball'), findsNothing);
       expect(find.text('0/20 spots'), findsNothing);
     });
 
-    testWidgets('event photo header renders the uploaded event photo', (
+    testWidgets('event photo header prefers activity artwork over photo', (
       tester,
     ) async {
       final event = buildEvent(
@@ -662,10 +663,10 @@ void main() {
           ),
         ),
       );
+      await tester.pump();
 
-      final image = tester.widget<Image>(find.byType(Image));
-      expect(image.image, isA<NetworkImage>());
-      expect((image.image as NetworkImage).url, event.photoUrl);
+      expect(find.byType(Image), findsNothing);
+      expect(find.text(event.title), findsNothing);
     });
 
     testWidgets('who is going shows the empty upcoming state', (tester) async {

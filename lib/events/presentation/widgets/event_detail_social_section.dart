@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -80,7 +81,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.lock_outline_rounded, size: 16, color: t.ink3),
+              Icon(CatchIcons.lockOutlineRounded, size: 16, color: t.ink3),
               gapW8,
               Text("Who's going", style: CatchTextStyles.titleL(context)),
             ],

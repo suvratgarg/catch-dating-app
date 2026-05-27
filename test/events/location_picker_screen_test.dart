@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -9,7 +8,6 @@ import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,17 +18,6 @@ import 'events_test_helpers.dart';
 
 void main() {
   group('LocationPickerScreen', () {
-    test('Catch map styles are valid JSON arrays', () {
-      expect(
-        jsonDecode(catchGoogleMapStyleFor(Brightness.light)),
-        isA<List<dynamic>>(),
-      );
-      expect(
-        jsonDecode(catchGoogleMapStyleFor(Brightness.dark)),
-        isA<List<dynamic>>(),
-      );
-    });
-
     test('stores the initial location argument', () {
       const initialLocation = LocationCoordinate(19.076, 72.8777);
       const screen = LocationPickerScreen(initialLocation: initialLocation);
@@ -69,9 +56,7 @@ void main() {
       );
     });
 
-    testWidgets('styles map tiles from the active app brightness', (
-      tester,
-    ) async {
+    testWidgets('uses Google default map styling', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -89,7 +74,7 @@ void main() {
       );
 
       expect(googleMap.mapType, gmaps.MapType.none);
-      expect(googleMap.style, catchGoogleMapStyleFor(Brightness.dark));
+      expect(googleMap.style, isNull);
     });
 
     testWidgets('initial center does not count as a selected location', (

@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_pin_renderer.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
@@ -22,8 +22,12 @@ class EventPinsMap extends StatefulWidget {
     this.selectedEventId,
     this.selectedEventCenter,
     this.enableNetworkTiles = true,
-    this.markerIcon = Icons.directions_run_rounded,
+    this.markerIcon,
+    this.userLocation,
+    this.distanceRingRadiusKm,
     this.onEventSelected,
+    this.onCameraCenterChanged,
+    this.onDistanceRingTapped,
   });
 
   final List<EventMapItem> items;
@@ -32,8 +36,12 @@ class EventPinsMap extends StatefulWidget {
   final String? selectedEventId;
   final LocationCoordinate? selectedEventCenter;
   final bool enableNetworkTiles;
-  final IconData markerIcon;
+  final IconData? markerIcon;
+  final LocationCoordinate? userLocation;
+  final double? distanceRingRadiusKm;
   final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
+  final VoidCallback? onDistanceRingTapped;
 
   @override
   State<EventPinsMap> createState() => _EventPinsMapState();
@@ -42,15 +50,21 @@ class EventPinsMap extends StatefulWidget {
 class _EventPinsMapState extends State<EventPinsMap> {
   gmaps.GoogleMapController? _mapController;
   late LocationCoordinate _lastAppliedCenter;
-  Map<String, gmaps.BitmapDescriptor> _pinIcons =
-      const <String, gmaps.BitmapDescriptor>{};
-  double? _lastRebuildDevicePixelRatio;
-  int _renderToken = 0;
+  late double _cameraZoom;
+  LocationCoordinate? _pendingCameraCenter;
+  double? _pendingCameraZoom;
+  LocationCoordinate? _lastReportedCameraCenter;
 
   @override
   void initState() {
     super.initState();
     _lastAppliedCenter = _effectiveCameraCenter;
+    _lastReportedCameraCenter = _lastAppliedCenter;
+    _cameraZoom = widget.initialZoom;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      widget.onCameraCenterChanged?.call(_lastAppliedCenter);
+    });
   }
 
   @override
@@ -65,65 +79,45 @@ class _EventPinsMapState extends State<EventPinsMap> {
     final nextCenter = _effectiveCameraCenter;
     if (!_samePoint(_lastAppliedCenter, nextCenter)) {
       _lastAppliedCenter = nextCenter;
+      _lastReportedCameraCenter = nextCenter;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
+        widget.onCameraCenterChanged?.call(nextCenter);
         _moveCameraTo(nextCenter, animate: true);
       });
-    }
-    if (widget.enableNetworkTiles && _pinIconsNeedRebuild(oldWidget)) {
-      unawaited(_rebuildPinIcons());
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final onEventSelected = widget.onEventSelected;
-    final mapStyle = catchGoogleMapStyleFor(Theme.of(context).brightness);
-    final dpr = MediaQuery.devicePixelRatioOf(context);
-    // Skip bitmap pin rendering in placeholder (network-tiles-disabled) mode.
-    // It saves async work and keeps widget tests deterministic — the
-    // placeholder paints its own icons via the placeholder widget below.
-    if (widget.enableNetworkTiles && _lastRebuildDevicePixelRatio != dpr) {
-      unawaited(_rebuildPinIcons(devicePixelRatio: dpr));
-    }
-
     final pinnedItems = _pinnedItems;
+    final markerGroups = _markerGroups(pinnedItems);
 
     if (!widget.enableNetworkTiles) {
       return _EventPinsMapPlaceholder(
         items: pinnedItems,
         selectedEventId: widget.selectedEventId,
-        markerIcon: widget.markerIcon,
+        markerIcon: widget.markerIcon ?? CatchIcons.running,
         onEventSelected: onEventSelected,
       );
     }
 
     return gmaps.GoogleMap(
-      style: mapStyle,
       initialCameraPosition: gmaps.CameraPosition(
         target: widget.initialCenter.toGoogleMapsLatLng(),
         zoom: widget.initialZoom,
       ),
       markers: {
-        for (final item in pinnedItems)
-          gmaps.Marker(
-            markerId: gmaps.MarkerId(item.event.id),
-            position: gmaps.LatLng(
-              item.event.effectiveStartingPointLat!,
-              item.event.effectiveStartingPointLng!,
-            ),
-            anchor: EventPinRenderer.anchor,
-            icon: _pinIcons[item.event.id] ??
-                gmaps.BitmapDescriptor.defaultMarker,
-            onTap: onEventSelected == null
-                ? null
-                : () => onEventSelected(item.event),
-          ),
+        for (final group in markerGroups) _markerFor(group, onEventSelected),
       },
+      circles: _mapCircles(context),
       myLocationButtonEnabled: false,
       mapToolbarEnabled: false,
       zoomControlsEnabled: false,
       compassEnabled: false,
+      onCameraMove: _handleCameraMove,
+      onCameraIdle: _handleCameraIdle,
       onMapCreated: (controller) {
         _mapController = controller;
         _moveCameraTo(_lastAppliedCenter, animate: false);
@@ -135,49 +129,96 @@ class _EventPinsMapState extends State<EventPinsMap> {
       .where((item) => item.event.hasExactStartingPoint)
       .toList(growable: false);
 
-  bool _pinIconsNeedRebuild(EventPinsMap oldWidget) {
-    if (oldWidget.selectedEventId != widget.selectedEventId) return true;
-    if (oldWidget.items.length != widget.items.length) return true;
-    for (var i = 0; i < oldWidget.items.length; i += 1) {
-      final left = oldWidget.items[i];
-      final right = widget.items[i];
-      if (left.event.id != right.event.id) return true;
-      if (left.status != right.status) return true;
-      if (!left.event.startTime.isAtSameMomentAs(right.event.startTime)) {
-        return true;
-      }
-    }
-    return false;
+  Set<gmaps.Circle> _mapCircles(BuildContext context) {
+    final userLocation = widget.userLocation;
+    if (userLocation == null) return const <gmaps.Circle>{};
+    final t = CatchTokens.of(context);
+    final center = userLocation.toGoogleMapsLatLng();
+    final ringRadiusKm = widget.distanceRingRadiusKm;
+    return {
+      if (ringRadiusKm != null && ringRadiusKm > 0)
+        gmaps.Circle(
+          circleId: const gmaps.CircleId('event-map-distance-ring'),
+          center: center,
+          radius: ringRadiusKm * 1000,
+          strokeWidth: 2,
+          strokeColor: t.primary.withValues(alpha: 0.38),
+          fillColor: t.primary.withValues(alpha: 0.08),
+          consumeTapEvents: widget.onDistanceRingTapped != null,
+          onTap: widget.onDistanceRingTapped,
+        ),
+      gmaps.Circle(
+        circleId: const gmaps.CircleId('event-map-user-location'),
+        center: center,
+        radius: 42,
+        strokeWidth: 3,
+        strokeColor: Colors.white.withValues(alpha: 0.92),
+        fillColor: t.primary,
+      ),
+    };
   }
 
-  Future<void> _rebuildPinIcons({double? devicePixelRatio}) async {
-    final token = ++_renderToken;
-    final dpr = devicePixelRatio ??
-        _lastRebuildDevicePixelRatio ??
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    _lastRebuildDevicePixelRatio = dpr;
-    final selectedId = widget.selectedEventId;
-    final items = _pinnedItems;
-    final entries = await Future.wait(
-      items.map((item) async {
-        final descriptor = await EventPinRenderer.render(
-          spec: EventPinSpec(
-            timeLabel: EventFormatters.time(item.event.startTime),
-            status: item.status,
-            selected: item.event.id == selectedId,
-          ),
-          devicePixelRatio: dpr,
-        );
-        return MapEntry<String, gmaps.BitmapDescriptor>(
-          item.event.id,
-          descriptor,
-        );
-      }),
+  gmaps.Marker _markerFor(
+    _MapMarkerGroup group,
+    ValueChanged<Event>? onEventSelected,
+  ) {
+    if (group.isCluster) {
+      return gmaps.Marker(
+        markerId: gmaps.MarkerId(group.id),
+        position: group.center.toGoogleMapsLatLng(),
+        icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
+          gmaps.BitmapDescriptor.hueAzure,
+        ),
+        infoWindow: gmaps.InfoWindow(
+          title: '${group.items.length} events nearby',
+          snippet: 'Tap to zoom in',
+        ),
+        onTap: () => _zoomToCluster(group),
+      );
+    }
+    final item = group.items.single;
+    final tileData = item.tileData;
+    return gmaps.Marker(
+      markerId: gmaps.MarkerId(item.event.id),
+      position: gmaps.LatLng(
+        item.event.effectiveStartingPointLat!,
+        item.event.effectiveStartingPointLng!,
+      ),
+      icon: gmaps.BitmapDescriptor.defaultMarkerWithHue(
+        _markerHueFor(item.status),
+      ),
+      infoWindow: gmaps.InfoWindow(
+        title: '${tileData.timeLabel} · ${tileData.title}',
+        snippet: tileData.meetingPoint,
+      ),
+      onTap: onEventSelected == null ? null : () => onEventSelected(item.event),
     );
-    if (!mounted || token != _renderToken) return;
-    setState(() {
-      _pinIcons = Map<String, gmaps.BitmapDescriptor>.fromEntries(entries);
-    });
+  }
+
+  List<_MapMarkerGroup> _markerGroups(List<EventMapItem> pinnedItems) {
+    if (pinnedItems.length < 6 || _cameraZoom >= 14) {
+      return [for (final item in pinnedItems) _MapMarkerGroup.single(item)];
+    }
+    final cellDegrees = _clusterCellDegrees(_cameraZoom);
+    final buckets = <String, List<EventMapItem>>{};
+    for (final item in pinnedItems) {
+      final lat = item.event.effectiveStartingPointLat!;
+      final lng = item.event.effectiveStartingPointLng!;
+      final key =
+          '${(lat / cellDegrees).floor()}:${(lng / cellDegrees).floor()}';
+      buckets.putIfAbsent(key, () => <EventMapItem>[]).add(item);
+    }
+
+    return [
+      for (final entry in buckets.entries)
+        if (entry.value.length == 1)
+          _MapMarkerGroup.single(entry.value.single)
+        else
+          _MapMarkerGroup.cluster(
+            id: 'cluster-${entry.key}-${entry.value.length}',
+            items: entry.value,
+          ),
+    ];
   }
 
   void _moveCameraTo(LocationCoordinate center, {required bool animate}) {
@@ -191,8 +232,92 @@ class _EventPinsMapState extends State<EventPinsMap> {
     }
   }
 
+  void _zoomToCluster(_MapMarkerGroup group) {
+    final controller = _mapController;
+    if (controller == null) return;
+    final nextZoom = math.min(_cameraZoom + 1.6, 15.5);
+    unawaited(
+      controller.animateCamera(
+        gmaps.CameraUpdate.newLatLngZoom(
+          group.center.toGoogleMapsLatLng(),
+          nextZoom,
+        ),
+      ),
+    );
+  }
+
+  void _handleCameraMove(gmaps.CameraPosition position) {
+    _pendingCameraCenter = LocationCoordinate(
+      position.target.latitude,
+      position.target.longitude,
+    );
+    _pendingCameraZoom = position.zoom;
+  }
+
+  void _handleCameraIdle() {
+    final nextCenter = _pendingCameraCenter;
+    final nextZoom = _pendingCameraZoom;
+    if (nextCenter != null &&
+        (_lastReportedCameraCenter == null ||
+            !_samePoint(_lastReportedCameraCenter!, nextCenter))) {
+      _lastReportedCameraCenter = nextCenter;
+      widget.onCameraCenterChanged?.call(nextCenter);
+    }
+    if (nextZoom != null && (nextZoom - _cameraZoom).abs() >= 0.05) {
+      setState(() => _cameraZoom = nextZoom);
+    }
+  }
+
   LocationCoordinate get _effectiveCameraCenter =>
       widget.selectedEventCenter ?? widget.initialCenter;
+}
+
+class _MapMarkerGroup {
+  _MapMarkerGroup._({
+    required this.id,
+    required this.items,
+    required this.center,
+    required this.isCluster,
+  });
+
+  factory _MapMarkerGroup.single(EventMapItem item) {
+    return _MapMarkerGroup._(
+      id: item.event.id,
+      items: [item],
+      center: LocationCoordinate(
+        item.event.effectiveStartingPointLat!,
+        item.event.effectiveStartingPointLng!,
+      ),
+      isCluster: false,
+    );
+  }
+
+  factory _MapMarkerGroup.cluster({
+    required String id,
+    required List<EventMapItem> items,
+  }) {
+    final lat =
+        items
+            .map((item) => item.event.effectiveStartingPointLat!)
+            .reduce((left, right) => left + right) /
+        items.length;
+    final lng =
+        items
+            .map((item) => item.event.effectiveStartingPointLng!)
+            .reduce((left, right) => left + right) /
+        items.length;
+    return _MapMarkerGroup._(
+      id: id,
+      items: List.unmodifiable(items),
+      center: LocationCoordinate(lat, lng),
+      isCluster: true,
+    );
+  }
+
+  final String id;
+  final List<EventMapItem> items;
+  final LocationCoordinate center;
+  final bool isCluster;
 }
 
 class _EventPinsMapPlaceholder extends StatelessWidget {
@@ -260,3 +385,25 @@ class _EventPinsMapPlaceholder extends StatelessWidget {
 
 bool _samePoint(LocationCoordinate a, LocationCoordinate b) =>
     a.latitude == b.latitude && a.longitude == b.longitude;
+
+double _markerHueFor(EventTileStatus status) {
+  return switch (status) {
+    EventTileStatus.joined ||
+    EventTileStatus.hosted ||
+    EventTileStatus.attended => gmaps.BitmapDescriptor.hueGreen,
+    EventTileStatus.saved => gmaps.BitmapDescriptor.hueAzure,
+    EventTileStatus.waitlisted ||
+    EventTileStatus.full => gmaps.BitmapDescriptor.hueOrange,
+    EventTileStatus.ineligible ||
+    EventTileStatus.cancelled => gmaps.BitmapDescriptor.hueRose,
+    EventTileStatus.past => gmaps.BitmapDescriptor.hueYellow,
+    EventTileStatus.recommended ||
+    EventTileStatus.open => gmaps.BitmapDescriptor.hueRed,
+  };
+}
+
+double _clusterCellDegrees(double zoom) {
+  final clampedZoom = zoom.clamp(10.0, 14.0);
+  final t = (clampedZoom - 10.0) / 4.0;
+  return 0.045 - (0.033 * t);
+}

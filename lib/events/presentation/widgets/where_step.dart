@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -74,7 +75,7 @@ class WhereStep extends StatelessWidget {
             helperText: startingPoint == null
                 ? 'Pick a map location first. Google Places fills this when available.'
                 : 'Edit this if attendees need a clearer name.',
-            prefixIcon: const Icon(Icons.location_on_outlined),
+            prefixIcon: Icon(CatchIcons.locationOnOutlined),
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             onChanged: onMeetingPointChanged,
@@ -93,7 +94,7 @@ class WhereStep extends StatelessWidget {
             controller: locationDetailsController,
             hintText: 'e.g. Meet outside the blue gate, third entrance',
             helperText: 'Gate, entrance, floor, or landmark for the group.',
-            prefixIcon: const Icon(Icons.info_outline),
+            prefixIcon: Icon(CatchIcons.infoOutline),
             maxLines: 3,
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.done,

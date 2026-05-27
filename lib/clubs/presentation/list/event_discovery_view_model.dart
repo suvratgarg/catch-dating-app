@@ -236,6 +236,35 @@ String _ageRestrictedLabel(ViewerEventAvailability availability) {
   };
 }
 
+final eventDiscoveryViewerCohortIdProvider = Provider<AsyncValue<String?>>((
+  ref,
+) {
+  final uidAsync = ref.watch(uidProvider);
+  if (uidAsync.isLoading) return const AsyncLoading();
+  if (uidAsync.hasError) {
+    return AsyncError(
+      uidAsync.error!,
+      uidAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (uidAsync.asData?.value == null) return const AsyncData(null);
+
+  final userProfileAsync = ref.watch(watchUserProfileProvider);
+  if (userProfileAsync.isLoading) return const AsyncLoading();
+  if (userProfileAsync.hasError) {
+    return AsyncError(
+      userProfileAsync.error!,
+      userProfileAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  final userProfile = userProfileAsync.asData?.value;
+  if (userProfile == null) return const AsyncData(null);
+  final cohortId = const EventCohortResolver()
+      .resolve(EventAttendeeProfile.fromUserProfile(userProfile))
+      .id;
+  return AsyncData(cohortId);
+});
+
 final eventDiscoveryViewModelProvider =
     Provider<AsyncValue<EventDiscoveryViewModel>>((ref) {
       final city = ref.watch(selectedClubCityProvider);
@@ -279,6 +308,9 @@ final eventDiscoveryViewModelProvider =
       final sourceClubIds = sourceClubs.map((club) => club.id).toSet();
 
       final uid = uidAsync.asData?.value;
+      final viewerCohortIdAsync = uid == null
+          ? const AsyncData<String?>(null)
+          : ref.watch(eventDiscoveryViewerCohortIdProvider);
       final userProfileAsync = uid == null
           ? const AsyncData(null)
           : ref.watch(watchUserProfileProvider);
@@ -288,23 +320,22 @@ final eventDiscoveryViewModelProvider =
       final participationsAsync = uid == null
           ? const AsyncData<List<EventParticipation>>([])
           : ref.watch(watchEventParticipationsForUserProvider(uid));
-      final signedUpEventsAsync = uid == null
-          ? const AsyncData<List<Event>>([])
-          : ref.watch(watchSignedUpEventsProvider(uid));
       final savedEventEdgesAsync = uid == null
           ? const AsyncData<List<SavedEvent>>([])
           : ref.watch(watchSavedEventsForUserProvider(uid));
-      final savedEventDetailsAsync = uid == null
-          ? const AsyncData<List<Event>>([])
-          : ref.watch(watchSavedEventDetailsForUserProvider(uid));
 
       if (userProfileAsync.isLoading ||
+          viewerCohortIdAsync.isLoading ||
           membershipsAsync.isLoading ||
           participationsAsync.isLoading ||
-          signedUpEventsAsync.isLoading ||
-          savedEventEdgesAsync.isLoading ||
-          savedEventDetailsAsync.isLoading) {
+          savedEventEdgesAsync.isLoading) {
         return const AsyncLoading();
+      }
+      if (viewerCohortIdAsync.hasError) {
+        return AsyncError(
+          viewerCohortIdAsync.error!,
+          viewerCohortIdAsync.stackTrace ?? StackTrace.current,
+        );
       }
       if (userProfileAsync.hasError) {
         return AsyncError(
@@ -324,22 +355,10 @@ final eventDiscoveryViewModelProvider =
           participationsAsync.stackTrace ?? StackTrace.current,
         );
       }
-      if (signedUpEventsAsync.hasError) {
-        return AsyncError(
-          signedUpEventsAsync.error!,
-          signedUpEventsAsync.stackTrace ?? StackTrace.current,
-        );
-      }
       if (savedEventEdgesAsync.hasError) {
         return AsyncError(
           savedEventEdgesAsync.error!,
           savedEventEdgesAsync.stackTrace ?? StackTrace.current,
-        );
-      }
-      if (savedEventDetailsAsync.hasError) {
-        return AsyncError(
-          savedEventDetailsAsync.error!,
-          savedEventDetailsAsync.stackTrace ?? StackTrace.current,
         );
       }
 
@@ -355,11 +374,7 @@ final eventDiscoveryViewModelProvider =
                 .map((club) => club.id)
                 .toSet();
       final userProfile = userProfileAsync.asData?.value;
-      final viewerCohortId = userProfile == null
-          ? null
-          : const EventCohortResolver()
-                .resolve(EventAttendeeProfile.fromUserProfile(userProfile))
-                .id;
+      final viewerCohortId = viewerCohortIdAsync.asData?.value;
 
       final eventsAsync = ref.watch(
         discoverableEventsProvider(
@@ -386,18 +401,29 @@ final eventDiscoveryViewModelProvider =
         for (final event in eventsAsync.asData?.value ?? const <Event>[])
           event.id: event,
       };
-      for (final event
-          in signedUpEventsAsync.asData?.value ?? const <Event>[]) {
-        if (sourceClubIds.contains(event.clubId)) {
-          eventsById[event.id] = event;
-        }
-      }
-      for (final event
-          in savedEventDetailsAsync.asData?.value ?? const <Event>[]) {
-        if (sourceClubIds.contains(event.clubId)) {
-          eventsById[event.id] = event;
-        }
-      }
+      final savedEventIds =
+          savedEventEdgesAsync.asData?.value
+              .map((savedEvent) => savedEvent.eventId)
+              .toSet() ??
+          <String>{};
+      final missingPersonalEventIds = <String>{
+        for (final participation
+            in participationsAsync.asData?.value ??
+                const <EventParticipation>[])
+          if (participation.status == EventParticipationStatus.signedUp &&
+              sourceClubIds.contains(participation.clubId) &&
+              !eventsById.containsKey(participation.eventId))
+            participation.eventId,
+        for (final eventId in savedEventIds)
+          if (!eventsById.containsKey(eventId)) eventId,
+      };
+      final personalEventsAsync = uid == null || missingPersonalEventIds.isEmpty
+          ? const AsyncData<List<Event>>([])
+          : ref.watch(
+              watchEventsByIdsProvider(
+                EventsByIdQuery(missingPersonalEventIds),
+              ),
+            );
 
       final clubById = {for (final club in sourceClubs) club.id: club};
       final participationByEventId = <String, EventParticipation>{
@@ -406,11 +432,12 @@ final eventDiscoveryViewModelProvider =
                 const <EventParticipation>[])
           participation.eventId: participation,
       };
-      final savedEventIds =
-          savedEventEdgesAsync.asData?.value
-              .map((savedEvent) => savedEvent.eventId)
-              .toSet() ??
-          <String>{};
+      for (final event
+          in personalEventsAsync.asData?.value ?? const <Event>[]) {
+        if (sourceClubIds.contains(event.clubId)) {
+          eventsById[event.id] = event;
+        }
+      }
       final deviceLocation = deviceLocationAsync.asData?.value;
       final normalizedQuery = query.trim().toLowerCase();
       final items =

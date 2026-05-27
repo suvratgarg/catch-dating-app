@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -41,7 +42,9 @@ class MapPinTile extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            hasPin ? Icons.edit_location_alt_outlined : Icons.map_outlined,
+            hasPin
+                ? CatchIcons.editLocationAltOutlined
+                : CatchIcons.mapOutlined,
             size: 20,
             color: foregroundColor,
           ),
@@ -55,7 +58,9 @@ class MapPinTile extends StatelessWidget {
             ),
           ),
           Icon(
-            hasPin ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
+            hasPin
+                ? CatchIcons.checkCircleRounded
+                : CatchIcons.chevronRightRounded,
             size: 18,
             color: foregroundColor,
           ),

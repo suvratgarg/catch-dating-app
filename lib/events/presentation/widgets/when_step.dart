@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -50,7 +51,7 @@ class WhenStep extends StatelessWidget {
           gapH8,
           PickerTile(
             key: CreateEventFormKeys.datePicker,
-            icon: Icons.calendar_today_outlined,
+            icon: CatchIcons.calendarTodayOutlined,
             value: dateController.text.isEmpty ? null : dateController.text,
             placeholder: 'Select a date',
             onTap: onPickDate,
@@ -76,7 +77,7 @@ class WhenStep extends StatelessWidget {
           gapH8,
           PickerTile(
             key: CreateEventFormKeys.timePicker,
-            icon: Icons.schedule_outlined,
+            icon: CatchIcons.scheduleOutlined,
             value: startTimeController.text.isEmpty
                 ? null
                 : startTimeController.text,

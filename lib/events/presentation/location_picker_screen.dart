@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/locations/presentation/catch_google_map_style.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -106,7 +106,6 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mapStyle = catchGoogleMapStyleFor(Theme.of(context).brightness);
     final initialCameraTarget =
         widget.initialLocation ?? widget.initialCenter ?? _defaultCenter;
     final hasInitialCameraHint =
@@ -116,7 +115,6 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
       body: Stack(
         children: [
           gmaps.GoogleMap(
-            style: mapStyle,
             initialCameraPosition: gmaps.CameraPosition(
               target: initialCameraTarget.toGoogleMapsLatLng(),
               zoom: hasInitialCameraHint ? 15 : 12,
@@ -342,7 +340,7 @@ class _MapPickerSearchRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchTopBarIconAction(
-          icon: Icons.arrow_back_ios_new_rounded,
+          icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           backgroundColor: t.surface.withValues(alpha: 0.94),
           size: CatchControlMetrics.floatingMinHeight,
@@ -392,7 +390,7 @@ class _PlaceSearchPanel extends StatelessWidget {
           size: CatchTextFieldSize.floating,
           shape: CatchTextFieldShape.pill,
           tone: CatchTextFieldTone.raised,
-          prefixIcon: const Icon(Icons.search_rounded, size: 18),
+          prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
           suffixText: stateText,
           suffixIcon: isPending
               ? const Center(
@@ -421,7 +419,7 @@ class _PlaceSearchPanel extends StatelessWidget {
                   final suggestion = suggestions[index];
                   return ListTile(
                     dense: true,
-                    leading: const Icon(Icons.place_outlined),
+                    leading: Icon(CatchIcons.placeOutlined),
                     title: Text(
                       suggestion.mainText.isNotEmpty
                           ? suggestion.mainText
@@ -491,8 +489,8 @@ class _SelectedPointPanel extends StatelessWidget {
             children: [
               Icon(
                 hasSelection
-                    ? Icons.check_circle_outline_rounded
-                    : Icons.touch_app_rounded,
+                    ? CatchIcons.checkCircleOutlineRounded
+                    : CatchIcons.touchAppRounded,
                 size: 20,
                 color: hasSelection ? t.success : t.ink2,
               ),

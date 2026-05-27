@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -41,16 +42,22 @@ class EventMapView extends ConsumerStatefulWidget {
     this.overlay,
     this.showSheet = true,
     this.onEventSelected,
+    this.onCameraCenterChanged,
+    this.onDistanceRingTapped,
     this.viewModel,
     this.onRetry,
+    this.distanceRingRadiusKm,
   });
 
   final bool enableNetworkTiles;
   final Widget? overlay;
   final bool showSheet;
   final ValueChanged<Event>? onEventSelected;
+  final ValueChanged<LocationCoordinate>? onCameraCenterChanged;
+  final VoidCallback? onDistanceRingTapped;
   final AsyncValue<EventMapViewModel>? viewModel;
   final VoidCallback? onRetry;
+  final double? distanceRingRadiusKm;
 
   @override
   ConsumerState<EventMapView> createState() => _EventMapViewState();
@@ -120,7 +127,11 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
                             selectedEventId: _selectedEventId,
                             selectedEventCenter: selectedEventCenter,
                             enableNetworkTiles: widget.enableNetworkTiles,
+                            userLocation: deviceLocation,
+                            distanceRingRadiusKm: widget.distanceRingRadiusKm,
                             onEventSelected: _selectEvent,
+                            onCameraCenterChanged: widget.onCameraCenterChanged,
+                            onDistanceRingTapped: widget.onDistanceRingTapped,
                           ),
                         ),
                         Positioned(
@@ -164,9 +175,9 @@ class _NoPinnedEventsState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CatchEmptyState(
-        icon: Icons.add_location_alt_outlined,
+        icon: CatchIcons.pinOutlined,
         title: 'No exact pins yet',
         message:
             'These events are visible, but none have pinned starting points.',
@@ -181,9 +192,9 @@ class _MapEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: CatchEmptyState(
-        icon: Icons.map_outlined,
+        icon: CatchIcons.map,
         title: 'No mapped events yet',
         message:
             'Join clubs, book events, or save future events to see starting points here.',

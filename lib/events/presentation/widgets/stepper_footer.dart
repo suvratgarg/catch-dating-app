@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class StepperFooter extends StatelessWidget {
                     onPressed: isLoading ? null : onSaveDraft,
                     variant: CatchButtonVariant.ghost,
                     size: CatchButtonSize.lg,
-                    icon: const Icon(Icons.save_outlined),
+                    icon: Icon(CatchIcons.saveOutlined),
                     foregroundColor: t.primary,
                   ),
                 ),
@@ -62,7 +63,7 @@ class StepperFooter extends StatelessWidget {
                   fullWidth: true,
                   icon: isLastStep
                       ? null
-                      : const Icon(Icons.arrow_forward_rounded),
+                      : Icon(CatchIcons.arrowForwardRounded),
                 ),
               ),
             ),

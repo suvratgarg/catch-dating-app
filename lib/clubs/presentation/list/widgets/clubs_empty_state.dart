@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class ClubsEmptyState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: CatchEmptyState(
-          icon: Icons.groups_outlined,
+          icon: CatchIcons.groupsOutlined,
           title: title,
           message: message,
           action: action,

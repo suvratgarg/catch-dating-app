@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -116,15 +117,15 @@ class EventHeroTile extends StatelessWidget {
                   runSpacing: CatchSpacing.s1,
                   children: [
                     _EventMetaChip(
-                      icon: Icons.access_time_rounded,
+                      icon: CatchIcons.accessTimeRounded,
                       label: '${data.dateLabel} · ${data.timeRangeLabel}',
                     ),
                     _EventMetaChip(
-                      icon: Icons.location_on_outlined,
+                      icon: CatchIcons.locationOnOutlined,
                       label: data.meetingPoint,
                     ),
                     _EventMetaChip(
-                      icon: Icons.route_outlined,
+                      icon: CatchIcons.routeOutlined,
                       label: data.activitySummaryLabel,
                     ),
                   ],

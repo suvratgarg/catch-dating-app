@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
@@ -970,7 +971,7 @@ void main() {
             }),
           ],
           child: MaterialApp(
-            theme: AppTheme.light,
+            theme: AppTheme.light.copyWith(platform: TargetPlatform.iOS),
             initialRoute: '/detail',
             routes: {
               '/': (context) =>
@@ -997,6 +998,20 @@ void main() {
       await tester.pump();
       expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.byTooltip('Share event'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byTooltip('Share event'),
+          matching: find.byIcon(CatchIcons.iosShareRounded),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byTooltip('Share event'),
+          matching: find.byIcon(CatchIcons.share),
+        ),
+        findsNothing,
+      );
       expect(find.byTooltip('Add to calendar'), findsOneWidget);
       expect(find.byTooltip('Save event'), findsOneWidget);
       await tester.tap(find.byTooltip('Share event'));

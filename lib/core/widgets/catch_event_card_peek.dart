@@ -28,6 +28,7 @@ class CatchEventCardPeek extends StatelessWidget {
     this.onTap,
     this.width = 264,
     this.height = 96,
+    this.preferActivityArtwork = false,
   });
 
   final String title;
@@ -41,6 +42,7 @@ class CatchEventCardPeek extends StatelessWidget {
   final VoidCallback? onTap;
   final double width;
   final double height;
+  final bool preferActivityArtwork;
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +81,7 @@ class CatchEventCardPeek extends StatelessWidget {
                   pace: pace,
                   activityKind: activityKind,
                   scrim: CatchEventThumbnailScrim.none,
+                  preferActivityArtwork: preferActivityArtwork,
                 ),
               ),
               Expanded(

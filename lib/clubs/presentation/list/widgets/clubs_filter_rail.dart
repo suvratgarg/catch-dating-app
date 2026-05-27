@@ -15,7 +15,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Bring them back through the search field or a future "More filters" sheet
 /// when the use-case justifies it.
 class ClubsFilterRail extends ConsumerWidget {
-  const ClubsFilterRail({super.key});
+  const ClubsFilterRail({super.key, this.backgroundColor});
+
+  final Color? backgroundColor;
 
   static const List<ExploreTimeFilter> _timeFilters = [
     ExploreTimeFilter.tonight,
@@ -39,7 +41,7 @@ class ClubsFilterRail extends ConsumerWidget {
     final filterController = ref.read(clubBrowseFiltersProvider.notifier);
 
     return ColoredBox(
-      color: t.bg,
+      color: backgroundColor ?? t.bg,
       child: SingleChildScrollView(
         key: const ValueKey('explore-filter-rail-scroll-view'),
         scrollDirection: Axis.horizontal,
@@ -50,45 +52,45 @@ class ClubsFilterRail extends ConsumerWidget {
           CatchSpacing.s3,
         ),
         child: Row(
-            children: [
-              for (final timeFilter in _timeFilters) ...[
-                CatchChip(
-                  label: _timeFilterLabel(timeFilter),
-                  active: filters.timeFilter == timeFilter,
-                  icon: Icon(_timeFilterIcon(timeFilter)),
-                  onTap: () => filterController.toggleTimeFilter(timeFilter),
-                ),
-                gapW8,
-              ],
-              _RailDivider(color: t.line2),
+          children: [
+            for (final timeFilter in _timeFilters) ...[
+              CatchChip(
+                label: _timeFilterLabel(timeFilter),
+                active: filters.timeFilter == timeFilter,
+                icon: Icon(_timeFilterIcon(timeFilter)),
+                onTap: () => filterController.toggleTimeFilter(timeFilter),
+              ),
               gapW8,
-              for (final distanceFilter in _distanceFilters) ...[
-                CatchChip(
-                  label: _distanceFilterLabel(distanceFilter),
-                  active: filters.distanceFilter == distanceFilter,
-                  icon: Icon(CatchIcons.nearMeOutlined),
-                  onTap: () =>
-                      filterController.toggleDistanceFilter(distanceFilter),
-                ),
-                gapW8,
-              ],
-              _RailDivider(color: t.line2),
+            ],
+            _RailDivider(color: t.line2),
+            gapW8,
+            for (final distanceFilter in _distanceFilters) ...[
+              CatchChip(
+                label: _distanceFilterLabel(distanceFilter),
+                active: filters.distanceFilter == distanceFilter,
+                icon: Icon(CatchIcons.nearMeOutlined),
+                onTap: () =>
+                    filterController.toggleDistanceFilter(distanceFilter),
+              ),
+              gapW8,
+            ],
+            _RailDivider(color: t.line2),
+            gapW8,
+            CatchChip(
+              label: 'Joined',
+              active: filters.joinedOnly,
+              icon: Icon(CatchIcons.joined),
+              onTap: filterController.toggleJoinedOnly,
+            ),
+            if (filters.hasActiveFilters) ...[
               gapW8,
               CatchChip(
-                label: 'Joined',
-                active: filters.joinedOnly,
-                icon: Icon(CatchIcons.joined),
-                onTap: filterController.toggleJoinedOnly,
+                label: 'Clear',
+                icon: Icon(CatchIcons.clear),
+                onTap: filterController.clear,
               ),
-              if (filters.hasActiveFilters) ...[
-                gapW8,
-                CatchChip(
-                  label: 'Clear',
-                  icon: Icon(CatchIcons.clear),
-                  onTap: filterController.clear,
-                ),
-              ],
             ],
+          ],
         ),
       ),
     );

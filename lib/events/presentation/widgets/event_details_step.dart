@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -91,7 +92,7 @@ class EventDetailsStep extends StatelessWidget {
                 label: 'Format name',
                 controller: customActivityLabelController,
                 hintText: 'Salsa night',
-                prefixIcon: const Icon(Icons.event_available_outlined),
+                prefixIcon: Icon(CatchIcons.eventAvailableOutlined),
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
                 validator: (value) {
@@ -135,7 +136,7 @@ class EventDetailsStep extends StatelessWidget {
                 label: 'Distance (km)',
                 controller: distanceController,
                 hintText: '10',
-                prefixIcon: const Icon(Icons.straighten_outlined),
+                prefixIcon: Icon(CatchIcons.straightenOutlined),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
@@ -207,7 +208,7 @@ class EventDetailsStep extends StatelessWidget {
               controller: descriptionController,
               hintText:
                   'What should attendees expect? Any tips for the route or venue?',
-              prefixIcon: const Icon(Icons.edit_note_outlined),
+              prefixIcon: Icon(CatchIcons.editNoteOutlined),
               maxLines: 4,
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.newline,

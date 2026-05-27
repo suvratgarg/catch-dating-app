@@ -2,6 +2,7 @@ import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.d
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -129,7 +130,9 @@ class _CityTrigger extends StatelessWidget {
           child: SizedBox.square(
             dimension: CatchControlMetrics.compactIconExtent,
             child: Icon(
-              focused ? Icons.location_on_rounded : Icons.location_on_outlined,
+              focused
+                  ? CatchIcons.locationOnRounded
+                  : CatchIcons.locationOnOutlined,
               size: 22,
               color: enabled ? t.ink : t.ink3,
             ),
@@ -184,7 +187,11 @@ class _CityPickerSheet extends StatelessWidget {
                         style: CatchTextStyles.titleM(context),
                       ),
                     ),
-                    Icon(Icons.location_on_outlined, size: 18, color: t.ink3),
+                    Icon(
+                      CatchIcons.locationOnOutlined,
+                      size: 18,
+                      color: t.ink3,
+                    ),
                   ],
                 ),
               ),
@@ -260,7 +267,7 @@ class _CityOptionTile extends StatelessWidget {
                   ),
                 ),
                 if (selected)
-                  Icon(Icons.check_rounded, size: 18, color: t.primary),
+                  Icon(CatchIcons.checkRounded, size: 18, color: t.primary),
               ],
             ),
           ),
