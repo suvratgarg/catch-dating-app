@@ -135,7 +135,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
           ],
           DashboardStrideSection(section: viewModel.weeklyActivitySection),
           gapH18,
-          const QuickActions(),
+          QuickActions(hostedClubShortcut: viewModel.hostedClubShortcut),
           if (followedClubIds.isNotEmpty) ...[
             gapH18,
             DashboardClubsRail(clubIds: followedClubIds),

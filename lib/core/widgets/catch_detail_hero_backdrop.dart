@@ -2,10 +2,16 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 class CatchDetailHeroBackdrop extends StatelessWidget {
-  const CatchDetailHeroBackdrop({super.key, this.imageUrl, this.semanticLabel});
+  const CatchDetailHeroBackdrop({
+    super.key,
+    this.imageUrl,
+    this.semanticLabel,
+    this.showScrim = true,
+  });
 
   final String? imageUrl;
   final String? semanticLabel;
+  final bool showScrim;
 
   static bool hasImage(String? imageUrl) =>
       imageUrl != null && imageUrl.trim().isNotEmpty;
@@ -26,7 +32,7 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
           )
         else
           const _CatchDetailHeroFallback(),
-        const _CatchDetailHeroScrim(),
+        if (showScrim) const _CatchDetailHeroScrim(),
       ],
     );
   }

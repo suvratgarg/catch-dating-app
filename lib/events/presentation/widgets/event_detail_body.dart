@@ -14,11 +14,13 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -46,6 +48,8 @@ class EventDetailBody extends ConsumerWidget {
     this.inviteCode,
     this.onShareEvent,
     this.now,
+    this.presentationMode = EventDetailPresentationMode.standard,
+    this.heroTag,
   });
 
   final Event event;
@@ -59,6 +63,8 @@ class EventDetailBody extends ConsumerWidget {
   final String? inviteCode;
   final EventShareHandler? onShareEvent;
   final DateTime? now;
+  final EventDetailPresentationMode presentationMode;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,6 +77,14 @@ class EventDetailBody extends ConsumerWidget {
     final share = ref.watch(externalShareControllerProvider);
     final calendar = ref.watch(eventCalendarControllerProvider);
     final now = this.now ?? DateTime.now();
+    final isSpotlightDark =
+        presentationMode == EventDetailPresentationMode.spotlightDark;
+    final style = isSpotlightDark
+        ? EventDetailSurfaceStyle.dark(t)
+        : EventDetailSurfaceStyle.light(
+            t,
+            useWhite: presentationMode == EventDetailPresentationMode.ticket,
+          );
     final Widget? bottomNavigationBar;
     void shareEvent(BuildContext buttonContext) => unawaited(
       onShareEvent != null
@@ -100,6 +114,7 @@ class EventDetailBody extends ConsumerWidget {
         clubId: clubId,
         eventId: event.id,
         inviteCode: inviteCode,
+        darkSurface: isSpotlightDark,
       );
     } else if (userProfile != null && !isHost) {
       bottomNavigationBar = EventDetailCta(
@@ -109,13 +124,14 @@ class EventDetailBody extends ConsumerWidget {
         participation: participation,
         inviteCode: inviteCode,
         now: now,
+        darkSurface: isSpotlightDark,
       );
     } else {
       bottomNavigationBar = null;
     }
 
     return Scaffold(
-      backgroundColor: t.bg,
+      backgroundColor: style.pageBackground,
       body: CustomScrollView(
         slivers: [
           EventDetailHeroAppBar(
@@ -132,6 +148,8 @@ class EventDetailBody extends ConsumerWidget {
             ),
             onAddToCalendar: (buttonContext) =>
                 unawaited(_addEventToCalendar(buttonContext, event, calendar)),
+            presentationMode: presentationMode,
+            heroTag: heroTag,
             onToggleSaved: () => _toggleSavedEvent(
               context,
               ref,
@@ -153,6 +171,7 @@ class EventDetailBody extends ConsumerWidget {
               children: [
                 EventDetailOverviewSection(
                   event: event,
+                  surfaceStyle: style,
                   onLocationTap: event.hasExactStartingPoint
                       ? () => context.pushNamed(
                           Routes.eventLocationMapScreen.name,
@@ -165,7 +184,11 @@ class EventDetailBody extends ConsumerWidget {
                   isHost: isHost,
                 )) ...[
                   gapH20,
-                  _EventCompanionEntry(event: event, clubId: clubId),
+                  _EventCompanionEntry(
+                    event: event,
+                    clubId: clubId,
+                    surfaceStyle: style,
+                  ),
                 ],
                 if (_canShowInviteLoop(
                   event: event,
@@ -174,10 +197,14 @@ class EventDetailBody extends ConsumerWidget {
                   now: now,
                 )) ...[
                   gapH20,
-                  _EventInviteLoopCard(event: event, onShare: shareEvent),
+                  _EventInviteLoopCard(
+                    event: event,
+                    onShare: shareEvent,
+                    surfaceStyle: style,
+                  ),
                 ],
                 gapH24,
-                Divider(color: t.line, height: 1),
+                Divider(color: style.dividerColor, height: 1),
                 gapH24,
                 EventDetailSocialSection(
                   event: event,
@@ -187,6 +214,7 @@ class EventDetailBody extends ConsumerWidget {
                   isAuthenticated: isAuthenticated,
                   participation: participation,
                   now: now,
+                  surfaceStyle: style,
                 ),
                 gapH16,
               ],
@@ -212,16 +240,24 @@ bool _canShowInviteLoop({
 }
 
 class _EventInviteLoopCard extends StatelessWidget {
-  const _EventInviteLoopCard({required this.event, required this.onShare});
+  const _EventInviteLoopCard({
+    required this.event,
+    required this.onShare,
+    required this.surfaceStyle,
+  });
 
   final Event event;
   final ValueChanged<BuildContext> onShare;
+  final EventDetailSurfaceStyle surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      borderColor: t.primary.withValues(alpha: 0.24),
+      backgroundColor: surfaceStyle.surfaceBackground,
+      borderColor: surfaceStyle.isDark
+          ? surfaceStyle.borderColor
+          : t.primary.withValues(alpha: 0.24),
       padding: const EdgeInsets.all(14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,12 +273,18 @@ class _EventInviteLoopCard extends StatelessWidget {
               children: [
                 Text(
                   'Bring someone into the room',
-                  style: CatchTextStyles.sectionTitle(context),
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle.headingColor,
+                  ),
                 ),
                 gapH4,
                 Text(
                   'Your spot is booked. Invite a friend who would make this event better.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle.bodyColor,
+                  ),
                 ),
                 gapH12,
                 Builder(
@@ -279,10 +321,15 @@ bool _canOpenCompanion({
 }
 
 class _EventCompanionEntry extends ConsumerWidget {
-  const _EventCompanionEntry({required this.event, required this.clubId});
+  const _EventCompanionEntry({
+    required this.event,
+    required this.clubId,
+    required this.surfaceStyle,
+  });
 
   final Event event;
   final String clubId;
+  final EventDetailSurfaceStyle surfaceStyle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -290,23 +337,33 @@ class _EventCompanionEntry extends ConsumerWidget {
     return planAsync.maybeWhen(
       data: (plan) => plan == null
           ? const SizedBox.shrink()
-          : _EventCompanionCard(event: event, clubId: clubId),
+          : _EventCompanionCard(
+              event: event,
+              clubId: clubId,
+              surfaceStyle: surfaceStyle,
+            ),
       orElse: () => const SizedBox.shrink(),
     );
   }
 }
 
 class _EventCompanionCard extends StatelessWidget {
-  const _EventCompanionCard({required this.event, required this.clubId});
+  const _EventCompanionCard({
+    required this.event,
+    required this.clubId,
+    required this.surfaceStyle,
+  });
 
   final Event event;
   final String clubId;
+  final EventDetailSurfaceStyle surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      borderColor: t.line,
+      backgroundColor: surfaceStyle.surfaceBackground,
+      borderColor: surfaceStyle.borderColor,
       padding: const EdgeInsets.all(14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -319,12 +376,18 @@ class _EventCompanionCard extends StatelessWidget {
               children: [
                 Text(
                   'Event companion',
-                  style: CatchTextStyles.sectionTitle(context),
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle.headingColor,
+                  ),
                 ),
                 gapH4,
                 Text(
                   'Check in, see your social prompt, and handle private follow-up after the event.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle.bodyColor,
+                  ),
                 ),
                 gapH12,
                 CatchButton(
@@ -484,34 +547,43 @@ class _GuestBookCta extends StatelessWidget {
     required this.clubId,
     required this.eventId,
     this.inviteCode,
+    this.darkSurface = false,
   });
 
   final String clubId;
   final String eventId;
   final String? inviteCode;
+  final bool darkSurface;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        child: CatchButton(
-          label: 'Sign in to book this event',
-          onPressed: () => context.go(
-            Uri(
-              path: Routes.authScreen.path,
-              queryParameters: {
-                'from': AppDeepLinks.inAppEventPath(
-                  clubId: clubId,
-                  eventId: eventId,
-                  inviteCode: inviteCode,
-                ),
-              },
-            ).toString(),
+      child: ColoredBox(
+        color: darkSurface ? t.ink : t.surface,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: CatchButton(
+            label: 'Sign in to book this event',
+            onPressed: () => context.go(
+              Uri(
+                path: Routes.authScreen.path,
+                queryParameters: {
+                  'from': AppDeepLinks.inAppEventPath(
+                    clubId: clubId,
+                    eventId: eventId,
+                    inviteCode: inviteCode,
+                  ),
+                },
+              ).toString(),
+            ),
+            icon: Icon(
+              CatchIcons.lockOutlineRounded,
+              size: 18,
+              color: t.primary,
+            ),
+            fullWidth: true,
           ),
-          icon: Icon(CatchIcons.lockOutlineRounded, size: 18, color: t.primary),
-          fullWidth: true,
         ),
       ),
     );

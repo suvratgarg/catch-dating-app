@@ -131,7 +131,7 @@ class VisualReviewApp extends StatelessWidget {
                 _PhoneFrame(label: 'Calendar', child: const CalendarScreen()),
                 _PhoneFrame(
                   label: 'Map view',
-                  child: const EventMapScreen(enableNetworkTiles: false),
+                  child: const EventMapView(enableNetworkTiles: false),
                 ),
                 _PhoneFrame(label: 'Filters', child: const FiltersScreen()),
                 _PhoneFrame(

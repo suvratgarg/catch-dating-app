@@ -26,10 +26,22 @@ class CatchMetricStrip extends StatelessWidget {
       vertical: CatchSpacing.s4,
       horizontal: CatchSpacing.s3,
     ),
+    this.backgroundColor,
+    this.borderColor,
+    this.dividerColor,
+    this.valueColor,
+    this.unitColor,
+    this.labelColor,
   }) : assert(items.isNotEmpty);
 
   final List<CatchMetricStripItem> items;
   final EdgeInsetsGeometry padding;
+  final Color? backgroundColor;
+  final Color? borderColor;
+  final Color? dividerColor;
+  final Color? valueColor;
+  final Color? unitColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +50,19 @@ class CatchMetricStrip extends StatelessWidget {
     return CatchSurface(
       padding: padding,
       radius: CatchRadius.md,
-      borderColor: t.line,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor ?? t.line,
       child: Row(
         children: [
           for (final item in items) ...[
-            _CatchMetricCell(item: item),
-            if (item != items.last) _CatchMetricDivider(color: t.line),
+            _CatchMetricCell(
+              item: item,
+              valueColor: valueColor,
+              unitColor: unitColor,
+              labelColor: labelColor,
+            ),
+            if (item != items.last)
+              _CatchMetricDivider(color: dividerColor ?? t.line),
           ],
         ],
       ),
@@ -52,9 +71,17 @@ class CatchMetricStrip extends StatelessWidget {
 }
 
 class _CatchMetricCell extends StatelessWidget {
-  const _CatchMetricCell({required this.item});
+  const _CatchMetricCell({
+    required this.item,
+    this.valueColor,
+    this.unitColor,
+    this.labelColor,
+  });
 
   final CatchMetricStripItem item;
+  final Color? valueColor;
+  final Color? unitColor;
+  final Color? labelColor;
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +97,18 @@ class _CatchMetricCell extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
-                Text(item.value, style: CatchTextStyles.mono(context)),
+                Text(
+                  item.value,
+                  style: CatchTextStyles.mono(context, color: valueColor),
+                ),
                 if (item.unit.isNotEmpty) ...[
                   gapW2,
                   Text(
                     item.unit,
-                    style: CatchTextStyles.mono(context, color: t.ink2),
+                    style: CatchTextStyles.mono(
+                      context,
+                      color: unitColor ?? t.ink2,
+                    ),
                   ),
                 ],
               ],
@@ -84,7 +117,10 @@ class _CatchMetricCell extends StatelessWidget {
           gapH2,
           Text(
             item.label,
-            style: CatchTextStyles.supporting(context, color: t.ink3),
+            style: CatchTextStyles.supporting(
+              context,
+              color: labelColor ?? t.ink3,
+            ),
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

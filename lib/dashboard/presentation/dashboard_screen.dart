@@ -90,6 +90,7 @@ class DashboardScreen extends ConsumerWidget {
                   ? DashboardEmptySliverBody(
                       weeklyActivitySection: viewModel.weeklyActivitySection,
                       followedClubIds: followedClubIds,
+                      hostedClubShortcut: viewModel.hostedClubShortcut,
                     )
                   : DashboardFullSliverBody(
                       viewModel: viewModel,

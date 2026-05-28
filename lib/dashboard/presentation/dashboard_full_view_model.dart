@@ -51,6 +51,7 @@ class DashboardFullViewModel {
     required this.activeSwipeEvent,
     required this.pendingReviewEvent,
     required this.hostEventTools,
+    required this.hostedClubShortcut,
     required this.attendedEventsSection,
     required this.weeklyActivitySection,
     required this.recommendationsSection,
@@ -62,6 +63,7 @@ class DashboardFullViewModel {
   final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
   final List<DashboardHostEventTool> hostEventTools;
+  final Club? hostedClubShortcut;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
   final DashboardSectionModel<WeeklyActivitySnapshot> weeklyActivitySection;
   final DashboardSectionModel<List<DashboardEventRecommendation>>
@@ -102,6 +104,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
   String? uid,
   UserProfile? viewer,
   List<Event> hostedEvents = const [],
+  List<Club> hostedOrOwnedClubs = const [],
   required AsyncValue<List<Event>> attendedEventsAsync,
   required AsyncValue<List<DashboardEventRecommendationCandidate>>
   recommendedEventsAsync,
@@ -196,10 +199,31 @@ DashboardFullViewModel buildDashboardFullViewModel({
     activeSwipeEvent: activeSwipeEvent,
     pendingReviewEvent: pendingReviewEvent,
     hostEventTools: hostEventTools,
+    hostedClubShortcut: selectHostedClubShortcut(hostedOrOwnedClubs, uid: uid),
     attendedEventsSection: attendedEventsSection,
     weeklyActivitySection: weeklyActivitySection,
     recommendationsSection: recommendationsSection,
   );
+}
+
+Club? selectHostedClubShortcut(List<Club> clubs, {required String? uid}) {
+  if (uid == null) return null;
+  final byId = <String, Club>{};
+  for (final club in clubs) {
+    if (club.archived || club.status != ClubLifecycleStatus.active) continue;
+    if (!club.isHostedBy(uid)) continue;
+    byId[club.id] = club;
+  }
+
+  final candidates = byId.values.toList(growable: false)
+    ..sort((left, right) {
+      final leftOwned = left.isOwnedBy(uid);
+      final rightOwned = right.isOwnedBy(uid);
+      if (leftOwned != rightOwned) return leftOwned ? -1 : 1;
+      return left.createdAt.compareTo(right.createdAt);
+    });
+
+  return candidates.firstOrNull;
 }
 
 DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
@@ -651,9 +675,16 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
-  final hostedClubs = ref.watch(watchClubsHostedByProvider(uid)).asData?.value;
+  final hostedClubs = _mergeDashboardHostClubs(
+    hostedClubs:
+        ref.watch(watchClubsHostedByProvider(uid)).asData?.value ??
+        const <Club>[],
+    ownedClubs:
+        ref.watch(watchClubsOwnedByProvider(uid)).asData?.value ??
+        const <Club>[],
+  );
   final hostedEvents = <Event>[];
-  for (final club in hostedClubs ?? const <Club>[]) {
+  for (final club in hostedClubs) {
     final events = ref.watch(watchEventsForClubProvider(club.id)).asData?.value;
     if (events != null) {
       hostedEvents.addAll(events);
@@ -665,6 +696,7 @@ DashboardFullViewModel dashboardFullViewModel(
     uid: uid,
     viewer: user,
     hostedEvents: hostedEvents,
+    hostedOrOwnedClubs: hostedClubs,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
     weeklyActivityAsync: ref.watch(weeklyActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
@@ -677,4 +709,18 @@ DashboardFullViewModel dashboardFullViewModel(
       ),
     ),
   );
+}
+
+List<Club> _mergeDashboardHostClubs({
+  required List<Club> hostedClubs,
+  required List<Club> ownedClubs,
+}) {
+  final byId = <String, Club>{};
+  for (final club in hostedClubs) {
+    byId[club.id] = club;
+  }
+  for (final club in ownedClubs) {
+    byId[club.id] = club;
+  }
+  return List.unmodifiable(byId.values);
 }

@@ -181,7 +181,7 @@ class _CardVariationLabScreen extends StatelessWidget {
                     countdownLabel: 'Thu',
                     priceLabel: fixtures.socialRun.isFree ? 'Free' : '₹799',
                     capacityLabel:
-                        '${fixtures.socialRun.activitySummaryLabel} - ${fixtures.socialRun.signedUpCount} going - ${fixtures.socialRun.spotsRemaining} left',
+                        '${fixtures.socialRun.activitySummaryLabel} · ${fixtures.socialRun.signedUpCount} going · ${fixtures.socialRun.spotsRemaining} left',
                     activityKind: fixtures.socialRun.activityKind,
                     statusLabel: 'Matches your 5 km preference',
                     clockTime: TimeOfDay.fromDateTime(
@@ -213,6 +213,8 @@ class _CardVariationLabScreen extends StatelessWidget {
                   child: EventDateRailCard(
                     event: fixtures.socialRun,
                     kicker: fixtures.runClub.name,
+                    supportingLabel:
+                        '${fixtures.socialRun.activitySummaryLabel} · ${fixtures.socialRun.locationName}',
                     priceLabel: 'Free',
                     statusLabel: "You're in",
                   ),

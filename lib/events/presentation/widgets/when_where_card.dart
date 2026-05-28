@@ -6,13 +6,20 @@ import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:flutter/material.dart';
 
 class WhenWhereCard extends StatelessWidget {
-  const WhenWhereCard({super.key, required this.event, this.onLocationTap});
+  const WhenWhereCard({
+    super.key,
+    required this.event,
+    this.onLocationTap,
+    this.surfaceStyle,
+  });
 
   final Event event;
   final VoidCallback? onLocationTap;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +27,13 @@ class WhenWhereCard extends StatelessWidget {
     final start = event.startTime;
     final canOpenLocation =
         event.hasExactStartingPoint && onLocationTap != null;
+    final style = surfaceStyle;
 
     return CatchSurface(
       padding: const EdgeInsets.all(16),
       radius: CatchRadius.md,
-      borderColor: t.line,
+      backgroundColor: style?.surfaceBackground,
+      borderColor: style?.borderColor ?? t.line,
       child: Column(
         children: [
           Row(
@@ -33,7 +42,7 @@ class WhenWhereCard extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: t.primarySoft,
+                  color: style?.primarySoftColor ?? t.primarySoft,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
@@ -43,14 +52,14 @@ class WhenWhereCard extends StatelessWidget {
                       '${start.day}',
                       style: CatchTextStyles.statCompact(
                         context,
-                        color: t.primary,
+                        color: style?.primaryColor ?? t.primary,
                       ),
                     ),
                     Text(
                       EventFormatters.shortMonth(start).toUpperCase(),
                       style: CatchTextStyles.statusLabel(
                         context,
-                        color: t.primary,
+                        color: style?.primaryColor ?? t.primary,
                       ),
                     ),
                   ],
@@ -63,12 +72,18 @@ class WhenWhereCard extends StatelessWidget {
                   children: [
                     Text(
                       event.timeRangeLabel,
-                      style: CatchTextStyles.sectionTitle(context),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: style?.headingColor,
+                      ),
                     ),
                     gapH2,
                     Text(
                       event.longDateLabel,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      style: CatchTextStyles.supporting(
+                        context,
+                        color: style?.bodyColor ?? t.ink2,
+                      ),
                     ),
                   ],
                 ),
@@ -77,7 +92,7 @@ class WhenWhereCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Divider(color: t.line, height: 1),
+            child: Divider(color: style?.dividerColor ?? t.line, height: 1),
           ),
           Semantics(
             button: canOpenLocation,
@@ -90,9 +105,9 @@ class WhenWhereCard extends StatelessWidget {
                   children: [
                     CatchIconTile(
                       icon: CatchIcons.locationOnOutlined,
-                      iconColor: t.ink2,
-                      backgroundColor: t.raised,
-                      borderColor: t.line,
+                      iconColor: style?.bodyColor ?? t.ink2,
+                      backgroundColor: style?.raisedBackground ?? t.raised,
+                      borderColor: style?.borderColor ?? t.line,
                       size: 44,
                       iconSize: 20,
                       radius: 10,
@@ -104,7 +119,10 @@ class WhenWhereCard extends StatelessWidget {
                         children: [
                           Text(
                             event.locationName,
-                            style: CatchTextStyles.sectionTitle(context),
+                            style: CatchTextStyles.sectionTitle(
+                              context,
+                              color: style?.headingColor,
+                            ),
                           ),
                           if (event.locationNotes != null &&
                               event.locationNotes!.isNotEmpty) ...[
@@ -113,7 +131,7 @@ class WhenWhereCard extends StatelessWidget {
                               event.locationNotes!,
                               style: CatchTextStyles.supporting(
                                 context,
-                                color: t.ink2,
+                                color: style?.bodyColor ?? t.ink2,
                               ),
                             ),
                           ],
@@ -123,7 +141,7 @@ class WhenWhereCard extends StatelessWidget {
                     if (canOpenLocation)
                       Icon(
                         CatchIcons.chevronRightRounded,
-                        color: t.ink3,
+                        color: style?.mutedColor ?? t.ink3,
                         size: 20,
                       ),
                   ],

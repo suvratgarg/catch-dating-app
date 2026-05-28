@@ -23,17 +23,17 @@ class EventCapacityPresenter {
 
   String goingAvailabilityLabel({String? availabilityLabel}) {
     final availability = availabilityLabel?.trim();
-    if (spotsRemaining <= 0) return '$goingLabel - full';
+    if (spotsRemaining <= 0) return '$goingLabel · full';
     if (availability != null &&
         availability.isNotEmpty &&
         availability.toLowerCase() != 'open') {
-      return '$goingLabel - $availability';
+      return '$goingLabel · $availability';
     }
-    return '$goingLabel - $spotsRemaining left';
+    return '$goingLabel · $spotsRemaining left';
   }
 
   String activityGoingAvailabilityLabel({String? availabilityLabel}) {
-    return '${event.activitySummaryLabel} - '
+    return '${event.activitySummaryLabel} · '
         '${goingAvailabilityLabel(availabilityLabel: availabilityLabel)}';
   }
 

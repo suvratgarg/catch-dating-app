@@ -34,6 +34,7 @@ class EventDetailCta extends ConsumerWidget {
     required this.participation,
     this.inviteCode,
     this.now,
+    this.darkSurface = false,
   });
 
   final Event event;
@@ -42,10 +43,16 @@ class EventDetailCta extends ConsumerWidget {
   final EventParticipation? participation;
   final String? inviteCode;
   final DateTime? now;
+  final bool darkSurface;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
     final referenceNow = now ?? DateTime.now();
+    final ctaBackground = darkSurface ? t.ink : null;
+    final ctaDivider = darkSurface
+        ? Colors.white.withValues(alpha: 0.12)
+        : null;
 
     final eligibility = _eligibilityForParticipation(
       event: event,
@@ -113,6 +120,8 @@ class EventDetailCta extends ConsumerWidget {
                         .joinWaitlist(event: event, inviteCode: inviteCode),
                   ),
             isLoading: joinWMutation.isPending,
+            backgroundColor: ctaBackground,
+            dividerColor: ctaDivider,
           )
         else
           switch (status) {
@@ -179,6 +188,8 @@ class EventDetailCta extends ConsumerWidget {
                       });
                     },
               isLoading: bookMutation.isPending,
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
               leadingContent: isFreeForViewer
                   ? null
                   : PriceLeading(
@@ -209,6 +220,8 @@ class EventDetailCta extends ConsumerWidget {
                       ),
                 isLoading: cancelMutation.isPending,
                 leadingContent: const BookedLeading(),
+                backgroundColor: ctaBackground,
+                dividerColor: ctaDivider,
               );
             })(),
             EventSignUpStatus.full => BottomCTA(
@@ -228,6 +241,8 @@ class EventDetailCta extends ConsumerWidget {
                           .joinWaitlist(event: event, inviteCode: inviteCode),
                     ),
               isLoading: joinWMutation.isPending,
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
             ),
             EventSignUpStatus.waitlisted => BottomCTA(
               label: requiresHostApproval
@@ -242,15 +257,21 @@ class EventDetailCta extends ConsumerWidget {
                           .leaveWaitlist(event: event),
                     ),
               isLoading: leaveWMutation.isPending,
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
             ),
             EventSignUpStatus.attended => BottomCTA(
               label: 'You attended this event',
               onPressed: null,
               leadingContent: const AttendedLeading(),
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
             ),
             EventSignUpStatus.past => BottomCTA(
               label: 'This event has ended',
               onPressed: null,
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
             ),
             EventSignUpStatus.ineligible => BottomCTA(
               label: switch (eligibility) {
@@ -264,6 +285,8 @@ class EventDetailCta extends ConsumerWidget {
                 _ => 'Not eligible for this event',
               },
               onPressed: null,
+              backgroundColor: ctaBackground,
+              dividerColor: ctaDivider,
             ),
           },
       ],

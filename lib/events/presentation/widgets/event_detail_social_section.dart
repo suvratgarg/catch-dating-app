@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
@@ -21,6 +22,7 @@ class EventDetailSocialSection extends StatelessWidget {
     required this.isAuthenticated,
     required this.participation,
     this.now,
+    this.surfaceStyle,
   });
 
   final Event event;
@@ -30,6 +32,7 @@ class EventDetailSocialSection extends StatelessWidget {
   final bool isAuthenticated;
   final EventParticipation? participation;
   final DateTime? now;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +48,16 @@ class EventDetailSocialSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (canShowMemberContext)
-          WhoIsGoing(event: event, userProfile: profile)
+          WhoIsGoing(
+            event: event,
+            userProfile: profile,
+            surfaceStyle: surfaceStyle,
+          )
         else
-          const _GuestWhoIsGoing(),
+          _GuestWhoIsGoing(surfaceStyle: surfaceStyle),
         if (canShowMemberContext) ...[
           gapH24,
-          Divider(color: t.line, height: 1),
+          Divider(color: surfaceStyle?.dividerColor ?? t.line, height: 1),
           gapH24,
           EventReviewsSection(
             clubId: clubId,
@@ -67,29 +74,45 @@ class EventDetailSocialSection extends StatelessWidget {
 }
 
 class _GuestWhoIsGoing extends StatelessWidget {
-  const _GuestWhoIsGoing();
+  const _GuestWhoIsGoing({this.surfaceStyle});
+
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      borderColor: t.line,
+      backgroundColor: surfaceStyle?.surfaceBackground,
+      borderColor: surfaceStyle?.borderColor ?? t.line,
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(CatchIcons.lockOutlineRounded, size: 16, color: t.ink3),
+              Icon(
+                CatchIcons.lockOutlineRounded,
+                size: 16,
+                color: surfaceStyle?.mutedColor ?? t.ink3,
+              ),
               gapW8,
-              Text("Who's going", style: CatchTextStyles.titleL(context)),
+              Text(
+                "Who's going",
+                style: CatchTextStyles.titleL(
+                  context,
+                  color: surfaceStyle?.headingColor,
+                ),
+              ),
             ],
           ),
           gapH8,
           Text(
             'Sign in to see who has booked this event.',
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            style: CatchTextStyles.supporting(
+              context,
+              color: surfaceStyle?.bodyColor ?? t.ink2,
+            ),
           ),
         ],
       ),

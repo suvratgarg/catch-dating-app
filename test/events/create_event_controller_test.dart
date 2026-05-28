@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
@@ -16,16 +17,19 @@ import 'events_test_helpers.dart';
 class FakeRunImageUploadRepository extends Fake
     implements ImageUploadRepository {
   String uploadResult = 'https://img.example/events/generated-7.jpg';
+  String? uploadedUid;
   String? uploadedClubId;
   String? uploadedEventId;
   XFile? uploadedImage;
 
   @override
   Future<String> uploadEventPhoto({
+    required String uid,
     required String clubId,
     required String eventId,
     required XFile image,
   }) async {
+    uploadedUid = uid;
     uploadedClubId = clubId;
     uploadedEventId = eventId;
     uploadedImage = image;
@@ -48,9 +52,17 @@ void main() {
             imageUploadRepositoryProvider.overrideWith(
               (ref) => fakeImageUploadRepository,
             ),
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
           ],
         );
         addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
 
         await container
             .read(createEventControllerProvider.notifier)
@@ -82,6 +94,7 @@ void main() {
         final createdEvent = fakeEventRepository.createdEvent;
         expect(createdEvent, isNotNull);
         expect(createdEvent!.id, 'generated-7');
+        expect(fakeImageUploadRepository.uploadedUid, 'host-1');
         expect(fakeImageUploadRepository.uploadedClubId, 'club-7');
         expect(fakeImageUploadRepository.uploadedEventId, 'generated-7');
         expect(fakeImageUploadRepository.uploadedImage, photo);

@@ -242,6 +242,7 @@ class _SelectedEventLead extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final event = item.event;
     final isSpotlight = event.id == spotlightEventId;
+    final source = 'map_selected_card';
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
@@ -260,14 +261,31 @@ class _SelectedEventLead extends ConsumerWidget {
               capacityLabel: _selectedCapacityLabel(item),
               activityKind: event.activityKind,
               kicker: item.distanceFromUserLabel ?? 'Spotlight pick',
-              visualHeroTag: eventPhotoHeroTag(event.id),
-              onTap: () => _openEvent(context, ref, item, 'map_selected_card'),
+              heroTag: eventSpotlightHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.spotlightDark,
+                transition: EventDetailRouteTransition.spotlightCard,
+                heroTag: eventSpotlightHeroTag(event.id, source),
+              ),
             )
           : _ExploreEventTicketCard(
               key: ValueKey('explore-selected-${event.id}'),
               item: item,
               statusLabel: item.distanceFromUserLabel ?? 'Map pick',
-              onTap: () => _openEvent(context, ref, item, 'map_selected_card'),
+              heroTag: eventTicketHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.ticket,
+                transition: EventDetailRouteTransition.mapSelectedCard,
+                heroTag: eventTicketHeroTag(event.id, source),
+              ),
             ),
     );
   }
@@ -279,12 +297,14 @@ class _ExploreEventTicketCard extends StatelessWidget {
     required this.item,
     this.statusLabel,
     this.width,
+    this.heroTag,
     this.onTap,
   });
 
   final ExploreEventItem item;
   final String? statusLabel;
   final double? width;
+  final Object? heroTag;
   final VoidCallback? onTap;
 
   @override
@@ -301,6 +321,7 @@ class _ExploreEventTicketCard extends StatelessWidget {
       activityKind: event.activityKind,
       statusLabel: statusLabel,
       clockTime: TimeOfDay.fromDateTime(event.startTime),
+      heroTag: heroTag,
       onTap: onTap,
     );
   }
@@ -441,6 +462,9 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
                     statusLabel: item.event.id == widget.selectedEventId
                         ? 'Selected'
                         : _ticketStatusLabel(item),
+                    heroTag: item.event.id == widget.selectedEventId
+                        ? eventTicketHeroTag(item.event.id, 'peek_rail')
+                        : null,
                     onTap: () => _handleTap(context, item),
                   ),
                 );
@@ -486,7 +510,15 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
       widget.onEventTapped(item.event);
       return;
     }
-    _openEvent(context, ref, item, 'peek_rail');
+    _openEvent(
+      context,
+      ref,
+      item,
+      'peek_rail',
+      presentationMode: EventDetailPresentationMode.ticket,
+      transition: EventDetailRouteTransition.ticketCard,
+      heroTag: eventTicketHeroTag(item.event.id, 'peek_rail'),
+    );
   }
 }
 
@@ -635,8 +667,11 @@ void _openEvent(
   BuildContext context,
   WidgetRef ref,
   ExploreEventItem item,
-  String source,
-) {
+  String source, {
+  required EventDetailPresentationMode presentationMode,
+  required EventDetailRouteTransition transition,
+  required Object heroTag,
+}) {
   ref
       .read(appAnalyticsProvider)
       .logEvent(
@@ -648,9 +683,9 @@ void _openEvent(
     pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
     extra: EventDetailRouteExtra(
       initialEvent: item.event,
-      transition: source == 'map_selected_card'
-          ? EventDetailRouteTransition.mapSelectedCard
-          : EventDetailRouteTransition.platform,
+      transition: transition,
+      presentationMode: presentationMode,
+      heroTag: heroTag,
     ),
   );
 }

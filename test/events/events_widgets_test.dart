@@ -418,8 +418,8 @@ void main() {
       expect(find.text('TODAY'), findsOneWidget);
       expect(find.text('CARTER ROAD'), findsOneWidget);
       expect(find.text(event.title), findsOneWidget);
-      expect(find.text('8:00 AM / Free'), findsOneWidget);
-      expect(find.text('2 going - 18 left'), findsOneWidget);
+      expect(find.text('8:00 AM · Free'), findsOneWidget);
+      expect(find.text('2 going · 18 left'), findsOneWidget);
       expect(find.text('VIEW'), findsNothing);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule event'), findsNothing);
@@ -585,7 +585,7 @@ void main() {
       expect(find.text(event.title), findsOneWidget);
       expect(find.text('Sea Link promenade'), findsOneWidget);
       expect(find.text('8km · Easy'), findsOneWidget);
-      expect(find.text('0 going - 20 left'), findsOneWidget);
+      expect(find.text('0 going · 20 left'), findsOneWidget);
       expect(find.text('Saved'), findsOneWidget);
 
       await tester.tap(find.byType(EventCompactRow));

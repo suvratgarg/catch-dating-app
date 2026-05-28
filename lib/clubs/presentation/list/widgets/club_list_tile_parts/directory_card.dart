@@ -82,7 +82,12 @@ class _DirectoryPhotoCard extends StatelessWidget {
           _ClubTitleLine(
             club: club,
             maxLines: 1,
-            style: _directorySerif(context, size: 30, height: 0.98),
+            style: CatchTextStyles.clubDisplay(
+              context,
+              size: 30,
+              height: 0.98,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           gapH4,
           Text(
@@ -160,10 +165,11 @@ class _DirectoryIdentityCard extends StatelessWidget {
                           _ClubTitleLine(
                             club: club,
                             maxLines: 2,
-                            style: _directorySerif(
+                            style: CatchTextStyles.clubDisplay(
                               context,
                               size: 30,
                               height: 0.98,
+                              fontStyle: FontStyle.italic,
                             ),
                           ),
                           gapH8,
@@ -468,22 +474,6 @@ String _directoryCaption(Club club) {
     return nextEventLabel.toUpperCase();
   }
   return '${club.area} / ${cityLabel(club.location)}'.toUpperCase();
-}
-
-TextStyle _directorySerif(
-  BuildContext context, {
-  required double size,
-  double height = 1.1,
-  Color? color,
-}) {
-  return GoogleFonts.getFont(
-    'Instrument Serif',
-    fontSize: size,
-    fontStyle: FontStyle.italic,
-    height: height,
-    letterSpacing: 0,
-    color: color ?? CatchTokens.of(context).ink,
-  );
 }
 
 _MembershipSash? _membershipSashFor({

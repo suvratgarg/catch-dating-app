@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -118,9 +119,11 @@ class CreateEventController extends _$CreateEventController {
     final eventId = eventRepo.generateId();
     String? photoUrl;
     if (photoImage != null) {
+      final uid = requireSignedInUid(ref, action: 'create an event');
       photoUrl = await ref
           .read(imageUploadRepositoryProvider)
           .uploadEventPhoto(
+            uid: uid,
             clubId: normalizedClubId,
             eventId: eventId,
             image: photoImage,
@@ -152,11 +155,10 @@ class CreateEventController extends _$CreateEventController {
       event: event,
       inviteCode: normalizedInviteCode,
       eventSuccessDefaults: eventSuccessDefaults.enabled
-          ? eventSuccessDefaults
-                .normalizedForFormat(
-                  event.eventFormat,
-                  targetAttendeeCount: event.capacityLimit,
-                )
+          ? eventSuccessDefaults.normalizedForFormat(
+              event.eventFormat,
+              targetAttendeeCount: event.capacityLimit,
+            )
           : null,
     );
     return event;

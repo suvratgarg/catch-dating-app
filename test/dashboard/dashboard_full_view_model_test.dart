@@ -89,6 +89,32 @@ void main() {
       expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
 
+    test(
+      'selects owned clubs before hosted clubs for the dashboard shortcut',
+      () {
+        final hosted = buildClub(
+          id: 'hosted-club',
+          hostUserId: 'club-owner',
+          createdAt: DateTime(2026, 1, 2),
+        ).copyWith(hostUserIds: const ['runner-1']);
+        final owned = buildClub(
+          id: 'owned-club',
+          hostUserId: 'other-host',
+          createdAt: DateTime(2026, 1, 3),
+        ).copyWith(ownerUserId: 'runner-1');
+
+        final viewModel = buildDashboardFullViewModel(
+          signedUpEvents: const [],
+          uid: 'runner-1',
+          hostedOrOwnedClubs: [hosted, owned],
+          attendedEventsAsync: const AsyncData<List<Event>>([]),
+          recommendedEventsAsync: _noRecommendationCandidates,
+        );
+
+        expect(viewModel.hostedClubShortcut?.id, 'owned-club');
+      },
+    );
+
     test('surfaces attended section errors and clears the swipe event', () {
       final viewModel = buildDashboardFullViewModel(
         signedUpEvents: const [],

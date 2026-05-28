@@ -189,54 +189,82 @@ class _AppShellNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedIndex = navigationShell.currentIndex;
-    void onDestinationSelected(int index) => navigationShell.goBranch(
-      index,
-      initialLocation: index == selectedIndex,
+
+    return AppShellNavigationBar(
+      currentIndex: selectedIndex,
+      unreadCount: unreadCount,
+      onDestinationSelected: (index) => navigationShell.goBranch(
+        index,
+        initialLocation: index == selectedIndex,
+      ),
     );
+  }
+}
+
+@visibleForTesting
+class AppShellNavigationBar extends StatelessWidget {
+  const AppShellNavigationBar({
+    super.key,
+    required this.currentIndex,
+    required this.unreadCount,
+    required this.onDestinationSelected,
+  });
+
+  final int currentIndex;
+  final int unreadCount;
+  final ValueChanged<int> onDestinationSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = currentIndex;
 
     if (prefersCupertinoControls()) {
       final t = CatchTokens.of(context);
-      return CupertinoTabBar(
-        key: AppShellKeys.navigationBar,
-        currentIndex: selectedIndex,
-        onTap: onDestinationSelected,
-        activeColor: t.primary,
-        inactiveColor: t.ink3,
-        backgroundColor: t.surface.withValues(alpha: 0.96),
-        border: Border(top: BorderSide(color: t.line)),
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.house),
-            activeIcon: Icon(CupertinoIcons.house_fill),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.person_2),
-            activeIcon: Icon(CupertinoIcons.person_2_fill),
-            label: 'Explore',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.heart),
-            activeIcon: Icon(CupertinoIcons.heart_fill),
-            label: 'Catches',
-          ),
-          BottomNavigationBarItem(
-            icon: AppShellNavigationBadge(
-              count: unreadCount,
-              child: const Icon(CupertinoIcons.chat_bubble_2),
+      return MediaQuery.withNoTextScaling(
+        child: CupertinoTabBar(
+          key: AppShellKeys.navigationBar,
+          currentIndex: selectedIndex,
+          onTap: onDestinationSelected,
+          activeColor: t.primary,
+          inactiveColor: t.ink3,
+          backgroundColor: t.surface.withValues(alpha: 0.96),
+          border: Border(top: BorderSide(color: t.line)),
+          height: 50,
+          iconSize: 30,
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.house),
+              activeIcon: Icon(CupertinoIcons.house_fill),
+              label: 'Home',
             ),
-            activeIcon: AppShellNavigationBadge(
-              count: unreadCount,
-              child: const Icon(CupertinoIcons.chat_bubble_2_fill),
+            const BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.person_2),
+              activeIcon: Icon(CupertinoIcons.person_2_fill),
+              label: 'Explore',
             ),
-            label: 'Chats',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.person),
-            activeIcon: Icon(CupertinoIcons.person_fill),
-            label: 'Profile',
-          ),
-        ],
+            const BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.heart),
+              activeIcon: Icon(CupertinoIcons.heart_fill),
+              label: 'Catches',
+            ),
+            BottomNavigationBarItem(
+              icon: AppShellNavigationBadge(
+                count: unreadCount,
+                child: const Icon(CupertinoIcons.chat_bubble_2),
+              ),
+              activeIcon: AppShellNavigationBadge(
+                count: unreadCount,
+                child: const Icon(CupertinoIcons.chat_bubble_2_fill),
+              ),
+              label: 'Chats',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.person),
+              activeIcon: Icon(CupertinoIcons.person_fill),
+              label: 'Profile',
+            ),
+          ],
+        ),
       );
     }
 

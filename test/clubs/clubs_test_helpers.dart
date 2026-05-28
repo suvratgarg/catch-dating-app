@@ -282,6 +282,13 @@ class FakeClubsRepository implements ClubsRepository {
   );
 
   @override
+  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
+      Stream.value([
+        for (final id in clubIds)
+          if (clubsById[id] != null) clubsById[id]!,
+      ]);
+
+  @override
   Future<void> addClubHost({
     required String clubId,
     String? uid,
@@ -359,6 +366,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Object? pickError;
   Object? uploadError;
   String uploadResult;
+  String? lastUploadUid;
   String? lastUploadClubId;
   String? lastUploadEventId;
   XFile? lastUploadedImage;
@@ -400,12 +408,14 @@ class FakeImageUploadRepository implements ImageUploadRepository {
 
   @override
   Future<String> uploadClubCover({
+    required String uid,
     required String clubId,
     required XFile image,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
+    lastUploadUid = uid;
     lastUploadClubId = clubId;
     lastUploadedImage = image;
     return uploadResult;
@@ -413,12 +423,14 @@ class FakeImageUploadRepository implements ImageUploadRepository {
 
   @override
   Future<String> uploadClubProfileImage({
+    required String uid,
     required String clubId,
     required XFile image,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
+    lastUploadUid = uid;
     lastUploadClubId = clubId;
     lastUploadedImage = image;
     return uploadResult;
@@ -426,6 +438,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
 
   @override
   Future<String> uploadEventPhoto({
+    required String uid,
     required String clubId,
     required String eventId,
     required XFile image,
@@ -433,6 +446,7 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     if (uploadError != null) {
       throw uploadError!;
     }
+    lastUploadUid = uid;
     lastUploadClubId = clubId;
     lastUploadEventId = eventId;
     lastUploadedImage = image;

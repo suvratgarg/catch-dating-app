@@ -15,7 +15,7 @@ void main() {
       timeLabel: '6:30 PM',
       countdownLabel: 'In 1h',
       priceLabel: 'Free',
-      capacityLabel: '18 going - 7 left',
+      capacityLabel: '18 going · 7 left',
       activityLabel: 'Run',
       statusLabel: 'Joined',
       activityKind: ActivityKind.socialRun,

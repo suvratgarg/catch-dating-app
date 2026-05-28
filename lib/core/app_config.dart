@@ -134,6 +134,11 @@ class AppConfig {
     defaultValue: false,
   );
 
+  static const bool enableExploreSyntheticVisualFill = bool.fromEnvironment(
+    'ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL',
+    defaultValue: false,
+  );
+
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
   static String get environmentBannerLabel => environment.bannerLabel;

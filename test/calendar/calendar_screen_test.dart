@@ -154,8 +154,8 @@ void main() {
       expect(find.text(events[1].title), findsOneWidget);
       expect(find.text(events[0].title), findsOneWidget);
       expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
-      expect(find.text('1 going - 19 left'), findsOneWidget);
-      expect(find.text('2 going - 10 left'), findsOneWidget);
+      expect(find.text('1 going · 19 left'), findsOneWidget);
+      expect(find.text('2 going · 10 left'), findsOneWidget);
     });
 
     testWidgets('includes future saved events as planned calendar rows', (

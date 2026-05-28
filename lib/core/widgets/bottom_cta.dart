@@ -43,6 +43,8 @@ class BottomCTA extends StatelessWidget {
     required this.onPressed,
     this.leadingContent,
     this.isLoading = false,
+    this.backgroundColor,
+    this.dividerColor,
   });
 
   final String label;
@@ -53,6 +55,8 @@ class BottomCTA extends StatelessWidget {
 
   /// Shows the design-system loading state inside the button when true.
   final bool isLoading;
+  final Color? backgroundColor;
+  final Color? dividerColor;
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +64,11 @@ class BottomCTA extends StatelessWidget {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
     return Container(
-      color: t.surface,
+      color: backgroundColor ?? t.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(color: t.line, height: 1, thickness: 1),
+          Divider(color: dividerColor ?? t.line, height: 1, thickness: 1),
           Padding(
             padding: EdgeInsets.fromLTRB(
               CatchSpacing.s4,

@@ -65,100 +65,103 @@ class ClubDetailBody extends StatelessWidget {
     final showMembershipControls = isAuthenticated && !isHost;
     final isOwner = club.isOwnedBy(uid);
 
-    return CustomScrollView(
-      slivers: [
-        ClubHeroAppBar(club: club, isHost: isHost),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            20,
-            CatchSpacing.s5,
-            0,
-          ),
-          sliver: SliverList.list(
-            children: [
-              StatsStrip(club: club, upcomingCount: upcoming.length),
-              gapH16,
-              _ClubHostSection(
-                club: club,
-                canViewProfile: isAuthenticated,
-                currentUid: uid,
-              ),
-              gapH16,
-              if (isOwner) ...[
-                HostPaymentAccountCard(club: club),
-                gapH16,
-                _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
-                gapH16,
-              ],
-              if (isHost) ...[
-                HostClubManagementPanel(
-                  club: club,
-                  events: upcoming,
-                  onEditClub: () => context.pushNamed(
-                    Routes.editClubScreen.name,
-                    pathParameters: {'clubId': club.id},
-                    extra: club,
-                  ),
-                  onCreateEvent: () => context.pushNamed(
-                    Routes.createEventScreen.name,
-                    pathParameters: {'clubId': club.id},
-                    extra: club,
-                  ),
-                ),
-                gapH16,
-              ],
-              Text(
-                club.description,
-                style: CatchTextStyles.bodyLead(context, color: t.ink2),
-              ),
-              gapH20,
-              if (club.instagramHandle != null ||
-                  club.phoneNumber != null ||
-                  club.email != null) ...[
-                _ClubContactSection(club: club),
-                gapH20,
-              ],
-              if (showMembershipControls)
-                MembershipButton(
-                  clubId: club.id,
-                  isMember: isMember,
-                  isMutating: isMutating,
-                  pushNotificationsEnabled: clubPushNotificationsEnabled,
-                  isPushMutating: isClubPushMutating,
-                ),
-              if (showMembershipControls) gapH24,
-              if (!isAuthenticated) ...[_GuestPrompt(club: club), gapH24],
-              gapH24,
-            ],
-          ),
-        ),
-        ClubScheduleSection(
-          events: upcoming,
-          isHost: isHost,
-          onEventSelected: (event) => context.pushNamed(
-            Routes.eventDetailScreen.name,
-            pathParameters: {'clubId': club.id, 'eventId': event.id},
-            extra: event,
-          ),
-        ),
-        if (isAuthenticated)
+    return ColoredBox(
+      color: t.surface,
+      child: CustomScrollView(
+        slivers: [
+          ClubHeroAppBar(club: club, isHost: isHost),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
               CatchSpacing.s5,
-              0,
+              20,
               CatchSpacing.s5,
-              CatchSpacing.s6,
+              0,
             ),
-            sliver: SliverToBoxAdapter(
-              child: ClubReviewsSection(
-                reviews: reviews,
-                currentUid: uid,
-                maxVisibleReviews: 3,
-              ),
+            sliver: SliverList.list(
+              children: [
+                StatsStrip(club: club, upcomingCount: upcoming.length),
+                gapH16,
+                _ClubHostSection(
+                  club: club,
+                  canViewProfile: isAuthenticated,
+                  currentUid: uid,
+                ),
+                gapH16,
+                if (isOwner) ...[
+                  HostPaymentAccountCard(club: club),
+                  gapH16,
+                  _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
+                  gapH16,
+                ],
+                if (isHost) ...[
+                  HostClubManagementPanel(
+                    club: club,
+                    events: upcoming,
+                    onEditClub: () => context.pushNamed(
+                      Routes.editClubScreen.name,
+                      pathParameters: {'clubId': club.id},
+                      extra: club,
+                    ),
+                    onCreateEvent: () => context.pushNamed(
+                      Routes.createEventScreen.name,
+                      pathParameters: {'clubId': club.id},
+                      extra: club,
+                    ),
+                  ),
+                  gapH16,
+                ],
+                Text(
+                  club.description,
+                  style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                ),
+                gapH20,
+                if (club.instagramHandle != null ||
+                    club.phoneNumber != null ||
+                    club.email != null) ...[
+                  _ClubContactSection(club: club),
+                  gapH20,
+                ],
+                if (showMembershipControls)
+                  MembershipButton(
+                    clubId: club.id,
+                    isMember: isMember,
+                    isMutating: isMutating,
+                    pushNotificationsEnabled: clubPushNotificationsEnabled,
+                    isPushMutating: isClubPushMutating,
+                  ),
+                if (showMembershipControls) gapH24,
+                if (!isAuthenticated) ...[_GuestPrompt(club: club), gapH24],
+                gapH24,
+              ],
             ),
           ),
-      ],
+          ClubScheduleSection(
+            events: upcoming,
+            isHost: isHost,
+            onEventSelected: (event) => context.pushNamed(
+              Routes.eventDetailScreen.name,
+              pathParameters: {'clubId': club.id, 'eventId': event.id},
+              extra: event,
+            ),
+          ),
+          if (isAuthenticated)
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                CatchSpacing.s5,
+                0,
+                CatchSpacing.s5,
+                CatchSpacing.s6,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: ClubReviewsSection(
+                  reviews: reviews,
+                  currentUid: uid,
+                  maxVisibleReviews: 3,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -22,6 +22,7 @@ class EventAgendaTile extends StatelessWidget {
     return EventDateRailCard(
       event: data.event,
       kicker: _kickerFor(data, showClubName: showClubName),
+      supportingLabel: _supportingLabelFor(data, showClubName: showClubName),
       priceLabel: data.priceLabel,
       statusLabel: _statusLabelFor(data, badgeLabel),
       onTap: onTap,
@@ -40,6 +41,23 @@ String _kickerFor(EventTileData data, {required bool showClubName}) {
   return data.title;
 }
 
+String? _supportingLabelFor(EventTileData data, {required bool showClubName}) {
+  final activity = data.activitySummaryLabel.trim();
+  final meetingPoint = data.meetingPoint.trim();
+  if (showClubName && meetingPoint.isNotEmpty) {
+    return _joinLabels([activity, meetingPoint]);
+  }
+  if (activity.isNotEmpty && activity != data.title.trim()) return activity;
+  return null;
+}
+
 String? _statusLabelFor(EventTileData data, String? badgeLabel) {
   return eventTileCardStatusLabel(data.status, label: badgeLabel);
+}
+
+String _joinLabels(Iterable<String> labels) {
+  return labels
+      .map((label) => label.trim())
+      .where((label) => label.isNotEmpty)
+      .join(' · ');
 }

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
@@ -38,12 +37,7 @@ class ClubsList extends ConsumerWidget {
     final query = ref.watch(clubSearchQueryProvider).trim();
     final filters = ref.watch(clubBrowseFiltersProvider);
     final sourceClubCount =
-        ref
-            .watch(watchClubsByLocationProvider(city.name))
-            .asData
-            ?.value
-            .length ??
-        0;
+        ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0;
     final hasSourceClubs = sourceClubCount > 0;
 
     return switch (viewModelAsync) {
@@ -63,7 +57,7 @@ class ClubsList extends ConsumerWidget {
         context: AppErrorContext.club,
         onRetry: () {
           ref.invalidate(clubsListViewModelProvider);
-          ref.invalidate(watchClubsByLocationProvider(city.name));
+          ref.invalidate(exploreSourceClubsProvider);
         },
       ),
       AsyncData(:final value) =>
