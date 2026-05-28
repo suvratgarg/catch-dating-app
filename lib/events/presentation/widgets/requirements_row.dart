@@ -3,12 +3,14 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:flutter/material.dart';
 
 class RequirementsRow extends StatelessWidget {
-  const RequirementsRow({super.key, required this.event});
+  const RequirementsRow({super.key, required this.event, this.surfaceStyle});
 
   final Event event;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,10 @@ class RequirementsRow extends StatelessWidget {
       children: [
         Text(
           'Requirements',
-          style: CatchTextStyles.labelL(context, color: t.ink2),
+          style: CatchTextStyles.labelL(
+            context,
+            color: surfaceStyle?.bodyColor ?? t.ink2,
+          ),
         ),
         gapH8,
         Wrap(

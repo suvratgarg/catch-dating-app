@@ -27,7 +27,6 @@ import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -67,7 +66,6 @@ enum Routes {
   savedEventsScreen('/saved-events'),
   savedEventDetailScreen('/saved-events/clubs/:clubId/events/:eventId'),
   filtersScreen('/filters'),
-  eventMapScreen('/map'),
   dashboardEventDetailScreen('/dashboard/clubs/:clubId/events/:eventId'),
   dashboardHostEventManageScreen(
     '/dashboard/clubs/:clubId/events/:eventId/manage',
@@ -135,19 +133,72 @@ EventDetailRouteTransition _eventDetailTransition(GoRouterState state) {
   };
 }
 
+EventDetailPresentationMode _eventDetailPresentationMode(GoRouterState state) {
+  return switch (state.extra) {
+    EventDetailRouteExtra(:final presentationMode) => presentationMode,
+    _ => EventDetailPresentationMode.standard,
+  };
+}
+
+Object? _eventDetailHeroTag(GoRouterState state) {
+  return switch (state.extra) {
+    EventDetailRouteExtra(:final heroTag) => heroTag,
+    _ => null,
+  };
+}
+
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(
     clubId: state.pathParameters['clubId']!,
     eventId: state.pathParameters['eventId']!,
     inviteCode: state.uri.queryParameters['invite'],
     initialEvent: _eventDetailInitialEvent(state),
+    presentationMode: _eventDetailPresentationMode(state),
+    heroTag: _eventDetailHeroTag(state),
+  );
+}
+
+Club? _clubDetailInitialClub(GoRouterState state) {
+  return switch (state.extra) {
+    final Club club => club,
+    _ => null,
+  };
+}
+
+ClubDetailScreen _clubDetailScreen(GoRouterState state) {
+  return ClubDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    initialClub: _clubDetailInitialClub(state),
+  );
+}
+
+Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: _clubDetailScreen(state),
+    transitionDuration: CatchMotion.slow,
+    reverseTransitionDuration: CatchMotion.base,
+    transitionsBuilder: (context, animation, _, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: CatchMotion.standardCurve,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final scale = Tween<double>(
+        begin: 0.985,
+        end: 1,
+      ).animate(curvedAnimation);
+      return FadeTransition(
+        opacity: curvedAnimation,
+        child: ScaleTransition(scale: scale, child: child),
+      );
+    },
   );
 }
 
 Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
   final child = _eventDetailScreen(state);
-  if (_eventDetailTransition(state) !=
-      EventDetailRouteTransition.mapSelectedCard) {
+  if (_eventDetailTransition(state) == EventDetailRouteTransition.platform) {
     return MaterialPage<void>(key: state.pageKey, child: child);
   }
 
@@ -162,13 +213,13 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
         curve: CatchMotion.standardCurve,
         reverseCurve: Curves.easeInCubic,
       );
-      final offset = Tween<Offset>(
-        begin: const Offset(0, 0.035),
-        end: Offset.zero,
+      final scale = Tween<double>(
+        begin: 0.985,
+        end: 1,
       ).animate(curvedAnimation);
       return FadeTransition(
         opacity: curvedAnimation,
-        child: SlideTransition(position: offset, child: child),
+        child: ScaleTransition(scale: scale, child: child),
       );
     },
   );
@@ -263,11 +314,6 @@ GoRouter goRouter(Ref ref) {
         path: Routes.filtersScreen.path,
         name: Routes.filtersScreen.name,
         builder: (context, state) => const FiltersScreen(),
-      ),
-      GoRoute(
-        path: Routes.eventMapScreen.path,
-        name: Routes.eventMapScreen.name,
-        builder: (context, state) => const EventMapScreen(),
       ),
       GoRoute(
         path: Routes.eventLocationMapScreen.path,
@@ -445,13 +491,7 @@ GoRouter goRouter(Ref ref) {
                   GoRoute(
                     path: ':clubId',
                     name: Routes.clubDetailScreen.name,
-                    builder: (context, state) => ClubDetailScreen(
-                      clubId: state.pathParameters['clubId']!,
-                      initialClub: switch (state.extra) {
-                        final Club rc => rc,
-                        _ => null,
-                      },
-                    ),
+                    pageBuilder: _clubDetailPage,
                     routes: [
                       GoRoute(
                         path: 'events/:eventId',

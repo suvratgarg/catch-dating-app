@@ -205,23 +205,30 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadClubCover',
-    schemaFileName: 'club_images.schema.json',
-    expectedPathPrefix: 'clubs/club-1/cover',
-    invoke: (repository, image) =>
-        repository.uploadClubCover(clubId: 'club-1', image: image),
+    schemaFileName: 'hosted_media.schema.json',
+    expectedPathPrefix: 'users/user-1/hostedMedia/club_club-1_cover_',
+    invoke: (repository, image) => repository.uploadClubCover(
+      uid: 'user-1',
+      clubId: 'club-1',
+      image: image,
+    ),
   ),
   UploadCase(
     name: 'uploadClubProfileImage',
-    schemaFileName: 'club_images.schema.json',
-    expectedPathPrefix: 'clubs/club-1/profile',
-    invoke: (repository, image) =>
-        repository.uploadClubProfileImage(clubId: 'club-1', image: image),
+    schemaFileName: 'hosted_media.schema.json',
+    expectedPathPrefix: 'users/user-1/hostedMedia/club_club-1_profile_',
+    invoke: (repository, image) => repository.uploadClubProfileImage(
+      uid: 'user-1',
+      clubId: 'club-1',
+      image: image,
+    ),
   ),
   UploadCase(
     name: 'uploadEventPhoto',
-    schemaFileName: 'event_images.schema.json',
-    expectedPathPrefix: 'clubs/club-1/events/event-1/photo_',
+    schemaFileName: 'hosted_media.schema.json',
+    expectedPathPrefix: 'users/user-1/hostedMedia/event_club-1_event-1_',
     invoke: (repository, image) => repository.uploadEventPhoto(
+      uid: 'user-1',
       clubId: 'club-1',
       eventId: 'event-1',
       image: image,

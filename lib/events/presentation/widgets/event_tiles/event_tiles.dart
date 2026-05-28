@@ -1,6 +1,9 @@
+export 'event_action_card.dart';
 export 'event_agenda_tile.dart';
-export 'event_hero_tile.dart';
-export 'event_map_tile.dart';
-export 'event_rail_tile.dart';
+export 'event_capacity_presenter.dart';
+export 'event_compact_row.dart';
+export 'event_date_marker.dart';
+export 'event_date_rail_card.dart';
 export 'event_tile_atoms.dart';
 export 'event_tile_data.dart';
+export 'event_visual_atoms.dart';

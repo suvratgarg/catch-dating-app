@@ -4,9 +4,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:flutter/material.dart';
 
@@ -229,157 +230,66 @@ class HostEventToolCard extends StatelessWidget {
       item.attendanceState,
     );
     final event = item.event;
-
-    return CatchSurface(
-      padding: EdgeInsets.zero,
-      backgroundColor: palette.background,
-      borderColor: palette.border,
-      radius: 22,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: palette.gradientColors,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(CatchSpacing.micro18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s1,
-                        children: [
-                          CatchBadge(
-                            label: 'Host event',
-                            tone: CatchBadgeTone.brand,
-                          ),
-                          CatchBadge(
-                            label: item.attendanceState.badgeLabel,
-                            tone: item.attendanceState.badgeTone,
-                            icon: item.canTakeAttendance
-                                ? CatchIcons.checklistRounded
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                if (cardCount > 1) ...[
-                  gapH10,
-                  HostEventToolsPageIndicator(
-                    key: HostEventToolsCarousel.pageIndicatorKey,
-                    selectedIndex: cardIndex,
-                    itemCount: cardCount,
-                  ),
-                ],
-                gapH16,
-                Text(
-                  event.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.displayM(context),
-                ),
-                gapH12,
-                _HostEventMetaLine(
-                  icon: CatchIcons.accessTimeRounded,
-                  label: '${event.shortDateLabel} · ${event.timeRangeLabel}',
-                ),
-                gapH6,
-                _HostEventMetaLine(
-                  icon: CatchIcons.locationOnOutlined,
-                  label: event.locationName,
-                ),
-                gapH6,
-                _HostEventMetaLine(
-                  icon: CatchIcons.groupsOutlined,
-                  label:
-                      '${event.signedUpCount}/${event.capacityLimit} booked · '
-                      '${event.waitlistCount} waitlist',
-                ),
-                gapH16,
-                _HostEventToolActions(
-                  item: item,
-                  onManageEvent: onManageEvent,
-                  onTakeAttendance: onTakeAttendance,
-                  onViewReport: onViewReport,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HostEventToolActions extends StatelessWidget {
-  const _HostEventToolActions({
-    required this.item,
-    required this.onManageEvent,
-    required this.onTakeAttendance,
-    required this.onViewReport,
-  });
-
-  final HostEventToolItem item;
-  final ValueChanged<Event> onManageEvent;
-  final ValueChanged<Event> onTakeAttendance;
-  final ValueChanged<Event> onViewReport;
-
-  @override
-  Widget build(BuildContext context) {
     final action = _hostEventActionForState(item.attendanceState);
 
-    return _HostEventActionButton(
-      action: action,
-      item: item,
-      onManageEvent: onManageEvent,
-      onTakeAttendance: onTakeAttendance,
-      onViewReport: onViewReport,
+    return EventActionCard(
+      event: event,
+      radius: 22,
+      backgroundColor: palette.background,
+      borderColor: palette.border,
+      gradientColors: palette.gradientColors,
+      badges: [
+        const EventActionCardBadge(
+          label: 'Host event',
+          tone: CatchBadgeTone.brand,
+        ),
+        EventActionCardBadge(
+          label: item.attendanceState.badgeLabel,
+          tone: item.attendanceState.badgeTone,
+          icon: item.canTakeAttendance ? CatchIcons.checklistRounded : null,
+        ),
+      ],
+      headerAccessory: cardCount > 1
+          ? HostEventToolsPageIndicator(
+              key: HostEventToolsCarousel.pageIndicatorKey,
+              selectedIndex: cardIndex,
+              itemCount: cardCount,
+            )
+          : null,
+      metaRows: [
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.accessTimeRounded,
+            label: '${event.shortDateLabel} · ${event.timeRangeLabel}',
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.locationOnOutlined,
+            label: event.locationName,
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.groupsOutlined,
+            label:
+                '${event.signedUpCount}/${event.capacityLimit} booked · '
+                '${event.waitlistCount} waitlist',
+          ),
+        ],
+      ],
+      actions: [
+        EventActionCardAction(
+          label: action.label,
+          icon: action.icon,
+          variant: CatchButtonVariant.primary,
+          onPressed: () => _handleAction(action),
+        ),
+      ],
     );
   }
-}
 
-class _HostEventActionButton extends StatelessWidget {
-  const _HostEventActionButton({
-    required this.action,
-    required this.item,
-    required this.onManageEvent,
-    required this.onTakeAttendance,
-    required this.onViewReport,
-  });
-
-  final _HostEventAction action;
-  final HostEventToolItem item;
-  final ValueChanged<Event> onManageEvent;
-  final ValueChanged<Event> onTakeAttendance;
-  final ValueChanged<Event> onViewReport;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchButton(
-      label: action.label,
-      icon: Icon(action.icon, size: 18),
-      variant: CatchButtonVariant.primary,
-      fullWidth: true,
-      onPressed: _handleAction,
-    );
-  }
-
-  void _handleAction() {
+  void _handleAction(_HostEventAction action) {
     switch (action) {
       case _HostEventAction.manage:
         onManageEvent(item.event);
@@ -388,33 +298,6 @@ class _HostEventActionButton extends StatelessWidget {
       case _HostEventAction.viewReport:
         onViewReport(item.event);
     }
-  }
-}
-
-class _HostEventMetaLine extends StatelessWidget {
-  const _HostEventMetaLine({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: t.ink3),
-        gapW6,
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ),
-      ],
-    );
   }
 }
 

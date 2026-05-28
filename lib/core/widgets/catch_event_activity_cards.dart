@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -7,13 +5,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surface.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-const _ticketMediaHeight = 136.0;
-const _ticketDividerHeight = 20.0;
-const _ticketNotchRadius = 10.0;
-const _ticketNotchDepth = 8.0;
 
 /// Production ticket-style event card backed by the shared activity visual
 /// schema. The schema is presentation-only and can change without data
@@ -31,6 +26,7 @@ class CatchEventTicketCard extends StatelessWidget {
     this.statusLabel,
     this.clockTime,
     this.width,
+    this.heroTag,
     this.onTap,
   });
 
@@ -44,6 +40,7 @@ class CatchEventTicketCard extends StatelessWidget {
   final String? statusLabel;
   final TimeOfDay? clockTime;
   final double? width;
+  final Object? heroTag;
   final VoidCallback? onTap;
 
   @override
@@ -51,14 +48,14 @@ class CatchEventTicketCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final visual = eventActivityVisual(activityKind);
     final status = statusLabel?.trim();
-    return SizedBox(
+    final card = SizedBox(
       width: width,
       child: PhysicalShape(
-        clipper: const _TicketShapeClipper(
+        clipper: const EventTicketShapeClipper(
           cornerRadius: CatchRadius.lg,
-          notchRadius: _ticketNotchRadius,
-          notchDepth: _ticketNotchDepth,
-          notchCenterY: _ticketMediaHeight + _ticketDividerHeight / 2,
+          notchRadius: eventTicketNotchRadius,
+          notchDepth: eventTicketNotchDepth,
+          notchCenterY: eventTicketMediaHeight + eventTicketDividerHeight / 2,
         ),
         clipBehavior: Clip.antiAlias,
         color: t.surface,
@@ -75,7 +72,7 @@ class CatchEventTicketCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
-                height: _ticketMediaHeight,
+                height: eventTicketMediaHeight,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -92,13 +89,17 @@ class CatchEventTicketCard extends StatelessWidget {
                         left: CatchSpacing.s3,
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: _DarkMiniPill(label: status),
+                          child: EventStatusPill(
+                            label: status,
+                            color: visual.accent,
+                            tone: EventStatusPillTone.dark,
+                          ),
                         ),
                       ),
                   ],
                 ),
               ),
-              const _TicketPerforatedDivider(),
+              const EventTicketPerforatedDivider(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   CatchSpacing.s4,
@@ -112,9 +113,16 @@ class CatchEventTicketCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        _ClockMark(
+                        EventClockMark(
                           accent: visual.accent,
                           time: clockTime ?? _parseClockTimeLabel(timeLabel),
+                          size: 38,
+                          ringColor: t.ink2,
+                          hourStrokeWidth: 2.2,
+                          minuteStrokeWidth: 1.7,
+                          hourLengthFactor: 0.52,
+                          minuteLengthFactor: 0.78,
+                          centerDotRadius: 2.2,
                         ),
                         gapW10,
                         Expanded(
@@ -135,7 +143,11 @@ class CatchEventTicketCard extends StatelessWidget {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: _serif(context, size: 24, height: 1.02),
+                      style: CatchTextStyles.eventDisplay(
+                        context,
+                        size: 24,
+                        height: 1.02,
+                      ),
                     ),
                     gapH6,
                     Text(
@@ -154,6 +166,9 @@ class CatchEventTicketCard extends StatelessWidget {
         ),
       ),
     );
+    return heroTag == null
+        ? card
+        : eventHeroSurface(tag: heroTag!, child: card);
   }
 }
 
@@ -168,6 +183,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
     required this.capacityLabel,
     required this.activityKind,
     this.kicker = "This week's pick",
+    this.heroTag,
     this.visualHeroTag,
     this.onTap,
   });
@@ -180,6 +196,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
   final String capacityLabel;
   final ActivityKind activityKind;
   final String kicker;
+  final Object? heroTag;
   final Object? visualHeroTag;
   final VoidCallback? onTap;
 
@@ -194,7 +211,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
       iconOpacity: 0.16,
       patternOpacity: 0.26,
     );
-    return CatchSurface(
+    final card = CatchSurface(
       onTap: onTap,
       padding: EdgeInsets.zero,
       radius: CatchRadius.lg,
@@ -210,7 +227,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (visualHeroTag == null)
+                if (visualHeroTag == null || heroTag != null)
                   backdrop
                 else
                   Hero(
@@ -251,7 +268,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: _serif(
+                    style: CatchTextStyles.eventDisplay(
                       context,
                       size: 30,
                       height: 1.0,
@@ -295,6 +312,9 @@ class CatchEventSpotlightCard extends StatelessWidget {
         ],
       ),
     );
+    return heroTag == null
+        ? card
+        : eventHeroSurface(tag: heroTag!, child: card);
   }
 }
 
@@ -320,47 +340,6 @@ class _OutlineStamp extends StatelessWidget {
           ),
           child: _MonoLabel(label.toUpperCase(), color: t.accent),
         ),
-      ),
-    );
-  }
-}
-
-class _DarkMiniPill extends StatelessWidget {
-  const _DarkMiniPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.68),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s1,
-        ),
-        child: _MonoLabel(label.toUpperCase(), color: Colors.white),
-      ),
-    );
-  }
-}
-
-class _ClockMark extends StatelessWidget {
-  const _ClockMark({required this.accent, required this.time});
-
-  final Color accent;
-  final TimeOfDay time;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SizedBox.square(
-      dimension: 38,
-      child: CustomPaint(
-        painter: _ClockPainter(ring: t.ink2, hand: accent, time: time),
       ),
     );
   }
@@ -444,204 +423,6 @@ class _MonoLabel extends StatelessWidget {
         color: color,
       ),
     );
-  }
-}
-
-TextStyle _serif(
-  BuildContext context, {
-  required double size,
-  double height = 1.1,
-  Color? color,
-}) {
-  return GoogleFonts.getFont(
-    'Instrument Serif',
-    fontSize: size,
-    fontStyle: FontStyle.italic,
-    height: height,
-    letterSpacing: 0,
-    color: color ?? CatchTokens.of(context).ink,
-  );
-}
-
-class _TicketPerforatedDivider extends StatelessWidget {
-  const _TicketPerforatedDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return SizedBox(
-      height: _ticketDividerHeight,
-      child: CustomPaint(
-        painter: _TicketPerforationPainter(lineColor: t.line2),
-      ),
-    );
-  }
-}
-
-class _TicketShapeClipper extends CustomClipper<Path> {
-  const _TicketShapeClipper({
-    required this.cornerRadius,
-    required this.notchRadius,
-    required this.notchDepth,
-    required this.notchCenterY,
-  }) : assert(notchDepth <= notchRadius);
-
-  final double cornerRadius;
-  final double notchRadius;
-  final double notchDepth;
-  final double notchCenterY;
-
-  @override
-  Path getClip(Size size) {
-    final radius = math.min(cornerRadius, size.shortestSide / 2);
-    final top = notchCenterY - notchRadius;
-    final bottom = notchCenterY + notchRadius;
-    const circleKappa = 0.5522847498;
-
-    return Path()
-      ..moveTo(radius, 0)
-      ..lineTo(size.width - radius, 0)
-      ..quadraticBezierTo(size.width, 0, size.width, radius)
-      ..lineTo(size.width, top)
-      ..cubicTo(
-        size.width - circleKappa * notchDepth,
-        top,
-        size.width - notchDepth,
-        notchCenterY - circleKappa * notchRadius,
-        size.width - notchDepth,
-        notchCenterY,
-      )
-      ..cubicTo(
-        size.width - notchDepth,
-        notchCenterY + circleKappa * notchRadius,
-        size.width - circleKappa * notchDepth,
-        bottom,
-        size.width,
-        bottom,
-      )
-      ..lineTo(size.width, size.height - radius)
-      ..quadraticBezierTo(
-        size.width,
-        size.height,
-        size.width - radius,
-        size.height,
-      )
-      ..lineTo(radius, size.height)
-      ..quadraticBezierTo(0, size.height, 0, size.height - radius)
-      ..lineTo(0, bottom)
-      ..cubicTo(
-        circleKappa * notchDepth,
-        bottom,
-        notchDepth,
-        notchCenterY + circleKappa * notchRadius,
-        notchDepth,
-        notchCenterY,
-      )
-      ..cubicTo(
-        notchDepth,
-        notchCenterY - circleKappa * notchRadius,
-        circleKappa * notchDepth,
-        top,
-        0,
-        top,
-      )
-      ..lineTo(0, radius)
-      ..quadraticBezierTo(0, 0, radius, 0)
-      ..close();
-  }
-
-  @override
-  bool shouldReclip(covariant _TicketShapeClipper oldClipper) {
-    return oldClipper.cornerRadius != cornerRadius ||
-        oldClipper.notchRadius != notchRadius ||
-        oldClipper.notchDepth != notchDepth ||
-        oldClipper.notchCenterY != notchCenterY;
-  }
-}
-
-class _TicketPerforationPainter extends CustomPainter {
-  const _TicketPerforationPainter({required this.lineColor});
-
-  final Color lineColor;
-
-  static const _dashWidth = 5.0;
-  static const _dashGap = 6.0;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final y = size.height / 2;
-    final linePaint = Paint()
-      ..color = lineColor
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke;
-    var x = _ticketNotchRadius + CatchSpacing.s2;
-    final lineEnd = size.width - _ticketNotchRadius - CatchSpacing.s2;
-    while (x < lineEnd) {
-      canvas.drawLine(Offset(x, y), Offset(x + _dashWidth, y), linePaint);
-      x += _dashWidth + _dashGap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _TicketPerforationPainter oldDelegate) {
-    return oldDelegate.lineColor != lineColor;
-  }
-}
-
-class _ClockPainter extends CustomPainter {
-  const _ClockPainter({
-    required this.ring,
-    required this.hand,
-    required this.time,
-  });
-
-  final Color ring;
-  final Color hand;
-  final TimeOfDay time;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide / 2 - 2;
-    final ringPaint = Paint()
-      ..color = ring
-      ..strokeWidth = 1.4
-      ..style = PaintingStyle.stroke;
-    final handPaint = Paint()
-      ..color = hand
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-    final minuteHandPaint = Paint()
-      ..color = hand
-      ..strokeWidth = 1.7
-      ..strokeCap = StrokeCap.round;
-    final hourAngle =
-        (((time.hour % 12) * 60 + time.minute) / 720) * math.pi * 2 -
-        math.pi / 2;
-    final minuteAngle = (time.minute / 60) * math.pi * 2 - math.pi / 2;
-    Offset handOffset(double length, double angle) {
-      return Offset(math.cos(angle) * length, math.sin(angle) * length);
-    }
-
-    canvas.drawCircle(center, radius, ringPaint);
-    canvas.drawLine(
-      center,
-      center + handOffset(radius * 0.52, hourAngle),
-      handPaint,
-    );
-    canvas.drawLine(
-      center,
-      center + handOffset(radius * 0.78, minuteAngle),
-      minuteHandPaint,
-    );
-    canvas.drawCircle(center, 2.2, Paint()..color = hand);
-  }
-
-  @override
-  bool shouldRepaint(covariant _ClockPainter oldDelegate) {
-    return oldDelegate.ring != ring ||
-        oldDelegate.hand != hand ||
-        oldDelegate.time != time;
   }
 }
 

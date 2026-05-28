@@ -1,7 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_date_rail_card.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_atoms.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
@@ -22,73 +19,45 @@ class EventAgendaTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final clubName = data.clubName?.trim();
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
-      radius: CatchRadius.md,
-      borderColor: t.line,
+    return EventDateRailCard(
+      event: data.event,
+      kicker: _kickerFor(data, showClubName: showClubName),
+      supportingLabel: _supportingLabelFor(data, showClubName: showClubName),
+      priceLabel: data.priceLabel,
+      statusLabel: _statusLabelFor(data, badgeLabel),
       onTap: onTap,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            left: 0,
-            right: null,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.primary,
-                borderRadius: BorderRadius.circular(CatchRadius.pill),
-              ),
-              child: gapW4,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        data.timeLabel,
-                        style: CatchTextStyles.statCompact(context),
-                      ),
-                    ),
-                    EventTileStatusBadge(
-                      status: data.status,
-                      label: badgeLabel,
-                      uppercase: true,
-                    ),
-                  ],
-                ),
-                gapH6,
-                Text(
-                  data.meetingPoint,
-                  style: CatchTextStyles.sectionTitle(context),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (clubName != null && clubName.isNotEmpty) ...[
-                  gapH4,
-                  Text(
-                    clubName,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-                gapH8,
-                Text(
-                  '${data.activitySummaryLabel} · ${data.spotsLabel}',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
+}
+
+String _kickerFor(EventTileData data, {required bool showClubName}) {
+  final clubName = data.clubName?.trim();
+  if (showClubName && clubName != null && clubName.isNotEmpty) {
+    return clubName;
+  }
+  final meetingPoint = data.meetingPoint.trim();
+  if (meetingPoint.isNotEmpty) return meetingPoint;
+  if (clubName != null && clubName.isNotEmpty) return clubName;
+  return data.title;
+}
+
+String? _supportingLabelFor(EventTileData data, {required bool showClubName}) {
+  final activity = data.activitySummaryLabel.trim();
+  final meetingPoint = data.meetingPoint.trim();
+  if (showClubName && meetingPoint.isNotEmpty) {
+    return _joinLabels([activity, meetingPoint]);
+  }
+  if (activity.isNotEmpty && activity != data.title.trim()) return activity;
+  return null;
+}
+
+String? _statusLabelFor(EventTileData data, String? badgeLabel) {
+  return eventTileCardStatusLabel(data.status, label: badgeLabel);
+}
+
+String _joinLabels(Iterable<String> labels) {
+  return labels
+      .map((label) => label.trim())
+      .where((label) => label.isNotEmpty)
+      .join(' · ');
 }

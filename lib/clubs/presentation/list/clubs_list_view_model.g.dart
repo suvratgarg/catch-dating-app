@@ -266,8 +266,8 @@ abstract class _$ClubBrowseFilters
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 
-@ProviderFor(filteredClubs)
-final filteredClubsProvider = FilteredClubsProvider._();
+@ProviderFor(exploreSourceClubs)
+final exploreSourceClubsProvider = ExploreSourceClubsProvider._();
 
 /// Algolia swap point: replace this provider's body to use a remote search
 /// index. The VM and screen are not affected.
@@ -275,7 +275,7 @@ final filteredClubsProvider = FilteredClubsProvider._();
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 
-final class FilteredClubsProvider
+final class ExploreSourceClubsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Club>>,
@@ -288,6 +288,54 @@ final class FilteredClubsProvider
   ///
   /// **Pattern D variant:** Combines location-filtered clubs with client-side
   /// search to produce a filtered list for the UI.
+  ExploreSourceClubsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'exploreSourceClubsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$exploreSourceClubsHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<Club>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<Club>> create(Ref ref) {
+    return exploreSourceClubs(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<Club>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<Club>>>(value),
+    );
+  }
+}
+
+String _$exploreSourceClubsHash() =>
+    r'2c3d177b9c89091efaaf20214309ab1f8579f323';
+
+@ProviderFor(filteredClubs)
+final filteredClubsProvider = FilteredClubsProvider._();
+
+final class FilteredClubsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Club>>,
+          AsyncValue<List<Club>>,
+          AsyncValue<List<Club>>
+        >
+    with $Provider<AsyncValue<List<Club>>> {
   FilteredClubsProvider._()
     : super(
         from: null,
@@ -322,7 +370,7 @@ final class FilteredClubsProvider
   }
 }
 
-String _$filteredClubsHash() => r'3fca1a07d18bf9c4448c344aca625e9129d74edd';
+String _$filteredClubsHash() => r'e04f6673db3b25c7630dd2bcbdbdd9b8830fb51d';
 
 /// **Pattern D: View-model provider**
 ///

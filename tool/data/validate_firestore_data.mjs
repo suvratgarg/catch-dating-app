@@ -390,6 +390,13 @@ function validateClub(doc, users, currentReport) {
     issue(currentReport, "warning", doc.path, "missing-host-user",
       `hostUserId references missing users/${data.hostUserId}.`);
   }
+  validateNoRetiredStoragePath(data.imageUrl, "imageUrl", doc, currentReport);
+  validateNoRetiredStoragePath(
+    data.profileImageUrl,
+    "profileImageUrl",
+    doc,
+    currentReport
+  );
 }
 
 function isSyntheticPublicProfile(doc) {
@@ -476,6 +483,35 @@ function validateRun(doc, clubs, currentReport) {
   if ((data.startingPointLat == null) !== (data.startingPointLng == null)) {
     issue(currentReport, "error", doc.path, "partial-coordinates",
       "startingPointLat and startingPointLng must be set together.");
+  }
+  validateNoRetiredStoragePath(data.photoUrl, "photoUrl", doc, currentReport);
+}
+
+function validateNoRetiredStoragePath(value, field, doc, currentReport) {
+  const objectPath = storagePathFromFirebaseUrl(value);
+  if (objectPath?.startsWith("clubs/")) {
+    issue(currentReport, "error", doc.path, "retired-storage-media-path",
+      `${field} references retired Storage path ${objectPath}; ` +
+      "club/event media must live under users/{uid}/hostedMedia.");
+  }
+}
+
+function storagePathFromFirebaseUrl(value) {
+  if (typeof value !== "string" || value.length === 0) return null;
+  if (value.startsWith("gs://")) {
+    const withoutScheme = value.slice("gs://".length);
+    const firstSlash = withoutScheme.indexOf("/");
+    return firstSlash === -1 ? null : withoutScheme.slice(firstSlash + 1);
+  }
+  try {
+    const url = new URL(value);
+    if (url.hostname !== "firebasestorage.googleapis.com") return null;
+    const marker = "/o/";
+    const index = url.pathname.indexOf(marker);
+    if (index === -1) return null;
+    return decodeURIComponent(url.pathname.slice(index + marker.length));
+  } catch (_) {
+    return null;
   }
 }
 

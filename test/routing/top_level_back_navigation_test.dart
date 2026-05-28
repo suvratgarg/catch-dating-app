@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -56,22 +55,6 @@ void main() {
     );
 
     expect(find.text('Calendar'), findsWidgets);
-    expect(find.byTooltip('Back'), findsOneWidget);
-
-    await tester.tap(find.byTooltip('Back'));
-    await _pumpRouterFrame(tester);
-
-    expect(find.text('Open destination'), findsOneWidget);
-  });
-
-  testWidgets('map back button returns to dashboard', (tester) async {
-    await pumpTopLevelRoute(
-      tester,
-      path: Routes.eventMapScreen.path,
-      child: const EventMapScreen(enableNetworkTiles: false),
-    );
-
-    expect(find.text('Map view'), findsNothing);
     expect(find.byTooltip('Back'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Back'));

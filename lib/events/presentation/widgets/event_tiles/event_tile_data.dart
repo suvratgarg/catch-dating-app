@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 
 enum EventTileStatus {
   open,
@@ -58,10 +59,11 @@ class EventTileData {
   String get distanceLabel => event.distanceLabel;
   String get paceLabel => event.pace.label;
   String get activitySummaryLabel => event.activitySummaryLabel;
-  String get signupLabel =>
-      '${event.signedUpCount}/${event.capacityLimit} signed up';
-  String get spotsLabel =>
-      '${event.signedUpCount}/${event.capacityLimit} spots';
+  EventCapacityPresenter get capacity => EventCapacityPresenter(event);
+  String get signupLabel => capacity.signedUpFractionLabel;
+  String get spotsLabel => capacity.spotsFractionLabel;
+  String get capacityLabel => capacity.goingAvailabilityLabel();
+  String get attendeeConfirmedLabel => capacity.attendeeConfirmedLabel;
   String get priceLabel => event.priceInPaise <= 0
       ? 'Free'
       : event.effectiveEventPolicy.usesDemandPricing

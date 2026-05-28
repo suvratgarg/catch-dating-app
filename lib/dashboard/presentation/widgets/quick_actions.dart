@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -9,34 +10,25 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key});
+  const QuickActions({super.key, this.hostedClubShortcut});
+
+  final Club? hostedClubShortcut;
 
   static const double _iconBoxSize = 36;
   static const double _tileSpacing = CatchSpacing.s3;
 
-  static final _actions = [
-    _QuickAction(
-      icon: CatchIcons.calendarMonthOutlined,
-      label: 'Calendar',
-      route: Routes.calendarScreen.path,
-    ),
-    _QuickAction(
-      icon: CatchIcons.bookmarkBorderRounded,
-      label: 'Saved events',
-      route: Routes.savedEventsScreen.path,
-    ),
-  ];
-
   void _onTap(BuildContext context, _QuickAction action) {
     if (action.route == null) return;
-    context.push(action.route!);
+    context.push(action.route!, extra: action.extra);
   }
 
   @override
   Widget build(BuildContext context) {
+    final actions = _actions;
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 320 ? _actions.length : 2;
+        final columns = constraints.maxWidth >= 320 ? actions.length : 2;
         final tileWidth =
             (constraints.maxWidth - (_tileSpacing * (columns - 1))) / columns;
 
@@ -44,7 +36,7 @@ class QuickActions extends StatelessWidget {
           spacing: _tileSpacing,
           runSpacing: _tileSpacing,
           children: [
-            for (final action in _actions)
+            for (final action in actions)
               SizedBox(
                 width: tileWidth,
                 child: Opacity(
@@ -62,6 +54,29 @@ class QuickActions extends StatelessWidget {
       },
     );
   }
+
+  List<_QuickAction> get _actions => [
+    _QuickAction(
+      icon: CatchIcons.calendarMonthOutlined,
+      label: 'Calendar',
+      route: Routes.calendarScreen.path,
+    ),
+    _QuickAction(
+      icon: CatchIcons.bookmarkBorderRounded,
+      label: 'Saved events',
+      route: Routes.savedEventsScreen.path,
+    ),
+    if (hostedClubShortcut case final club?)
+      _QuickAction(
+        icon: CatchIcons.homeRounded,
+        label: 'My club',
+        route: Routes.clubDetailScreen.path.replaceFirst(
+          ':clubId',
+          Uri.encodeComponent(club.id),
+        ),
+        extra: club,
+      ),
+  ];
 }
 
 class _QuickActionTile extends StatelessWidget {
@@ -106,9 +121,15 @@ class _QuickActionTile extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction({required this.icon, required this.label, this.route});
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    this.route,
+    this.extra,
+  });
 
   final IconData icon;
   final String label;
   final String? route;
+  final Object? extra;
 }

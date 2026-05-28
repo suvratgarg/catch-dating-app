@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 import * as crypto from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
-import {defineSecret, defineString} from "firebase-functions/params";
+import {defineSecret} from "firebase-functions/params";
 
 export const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 export const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
@@ -12,27 +12,6 @@ const defaultStripeCheckoutSuccessUrl =
   "?session_id={CHECKOUT_SESSION_ID}";
 const defaultStripeCheckoutCancelUrl =
   "https://catchdates.com/payment-history";
-
-export const stripeConnectRefreshUrl = defineString(
-  "STRIPE_CONNECT_REFRESH_URL",
-  {default: defaultStripeConnectUrl}
-);
-export const stripeConnectReturnUrl = defineString(
-  "STRIPE_CONNECT_RETURN_URL",
-  {default: defaultStripeConnectUrl}
-);
-export const stripeCheckoutSuccessUrl = defineString(
-  "STRIPE_CHECKOUT_SUCCESS_URL",
-  {default: defaultStripeCheckoutSuccessUrl}
-);
-export const stripeCheckoutCancelUrl = defineString(
-  "STRIPE_CHECKOUT_CANCEL_URL",
-  {default: defaultStripeCheckoutCancelUrl}
-);
-export const stripeApplicationFeeBasisPoints = defineString(
-  "STRIPE_APPLICATION_FEE_BPS",
-  {default: "0"}
-);
 
 const stripeApiVersion = "2026-02-25.clover";
 const stripeApiBaseUrl = "https://api.stripe.com";
@@ -125,40 +104,43 @@ export function createStripeClient(): StripeClient {
 
 export function stripeConnectRefreshUrlValue(): string {
   return stringParamOrDefault(
-    stripeConnectRefreshUrl.value(),
+    process.env.STRIPE_CONNECT_REFRESH_URL,
     defaultStripeConnectUrl
   );
 }
 
 export function stripeConnectReturnUrlValue(): string {
   return stringParamOrDefault(
-    stripeConnectReturnUrl.value(),
+    process.env.STRIPE_CONNECT_RETURN_URL,
     defaultStripeConnectUrl
   );
 }
 
 export function stripeCheckoutSuccessUrlValue(): string {
   return stringParamOrDefault(
-    stripeCheckoutSuccessUrl.value(),
+    process.env.STRIPE_CHECKOUT_SUCCESS_URL,
     defaultStripeCheckoutSuccessUrl
   );
 }
 
 export function stripeCheckoutCancelUrlValue(): string {
   return stringParamOrDefault(
-    stripeCheckoutCancelUrl.value(),
+    process.env.STRIPE_CHECKOUT_CANCEL_URL,
     defaultStripeCheckoutCancelUrl
   );
 }
 
 export function stripeFeeAmountMinor(amountMinor: number): number {
-  const basisPoints = Number(stripeApplicationFeeBasisPoints.value());
+  const basisPoints = Number(process.env.STRIPE_APPLICATION_FEE_BPS ?? "0");
   if (!Number.isInteger(basisPoints) || basisPoints <= 0) return 0;
   return Math.floor((amountMinor * basisPoints) / 10000);
 }
 
-function stringParamOrDefault(value: string, fallback: string): string {
-  const trimmed = value.trim();
+function stringParamOrDefault(
+  value: string | undefined,
+  fallback: string
+): string {
+  const trimmed = value?.trim() ?? "";
   return trimmed.length > 0 ? trimmed : fallback;
 }
 

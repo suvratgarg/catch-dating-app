@@ -48,13 +48,6 @@ function match(overrides = {}) {
   };
 }
 
-function club(overrides = {}) {
-  return {
-    hostUserId: "host-1",
-    ...overrides,
-  };
-}
-
 async function seedFirestore(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), ...pathSegments), data);
@@ -189,83 +182,56 @@ describe("storage.rules", () => {
     });
   });
 
-  describe("event photos", () => {
-    it("allows legacy club hosts to upload event photos", async () => {
-      await seedFirestore(["clubs", "club-1"], club());
-
+  describe("hosted media staging", () => {
+    it("lets signed-in users upload their own hosted media", async () => {
       await assertSucceeds(
         uploadImage(
           authedStorage("host-1"),
-          "clubs/club-1/events/event-1/photo.jpg",
+          "users/host-1/hostedMedia/club_club-1_profile_123.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("runner-1"),
-          "clubs/club-1/events/event-1/photo.jpg",
+          "users/host-1/hostedMedia/club_club-1_profile_123.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           unauthenticatedStorage(),
-          "clubs/club-1/events/event-1/photo.jpg",
+          "users/host-1/hostedMedia/club_club-1_profile_123.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("host-1"),
-          "clubs/club-1/events/event-1/photo.txt",
+          "users/host-1/hostedMedia/club_club-1_profile_123.txt",
           {contentType: "text/plain"},
         ),
       );
     });
 
-    it("allows club owners and co-hosts to upload event photos", async () => {
-      await seedFirestore(
-        ["clubs", "club-1"],
-        club({
-          ownerUserId: "owner-1",
-          hostUserIds: ["owner-1", "cohost-1"],
-        }),
+    it("allows public reads for hosted club and event media", async () => {
+      await seedStorageFile(
+        "users/host-1/hostedMedia/event_club-1_event-1_123.jpg",
       );
 
       await assertSucceeds(
-        uploadImage(
-          authedStorage("owner-1"),
-          "clubs/club-1/events/event-1/owner-photo.jpg",
-        ),
-      );
-      await assertSucceeds(
-        uploadImage(
-          authedStorage("cohost-1"),
-          "clubs/club-1/events/event-1/cohost-photo.jpg",
-        ),
-      );
-      await assertFails(
-        uploadImage(
-          authedStorage("runner-1"),
-          "clubs/club-1/events/event-1/runner-photo.jpg",
-        ),
+        unauthenticatedStorage()
+          .ref("users/host-1/hostedMedia/event_club-1_event-1_123.jpg")
+          .getMetadata(),
       );
     });
 
-    it("allows club owners and co-hosts to upload club profile images", async () => {
-      await seedFirestore(
-        ["clubs", "club-1"],
-        club({
-          ownerUserId: "owner-1",
-          hostUserIds: ["owner-1", "cohost-1"],
-        }),
-      );
-
-      await assertSucceeds(
-        uploadImage(authedStorage("owner-1"), "clubs/club-1/profile.jpg"),
-      );
-      await assertSucceeds(
-        uploadImage(authedStorage("cohost-1"), "clubs/club-1/profile-2.jpg"),
+    it("denies retired legacy club and event media paths", async () => {
+      await assertFails(
+        uploadImage(authedStorage("host-1"), "clubs/club-1/profile.jpg"),
       );
       await assertFails(
-        uploadImage(authedStorage("runner-1"), "clubs/club-1/profile-3.jpg"),
+        uploadImage(
+          authedStorage("host-1"),
+          "clubs/club-1/events/event-1/photo.jpg",
+        ),
       );
     });
   });

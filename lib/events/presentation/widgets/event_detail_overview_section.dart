@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_stats_grid.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/when_where_card.dart';
@@ -17,10 +18,12 @@ class EventDetailOverviewSection extends StatelessWidget {
     super.key,
     required this.event,
     this.onLocationTap,
+    this.surfaceStyle,
   });
 
   final Event event;
   final VoidCallback? onLocationTap;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -29,27 +32,38 @@ class EventDetailOverviewSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        EventStatsGrid(event: event),
+        EventStatsGrid(event: event, surfaceStyle: surfaceStyle),
         gapH20,
-        WhenWhereCard(event: event, onLocationTap: onLocationTap),
+        WhenWhereCard(
+          event: event,
+          onLocationTap: onLocationTap,
+          surfaceStyle: surfaceStyle,
+        ),
         if (description.isNotEmpty) ...[
           gapH20,
-          _EventDescription(description: description),
+          _EventDescription(
+            description: description,
+            surfaceStyle: surfaceStyle,
+          ),
         ],
-        if (event.hasRequirements) ...[gapH20, RequirementsRow(event: event)],
+        if (event.hasRequirements) ...[
+          gapH20,
+          RequirementsRow(event: event, surfaceStyle: surfaceStyle),
+        ],
         gapH20,
-        _WhatToExpectSection(event: event),
+        _WhatToExpectSection(event: event, surfaceStyle: surfaceStyle),
         gapH20,
-        _EventPolicySummary(event: event),
+        _EventPolicySummary(event: event, surfaceStyle: surfaceStyle),
       ],
     );
   }
 }
 
 class _EventDescription extends StatelessWidget {
-  const _EventDescription({required this.description});
+  const _EventDescription({required this.description, this.surfaceStyle});
 
   final String description;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +72,20 @@ class _EventDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('About this event', style: CatchTextStyles.sectionTitle(context)),
+        Text(
+          'About this event',
+          style: CatchTextStyles.sectionTitle(
+            context,
+            color: surfaceStyle?.headingColor,
+          ),
+        ),
         gapH8,
         Text(
           description,
-          style: CatchTextStyles.bodyLead(context, color: t.ink2),
+          style: CatchTextStyles.bodyLead(
+            context,
+            color: surfaceStyle?.bodyColor ?? t.ink2,
+          ),
         ),
       ],
     );
@@ -70,9 +93,10 @@ class _EventDescription extends StatelessWidget {
 }
 
 class _WhatToExpectSection extends StatelessWidget {
-  const _WhatToExpectSection({required this.event});
+  const _WhatToExpectSection({required this.event, this.surfaceStyle});
 
   final Event event;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -82,14 +106,26 @@ class _WhatToExpectSection extends StatelessWidget {
     return CatchSurface(
       padding: const EdgeInsets.all(14),
       radius: CatchRadius.md,
-      borderColor: t.line,
+      backgroundColor: surfaceStyle?.surfaceBackground,
+      borderColor: surfaceStyle?.borderColor ?? t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('What to expect', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            'What to expect',
+            style: CatchTextStyles.sectionTitle(
+              context,
+              color: surfaceStyle?.headingColor,
+            ),
+          ),
           gapH10,
           for (final item in items) ...[
-            _PolicyLine(icon: item.icon, title: item.title, body: item.body),
+            _PolicyLine(
+              icon: item.icon,
+              title: item.title,
+              body: item.body,
+              surfaceStyle: surfaceStyle,
+            ),
             if (item != items.last) gapH10,
           ],
         ],
@@ -99,9 +135,10 @@ class _WhatToExpectSection extends StatelessWidget {
 }
 
 class _EventPolicySummary extends StatelessWidget {
-  const _EventPolicySummary({required this.event});
+  const _EventPolicySummary({required this.event, this.surfaceStyle});
 
   final Event event;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -112,16 +149,24 @@ class _EventPolicySummary extends StatelessWidget {
     return CatchSurface(
       padding: const EdgeInsets.all(14),
       radius: CatchRadius.md,
-      borderColor: t.line,
+      backgroundColor: surfaceStyle?.surfaceBackground,
+      borderColor: surfaceStyle?.borderColor ?? t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Booking policy', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            'Booking policy',
+            style: CatchTextStyles.sectionTitle(
+              context,
+              color: surfaceStyle?.headingColor,
+            ),
+          ),
           gapH10,
           _PolicyLine(
             icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
             body: _admissionSummary(policy.admissionPolicy),
+            surfaceStyle: surfaceStyle,
           ),
           if (policy.usesDemandPricing) ...[
             gapH10,
@@ -132,6 +177,7 @@ class _EventPolicySummary extends StatelessWidget {
                 policy.pricingPolicy,
                 currencyCode: event.currency,
               ),
+              surfaceStyle: surfaceStyle,
             ),
           ],
           gapH10,
@@ -139,12 +185,14 @@ class _EventPolicySummary extends StatelessWidget {
             icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
+            surfaceStyle: surfaceStyle,
           ),
           gapH10,
           _PolicyLine(
             icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,
             body: policy.settlementPolicy.summary,
+            surfaceStyle: surfaceStyle,
           ),
         ],
       ),
@@ -157,11 +205,13 @@ class _PolicyLine extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.body,
+    this.surfaceStyle,
   });
 
   final IconData icon;
   final String title;
   final String body;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -169,17 +219,26 @@ class _PolicyLine extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: t.primary, size: 18),
+        Icon(icon, color: surfaceStyle?.primaryColor ?? t.primary, size: 18),
         gapW8,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: CatchTextStyles.labelL(context)),
+              Text(
+                title,
+                style: CatchTextStyles.labelL(
+                  context,
+                  color: surfaceStyle?.headingColor,
+                ),
+              ),
               gapH2,
               Text(
                 body,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: surfaceStyle?.bodyColor ?? t.ink2,
+                ),
               ),
             ],
           ),

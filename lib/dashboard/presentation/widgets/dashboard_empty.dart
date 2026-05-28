@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -62,10 +63,12 @@ class DashboardEmptySliverBody extends StatelessWidget {
     super.key,
     this.weeklyActivitySection,
     this.followedClubIds = const <String>[],
+    this.hostedClubShortcut,
   });
 
   final DashboardSectionModel<WeeklyActivitySnapshot>? weeklyActivitySection;
   final List<String> followedClubIds;
+  final Club? hostedClubShortcut;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class DashboardEmptySliverBody extends StatelessWidget {
             DashboardStrideSection(section: weeklyActivitySection!),
             gapH20,
           ],
-          const QuickActions(),
+          QuickActions(hostedClubShortcut: hostedClubShortcut),
           if (followedClubIds.isNotEmpty) ...[
             gapH20,
             DashboardClubsRail(clubIds: followedClubIds),

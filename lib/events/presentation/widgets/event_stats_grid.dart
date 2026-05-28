@@ -2,16 +2,27 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:flutter/material.dart';
 
 class EventStatsGrid extends StatelessWidget {
-  const EventStatsGrid({super.key, required this.event});
+  const EventStatsGrid({super.key, required this.event, this.surfaceStyle});
 
   final Event event;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
-    return CatchMetricStrip(items: _statsFor(event));
+    final style = surfaceStyle;
+    return CatchMetricStrip(
+      items: _statsFor(event),
+      backgroundColor: style?.surfaceBackground,
+      borderColor: style?.borderColor,
+      dividerColor: style?.dividerColor,
+      valueColor: style?.headingColor,
+      unitColor: style?.bodyColor,
+      labelColor: style?.mutedColor,
+    );
   }
 }
 

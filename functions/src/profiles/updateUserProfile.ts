@@ -479,7 +479,7 @@ function toFirestorePatch(
         photo.prompt;
       return {
         ...photo,
-        prompt,
+        ...(prompt !== undefined && {prompt}),
         createdAt: deps.timestampFromMillis(photo.createdAt),
         updatedAt: deps.timestampFromMillis(photo.updatedAt),
         ...(photo.moderation?.reviewedAt !== undefined &&

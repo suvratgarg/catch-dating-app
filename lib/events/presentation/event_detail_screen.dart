@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -21,12 +22,16 @@ class EventDetailScreen extends ConsumerWidget {
     required this.eventId,
     this.initialEvent,
     this.inviteCode,
+    this.presentationMode = EventDetailPresentationMode.standard,
+    this.heroTag,
   });
 
   final String clubId;
   final String eventId;
   final Event? initialEvent;
   final String? inviteCode;
+  final EventDetailPresentationMode presentationMode;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,6 +80,8 @@ class EventDetailScreen extends ConsumerWidget {
       isSaved: vm.isSaved,
       participation: vm.participation,
       inviteCode: inviteCode,
+      presentationMode: presentationMode,
+      heroTag: heroTag,
     );
   }
 
@@ -114,6 +121,8 @@ class EventDetailScreen extends ConsumerWidget {
       isSaved: savedEvent != null,
       participation: participation,
       inviteCode: inviteCode,
+      presentationMode: presentationMode,
+      heroTag: heroTag,
     );
   }
 }

@@ -11,19 +11,20 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_card_peek.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-const double _peekCardWidth = 264;
-const double _peekCardSpacing = CatchSpacing.s3;
+const double _ticketRailCardWidth = 336;
+const double _ticketRailHeight = 352;
+const double _ticketRailCardSpacing = CatchSpacing.s3;
 const double _mapAreaScopeThresholdMeters = 25000;
 const String _seeAllNearbyEventsLabel = 'See all nearby events';
 
@@ -31,8 +32,9 @@ enum ExploreMapSheetLeadMode { collapsedSummary, selectedEvent, nearbyRail }
 
 /// Builds the lead sliver for the Explore map sheet.
 ///
-/// The PEEK snap uses only an aggregate summary, selected pins promote a
-/// single event hero, and the unselected half/full sheet keeps the nearby rail.
+/// The PEEK snap uses only an aggregate summary. Selected pins render the
+/// shared ticket card unless the selected event is the feed spotlight, and the
+/// unselected half/full sheet keeps the nearby ticket rail.
 List<Widget> buildExploreMapSheetLeadSlivers({
   required WidgetRef ref,
   required String? selectedEventId,
@@ -74,6 +76,7 @@ List<Widget> buildExploreMapSheetLeadSlivers({
         ),
         AsyncData(:final value) => _ExploreMapSheetLead(
           items: _sortItemsForCamera(value.items, cameraCenter),
+          spotlightEventId: value.featuredItem?.event.id,
           selectedEventId: selectedEventId,
           scopeLabel: scopeLabel,
           filters: filters,
@@ -122,6 +125,7 @@ double? _distanceFromCamera(
 class _ExploreMapSheetLead extends StatelessWidget {
   const _ExploreMapSheetLead({
     required this.items,
+    required this.spotlightEventId,
     required this.selectedEventId,
     required this.scopeLabel,
     required this.filters,
@@ -131,6 +135,7 @@ class _ExploreMapSheetLead extends StatelessWidget {
   });
 
   final List<ExploreEventItem> items;
+  final String? spotlightEventId;
   final String? selectedEventId;
   final String scopeLabel;
   final ClubBrowseFilterSelection filters;
@@ -151,7 +156,10 @@ class _ExploreMapSheetLead extends StatelessWidget {
     if (leadMode == ExploreMapSheetLeadMode.selectedEvent) {
       final selectedItem = _selectedItem(items, selectedEventId);
       if (selectedItem != null) {
-        return _SelectedEventLead(item: selectedItem);
+        return _SelectedEventLead(
+          item: selectedItem,
+          spotlightEventId: spotlightEventId,
+        );
       }
     }
 
@@ -222,13 +230,19 @@ class _CollapsedMapSummary extends StatelessWidget {
 }
 
 class _SelectedEventLead extends ConsumerWidget {
-  const _SelectedEventLead({required this.item});
+  const _SelectedEventLead({
+    required this.item,
+    required this.spotlightEventId,
+  });
 
   final ExploreEventItem item;
+  final String? spotlightEventId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final event = item.event;
+    final isSpotlight = event.id == spotlightEventId;
+    final source = 'map_selected_card';
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
@@ -236,19 +250,79 @@ class _SelectedEventLead extends ConsumerWidget {
         CatchSpacing.s5,
         CatchSpacing.s4,
       ),
-      child: CatchEventSpotlightCard(
-        key: ValueKey('explore-selected-${event.id}'),
-        title: item.event.title,
-        supportingLabel: _selectedSupportingLabel(item),
-        timeLabel: EventFormatters.time(event.startTime),
-        countdownLabel: _selectedCountdownLabel(event.startTime),
-        priceLabel: item.priceLabel,
-        capacityLabel: _selectedCapacityLabel(item),
-        activityKind: event.activityKind,
-        kicker: item.distanceFromUserLabel ?? 'Map pick',
-        visualHeroTag: eventPhotoHeroTag(event.id),
-        onTap: () => _openEvent(context, ref, item, 'map_selected_card'),
-      ),
+      child: isSpotlight
+          ? CatchEventSpotlightCard(
+              key: ValueKey('explore-selected-${event.id}'),
+              title: item.event.title,
+              supportingLabel: _eventTicketSubtitle(item),
+              timeLabel: EventFormatters.time(event.startTime),
+              countdownLabel: _selectedCountdownLabel(event.startTime),
+              priceLabel: item.priceLabel,
+              capacityLabel: _selectedCapacityLabel(item),
+              activityKind: event.activityKind,
+              kicker: item.distanceFromUserLabel ?? 'Spotlight pick',
+              heroTag: eventSpotlightHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.spotlightDark,
+                transition: EventDetailRouteTransition.spotlightCard,
+                heroTag: eventSpotlightHeroTag(event.id, source),
+              ),
+            )
+          : _ExploreEventTicketCard(
+              key: ValueKey('explore-selected-${event.id}'),
+              item: item,
+              statusLabel: item.distanceFromUserLabel ?? 'Map pick',
+              heroTag: eventTicketHeroTag(event.id, source),
+              onTap: () => _openEvent(
+                context,
+                ref,
+                item,
+                source,
+                presentationMode: EventDetailPresentationMode.ticket,
+                transition: EventDetailRouteTransition.mapSelectedCard,
+                heroTag: eventTicketHeroTag(event.id, source),
+              ),
+            ),
+    );
+  }
+}
+
+class _ExploreEventTicketCard extends StatelessWidget {
+  const _ExploreEventTicketCard({
+    super.key,
+    required this.item,
+    this.statusLabel,
+    this.width,
+    this.heroTag,
+    this.onTap,
+  });
+
+  final ExploreEventItem item;
+  final String? statusLabel;
+  final double? width;
+  final Object? heroTag;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final event = item.event;
+    return CatchEventTicketCard(
+      width: width,
+      title: event.title,
+      subtitle: _eventTicketSubtitle(item),
+      timeLabel: EventFormatters.time(event.startTime),
+      countdownLabel: _selectedCountdownLabel(event.startTime),
+      priceLabel: item.priceLabel,
+      capacityLabel: _selectedCapacityLabel(item),
+      activityKind: event.activityKind,
+      statusLabel: statusLabel,
+      clockTime: TimeOfDay.fromDateTime(event.startTime),
+      heroTag: heroTag,
+      onTap: onTap,
     );
   }
 }
@@ -368,7 +442,7 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
           ),
           gapH10,
           SizedBox(
-            height: 96,
+            height: _ticketRailHeight,
             child: ListView.separated(
               controller: _railController,
               scrollDirection: Axis.horizontal,
@@ -376,22 +450,23 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
               physics: const BouncingScrollPhysics(),
               itemCount: items.length,
               separatorBuilder: (_, _) =>
-                  const SizedBox(width: _peekCardSpacing),
+                  const SizedBox(width: _ticketRailCardSpacing),
               itemBuilder: (context, index) {
                 final item = items[index];
-                return CatchEventCardPeek(
-                  key: ValueKey('explore-peek-${item.event.id}'),
-                  title: item.event.title,
-                  subtitle: '${item.club.name} · ${item.event.locationName}',
-                  kickerLabel: _peekKicker(item),
-                  distanceLabel: _peekDistanceLabel(item),
-                  photoUrl: item.event.photoUrl,
-                  pace: item.event.pace,
-                  activityKind: item.event.activityKind,
-                  selected: item.event.id == widget.selectedEventId,
-                  width: _peekCardWidth,
-                  preferActivityArtwork: true,
-                  onTap: () => _handleTap(context, item),
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: _ExploreEventTicketCard(
+                    key: ValueKey('explore-peek-${item.event.id}'),
+                    item: item,
+                    width: _ticketRailCardWidth,
+                    statusLabel: item.event.id == widget.selectedEventId
+                        ? 'Selected'
+                        : _ticketStatusLabel(item),
+                    heroTag: item.event.id == widget.selectedEventId
+                        ? eventTicketHeroTag(item.event.id, 'peek_rail')
+                        : null,
+                    onTap: () => _handleTap(context, item),
+                  ),
                 );
               },
             ),
@@ -414,7 +489,8 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
       (item) => item.event.id == selectedEventId,
     );
     if (selectedIndex < 0) return;
-    final targetOffset = selectedIndex * (_peekCardWidth + _peekCardSpacing);
+    final targetOffset =
+        selectedIndex * (_ticketRailCardWidth + _ticketRailCardSpacing);
     final clampedOffset = targetOffset
         .clamp(0.0, _railController.position.maxScrollExtent)
         .toDouble();
@@ -434,7 +510,15 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
       widget.onEventTapped(item.event);
       return;
     }
-    _openEvent(context, ref, item, 'peek_rail');
+    _openEvent(
+      context,
+      ref,
+      item,
+      'peek_rail',
+      presentationMode: EventDetailPresentationMode.ticket,
+      transition: EventDetailRouteTransition.ticketCard,
+      heroTag: eventTicketHeroTag(item.event.id, 'peek_rail'),
+    );
   }
 }
 
@@ -467,44 +551,24 @@ class _PeekRailSkeleton extends StatelessWidget {
           CatchSkeleton.text(width: 132),
           gapH10,
           SizedBox(
-            height: 96,
+            height: _ticketRailHeight,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.none,
               physics: const BouncingScrollPhysics(),
               itemCount: 2,
               separatorBuilder: (_, _) =>
-                  const SizedBox(width: _peekCardSpacing),
-              itemBuilder: (_, _) =>
-                  CatchSkeleton.card(width: _peekCardWidth, height: 96),
+                  const SizedBox(width: _ticketRailCardSpacing),
+              itemBuilder: (_, _) => CatchSkeleton.card(
+                width: _ticketRailCardWidth,
+                height: _ticketRailHeight,
+              ),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-String _peekKicker(ExploreEventItem item) {
-  final start = item.event.startTime;
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final eventDay = DateTime(start.year, start.month, start.day);
-  final diffDays = eventDay.difference(today).inDays;
-  final time = EventFormatters.time(start);
-  return switch (diffDays) {
-    0 => 'Today · $time',
-    1 => 'Tomorrow · $time',
-    _ => '${EventFormatters.shortWeekday(start)} · $time',
-  };
-}
-
-String? _peekDistanceLabel(ExploreEventItem item) {
-  final distance = item.distanceFromUserKm;
-  if (distance == null) return null;
-  if (distance < 1) return '${(distance * 1000).round()} m';
-  if (distance >= 10) return '${distance.round()} km';
-  return '${distance.toStringAsFixed(1)} km';
 }
 
 String _collapsedTitle(int? count) {
@@ -563,26 +627,19 @@ String _distanceScopeLabel(ExploreDistanceFilter filter) {
   };
 }
 
-String _selectedSupportingLabel(ExploreEventItem item) {
+String _eventTicketSubtitle(ExploreEventItem item) {
   final event = item.event;
-  return [
-    item.club.name,
-    event.locationName,
-    event.activitySummaryLabel,
-  ].join(' - ');
+  return '${item.club.name} · ${event.locationName}';
+}
+
+String? _ticketStatusLabel(ExploreEventItem item) {
+  return item.distanceFromUserLabel ?? item.availabilityLabel;
 }
 
 String _selectedCapacityLabel(ExploreEventItem item) {
-  final event = item.event;
-  final availability = item.availabilityLabel;
-  final base = '${event.signedUpCount} going';
-  if (availability != null &&
-      availability.isNotEmpty &&
-      availability.toLowerCase() != 'open') {
-    return '$base - $availability';
-  }
-  if (event.spotsRemaining > 0) return '$base - ${event.spotsRemaining} left';
-  return '$base - full';
+  return EventCapacityPresenter(
+    item.event,
+  ).activityGoingAvailabilityLabel(availabilityLabel: item.availabilityLabel);
 }
 
 String _selectedCountdownLabel(DateTime startTime) {
@@ -610,8 +667,11 @@ void _openEvent(
   BuildContext context,
   WidgetRef ref,
   ExploreEventItem item,
-  String source,
-) {
+  String source, {
+  required EventDetailPresentationMode presentationMode,
+  required EventDetailRouteTransition transition,
+  required Object heroTag,
+}) {
   ref
       .read(appAnalyticsProvider)
       .logEvent(
@@ -623,9 +683,9 @@ void _openEvent(
     pathParameters: {'clubId': item.event.clubId, 'eventId': item.event.id},
     extra: EventDetailRouteExtra(
       initialEvent: item.event,
-      transition: source == 'map_selected_card'
-          ? EventDetailRouteTransition.mapSelectedCard
-          : EventDetailRouteTransition.platform,
+      transition: transition,
+      presentationMode: presentationMode,
+      heroTag: heroTag,
     ),
   );
 }

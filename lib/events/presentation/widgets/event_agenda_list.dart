@@ -114,14 +114,18 @@ class EventAgendaSliverList extends StatelessWidget {
                   builder: (context) {
                     final effectiveBadge =
                         badgeLabelBuilder?.call(event) ?? badgeLabel;
-                    return EventAgendaCard(
-                      event: event,
-                      badgeLabel: effectiveBadge,
-                      clubName: clubNameBuilder?.call(event),
-                      status:
-                          statusBuilder?.call(event) ??
-                          _statusForBadge(effectiveBadge),
+                    final clubName = clubNameBuilder?.call(event);
+                    final status =
+                        statusBuilder?.call(event) ??
+                        _statusForBadge(effectiveBadge);
+                    return EventAgendaTile(
+                      data: EventTileData.fromEvent(
+                        event: event,
+                        status: status,
+                        clubName: clubName,
+                      ),
                       showClubName: showClubName,
+                      badgeLabel: effectiveBadge,
                       onTap: onEventSelected == null
                           ? null
                           : () => onEventSelected!.call(event),
@@ -152,39 +156,6 @@ class EventAgendaSliverList extends StatelessWidget {
                 children: children,
               ),
             ),
-    );
-  }
-}
-
-class EventAgendaCard extends StatelessWidget {
-  const EventAgendaCard({
-    super.key,
-    required this.event,
-    this.badgeLabel,
-    this.clubName,
-    this.status = EventTileStatus.open,
-    this.showClubName = false,
-    this.onTap,
-  });
-
-  final Event event;
-  final String? badgeLabel;
-  final String? clubName;
-  final EventTileStatus status;
-  final bool showClubName;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return EventAgendaTile(
-      data: EventTileData.fromEvent(
-        event: event,
-        status: status,
-        clubName: clubName,
-      ),
-      onTap: onTap,
-      showClubName: showClubName,
-      badgeLabel: badgeLabel,
     );
   }
 }

@@ -397,9 +397,9 @@ void main() {
 
       expect(find.text('Upcoming events'), findsOneWidget);
       expect(find.text('Recent updates'), findsOneWidget);
+      expect(find.text(upcomingEvent.title), findsOneWidget);
       expect(find.text('India Gate lawns east side'), findsOneWidget);
-      expect(find.text('7km'), findsOneWidget);
-      expect(find.text('Fast'), findsOneWidget);
+      expect(find.text('7km · Fast'), findsOneWidget);
       expect(find.text("It's a catch"), findsOneWidget);
       expect(find.text('Catch'), findsOneWidget);
       expect(find.text('Upcoming event'), findsNothing);
@@ -652,7 +652,7 @@ void main() {
       );
       // Activity summary and capacity stay visible in the ticket meta line.
       expect(
-        find.text('12km · Moderate - 4 going - 8 left', skipOffstage: false),
+        find.text('12km · Moderate · 4 going · 8 left', skipOffstage: false),
         findsOneWidget,
       );
       expect(find.text('₹150', skipOffstage: false), findsOneWidget);
@@ -986,12 +986,12 @@ void main() {
         final firstRun = buildEvent(
           id: 'event-focus-first',
           bookedCount: 1,
-          startTime: DateTime(2026, 5, 28, 9, 10),
+          startTime: DateTime(2026, 6, 4, 9, 10),
         );
         final secondRun = buildEvent(
           id: 'event-focus-second',
           bookedCount: 1,
-          startTime: DateTime(2026, 5, 29, 9, 10),
+          startTime: DateTime(2026, 6, 5, 9, 10),
         );
 
         await tester.pumpWidget(
@@ -1348,6 +1348,37 @@ void main() {
       expect(find.text('Saved events screen'), findsOneWidget);
     });
 
+    testWidgets('navigates directly to the hosted club shortcut', (
+      tester,
+    ) async {
+      final hostedClub = buildClub(id: 'club-host', name: 'Saket Striders');
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) =>
+                Scaffold(body: QuickActions(hostedClubShortcut: hostedClub)),
+          ),
+          GoRoute(
+            path: Routes.clubDetailScreen.path,
+            builder: (_, state) =>
+                Scaffold(body: Text('Club ${state.pathParameters['clubId']}')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      );
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('My club'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Club club-host'), findsOneWidget);
+    });
+
     testWidgets('host tools rail opens the selected hosted event', (
       tester,
     ) async {
@@ -1559,6 +1590,9 @@ List _dashboardHostOverrides(
     watchClubsHostedByProvider(
       user.uid,
     ).overrideWithValue(AsyncData(hostedClubs)),
+    watchClubsOwnedByProvider(
+      user.uid,
+    ).overrideWithValue(const AsyncData<List<Club>>([])),
     if (includeWeeklyActivity)
       weeklyActivityProvider.overrideWithValue(
         weeklyActivity ?? _emptyWeeklyActivitySnapshot(),

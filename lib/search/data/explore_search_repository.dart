@@ -1,0 +1,83 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'explore_search_repository.g.dart';
+
+@Riverpod(keepAlive: true)
+ExploreSearchRepository exploreSearchRepository(Ref ref) =>
+    FirebaseExploreSearchRepository(ref.watch(firebaseFunctionsProvider));
+
+abstract interface class ExploreSearchRepository {
+  Future<ExploreSearchResult> searchExplore({
+    required String query,
+    required String cityName,
+    int limit = 20,
+  });
+}
+
+class FirebaseExploreSearchRepository implements ExploreSearchRepository {
+  const FirebaseExploreSearchRepository(this._functions);
+
+  final FirebaseFunctions _functions;
+
+  @override
+  Future<ExploreSearchResult> searchExplore({
+    required String query,
+    required String cityName,
+    int limit = 20,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions.httpsCallable('exploreSearch').call({
+        'query': query.trim(),
+        'cityName': cityName.trim(),
+        'limit': limit,
+      });
+      return ExploreSearchResult.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'search explore',
+      resource: 'exploreSearch',
+    ),
+  );
+}
+
+class ExploreSearchResult {
+  const ExploreSearchResult({required this.clubIds, required this.eventIds});
+
+  factory ExploreSearchResult.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      return ExploreSearchResult(
+        clubIds: _stringList(map['clubIds']),
+        eventIds: _stringList(map['eventIds']),
+      );
+    }
+    return empty;
+  }
+
+  static const empty = ExploreSearchResult(clubIds: [], eventIds: []);
+
+  final List<String> clubIds;
+  final List<String> eventIds;
+}
+
+List<String> _stringList(Object? value) {
+  if (value is! List<Object?>) return const [];
+  return value.whereType<String>().toList(growable: false);
+}
+
+@riverpod
+Future<ExploreSearchResult?> exploreServerSearch(
+  Ref ref, {
+  required String query,
+  required String cityName,
+}) async {
+  final normalizedQuery = query.trim();
+  if (normalizedQuery.length < 2) return null;
+  return ref
+      .watch(exploreSearchRepositoryProvider)
+      .searchExplore(query: normalizedQuery, cityName: cityName);
+}

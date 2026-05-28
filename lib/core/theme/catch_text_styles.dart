@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,6 +55,44 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
+  /// Editorial club identity treatment shared by Explore club cards and the
+  /// club detail hero/collapsed header.
+  static TextStyle clubDisplay(
+    BuildContext context, {
+    required double size,
+    double height = 1.0,
+    Color? color,
+    FontWeight weight = FontWeight.w600,
+    FontStyle fontStyle = FontStyle.normal,
+  }) {
+    return CatchFonts.clubDisplay(
+      fontSize: size,
+      fontWeight: weight,
+      fontStyle: fontStyle,
+      height: height,
+      color: color ?? CatchTokens.of(context).ink,
+    );
+  }
+
+  /// Ticket/event identity treatment shared by Explore event cards and event
+  /// detail headers.
+  static TextStyle eventDisplay(
+    BuildContext context, {
+    required double size,
+    double height = 1.0,
+    Color? color,
+    FontWeight weight = FontWeight.w400,
+    FontStyle fontStyle = FontStyle.italic,
+  }) {
+    return CatchFonts.eventDisplay(
+      fontSize: size,
+      fontWeight: weight,
+      fontStyle: fontStyle,
+      height: height,
+      color: color ?? CatchTokens.of(context).ink,
+    );
+  }
+
   static TextStyle sectionTitle(BuildContext context, {Color? color}) => _text(
     context,
     size: 16,
@@ -90,17 +129,16 @@ abstract final class CatchTextStyles {
   /// like `TONIGHT · 8:50 PM` on hero cards and the day-section header strip.
   /// Always render the text already upper-cased; this style only sets weight,
   /// size, tracking, and a tabular feature for any embedded numerals.
-  static TextStyle kickerCaps(BuildContext context, {Color? color}) =>
-      _tabular(
-        GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          height: 1.15,
-          letterSpacing: 0.8,
-          decoration: TextDecoration.none,
-          color: color ?? CatchTokens.of(context).primary,
-        ),
-      );
+  static TextStyle kickerCaps(BuildContext context, {Color? color}) => _tabular(
+    GoogleFonts.inter(
+      fontSize: 11,
+      fontWeight: FontWeight.w800,
+      height: 1.15,
+      letterSpacing: 0.8,
+      decoration: TextDecoration.none,
+      color: color ?? CatchTokens.of(context).primary,
+    ),
+  );
 
   /// Larger caps-tracked kicker for editorial sashes like
   /// `TONIGHT'S PICK` / `PICKED FOR YOU`.

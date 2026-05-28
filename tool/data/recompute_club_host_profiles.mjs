@@ -113,9 +113,7 @@ export async function buildClubHostProfileRepairPlan(
       hostProfiles: Array.isArray(club.hostProfiles) ? club.hostProfiles : [],
       profileImageUrl: club.profileImageUrl ?? null,
     };
-    if (
-      JSON.stringify(current) !== JSON.stringify(expected)
-    ) {
+    if (stableStringify(current) !== stableStringify(expected)) {
       repairs.push({
         path: clubDoc.ref.path,
         clubId: clubDoc.id,
@@ -254,6 +252,22 @@ function resolveHostUserIds(club, ownerUserId) {
   ]
     .filter((uid) => typeof uid === "string" && uid.length > 0)
     .filter((uid, index, all) => all.indexOf(uid) === index);
+}
+
+function stableStringify(value) {
+  return JSON.stringify(stableValue(value));
+}
+
+function stableValue(value) {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, stableValue(value[key])])
+    );
+  }
+  return value;
 }
 
 function printSummary(summary) {

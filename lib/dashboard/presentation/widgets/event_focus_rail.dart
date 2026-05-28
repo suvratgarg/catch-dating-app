@@ -4,22 +4,20 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
-import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
 import 'package:catch_dating_app/core/widgets/catch_page_dots.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_launcher.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_location_links.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -398,194 +396,78 @@ class _EventFocusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      padding: EdgeInsets.zero,
-      backgroundColor: t.surface,
-      borderColor: item.isUrgent ? t.primary.withValues(alpha: 0.32) : t.line2,
-      radius: CatchRadius.lg,
-      elevation: CatchSurfaceElevation.card,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    item.isUrgent
-                        ? t.primarySoft.withValues(alpha: 0.62)
-                        : t.primarySoft.withValues(alpha: 0.28),
-                    t.surface,
-                    t.raised.withValues(alpha: 0.62),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(CatchSpacing.micro18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Wrap(
-                        spacing: CatchSpacing.s2,
-                        runSpacing: CatchSpacing.s1,
-                        children: [
-                          _EventFocusSashChip(
-                            label: item.badgeLabel,
-                            tone: item.isUrgent
-                                ? CatchSashTone.brand
-                                : CatchSashTone.solid,
-                          ),
-                          if (item.canSwipe)
-                            CatchBadge(
-                              label: 'Catch · ${_swipeCountdown(item.event)}',
-                              tone: CatchBadgeTone.brand,
-                              icon: PhosphorIconsFill.heart,
-                            ),
-                          if (item.needsReview)
-                            CatchBadge(
-                              label: 'Review pending',
-                              tone: CatchBadgeTone.warning,
-                              icon: PhosphorIconsRegular.pencilLine,
-                            ),
-                        ],
-                      ),
-                    ),
-                    if (cardCount > 1) ...[
-                      gapW8,
-                      CatchBadge(
-                        label: '${cardIndex + 1}/$cardCount',
-                        tone: CatchBadgeTone.neutral,
-                      ),
-                    ],
-                  ],
-                ),
-                gapH12,
-                Text(
-                  item.event.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.displayM(context),
-                ),
-                if (item.clubName != null) ...[
-                  gapH4,
-                  Text(
-                    item.clubName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-                gapH12,
-                CatchMetaDotRow(
-                  entries: [
-                    CatchMetaEntry(
-                      icon: CatchIcons.clock,
-                      label:
-                          '${EventFormatters.shortWeekday(item.event.startTime)}, '
-                          '${item.event.startTime.day} '
-                          '${EventFormatters.shortMonth(item.event.startTime)} · '
-                          '${item.event.timeRangeLabel}',
-                    ),
-                  ],
-                ),
-                gapH6,
-                CatchMetaDotRow(
-                  entries: [
-                    CatchMetaEntry(
-                      icon: CatchIcons.pinOutlined,
-                      label: item.event.locationName,
-                    ),
-                  ],
-                ),
-                gapH6,
-                CatchMetaDotRow(
-                  entries: [
-                    CatchMetaEntry(
-                      icon: activityKindGlyph(item.event.activityKind),
-                      label: item.event.activitySummaryLabel,
-                    ),
-                    CatchMetaEntry(
-                      icon: CatchIcons.group,
-                      label:
-                          '${item.event.signedUpCount}/${item.event.capacityLimit}',
-                    ),
-                  ],
-                ),
-                gapH16,
-                _EventFocusActions(
-                  item: item,
-                  isPrimaryLoading:
-                      item.primaryAction == _EventFocusAction.checkIn &&
-                      checkInMutation.isPending,
-                  onActionPressed: onActionPressed,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Sash-styled chip used at the top of the focus card. Borrows the corner
-/// sash visual without the corner-radius asymmetry so it sits inline next
-/// to other badges in the urgency row.
-class _EventFocusSashChip extends StatelessWidget {
-  const _EventFocusSashChip({required this.label, required this.tone});
-
-  final String label;
-  final CatchSashTone tone;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchCornerSash(label: label, tone: tone);
-  }
-}
-
-class _EventFocusActions extends StatelessWidget {
-  const _EventFocusActions({
-    required this.item,
-    required this.isPrimaryLoading,
-    required this.onActionPressed,
-  });
-
-  final _EventFocusItem item;
-  final bool isPrimaryLoading;
-  final ValueChanged<_EventFocusAction> onActionPressed;
-
-  @override
-  Widget build(BuildContext context) {
     final actions = [item.primaryAction, ...item.secondaryActions];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var index = 0; index < actions.length; index += 1) ...[
-          if (index > 0) gapH10,
-          CatchButton(
+    return EventActionCard(
+      event: item.event,
+      subtitle: item.clubName,
+      urgent: item.isUrgent,
+      indexLabel: cardCount > 1 ? '${cardIndex + 1}/$cardCount' : null,
+      badges: [
+        EventActionCardBadge(
+          label: item.badgeLabel,
+          tone: item.isUrgent ? CatchBadgeTone.brand : CatchBadgeTone.neutral,
+        ),
+        if (item.canSwipe)
+          EventActionCardBadge(
+            label: 'Catch · ${_swipeCountdown(item.event)}',
+            tone: CatchBadgeTone.brand,
+            icon: PhosphorIconsFill.heart,
+          ),
+        if (item.needsReview)
+          EventActionCardBadge(
+            label: 'Review pending',
+            tone: CatchBadgeTone.warning,
+            icon: PhosphorIconsRegular.pencilLine,
+          ),
+      ],
+      metaRows: [
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.clock,
+            label:
+                '${EventFormatters.shortWeekday(item.event.startTime)}, '
+                '${item.event.startTime.day} '
+                '${EventFormatters.shortMonth(item.event.startTime)} · '
+                '${item.event.timeRangeLabel}',
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: CatchIcons.pinOutlined,
+            label: item.event.locationName,
+          ),
+        ],
+        [
+          CatchMetaEntry(
+            icon: activityKindGlyph(item.event.activityKind),
+            label: item.event.activitySummaryLabel,
+          ),
+          CatchMetaEntry(
+            icon: CatchIcons.group,
+            label: '${item.event.signedUpCount}/${item.event.capacityLimit}',
+          ),
+        ],
+      ],
+      actions: [
+        for (var index = 0; index < actions.length; index += 1)
+          EventActionCardAction(
             label: actions[index].label,
-            icon: Icon(actions[index].icon, size: 18),
+            icon: actions[index].icon,
             variant: index == 0
                 ? CatchButtonVariant.primary
                 : CatchButtonVariant.secondary,
-            fullWidth: true,
-            isLoading: index == 0 && isPrimaryLoading,
-            onPressed: index == 0 && isPrimaryLoading
+            isLoading:
+                index == 0 &&
+                item.primaryAction == _EventFocusAction.checkIn &&
+                checkInMutation.isPending,
+            onPressed:
+                index == 0 &&
+                    item.primaryAction == _EventFocusAction.checkIn &&
+                    checkInMutation.isPending
                 ? null
                 : () => onActionPressed(actions[index]),
           ),
-        ],
       ],
     );
   }

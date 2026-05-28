@@ -28,18 +28,23 @@ import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_event_t
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_cover_fallback.dart';
+import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_metric_strip.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
@@ -175,6 +180,7 @@ void main() {
       final sourceClub = buildClub(id: 'source-club', name: 'Bandra Pacers');
       final container = ProviderContainer(
         overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(null)),
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([sourceClub])),
@@ -218,6 +224,7 @@ void main() {
       final sourceClub = buildClub(id: 'source-club', name: 'Bandra Pacers');
       final container = ProviderContainer(
         overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(null)),
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([sourceClub])),
@@ -331,13 +338,180 @@ void main() {
       );
       await tester.pump();
 
-      // Activity-art card layout: event title, club + meeting point + type
-      // subtitle, and capacity copy from the same availability model.
+      // Sparse markets should keep the regular Explore feed and skip the
+      // weekly strip until there are enough day-level picks to justify it.
+      expect(find.text('This week'), findsNothing);
+      expect(find.textContaining('COMING UP'), findsNothing);
       expect(find.textContaining(event.title), findsWidgets);
-      expect(find.textContaining('Pace Social - People Plaza'), findsOneWidget);
-      expect(find.text('8 going - 4 spots left'), findsOneWidget);
+      expect(find.textContaining('Pace Social'), findsWidgets);
+      expect(find.text('8 going · 4 spots left'), findsOneWidget);
       expect(find.textContaining('5km'), findsOneWidget);
     });
+
+    testWidgets('Explore club card and detail hero share media padding', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-padding',
+        name: 'Padding Pacers',
+        imageUrl: 'https://example.com/club.jpg',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWithValue(
+              const AsyncData(ExploreFeedViewModel(items: [])),
+            ),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) => MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: CustomScrollView(
+                  slivers: buildExploreEventsSlivers(
+                    ref,
+                    pinnedDayHeaders: false,
+                    candidateClubs: [club],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final cardPadding = tester.widget<Padding>(
+        find.byKey(const ValueKey('explore-club-polaroid-padding')),
+      );
+      expect(cardPadding.padding, clubInteractionMediaPadding);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [ClubHeroAppBar(club: club, isHost: false)],
+            ),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      final detailPadding = tester.widget<Padding>(
+        find.byKey(const ValueKey('club-detail-hero-padding')),
+      );
+      expect(detailPadding.padding, cardPadding.padding);
+      final curveFrame = tester.widget<CatchViewportCurveFrame>(
+        find.byKey(const ValueKey('club-detail-viewport-curve-frame')),
+      );
+      expect(curveFrame.padding, clubInteractionMediaPadding);
+    });
+
+    testWidgets(
+      'ExploreEventsSection shows enough top recommendations by day',
+      (tester) async {
+        final club = buildClub(
+          id: 'club-week',
+          name: 'Weekenders',
+          area: 'Indiranagar',
+        );
+        final today = DateUtils.dateOnly(DateTime.now());
+        final dinner = event_test.buildEvent(
+          id: 'event-week-dinner',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 1, hours: 19)),
+          meetingPoint: 'Long table room',
+          eventFormat: EventFormatSnapshot.custom(
+            label: 'long table',
+            interactionModel: EventInteractionModel.seatedTable,
+          ),
+        );
+        final run = event_test.buildEvent(
+          id: 'event-week-run',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 2, hours: 6)),
+          meetingPoint: 'Cubbon Park',
+        );
+        final art = event_test.buildEvent(
+          id: 'event-week-art',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 3, hours: 16)),
+          meetingPoint: 'NGMA',
+          eventFormat: EventFormatSnapshot.custom(
+            label: 'sketching strangers',
+            interactionModel: EventInteractionModel.openFormat,
+          ),
+        );
+        final brunch = event_test.buildEvent(
+          id: 'event-week-brunch',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 4, hours: 11)),
+          meetingPoint: 'Koramangala',
+          eventFormat: EventFormatSnapshot.fromActivityKind(
+            ActivityKind.dinner,
+          ),
+        );
+        final pickleball = event_test.buildEvent(
+          id: 'event-week-pickleball',
+          clubId: club.id,
+          startTime: today.add(const Duration(days: 5, hours: 18)),
+          meetingPoint: 'Court 2',
+          eventFormat: EventFormatSnapshot.fromActivityKind(
+            ActivityKind.pickleball,
+          ),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              exploreFeedViewModelProvider.overrideWithValue(
+                AsyncData(
+                  ExploreFeedViewModel(
+                    items: [
+                      for (final event in [
+                        dinner,
+                        run,
+                        art,
+                        brunch,
+                        pickleball,
+                      ])
+                        ExploreEventItem(
+                          event: event,
+                          club: club,
+                          availability: resolveViewerEventAvailability(
+                            event: event,
+                            userProfile: null,
+                          ),
+                          status: EventTileStatus.open,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const Scaffold(
+                body: CustomScrollView(slivers: [ExploreEventsSection()]),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('This week'), findsOneWidget);
+        expect(find.text('COMING UP · 5'), findsOneWidget);
+        expect(find.textContaining('Long Table'), findsOneWidget);
+        expect(find.textContaining('Run'), findsOneWidget);
+        expect(find.textContaining('Sketching Strangers'), findsOneWidget);
+        expect(find.textContaining('Dinner'), findsWidgets);
+        expect(find.textContaining('Pickleball'), findsWidgets);
+        expect(find.byType(EventDateRailCard), findsNWidgets(5));
+        expect(find.byType(CatchEventSpotlightCard), findsNothing);
+      },
+    );
 
     testWidgets('ExploreEventsSection does not duplicate full status meta', (
       tester,
@@ -346,6 +520,13 @@ void main() {
         id: 'club-full',
         name: 'Pace Social',
         area: 'Necklace Road',
+      );
+      final featuredEvent = event_test.buildEvent(
+        id: 'event-featured',
+        clubId: club.id,
+        meetingPoint: 'People Plaza',
+        bookedCount: 2,
+        capacityLimit: 6,
       );
       final event = event_test.buildEvent(
         id: 'event-full',
@@ -362,6 +543,15 @@ void main() {
               AsyncData(
                 ExploreFeedViewModel(
                   items: [
+                    ExploreEventItem(
+                      event: featuredEvent,
+                      club: club,
+                      availability: resolveViewerEventAvailability(
+                        event: featuredEvent,
+                        userProfile: null,
+                      ),
+                      status: EventTileStatus.open,
+                    ),
                     ExploreEventItem(
                       event: event,
                       club: club,
@@ -386,8 +576,9 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('6 going - full'), findsOneWidget);
-      expect(find.text('FULL'), findsOneWidget);
+      expect(find.text('6 going · full'), findsOneWidget);
+      expect(find.text('FULL'), findsNothing);
+      expect(find.byType(EventCapacityProgress), findsNothing);
     });
 
     testWidgets('Explore event type browse grid updates the activity filter', (
@@ -1108,6 +1299,21 @@ void main() {
         expect(find.text('Rated Club'), findsOneWidget);
         expect(find.text('Bandra, Mumbai'), findsOneWidget);
         expect(find.text('4.8'), findsNothing);
+        expect(
+          find.byKey(const ValueKey('club-detail-hero-frame')),
+          findsOneWidget,
+        );
+        final heroFrame = tester.widget<CatchSurface>(
+          find.byKey(const ValueKey('club-detail-hero-frame')),
+        );
+        expect(heroFrame.backgroundColor, CatchTokens.sunsetLight.surface);
+        final expandedTitle = tester.widget<Text>(
+          find.byKey(const ValueKey('club-detail-expanded-title')),
+        );
+        expect(
+          expandedTitle.style?.fontFamily,
+          contains(CatchFonts.clubDisplayFamily.split(' ').first),
+        );
 
         await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
         await _pumpClubUi(tester);
@@ -1166,7 +1372,7 @@ void main() {
           findsNothing,
         );
 
-        await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -520));
         await _pumpClubUi(tester);
 
         final collapsedTitle = find.byKey(
@@ -1174,6 +1380,11 @@ void main() {
         );
         expect(collapsedTitle, findsOneWidget);
         expect(tester.getTopLeft(collapsedTitle).dy, lessThan(96));
+        final collapsedTitleText = tester.widget<Text>(collapsedTitle);
+        expect(
+          collapsedTitleText.style?.fontFamily,
+          contains(CatchFonts.clubDisplayFamily.split(' ').first),
+        );
       },
     );
 
@@ -1322,6 +1533,15 @@ void main() {
 
       expect(find.text('Join club'), findsNothing);
       expect(find.text('Leave club'), findsNothing);
+      final scrollBackground = tester.widget<ColoredBox>(
+        find
+            .ancestor(
+              of: find.byType(CustomScrollView),
+              matching: find.byType(ColoredBox),
+            )
+            .first,
+      );
+      expect(scrollBackground.color, CatchTokens.sunsetLight.surface);
       expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
       expect(find.text('Hosted by Asha Host'), findsOneWidget);
@@ -1696,7 +1916,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await _pumpClubUi(tester);
 
-      await tester.tap(find.text('Start'));
+      await tester.tap(find.text('START'));
       await _pumpClubUi(tester);
 
       expect(find.text('Event event-42'), findsOneWidget);
@@ -2233,23 +2453,109 @@ void main() {
         );
         await _pumpClubUi(tester);
 
-        // Pin selection animates the sheet upward to the selected event card
-        // instead of hiding the focus inside the collapsed peek rail.
+        // Pin selection animates the sheet upward to the selected event ticket
+        // instead of promoting every selected pin into spotlight styling.
         expect(
           find.byKey(ValueKey('explore-selected-${selectedEvent.id}')),
           findsOneWidget,
         );
+        expect(find.byType(CatchEventTicketCard), findsOneWidget);
         expect(
           find.byWidgetPredicate(
             (widget) =>
                 widget is Hero &&
-                widget.tag == eventPhotoHeroTag(selectedEvent.id),
+                widget.tag ==
+                    eventTicketHeroTag(selectedEvent.id, 'map_selected_card'),
           ),
           findsOneWidget,
         );
         expect(find.text('6 events nearby'), findsNothing);
       },
     );
+
+    testWidgets('selected spotlight pin keeps spotlight styling', (
+      tester,
+    ) async {
+      final club = buildClub(
+        id: 'club-selected-spotlight',
+        name: 'Spotlight Club',
+      );
+      final spotlight = event_test.buildEvent(
+        id: 'event-spotlight-pin',
+        clubId: club.id,
+        meetingPoint: 'Spotlight Point',
+        startTime: DateTime.now().add(const Duration(days: 1)),
+      );
+      final other = event_test.buildEvent(
+        id: 'event-other-pin',
+        clubId: club.id,
+        meetingPoint: 'Other Point',
+        startTime: DateTime.now().add(const Duration(days: 2)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            exploreFeedViewModelProvider.overrideWithValue(
+              AsyncData(
+                ExploreFeedViewModel(
+                  items: [
+                    ExploreEventItem(
+                      event: spotlight,
+                      club: club,
+                      status: EventTileStatus.recommended,
+                    ),
+                    ExploreEventItem(
+                      event: other,
+                      club: club,
+                      status: EventTileStatus.open,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) {
+              return MaterialApp(
+                theme: AppTheme.light,
+                home: Scaffold(
+                  body: CustomScrollView(
+                    slivers: buildExploreMapSheetLeadSlivers(
+                      ref: ref,
+                      selectedEventId: spotlight.id,
+                      cameraCenter: null,
+                      filters: const ClubBrowseFilterSelection(),
+                      scopeLabel: 'Mumbai',
+                      leadMode: ExploreMapSheetLeadMode.selectedEvent,
+                      onEventTapped: (_) {},
+                      onSeeAll: () {},
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(ValueKey('explore-selected-${spotlight.id}')),
+        findsOneWidget,
+      );
+      expect(find.byType(CatchEventSpotlightCard), findsOneWidget);
+      expect(find.byType(CatchEventTicketCard), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Hero &&
+              widget.tag ==
+                  eventSpotlightHeroTag(spotlight.id, 'map_selected_card'),
+        ),
+        findsOneWidget,
+      );
+    });
 
     test('explore map summary switches to map area after a large pan', () {
       final mumbai = _testCities.first;

@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/search/data/explore_search_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -264,6 +265,35 @@ void main() {
     });
 
     test(
+      'mergeExploreSourceClubs keeps hosted clubs outside the city feed',
+      () {
+        final cityClub = buildClub(id: 'city-club', location: 'mumbai');
+        final hostedClub = buildClub(
+          id: 'hosted-club',
+          location: 'indore',
+          hostUserId: 'runner-1',
+        );
+        final ownedClub = buildClub(
+          id: 'owned-club',
+          location: 'delhi',
+          ownerUserId: 'runner-1',
+        );
+
+        final merged = mergeExploreSourceClubs(
+          locationClubs: [cityClub],
+          hostedClubs: [hostedClub],
+          ownedClubs: [ownedClub],
+        );
+
+        expect(merged.map((club) => club.id), [
+          'city-club',
+          'hosted-club',
+          'owned-club',
+        ]);
+      },
+    );
+
+    test(
       'clubsListViewModelProvider partitions joined and discover clubs',
       () async {
         final memberClub = buildClub(id: 'member-club');
@@ -294,6 +324,12 @@ void main() {
                 hostedClub,
               ]),
             ),
+            watchClubsHostedByProvider(
+              'runner-1',
+            ).overrideWith((ref) => Stream.value([hostedClub])),
+            watchClubsOwnedByProvider(
+              'runner-1',
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
         );
         addTearDown(container.dispose);
@@ -374,6 +410,10 @@ void main() {
       );
       final container = ProviderContainer(
         overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+          exploreSearchRepositoryProvider.overrideWithValue(
+            _FakeExploreSearchRepository(error: StateError('search offline')),
+          ),
           watchClubsByLocationProvider(
             'mumbai',
           ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
@@ -496,6 +536,12 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
+            watchClubsHostedByProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            watchClubsOwnedByProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
@@ -581,6 +627,12 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
+            watchClubsHostedByProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
+            watchClubsOwnedByProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
@@ -699,5 +751,22 @@ class _FakeEventDiscoveryRepository extends Fake
   @override
   Future<List<Event>> fetchDiscoverableEvents(EventDiscoveryQuery query) async {
     return events;
+  }
+}
+
+class _FakeExploreSearchRepository implements ExploreSearchRepository {
+  const _FakeExploreSearchRepository({this.error});
+
+  final Object? error;
+
+  @override
+  Future<ExploreSearchResult> searchExplore({
+    required String query,
+    required String cityName,
+    int limit = 20,
+  }) async {
+    final error = this.error;
+    if (error != null) throw error;
+    return ExploreSearchResult.empty;
   }
 }

@@ -20,7 +20,7 @@
  * ## Storage paths moderated
  *
  *   - `users/{uid}/photos/{fileName}` — profile photos
- *   - `clubs/{clubId}/{fileName}` — club images
+ *   - `users/{uid}/hostedMedia/{fileName}` — hosted club/event media
  *   - `matches/{matchId}/images/{messageId}` — chat images (future)
  *
  * ## Costs
@@ -213,10 +213,11 @@ export const moderatePhotoOnUpload = onObjectFinalized(
     // Only moderate recognized image paths.
     const isProfilePhoto = filePath.startsWith("users/") &&
       filePath.includes("/photos/");
-    const isClubImage = filePath.startsWith("clubs/");
+    const isHostedMedia = filePath.startsWith("users/") &&
+      filePath.includes("/hostedMedia/");
     const isChatImage = filePath.startsWith("matches/");
 
-    if (!isProfilePhoto && !isClubImage && !isChatImage) return;
+    if (!isProfilePhoto && !isHostedMedia && !isChatImage) return;
 
     const bucket = admin.storage().bucket(event.data.bucket);
     const file = bucket.file(filePath);
@@ -254,7 +255,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
         flagType: "explicit_photo" as const,
         source: (
           isProfilePhoto ? "profile_photo" :
-            isClubImage ? "club_image" : "chat_message"
+            isHostedMedia ? "club_image" : "chat_message"
         ) as ModerationFlagDocument["source"],
         status: "pending" as const,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),

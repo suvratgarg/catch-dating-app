@@ -99,6 +99,8 @@ Do not edit it by hand.
 | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `functions/src/shared/generated/placesAutocompleteCallableResponse.ts` |
 | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `functions/src/shared/generated/placeDetailsCallablePayload.ts` |
 | PlaceDetailsCallableResponse | `callable_responses/place_details_response.schema.json` | `functions/src/shared/generated/placeDetailsCallableResponse.ts` |
+| ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `functions/src/shared/generated/exploreSearchCallablePayload.ts` |
+| ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `functions/src/shared/generated/exploreSearchCallableResponse.ts` |
 | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `functions/src/shared/generated/fetchEventSuccessWingmanCandidatesCallableResponse.ts` |
 | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `functions/src/shared/generated/createProfileDecisionClientWrite.ts` |
 | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `functions/src/shared/generated/createChatMessageClientWrite.ts` |
@@ -198,6 +200,8 @@ Do not edit it by hand.
 | `schemaPlacesAutocompleteCallableResponseSchema` | PlacesAutocompleteCallableResponse | `callable_responses/places_autocomplete_response.schema.json` | `lib/core/schema_contracts/generated/schemas/places_autocomplete_callable_response.g.dart` |
 | `schemaPlaceDetailsCallablePayloadSchema` | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/place_details_callable_payload.g.dart` |
 | `schemaPlaceDetailsCallableResponseSchema` | PlaceDetailsCallableResponse | `callable_responses/place_details_response.schema.json` | `lib/core/schema_contracts/generated/schemas/place_details_callable_response.g.dart` |
+| `schemaExploreSearchCallablePayloadSchema` | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/explore_search_callable_payload.g.dart` |
+| `schemaExploreSearchCallableResponseSchema` | ExploreSearchCallableResponse | `callable_responses/explore_search_response.schema.json` | `lib/core/schema_contracts/generated/schemas/explore_search_callable_response.g.dart` |
 | `schemaFetchEventSuccessWingmanCandidatesCallableResponseSchema` | FetchEventSuccessWingmanCandidatesCallableResponse | `callable_responses/fetch_event_success_wingman_candidates_response.schema.json` | `lib/core/schema_contracts/generated/schemas/fetch_event_success_wingman_candidates_callable_response.g.dart` |
 | `schemaCreateProfileDecisionClientWriteSchema` | CreateProfileDecisionClientWrite | `client_writes/create_profile_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/create_profile_decision_client_write.g.dart` |
 | `schemaCreateChatMessageClientWriteSchema` | CreateChatMessageClientWrite | `client_writes/create_chat_message.schema.json` | `lib/core/schema_contracts/generated/schemas/create_chat_message_client_write.g.dart` |
@@ -247,6 +251,7 @@ Do not edit it by hand.
 | CreateStripeHostOnboardingLinkCallableRequest | CreateStripeHostOnboardingLinkCallablePayload | `callables/create_stripe_host_onboarding_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_stripe_host_onboarding_link_callable_request.g.dart` |
 | PlacesAutocompleteCallableRequest | PlacesAutocompleteCallablePayload | `callables/places_autocomplete_payload.schema.json` | `lib/core/schema_contracts/generated/callables/places_autocomplete_callable_request.g.dart` |
 | PlaceDetailsCallableRequest | PlaceDetailsCallablePayload | `callables/place_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/place_details_callable_request.g.dart` |
+| ExploreSearchCallableRequest | ExploreSearchCallablePayload | `callables/explore_search_payload.schema.json` | `lib/core/schema_contracts/generated/callables/explore_search_callable_request.g.dart` |
 
 ## Callable Schemas Still Hand-Written In Dart
 

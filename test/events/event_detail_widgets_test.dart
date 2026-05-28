@@ -728,8 +728,6 @@ void main() {
                 EventDetailHeroAppBar(
                   event: event,
                   isSaved: false,
-                  isHost: false,
-                  participation: null,
                   savePending: false,
                   onBack: () {},
                   onShare: (_) {},
@@ -762,6 +760,51 @@ void main() {
       await tester.tap(find.byTooltip('Save event'));
       await tester.pump();
       expect(saved, true);
+    });
+
+    testWidgets('keeps the expanded hero title-only', (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final event = buildEvent(
+        startTime: DateTime(2026, 5, 28, 7, 30),
+        endTime: DateTime(2026, 5, 28, 8, 45),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                EventDetailHeroAppBar(
+                  event: event,
+                  isSaved: true,
+                  savePending: false,
+                  onBack: () {},
+                  onShare: (_) {},
+                  showAddToCalendar: true,
+                  onAddToCalendar: (_) {},
+                  onToggleSaved: () {},
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 900)),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Thursday Morning Run'), findsOneWidget);
+      expect(find.textContaining('THU'), findsNothing);
+      expect(find.textContaining('7:30'), findsNothing);
+      expect(find.text("You're in"), findsNothing);
+      expect(find.text('Saved'), findsNothing);
+      expect(find.byTooltip('Share event'), findsOneWidget);
+      expect(find.byTooltip('Add to calendar'), findsOneWidget);
+      expect(find.byTooltip('Unsave event'), findsOneWidget);
     });
   });
 

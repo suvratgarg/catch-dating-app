@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -61,6 +62,31 @@ void main() {
     expect(styles.map((style) => style.decoration).toSet(), {
       TextDecoration.none,
     });
+  });
+
+  test('CatchViewportCurveFrame derives top curve from safe area', () {
+    const fallback = CatchRadius.lg;
+    final flat = catchViewportTopCornerRadius(
+      const MediaQueryData(size: Size(393, 852)),
+    );
+    final roundedPhone = catchViewportTopCornerRadius(
+      const MediaQueryData(
+        size: Size(393, 852),
+        padding: EdgeInsets.only(top: 59),
+      ),
+    );
+    final tablet = catchViewportTopCornerRadius(
+      const MediaQueryData(
+        size: Size(834, 1194),
+        padding: EdgeInsets.only(top: 24),
+      ),
+    );
+
+    expect(flat, fallback);
+    expect(roundedPhone, greaterThan(fallback));
+    expect(roundedPhone, lessThanOrEqualTo(393 * 0.18));
+    expect(tablet, greaterThan(fallback));
+    expect(tablet, lessThan(roundedPhone));
   });
 
   testWidgets(

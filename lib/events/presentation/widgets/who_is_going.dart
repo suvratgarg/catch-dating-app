@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_stack.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -35,10 +36,16 @@ Future<Map<String, (String name, String? photoUrl)>> attendeeProfiles(
 }
 
 class WhoIsGoing extends ConsumerWidget {
-  const WhoIsGoing({super.key, required this.event, required this.userProfile});
+  const WhoIsGoing({
+    super.key,
+    required this.event,
+    required this.userProfile,
+    this.surfaceStyle,
+  });
 
   final Event event;
   final UserProfile userProfile;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,6 +59,7 @@ class WhoIsGoing extends ConsumerWidget {
         roster: EventParticipationRoster.empty(),
         userProfile: userProfile,
         fallbackTotal: event.signedUpCount,
+        surfaceStyle: surfaceStyle,
       ),
       error: (e, _) => CatchInlineErrorState.fromError(
         e,
@@ -64,6 +72,7 @@ class WhoIsGoing extends ConsumerWidget {
         event: event,
         roster: roster,
         userProfile: userProfile,
+        surfaceStyle: surfaceStyle,
       ),
     );
   }
@@ -75,12 +84,14 @@ class _WhoIsGoingContent extends ConsumerWidget {
     required this.roster,
     required this.userProfile,
     this.fallbackTotal,
+    this.surfaceStyle,
   });
 
   final Event event;
   final EventParticipationRoster roster;
   final UserProfile userProfile;
   final int? fallbackTotal;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,12 +107,18 @@ class _WhoIsGoingContent extends ConsumerWidget {
             Expanded(
               child: Text(
                 "Who's going",
-                style: CatchTextStyles.titleL(context),
+                style: CatchTextStyles.titleL(
+                  context,
+                  color: surfaceStyle?.headingColor,
+                ),
               ),
             ),
             Text(
               '$total/${event.capacityLimit}',
-              style: CatchTextStyles.labelL(context, color: t.ink2),
+              style: CatchTextStyles.labelL(
+                context,
+                color: surfaceStyle?.bodyColor ?? t.ink2,
+              ),
             ),
           ],
         ),
@@ -114,6 +131,7 @@ class _WhoIsGoingContent extends ConsumerWidget {
             message: event.isUpcoming
                 ? 'Be the first to book this event.'
                 : 'This event did not have any booked attendees.',
+            surfaceStyle: surfaceStyle,
           )
         else ...[
           EventHypeAvatarStack(
@@ -130,17 +148,20 @@ class _WhoIsGoingContent extends ConsumerWidget {
             _SwipeWindowBanner(
               icon: CatchIcons.lockOutlineRounded,
               message: 'Swiping unlocks for 24 hours after the event finishes.',
+              surfaceStyle: surfaceStyle,
             )
           else if (hasActiveSwipeWindow)
             _SwipeWindowBanner(
               icon: CatchIcons.favoriteRounded,
               message:
                   'The swipe window is open for 24 hours after the event finishes.',
+              surfaceStyle: surfaceStyle,
             )
           else
             _SwipeWindowBanner(
               icon: CatchIcons.scheduleRounded,
               message: 'The swipe window for this event has closed.',
+              surfaceStyle: surfaceStyle,
             ),
         ],
       ],
@@ -149,10 +170,15 @@ class _WhoIsGoingContent extends ConsumerWidget {
 }
 
 class _EmptyRosterMessage extends StatelessWidget {
-  const _EmptyRosterMessage({required this.title, required this.message});
+  const _EmptyRosterMessage({
+    required this.title,
+    required this.message,
+    this.surfaceStyle,
+  });
 
   final String title;
   final String message;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -161,20 +187,34 @@ class _EmptyRosterMessage extends StatelessWidget {
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s4),
       radius: CatchRadius.md,
-      borderColor: t.line,
+      backgroundColor: surfaceStyle?.surfaceBackground,
+      borderColor: surfaceStyle?.borderColor ?? t.line,
       child: Row(
         children: [
-          Icon(CatchIcons.groups2Outlined, size: 20, color: t.ink3),
+          Icon(
+            CatchIcons.groups2Outlined,
+            size: 20,
+            color: surfaceStyle?.mutedColor ?? t.ink3,
+          ),
           gapW12,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.sectionTitle(context)),
+                Text(
+                  title,
+                  style: CatchTextStyles.sectionTitle(
+                    context,
+                    color: surfaceStyle?.headingColor,
+                  ),
+                ),
                 gapH4,
                 Text(
                   message,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: surfaceStyle?.bodyColor ?? t.ink2,
+                  ),
                 ),
               ],
             ),
@@ -186,10 +226,15 @@ class _EmptyRosterMessage extends StatelessWidget {
 }
 
 class _SwipeWindowBanner extends StatelessWidget {
-  const _SwipeWindowBanner({required this.icon, required this.message});
+  const _SwipeWindowBanner({
+    required this.icon,
+    required this.message,
+    this.surfaceStyle,
+  });
 
   final IconData icon;
   final String message;
+  final EventDetailSurfaceStyle? surfaceStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -197,17 +242,23 @@ class _SwipeWindowBanner extends StatelessWidget {
 
     return CatchSurface(
       padding: const EdgeInsets.all(12),
-      tone: CatchSurfaceTone.primarySoft,
+      tone: surfaceStyle == null
+          ? CatchSurfaceTone.primarySoft
+          : CatchSurfaceTone.transparent,
+      backgroundColor: surfaceStyle?.primarySoftColor,
       radius: CatchRadius.md,
       borderWidth: 0,
       child: Row(
         children: [
-          Icon(icon, size: 16, color: t.primary),
+          Icon(icon, size: 16, color: surfaceStyle?.primaryColor ?? t.primary),
           gapW8,
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.supporting(context, color: t.primary),
+              style: CatchTextStyles.supporting(
+                context,
+                color: surfaceStyle?.primaryColor ?? t.primary,
+              ),
             ),
           ),
         ],

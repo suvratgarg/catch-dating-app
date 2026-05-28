@@ -395,6 +395,7 @@ class CatchCollapsedSliverTitle extends StatelessWidget {
     required this.title,
     this.textKey,
     this.color,
+    this.style,
   });
 
   static const double _fadeExtent = 72;
@@ -402,6 +403,7 @@ class CatchCollapsedSliverTitle extends StatelessWidget {
   final String title;
   final Key? textKey;
   final Color? color;
+  final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -421,7 +423,8 @@ class CatchCollapsedSliverTitle extends StatelessWidget {
           key: textKey,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.titleL(context, color: color ?? t.ink),
+          style:
+              style ?? CatchTextStyles.titleL(context, color: color ?? t.ink),
         ),
       ),
     );

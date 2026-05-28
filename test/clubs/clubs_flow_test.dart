@@ -8,6 +8,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
+import 'package:catch_dating_app/clubs/presentation/list/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -37,7 +38,17 @@ void main() {
         routes: [
           GoRoute(
             path: Routes.clubsListScreen.path,
-            builder: (_, _) => const ClubsListScreen(),
+            builder: (_, _) => Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  ClubDiscoverList(
+                    clubs: [club],
+                    joinedClubIds: const {},
+                    hostedClubIds: const {},
+                  ),
+                ],
+              ),
+            ),
             routes: [
               GoRoute(
                 path: ':clubId',
@@ -80,18 +91,6 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
-      final sheetScrollable = find
-          .descendant(
-            of: find.byKey(const ValueKey('explore-list-scroll-view')),
-            matching: find.byType(Scrollable),
-          )
-          .first;
-      await tester.scrollUntilVisible(
-        find.text(club.name),
-        200,
-        scrollable: sheetScrollable,
-      );
-      await _pumpClubFlow(tester);
       await tester.tap(find.text(club.name));
       await _pumpClubFlow(tester);
 

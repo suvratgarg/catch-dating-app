@@ -99,13 +99,18 @@ class CreateClubController extends _$CreateClubController {
       if (coverImage != null) {
         imageUrl = await ref
             .read(imageUploadRepositoryProvider)
-            .uploadClubCover(clubId: existingClub.id, image: coverImage);
+            .uploadClubCover(
+              uid: uid,
+              clubId: existingClub.id,
+              image: coverImage,
+            );
         uploadedImageUrl = imageUrl;
       }
       if (profileImage != null) {
         profileImageUrl = await ref
             .read(imageUploadRepositoryProvider)
             .uploadClubProfileImage(
+              uid: uid,
               clubId: existingClub.id,
               image: profileImage,
             );
@@ -170,12 +175,16 @@ class CreateClubController extends _$CreateClubController {
     if (coverImage != null) {
       uploadedCover = await ref
           .read(imageUploadRepositoryProvider)
-          .uploadClubCover(clubId: createdClubId, image: coverImage);
+          .uploadClubCover(uid: uid, clubId: createdClubId, image: coverImage);
     }
     if (profileImage != null) {
       uploadedProfile = await ref
           .read(imageUploadRepositoryProvider)
-          .uploadClubProfileImage(clubId: createdClubId, image: profileImage);
+          .uploadClubProfileImage(
+            uid: uid,
+            clubId: createdClubId,
+            image: profileImage,
+          );
     }
     if (uploadedCover != null || uploadedProfile != null) {
       final patch = <String, Object?>{};

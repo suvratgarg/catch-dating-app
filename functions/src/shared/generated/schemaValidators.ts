@@ -91,6 +91,8 @@ import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePay
 import {PlacesAutocompleteCallableResponse} from "./placesAutocompleteCallableResponse";
 import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
 import {PlaceDetailsCallableResponse} from "./placeDetailsCallableResponse";
+import {ExploreSearchCallablePayload} from "./exploreSearchCallablePayload";
+import {ExploreSearchCallableResponse} from "./exploreSearchCallableResponse";
 import {FetchEventSuccessWingmanCandidatesCallableResponse} from "./fetchEventSuccessWingmanCandidatesCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
@@ -186,6 +188,8 @@ import {
   placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
   placeDetailsCallableResponseSchema,
+  exploreSearchCallablePayloadSchema,
+  exploreSearchCallableResponseSchema,
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
@@ -546,6 +550,14 @@ export const validatePlaceDetailsCallableResponse:
   ValidateFunction<PlaceDetailsCallableResponse> =
     ajv.compile(placeDetailsCallableResponseSchema) as
       ValidateFunction<PlaceDetailsCallableResponse>;
+export const validateExploreSearchCallablePayload:
+  ValidateFunction<ExploreSearchCallablePayload> =
+    ajv.compile(exploreSearchCallablePayloadSchema) as
+      ValidateFunction<ExploreSearchCallablePayload>;
+export const validateExploreSearchCallableResponse:
+  ValidateFunction<ExploreSearchCallableResponse> =
+    ajv.compile(exploreSearchCallableResponseSchema) as
+      ValidateFunction<ExploreSearchCallableResponse>;
 export const validateFetchEventSuccessWingmanCandidatesCallableResponse:
   ValidateFunction<FetchEventSuccessWingmanCandidatesCallableResponse> =
     ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema) as

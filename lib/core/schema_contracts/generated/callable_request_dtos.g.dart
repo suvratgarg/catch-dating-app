@@ -29,6 +29,7 @@ export 'callables/delete_event_callable_request.g.dart';
 export 'callables/delete_event_review_callable_request.g.dart';
 export 'callables/event_id_callable_request.g.dart';
 export 'callables/event_join_request_decision_callable_request.g.dart';
+export 'callables/explore_search_callable_request.g.dart';
 export 'callables/mark_event_attendance_callable_request.g.dart';
 export 'callables/override_event_success_groups_callable_request.g.dart';
 export 'callables/override_event_success_rotations_callable_request.g.dart';

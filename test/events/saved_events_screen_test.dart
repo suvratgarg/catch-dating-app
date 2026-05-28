@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -54,12 +55,12 @@ void main() {
       await tester.pump();
 
       expect(find.text('Events you saved'), findsOneWidget);
-      expect(find.text('Stride Social'), findsAtLeastNWidgets(1));
+      expect(find.text('STRIDE SOCIAL'), findsAtLeastNWidgets(1));
       expect(find.text('SAVED'), findsOneWidget);
       expect(find.text('PAST'), findsOneWidget);
       expect(
-        tester.getTopLeft(find.text('Future Park')).dy,
-        lessThan(tester.getTopLeft(find.text('Past Park')).dy),
+        tester.getTopLeft(find.textContaining('Future Park')).dy,
+        lessThan(tester.getTopLeft(find.textContaining('Past Park')).dy),
       );
     });
 
@@ -95,7 +96,7 @@ void main() {
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       );
 
-      await tester.tap(find.text('Future Park'));
+      await tester.tap(find.textContaining('Future Park'));
       await tester.pump();
       await tester.pump();
 
@@ -125,9 +126,17 @@ Future<void> _pumpSavedEvents(
         watchSavedEventDetailsForUserProvider(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
+        clubNameLookupProvider(
+          ClubNameLookupQuery(savedEvents.map((event) => event.clubId)),
+        ).overrideWithValue(
+          AsyncData({
+            for (final event in savedEvents) event.clubId: 'Stride Social',
+          }),
+        ),
       ],
       child: wrapped,
     ),
   );
+  await tester.pump();
   await tester.pump();
 }
