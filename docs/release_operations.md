@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.1
-updated: 2026-05-26
+version: 1.7.3
+updated: 2026-05-28
 owner: recursive_audit_loop
 status: active
 ---
@@ -81,6 +81,96 @@ The corresponding Google Cloud service accounts are:
 
 Do not add `FIREBASE_SERVICE_ACCOUNT_*` JSON secrets unless the OIDC setup is
 intentionally retired.
+
+## Algolia Server-Side Search Secrets
+
+Explore server-side search stores runtime Algolia credentials in Firebase
+Secret Manager, not in the client app and not in GitHub Actions. Use one
+Algolia application per Firebase environment so data, analytics, write keys,
+and emergency rotations stay isolated:
+
+| Firebase project | Algolia app |
+|---|---|
+| `catchdates-dev` | `Catch Dev` |
+| `catchdates-staging` | `Catch Staging` |
+| `catch-dating-app-64e51` | `Catch Prod` |
+
+The callable and index sync triggers use:
+
+- `ALGOLIA_APP_ID`
+- `ALGOLIA_SEARCH_API_KEY`
+- `ALGOLIA_WRITE_API_KEY`
+
+Use a search-only Algolia key for `ALGOLIA_SEARCH_API_KEY`. Do not use the
+Algolia Admin API key for runtime search. `ALGOLIA_WRITE_API_KEY` is backend
+only; use a write-capable key for Functions triggers and backfills, and keep it
+out of the mobile app.
+
+Create or rotate the runtime search secrets per Firebase project. Do not reuse
+one app's key material across environments:
+
+```sh
+printf "Algolia application ID: "
+IFS= read -r ALGOLIA_APP_ID
+printf "Algolia search-only API key: "
+stty -echo
+IFS= read -r ALGOLIA_SEARCH_API_KEY
+stty echo
+printf "\n"
+printf "Algolia write API key: "
+stty -echo
+IFS= read -r ALGOLIA_WRITE_API_KEY
+stty echo
+printf "\n"
+
+for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
+  printf "%s" "$ALGOLIA_APP_ID" |
+    firebase functions:secrets:set ALGOLIA_APP_ID \
+      --project "$project" \
+      --data-file -
+  printf "%s" "$ALGOLIA_SEARCH_API_KEY" |
+    firebase functions:secrets:set ALGOLIA_SEARCH_API_KEY \
+      --project "$project" \
+      --data-file -
+  printf "%s" "$ALGOLIA_WRITE_API_KEY" |
+    firebase functions:secrets:set ALGOLIA_WRITE_API_KEY \
+      --project "$project" \
+      --data-file -
+done
+```
+
+Verify metadata without printing secret values:
+
+```sh
+for project in catchdates-dev catchdates-staging catch-dating-app-64e51; do
+  firebase functions:secrets:get ALGOLIA_APP_ID --project "$project"
+  firebase functions:secrets:get ALGOLIA_SEARCH_API_KEY --project "$project"
+  firebase functions:secrets:get ALGOLIA_WRITE_API_KEY --project "$project"
+done
+```
+
+Index names default to `clubs` and `events`. Only override them with
+`ALGOLIA_CLUBS_INDEX` or `ALGOLIA_EVENTS_INDEX` if an environment needs
+different index names. These are not secrets.
+
+Backfill after first setup or after changing searchable data shape:
+
+```sh
+ALGOLIA_APP_ID="<env app id>" \
+ALGOLIA_WRITE_API_KEY="<env write key>" \
+node tool/data/backfill_algolia_explore_search.mjs \
+  --env prod \
+  --apply \
+  --allow-prod
+```
+
+For dev or staging, change `--env` and omit `--allow-prod`.
+
+Algolia index settings must allow the function filters:
+
+- Clubs index: make `location` filterable/facetable.
+- Events index: make `discoveryCityName` filterable/facetable and store
+  `startTimeEpoch` as a numeric attribute.
 
 ## Required Secrets
 
@@ -269,6 +359,11 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   mode keys separate, and do not reuse another environment's secret key.
 - [ ] Set the Stripe Functions secrets in each Firebase project:
   `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+  As of 2026-05-28, `dev`, `staging`, and `prod` have non-real placeholder
+  values for both secrets so unrelated Functions deploys are not blocked by
+  missing Stripe bindings. Replace those Secret Manager values with
+  environment-owned Stripe credentials before enabling Stripe onboarding,
+  checkout, or webhooks.
 - [ ] Configure Stripe webhook endpoints per environment for the exported
   `stripeWebhook` HTTPS Function. Subscribe at minimum to Checkout Session
   completion and expiration events used by the backend booking flow, then copy
@@ -283,8 +378,9 @@ complete for each target environment (`dev`, `staging`, and `prod`):
 - [ ] Set production-safe redirect URLs for Stripe onboarding and checkout:
   `STRIPE_CONNECT_RETURN_URL`, `STRIPE_CONNECT_REFRESH_URL`,
   `STRIPE_CHECKOUT_SUCCESS_URL`, and `STRIPE_CHECKOUT_CANCEL_URL`. The checked-in
-  defaults point at `catchdates.com` and should be reviewed before staging/prod
-  rollout.
+  code defaults point at `catchdates.com` and exist only so noninteractive
+  Functions deploys keep working before Stripe launch. Review and override them
+  before staging/prod payment rollout.
 - [ ] Create environment-owned Razorpay credentials before live INR payments.
   Current non-prod/prod state has reused test-mode Razorpay secrets; replace
   them with the intended `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values per

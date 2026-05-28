@@ -148,7 +148,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.158",
+    "version": "2.5.159",
     "updated": "2026-05-28",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
@@ -176,8 +176,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.7.1",
-    "updated": "2026-05-26",
+    "version": "1.7.3",
+    "updated": "2026-05-28",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
   },
