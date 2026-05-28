@@ -442,6 +442,7 @@ void main() {
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-42');
+      expect(fakeImageUploadRepository.lastUploadUid, 'host-1');
       expect(fakeRepository.lastCreateCall, isNotNull);
       expect(fakeRepository.lastCreateCall!.clubId, 'club-42');
       expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
@@ -587,6 +588,7 @@ void main() {
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
+      expect(fakeImageUploadRepository.lastUploadUid, 'host-1');
       expect(
         fakeRepository.lastUpdatedFields!['imageUrl'],
         'https://example.com/new.jpg',
@@ -638,6 +640,7 @@ void main() {
             );
 
         expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
+        expect(fakeImageUploadRepository.lastUploadUid, 'cohost-1');
         expect(fakeRepository.lastUpdatedClubId, 'club-1');
         expect(fakeRepository.lastUpdatedFields, {
           'imageUrl': 'https://example.com/new.jpg',

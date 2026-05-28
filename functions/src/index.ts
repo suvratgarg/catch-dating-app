@@ -97,3 +97,8 @@ export {
   listSuvbotDemoActions,
   requestSuvbotDemoOperation,
 } from "./demoOps/suvbot";
+export {exploreSearch} from "./search/exploreSearch";
+export {
+  syncAlgoliaClubIndex,
+  syncAlgoliaEventIndex,
+} from "./search/algoliaExploreIndex";

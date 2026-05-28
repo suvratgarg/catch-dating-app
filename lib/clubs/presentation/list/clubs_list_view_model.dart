@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/search/data/explore_search_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -363,21 +364,181 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
 /// **Pattern D variant:** Combines location-filtered clubs with client-side
 /// search to produce a filtered list for the UI.
 @riverpod
+AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
+  final city = ref.watch(selectedClubCityProvider);
+  final locationClubsAsync = ref.watch(watchClubsByLocationProvider(city.name));
+  final uidAsync = ref.watch(uidProvider);
+
+  if (locationClubsAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (locationClubsAsync.hasError) {
+    return AsyncError(
+      locationClubsAsync.error!,
+      locationClubsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  final locationClubs = locationClubsAsync.asData?.value ?? const <Club>[];
+  if (!uidAsync.hasValue || uidAsync.hasError) {
+    return AsyncData(List.unmodifiable(locationClubs));
+  }
+  final uid = uidAsync.asData?.value;
+  if (uid == null) {
+    return AsyncData(List.unmodifiable(locationClubs));
+  }
+
+  final hostedClubsAsync = ref.watch(watchClubsHostedByProvider(uid));
+  final ownedClubsAsync = ref.watch(watchClubsOwnedByProvider(uid));
+
+  if (hostedClubsAsync.isLoading || ownedClubsAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (hostedClubsAsync.hasError) {
+    return AsyncError(
+      hostedClubsAsync.error!,
+      hostedClubsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (ownedClubsAsync.hasError) {
+    return AsyncError(
+      ownedClubsAsync.error!,
+      ownedClubsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  return AsyncData(
+    mergeExploreSourceClubs(
+      locationClubs: locationClubs,
+      hostedClubs: hostedClubsAsync.asData?.value ?? const <Club>[],
+      ownedClubs: ownedClubsAsync.asData?.value ?? const <Club>[],
+    ),
+  );
+}
+
+@riverpod
 AsyncValue<List<Club>> filteredClubs(Ref ref) {
   final city = ref.watch(selectedClubCityProvider);
   final query = ref.watch(clubSearchQueryProvider);
-  final clubsAsync = ref.watch(watchClubsByLocationProvider(city.name));
+  final clubsAsync = ref.watch(exploreSourceClubsProvider);
+  final normalizedQuery = query.trim().toLowerCase();
 
-  return clubsAsync.whenData((clubs) {
-    final normalizedQuery = query.trim().toLowerCase();
-    if (normalizedQuery.isEmpty) {
-      return clubs;
-    }
+  if (clubsAsync.isLoading) return const AsyncLoading();
+  if (clubsAsync.hasError) {
+    return AsyncError(
+      clubsAsync.error!,
+      clubsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
 
-    return clubs
-        .where((club) => matchesClubSearchQuery(club, normalizedQuery))
-        .toList(growable: false);
-  });
+  final sourceClubs = clubsAsync.asData?.value ?? const <Club>[];
+  if (normalizedQuery.isEmpty) {
+    return AsyncData(sourceClubs);
+  }
+
+  final uid = ref.watch(uidProvider).asData?.value;
+  final pinnedClubs = uid == null
+      ? const <Club>[]
+      : sourceClubs
+            .where((club) => club.isHostedBy(uid))
+            .toList(growable: false);
+  final localFallback = _localSearchWithPinnedClubs(
+    sourceClubs: sourceClubs,
+    pinnedClubs: pinnedClubs,
+    normalizedQuery: normalizedQuery,
+  );
+  final searchAsync = ref.watch(
+    exploreServerSearchProvider(query: query, cityName: city.name),
+  );
+
+  if (searchAsync.isLoading) {
+    return AsyncData(localFallback);
+  }
+  if (searchAsync.hasError) {
+    return AsyncData(localFallback);
+  }
+
+  final searchResult = searchAsync.asData?.value;
+  if (searchResult == null) {
+    return AsyncData(localFallback);
+  }
+
+  final searchedClubsAsync = ref.watch(
+    watchClubsByIdsProvider(ClubsByIdQuery(searchResult.clubIds)),
+  );
+  if (searchedClubsAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (searchedClubsAsync.hasError) {
+    return AsyncData(localFallback);
+  }
+
+  final rankedMatches = _rankClubsById(
+    ids: searchResult.clubIds,
+    clubs: searchedClubsAsync.asData?.value ?? const <Club>[],
+  );
+  return AsyncData(
+    mergeSearchMatchesWithPinnedClubs(
+      rankedMatches: rankedMatches,
+      pinnedClubs: pinnedClubs,
+    ),
+  );
+}
+
+List<Club> mergeExploreSourceClubs({
+  required List<Club> locationClubs,
+  required List<Club> hostedClubs,
+  required List<Club> ownedClubs,
+}) {
+  final byId = <String, Club>{};
+  for (final club in locationClubs) {
+    byId[club.id] = club;
+  }
+  for (final club in hostedClubs) {
+    byId[club.id] = club;
+  }
+  for (final club in ownedClubs) {
+    byId[club.id] = club;
+  }
+  return List.unmodifiable(byId.values);
+}
+
+List<Club> _localSearchWithPinnedClubs({
+  required List<Club> sourceClubs,
+  required List<Club> pinnedClubs,
+  required String normalizedQuery,
+}) {
+  final localMatches = sourceClubs
+      .where((club) => matchesClubSearchQuery(club, normalizedQuery))
+      .toList(growable: false);
+  return mergeSearchMatchesWithPinnedClubs(
+    rankedMatches: localMatches,
+    pinnedClubs: pinnedClubs,
+  );
+}
+
+List<Club> mergeSearchMatchesWithPinnedClubs({
+  required List<Club> rankedMatches,
+  required List<Club> pinnedClubs,
+}) {
+  final byId = <String, Club>{};
+  for (final club in rankedMatches) {
+    byId[club.id] = club;
+  }
+  for (final club in pinnedClubs) {
+    byId[club.id] = club;
+  }
+  return List.unmodifiable(byId.values);
+}
+
+List<Club> _rankClubsById({
+  required List<String> ids,
+  required List<Club> clubs,
+}) {
+  final byId = {for (final club in clubs) club.id: club};
+  return [
+    for (final id in ids)
+      if (byId[id] != null) byId[id]!,
+  ];
 }
 
 /// **Pattern D: View-model provider**

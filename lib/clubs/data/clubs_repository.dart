@@ -129,6 +129,76 @@ class ClubsRepository {
     ),
   );
 
+  Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) {
+    final uniqueIds = clubIds.toSet().toList()..sort();
+    if (uniqueIds.isEmpty) return Stream.value(const []);
+
+    var clubSubs = <StreamSubscription<QuerySnapshot<Club>>>[];
+    var closed = false;
+    late final StreamController<List<Club>> controller;
+
+    void emitOrderedClubs({
+      required Map<int, List<Club>> clubsByChunk,
+      required int chunkCount,
+    }) {
+      if (clubsByChunk.length < chunkCount || controller.isClosed) return;
+      final byId = <String, Club>{};
+      for (final clubs in clubsByChunk.values) {
+        for (final club in clubs) {
+          byId[club.id] = club;
+        }
+      }
+      final clubs = [
+        for (final id in uniqueIds)
+          if (byId[id] != null) byId[id]!,
+      ];
+      controller.add(clubs);
+    }
+
+    controller = StreamController<List<Club>>(
+      onListen: () {
+        final chunks = _chunks(uniqueIds, 10).toList(growable: false);
+        final clubsByChunk = <int, List<Club>>{};
+        for (var i = 0; i < chunks.length; i += 1) {
+          final chunk = chunks[i];
+          final sub = _clubsRef
+              .where(FieldPath.documentId, whereIn: chunk)
+              .snapshots()
+              .listen((clubSnap) {
+                if (closed) return;
+                clubsByChunk[i] = clubSnap.docs
+                    .map((doc) => doc.data())
+                    .toList();
+                emitOrderedClubs(
+                  clubsByChunk: clubsByChunk,
+                  chunkCount: chunks.length,
+                );
+              }, onError: controller.addError);
+          clubSubs.add(sub);
+        }
+      },
+      onCancel: () async {
+        closed = true;
+        for (final sub in clubSubs) {
+          await sub.cancel();
+        }
+        clubSubs = [];
+        if (!controller.isClosed) {
+          await controller.close();
+        }
+      },
+    );
+
+    return withBackendErrorStream(
+      () => controller.stream,
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch clubs by ids',
+        resource: _collectionPath,
+      ),
+    );
+  }
+
   // ── Write ──────────────────────────────────────────────────────────────────
 
   String generateId() => _clubRef().id;
@@ -359,3 +429,35 @@ Stream<List<Club>> watchClubsOwnedBy(Ref ref, String uid) {
 @riverpod
 Future<Club?> fetchClub(Ref ref, String id) =>
     ref.watch(clubsRepositoryProvider).fetchClub(id);
+
+@riverpod
+Stream<List<Club>> watchClubsByIds(Ref ref, ClubsByIdQuery query) =>
+    ref.watch(clubsRepositoryProvider).watchClubsByIds(clubIds: query.clubIds);
+
+class ClubsByIdQuery {
+  ClubsByIdQuery._(Iterable<String> clubIds)
+    : clubIds = List.unmodifiable(clubIds.toSet().toList()..sort());
+
+  factory ClubsByIdQuery(Iterable<String> clubIds) => ClubsByIdQuery._(clubIds);
+
+  static const _equality = ListEquality<String>();
+
+  final List<String> clubIds;
+
+  @override
+  bool operator ==(Object other) {
+    return other is ClubsByIdQuery && _equality.equals(other.clubIds, clubIds);
+  }
+
+  @override
+  int get hashCode => _equality.hash(clubIds);
+}
+
+Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
+  for (var i = 0; i < values.length; i += size) {
+    yield values.sublist(
+      i,
+      i + size > values.length ? values.length : i + size,
+    );
+  }
+}

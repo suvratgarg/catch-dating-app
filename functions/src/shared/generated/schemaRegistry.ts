@@ -12518,6 +12518,68 @@ export const placeDetailsCallableResponseSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const exploreSearchCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/explore_search_payload.schema.json",
+  "title": "ExploreSearchCallablePayload",
+  "description": "Callable payload accepted by exploreSearch.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "query"
+  ],
+  "properties": {
+    "query": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 120
+    },
+    "cityName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+} as const;
+
+export const exploreSearchCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/explore_search_response.schema.json",
+  "title": "ExploreSearchCallableResponse",
+  "description": "Callable response returned by exploreSearch.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubIds",
+    "eventIds"
+  ],
+  "properties": {
+    "clubIds": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "eventIds": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    }
+  }
+} as const;
+
 export const fetchEventSuccessWingmanCandidatesCallableResponseSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callable_responses/fetch_event_success_wingman_candidates_response.schema.json",

@@ -522,6 +522,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/placeDetailsCallableResponse.ts",
   },
   {
+    name: "ExploreSearchCallablePayload",
+    source: "callables/explore_search_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exploreSearchCallablePayload.ts",
+  },
+  {
+    name: "ExploreSearchCallableResponse",
+    source: "callable_responses/explore_search_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/exploreSearchCallableResponse.ts",
+  },
+  {
     name: "FetchEventSuccessWingmanCandidatesCallableResponse",
     source:
       "callable_responses/fetch_event_success_wingman_candidates_response.schema.json",

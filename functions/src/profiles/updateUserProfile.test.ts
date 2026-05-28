@@ -63,6 +63,7 @@ class FakeTransaction {
   }
 
   update(ref: FakeDocRef, patch: FakeData) {
+    assertNoUndefinedFirestoreValues(patch);
     this.writes.push(() => {
       const current = this.firestore.get(ref.path);
       if (current === undefined) {
@@ -103,6 +104,23 @@ function request(
 
 function assertHttpsCode(error: unknown, code: string): boolean {
   return error instanceof HttpsError && error.code === code;
+}
+
+function assertNoUndefinedFirestoreValues(value: unknown, path = "patch") {
+  if (value === undefined) {
+    throw new Error(`Undefined Firestore value at ${path}`);
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) =>
+      assertNoUndefinedFirestoreValues(item, `${path}.${index}`)
+    );
+    return;
+  }
+  if (value && typeof value === "object") {
+    for (const [key, nested] of Object.entries(value)) {
+      assertNoUndefinedFirestoreValues(nested, `${path}.${key}`);
+    }
+  }
 }
 
 test("updateUserProfileHandler validates and applies profile patches",
@@ -435,6 +453,48 @@ test("updateUserProfileHandler deletes removed grouped photo storage objects",
       "users/runner-1/photoThumbnails/0_old.jpg",
       "users/runner-1/photos/0_old.jpg",
     ]);
+  }
+);
+
+test("updateUserProfileHandler omits undefined profile photo prompt fields",
+  async () => {
+    const h = harness({
+      "users/runner-1": {
+        name: "Runner One",
+        profileComplete: false,
+        profilePhotos: [],
+      },
+    });
+
+    await updateUserProfileHandler(
+      request("runner-1", {
+        fields: {
+          profilePhotos: [{
+            id: "new",
+            url: "https://example.test/new.jpg",
+            thumbnailUrl: "https://example.test/new-thumb.jpg",
+            storagePath: "users/runner-1/photos/0_new.jpg",
+            thumbnailStoragePath:
+              "users/runner-1/photoThumbnails/0_new.jpg",
+            position: 0,
+            createdAt: 0,
+            updatedAt: 0,
+          }],
+        },
+      }),
+      h.deps
+    );
+
+    assert.deepEqual(h.firestore.get("users/runner-1")?.profilePhotos, [{
+      id: "new",
+      url: "https://example.test/new.jpg",
+      thumbnailUrl: "https://example.test/new-thumb.jpg",
+      storagePath: "users/runner-1/photos/0_new.jpg",
+      thumbnailStoragePath: "users/runner-1/photoThumbnails/0_new.jpg",
+      position: 0,
+      createdAt: {kind: "timestamp", millis: 0},
+      updatedAt: {kind: "timestamp", millis: 0},
+    }]);
   }
 );
 

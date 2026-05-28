@@ -49,6 +49,8 @@ export 'event_success_plan_document.g.dart';
 export 'event_success_preference_document.g.dart';
 export 'event_success_scorecard_document.g.dart';
 export 'event_success_wingman_request_document.g.dart';
+export 'explore_search_callable_payload.g.dart';
+export 'explore_search_callable_response.g.dart';
 export 'fetch_event_success_wingman_candidates_callable_response.g.dart';
 export 'function_event_receipt_document.g.dart';
 export 'host_payment_account_document.g.dart';

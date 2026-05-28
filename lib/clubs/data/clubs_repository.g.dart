@@ -493,3 +493,77 @@ final class FetchClubFamily extends $Family
   @override
   String toString() => r'fetchClubProvider';
 }
+
+@ProviderFor(watchClubsByIds)
+final watchClubsByIdsProvider = WatchClubsByIdsFamily._();
+
+final class WatchClubsByIdsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Club>>,
+          List<Club>,
+          Stream<List<Club>>
+        >
+    with $FutureModifier<List<Club>>, $StreamProvider<List<Club>> {
+  WatchClubsByIdsProvider._({
+    required WatchClubsByIdsFamily super.from,
+    required ClubsByIdQuery super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchClubsByIdsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchClubsByIdsHash();
+
+  @override
+  String toString() {
+    return r'watchClubsByIdsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Club>> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Club>> create(Ref ref) {
+    final argument = this.argument as ClubsByIdQuery;
+    return watchClubsByIds(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchClubsByIdsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchClubsByIdsHash() => r'2799c81fb6924bd06b106e5651b670001d6609e7';
+
+final class WatchClubsByIdsFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Club>>, ClubsByIdQuery> {
+  WatchClubsByIdsFamily._()
+    : super(
+        retry: null,
+        name: r'watchClubsByIdsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchClubsByIdsProvider call(ClubsByIdQuery query) =>
+      WatchClubsByIdsProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'watchClubsByIdsProvider';
+}

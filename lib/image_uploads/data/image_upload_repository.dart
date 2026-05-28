@@ -85,13 +85,8 @@ class ImageUploadRepository {
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
-  static const _clubImagesContract = _StorageUploadContract(
-    resource: 'club_images',
-    maxBytes: 8388608,
-    contentTypePattern: 'image/.*',
-  );
-  static const _eventImagesContract = _StorageUploadContract(
-    resource: 'event_images',
+  static const _hostedMediaContract = _StorageUploadContract(
+    resource: 'hosted_media',
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
@@ -187,25 +182,45 @@ class ImageUploadRepository {
   }
 
   Future<String> uploadClubCover({
+    required String uid,
     required String clubId,
     required XFile image,
-  }) => upload(storagePath: 'clubs/$clubId/cover', image: image);
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return upload(
+      storagePath:
+          'users/$uid/hostedMedia/club_${_fileToken(clubId)}_cover_$millis',
+      image: image,
+    );
+  }
 
   Future<String> uploadClubProfileImage({
+    required String uid,
     required String clubId,
     required XFile image,
-  }) => upload(storagePath: 'clubs/$clubId/profile', image: image);
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return upload(
+      storagePath:
+          'users/$uid/hostedMedia/club_${_fileToken(clubId)}_profile_$millis',
+      image: image,
+    );
+  }
 
   Future<String> uploadEventPhoto({
+    required String uid,
     required String clubId,
     required String eventId,
     required XFile image,
-  }) => upload(
-    storagePath:
-        'clubs/$clubId/events/$eventId/photo_'
-        '${DateTime.now().millisecondsSinceEpoch}',
-    image: image,
-  );
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return upload(
+      storagePath:
+          'users/$uid/hostedMedia/event_${_fileToken(clubId)}_'
+          '${_fileToken(eventId)}_$millis',
+      image: image,
+    );
+  }
 
   Future<String> uploadChatImage({
     required String matchId,
@@ -294,19 +309,21 @@ class ImageUploadRepository {
     if (storagePath.startsWith('users/') && storagePath.contains('/photos/')) {
       return _profilePhotosContract;
     }
-    final storageName = storagePath.split('/').last;
-    if (storagePath.startsWith('clubs/') &&
-        storagePath.contains('/events/') &&
-        storageName.isNotEmpty) {
-      return _eventImagesContract;
+    if (storagePath.startsWith('users/') &&
+        storagePath.contains('/hostedMedia/')) {
+      return _hostedMediaContract;
     }
-    if (storagePath.startsWith('clubs/')) return _clubImagesContract;
     if (storagePath.startsWith('matches/') &&
         storagePath.contains('/images/')) {
       return _matchChatImagesContract;
     }
     return null;
   }
+}
+
+String _fileToken(String value) {
+  final token = value.replaceAll(RegExp(r'[^A-Za-z0-9_-]+'), '_');
+  return token.isEmpty ? 'media' : token;
 }
 
 String _formatBytes(int bytes) {

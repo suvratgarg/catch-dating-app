@@ -90,6 +90,8 @@ import {
   placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
   placeDetailsCallableResponseSchema,
+  exploreSearchCallablePayloadSchema,
+  exploreSearchCallableResponseSchema,
   fetchEventSuccessWingmanCandidatesCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
@@ -195,6 +197,8 @@ export const validatePlacesAutocompleteCallablePayload = ajv.compile(placesAutoc
 export const validatePlacesAutocompleteCallableResponse = ajv.compile(placesAutocompleteCallableResponseSchema);
 export const validatePlaceDetailsCallablePayload = ajv.compile(placeDetailsCallablePayloadSchema);
 export const validatePlaceDetailsCallableResponse = ajv.compile(placeDetailsCallableResponseSchema);
+export const validateExploreSearchCallablePayload = ajv.compile(exploreSearchCallablePayloadSchema);
+export const validateExploreSearchCallableResponse = ajv.compile(exploreSearchCallableResponseSchema);
 export const validateFetchEventSuccessWingmanCandidatesCallableResponse = ajv.compile(fetchEventSuccessWingmanCandidatesCallableResponseSchema);
 export const validateCreateProfileDecisionClientWrite = ajv.compile(createProfileDecisionClientWriteSchema);
 export const validateCreateChatMessageClientWrite = ajv.compile(createChatMessageClientWriteSchema);
