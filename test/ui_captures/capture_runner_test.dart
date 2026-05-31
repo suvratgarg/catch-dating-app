@@ -1,0 +1,56 @@
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+
+import 'catalog/screen_capture_catalog.dart';
+import 'support/capture_device.dart';
+import 'support/capture_pump.dart';
+
+const _defaultCaptureIds = 'profile_self';
+const _captureIdsArg = String.fromEnvironment(
+  'CAPTURE_IDS',
+  defaultValue: _defaultCaptureIds,
+);
+const _outputDirArg = String.fromEnvironment(
+  'CAPTURE_OUTPUT_DIR',
+  defaultValue: 'artifacts/ui-captures/review',
+);
+const _deviceIdArg = String.fromEnvironment('CAPTURE_DEVICE_ID');
+const _textScaleArg = String.fromEnvironment(
+  'CAPTURE_TEXT_SCALE',
+  defaultValue: '1.0',
+);
+
+void main() {
+  final captureIds = _captureIdsArg
+      .split(',')
+      .map((id) => id.trim())
+      .where((id) => id.isNotEmpty)
+      .toList(growable: false);
+  final outputDirectory = Directory(_outputDirArg);
+  final textScale = double.tryParse(_textScaleArg) ?? 1.0;
+
+  for (final captureId in captureIds) {
+    testWidgets('captures $captureId', (tester) async {
+      final entry = findScreenCapture(captureId);
+      final device = _deviceIdArg.isEmpty
+          ? entry.device
+          : CaptureDevice.fromId(_deviceIdArg);
+      final artifacts = await captureCatchWidget(
+        tester,
+        id: entry.id,
+        builder: entry.builder,
+        device: device,
+        textScale: textScale,
+        outputDirectory: outputDirectory,
+        precache: entry.precache,
+        providerOverrides: entry.providerOverrides,
+      );
+
+      for (final artifact in artifacts) {
+        expect(artifact.file.existsSync(), isTrue);
+        expect(artifact.file.lengthSync(), greaterThan(0));
+      }
+    });
+  }
+}

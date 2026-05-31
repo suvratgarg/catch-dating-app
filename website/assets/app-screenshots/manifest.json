@@ -1,120 +1,120 @@
 {
   "version": 1,
-  "updated": "2026-05-25",
+  "updated": "2026-05-31",
   "generatedBy": "tool/marketing/sync_website_media.mjs",
   "captures": [
     {
       "id": "member-event-discovery",
       "audience": "member",
       "surface": "Event discovery",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/member-event-discovery.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/member-event-discovery.png",
       "alt": "Catch event discovery screen showing hosted singles events",
       "caption": "Members browse real hosted events before any dating surface opens.",
       "walkthroughStep": "Discover",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.member.eventDiscovery",
         "sourcePath": "artifacts/marketing/app-screenshots/member-event-discovery.png",
-        "sourceSha256": null,
+        "sourceSha256": "34d45c28a19c5e5333b903a4072617965513bcc922e13189a3ea2577b4dbbe04",
         "placeholderPath": "website/assets/app-screenshots/placeholders/member-event-discovery.svg",
-        "placeholderSha256": "dbeab92ef5af6e21461270ad5bf49d25545a8d88567bf2e73959f6d2f5ae3c65"
+        "placeholderSha256": null
       }
     },
     {
       "id": "post-run-catch-window",
       "audience": "member",
       "surface": "Post-event catch window",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/post-run-catch-window.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/post-run-catch-window.png",
       "alt": "Catch post-event roster screen for the 24 hour catch window",
       "caption": "The roster opens after attendance creates shared context.",
       "walkthroughStep": "Unlock",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.member.postRunCatchWindow",
         "sourcePath": "artifacts/marketing/app-screenshots/post-run-catch-window.png",
-        "sourceSha256": null,
+        "sourceSha256": "4936f9d8fcfc138998f4c1139c52f1edd4ff338ef35cbfd196883f8d45b24f40",
         "placeholderPath": "website/assets/app-screenshots/placeholders/post-run-catch-window.svg",
-        "placeholderSha256": "362b3feb4695daf489152d48cdca64b08215fad366f6bf7d2d5091248a2efd0a"
+        "placeholderSha256": null
       }
     },
     {
       "id": "match-chat-context",
       "audience": "member",
       "surface": "Contextual match chat",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/match-chat-context.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/match-chat-context.png",
       "alt": "Catch match chat screen with shared event context",
       "caption": "Matches start with the room they already shared.",
       "walkthroughStep": "Match",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.member.matchChatContext",
         "sourcePath": "artifacts/marketing/app-screenshots/match-chat-context.png",
-        "sourceSha256": null,
+        "sourceSha256": "b27db6f44b5b298cb0a5ebaf12d0d6fc4004c66a8868cd4050280d6b1b4eecb5",
         "placeholderPath": "website/assets/app-screenshots/placeholders/match-chat-context.svg",
-        "placeholderSha256": "5ec9b84baffdafe41d47c8c01410e34bea419087611af7b943731be1c0f48e52"
+        "placeholderSha256": null
       }
     },
     {
       "id": "host-event-setup",
       "audience": "host",
       "surface": "Host event setup",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/host-event-setup.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/host-event-setup.png",
       "alt": "Catch host event setup screen",
       "caption": "Create the event, set the access model, and preview the guest experience.",
       "walkthroughStep": "Setup",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.host.eventSetup",
         "sourcePath": "artifacts/marketing/app-screenshots/host-event-setup.png",
-        "sourceSha256": null,
+        "sourceSha256": "6aa5c707fd42776abd240110f2a7d97599db47317903988faf1a7991c7642435",
         "placeholderPath": "website/assets/app-screenshots/placeholders/host-event-setup.svg",
-        "placeholderSha256": "be5b12f8815910a323826ea3350dc1b138ad61df5732148766cf830e78138f5a"
+        "placeholderSha256": null
       }
     },
     {
       "id": "host-live-console",
       "audience": "host",
       "surface": "Host live console",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/host-live-console.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/host-live-console.png",
       "alt": "Catch host live console with roster and check-in controls",
       "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
       "walkthroughStep": "Live",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.host.liveConsole",
         "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
-        "sourceSha256": null,
+        "sourceSha256": "38fa7940df2bc4a7e83afc629fe23017e977e127e0f6140f8682a88d77b2c12b",
         "placeholderPath": "website/assets/app-screenshots/placeholders/host-live-console.svg",
-        "placeholderSha256": "60df8985712820c63cb3bcdf14562d994ab0ddc5191373035102e8cce8aee670"
+        "placeholderSha256": null
       }
     },
     {
       "id": "host-post-event-report",
       "audience": "host",
       "surface": "Host post-event report",
-      "device": "iphone-15",
-      "status": "pending-fixture",
-      "webPath": "/assets/app-screenshots/placeholders/host-post-event-report.svg",
+      "device": "iphone-17-pro",
+      "status": "active",
+      "webPath": "/assets/app-screenshots/host-post-event-report.png",
       "alt": "Catch host post-event report screen",
       "caption": "Review attendance and event momentum after the room closes.",
       "walkthroughStep": "Report",
-      "statusLabel": "Pending synthetic fixture capture",
+      "statusLabel": "Captured from current app UI",
       "source": {
         "fixtureKey": "salesDemo.host.postEventReport",
         "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
-        "sourceSha256": null,
+        "sourceSha256": "494e2d0b67e032d1c67832360db8b1ce68f22a55569277d8d09bf065b2233447",
         "placeholderPath": "website/assets/app-screenshots/placeholders/host-post-event-report.svg",
-        "placeholderSha256": "fbe118f740d429a324c16e23c5ea7501bcc43785802cd41a99927cbdd82813a3"
+        "placeholderSha256": null
       }
     }
   ]

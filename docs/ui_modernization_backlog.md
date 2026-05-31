@@ -25,8 +25,9 @@ Keep entries small and self-describing — one line is fine.
 - `EventCompactRow` — dense event row for notification/activity surfaces that still need a small tappable event depiction. See [event_compact_row.dart](../lib/events/presentation/widgets/event_tiles/event_compact_row.dart).
 - `EventDateMarker` — shared calendar day/week marker with event dots and selected/today state. See [event_date_marker.dart](../lib/events/presentation/widgets/event_tiles/event_date_marker.dart).
 - `ClubIdentityAtoms` — shared club-card member, tag, host, role, and rating atoms. See [club_identity_atoms.dart](../lib/clubs/presentation/shared/club_identity_atoms.dart).
-- `CatchTextStyles.kickerCaps` — caps-tracked label style.
+- `CatchTextStyles.kicker` / `kickerLg` — tracked-mono caps kicker labels (the former `kickerCaps` / `kickerCapsLg` were consolidated here in the 2026-05-30 type-scale pass; ~30 named styles total).
 - `CatchTextStyles.numericLarge` — tabular numerals for counts/distances on cards.
+- Typography is now **bundled + optically sized** via `CatchFonts` (`FontVariation('opsz'/'wght')`); add new styles through `CatchFonts.serif/sans/mono`, never raw `TextStyle`/`GoogleFonts` (enforced by `tool/check_design_tokens.sh`).
 
 ## Screens to migrate to the new event card primitives
 

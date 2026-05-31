@@ -1,0 +1,282 @@
+{
+  "version": 1,
+  "updated": "2026-05-31",
+  "generatedAgainst": "tool/ui_capture/route_inventory.json",
+  "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
+  "routes": [
+    {
+      "routeId": "loadingScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Transient startup state; capture only when launch UX work needs it."
+    },
+    {
+      "routeId": "startScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["start_welcome"],
+      "reason": "Static welcome/start fixture."
+    },
+    {
+      "routeId": "authScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["auth_phone_entry"],
+      "reason": "Baseline phone-entry auth capture; OTP state can be added as a variant."
+    },
+    {
+      "routeId": "onboardingScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["onboarding_welcome"],
+      "reason": "Baseline onboarding welcome capture; deeper steps can be added as variants."
+    },
+    {
+      "routeId": "calendarScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["calendar_planned_events"],
+      "reason": "Current-user calendar fixture with booked and saved events."
+    },
+    {
+      "routeId": "calendarEventDetailScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "eventDetailScreen",
+      "reason": "Same event detail surface reached from the calendar entry path."
+    },
+    {
+      "routeId": "savedEventsScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["saved_events_list"],
+      "reason": "Saved events list fixture with deterministic club lookup."
+    },
+    {
+      "routeId": "savedEventDetailScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "eventDetailScreen",
+      "reason": "Same event detail surface reached from saved events."
+    },
+    {
+      "routeId": "filtersScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["filters_preferences"],
+      "reason": "Profile-backed filter defaults fixture."
+    },
+    {
+      "routeId": "dashboardEventDetailScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "eventDetailScreen",
+      "reason": "Same event detail surface reached from the dashboard."
+    },
+    {
+      "routeId": "dashboardHostEventManageScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Host manage surface reached from the dashboard; canonical capture should include setup/live/report sections."
+    },
+    {
+      "routeId": "hostEventManageScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["host_live_console", "host_post_event_report"],
+      "reason": "Canonical host manage route captured with live console and post-event report variants."
+    },
+    {
+      "routeId": "editHostedEventScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["edit_hosted_event"],
+      "reason": "Hosted event edit fixture with map tiles disabled."
+    },
+    {
+      "routeId": "eventSuccessHostScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Success host route currently enters the host manage setup section."
+    },
+    {
+      "routeId": "eventLocationMapScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["event_location_map"],
+      "reason": "Event location map fixture using the deterministic placeholder map fallback."
+    },
+    {
+      "routeId": "dashboardScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["dashboard_home"],
+      "reason": "Main review surface with current user, upcoming event, hosted shortcut, notifications, and recommendations."
+    },
+    {
+      "routeId": "notificationsScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["notifications_activity"],
+      "reason": "Activity notifications fixture with upcoming event context."
+    },
+    {
+      "routeId": "clubsListScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["member_event_discovery"],
+      "reason": "Event discovery and club browse review surface."
+    },
+    {
+      "routeId": "clubDetailScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["club_detail_member"],
+      "reason": "Member-state club detail fixture with upcoming events and reviews."
+    },
+    {
+      "routeId": "editClubScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["edit_club_basics"],
+      "reason": "Owned club edit fixture using the create/edit club form."
+    },
+    {
+      "routeId": "eventDetailScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["event_detail_member"],
+      "reason": "Canonical event detail capture reused by calendar, saved, and dashboard aliases."
+    },
+    {
+      "routeId": "attendanceSheet",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Sheet-like route; host live capture should include attendance controls."
+    },
+    {
+      "routeId": "eventSuccessCompanionScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["event_success_companion"],
+      "reason": "Deterministic attendee companion fixture using the default live guide plan."
+    },
+    {
+      "routeId": "createClubScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["create_club_basics"],
+      "reason": "Baseline first-step create-club fixture."
+    },
+    {
+      "routeId": "createEventScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["host_event_setup"],
+      "reason": "Host event setup fixture with map tiles disabled for deterministic rendering."
+    },
+    {
+      "routeId": "swipeHubScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["swipe_hub_active"],
+      "reason": "Main Catches hub with an active post-event catch window."
+    },
+    {
+      "routeId": "swipeEventScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["post_run_catch_window"],
+      "reason": "Post-event roster and catch-window candidate."
+    },
+    {
+      "routeId": "eventRecapScreen",
+      "status": "captured",
+      "priority": "P2",
+      "captureIds": ["event_recap_attendees"],
+      "reason": "Attended event recap fixture with remembered attendee tiles."
+    },
+    {
+      "routeId": "matchesListScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["matches_list_context"],
+      "reason": "Match list fixture with active conversations and new matches from synthetic personas."
+    },
+    {
+      "routeId": "chatScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["match_chat_context"],
+      "reason": "Marketing match chat context candidate backed by the synthetic sales persona catalog."
+    },
+    {
+      "routeId": "profileScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["profile_self"],
+      "reason": "First working raw light/dark review capture."
+    },
+    {
+      "routeId": "reviewsHistoryScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["reviews_history_list"],
+      "reason": "Review history fixture with event context."
+    },
+    {
+      "routeId": "publicProfileScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": ["public_profile_member"],
+      "reason": "Public profile review surface backed by the synthetic sales persona fixture."
+    },
+    {
+      "routeId": "settingsScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["settings_account"],
+      "reason": "Account and safety settings fixture with current user data."
+    },
+    {
+      "routeId": "paymentHistoryScreen",
+      "status": "captured",
+      "priority": "P3",
+      "captureIds": ["payment_history_empty"],
+      "reason": "Payment history baseline empty state."
+    },
+    {
+      "routeId": "paymentConfirmationScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Route requires transaction extra; capture only with deterministic confirmation data."
+    },
+    {
+      "routeId": "eventPolicyLabScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated lab route."
+    },
+    {
+      "routeId": "eventSuccessLabScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated lab route."
+    },
+    {
+      "routeId": "eventSuccessManualQaScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Manual QA surface, not baseline app review."
+    },
+    {
+      "routeId": "eventSuccessPreviewScreen",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Dev-gated preview route."
+    }
+  ]
+}

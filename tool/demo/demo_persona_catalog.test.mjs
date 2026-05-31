@@ -5,6 +5,7 @@ import {
   formatPersonaPhotoGenerationPlanMarkdown,
   loadPersonaCatalog,
   photoPromptAnswersForPersona,
+  personaProfileProjection,
   personaPhotoGenerationPlan,
   profilePhotosForPersona,
   profilePromptAnswersForPersona,
@@ -106,6 +107,43 @@ test("persona prompt and photo mappers return app-ready profile fields", () => {
   assert.equal(photos[0].moderation.synthetic, true);
   assert.equal(photos[0].createdAt, "created");
   assert.equal(photos[0].updatedAt, "updated");
+});
+
+test("profile photo mapper can filter by asset status", () => {
+  const persona = validCatalog().personas[0];
+
+  assert.equal(profilePhotosForPersona(persona).length, 4);
+  assert.equal(
+    profilePhotosForPersona(persona, {assetStatuses: ["uploaded"]}).length,
+    0
+  );
+  assert.equal(
+    profilePhotosForPersona(persona, {assetStatuses: ["planned"]}).length,
+    4
+  );
+  assert.equal(profilePhotosForPersona(persona, {assetStatuses: "all"}).length, 4);
+  assert.throws(
+    () => profilePhotosForPersona(persona, {assetStatuses: ["published"]}),
+    /Unknown persona asset status published/
+  );
+});
+
+test("persona profile projection exposes reusable app-ready profile data", () => {
+  const catalog = validCatalog();
+
+  const uploadedProjection = personaProfileProjection(catalog, {
+    photoCompositionIndex: testCompositionIndex(),
+  });
+  const plannedProjection = personaProfileProjection(catalog, {
+    assetStatuses: ["planned"],
+    photoCompositionIndex: testCompositionIndex(),
+  });
+
+  assert.equal(uploadedProjection.assetStatuses[0], "uploaded");
+  assert.equal(uploadedProjection.projectedPhotoCount, 0);
+  assert.equal(plannedProjection.projectedPhotoCount, 4);
+  assert.equal(plannedProjection.personas[0].profilePrompts[0].promptId, "perfectRun");
+  assert.equal(plannedProjection.personas[0].profilePhotos[0].id, "photo_0");
 });
 
 test("persona photo generation plan exposes reviewable prompts", () => {

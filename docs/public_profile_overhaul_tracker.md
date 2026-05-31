@@ -1,14 +1,14 @@
 ---
 doc_id: public_profile_overhaul_tracker
-version: 0.2.0
-updated: 2026-05-17
+version: 0.3.0
+updated: 2026-05-31
 owner: public_profile
 status: active
 ---
 
 # Public Profile Overhaul Tracker
 
-Last updated: 2026-05-17
+Last updated: 2026-05-31
 
 ## Goal
 
@@ -62,6 +62,16 @@ The next direction is to move away from the deck/card paradigm entirely. Now tha
 - Catches now renders the first queue candidate as a full structured `ProfileSurface`, uses mode-gated section reaction controls, and exposes a floating lower-left X for pass/dismiss.
 - Preview and Public Profile use the same `ProfileSurface` renderer in passive modes so they do not show reaction controls.
 - The existing `SwipeQueueNotifier.swipe` path still records likes/passes and removes the current profile from the queue, so section likes/comments advance to the next candidate without a separate UI-only queue mechanism.
+
+### 2026-05-31: Editorial Flagship (UI-elevation Phase 2)
+
+- Rebuilt the shared renderer to the locked design language (`design_language.md`) while keeping the cardless, contextual-reaction model. The old `ScrollableProfile` + per-section widget set is superseded by:
+  - `lib/swipes/presentation/profile_redesign/profile_view.dart` — a pure, fixture-friendly **section-based `ProfileView`** (`ProfileCompatibilitySection`, `ProfilePromptSectionData`, `ProfileRunningSection`, `ProfilePhotoSection`, `ProfileFactsSection`), each carrying an optional `ProfileReactionTarget`.
+  - `profile_view_mapper.dart` — `profileViewFromCardContent(...)` maps the existing `ProfileCardContent` (so the data/insights layer is reused) onto the sections; section order + all seven reaction targets (`heroPhoto`, `photo`, `profilePrompt`, `compatibility`, `running`, `details`, `lifestyle`) mirror the legacy surface 1:1 — **no like/comment affordance lost**.
+  - `catch_profile_view.dart` — editorial `CatchProfileView`: dark "wow" graded hero (Newsreader name, mono kicker in the activity pigment, mono meta), hairline-separated sections, `proseL`/Newsreader prompt answers, mono section labels, `CatchChip` tags. Per-section `ProfileReactionControls` render only when `onReact != null` (Catches); preview/public are calm.
+- `ProfileSurface` now builds `CatchProfileView` via the mapper for all three modes, so Catches + Profile Preview + Public Profile share the flagship at once.
+- **Visual regression coverage started:** `test/goldens/profile_view_test.dart` renders the full reactable surface in light + dark (advances the "Add visual regression coverage" item below). The [UI capture pipeline](plans/ui_capture_pipeline_plan.md) will extend per-screen coverage.
+- **Remaining:** reconcile the legacy profile widget tests for the new editorial treatment (section titles are tracked-mono **uppercase**; the no-photo state is on-brand **activity art**, not a "Photo coming soon" label); re-add `relationshipGoal` as a "Looking for" detail; finish the preview-tab nested-scroll integration (the flagship is a `CustomScrollView`). Device QA (floating pass-X, bottom-nav coexistence, reaction density) still pending.
 
 ## Current Product Decisions
 
@@ -263,7 +273,7 @@ Open modeling questions:
 | P1 | Add prompt-picker UX for profile prompts and photo captions | Partially implemented | Photo prompt/caption editing is implemented in `ProfilePhotoEditorScreen`. Profile prompt selection still uses the fixed default prompt set in onboarding/edit profile. |
 | P1 | Expand compatibility reasons beyond v1 heuristics | Partially implemented | Existing reasons cover run title, relationship goal, running reason, time, distance, pace, language, and easy openers. Missing club/run history, prompt/caption themes, and richer non-running signals. |
 | P2 | Add richer profile quality coaching | Partially implemented | Edit Profile has a top strength card. Still missing inline prompt/photo coaching, Preview checklist, and post-onboarding nudges. |
-| P2 | Add visual regression coverage for profile surfaces | Not started | Need screenshot/golden checks for long names, dense chips, missing photos, multi-photo profiles, and cardless scroll behavior. |
+| P2 | Add visual regression coverage for profile surfaces | In progress | `test/goldens/profile_view_test.dart` covers the full reactable surface (light + dark). Still need cases for long names, dense chips, missing photos, multi-photo profiles, and Dynamic Type — to be folded into the [UI capture pipeline](plans/ui_capture_pipeline_plan.md). |
 | P2 | Audit user-facing copy for "swipe" language | Not started | Storage/domain names can remain for now, but user-facing Catches copy should match the new interaction model. Current live copy still includes swipe-window language. |
 
 ## Proposed Iteration Order

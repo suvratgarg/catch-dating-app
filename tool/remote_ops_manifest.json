@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "updated": "2026-05-31",
+  "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight release operations without changing the underlying tools.",
+  "operations": [
+    {
+      "id": "firebase-environment-config",
+      "category": "environment",
+      "status": "active",
+      "safety": "local-writes-config",
+      "environments": ["dev", "staging", "prod"],
+      "purpose": "Select and verify the active Firebase/native app configuration before local builds, CI release builds, deploys, or console-driven checks.",
+      "entrypoints": [
+        {"kind": "tool-id", "ref": "env:use-firebase"},
+        {"kind": "tool-id", "ref": "env:validate-firebase"},
+        {"kind": "tool-id", "ref": "env:flutter"},
+        {"kind": "tool-id", "ref": "env:firebase"},
+        {"kind": "tool-id", "ref": "platform:ios-maps-key"},
+        {"kind": "workflow", "ref": ".github/workflows/app-build-matrix.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/release-readiness.yml"},
+        {"kind": "doc", "ref": "firebase/README.md"},
+        {"kind": "doc", "ref": "docs/release_operations.md"}
+      ],
+      "requiredChecks": [
+        "tool/validate_firebase_environment.sh <env>",
+        "node tool/firebase/validate_google_maps_config.mjs --env <env> --platform ios"
+      ],
+      "notes": [
+        "Environment aliases are defined in .firebaserc.",
+        "Active checked-in config files are copied from firebase/<env> by tool/use_firebase_environment.sh."
+      ]
+    },
+    {
+      "id": "firebase-deploy-safe-order",
+      "category": "deploy",
+      "status": "active",
+      "safety": "remote-deploy",
+      "environments": ["dev", "staging", "prod"],
+      "purpose": "Deploy Firebase targets in a safe, explicit order with logical target expansion for Functions.",
+      "entrypoints": [
+        {"kind": "tool-id", "ref": "firebase:deploy-targets"},
+        {"kind": "tool-id", "ref": "firebase:function-targets"},
+        {"kind": "workflow", "ref": ".github/workflows/firebase-deploy.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/firebase-dev-deploy.yml"},
+        {"kind": "config", "ref": "firebase.json"},
+        {"kind": "config", "ref": ".firebaserc"},
+        {"kind": "doc", "ref": "docs/release_operations.md"}
+      ],
+      "requiredChecks": [
+        "node tool/contracts/check_firestore_contract.mjs",
+        "npm --prefix functions run lint",
+        "npm --prefix functions test",
+        "firebase emulators:exec --project demo-catch-rules --only firestore,storage \"npm --prefix functions run test:rules\""
+      ],
+      "notes": [
+        "Known targets deploy in this order: functions, firestore:indexes, firestore:rules, storage, hosting, remoteconfig.",
+        "Extensions remain an explicit separate deploy path documented in docs/release_operations.md."
+      ]
+    },
+    {
+      "id": "remote-data-ops",
+      "category": "data",
+      "status": "active",
+      "safety": "remote-read-write-apply-guarded",
+      "environments": ["dev", "staging", "prod"],
+      "purpose": "Validate, repair, backfill, or intentionally delete Firestore data with dry-run defaults and apply guards.",
+      "entrypoints": [
+        {"kind": "tool-id", "ref": "data:validate"},
+        {"kind": "tool-id", "ref": "data:delete-reviews"},
+        {"kind": "tool-id", "ref": "data:repair-public-profiles"},
+        {"kind": "tool-id", "ref": "data:repair-club-hosts"},
+        {"kind": "tool-id", "ref": "data:repair-review-authors"},
+        {"kind": "tool-id", "ref": "data:repair-club-member-counts"},
+        {"kind": "tool-id", "ref": "data:repair-event-aggregates"},
+        {"kind": "tool-id", "ref": "data:repair-future-attendance"},
+        {"kind": "tool-id", "ref": "data:backfill-profile-decisions"},
+        {"kind": "tool-id", "ref": "data:backfill-profile-photos"},
+        {"kind": "tool-id", "ref": "data:backfill-event-discovery"},
+        {"kind": "tool-id", "ref": "data:backfill-algolia-explore-search"},
+        {"kind": "tool-id", "ref": "data:hygiene-media-paths"},
+        {"kind": "workflow", "ref": ".github/workflows/data-validation.yml"},
+        {"kind": "doc", "ref": "docs/backend_operation_catalog.md"},
+        {"kind": "doc", "ref": "docs/demo_data_seeding.md"}
+      ],
+      "requiredChecks": [
+        "Prefer --json dry run before --apply.",
+        "Use --allow-prod only after reviewing prod dry-run output."
+      ],
+      "notes": [
+        "Destructive tools require an explicit confirmation flag in addition to --apply.",
+        "Fraud/safety-related data changes should be tied back to backend_operation_catalog ownership before apply."
+      ]
+    },
+    {
+      "id": "app-check-and-abuse-controls",
+      "category": "security",
+      "status": "console-tracked",
+      "safety": "remote-console-security",
+      "environments": ["dev", "staging", "prod"],
+      "purpose": "Track App Check provider setup, callable enforcement, debug/release tokens, and abuse-control prerequisites that are partly managed in Firebase/GCP consoles.",
+      "entrypoints": [
+        {"kind": "config", "ref": "functions/src/shared/callableOptions.ts"},
+        {"kind": "config", "ref": "tool/env/dart_defines/dev.json"},
+        {"kind": "config", "ref": "tool/env/dart_defines/staging.json"},
+        {"kind": "config", "ref": "tool/env/dart_defines/prod.json"},
+        {"kind": "doc", "ref": "firebase/README.md"},
+        {"kind": "doc", "ref": "docs/config_cicd_platform_audit_2026-05-21.md"},
+        {"kind": "doc", "ref": "docs/release_operations.md"},
+        {"kind": "manual", "ref": "Firebase Console App Check provider registration and enforcement"},
+        {"kind": "manual", "ref": "Firebase Console debug token registration for trusted devices"}
+      ],
+      "requiredChecks": [
+        "functions/test/callable-app-check.test.cjs",
+        "tool/validate_firebase_environment.sh <env>",
+        "Console evidence for provider registration and enforcement before release"
+      ],
+      "notes": [
+        "No local script should pretend to prove console enforcement by itself.",
+        "The manifest makes the manual console dependency explicit for future automation."
+      ]
+    },
+    {
+      "id": "ci-cd-gates",
+      "category": "ci",
+      "status": "active",
+      "safety": "local-ci-remote-optional",
+      "environments": ["dev", "staging", "prod"],
+      "purpose": "Group the CI workflows that gate contracts, Functions, Firestore rules, app builds, tools, release readiness, and observability evidence.",
+      "entrypoints": [
+        {"kind": "workflow", "ref": ".github/workflows/tools-ci.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/contracts-ci.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/functions-ci.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/firestore-rules-ci.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/flutter-ci.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/app-build-matrix.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/release-readiness.yml"},
+        {"kind": "workflow", "ref": ".github/workflows/observability-evidence.yml"},
+        {"kind": "doc", "ref": "docs/release_operations.md"}
+      ],
+      "requiredChecks": [
+        "node tool/run.mjs check --manifest-only",
+        "node tool/check_remote_ops_manifest.mjs --check"
+      ],
+      "notes": [
+        "Workflow-specific proof still belongs in GitHub Actions run summaries.",
+        "This manifest is the local index for deciding which workflow owns which operational concern."
+      ]
+    },
+    {
+      "id": "ios-testflight-app-store",
+      "category": "app-store",
+      "status": "break-glass",
+      "safety": "remote-release-break-glass",
+      "environments": ["prod"],
+      "purpose": "Track iOS archive, export, App Store Connect authentication, TestFlight evidence, and the decision that Xcode Cloud is canonical for routine TestFlight upload.",
+      "entrypoints": [
+        {"kind": "tool-id", "ref": "env:flutter"},
+        {"kind": "tool-id", "ref": "platform:ios-maps-key"},
+        {"kind": "tool-id", "ref": "firebase:maps-config"},
+        {"kind": "workflow", "ref": ".github/workflows/ios-testflight-release.yml"},
+        {"kind": "doc", "ref": "docs/release_operations.md"},
+        {"kind": "manual", "ref": "App Store Connect Xcode Cloud workflow and TestFlight group configuration"}
+      ],
+      "requiredChecks": [
+        "GitHub workflow upload_to_testflight=false for routine archives.",
+        "break_glass_reason is required when GitHub uploads to TestFlight.",
+        "Verify exported Maps key, HealthKit entitlement, and Associated Domains entitlement."
+      ],
+      "notes": [
+        "GitHub TestFlight upload is break-glass only while Xcode Cloud remains canonical.",
+        "App Store review metadata and TestFlight group membership remain console-owned."
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-25",
+  "updated": "2026-05-31",
   "tools": [
     {
       "id": "tool:runner",
@@ -53,6 +53,97 @@
       "checks": ["bash -n tool/widget_cleanup_scan.sh"]
     },
     {
+      "id": "remote-ops:manifest",
+      "category": "remote-ops",
+      "path": "tool/check_remote_ops_manifest.mjs",
+      "command": "node tool/check_remote_ops_manifest.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Validates the consolidated remote operations inventory.",
+      "checks": [
+        "node --check tool/check_remote_ops_manifest.mjs",
+        "node tool/check_remote_ops_manifest.mjs --check"
+      ]
+    },
+    {
+      "id": "scanner:design-tokens",
+      "category": "scanners",
+      "path": "tool/check_design_tokens.sh",
+      "command": "bash tool/check_design_tokens.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans Dart UI code for design token migration candidates.",
+      "checks": [
+        "bash -n tool/check_design_tokens.sh",
+        "bash tool/check_design_tokens.sh --count"
+      ]
+    },
+    {
+      "id": "scanner:raw-colors",
+      "category": "scanners",
+      "path": "tool/check_raw_color_sweep.sh",
+      "command": "bash tool/check_raw_color_sweep.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans UI code for raw color and opacity values that should use theme tokens.",
+      "checks": [
+        "bash -n tool/check_raw_color_sweep.sh",
+        "bash tool/check_raw_color_sweep.sh --count"
+      ]
+    },
+    {
+      "id": "scanner:sizing",
+      "category": "scanners",
+      "path": "tool/check_sizing.sh",
+      "command": "bash tool/check_sizing.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans UI code for raw sizing values that should use shared layout tokens.",
+      "checks": [
+        "bash -n tool/check_sizing.sh",
+        "bash tool/check_sizing.sh --count"
+      ]
+    },
+    {
+      "id": "scanner:ui-allow-debt",
+      "category": "scanners",
+      "path": "tool/check_ui_allow_debt.sh",
+      "command": "bash tool/check_ui_allow_debt.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans UI code for temporary allow-list comments that should not accumulate.",
+      "checks": [
+        "bash -n tool/check_ui_allow_debt.sh",
+        "bash tool/check_ui_allow_debt.sh --count"
+      ]
+    },
+    {
+      "id": "scanner:ui-local-constant-wrappers",
+      "category": "scanners",
+      "path": "tool/check_ui_local_constant_wrappers.sh",
+      "command": "bash tool/check_ui_local_constant_wrappers.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans UI code for local wrapper constants that hide token debt.",
+      "checks": [
+        "bash -n tool/check_ui_local_constant_wrappers.sh",
+        "bash tool/check_ui_local_constant_wrappers.sh --count"
+      ]
+    },
+    {
+      "id": "scanner:ui-system-raw-values",
+      "category": "scanners",
+      "path": "tool/check_ui_system_raw_values.sh",
+      "command": "bash tool/check_ui_system_raw_values.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Scans core UI system code for raw values that should use shared tokens.",
+      "checks": [
+        "bash -n tool/check_ui_system_raw_values.sh",
+        "bash tool/check_ui_system_raw_values.sh --count"
+      ]
+    },
+    {
       "id": "contracts:check-all",
       "category": "contracts",
       "path": "tool/check_data_contract.sh",
@@ -70,7 +161,10 @@
       "safety": "local-writes-generated",
       "status": "active",
       "description": "Generates shared Flutter and Functions business constants.",
-      "checks": ["node --check tool/contracts/generate_business_rules.mjs"]
+      "checks": [
+        "node --check tool/contracts/generate_business_rules.mjs",
+        "node tool/contracts/generate_business_rules.mjs --check"
+      ]
     },
     {
       "id": "contracts:generate-schemas",
@@ -330,7 +424,11 @@
       "safety": "remote-write-apply-guarded",
       "status": "active",
       "description": "Operational wrapper for demo seeding, matching, Suvbot, and demo readiness.",
-      "checks": ["node --check tool/demo/demo_ops.mjs", "node --test tool/demo/demo_ops_core.test.mjs"]
+      "checks": [
+        "node --check tool/demo/demo_ops.mjs",
+        "node --test tool/demo/demo_ops_core.test.mjs",
+        "node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check"
+      ]
     },
     {
       "id": "demo:ops-core",
@@ -513,6 +611,30 @@
       "checks": ["node --check tool/migrations/migrate_run_data_to_events.mjs"]
     },
     {
+      "id": "marketing:device-frame",
+      "category": "marketing",
+      "path": "tool/marketing/frame_device_capture.dart",
+      "command": "dart run tool/marketing/frame_device_capture.dart",
+      "safety": "local-writes-artifacts",
+      "status": "active",
+      "description": "Wraps a raw app capture in the configured marketing device frame.",
+      "checks": ["dart analyze tool/marketing/frame_device_capture.dart"]
+    },
+    {
+      "id": "marketing:app-screenshot-export",
+      "category": "marketing",
+      "path": "tool/marketing/export_app_screenshots.mjs",
+      "command": "node tool/marketing/export_app_screenshots.mjs",
+      "safety": "local-writes-artifacts",
+      "status": "active",
+      "description": "Renders active app marketing captures and wraps them in the configured device frame.",
+      "checks": [
+        "node --check tool/marketing/export_app_screenshots.mjs",
+        "dart analyze tool/marketing/frame_device_capture.dart",
+        "node tool/marketing/export_app_screenshots.mjs --check"
+      ]
+    },
+    {
       "id": "marketing:app-media-sync",
       "category": "marketing",
       "path": "tool/marketing/sync_website_media.mjs",
@@ -524,6 +646,42 @@
         "node --check tool/marketing/sync_website_media.mjs",
         "node tool/marketing/sync_website_media.mjs --check"
       ]
+    },
+    {
+      "id": "ui-capture:route-inventory",
+      "category": "ui-capture",
+      "path": "tool/ui_capture/check_route_inventory.mjs",
+      "command": "node tool/ui_capture/check_route_inventory.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates and checks the route inventory that keeps UI captures aligned with go_router.dart.",
+      "checks": [
+        "node --check tool/ui_capture/check_route_inventory.mjs",
+        "node tool/ui_capture/check_route_inventory.mjs --check"
+      ]
+    },
+    {
+      "id": "ui-capture:coverage",
+      "category": "ui-capture",
+      "path": "tool/ui_capture/check_capture_coverage.mjs",
+      "command": "node tool/ui_capture/check_capture_coverage.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Checks every routed screen is captured, aliased, planned, or explicitly excluded for UI captures.",
+      "checks": [
+        "node --check tool/ui_capture/check_capture_coverage.mjs",
+        "node tool/ui_capture/check_capture_coverage.mjs --check"
+      ]
+    },
+    {
+      "id": "ui-capture:run",
+      "category": "ui-capture",
+      "path": "tool/ui_capture/run_captures.mjs",
+      "command": "node tool/ui_capture/run_captures.mjs",
+      "safety": "local-writes-artifacts",
+      "status": "active",
+      "description": "Runs the Flutter UI capture harness and writes review PNG artifacts.",
+      "checks": ["node --check tool/ui_capture/run_captures.mjs"]
     },
     {
       "id": "design:preview-app",
