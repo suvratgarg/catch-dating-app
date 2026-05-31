@@ -6,6 +6,7 @@ import {
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
+  uploadedPhotoSchema,
   activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
@@ -113,6 +114,7 @@ addFormats(ajv);
 export const validateProfilePromptAnswer = ajv.compile(profilePromptAnswerSchema);
 export const validatePhotoPromptAnswer = ajv.compile(photoPromptAnswerSchema);
 export const validateProfilePhoto = ajv.compile(profilePhotoSchema);
+export const validateUploadedPhoto = ajv.compile(uploadedPhotoSchema);
 export const validateActivityPreferences = ajv.compile(activityPreferencesSchema);
 export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSchema);
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);

@@ -85,6 +85,14 @@
       "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
       "x-catch-ownership": "callable-owned"
     },
+    "eventPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "$ref": "../embedded/uploaded_photo.schema.json"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "distanceKm": {
       "type": "number",
       "minimum": 0,

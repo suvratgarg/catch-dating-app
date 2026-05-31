@@ -70,9 +70,10 @@ Schema:
 - `x-storage-rules-match`, `x-storage-read`, `x-storage-write`, and
   `x-storage-rules-test-file` connect storage-path schemas to `storage.rules`
   and rules tests.
-- `x-storage-content-type-pattern` and `x-storage-max-bytes` describe the
-  intended client/server upload policy for a storage path. Rules and client
-  helpers should reject violations before a bad upload completes.
+- `x-storage-content-type-pattern`, `x-storage-file-name-pattern`, and
+  `x-storage-max-bytes` describe the intended client/server upload policy for a
+  storage path. Rules and client helpers should reject violations before a bad
+  upload completes.
 - `x-storage-related-collection` and `x-storage-known-consumers` document the
   Firestore collection and app/backend surfaces that read or write a storage
   path.

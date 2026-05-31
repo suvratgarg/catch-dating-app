@@ -23,6 +23,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   startingPointLng: (json['startingPointLng'] as num?)?.toDouble(),
   locationDetails: json['locationDetails'] as String?,
   photoUrl: json['photoUrl'] as String?,
+  eventPhotos:
+      (json['eventPhotos'] as List<dynamic>?)
+          ?.map((e) => UploadedPhoto.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   eventFormat: json['eventFormat'] == null
       ? const EventFormatSnapshot.socialRun()
       : EventFormatSnapshot.fromJson(
@@ -77,6 +82,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'startingPointLng': instance.startingPointLng,
   'locationDetails': instance.locationDetails,
   'photoUrl': ?instance.photoUrl,
+  'eventPhotos': instance.eventPhotos.map((e) => e.toJson()).toList(),
   'eventFormat': instance.eventFormat.toJson(),
   'distanceKm': instance.distanceKm,
   'pace': _$PaceLevelEnumMap[instance.pace]!,

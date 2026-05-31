@@ -6,6 +6,10 @@ import {requireAuth} from "../shared/auth";
 import {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {
+  normalizeOptionalUploadedPhotoForFirestore,
+  normalizeUploadedPhotosForFirestore,
+} from "../shared/uploadedPhotoNormalization";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CreateClubCallablePayload} from
   "../shared/generated/createClubCallablePayload";
@@ -118,6 +122,10 @@ export async function createClubHandler(
 
     const hostName = publicDisplayName(user);
     const hostAvatarUrl = publicAvatarUrl(user);
+    const clubPhotos = normalizeUploadedPhotosForFirestore(data.clubPhotos);
+    const logoPhoto = normalizeOptionalUploadedPhotoForFirestore(
+      data.logoPhoto
+    );
 
     tx.create(clubRef, {
       name: data.name,
@@ -136,8 +144,11 @@ export async function createClubHandler(
         role: "owner",
       }],
       createdAt: deps.serverTimestamp(),
-      imageUrl: data.imageUrl ?? null,
-      profileImageUrl: data.profileImageUrl ?? null,
+      imageUrl: primaryPhotoUrl(clubPhotos) ?? data.imageUrl ?? null,
+      profileImageUrl: thumbnailOrUrl(logoPhoto) ??
+        data.profileImageUrl ?? null,
+      clubPhotos,
+      logoPhoto,
       tags: [],
       memberCount: 1,
       rating: 0,
@@ -172,6 +183,34 @@ export const createClub = onCall(
   appCheckCallableOptions,
   (request) => createClubHandler(request)
 );
+
+/**
+ * Extracts the first usable full-size URL from an uploaded photo gallery.
+ * @param {unknown[] | undefined} photos Candidate uploaded photo records.
+ * @return {string|null} First full-size URL, or null when unavailable.
+ */
+function primaryPhotoUrl(photos: unknown[] | undefined): string | null {
+  if (!Array.isArray(photos) || photos.length === 0) return null;
+  const first = photos[0];
+  if (first === null || typeof first !== "object") return null;
+  const url = (first as {url?: unknown}).url;
+  return typeof url === "string" && url.trim().length > 0 ? url : null;
+}
+
+/**
+ * Prefers an uploaded photo thumbnail URL and falls back to its full-size URL.
+ * @param {unknown} photo Candidate uploaded photo record.
+ * @return {string|null} Best display URL, or null when unavailable.
+ */
+function thumbnailOrUrl(photo: unknown): string | null {
+  if (photo === null || typeof photo !== "object") return null;
+  const thumbnailUrl = (photo as {thumbnailUrl?: unknown}).thumbnailUrl;
+  if (typeof thumbnailUrl === "string" && thumbnailUrl.trim().length > 0) {
+    return thumbnailUrl;
+  }
+  const url = (photo as {url?: unknown}).url;
+  return typeof url === "string" && url.trim().length > 0 ? url : null;
+}
 
 /**
  * Default host-management settings for newly created clubs.

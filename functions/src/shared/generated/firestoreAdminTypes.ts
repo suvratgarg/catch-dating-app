@@ -63,6 +63,25 @@ export interface ProfilePhoto {
 }
 
 /**
+ * Canonical uploaded image object for ordered media galleries, logos, and event photos.
+ */
+export interface UploadedPhoto {
+  id: string;
+  url: string;
+  storagePath: string;
+  thumbnailUrl: string | null;
+  thumbnailStoragePath: string | null;
+  position: number;
+  moderation?: {
+    status: "pending" | "approved" | "rejected";
+    reason?: string | null;
+    reviewedAt?: FirebaseFirestore.Timestamp | null;
+  } | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Per-activity user preferences. Running is the first migrated activity-specific preference object; other activity kinds can be added without new root profile fields.
  */
 export interface ActivityPreferences {
@@ -621,6 +640,11 @@ export interface ClubDocument {
   imageUrl: string | null;
   profileImageUrl: string | null;
   /**
+   * @maxItems 12
+   */
+  clubPhotos?: UploadedPhoto[];
+  logoPhoto?: UploadedPhoto | null;
+  /**
    * @maxItems 20
    */
   tags: string[];
@@ -675,6 +699,10 @@ export interface EventDocument {
   startingPointLng?: number | null;
   locationDetails?: string | null;
   photoUrl?: string | null;
+  /**
+   * @maxItems 12
+   */
+  eventPhotos?: UploadedPhoto[];
   distanceKm: number;
   eventFormat: EventFormatSnapshot;
   pace: "easy" | "moderate" | "fast" | "competitive";

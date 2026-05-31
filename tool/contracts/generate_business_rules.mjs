@@ -8,6 +8,7 @@ const repoRoot = path.resolve(scriptDir, "../..");
 const sourcePath = path.join(scriptDir, "business_rules.json");
 const dartPath = path.join(repoRoot, "lib/core/business_rules.dart");
 const tsPath = path.join(repoRoot, "functions/src/shared/businessRules.ts");
+const checkOnly = process.argv.includes("--check");
 
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
 const eventScheduling = source.eventScheduling ?? {};
@@ -85,5 +86,35 @@ export const EVENT_HOST_ATTENDANCE_WINDOW_BEFORE_MINUTES = ${eventAttendance.hos
 export const EVENT_HOST_ATTENDANCE_WINDOW_AFTER_EVENT_HOURS = ${eventAttendance.hostAttendanceWindowAfterEventHours};
 `;
 
-fs.writeFileSync(dartPath, dart);
-fs.writeFileSync(tsPath, ts);
+const outputs = [
+  {path: dartPath, content: dart},
+  {path: tsPath, content: ts},
+];
+
+const staleFiles = [];
+for (const output of outputs) {
+  if (checkOnly) {
+    const current = fs.existsSync(output.path) ?
+      fs.readFileSync(output.path, "utf8") :
+      null;
+    if (current !== output.content) {
+      staleFiles.push(path.relative(repoRoot, output.path));
+    }
+  } else {
+    fs.mkdirSync(path.dirname(output.path), {recursive: true});
+    fs.writeFileSync(output.path, output.content);
+  }
+}
+
+if (staleFiles.length > 0) {
+  console.error("Generated shared business constants are stale:");
+  for (const file of staleFiles) console.error(`- ${file}`);
+  console.error("Run: node tool/contracts/generate_business_rules.mjs");
+  process.exitCode = 1;
+} else {
+  console.log(
+    checkOnly ?
+      "Generated shared business constants are current." :
+      "Generated shared business constants."
+  );
+}

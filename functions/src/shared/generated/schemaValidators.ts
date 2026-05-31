@@ -7,6 +7,7 @@ import addFormats from "ajv-formats";
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
 import {ProfilePhoto} from "./profilePhoto";
+import {UploadedPhoto} from "./uploadedPhoto";
 import {ActivityPreferences} from "./activityPreferences";
 import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
@@ -104,6 +105,7 @@ import {
   profilePromptAnswerSchema,
   photoPromptAnswerSchema,
   profilePhotoSchema,
+  uploadedPhotoSchema,
   activityPreferencesSchema,
   configCitiesDocumentSchema,
   onboardingDraftDocumentSchema,
@@ -214,6 +216,10 @@ export const validateProfilePhoto:
   ValidateFunction<ProfilePhoto> =
     ajv.compile(profilePhotoSchema) as
       ValidateFunction<ProfilePhoto>;
+export const validateUploadedPhoto:
+  ValidateFunction<UploadedPhoto> =
+    ajv.compile(uploadedPhotoSchema) as
+      ValidateFunction<UploadedPhoto>;
 export const validateActivityPreferences:
   ValidateFunction<ActivityPreferences> =
     ajv.compile(activityPreferencesSchema) as

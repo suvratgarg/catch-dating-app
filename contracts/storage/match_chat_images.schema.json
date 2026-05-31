@@ -8,6 +8,7 @@
   "x-storage-read": "active match participant",
   "x-storage-write": "active match participant (uploader)",
   "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "[A-Za-z0-9_-]{1,180}_[0-9]+\\.(jpg|jpeg|png)",
   "x-storage-max-bytes": 8388608,
   "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
   "x-storage-related-collection": "matches",
@@ -23,7 +24,7 @@
     },
     "fileName": {
       "type": "string",
-      "description": "Conventional pattern: {senderId}_{timestamp}.{ext}"
+      "description": "Required pattern: {messageId}_{timestamp}.{ext}, with ext jpg/jpeg/png."
     }
   }
 }

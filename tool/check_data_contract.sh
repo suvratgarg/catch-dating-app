@@ -5,25 +5,8 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 cd "$repo_root"
 
-before_diff="$(mktemp)"
-after_diff="$(mktemp)"
-cleanup() {
-  rm -f "$before_diff" "$after_diff"
-}
-trap cleanup EXIT
-
 echo "==> Checking generated shared business constants"
-git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
-  >"$before_diff"
-node tool/contracts/generate_business_rules.mjs
-git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
-  >"$after_diff"
-if ! diff -u "$before_diff" "$after_diff"; then
-  echo
-  echo "Generated shared business constants are stale."
-  echo "Command: node tool/contracts/generate_business_rules.mjs"
-  exit 1
-fi
+node tool/contracts/generate_business_rules.mjs --check
 
 echo "==> Checking schema contract sources"
 node tool/contracts/validate_schema_contracts.mjs

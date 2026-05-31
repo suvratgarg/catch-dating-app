@@ -15,6 +15,7 @@ Do not edit it by hand.
 | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `functions/src/shared/generated/profilePromptAnswer.ts` |
 | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `functions/src/shared/generated/photoPromptAnswer.ts` |
 | ProfilePhoto | `embedded/profile_photo.schema.json` | `functions/src/shared/generated/profilePhoto.ts` |
+| UploadedPhoto | `embedded/uploaded_photo.schema.json` | `functions/src/shared/generated/uploadedPhoto.ts` |
 | ActivityPreferences | `embedded/activity_preferences.schema.json` | `functions/src/shared/generated/activityPreferences.ts` |
 | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `functions/src/shared/generated/configCitiesDocument.ts` |
 | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `functions/src/shared/generated/onboardingDraftDocument.ts` |
@@ -116,6 +117,7 @@ Do not edit it by hand.
 | `schemaProfilePromptAnswerSchema` | ProfilePromptAnswer | `embedded/profile_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_prompt_answer.g.dart` |
 | `schemaPhotoPromptAnswerSchema` | PhotoPromptAnswer | `embedded/photo_prompt_answer.schema.json` | `lib/core/schema_contracts/generated/schemas/photo_prompt_answer.g.dart` |
 | `schemaProfilePhotoSchema` | ProfilePhoto | `embedded/profile_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/profile_photo.g.dart` |
+| `schemaUploadedPhotoSchema` | UploadedPhoto | `embedded/uploaded_photo.schema.json` | `lib/core/schema_contracts/generated/schemas/uploaded_photo.g.dart` |
 | `schemaActivityPreferencesSchema` | ActivityPreferences | `embedded/activity_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/activity_preferences.g.dart` |
 | `schemaConfigCitiesDocumentSchema` | ConfigCitiesDocument | `firestore/config_cities.schema.json` | `lib/core/schema_contracts/generated/schemas/config_cities_document.g.dart` |
 | `schemaOnboardingDraftDocumentSchema` | OnboardingDraftDocument | `firestore/onboarding_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/onboarding_draft_document.g.dart` |
@@ -216,7 +218,6 @@ Do not edit it by hand.
 |---|---|---|---|
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
-| UpdateClubPatch | UpdateClubCallablePayload | `callables/update_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_club_patch.g.dart` |
 | AddClubHostCallableRequest | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/add_club_host_callable_request.g.dart` |
 | RemoveClubHostCallableRequest | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/remove_club_host_callable_request.g.dart` |
 | TransferClubOwnershipCallableRequest | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/transfer_club_ownership_callable_request.g.dart` |
@@ -257,6 +258,7 @@ Do not edit it by hand.
 
 | Schema | Reason |
 |---|---|
+| UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 
 ## Registry And Validator Outputs

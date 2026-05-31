@@ -87,6 +87,9 @@ export {updateUserProfile} from "./profiles/updateUserProfile";
 export {
   generateProfilePhotoThumbnail,
 } from "./profiles/generateProfilePhotoThumbnail";
+export {
+  generateClubLogoThumbnail,
+} from "./clubs/generateClubLogoThumbnail";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";

@@ -17,6 +17,8 @@ final class CreateClubCallableRequest {
     required this.area,
     this.imageUrl,
     this.profileImageUrl,
+    this.clubPhotos,
+    this.logoPhoto,
     this.instagramHandle,
     this.phoneNumber,
     this.email,
@@ -30,6 +32,8 @@ final class CreateClubCallableRequest {
   final String area;
   final String? imageUrl;
   final String? profileImageUrl;
+  final List<Map<String, Object?>>? clubPhotos;
+  final Map<String, Object?>? logoPhoto;
   final String? instagramHandle;
   final String? phoneNumber;
   final String? email;
@@ -43,6 +47,8 @@ final class CreateClubCallableRequest {
     'area': area,
     'imageUrl': ?imageUrl,
     'profileImageUrl': ?profileImageUrl,
+    'clubPhotos': ?clubPhotos,
+    'logoPhoto': ?logoPhoto,
     'instagramHandle': ?instagramHandle,
     'phoneNumber': ?phoneNumber,
     'email': ?email,

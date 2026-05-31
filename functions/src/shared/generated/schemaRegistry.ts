@@ -272,6 +272,176 @@ export const profilePhotoSchema: Record<string, unknown> = {
   "x-migration-contract": "../migrations/profile_photos_storage.json"
 } as const;
 
+export const uploadedPhotoSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/uploaded_photo.schema.json",
+  "title": "UploadedPhoto",
+  "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "url",
+    "storagePath",
+    "thumbnailUrl",
+    "thumbnailStoragePath",
+    "position",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "storagePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^/\\u0000][^\\u0000]*$"
+    },
+    "thumbnailUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "thumbnailStoragePath": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^/\\u0000][^\\u0000]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 19
+    },
+    "moderation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "reviewedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "definitions": {
+    "storageObjectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^/\\u0000][^\\u0000]*$"
+    }
+  }
+} as const;
+
 export const activityPreferencesSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/embedded/activity_preferences.schema.json",
@@ -2202,6 +2372,353 @@ export const clubDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "clubPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "title": "UploadedPhoto",
+        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "storagePath",
+          "thumbnailUrl",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "thumbnailStoragePath": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 19
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {
+          "title": "UploadedPhoto",
+          "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "url",
+            "storagePath",
+            "thumbnailUrl",
+            "thumbnailStoragePath",
+            "position",
+            "createdAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "storagePath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^/\\u0000][^\\u0000]*$"
+            },
+            "thumbnailUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "thumbnailStoragePath": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "pattern": "^[^/\\u0000][^\\u0000]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "position": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            },
+            "moderation": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "updatedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          },
+          "definitions": {
+            "storageObjectPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^/\\u0000][^\\u0000]*$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "tags": {
       "type": "array",
       "maxItems": 20,
@@ -3239,6 +3756,178 @@ export const eventDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "eventPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "title": "UploadedPhoto",
+        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "storagePath",
+          "thumbnailUrl",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "thumbnailStoragePath": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 19
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        }
+      },
       "x-catch-ownership": "callable-owned"
     },
     "distanceKm": {
@@ -8930,6 +9619,351 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
       ],
       "maxLength": 320
     },
+    "clubPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "title": "UploadedPhoto",
+        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "storagePath",
+          "thumbnailUrl",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "thumbnailStoragePath": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 19
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        }
+      }
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {
+          "title": "UploadedPhoto",
+          "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "url",
+            "storagePath",
+            "thumbnailUrl",
+            "thumbnailStoragePath",
+            "position",
+            "createdAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            "storagePath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^/\\u0000][^\\u0000]*$"
+            },
+            "thumbnailUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "thumbnailStoragePath": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "pattern": "^[^/\\u0000][^\\u0000]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "position": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 19
+            },
+            "moderation": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 240
+                },
+                "reviewedAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "updatedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          },
+          "definitions": {
+            "storageObjectPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^[^/\\u0000][^\\u0000]*$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "instagramHandle": {
       "type": [
         "string",
@@ -9490,6 +10524,351 @@ export const updateClubCallablePayloadSchema: Record<string, unknown> = {
             "null"
           ],
           "maxLength": 320
+        },
+        "clubPhotos": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "title": "UploadedPhoto",
+            "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "url",
+              "storagePath",
+              "thumbnailUrl",
+              "thumbnailStoragePath",
+              "position",
+              "createdAt",
+              "updatedAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "storagePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "thumbnailUrl": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "thumbnailStoragePath": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\u0000][^\\u0000]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "moderation": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "approved",
+                      "rejected"
+                    ]
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 240
+                  },
+                  "reviewedAt": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "description": "Serialized Firestore Timestamp fixture shape.",
+                        "x-firestore-type": "timestamp",
+                        "additionalProperties": false,
+                        "required": [
+                          "_seconds",
+                          "_nanoseconds"
+                        ],
+                        "properties": {
+                          "_seconds": {
+                            "type": "integer"
+                          },
+                          "_nanoseconds": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "updatedAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              }
+            },
+            "definitions": {
+              "storageObjectPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              }
+            }
+          }
+        },
+        "logoPhoto": {
+          "anyOf": [
+            {
+              "title": "UploadedPhoto",
+              "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "url",
+                "storagePath",
+                "thumbnailUrl",
+                "thumbnailStoragePath",
+                "position",
+                "createdAt",
+                "updatedAt"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[A-Za-z0-9_-]+$"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048
+                },
+                "storagePath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "pattern": "^[^/\\u0000][^\\u0000]*$"
+                },
+                "thumbnailUrl": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uri",
+                      "maxLength": 2048
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "thumbnailStoragePath": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512,
+                      "pattern": "^[^/\\u0000][^\\u0000]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "position": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 19
+                },
+                "moderation": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": false,
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "approved",
+                        "rejected"
+                      ]
+                    },
+                    "reason": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 240
+                    },
+                    "reviewedAt": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "description": "Serialized Firestore Timestamp fixture shape.",
+                          "x-firestore-type": "timestamp",
+                          "additionalProperties": false,
+                          "required": [
+                            "_seconds",
+                            "_nanoseconds"
+                          ],
+                          "properties": {
+                            "_seconds": {
+                              "type": "integer"
+                            },
+                            "_nanoseconds": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 999999999
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "createdAt": {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                "updatedAt": {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                }
+              },
+              "definitions": {
+                "storageObjectPath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512,
+                  "pattern": "^[^/\\u0000][^\\u0000]*$"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "tags": {
           "type": "array",
@@ -10305,6 +11684,177 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
         }
       ]
     },
+    "eventPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "title": "UploadedPhoto",
+        "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "storagePath",
+          "thumbnailUrl",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "thumbnailStoragePath": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 19
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        }
+      }
+    },
     "distanceKm": {
       "type": "number",
       "minimum": 0,
@@ -11063,6 +12613,177 @@ export const updateEventCallablePayloadSchema: Record<string, unknown> = {
               "type": "null"
             }
           ]
+        },
+        "eventPhotos": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "title": "UploadedPhoto",
+            "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "url",
+              "storagePath",
+              "thumbnailUrl",
+              "thumbnailStoragePath",
+              "position",
+              "createdAt",
+              "updatedAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "storagePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "thumbnailUrl": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2048
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "thumbnailStoragePath": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512,
+                    "pattern": "^[^/\\u0000][^\\u0000]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "moderation": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "approved",
+                      "rejected"
+                    ]
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 240
+                  },
+                  "reviewedAt": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "description": "Serialized Firestore Timestamp fixture shape.",
+                        "x-firestore-type": "timestamp",
+                        "additionalProperties": false,
+                        "required": [
+                          "_seconds",
+                          "_nanoseconds"
+                        ],
+                        "properties": {
+                          "_seconds": {
+                            "type": "integer"
+                          },
+                          "_nanoseconds": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 999999999
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "updatedAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              }
+            },
+            "definitions": {
+              "storageObjectPath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              }
+            }
+          }
         },
         "distanceKm": {
           "type": "number",

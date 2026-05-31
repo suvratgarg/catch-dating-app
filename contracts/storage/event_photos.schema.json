@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/event_photos.schema.json",
+  "title": "EventPhotosStoragePath",
+  "description": "Event photos stored at events/{eventId}/photos/{fileName}. Host writes require the event to exist and the uploader to host its club.",
+  "type": "object",
+  "x-storage-rules-match": "match /events/{eventId}/photos/{fileName}",
+  "x-storage-read": "public (download URLs are used for public event media)",
+  "x-storage-write": "event club host or owner",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "[0-5]_[0-9]+\\.(jpg|jpeg|png)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "events",
+  "x-storage-known-consumers": [
+    "lib/events/presentation/create_event_controller.dart"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "description": "Event document id; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Required pattern: {position}_{timestamp}.{ext}, with position 0-5 and ext jpg/jpeg/png."
+    }
+  }
+}

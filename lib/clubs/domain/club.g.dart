@@ -31,6 +31,14 @@ _Club _$ClubFromJson(Map<String, dynamic> json) => _Club(
   ),
   imageUrl: json['imageUrl'] as String?,
   profileImageUrl: json['profileImageUrl'] as String?,
+  clubPhotos:
+      (json['clubPhotos'] as List<dynamic>?)
+          ?.map((e) => UploadedPhoto.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  logoPhoto: json['logoPhoto'] == null
+      ? null
+      : UploadedPhoto.fromJson(json['logoPhoto'] as Map<String, dynamic>),
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -73,6 +81,8 @@ Map<String, dynamic> _$ClubToJson(_Club instance) => <String, dynamic>{
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'imageUrl': instance.imageUrl,
   'profileImageUrl': instance.profileImageUrl,
+  'clubPhotos': instance.clubPhotos.map((e) => e.toJson()).toList(),
+  'logoPhoto': instance.logoPhoto?.toJson(),
   'tags': instance.tags,
   'memberCount': instance.memberCount,
   'rating': instance.rating,

@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {UploadedPhoto} from "./uploadedPhoto";
+
 /**
  * Callable payload accepted by updateClub.
  */
@@ -16,6 +18,11 @@ export interface UpdateClubCallablePayload {
     hostAvatarUrl?: string | null;
     imageUrl?: string | null;
     profileImageUrl?: string | null;
+    /**
+     * @maxItems 12
+     */
+    clubPhotos?: UploadedPhoto[];
+    logoPhoto?: UploadedPhoto | null;
     /**
      * @maxItems 12
      */

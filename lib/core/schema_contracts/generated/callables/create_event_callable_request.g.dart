@@ -35,6 +35,7 @@ final class CreateEventCallableRequest {
     required this.startingPointLng,
     this.locationDetails,
     this.photoUrl,
+    this.eventPhotos,
     required this.distanceKm,
     required this.pace,
     required this.capacityLimit,
@@ -58,6 +59,7 @@ final class CreateEventCallableRequest {
   final double startingPointLng;
   final String? locationDetails;
   final String? photoUrl;
+  final List<Map<String, Object?>>? eventPhotos;
   final double distanceKm;
   final String pace;
   final int capacityLimit;
@@ -81,6 +83,7 @@ final class CreateEventCallableRequest {
     'startingPointLng': startingPointLng,
     'locationDetails': ?locationDetails,
     'photoUrl': ?photoUrl,
+    'eventPhotos': ?eventPhotos,
     'distanceKm': distanceKm,
     'pace': pace,
     'capacityLimit': capacityLimit,

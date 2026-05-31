@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -47,6 +48,23 @@ class CreateEventController extends _$CreateEventController {
     return PickedEventPhoto(image: image, bytes: await image.readAsBytes());
   }
 
+  Future<List<PickedEventPhoto>> pickEventPhotos({
+    int imageQuality = 82,
+    int limit = 6,
+  }) async {
+    final images = await ref
+        .read(imageUploadRepositoryProvider)
+        .pickImages(
+          purpose: ImageUploadPurpose.eventPhoto,
+          imageQuality: imageQuality,
+          limit: limit,
+        );
+    return [
+      for (final image in images)
+        PickedEventPhoto(image: image, bytes: await image.readAsBytes()),
+    ];
+  }
+
   Future<Event> submit({
     required String clubId,
     required DateTime startTime,
@@ -61,6 +79,7 @@ class CreateEventController extends _$CreateEventController {
     required EventPolicyBundle eventPolicy,
     String? inviteCode,
     XFile? photoImage,
+    List<XFile> photoImages = const [],
     EventSuccessDefaults eventSuccessDefaults = const EventSuccessDefaults(),
   }) async {
     final normalizedClubId = _requireNonBlank(
@@ -117,19 +136,6 @@ class CreateEventController extends _$CreateEventController {
     }
     final eventRepo = ref.read(eventRepositoryProvider);
     final eventId = eventRepo.generateId();
-    String? photoUrl;
-    if (photoImage != null) {
-      final uid = requireSignedInUid(ref, action: 'create an event');
-      photoUrl = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadEventPhoto(
-            uid: uid,
-            clubId: normalizedClubId,
-            eventId: eventId,
-            image: photoImage,
-          );
-    }
-
     final event = Event(
       id: eventId,
       clubId: normalizedClubId,
@@ -140,7 +146,8 @@ class CreateEventController extends _$CreateEventController {
       startingPointLat: normalizedMeetingLocation.latitude,
       startingPointLng: normalizedMeetingLocation.longitude,
       locationDetails: normalizedMeetingLocation.notes,
-      photoUrl: photoUrl,
+      photoUrl: null,
+      eventPhotos: const [],
       eventFormat: eventFormat,
       distanceKm: distanceKm,
       pace: pace,
@@ -161,7 +168,35 @@ class CreateEventController extends _$CreateEventController {
             )
           : null,
     );
-    return event;
+    final selectedPhotoImages = photoImages.isNotEmpty
+        ? photoImages
+        : [?photoImage];
+    if (selectedPhotoImages.isEmpty) return event;
+
+    requireSignedInUid(ref, action: 'upload event photos');
+    final uploadedPhotos = <UploadedPhoto>[];
+    for (final indexedImage in selectedPhotoImages.indexed) {
+      final upload = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadEventPhotoWithMetadata(
+            eventId: eventId,
+            position: indexedImage.$1,
+            image: indexedImage.$2,
+          );
+      uploadedPhotos.add(
+        UploadedPhoto.fromUpload(
+          url: upload.url,
+          storagePath: upload.storagePath,
+          position: indexedImage.$1,
+        ),
+      );
+    }
+    final updatedEvent = event.copyWith(
+      photoUrl: uploadedPhotos.first.url,
+      eventPhotos: uploadedPhotos,
+    );
+    await eventRepo.updateEventDetails(event: updatedEvent);
+    return updatedEvent;
   }
 }
 

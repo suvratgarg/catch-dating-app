@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -27,6 +28,8 @@ abstract class Club with _$Club {
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
     String? profileImageUrl,
+    @Default([]) List<UploadedPhoto> clubPhotos,
+    UploadedPhoto? logoPhoto,
     @Default([]) List<String> tags,
     @Default(0) int memberCount,
     @Default(0.0) double rating,
@@ -47,8 +50,7 @@ abstract class Club with _$Club {
 
   String get ownerOrPrimaryHostUserId => ownerUserId ?? hostUserId;
 
-  bool isOwnedBy(String? uid) =>
-      uid != null && uid == ownerOrPrimaryHostUserId;
+  bool isOwnedBy(String? uid) => uid != null && uid == ownerOrPrimaryHostUserId;
 
   bool isHostedBy(String? uid) {
     if (uid == null) return false;
@@ -69,6 +71,13 @@ abstract class Club with _$Club {
       ),
     ];
   }
+
+  String? get primaryClubPhotoUrl {
+    if (clubPhotos.isNotEmpty) return clubPhotos.first.url;
+    return imageUrl;
+  }
+
+  String? get logoPhotoUrl => logoPhoto?.thumbnailOrUrl ?? profileImageUrl;
 }
 
 enum ClubHostRole { owner, host }

@@ -9,37 +9,190 @@ service firebase.storage {
     function isImage() {
       return request.resource != null
         && request.resource.contentType.matches('image/.*')
-        && request.resource.size < 8 * 1024 * 1024;
+        && request.resource.size <= 8 * 1024 * 1024;
+    }
+
+    function isGalleryPhotoFileName(fileName) {
+      return fileName.matches('[0-5]_[0-9]+\\.(jpg|jpeg|png)');
+    }
+
+    function isTimestampImageFileName(fileName) {
+      return fileName.matches('[0-9]+\\.(jpg|jpeg|png)');
+    }
+
+    function isChatImageFileName(fileName) {
+      return fileName.matches('[A-Za-z0-9_-]{1,180}_[0-9]+\\.(jpg|jpeg|png)');
+    }
+
+    function blockDocId(blockerUid, blockedUid) {
+      return blockerUid + '__' + blockedUid;
+    }
+
+    function hasBlockBetween(uidA, uidB) {
+      return firestore.exists(
+          /databases/(default)/documents/blocks/$(blockDocId(uidA, uidB))
+        )
+        || firestore.exists(
+          /databases/(default)/documents/blocks/$(blockDocId(uidB, uidA))
+        );
+    }
+
+    function hasCanonicalMatchUsers(matchId) {
+      return firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.keys().hasAny(['user1Id'])
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.keys().hasAny(['user2Id'])
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.user1Id is string
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.user2Id is string;
+    }
+
+    function hasNoBlockBetweenMatchUsers(matchId) {
+      return !hasCanonicalMatchUsers(matchId)
+        || !hasBlockBetween(
+          firestore.get(
+            /databases/(default)/documents/matches/$(matchId)
+          ).data.user1Id,
+          firestore.get(
+            /databases/(default)/documents/matches/$(matchId)
+          ).data.user2Id
+        );
     }
 
     function canAccessMatch(matchId) {
-      let matchData = firestore.get(
-        /databases/(default)/documents/matches/$(matchId)
-      ).data;
-      return matchData.user1Id == request.auth.uid
-        || matchData.user2Id == request.auth.uid
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/matches/$(matchId))
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.status != 'blocked'
+        && hasNoBlockBetweenMatchUsers(matchId)
+        && (
+          (
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['user1Id'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.user1Id == request.auth.uid
+          )
+          || (
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['user2Id'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.user2Id == request.auth.uid
+          )
         || (
-          matchData.keys().hasAny(['participantIds'])
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['participantIds'])
           &&
-          matchData.participantIds is list
-          && matchData.participantIds.hasAny([request.auth.uid])
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.participantIds is list
+            && firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.participantIds.hasAny([request.auth.uid])
+          )
         );
     }
 
     function canWriteMatchImage(matchId) {
-      let matchData = firestore.get(
-        /databases/(default)/documents/matches/$(matchId)
-      ).data;
-      return matchData.status == 'active'
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/matches/$(matchId))
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.status == 'active'
+        && hasNoBlockBetweenMatchUsers(matchId)
         && (
-          matchData.user1Id == request.auth.uid
-          || matchData.user2Id == request.auth.uid
-          || (
-            matchData.keys().hasAny(['participantIds'])
+          (
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['user1Id'])
             &&
-            matchData.participantIds is list
-            && matchData.participantIds.hasAny([request.auth.uid])
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.user1Id == request.auth.uid
           )
+          || (
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['user2Id'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.user2Id == request.auth.uid
+          )
+          || (
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.keys().hasAny(['participantIds'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.participantIds is list
+            && firestore.get(
+              /databases/(default)/documents/matches/$(matchId)
+            ).data.participantIds.hasAny([request.auth.uid])
+          )
+        );
+    }
+
+    function canWriteClubMedia(clubId) {
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/clubs/$(clubId))
+        && (
+          (
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.keys().hasAny(['hostUserId'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.hostUserId == request.auth.uid
+          )
+          || (
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.keys().hasAny(['ownerUserId'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.ownerUserId == request.auth.uid
+          )
+          || (
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.keys().hasAny(['hostUserIds'])
+            &&
+            firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.hostUserIds is list
+            && firestore.get(
+              /databases/(default)/documents/clubs/$(clubId)
+            ).data.hostUserIds.hasAny([request.auth.uid])
+          )
+        );
+    }
+
+    function canWriteEventMedia(eventId) {
+      return isSignedIn()
+        && firestore.exists(/databases/(default)/documents/events/$(eventId))
+        && firestore.get(
+          /databases/(default)/documents/events/$(eventId)
+        ).data.keys().hasAny(['clubId'])
+        && canWriteClubMedia(
+          firestore.get(
+            /databases/(default)/documents/events/$(eventId)
+          ).data.clubId
         );
     }
 
@@ -47,6 +200,7 @@ service firebase.storage {
       allow read: if isSignedIn();
       allow write: if isSignedIn()
         && request.auth.uid == uid
+        && isGalleryPhotoFileName(fileName)
         && isImage();
     }
 
@@ -57,15 +211,40 @@ service firebase.storage {
 
     match /users/{uid}/hostedMedia/{fileName} {
       allow read: if true;
-      allow write: if isSignedIn()
-        && request.auth.uid == uid
+      allow write: if false;
+    }
+
+    match /clubs/{clubId}/photos/{fileName} {
+      allow read: if true;
+      allow write: if canWriteClubMedia(clubId)
+        && isGalleryPhotoFileName(fileName)
+        && isImage();
+    }
+
+    match /clubs/{clubId}/logo/{fileName} {
+      allow read: if true;
+      allow write: if canWriteClubMedia(clubId)
+        && isTimestampImageFileName(fileName)
+        && isImage();
+    }
+
+    match /clubs/{clubId}/logoThumbnails/{fileName} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /events/{eventId}/photos/{fileName} {
+      allow read: if true;
+      allow write: if canWriteEventMedia(eventId)
+        && isGalleryPhotoFileName(fileName)
         && isImage();
     }
 
     match /matches/{matchId}/images/{fileName} {
-      allow read: if isSignedIn() && canAccessMatch(matchId);
+      allow read: if canAccessMatch(matchId);
       allow write: if isSignedIn()
         && isImage()
+        && isChatImageFileName(fileName)
         && canWriteMatchImage(matchId);
     }
 

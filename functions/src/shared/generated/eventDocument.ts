@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {UploadedPhoto} from "./uploadedPhoto";
+
 /**
  * Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.
  */
@@ -37,6 +39,10 @@ export interface EventDocument {
   startingPointLng: number | null;
   locationDetails: string | null;
   photoUrl?: string | null;
+  /**
+   * @maxItems 12
+   */
+  eventPhotos?: UploadedPhoto[];
   distanceKm: number;
   eventFormat: {
     version: 1;

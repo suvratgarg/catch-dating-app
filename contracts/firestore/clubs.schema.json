@@ -117,6 +117,21 @@
       "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull",
       "x-catch-ownership": "callable-owned"
     },
+    "clubPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "$ref": "../embedded/uploaded_photo.schema.json"
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {"$ref": "../embedded/uploaded_photo.schema.json"},
+        {"type": "null"}
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
     "tags": {
       "type": "array",
       "maxItems": 20,

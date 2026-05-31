@@ -32,6 +32,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaProfilePhotoSchema,
   ),
   SchemaContractDefinition(
+    name: 'UploadedPhoto',
+    source: 'embedded/uploaded_photo.schema.json',
+    schema: schemaUploadedPhotoSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ActivityPreferences',
     source: 'embedded/activity_preferences.schema.json',
     schema: schemaActivityPreferencesSchema,
@@ -502,6 +507,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ProfilePromptAnswer': schemaProfilePromptAnswerSchema,
   'PhotoPromptAnswer': schemaPhotoPromptAnswerSchema,
   'ProfilePhoto': schemaProfilePhotoSchema,
+  'UploadedPhoto': schemaUploadedPhotoSchema,
   'ActivityPreferences': schemaActivityPreferencesSchema,
   'ConfigCitiesDocument': schemaConfigCitiesDocumentSchema,
   'OnboardingDraftDocument': schemaOnboardingDraftDocumentSchema,
@@ -601,6 +607,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'embedded/profile_prompt_answer.schema.json': schemaProfilePromptAnswerSchema,
   'embedded/photo_prompt_answer.schema.json': schemaPhotoPromptAnswerSchema,
   'embedded/profile_photo.schema.json': schemaProfilePhotoSchema,
+  'embedded/uploaded_photo.schema.json': schemaUploadedPhotoSchema,
   'embedded/activity_preferences.schema.json': schemaActivityPreferencesSchema,
   'firestore/config_cities.schema.json': schemaConfigCitiesDocumentSchema,
   'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,

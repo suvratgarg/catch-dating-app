@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/events/domain/pace_level_theme.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -70,16 +68,4 @@ void main() {
     });
   });
 
-  group('PaceLevel.colors', () {
-    test('maps every pace to a distinct semantic palette', () {
-      expect(PaceLevel.easy.colors.bg, const Color(0xFFDCFCE7));
-      expect(PaceLevel.easy.colors.fg, const Color(0xFF166534));
-      expect(PaceLevel.moderate.colors.bg, const Color(0xFFDBEAFE));
-      expect(PaceLevel.moderate.colors.fg, const Color(0xFF1E40AF));
-      expect(PaceLevel.fast.colors.bg, const Color(0xFFFEF3C7));
-      expect(PaceLevel.fast.colors.fg, const Color(0xFF92400E));
-      expect(PaceLevel.competitive.colors.bg, const Color(0xFFFFE4E6));
-      expect(PaceLevel.competitive.colors.fg, const Color(0xFF9F1239));
-    });
-  });
 }

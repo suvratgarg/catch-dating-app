@@ -2,18 +2,17 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/storage/hosted_media.schema.json",
   "title": "HostedMediaStoragePath",
-  "description": "User-owned club and event media staged at users/{uid}/hostedMedia/{fileName}. Writes only require the uploader's authenticated uid; attaching the resulting URL to clubs/events is authorized by Cloud Functions.",
+  "description": "Retired user-owned club and event media staging path at users/{uid}/hostedMedia/{fileName}. Existing objects remain public-readable for compatibility; new client writes are denied.",
   "type": "object",
   "x-storage-rules-match": "match /users/{uid}/hostedMedia/{fileName}",
   "x-storage-read": "public (download URLs are used for public club/event media)",
-  "x-storage-write": "owner (uid path segment must equal request.auth.uid)",
+  "x-storage-write": "legacy read-only (client writes denied)",
   "x-storage-content-type-pattern": "image/.*",
   "x-storage-max-bytes": 8388608,
   "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
   "x-storage-related-collection": "users",
   "x-storage-known-consumers": [
-    "lib/clubs/presentation/create/create_club_controller.dart",
-    "lib/events/presentation/create_event_controller.dart"
+    "functions/src/moderation/moderatePhoto.ts"
   ],
   "properties": {
     "uid": {
