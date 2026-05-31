@@ -156,7 +156,9 @@ class _CatchNoticeHostState extends ConsumerState<CatchNoticeHost> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.s3),
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 520),
+                    constraints: const BoxConstraints(
+                      maxWidth: CatchLayout.noticeMaxWidth,
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -239,8 +241,12 @@ class CatchNotice extends StatelessWidget {
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
               ),
               child: SizedBox.square(
-                dimension: 36,
-                child: Icon(notice.icon, color: palette.icon, size: 20),
+                dimension: CatchLayout.noticeIconExtent,
+                child: Icon(
+                  notice.icon,
+                  color: palette.icon,
+                  size: CatchIcon.control,
+                ),
               ),
             ),
             const SizedBox(width: CatchSpacing.s3),

@@ -78,6 +78,11 @@ app.*.map.json
 codex_audit/*.zip
 codex_audit/**/logs/
 
+# Generated UI review captures
+artifacts/ui-captures/
+artifacts/marketing/app-screenshots/raw/
+test/goldens/failures/
+
 # Website research/reference screenshots
 docs/visual_references/**/*.avif
 docs/visual_references/**/*.gif

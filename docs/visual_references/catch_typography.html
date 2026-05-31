@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Catch — Typography, legibility-first (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400..700&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=Playfair+Display:wght@400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F4F1; --paper-2:#FCFCFB; --ink:#16140F; --ink-2:#544F47; --ink-3:#9C958A;
+    --line:rgba(22,20,15,.12); --run:#C9542F;
+    --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+    /* recommended display+body serif */
+    --news:'Newsreader',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:48px 40px 100px;max-width:1080px;margin:0 auto;}
+  .kick{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);}
+  .h1{font-family:var(--news);font-optical-sizing:auto;font-variation-settings:'opsz' 72;font-weight:600;font-size:56px;line-height:.98;letter-spacing:-.01em;margin-top:10px;}
+  .h1 em{font-style:italic;color:var(--run);}
+  .sub{max-width:700px;margin-top:16px;font-size:15px;line-height:1.6;color:var(--ink-2);}
+  h2{font-family:var(--news);font-variation-settings:'opsz' 72;font-weight:600;font-size:30px;margin:54px 0 4px;letter-spacing:-.005em;}
+  .note{font-size:13.5px;line-height:1.6;color:var(--ink-2);max-width:740px;margin-bottom:22px;}
+  .rule{height:1px;background:var(--line);margin-top:6px;}
+  .legib{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);}
+  .good{color:#2F7D55;border-color:#bcdcc7;} .bad{color:#B23B2A;border-color:#e6c4bd;}
+
+  .faces .news{font-family:var(--news);} .faces .src{font-family:'Source Serif 4',serif;} .faces .lit{font-family:'Literata',serif;}
+  .playfair{font-family:'Playfair Display',serif;}
+
+  /* §1 contrast vs legibility */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .cmp .box{border:1px solid var(--line);border-radius:12px;padding:20px;background:var(--paper-2);}
+  .cmp .t{font-size:15px;line-height:1.62;}
+  .cmp .h{font-size:30px;line-height:1.05;margin-bottom:10px;}
+
+  /* §2 levers */
+  .levers{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+  .levers .cell{background:var(--paper-2);padding:22px;}
+  .levers .pk{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--run);}
+  .levers .pt{font-family:var(--news);font-variation-settings:'opsz' 72;font-weight:600;font-size:20px;margin:6px 0 8px;}
+  .levers .pd{font-size:12.5px;line-height:1.55;color:var(--ink-2);}
+  .levers .demo{margin-top:14px;font-family:var(--news);}
+  .xh{font-size:40px;position:relative;}
+  .opsz6{font-family:var(--news);font-variation-settings:'opsz' 6;font-size:32px;}
+  .opsz72{font-family:var(--news);font-variation-settings:'opsz' 72;font-size:32px;}
+
+  /* §3 candidates */
+  .cand{border:1px solid var(--line);border-radius:14px;background:var(--paper-2);padding:24px;margin-bottom:16px;}
+  .cand.reco{outline:2px solid var(--run);outline-offset:-2px;}
+  .cand .top{display:flex;align-items:baseline;gap:10px;}
+  .cand .nm{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);}
+  .cand.reco .nm::after{content:" · recommended";color:var(--run);}
+  .cand .head{font-size:40px;line-height:1.0;margin:14px 0 4px;}
+  .cand .head em{font-style:italic;color:var(--run);}
+  .cand .body{font-size:15px;line-height:1.62;color:var(--ink);max-width:62ch;margin-top:8px;}
+  .cand .small{font-size:12px;line-height:1.5;color:var(--ink-2);margin-top:8px;}
+  .cand .verdict{font-size:12.5px;color:var(--ink-2);line-height:1.55;margin-top:12px;border-top:1px solid var(--line);padding-top:10px;}
+
+  /* §4 in situ */
+  .situ{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .ticket{background:var(--paper-2);border-radius:16px;overflow:hidden;box-shadow:0 14px 34px rgba(22,20,15,.10);}
+  .ticket .media{height:118px;background:var(--run);display:flex;align-items:flex-end;padding:12px;}
+  .ticket .st{font-family:var(--mono);font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#F6EFE6;border:1.4px solid rgba(246,239,230,.7);padding:4px 7px;transform:rotate(-3deg);}
+  .ticket .stub{padding:14px 16px 18px;}
+  .ticket .tl{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--run);}
+  .ticket .t{font-family:var(--news);font-variation-settings:'opsz' 72;font-weight:600;font-size:26px;line-height:1.0;margin-top:7px;letter-spacing:-.01em;}
+  .ticket .m{font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-top:10px;}
+  .pf{border:1px solid var(--line);border-radius:16px;padding:24px;background:var(--paper-2);}
+  .pf .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);}
+  .pf .nm{font-family:var(--news);font-variation-settings:'opsz' 72;font-weight:600;font-size:50px;line-height:.94;letter-spacing:-.015em;margin-top:6px;}
+  .pf .nm em{font-style:italic;color:var(--run);}
+  .pf .meta{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink-2);margin-top:12px;}
+  .pf .bio{font-family:var(--news);font-variation-settings:'opsz' 16;font-size:16px;line-height:1.6;color:var(--ink);margin-top:14px;max-width:42ch;}
+</style>
+</head>
+<body>
+
+<div class="kick">Catch · Typography study · v2 · legibility-first</div>
+<div class="h1">Legible <em>first.</em> Editorial always.</div>
+<p class="sub">Correcting the last pass: the Didones (Playfair, Bodoni) were the wrong family — beautiful as logos, but they sacrifice readability at text sizes. Since you want serif body text, the face has to read well at 15px <em>and</em> command attention at 50px. That points to screen-reading editorial serifs with optical sizing — shown here doing the hardest job first: a paragraph.</p>
+
+<h2>1 · Why the Didones failed — contrast vs legibility</h2>
+<div class="rule"></div>
+<p class="note" style="margin-top:16px;">Identical paragraph, 15px. High contrast = thin strokes thin out and shimmer ("dazzle"); moderate contrast holds. This is the readability tradeoff, made visible.</p>
+<div class="cmp">
+    <div class="box"><span class="legib bad">High contrast · hard to read</span><div class="h playfair">Long table, short questions</div><div class="t playfair">Curated tables of six. One long conversation, phones away. The thin strokes get fragile and the eye works harder line after line — fine for a masthead, punishing for a bio.</div></div>
+    <div class="box"><span class="legib good">Moderate contrast · easy to read</span><div class="h news">Long table, short questions</div><div class="t news" style="font-variation-settings:'opsz' 16;">Curated tables of six. One long conversation, phones away. Even strokes and a generous x-height keep the line steady and calm to read, paragraph after paragraph.</div></div>
+</div>
+
+<h2>2 · The legibility levers (what actually drives the choice)</h2>
+<div class="levers">
+  <div class="cell"><div class="pk">01 · Optical sizing</div><div class="pt">Sturdy small, fine large</div><div class="pd">A real text face has a "text" cut (sturdier, lower contrast, looser) and a "display" cut (finer, tighter). Using one face across both is the secret to refinement. All three candidates carry an optical axis.</div><div class="demo"><span class="opsz6">Aa</span> <span class="legib">opsz 6 (text)</span> &nbsp; <span class="opsz72">Aa</span> <span class="legib">opsz 72 (display)</span></div></div>
+  <div class="cell"><div class="pk">02 · x-height</div><div class="pt">Taller lowercase reads smaller</div><div class="pd">A generous x-height keeps text legible at small sizes — critical for bios and meta on a phone. Reading serifs maximize it; display serifs often don't.</div><div class="demo xh news">handgloves</div></div>
+  <div class="cell"><div class="pk">03 · Moderate stroke contrast</div><div class="pt">Even color on the page</div><div class="pd">Low-to-moderate modulation gives an even "texture" across a paragraph and survives small sizes and dark mode. High contrast is reserved strictly for very large display.</div><div class="demo" style="font-size:30px;">Sundowner 5K</div></div>
+  <div class="cell"><div class="pk">04 · Open apertures + weight</div><div class="pt">Letters stay distinct</div><div class="pd">Open counters/apertures (the a, e, c, s) prevent letters from clogging at size; a true text weight (~400–500) keeps body even, with heavier weights saved for display.</div><div class="demo" style="font-size:30px;">aces · social</div></div>
+</div>
+
+<h2>3 · Three legible editorial serifs — judged on a paragraph</h2>
+<div class="note">Each: a display headline, a real body paragraph at 15px (the actual test), and the profile name. None are Didones; all read well small.</div>
+
+<div class="cand reco faces">
+  <div class="top"><span class="nm">Newsreader</span></div>
+  <div class="head news">Dinners for <em>people</em> who skip small talk.</div>
+  <div class="body news" style="font-variation-settings:'opsz' 16;">Long run, longer brunch, and a bookshop I have no business being in. I'll out-walk you at any market and lose every argument about where to eat. Designer by trade, runner by accident — find me at the Sunday sea-face crew.</div>
+  <div class="small news" style="font-variation-settings:'opsz' 16;">Aanya, 27 · Bandra · 2 mutual clubs</div>
+  <div class="verdict">Built by Production Type for on-screen editorial reading. Real character (lovely italic, ball terminals) but moderate contrast and a big x-height — reads beautifully small, commands attention large. Optical axis 6→72. The best of both jobs.</div>
+</div>
+
+<div class="cand faces">
+  <div class="top"><span class="nm">Source Serif 4</span></div>
+  <div class="head src">Dinners for <em>people</em> who skip small talk.</div>
+  <div class="body src">Long run, longer brunch, and a bookshop I have no business being in. I'll out-walk you at any market and lose every argument about where to eat. Designer by trade, runner by accident — find me at the Sunday sea-face crew.</div>
+  <div class="small src">Aanya, 27 · Bandra · 2 mutual clubs</div>
+  <div class="verdict">Cleanest and most neutral; superb legibility, optical sizing, screen-tuned. Slightly less "character" — safe and modern, a touch more corporate than editorial.</div>
+</div>
+
+<div class="cand faces">
+  <div class="top"><span class="nm">Literata</span></div>
+  <div class="head lit">Dinners for <em>people</em> who skip small talk.</div>
+  <div class="body lit">Long run, longer brunch, and a bookshop I have no business being in. I'll out-walk you at any market and lose every argument about where to eat. Designer by trade, runner by accident — find me at the Sunday sea-face crew.</div>
+  <div class="small lit">Aanya, 27 · Bandra · 2 mutual clubs</div>
+  <div class="verdict">Google's e-reader face — warm, sturdy, very cozy for long reading. A little softer/rounder; less crisp than Newsreader at display, but the friendliest to read.</div>
+</div>
+
+<h2>4 · Proposed system — Newsreader + Inter + IBM Plex Mono</h2>
+<div class="note">Serif (Newsreader, optical-sized) for titles AND long-form body. Inter for functional UI/controls. IBM Plex Mono for data + tracked labels. Upright titles, italic as a single accent.</div>
+<div class="situ">
+  <div class="ticket">
+    <div class="media"><span class="st">Social run</span></div>
+    <div class="stub"><div class="tl">6:30 PM / IN 1H</div><div class="t">Sundowner 5K, then sodas</div><div class="m">SUNDOWNER RUN CLUB · 18 GOING · 7 LEFT · FREE</div></div>
+  </div>
+  <div class="pf">
+    <div class="k">Was at · Sundowner 5K</div>
+    <div class="nm">Aanya, <em>27</em></div>
+    <div class="meta">DESIGNER · RUNS AT DAWN · 2 MUTUAL CLUBS</div>
+    <div class="bio">Long run, longer brunch, and a bookshop I have no business being in. I lose every argument about where to eat.</div>
+  </div>
+</div>
+
+</body>
+</html>

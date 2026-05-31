@@ -104,7 +104,7 @@ class PersonRow extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: CatchSpacing.s5,
-            vertical: 10,
+            vertical: CatchSpacing.micro10,
           ),
           child: Row(
             children: [
@@ -153,7 +153,7 @@ class _ChatLayout extends StatelessWidget {
             Expanded(
               child: Text(
                 data.name,
-                style: CatchTextStyles.titleM(context),
+                style: CatchTextStyles.sectionTitle(context),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -167,7 +167,11 @@ class _ChatLayout extends StatelessWidget {
           gapH2,
           Row(
             children: [
-              Icon(CatchIcons.directionsRunRounded, size: 11, color: t.ink3),
+              Icon(
+                CatchIcons.directionsRunRounded,
+                size: CatchIcon.micro,
+                color: t.ink3,
+              ),
               gapW3,
               Expanded(
                 child: Text(
@@ -203,7 +207,10 @@ class _ChatLayout extends StatelessWidget {
             if (data.unreadCount > 0) ...[
               gapW8,
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CatchSpacing.micro6 + CatchStroke.hairline,
+                  vertical: CatchSpacing.micro2,
+                ),
                 decoration: BoxDecoration(
                   color: t.primary,
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
@@ -238,7 +245,7 @@ class _RosterLayout extends StatelessWidget {
       children: [
         Text(
           data.name,
-          style: CatchTextStyles.titleM(context),
+          style: CatchTextStyles.sectionTitle(context),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

@@ -17,8 +17,8 @@ class CatchHorizontalRail extends StatelessWidget {
     required this.itemBuilder,
     this.trailing,
     this.showDivider = true,
-    this.height = 92,
-    this.spacing = 12,
+    this.height = CatchLayout.horizontalRailHeight,
+    this.spacing = CatchSpacing.s3,
     this.headerPadding = _defaultHeaderPadding,
     this.listPadding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
   });
@@ -35,9 +35,9 @@ class CatchHorizontalRail extends StatelessWidget {
 
   static const _defaultHeaderPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
-    14,
+    CatchSpacing.micro14,
     CatchSpacing.s5,
-    8,
+    CatchSpacing.s2,
   );
 
   @override
@@ -56,7 +56,10 @@ class CatchHorizontalRail extends StatelessWidget {
         if (showDivider)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-            child: Divider(color: CatchTokens.of(context).line, height: 24),
+            child: Divider(
+              color: CatchTokens.of(context).line,
+              height: CatchLayout.horizontalRailDividerHeight,
+            ),
           ),
       ],
     );

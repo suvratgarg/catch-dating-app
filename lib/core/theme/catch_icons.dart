@@ -153,6 +153,7 @@ abstract final class CatchIcons {
   static IconData get discountOutlined => Icons.discount_outlined;
   static IconData get diversity3Outlined => Icons.diversity_3_outlined;
   static IconData get downloadRounded => Icons.download_rounded;
+  static IconData get dragIndicatorRounded => Icons.drag_indicator_rounded;
   static IconData get ecoOutlined => Icons.eco_outlined;
   static IconData get editLocationAltOutlined =>
       Icons.edit_location_alt_outlined;

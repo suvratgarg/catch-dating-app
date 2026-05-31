@@ -44,7 +44,7 @@ class CatchDaySectionHeader extends StatelessWidget {
               label.toUpperCase(),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.kickerCapsLg(context, color: t.primary),
+              style: CatchTextStyles.kickerLg(context, color: t.primary),
             ),
           ),
           if (count != null) _AnimatedCount(count: count!, color: t.ink2),

@@ -47,6 +47,65 @@ Current named contract: `profileTabBodyPadding` in
 `lib/user_profile/presentation/widgets/profile_tab.dart` uses 20 px horizontal,
 8 px top, and 32 px bottom for Profile Edit and Preview tabs.
 
+## Sizing & Constraints
+
+Catch must scale seamlessly across phone sizes and Dynamic Type. **Prefer
+constraints over constant dimensions.** Hardcoded heights/widths that wrap
+content are the main cause of clipping at large text scales and of cramped or
+stretched layouts on small/large devices.
+
+This doctrine is enforced by **`tool/check_sizing.sh`** (wire into CI next to
+`tool/check_data_contract.sh`). It flags fixed `height`/`width`/`dimension`
+named args, fixed `Size(...)`, `BoxConstraints.tight*/expand`, and
+dimension-like `const double` declarations — anywhere under `lib/` except the
+design-system scale (`lib/core/theme/**`), generated code, and retired
+sandboxes. A finding is cleared by **converting it** (below) or **annotating the
+same line** `// sizing:allow: <reason>`.
+
+### Constant dimensions are allowed ONLY for
+- **Icon sizes** via `CatchIcon.{sm,md,lg}` (never a raw number).
+- **Hairlines / dividers** (`1` px) and `0` — auto-exempt.
+- **Spacing gaps** via `CatchSpacing` / `gapH*`/`gapW*` — never a raw
+  `SizedBox(height: 24)`; write `SizedBox(height: CatchSpacing.s6)` or `gapH24`.
+- **Radii** (`CatchRadius`), **border/stroke widths**.
+- **Genuinely fixed art** (logo canvas, QR, platform-spec graphic) — keep and
+  annotate `// sizing:allow: <reason>`.
+
+Everything that sizes *content* uses constraints.
+
+### Banned → preferred
+| Instead of | Use |
+|---|---|
+| `SizedBox(height: 200, child: img)` (media) | `AspectRatio(aspectRatio: 16/10, child: img)` |
+| `Container(height: 120, child: …)` (cap) | `ConstrainedBox(constraints: BoxConstraints(maxHeight: 120), …)` |
+| Fixed row height that wraps text | let it size; add `ConstrainedBox(minHeight:)` only for a floor |
+| Fixed-width sibling columns | `Expanded` / `Flexible` (in a Row) or `FractionallySizedBox` |
+| `BoxConstraints.tightFor(height: X)` | min/max constraints, or `AspectRatio` |
+| Full-bleed content on large screens | center the body in `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)` |
+
+Add **`CatchLayout.maxContentWidth`** (≈ 600) to `lib/core/theme/catch_tokens.dart`
+as the content max-width clamp for large phones/foldables.
+
+### Dynamic Type
+Never fix the height of a text-bearing container. Use min-height + padding and
+let text grow. Validate every screen at text scale **1.0 / 1.5 / 2.0** — no
+clipping or overflow.
+
+### Deterministic conversion algorithm
+For each `tool/check_sizing.sh` finding, in order:
+1. **Icon size?** → `CatchIcon.{sm,md,lg}`.
+2. **Spacing gap** (`SizedBox` with no `child`)? → `CatchSpacing.*` / `gapH*`/`gapW*`.
+3. **Media** (image/photo/backdrop)? → `AspectRatio`; drop the fixed height.
+4. **Box that should fit its child?** → remove the fixed dim; let it size.
+5. **Box that must cap size?** → `ConstrainedBox(maxHeight|maxWidth)`.
+6. **Fixed-width sibling in a Row/Column?** → `Expanded` / `Flexible` / `FractionallySizedBox`.
+7. **Page/content width on large screens?** → wrap body in
+   `ConstrainedBox(maxWidth: CatchLayout.maxContentWidth)`, centered.
+8. **Genuinely fixed art?** → keep + `// sizing:allow: <reason>`.
+
+After each change run `flutter analyze` and verify at text scale 1.0/1.5/2.0 in
+light + dark. Repeat until `tool/check_sizing.sh` exits 0.
+
 ## Scroll Ownership
 
 Each full screen should have one clear vertical scroll owner.

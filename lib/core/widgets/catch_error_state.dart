@@ -67,8 +67,8 @@ class CatchErrorState extends StatelessWidget {
         Text(
           title,
           style: isCompact
-              ? CatchTextStyles.titleM(context)
-              : CatchTextStyles.displayS(context),
+              ? CatchTextStyles.sectionTitle(context)
+              : CatchTextStyles.titleL(context),
           textAlign: TextAlign.center,
         ),
         gapH8,

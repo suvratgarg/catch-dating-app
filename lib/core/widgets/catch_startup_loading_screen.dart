@@ -21,16 +21,16 @@ class CatchStartupLoadingScreen extends StatelessWidget {
             children: [
               Image.asset(
                 iconAsset,
-                width: 96,
-                height: 96,
+                width: CatchLayout.startupLogoExtent,
+                height: CatchLayout.startupLogoExtent,
                 semanticLabel: 'Catch',
               ),
               gapH28,
               const SizedBox.square(
-                dimension: 28,
+                dimension: CatchLayout.startupIndicatorExtent,
                 child: CatchLoadingIndicator(
                   strokeWidth: 2.6,
-                  color: Colors.white,
+                  color: CatchTokens.editorialLight,
                 ),
               ),
             ],

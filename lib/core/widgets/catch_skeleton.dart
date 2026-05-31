@@ -24,14 +24,17 @@ class CatchSkeleton extends StatelessWidget {
   ///
   /// Defaults to full width with a 120 px height — a reasonable proxy for a
   /// [CatchSurface] or another content shell.
-  factory CatchSkeleton.card({double? width, double height = 120}) {
+  factory CatchSkeleton.card({
+    double? width,
+    double height = CatchLayout.skeletonCardHeight,
+  }) {
     return CatchSkeleton._(
       child: Container(
         width: width ?? double.infinity,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          color: CatchTokens.editorialLight,
+          borderRadius: BorderRadius.circular(CatchRadius.md),
         ),
       ),
     );
@@ -42,10 +45,10 @@ class CatchSkeleton extends StatelessWidget {
     return CatchSkeleton._(
       child: Container(
         width: width,
-        height: 14,
+        height: CatchLayout.skeletonTextHeight,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4),
+          color: CatchTokens.editorialLight,
+          borderRadius: BorderRadius.circular(CatchRadius.xs),
         ),
       ),
     );
@@ -61,14 +64,16 @@ class CatchSkeleton extends StatelessWidget {
         children: [
           for (var i = 0; i < lines; i++)
             Padding(
-              padding: EdgeInsets.only(bottom: i < lines - 1 ? 8 : 0),
+              padding: EdgeInsets.only(
+                bottom: i < lines - 1 ? CatchSpacing.s2 : CatchSpacing.s0,
+              ),
               child: FractionallySizedBox(
                 widthFactor: i == lines - 1 ? 0.6 : 1.0,
                 child: Container(
-                  height: 14,
+                  height: CatchLayout.skeletonTextHeight,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
+                    color: CatchTokens.editorialLight,
+                    borderRadius: BorderRadius.circular(CatchRadius.xs),
                   ),
                 ),
               ),
@@ -79,13 +84,15 @@ class CatchSkeleton extends StatelessWidget {
   }
 
   /// Circular avatar placeholder.
-  factory CatchSkeleton.circle({double size = 48}) {
+  factory CatchSkeleton.circle({
+    double size = CatchLayout.skeletonCircleExtent,
+  }) {
     return CatchSkeleton._(
       child: Container(
         width: size,
         height: size,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: CatchTokens.editorialLight,
           shape: BoxShape.circle,
         ),
       ),
@@ -111,7 +118,7 @@ class CatchSkeleton extends StatelessWidget {
         colors: [t.raised, t.surface, t.raised],
         stops: const [0.0, 0.5, 1.0],
       ),
-      period: const Duration(milliseconds: 1200),
+      period: CatchMotion.skeletonShimmer,
       child: child,
     );
   }
@@ -124,8 +131,8 @@ class CatchSkeletonList extends StatelessWidget {
   const CatchSkeletonList({
     super.key,
     this.count = 3,
-    this.height = 120,
-    this.spacing = 12,
+    this.height = CatchLayout.skeletonCardHeight,
+    this.spacing = CatchSpacing.s3,
   });
 
   final int count;

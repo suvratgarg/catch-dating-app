@@ -8,13 +8,13 @@ enum CatchControlShape { rounded, pill }
 enum CatchControlTone { surface, raised }
 
 abstract final class CatchControlMetrics {
-  static const double floatingMinHeight = 44;
-  static const double compactMinHeight = 52;
-  static const double mdMinHeight = 56;
-  static const double floatingIconExtent = 40;
+  static const double floatingMinHeight = CatchSpacing.s11;
+  static const double compactMinHeight = CatchSpacing.s12 + CatchSpacing.s1;
+  static const double mdMinHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double floatingIconExtent = CatchSpacing.s10;
   static const double compactIconExtent = compactMinHeight;
   static const double mdIconExtent = mdMinHeight;
-  static const double stepperIconExtent = 44;
+  static const double stepperIconExtent = CatchSpacing.s11;
 
   static double minHeight(CatchControlSize size) => switch (size) {
     CatchControlSize.floating => floatingMinHeight,
@@ -28,30 +28,43 @@ abstract final class CatchControlMetrics {
     CatchControlSize.md => mdIconExtent,
   };
 
+  static BoxConstraints squareConstraints(double extent) => BoxConstraints(
+    minWidth: extent,
+    maxWidth: extent,
+    minHeight: extent,
+    maxHeight: extent,
+  );
+
   static double radius(CatchControlShape shape) => switch (shape) {
     CatchControlShape.rounded => CatchRadius.sm,
     CatchControlShape.pill => CatchRadius.pill,
   };
 
   static EdgeInsets contentPadding(CatchControlSize size) => switch (size) {
-    CatchControlSize.floating => const EdgeInsets.symmetric(horizontal: 12),
-    CatchControlSize.compact => const EdgeInsets.symmetric(horizontal: 12),
-    CatchControlSize.md => const EdgeInsets.symmetric(horizontal: 14),
+    CatchControlSize.floating => const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.s3,
+    ),
+    CatchControlSize.compact => const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.s3,
+    ),
+    CatchControlSize.md => const EdgeInsets.symmetric(
+      horizontal: CatchSpacing.micro14,
+    ),
   };
 
   static EdgeInsets textFieldContentPadding(CatchControlSize size) =>
       switch (size) {
         CatchControlSize.floating => const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 0,
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.s0,
         ),
         CatchControlSize.compact => const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 0,
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.s0,
         ),
         CatchControlSize.md => const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+          horizontal: CatchSpacing.micro14,
+          vertical: CatchSpacing.micro14,
         ),
       };
 }
@@ -96,9 +109,12 @@ class CatchControlShell extends StatelessWidget {
       decoration: BoxDecoration(
         color: _fillColor(t),
         borderRadius: radius,
-        border: Border.all(color: _borderColor(t), width: 1.5),
+        border: Border.all(
+          color: _borderColor(t),
+          width: CatchStroke.underline,
+        ),
         boxShadow: focused && !hasError
-            ? [BoxShadow(color: t.primarySoft, blurRadius: 0, spreadRadius: 3)]
+            ? CatchElevation.focusRing(t)
             : CatchElevation.none,
       ),
       child: child,

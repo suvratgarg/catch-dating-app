@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 
@@ -43,8 +42,8 @@ class CatchBrowseHeader extends StatelessWidget {
   final Color? backgroundColor;
   final EdgeInsetsGeometry padding;
 
-  static const double _contentHeight = 60;
-  static const double _searchExtent = CatchControlMetrics.compactIconExtent;
+  static const double _contentHeight = CatchLayout.browseHeaderContentHeight;
+  static const double _searchExtent = CatchLayout.browseHeaderSearchExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +143,7 @@ class _TitleLayout extends StatelessWidget {
                 title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.screenHeadline(context),
+                style: CatchTextStyles.headline(context),
               ),
               gapH4,
               Text(
@@ -210,7 +209,11 @@ class _MorphingSearchControl extends StatelessWidget {
                       size: CatchBrowseHeader._searchExtent,
                       onTap: onOpenSearch,
                       background: t.raised,
-                      child: Icon(CatchIcons.search, size: 20, color: t.ink),
+                      child: Icon(
+                        CatchIcons.search,
+                        size: CatchIcon.control,
+                        color: t.ink,
+                      ),
                     ),
                   ),
                 ),

@@ -138,6 +138,10 @@ class _CatchMetricDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 1, height: 36, color: color);
+    return Container(
+      width: CatchStroke.hairline,
+      height: CatchSpacing.s9,
+      color: color,
+    );
   }
 }

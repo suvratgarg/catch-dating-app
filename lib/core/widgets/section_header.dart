@@ -9,7 +9,7 @@ class SectionHeader extends StatelessWidget {
     this.trailing,
     this.uppercase = false,
     this.heavy = false,
-    this.padding = const EdgeInsets.only(bottom: 8),
+    this.padding = const EdgeInsets.only(bottom: CatchSpacing.s2),
     this.titleStyle,
   });
 
@@ -27,7 +27,7 @@ class SectionHeader extends StatelessWidget {
     final style =
         titleStyle ??
         (heavy
-            ? CatchTextStyles.cardTitle(context, color: t.ink)
+            ? CatchTextStyles.titleL(context, color: t.ink)
             : CatchTextStyles.sectionTitle(context, color: t.ink));
     return Padding(
       padding: padding,

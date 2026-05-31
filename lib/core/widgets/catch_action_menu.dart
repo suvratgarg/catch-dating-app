@@ -53,10 +53,13 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
 
     return MenuAnchor(
       controller: _controller,
-      alignmentOffset: const Offset(-160, CatchSpacing.s1),
+      alignmentOffset: const Offset(
+        CatchLayout.actionMenuAlignmentX,
+        CatchSpacing.s1,
+      ),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(t.surface),
-        elevation: const WidgetStatePropertyAll(8),
+        elevation: const WidgetStatePropertyAll(CatchElevation.menu),
         shadowColor: WidgetStatePropertyAll(t.overlay),
         surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
         shape: WidgetStatePropertyAll(
@@ -72,7 +75,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       menuChildren: [
         for (final item in widget.items)
           SizedBox(
-            width: 192,
+            width: CatchLayout.actionMenuWidth,
             child: MenuItemButton(
               onPressed: item.enabled
                   ? () {
@@ -88,7 +91,9 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
                       color: _itemColor(t, item),
                     ),
               style: ButtonStyle(
-                minimumSize: const WidgetStatePropertyAll(Size(0, 44)),
+                minimumSize: const WidgetStatePropertyAll(
+                  Size(CatchSpacing.s0, CatchLayout.menuItemHeightCompact),
+                ),
                 padding: const WidgetStatePropertyAll(
                   EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
                 ),

@@ -47,10 +47,13 @@ class SettingsRow extends StatelessWidget {
     final color = danger ? t.primary : t.ink;
 
     final child = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.micro14,
+        vertical: CatchSpacing.s3 + CatchStroke.hairline,
+      ),
       child: Row(
         children: [
-          Icon(icon, color: danger ? t.primary : t.ink2, size: 22),
+          Icon(icon, color: danger ? t.primary : t.ink2, size: CatchIcon.row),
           gapW12,
           Expanded(
             child: Text(
@@ -88,7 +91,7 @@ class SettingsRow extends StatelessWidget {
     );
 
     return Material(
-      color: Colors.transparent,
+      color: t.surface.withValues(alpha: CatchOpacity.none),
       child: InkWell(onTap: onTap, child: child),
     );
   }

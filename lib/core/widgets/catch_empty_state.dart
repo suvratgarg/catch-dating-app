@@ -52,7 +52,7 @@ class CatchEmptyState extends StatelessWidget {
             title: title,
             message: message,
             action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.cardTitle(context),
+            titleStyle: titleStyle ?? CatchTextStyles.titleL(context),
             messageStyle:
                 messageStyle ??
                 CatchTextStyles.bodyLead(context, color: t.ink2),

@@ -41,21 +41,30 @@ class ErrorBanner extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.fromLTRB(
           CatchSpacing.s4,
-          8,
+          CatchSpacing.s2,
           CatchSpacing.s4,
-          0,
+          CatchSpacing.s0,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.micro10,
+        ),
         decoration: BoxDecoration(
-          color: colorScheme.errorContainer.withAlpha(120),
+          color: colorScheme.errorContainer.withValues(
+            alpha: CatchOpacity.errorContainerFill,
+          ),
           borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(color: colorScheme.error.withAlpha(60)),
+          border: Border.all(
+            color: colorScheme.error.withValues(
+              alpha: CatchOpacity.errorContainerBorder,
+            ),
+          ),
         ),
         child: Row(
           children: [
             Icon(
               CatchIcons.errorOutlineRounded,
-              size: 16,
+              size: CatchIcon.xs,
               color: colorScheme.error,
             ),
             gapW8,
@@ -74,7 +83,7 @@ class ErrorBanner extends StatelessWidget {
                 label: 'Try again',
                 onPressed: onRetry,
                 foregroundColor: colorScheme.error,
-                minimumSize: const Size(0, 32),
+                minimumSize: const Size(CatchSpacing.s0, CatchSpacing.s8),
                 padding: EdgeInsets.zero,
               ),
             ],

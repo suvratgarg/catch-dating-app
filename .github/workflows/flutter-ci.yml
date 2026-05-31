@@ -25,6 +25,15 @@ jobs:
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
 
+      - name: Sizing doctrine check
+        run: bash tool/check_sizing.sh
+
+      - name: UI local-constant wrappers check
+        run: bash tool/check_ui_local_constant_wrappers.sh
+
+      - name: Design-token drift check
+        run: bash tool/check_design_tokens.sh
+
       - name: Unit & widget tests
         run: flutter test --concurrency=1
 

@@ -29,7 +29,7 @@ class IconBtn extends StatelessWidget {
     this.borderRadius,
   });
 
-  static const double defaultSize = 40;
+  static const double defaultSize = CatchSpacing.s10;
 
   final Widget child;
   final VoidCallback? onTap;

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
@@ -40,20 +42,22 @@ class CatchEventThumbnail extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (hasPhoto)
-          Image.network(
-            url,
-            fit: fit,
-            errorBuilder: (_, _, _) => _ActivityFallback(
-              activityKind: activityKind,
-              iconAlignment: iconAlignment,
-            ),
-            loadingBuilder: (context, child, progress) {
-              if (progress == null) return child;
-              return _ActivityFallback(
+          GradedImage(
+            child: Image.network(
+              url,
+              fit: fit,
+              errorBuilder: (_, _, _) => _ActivityFallback(
                 activityKind: activityKind,
                 iconAlignment: iconAlignment,
-              );
-            },
+              ),
+              loadingBuilder: (context, child, progress) {
+                if (progress == null) return child;
+                return _ActivityFallback(
+                  activityKind: activityKind,
+                  iconAlignment: iconAlignment,
+                );
+              },
+            ),
           )
         else
           _ActivityFallback(
@@ -78,12 +82,12 @@ class _ActivityFallback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return EventActivityBackdrop(
-      visual: eventActivityVisual(activityKind),
+      visual: eventActivityVisual(activityKind, context: context),
       dense: true,
       iconAlignment: iconAlignment,
-      iconSize: 144,
-      iconOpacity: 0.24,
-      patternOpacity: 0.22,
+      iconSize: CatchSpacing.s16 * 2 + CatchSpacing.s4,
+      iconOpacity: CatchOpacity.fallbackArtworkIcon,
+      patternOpacity: CatchOpacity.ticketPerforationLine,
     );
   }
 }
@@ -100,13 +104,15 @@ class _Scrim extends StatelessWidget {
       CatchEventThumbnailScrim.bottom => [
         Colors.transparent,
         Colors.transparent,
-        Colors.black.withValues(alpha: 0.36),
-        Colors.black.withValues(alpha: 0.62),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
       ],
       CatchEventThumbnailScrim.full => [
-        Colors.black.withValues(alpha: 0.05),
-        Colors.black.withValues(alpha: 0.36),
-        Colors.black.withValues(alpha: 0.62),
+        CatchTokens.editorialDark.withValues(
+          alpha: CatchOpacity.photoScrimBarelyVisible,
+        ),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.mutedContent),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.gradientBand),
       ],
     };
     final stops = switch (style) {

@@ -29,9 +29,9 @@ class CatchStepFlowHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        12,
+        CatchSpacing.s3,
         CatchSpacing.s5,
-        0,
+        CatchSpacing.s0,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,7 +39,7 @@ class CatchStepFlowHeader extends StatelessWidget {
           Row(
             children: [
               SizedBox.square(
-                dimension: 40,
+                dimension: CatchSpacing.s10,
                 child: onBack == null
                     ? const SizedBox.shrink()
                     : IconBtn(
@@ -48,7 +48,7 @@ class CatchStepFlowHeader extends StatelessWidget {
                           message: 'Back',
                           child: Icon(
                             CatchIcons.arrowBackIosNewRounded,
-                            size: 18,
+                            size: CatchIcon.md,
                             color: t.ink,
                           ),
                         ),
