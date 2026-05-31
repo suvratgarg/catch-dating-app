@@ -74,4 +74,36 @@ class ExternalShareController {
       ),
     );
   }
+
+  Future<void> sharePngFile({
+    required Uint8List pngBytes,
+    required String fileName,
+    String? subject,
+    String? text,
+    Rect? origin,
+  }) {
+    final file = XFile.fromData(
+      pngBytes,
+      name: fileName,
+      mimeType: 'image/png',
+      length: pngBytes.length,
+    );
+    return withBackendErrorContext(
+      () => _share(
+        ShareParams(
+          text: text,
+          subject: subject,
+          title: fileName,
+          files: [file],
+          fileNameOverrides: [fileName],
+          sharePositionOrigin: origin,
+        ),
+      ),
+      context: const BackendErrorContext(
+        service: BackendService.external,
+        action: 'share png file',
+        resource: 'share_sheet',
+      ),
+    );
+  }
 }

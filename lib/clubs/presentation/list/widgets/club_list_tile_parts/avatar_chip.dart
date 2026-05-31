@@ -16,8 +16,8 @@ class _AvatarChip extends StatelessWidget {
 
   final VoidCallback? onTap;
 
-  static const double _tileSize = 64;
-  static const double _columnWidth = 76;
+  static const double _tileSize = CatchSpacing.s16;
+  static const double _columnWidth = CatchLayout.clubAvatarRailColumnWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +44,10 @@ class _AvatarChip extends StatelessWidget {
                     width: showLiveBadge ? 2 : 1,
                   ),
                 ),
-                padding: const EdgeInsets.all(2),
+                padding: const EdgeInsets.all(CatchSpacing.micro2),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  child: _ClubImage(
-                    club: club,
-                    preferProfileImage: true,
-                    showFallbackFooterLabel: false,
-                  ),
+                  child: _ClubImage(club: club, preferProfileImage: true),
                 ),
               ),
               gapH6,

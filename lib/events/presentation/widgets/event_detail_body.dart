@@ -15,12 +15,12 @@ import 'package:catch_dating_app/events/presentation/event_booking_controller.da
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
-import 'package:catch_dating_app/events/presentation/event_invite_share_copy.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -257,8 +257,8 @@ class _EventInviteLoopCard extends StatelessWidget {
       backgroundColor: surfaceStyle.surfaceBackground,
       borderColor: surfaceStyle.isDark
           ? surfaceStyle.borderColor
-          : t.primary.withValues(alpha: 0.24),
-      padding: const EdgeInsets.all(14),
+          : t.primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -364,7 +364,7 @@ class _EventCompanionCard extends StatelessWidget {
     return CatchSurface(
       backgroundColor: surfaceStyle.surfaceBackground,
       borderColor: surfaceStyle.borderColor,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -451,44 +451,12 @@ Future<void> _shareEvent(
   ExternalShareController share,
   String? inviteCode,
 ) async {
-  final box = context.findRenderObject() as RenderBox?;
-  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  try {
-    await share.shareText(
-      text: EventInviteShareCopy.eventDetailInviteText(
-        event,
-        inviteCode: inviteCode,
-      ),
-      subject: EventInviteShareCopy.subject(event),
-      origin: origin,
-    );
-  } on Object catch (error, stackTrace) {
-    final actionError = ExternalActionException(
-      'Failed to share event',
-      cause: error,
-      stackTrace: stackTrace,
-    );
-
-    if (context.mounted) {
-      ProviderScope.containerOf(context, listen: false)
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              actionError,
-              stackTrace: stackTrace,
-              context: const BackendErrorContext(
-                service: BackendService.external,
-                action: 'share event',
-                resource: 'share_sheet',
-              ),
-            ),
-          );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open share sheet.')),
-      );
-    }
-  }
+  await showEventShareCardSheet(
+    context,
+    event: event,
+    share: share,
+    inviteCode: inviteCode,
+  );
 }
 
 Future<void> _addEventToCalendar(
@@ -562,7 +530,12 @@ class _GuestBookCta extends StatelessWidget {
       child: ColoredBox(
         color: darkSurface ? t.ink : t.surface,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+            CatchSpacing.s4,
+            CatchSpacing.s4,
+          ),
           child: CatchButton(
             label: 'Sign in to book this event',
             onPressed: () => context.go(
@@ -579,7 +552,7 @@ class _GuestBookCta extends StatelessWidget {
             ),
             icon: Icon(
               CatchIcons.lockOutlineRounded,
-              size: 18,
+              size: CatchIcon.md,
               color: t.primary,
             ),
             fullWidth: true,

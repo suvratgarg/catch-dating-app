@@ -50,9 +50,11 @@ import {
   DEFAULT_PERSONA_CATALOG_PATH,
   DEFAULT_PHOTO_ACTIVITY_TAXONOMY_PATH,
   DEFAULT_PHOTO_COMPOSITION_INDEX_PATH,
+  DEFAULT_PERSONA_PROFILE_PROJECTION_PATH,
   formatPersonaPhotoGenerationPlanMarkdown,
   loadPhotoActivityTaxonomy,
   loadPhotoCompositionIndex,
+  personaProfileProjection,
   personaPhotoGenerationPlan,
   personaCatalogSummary,
   validatePersonaCatalog,
@@ -101,6 +103,10 @@ export async function main(argv = process.argv.slice(2)) {
   }
   if (command === "persona-photo-plan") {
     printPersonaPhotoPlan(args);
+    return;
+  }
+  if (command === "persona-profile-projection") {
+    printPersonaProfileProjection(args);
     return;
   }
   if (command === "persona-image-generate") {
@@ -817,6 +823,8 @@ function parseArgs(argv) {
     photoTaxonomy: null,
     photoComposition: null,
     photoPlanFormat: "text",
+    assetStatuses: ["uploaded"],
+    output: null,
     imagePilotConfig: null,
     imageProvider: null,
     imageModel: null,
@@ -829,6 +837,8 @@ function parseArgs(argv) {
     requirePublishedAssets: false,
     demoScenario: null,
     apply: false,
+    update: false,
+    check: false,
     allowProd: false,
     resetSynthetic: false,
     viaSwipes: false,
@@ -846,6 +856,8 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") args.help = true;
     else if (arg === "--json") args.json = true;
     else if (arg === "--apply") args.apply = true;
+    else if (arg === "--update") args.update = true;
+    else if (arg === "--check") args.check = true;
     else if (arg === "--allow-prod") args.allowProd = true;
     else if (arg === "--reset-synthetic") args.resetSynthetic = true;
     else if (arg === "--via-swipes") args.viaSwipes = true;
@@ -890,6 +902,8 @@ function parseArgs(argv) {
     else if (arg === "--photo-taxonomy") args.photoTaxonomy = requireValue(argv, ++i, arg);
     else if (arg === "--photo-composition") args.photoComposition = requireValue(argv, ++i, arg);
     else if (arg === "--format") args.photoPlanFormat = requireValue(argv, ++i, arg);
+    else if (arg === "--asset-statuses") args.assetStatuses = splitCsv(requireValue(argv, ++i, arg));
+    else if (arg === "--output") args.output = requireValue(argv, ++i, arg);
     else if (arg === "--image-pilot-config") args.imagePilotConfig = requireValue(argv, ++i, arg);
     else if (arg === "--image-provider") args.imageProvider = requireValue(argv, ++i, arg);
     else if (arg === "--image-model") args.imageModel = requireValue(argv, ++i, arg);
@@ -910,6 +924,9 @@ function parseArgs(argv) {
     args.seedPrefix = args.seedPrefix === DEFAULT_DEMO_OPS_PREFIX ?
       DEFAULT_SEED_PREFIX :
       args.seedPrefix;
+  }
+  if (args.update && args.check) {
+    throw new Error("--update and --check cannot be used together.");
   }
   return {command, args};
 }
@@ -1016,6 +1033,66 @@ function printPersonaPhotoPlan(args) {
     );
     console.log(`  ${photo.scene}`);
   }
+}
+
+function printPersonaProfileProjection(args) {
+  const {catalog, result, summary, photoTaxonomy, photoCompositionIndex} =
+    validatePersonaCatalogFromArgs(args);
+  if (!result.valid) {
+    if (args.json) {
+      console.log(JSON.stringify({valid: false, summary, issues: result.issues}, null, 2));
+    } else {
+      console.error("Persona catalog invalid");
+      for (const issue of result.issues) console.error(`- ${issue}`);
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  const projection = personaProfileProjection(catalog, {
+    assetStatuses: args.assetStatuses,
+    photoTaxonomy,
+    photoCompositionIndex,
+  });
+  const outputPath = args.output ?
+    path.resolve(path.resolve(toolDir, "../.."), args.output) :
+    DEFAULT_PERSONA_PROFILE_PROJECTION_PATH;
+
+  if (args.check) {
+    const expected = stableJson(projection);
+    const actual = fs.existsSync(outputPath) ?
+      fs.readFileSync(outputPath, "utf8") :
+      null;
+    if (actual !== expected) {
+      console.error("Persona profile projection artifact is stale.");
+      console.error(`Run: node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses ${projection.assetStatuses.join(",")} --output ${path.relative(path.resolve(toolDir, "../.."), outputPath)} --update`);
+      process.exitCode = 1;
+    } else if (!args.json) {
+      console.log(`Persona profile projection artifact is current: ${path.relative(path.resolve(toolDir, "../.."), outputPath)}`);
+    }
+    return;
+  }
+
+  if (args.update) {
+    fs.mkdirSync(path.dirname(outputPath), {recursive: true});
+    fs.writeFileSync(outputPath, stableJson(projection));
+    if (!args.json) {
+      console.log(`Wrote ${path.relative(path.resolve(toolDir, "../.."), outputPath)}`);
+    }
+    return;
+  }
+
+  if (args.json) {
+    console.log(JSON.stringify({valid: true, projection}, null, 2));
+    return;
+  }
+
+  console.log("Persona profile projection");
+  console.log(`Catalog: ${projection.catalogId}`);
+  console.log(`Asset statuses: ${projection.assetStatuses.join(", ")}`);
+  console.log(`Personas: ${projection.personaCount}`);
+  console.log(`Projected profile photos: ${projection.projectedPhotoCount}`);
+  console.log("Use --json to emit the app-ready projection payload.");
 }
 
 async function runPersonaImageGenerate(args) {
@@ -1193,6 +1270,10 @@ function requireValue(argv, index, flag) {
   return value;
 }
 
+function stableJson(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
 function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   if (args.json) {
     console.log(JSON.stringify({projectId, apply: args.apply, plan, manifest, appliedSummary}, null, 2));
@@ -1267,6 +1348,7 @@ function printCommands() {
 - list-golden-accounts
 - validate-persona-catalog
 - persona-photo-plan
+- persona-profile-projection
 - persona-image-generate`);
 }
 
@@ -1291,12 +1373,16 @@ Usage:
   node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
   node tool/demo/demo_ops.mjs validate-persona-catalog --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
   node tool/demo/demo_ops.mjs persona-photo-plan --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
+  node tool/demo/demo_ops.mjs persona-profile-projection --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json --json
+  node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check
   node tool/demo/demo_ops.mjs persona-image-generate --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
 
 Common options:
   --env <dev|staging|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit project id.
   --apply                        Write/delete documents. Default is dry run.
+  --update                       Update local generated artifacts for commands that support it.
+  --check                        Check local generated artifacts for commands that support it.
   --allow-prod                   Required for prod writes.
   --json                         Machine-readable output.
   --emulator / --emulator-host   Use Firestore emulator.
@@ -1328,6 +1414,8 @@ Command options:
   --photo-taxonomy <path>        Photo activity taxonomy for persona validation.
   --photo-composition <path>     Photo composition index for persona validation.
   --format <text|markdown|jsonl> persona-photo-plan/persona-image-generate output format.
+  --asset-statuses <statuses>    persona-profile-projection statuses: uploaded, generated, planned, or all.
+  --output <path>                persona-profile-projection artifact path.
   --require-published-assets     Require uploaded persona assets.
   --image-pilot-config <path>    Image generation pilot JSON.
   --personas <id,...>            Persona IDs for persona-image-generate.

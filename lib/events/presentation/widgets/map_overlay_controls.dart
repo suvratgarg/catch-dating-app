@@ -30,7 +30,9 @@ class MapOverlayControls extends StatelessWidget {
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   backgroundColor: CatchTokens.of(
                     context,
-                  ).surface.withValues(alpha: 0.92),
+                  ).surface.withValues(
+                    alpha: CatchOpacity.mapOverlayChromeFill,
+                  ),
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
                 ),
                 const Spacer(),

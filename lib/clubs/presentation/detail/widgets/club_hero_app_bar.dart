@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -13,9 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_detail_hero_backdrop.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_viewport_curve_frame.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -67,26 +64,34 @@ class ClubHeroAppBar extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(CatchSpacing.s2),
         child: CatchTopBarIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
-          backgroundColor: Colors.black.withValues(alpha: 0.35),
-          foregroundColor: Colors.white,
+          backgroundColor: CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.eventHeroOverlayScrim,
+          ),
+          foregroundColor: CatchTokens.editorialLight,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+          padding: const EdgeInsets.only(
+            top: CatchSpacing.s2,
+            bottom: CatchSpacing.s2,
+            right: CatchSpacing.s2,
+          ),
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),
               tooltip: 'Share club',
-              backgroundColor: Colors.black.withValues(alpha: 0.35),
-              foregroundColor: Colors.white,
+              backgroundColor: CatchTokens.editorialDark.withValues(
+                alpha: CatchOpacity.eventHeroOverlayScrim,
+              ),
+              foregroundColor: CatchTokens.editorialLight,
               onPressed: () => unawaited(
                 onShareClub != null
                     ? onShareClub!(buttonContext, club)
@@ -131,12 +136,14 @@ class ClubHeroAppBar extends StatelessWidget {
 double _heroMediaHeightFor(double width, {required bool hasCover}) {
   final mediaWidth = width - (clubInteractionMediaInset * 2);
   final aspectHeight = mediaWidth * 3 / 4;
-  if (!hasCover) return width > 600 ? 164 : 220;
-  return width > 600 ? aspectHeight.clamp(164, 260) : aspectHeight;
+  if (!hasCover) return width > CatchLayout.maxContentWidth ? 164 : 220;
+  return width > CatchLayout.maxContentWidth
+      ? aspectHeight.clamp(164, 260)
+      : aspectHeight;
 }
 
 double _heroCaptionExtentFor(double width) {
-  return width > 600 ? 112 : 152;
+  return width > CatchLayout.maxContentWidth ? 112 : 152;
 }
 
 class _ClubHeroModule extends StatelessWidget {
@@ -200,7 +207,7 @@ class _ClubHeroModule extends StatelessWidget {
                     children: [
                       Icon(
                         CatchIcons.locationOnOutlined,
-                        size: 18,
+                        size: CatchIcon.md,
                         color: t.ink2,
                       ),
                       gapW6,
@@ -232,42 +239,5 @@ Future<void> shareClub(
   Club club,
   ExternalShareController share,
 ) async {
-  final box = context.findRenderObject() as RenderBox?;
-  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final uri = AppDeepLinks.club(club.id);
-
-  try {
-    await share.shareText(
-      text:
-          'Check out ${club.name}, a club in ${club.area}, ${cityLabel(club.location)}: ${uri.toString()}',
-      subject: club.name,
-      origin: origin,
-    );
-  } on Object catch (error, stackTrace) {
-    final actionError = ExternalActionException(
-      'Failed to share club',
-      cause: error,
-      stackTrace: stackTrace,
-    );
-
-    if (context.mounted) {
-      ProviderScope.containerOf(context, listen: false)
-          .read(errorLoggerProvider)
-          .logAppException(
-            normalizeBackendError(
-              actionError,
-              stackTrace: stackTrace,
-              context: const BackendErrorContext(
-                service: BackendService.external,
-                action: 'share club',
-                resource: 'share_sheet',
-              ),
-            ),
-          );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open share sheet.')),
-      );
-    }
-  }
+  await showClubShareCardSheet(context, club: club, share: share);
 }

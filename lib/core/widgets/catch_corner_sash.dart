@@ -40,7 +40,7 @@ class CatchCornerSash extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 12, color: palette.foreground),
+              Icon(icon, size: CatchIcon.badge, color: palette.foreground),
               gapW4,
             ],
             Text(
@@ -79,16 +79,22 @@ class CatchCornerSash extends StatelessWidget {
 
   _SashPalette _palette(CatchTokens t) {
     return switch (tone) {
-      CatchSashTone.brand =>
-        _SashPalette(background: t.primary, foreground: t.primaryInk),
+      CatchSashTone.brand => _SashPalette(
+        background: t.primary,
+        foreground: t.primaryInk,
+      ),
       CatchSashTone.success => _SashPalette(
         background: t.success,
-        foreground: Colors.white,
+        foreground: CatchTokens.editorialLight,
       ),
-      CatchSashTone.solid =>
-        _SashPalette(background: t.ink, foreground: t.surface),
+      CatchSashTone.solid => _SashPalette(
+        background: t.ink,
+        foreground: t.surface,
+      ),
       CatchSashTone.surface => _SashPalette(
-        background: Colors.white.withValues(alpha: 0.92),
+        background: CatchTokens.editorialLight.withValues(
+          alpha: CatchOpacity.surfaceSashFill,
+        ),
         foreground: t.ink,
       ),
     };

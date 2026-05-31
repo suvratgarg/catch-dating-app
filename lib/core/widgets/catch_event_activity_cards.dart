@@ -8,7 +8,6 @@ import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart
 import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surface.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Production ticket-style event card backed by the shared activity visual
 /// schema. The schema is presentation-only and can change without data
@@ -46,124 +45,138 @@ class CatchEventTicketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(activityKind);
+    final visual = eventActivityVisual(activityKind, context: context);
     final status = statusLabel?.trim();
     final card = SizedBox(
       width: width,
-      child: PhysicalShape(
-        clipper: const EventTicketShapeClipper(
-          cornerRadius: CatchRadius.lg,
-          notchRadius: eventTicketNotchRadius,
-          notchDepth: eventTicketNotchDepth,
-          notchCenterY: eventTicketMediaHeight + eventTicketDividerHeight / 2,
-        ),
-        clipBehavior: Clip.antiAlias,
-        color: t.surface,
-        elevation: 4,
-        shadowColor: Colors.black.withValues(alpha: 0.16),
-        child: CatchSurface(
-          onTap: onTap,
-          padding: EdgeInsets.zero,
-          radius: CatchRadius.lg,
-          elevation: CatchSurfaceElevation.none,
-          clipBehavior: Clip.none,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: eventTicketMediaHeight,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    EventActivityBackdrop(visual: visual),
-                    Positioned(
-                      left: CatchSpacing.s4,
-                      bottom: CatchSpacing.s4,
-                      child: _OutlineStamp(label: visual.label),
-                    ),
-                    if (status != null && status.isNotEmpty)
-                      Positioned(
-                        top: CatchSpacing.s3,
-                        right: CatchSpacing.s3,
-                        left: CatchSpacing.s3,
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: EventStatusPill(
-                            label: status,
-                            color: visual.accent,
-                            tone: EventStatusPillTone.dark,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const EventTicketPerforatedDivider(),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s4,
-                  CatchSpacing.s3,
-                  CatchSpacing.s4,
-                  CatchSpacing.s4,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final mediaHeight = constraints.hasBoundedWidth
+              ? constraints.maxWidth * 10 / 16
+              : 136.0; // fallback when unconstrained (should not happen)
+          final notchCenterY = mediaHeight + eventTicketDividerHeight / 2;
+          return PhysicalShape(
+            clipper: EventTicketShapeClipper(
+              cornerRadius: CatchRadius.lg,
+              notchRadius: eventTicketNotchRadius,
+              notchDepth: eventTicketNotchDepth,
+              notchCenterY: notchCenterY,
+            ),
+            clipBehavior: Clip.antiAlias,
+            color: t.surface,
+            elevation: CatchElevation.physicalTicket,
+            child: CatchSurface(
+              onTap: onTap,
+              padding: EdgeInsets.zero,
+              radius: CatchRadius.lg,
+              elevation: CatchSurfaceElevation.none,
+              clipBehavior: Clip.none,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AspectRatio(
+                    aspectRatio: CatchAspectRatio.activityCard,
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        EventClockMark(
-                          accent: visual.accent,
-                          time: clockTime ?? _parseClockTimeLabel(timeLabel),
-                          size: 38,
-                          ringColor: t.ink2,
-                          hourStrokeWidth: 2.2,
-                          minuteStrokeWidth: 1.7,
-                          hourLengthFactor: 0.52,
-                          minuteLengthFactor: 0.78,
-                          centerDotRadius: 2.2,
+                        EventActivityBackdrop(visual: visual),
+                        Positioned(
+                          left: CatchSpacing.s4,
+                          bottom: CatchSpacing.s4,
+                          child: _OutlineStamp(label: visual.label),
                         ),
-                        gapW10,
-                        Expanded(
-                          child: _MonoLabel(
-                            '$timeLabel / $countdownLabel',
-                            color: t.primary,
+                        if (status != null && status.isNotEmpty)
+                          Positioned(
+                            top: CatchSpacing.s3,
+                            right: CatchSpacing.s3,
+                            left: CatchSpacing.s3,
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: EventStatusPill(
+                                label: status,
+                                color: visual.accent,
+                                tone: EventStatusPillTone.dark,
+                              ),
+                            ),
                           ),
-                        ),
-                        gapW8,
-                        Text(
-                          priceLabel,
-                          style: CatchTextStyles.labelL(context, color: t.ink),
-                        ),
                       ],
                     ),
-                    gapH10,
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.eventDisplay(
-                        context,
-                        size: 24,
-                        height: 1.02,
-                      ),
+                  ),
+                  const EventTicketPerforatedDivider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      CatchSpacing.s4,
+                      CatchSpacing.s3,
+                      CatchSpacing.s4,
+                      CatchSpacing.s4,
                     ),
-                    gapH6,
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            EventClockMark(
+                              accent: visual.accent,
+                              time:
+                                  clockTime ?? _parseClockTimeLabel(timeLabel),
+                              size: 38,
+                              ringColor: t.ink2,
+                              hourStrokeWidth: 2.2,
+                              minuteStrokeWidth: 1.7,
+                              hourLengthFactor: 0.52,
+                              minuteLengthFactor: 0.78,
+                              centerDotRadius: 2.2,
+                            ),
+                            gapW10,
+                            Expanded(
+                              child: _MonoLabel(
+                                '$timeLabel / $countdownLabel',
+                                color: t.primary,
+                              ),
+                            ),
+                            gapW8,
+                            Text(
+                              priceLabel,
+                              style: CatchTextStyles.labelL(
+                                context,
+                                color: t.ink,
+                              ),
+                            ),
+                          ],
+                        ),
+                        gapH10,
+                        Text(
+                          title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.eventDisplay(
+                            context,
+                            size: 24,
+                            height: 1.02,
+                          ),
+                        ),
+                        gapH6,
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                        gapH12,
+                        _MonoLabel(capacityLabel, color: t.ink2),
+                      ],
                     ),
-                    gapH12,
-                    _MonoLabel(capacityLabel, color: t.ink2),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
     return heroTag == null
@@ -203,11 +216,11 @@ class CatchEventSpotlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(activityKind);
+    final visual = eventActivityVisual(activityKind, context: context);
     final backdrop = EventActivityBackdrop(
       visual: visual,
       dense: true,
-      iconSize: 180,
+      iconSize: CatchSpacing.s16 * 2 + CatchSpacing.s12 + CatchSpacing.s1,
       iconOpacity: 0.16,
       patternOpacity: 0.26,
     );
@@ -223,7 +236,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AspectRatio(
-            aspectRatio: 16 / 9,
+            aspectRatio: CatchAspectRatio.wide16x9,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -261,7 +274,9 @@ class CatchEventSpotlightCard extends StatelessWidget {
                 children: [
                   _MonoLabel(
                     kicker.toUpperCase(),
-                    color: t.primarySoft.withValues(alpha: 0.72),
+                    color: t.primarySoft.withValues(
+                      alpha: CatchOpacity.scrimFill,
+                    ),
                   ),
                   gapH8,
                   Text(
@@ -282,18 +297,26 @@ class CatchEventSpotlightCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: CatchTextStyles.bodyM(
                       context,
-                      color: t.primaryInk.withValues(alpha: 0.76),
+                      color: t.primaryInk.withValues(
+                        alpha: CatchOpacity.onFillMuted,
+                      ),
                     ),
                   ),
                   gapH16,
                   Row(
                     children: [
-                      Icon(CatchIcons.group, size: 18, color: visual.accent),
+                      Icon(
+                        CatchIcons.group,
+                        size: CatchIcon.md,
+                        color: visual.accent,
+                      ),
                       gapW8,
                       Expanded(
                         child: _MonoLabel(
                           capacityLabel,
-                          color: t.primaryInk.withValues(alpha: 0.82),
+                          color: t.primaryInk.withValues(
+                            alpha: CatchOpacity.primaryInkProminent,
+                          ),
                         ),
                       ),
                       Text(
@@ -331,7 +354,7 @@ class _OutlineStamp extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border.all(color: t.accent, width: 1.5),
-          color: t.primaryInk.withValues(alpha: 0.12),
+          color: t.primaryInk.withValues(alpha: CatchOpacity.subtleFill),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -353,11 +376,11 @@ class _DarkTimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-      ),
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      radius: CatchRadius.md,
+      backgroundColor: t.darkScrimFill,
+      borderWidth: 0,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
@@ -367,13 +390,13 @@ class _DarkTimeChip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _MonoLabel(sublabel.toUpperCase(), color: Colors.white70),
+            _MonoLabel(sublabel.toUpperCase(), color: t.darkMutedInk),
             gapH2,
             Text(
               label,
-              style: CatchTextStyles.titleM(
+              style: CatchTextStyles.sectionTitle(
                 context,
-                color: Colors.white,
+                color: t.darkPillInk,
               ).copyWith(fontWeight: FontWeight.w800),
             ),
           ],
@@ -390,15 +413,21 @@ class _RoundGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.18),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.42)),
+    return CatchSurface(
+      width: CatchSpacing.s12 + CatchSpacing.s2,
+      height: CatchSpacing.s12 + CatchSpacing.s2,
+      radius: CatchRadius.pill,
+      backgroundColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.lightOverlayFill,
       ),
-      child: Icon(icon, color: Colors.white, size: 26),
+      borderColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.lightOverlayBorder,
+      ),
+      child: Icon(
+        icon,
+        color: CatchTokens.editorialLight,
+        size: CatchIcon.lg + CatchSpacing.micro2,
+      ),
     );
   }
 }
@@ -415,13 +444,7 @@ class _MonoLabel extends StatelessWidget {
       label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: GoogleFonts.ibmPlexMono(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0,
-        height: 1.15,
-        color: color,
-      ),
+      style: CatchTextStyles.monoLabel(context, color: color),
     );
   }
 }

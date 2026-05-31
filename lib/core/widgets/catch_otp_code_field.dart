@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,10 +33,7 @@ class CatchOtpCodeField extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = CatchTokens.of(context);
     final code = controller.text;
-    final textStyle = Theme.of(context).textTheme.headlineSmall?.copyWith(
-      color: tokens.ink,
-      fontWeight: FontWeight.w700,
-    );
+    final textStyle = CatchTextStyles.otpDigit(context, color: tokens.ink);
 
     return Semantics(
       label: semanticsLabel,
@@ -60,7 +58,7 @@ class CatchOtpCodeField extends StatelessWidget {
           ),
           Positioned.fill(
             child: Opacity(
-              opacity: 0.01,
+              opacity: CatchOpacity.hiddenInput,
               child: TextField(
                 key: inputKey,
                 controller: controller,
@@ -76,7 +74,7 @@ class CatchOtpCodeField extends StatelessWidget {
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
                 ),
-                style: const TextStyle(color: Colors.transparent),
+                style: CatchTextStyles.transparentInput(),
                 enableInteractiveSelection: false,
                 showCursor: false,
                 onSubmitted: onSubmitted,
@@ -107,7 +105,7 @@ class _OtpDigitBox extends StatelessWidget {
     final tokens = CatchTokens.of(context);
     return AnimatedContainer(
       duration: CatchMotion.fast,
-      height: 64,
+      height: CatchLayout.otpDigitHeight,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: tokens.raised,

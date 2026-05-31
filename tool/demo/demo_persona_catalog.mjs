@@ -24,6 +24,10 @@ export const DEFAULT_PHOTO_COMPOSITION_INDEX_PATH = path.join(
   repoRoot,
   "tool/demo/demo_seed/personas/photo_composition_index.json"
 );
+export const DEFAULT_PERSONA_PROFILE_PROJECTION_PATH = path.join(
+  repoRoot,
+  "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json"
+);
 
 const allowedGenders = new Set(["woman", "man", "nonBinary", "other"]);
 const allowedAssetStatuses = new Set(["planned", "generated", "uploaded"]);
@@ -257,10 +261,15 @@ export function photoPromptAnswersForPersona(persona) {
     });
 }
 
-export function profilePhotosForPersona(persona, {createdAt = null, updatedAt = null} = {}) {
+export function profilePhotosForPersona(
+  persona,
+  {assetStatuses = null, createdAt = null, updatedAt = null} = {}
+) {
+  const statusFilter = normalizeAssetStatusFilter(assetStatuses);
   return persona.photos
     .slice()
     .sort((a, b) => a.position - b.position)
+    .filter((photo) => statusFilter === null || statusFilter.has(photo.assetStatus))
     .map((photo) => {
       const entry = {
         id: photo.id,
@@ -280,6 +289,51 @@ export function profilePhotosForPersona(persona, {createdAt = null, updatedAt = 
       if (updatedAt) entry.updatedAt = updatedAt;
       return entry;
     });
+}
+
+export function personaProfileProjection(catalog, options = {}) {
+  assertValidPersonaCatalog(catalog, options);
+  const statusFilter = normalizeAssetStatusFilter(
+    options.assetStatuses ?? ["uploaded"]
+  );
+  const personas = catalog.personas.map((persona) => {
+    const profilePhotos = profilePhotosForPersona(persona, {
+      assetStatuses: statusFilter,
+      createdAt: options.createdAt ?? null,
+      updatedAt: options.updatedAt ?? null,
+    });
+    return {
+      id: persona.id,
+      firstName: persona.firstName,
+      lastName: persona.lastName,
+      displayName: persona.displayName,
+      gender: persona.gender,
+      pronouns: persona.pronouns,
+      dateOfBirth: persona.dateOfBirth,
+      heightCm: persona.heightCm,
+      countryCode: persona.countryCode,
+      citySlug: persona.citySlug,
+      cityLabel: persona.cityLabel,
+      occupation: persona.occupation,
+      company: persona.company,
+      profilePrompts: profilePromptAnswersForPersona(persona),
+      photoPrompts: photoPromptAnswersForPersona(persona),
+      profilePhotos,
+    };
+  });
+  return {
+    schemaVersion: 1,
+    kind: "sales-demo-persona-profile-projection",
+    catalogId: catalog.id,
+    catalogLabel: catalog.label,
+    assetStatuses: statusFilter === null ? ["all"] : [...statusFilter].sort(),
+    personaCount: personas.length,
+    projectedPhotoCount: personas.reduce(
+      (total, persona) => total + persona.profilePhotos.length,
+      0
+    ),
+    personas,
+  };
 }
 
 export function personaPhotoGenerationPlan(catalog, options = {}) {
@@ -363,6 +417,27 @@ export function formatPersonaPhotoGenerationPlanMarkdown(plan) {
   }
 
   return `${lines.join("\n").trimEnd()}\n`;
+}
+
+function normalizeAssetStatusFilter(assetStatuses) {
+  if (assetStatuses === null || assetStatuses === "all") return null;
+  const values = assetStatuses instanceof Set ?
+    [...assetStatuses] :
+    (Array.isArray(assetStatuses) ? assetStatuses : [assetStatuses]);
+  const normalized = new Set();
+  for (const value of values) {
+    if (value === "all") return null;
+    if (typeof value !== "string" || value.trim().length === 0) continue;
+    const status = value.trim();
+    if (!allowedAssetStatuses.has(status)) {
+      throw new Error(
+        `Unknown persona asset status ${status}; expected one of all, ` +
+        `${[...allowedAssetStatuses].join(", ")}.`
+      );
+    }
+    normalized.add(status);
+  }
+  return normalized.size > 0 ? normalized : null;
 }
 
 function validatePersona(

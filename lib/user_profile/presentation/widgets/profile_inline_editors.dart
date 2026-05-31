@@ -6,7 +6,15 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchMotion, CatchRadius, CatchSpacing, CatchTokens;
+    show
+        CatchLayout,
+        CatchMotion,
+        CatchIcon,
+        CatchOpacity,
+        CatchRadius,
+        CatchSpacing,
+        CatchStroke,
+        CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -198,9 +206,10 @@ class ProfileInlineTextValue extends StatelessWidget {
     this.onSubmitted,
   });
 
-  static const double _minimumUnderlineWidth = 28;
-  static const double _underlineGap = 2;
-  static const double _underlineHeight = 1.5;
+  static const double _minimumUnderlineWidth =
+      CatchLayout.profileInlineMinimumUnderlineWidth;
+  static const double _underlineGap = CatchSpacing.micro2;
+  static const double _underlineHeight = CatchStroke.underline;
 
   final String label;
   final String displayValue;
@@ -327,7 +336,9 @@ class ProfileInlineTextValue extends StatelessWidget {
                             ),
                             cursorColor: t.primary,
                             backgroundCursorColor: t.primary,
-                            selectionColor: t.primary.withValues(alpha: 0.22),
+                            selectionColor: t.primary.withValues(
+                              alpha: CatchOpacity.subtleBorder,
+                            ),
                             cursorWidth: 2,
                             cursorRadius: const Radius.circular(
                               CatchRadius.pill,
@@ -345,7 +356,11 @@ class ProfileInlineTextValue extends StatelessWidget {
                     duration: CatchMotion.fast,
                     curve: CatchMotion.standardCurve,
                     decoration: BoxDecoration(
-                      color: t.primary.withValues(alpha: enabled ? 0.9 : 0.35),
+                      color: t.primary.withValues(
+                        alpha: enabled
+                            ? CatchOpacity.profileInlineUnderlineActive
+                            : CatchOpacity.profileInlineUnderlineInactive,
+                      ),
                       borderRadius: BorderRadius.circular(CatchRadius.pill),
                     ),
                   ),
@@ -770,11 +785,13 @@ class _ProfileHeightStepButton extends StatelessWidget {
           radius: CatchSpacing.micro18,
           customBorder: const CircleBorder(),
           child: SizedBox.square(
-            dimension: 36,
+            dimension: CatchLayout.profileHeightStepButtonExtent,
             child: Icon(
               icon,
-              size: 21,
-              color: enabled ? t.ink : t.ink3.withValues(alpha: 0.45),
+              size: CatchIcon.profileHeightStep,
+              color: enabled
+                  ? t.ink
+                  : t.ink3.withValues(alpha: CatchOpacity.profileDisabledIcon),
             ),
           ),
         ),

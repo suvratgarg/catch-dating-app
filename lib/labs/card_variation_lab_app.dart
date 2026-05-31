@@ -629,7 +629,7 @@ class _LabSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: CatchTextStyles.displayS(context)),
+          Text(title, style: CatchTextStyles.titleL(context)),
           gapH6,
           Text(description, style: CatchTextStyles.supporting(context)),
           gapH16,
@@ -695,7 +695,7 @@ class _LabSample extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: CatchTextStyles.titleM(context)),
+            Text(title, style: CatchTextStyles.sectionTitle(context)),
             gapH4,
             Text(
               source,

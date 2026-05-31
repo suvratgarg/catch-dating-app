@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -71,7 +72,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         gapH12,
         LayoutBuilder(
           builder: (context, constraints) {
-            final twoColumn = constraints.maxWidth >= 560;
+            final twoColumn =
+                constraints.maxWidth >=
+                ComponentBreakpoints.eventSuccessConfigTwoColumnBreakpoint;
             final itemWidth = twoColumn
                 ? (constraints.maxWidth - CatchSpacing.s3) / 2
                 : constraints.maxWidth;

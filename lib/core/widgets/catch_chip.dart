@@ -39,7 +39,7 @@ class CatchChip extends StatelessWidget {
       enabled: enabled,
       label: semanticsLabel ?? label,
       child: AnimatedOpacity(
-        opacity: enabled ? 1 : 0.4,
+        opacity: enabled ? 1 : CatchOpacity.disabledControl,
         duration: CatchMotion.fast,
         curve: CatchMotion.standardCurve,
         child: DecoratedBox(
@@ -54,12 +54,16 @@ class CatchChip extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: enabled ? onTap : null,
-                splashColor: foreground.withValues(alpha: 0.08),
-                highlightColor: foreground.withValues(alpha: 0.04),
+                splashColor: foreground.withValues(
+                  alpha: CatchOpacity.controlOverlayPressed,
+                ),
+                highlightColor: foreground.withValues(
+                  alpha: CatchOpacity.controlOverlayHover,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
+                    horizontal: CatchSpacing.micro14,
+                    vertical: CatchSpacing.s2,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -116,7 +120,7 @@ class _RemoveButton extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onRemove,
       child: Padding(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(CatchSpacing.micro2),
         child: Icon(CatchIcons.closeRounded, color: color, size: CatchIcon.sm),
       ),
     );

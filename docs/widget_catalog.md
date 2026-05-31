@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.159
-updated: 2026-05-28
+version: 2.5.160
+updated: 2026-05-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,31 @@ start with `docs/audit_registry/README.md`,
 a feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.160
+
+- Typography is now **bundled + optically sized**: `CatchFonts` drives the variable
+  `Newsreader` / `Inter` / `IBM Plex Mono` via `FontVariation('opsz'/'wght')` (auto
+  optical size from point size) instead of runtime `google_fonts`. Build text through
+  `CatchFonts.serif/sans/mono` (or a named `CatchTextStyles.*`); never raw `TextStyle(`
+  or `GoogleFonts` in production — enforced by `tool/check_design_tokens.sh`.
+- `CatchTextStyles` consolidated **59 → ~30** named styles onto one principled scale.
+  Removed names (`heroImpact`, `displayXL/L/M/S`, `screenHeadline`, `heroHeadline`,
+  `cardTitle`, `formQuestion`, `titleM`, `kickerCaps`/`kickerCapsLg`, `ticketMeta`,
+  `arrivalMissionTitle`, …) are gone — use the canonical set: serif
+  `display`/`headline`/`headlineS`/`titleL`/`profileAnswer`/`proseL`/`proseM`, sans
+  `sectionTitle`/`titleS`/`body*`/`label*`/`supporting`/`button*`, mono
+  `kicker`/`kickerLg`/`monoLabel`/`monoLabelS`/`numeric*`/`mono`.
+- `GradedImage` / `CatchGrade` is now a tunable, brightness-aware **matte duotone**
+  (desaturate + black-lift + warm shadow/highlight split-tone, optional grain).
+- **Flagship profile:** `CatchProfileView`
+  (`lib/swipes/presentation/profile_redesign/`) renders a section-based `ProfileView`
+  in the editorial language with per-section reaction controls;
+  `profileViewFromCardContent` maps the existing `ProfileCardContent`, and
+  `ProfileSurface` routes Catches + preview + public profile through it. The legacy
+  `ScrollableProfile` + section widgets are superseded.
+- New anti-drift gate `tool/check_design_tokens.sh` (raw `Color`/`Colors.*`/`TextStyle(`/
+  `GoogleFonts`) joins `check_sizing.sh` + `check_ui_local_constant_wrappers.sh` in CI.
 
 ### 2.5.159
 
@@ -144,8 +169,8 @@ a feature section here only when auditing that feature's widget surface.
 - Production Explore club directory cards now adopt the concept-lab club
   spotlight direction. `ClubListTile` dispatches image-backed clubs to a
   photo card and no-image clubs to an identity card that reuses
-  `ClubCoverFallback` and the shared `ClubCoverVisualPalette`, keeping the
-  no-cover colors and fallback imagery in one iterable schema.
+  `CatchPolaroid`, `ClubPolaroidArtwork`, and `ClubCoverVisualPalette`,
+  keeping the no-cover colors and fallback imagery in one iterable schema.
 
 ### 2.5.143
 
@@ -554,7 +579,7 @@ a feature section here only when auditing that feature's widget surface.
   search field.
 - `CatchTextField` now defaults to a platform done action and unfocuses on
   submit/tap-outside so app keyboards have a shared dismissal path.
-- `ClubCoverFallback` no longer renders generated initials artwork. No-photo
+- `ClubPolaroidArtwork` no longer renders generated initials artwork. No-photo
   club tiles use a quieter map-style fallback with a location mark.
 
 ### 2.5.97
@@ -2330,15 +2355,6 @@ Generated 2026-05-06.
 | `ExploreEventsSection` | `lib/clubs/presentation/list/widgets/explore_events_section.dart:101` | Mixed Explore discovery section. Watches the event discovery feed, accepts candidate clubs from `ClubsListBody`, and leads the default This week filter with a no-gap ticket strip only when there are at least five day-level `EventDateRailCard` recommendations. Weekly-strip events are excluded from the remaining mixed feed, which interleaves leftover compact event rows, an Instax-like club spotlight, the editor-pick event spotlight, and compact club rows. Event taps route to `Routes.eventDetailScreen`, club taps route to `Routes.clubDetailScreen`, club cards use shared club identity atoms, and event rows use `EventCapacityPresenter` for going/left copy. Skeleton/error/empty states still belong to the event discovery feed, with club-only fallback content allowed when events are empty; debug builds can opt into non-tappable synthetic visual fill with `ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL`. |
 | `ExploreEventTypeBrowseGrid` | `lib/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart:13` | Bottom-of-page Browse by event type surface. Reads the current Explore feed and `clubBrowseFiltersProvider`, renders `primaryBrowseActivityKinds` with the shared activity palette and visible-feed counts, and toggles `activityTag` filters from each tile. |
 | `ExplorePeekRail` | `lib/clubs/presentation/list/widgets/explore_peek_rail.dart:13` | Lead sliver builder for the Explore map sheet. `buildExploreMapSheetLeadSlivers` renders aggregate count/scope copy in collapsed mode, a selected-pin lead that branches between `CatchEventTicketCard` and `CatchEventSpotlightCard` based on the feed's featured event id, and the nearby horizontal rail with `CatchEventTicketCard` items, spatial reordering, and a semantic "See all" action in unselected half/full mode. |
-| `ExploreConceptPreviewScreen` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_preview_screen.dart:14` | Dev-only static lab for the next Explore visual direction. It renders presentation-only concept data through isolated ticket event cards, the mixed This week list, spotlight event and club cards, an activity color-system board, detail header treatment, map pin treatment, and browse-by-type grid without reading live events, clubs, memberships, or booking state. |
-| `ExploreConceptActivityThemeBoard` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_activity_theme_board.dart:10` | Dev-only board for inspecting the proposed `ActivityKind` visual taxonomy. Shows the shared gradient, motif, icon, and swatches that ticket cards, spotlight cards, detail headers, and browse tiles reuse. |
-| `ExploreConceptActivityBackdrop` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_activity_visuals.dart:7` | Concept-lab compatibility alias for the production `EventActivityBackdrop` schema. The lab still owns presentation experiments, but activity color decisions now flow from `lib/events/presentation/event_activity_visuals.dart` so production and prototypes iterate from one palette. |
-| `ExploreConceptEventTicketCard` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_cards.dart:17` | Prototype ticket-style event card for horizontal rails. Uses concept-only event data, the shared `ActivityKind` visual backdrop, stamp/status treatment, shared `EventClockMark`, a clipped ticket shape with transparent side notches, perforated divider, and plain capacity label while staying separate from production `EventDiscoveryItem` rendering. |
-| `ExploreConceptEventSpotlightCard` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_cards.dart:127` | Prototype large spotlight event card for an editor-pick/picked-for-you position. Reuses the activity-coded visual backdrop from the ticket cards and is intended for visual iteration before deciding how real ranking/curation should adapt into the production Explore feed. |
-| `ExploreConceptThisWeekList` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_cards.dart:456` | Prototype compact mixed listing for the Explore concept lab. Renders chronological event rows with date capsule, activity stamp, shared `EventClockMark`, shared `EventCapacityProgress`, and activity accent rail, plus club recommendation rows with a larger club stamp and follow CTA for concise discovery slots. |
-| `ExploreConceptEventDetailHeaderMock` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_cards.dart:798` | Static detail-header mock that applies the same activity-coded gradient and motif to the event detail top surface. It exists only to inspect cross-surface color continuity before touching production event-detail routes. |
-| `ExploreConceptClubSpotlightCard` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_cards.dart:257` | Prototype club spotlight card with equal-size cover and no-cover variants. Clubs with cover photos render as a single Instax-like club snapshot card with member count on the image and club identity in the caption band; no-cover clubs keep the restrained crest/member-seal identity card, hosted-by row, tags, and compact CTA without duplicating member count. |
-| `ExploreConceptCategoryGrid` | `lib/clubs/presentation/list/widgets/explore_concept/explore_concept_category_grid.dart:12` | Prototype browse-by-event-type grid. Uses concept category data and `ActivityKind` color themes in compact horizontal cards with a softened color cue, keeping the browse section visually lighter than the spotlight and ticket event surfaces. |
 | `ClubDiscoverList` | `lib/clubs/presentation/list/widgets/club_discover_list.dart:8` | Club directory section of Explore with a real `SliverList` of directory cards. Passes joined and hosted club IDs separately so host-owned clubs are not mislabeled as ordinary joined clubs. |
 | `ClubIdentityAtoms` | `lib/clubs/presentation/shared/club_identity_atoms.dart:11` | Shared club-card identity helpers and widgets: member-count label, tag filtering, member seal, tag wrap, hosted-by line, host avatar, host role badge, and rating pill. Use this before adding club-card-local member labels, tag wraps, host rows, or rating chips. |
 | `ClubListTile` | `lib/clubs/presentation/list/widgets/club_list_tile.dart:33` | Club tile rendered as directory card or avatar chip. Directory cards now use the productionized concept-lab club language and shared club identity atoms: image-backed clubs get a bounded photo card with member seal, centrally themed `CatchTextStyles.clubDisplay` title, tags, host row, and role sash; no-image clubs get an identity card that reuses the shared fallback palette. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
@@ -2352,12 +2368,13 @@ Generated 2026-05-06.
 | `_ClubContactSection` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:148` | Contact info section: Instagram, website, WhatsApp, email rows. |
 | `_ContactRow` | `lib/clubs/presentation/detail/widgets/club_detail_body.dart:201` | Single contact row: icon, label, and value. |
 | `StatsStrip` | `lib/clubs/presentation/detail/widgets/stats_strip.dart:6` | Club detail stats wrapper. Adapts club metrics into the shared `CatchMetricStrip` so club and event detail metric rails use the same surface treatment. |
-| `ClubCoverFallback` | `lib/clubs/presentation/shared/club_cover_fallback.dart:11` | Map-style branded fallback shown when a club has no cover photo. It avoids generated initials, uses a quiet location mark, and lets callers independently hide the location chip and footer label so detail heroes, directory cards, and avatar rails avoid repeating metadata already shown nearby. `ClubCoverVisualPalette` exposes the deterministic fallback palette for production cards that need matching no-cover accents. |
-| `_CoverChip` | `lib/clubs/presentation/shared/club_cover_fallback.dart:98` | Small distance/location chip overlaid on the cover fallback. |
+| `CatchPolaroid` | `lib/clubs/presentation/shared/catch_polaroid.dart:12` | Shared club polaroid primitive: white framed media, mono caption, serif club title, editorial supporting copy, and optional footer/actions. Used by Explore club cards and directory club cards so image-backed and no-cover states share one named metaphor. |
+| `ClubPolaroidArtwork` | `lib/clubs/presentation/shared/catch_polaroid.dart:115` | Map-style no-photo artwork for club polaroids and compact club crests. It avoids generated initials, uses a quiet location mark, and derives deterministic accents from `ClubCoverVisualPalette`. |
+| `ClubCoverVisualPalette` | `lib/clubs/presentation/shared/catch_polaroid.dart:175` | Deterministic club visual palette derived from `ActivityPalette` and tokens for production cards that need matching no-cover accents. |
 | `CreateClubCoverPicker` | `lib/clubs/presentation/create/widgets/create_club_cover_picker.dart:9` | Cover photo picker for the create/edit club form. |
 | `CreateClubContactFields` | `lib/clubs/presentation/create/widgets/create_club_contact_fields.dart:6` | Contact fields (Instagram, WhatsApp, website, email) for the create/edit form. |
-| `_DirectoryPhotoCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:43` | Image-backed Explore club directory card. Uses real club imagery through `_ClubImage`, adds a compact member seal/rating badge, keeps the serif identity band below the media, and renders tags plus hosted-by/action affordances without moving join mutation state into display-only card code. |
-| `_DirectoryIdentityCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:109` | No-cover Explore club directory card. Uses a circular `ClubCoverFallback` crest and the same deterministic palette as the fallback art, then renders metadata, tags, hosted-by context, and the role-aware action row without generated initials. |
+| `_DirectoryPhotoCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:43` | Image-backed Explore club directory card. Uses `CatchPolaroid` with real club imagery through `_ClubImage`, adds a compact member seal/rating badge, keeps the serif identity band below the media, and renders tags plus hosted-by/action affordances without moving join mutation state into display-only card code. |
+| `_DirectoryIdentityCard` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:109` | No-cover Explore club directory card. Uses `CatchPolaroid` with `ClubPolaroidArtwork`, then renders metadata, tags, hosted-by context, and the role-aware action row without generated initials. |
 | `_ClubPhotoMedia` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:239` | Bounded responsive media block for image-backed directory cards. Preserves a 16:9 feel on normal phone widths while capping wide layouts so the list tile does not overflow in tablet/test surfaces. |
 | `_ClubImage` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/club_image.dart:3` | Club cover image for list tiles. Selects cover/profile image order by variant and passes explicit fallback chrome flags for directory cards versus avatar rail chips. |
 | `_HostAvatar` | `lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart:721` | Host avatar shown on directory cards, with configurable radius for the newer hosted-by row density. |

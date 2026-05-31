@@ -100,18 +100,24 @@ class _BadgeMetrics {
   static _BadgeMetrics from(CatchBadgeSize size) {
     return switch (size) {
       CatchBadgeSize.sm => _BadgeMetrics(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro10,
+          vertical: CatchSpacing.s1,
+        ),
         gap: CatchSpacing.s1,
-        iconSize: 12,
-        dotSize: 6,
+        iconSize: CatchIcon.badge,
+        dotSize: CatchSpacing.micro6,
         textStyle: (context, color) =>
             CatchTextStyles.labelS(context, color: color),
       ),
       CatchBadgeSize.md => _BadgeMetrics(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.micro6 + CatchStroke.hairline,
+        ),
         gap: CatchSpacing.s1,
-        iconSize: 14,
-        dotSize: 7,
+        iconSize: CatchIcon.sm,
+        dotSize: CatchSpacing.micro6 + CatchStroke.hairline,
         textStyle: (context, color) =>
             CatchTextStyles.labelL(context, color: color),
       ),
@@ -143,17 +149,17 @@ class _BadgePalette {
         border: Colors.transparent,
       ),
       CatchBadgeTone.success => _BadgePalette(
-        background: t.success.withValues(alpha: 0.12),
+        background: t.success.withValues(alpha: CatchOpacity.subtleFill),
         foreground: t.success,
         border: Colors.transparent,
       ),
       CatchBadgeTone.warning => _BadgePalette(
-        background: t.warning.withValues(alpha: 0.14),
+        background: t.warning.withValues(alpha: CatchOpacity.warningFill),
         foreground: t.warning,
         border: Colors.transparent,
       ),
       CatchBadgeTone.danger => _BadgePalette(
-        background: t.danger.withValues(alpha: 0.10),
+        background: t.danger.withValues(alpha: CatchOpacity.dangerFill),
         foreground: t.danger,
         border: Colors.transparent,
       ),

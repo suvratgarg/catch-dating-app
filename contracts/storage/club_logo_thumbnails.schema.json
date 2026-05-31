@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/club_logo_thumbnails.schema.json",
+  "title": "ClubLogoThumbnailsStoragePath",
+  "description": "Server-generated club logo thumbnails stored at clubs/{clubId}/logoThumbnails/{fileName}. Clients only read.",
+  "type": "object",
+  "x-storage-rules-match": "match /clubs/{clubId}/logoThumbnails/{fileName}",
+  "x-storage-read": "public (download URLs are used for public club media)",
+  "x-storage-write": "server only (clients are denied)",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "clubs",
+  "x-storage-known-consumers": [
+    "lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart",
+    "functions/src/clubs/generateClubLogoThumbnail.ts"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "description": "Club document id; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Conventional pattern: derived from the source logo object name."
+    }
+  }
+}

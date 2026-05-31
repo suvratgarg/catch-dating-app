@@ -90,8 +90,8 @@ class ActivitySection extends ConsumerWidget {
             child: Row(
               children: [
                 const SizedBox(
-                  width: 18,
-                  height: 18,
+                  width: CatchLayout.activityLoadingIndicatorExtent,
+                  height: CatchLayout.activityLoadingIndicatorExtent,
                   child: CatchLoadingIndicator(strokeWidth: 2),
                 ),
                 gapW10,
@@ -119,7 +119,7 @@ class ActivitySection extends ConsumerWidget {
               message:
                   'New catches, bookings, and event reminders will collect here.',
               iconStyle: CatchEmptyStateIconStyle.plain,
-              iconSize: 34,
+              iconSize: CatchIcon.emptyState,
               titleStyle: CatchTextStyles.titleL(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
@@ -150,7 +150,10 @@ class ActivitySection extends ConsumerWidget {
             for (final group in _groupItems(notificationItems)) ...[
               SectionHeader(
                 title: group.label,
-                padding: const EdgeInsets.only(top: 4, bottom: 8),
+                padding: const EdgeInsets.only(
+                  top: CatchSpacing.s1,
+                  bottom: CatchSpacing.s2,
+                ),
               ),
               for (final entry in group.items.indexed) ...[
                 _NotificationTile(item: entry.$2),
@@ -211,10 +214,10 @@ class _NotificationTile extends StatelessWidget {
       child: CatchSurface(
         onTap: item.route == null ? null : () => context.push(item.route!),
         borderColor: item.isUnread
-            ? visual.accent.withValues(alpha: 0.34)
+            ? visual.accent.withValues(alpha: CatchOpacity.activityUnreadBorder)
             : t.line,
         backgroundColor: item.isUnread
-            ? visual.accent.withValues(alpha: 0.06)
+            ? visual.accent.withValues(alpha: CatchOpacity.activityUnreadFill)
             : t.surface,
         padding: const EdgeInsets.all(CatchSpacing.s3),
         child: Row(
@@ -284,7 +287,11 @@ class _NotificationTile extends StatelessWidget {
             ),
             if (item.route != null) ...[
               gapW8,
-              Icon(CatchIcons.chevronRightRounded, size: 20, color: t.ink3),
+              Icon(
+                CatchIcons.chevronRightRounded,
+                size: CatchIcon.control,
+                color: t.ink3,
+              ),
             ],
           ],
         ),
@@ -338,7 +345,7 @@ class _NotificationVisual {
       required CatchBadgeTone tone,
       required Color accent,
       IconData? badgeIcon,
-      double backgroundAlpha = 0.11,
+      double backgroundAlpha = CatchOpacity.activityIconFill,
     }) {
       return _NotificationVisual(
         icon: icon,
@@ -346,7 +353,7 @@ class _NotificationVisual {
         badgeTone: tone,
         accent: accent,
         background: accent.withValues(alpha: backgroundAlpha),
-        border: accent.withValues(alpha: 0.14),
+        border: accent.withValues(alpha: CatchOpacity.activityIconBorder),
         badgeIcon: badgeIcon,
       );
     }

@@ -102,7 +102,7 @@ Future<void> _lockDeviceOrientation() {
 /// Returns the Remote Config fetch failure (error, stack) when the initial
 /// fetch fails, or null. See [_initializeRemoteConfig].
 Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _initializeDefaultFirebaseApp();
   await _activateFirebaseAppCheck();
   await _configureFirebaseAuthTestingSettings();
 
@@ -129,6 +129,29 @@ Future<(Object, StackTrace)?> _initializeFirebaseServices() async {
   }
 
   return remoteConfigError;
+}
+
+Future<void> _initializeDefaultFirebaseApp() async {
+  if (_hasDefaultFirebaseApp()) return;
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } on FirebaseException catch (error) {
+    if (error.code == 'duplicate-app' && _hasDefaultFirebaseApp()) return;
+    rethrow;
+  }
+}
+
+bool _hasDefaultFirebaseApp() {
+  try {
+    Firebase.app();
+    return true;
+  } on FirebaseException catch (error) {
+    if (error.code == 'no-app') return false;
+    rethrow;
+  }
 }
 
 Future<void> _configureFirebaseAuthTestingSettings() async {

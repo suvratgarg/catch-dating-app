@@ -14,6 +14,17 @@
     "area": {"type": "string", "minLength": 1, "maxLength": 120},
     "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "profileImageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+    "clubPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {"$ref": "../embedded/uploaded_photo.schema.json"}
+    },
+    "logoPhoto": {
+      "anyOf": [
+        {"$ref": "../embedded/uploaded_photo.schema.json"},
+        {"type": "null"}
+      ]
+    },
     "instagramHandle": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "phoneNumber": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
     "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},

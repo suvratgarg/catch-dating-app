@@ -48,18 +48,21 @@ class EventDetailSurfaceStyle {
   }
 
   factory EventDetailSurfaceStyle.dark(CatchTokens t) {
+    const d = CatchTokens.sunsetDark;
     return EventDetailSurfaceStyle(
       isDark: true,
       pageBackground: t.ink,
-      surfaceBackground: const Color(0xFF1D1814),
-      raisedBackground: Colors.white.withValues(alpha: 0.07),
-      borderColor: Colors.white.withValues(alpha: 0.12),
-      dividerColor: Colors.white.withValues(alpha: 0.12),
-      headingColor: t.primaryInk,
-      bodyColor: t.primaryInk.withValues(alpha: 0.78),
-      mutedColor: t.primaryInk.withValues(alpha: 0.58),
+      surfaceBackground: d.surface,
+      raisedBackground: d.raised,
+      borderColor: d.line,
+      dividerColor: d.line2,
+      headingColor: d.ink,
+      bodyColor: d.ink2,
+      mutedColor: d.ink3,
       primaryColor: t.primary,
-      primarySoftColor: t.primary.withValues(alpha: 0.18),
+      primarySoftColor: t.primary.withValues(
+        alpha: CatchOpacity.eventDetailPrimarySoft,
+      ),
     );
   }
 }

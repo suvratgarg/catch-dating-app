@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -143,7 +144,9 @@ class _CatchesProfileReview extends StatelessWidget {
         Positioned.fill(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final horizontalPadding = constraints.maxWidth > 700
+              final horizontalPadding =
+                  constraints.maxWidth >
+                      ComponentBreakpoints.catchesWidePaddingBreakpoint
                   ? CatchSpacing.s8
                   : 0.0;
 
@@ -155,7 +158,7 @@ class _CatchesProfileReview extends StatelessWidget {
                   mode: ProfileSurfaceMode.catches,
                   viewerProfile: viewerProfile,
                   sharedRunTitle: sharedRunTitle,
-                  bottomPadding: 112,
+                  bottomPadding: CatchLayout.catchesProfileBottomPadding,
                   onReact: onReact,
                 ),
               );
@@ -218,15 +221,13 @@ class _CatchesTopOverlay extends StatelessWidget {
                 child: Center(
                   child: CatchSurface(
                     radius: CatchRadius.pill,
-                    backgroundColor: t.surface.withValues(alpha: 0.84),
-                    borderColor: t.line.withValues(alpha: 0.72),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
-                        blurRadius: 18,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
+                    backgroundColor: t.surface.withValues(
+                      alpha: CatchOpacity.floatingChromeFill,
+                    ),
+                    borderColor: t.line.withValues(
+                      alpha: CatchOpacity.floatingChromeBorder,
+                    ),
+                    boxShadow: CatchElevation.card,
                     padding: const EdgeInsets.symmetric(
                       horizontal: CatchSpacing.s4,
                       vertical: CatchSpacing.s2,
@@ -272,15 +273,15 @@ class _OverlayIconButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: t.surface.withValues(alpha: 0.88),
+        color: t.surface.withValues(alpha: CatchOpacity.floatingControlFill),
         shape: const CircleBorder(),
-        elevation: 3,
+        elevation: CatchElevation.physicalControl,
         child: InkWell(
           customBorder: const CircleBorder(),
           onTap: onPressed,
           child: SizedBox.square(
-            dimension: 48,
-            child: Icon(icon, color: t.ink, size: 22),
+            dimension: CatchLayout.floatingControlExtent,
+            child: Icon(icon, color: t.ink, size: CatchIcon.row),
           ),
         ),
       ),
@@ -299,7 +300,7 @@ class _CatchesBottomScrim extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      height: 128,
+      height: CatchLayout.bottomActionScrimHeight,
       child: IgnorePointer(
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -307,8 +308,8 @@ class _CatchesBottomScrim extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                t.bg.withValues(alpha: 0.0),
-                t.bg.withValues(alpha: 0.82),
+                t.bg.withValues(alpha: CatchOpacity.none),
+                t.bg.withValues(alpha: CatchOpacity.bottomActionScrim),
                 t.bg,
               ],
             ),

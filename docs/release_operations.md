@@ -20,6 +20,7 @@ Configure GitHub branch protection for `main` to require:
 - Functions lint/build/tests.
 - Firestore rules emulator tests.
 - Schema contract validation (the `contracts/` source of truth).
+- Sizing doctrine check (`tool/check_sizing.sh` exits 0).
 - Web build.
 - Android debug APK build.
 - iOS simulator build.

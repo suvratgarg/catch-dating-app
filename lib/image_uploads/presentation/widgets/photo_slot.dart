@@ -57,21 +57,25 @@ class PhotoSlot extends StatelessWidget {
           child: Center(
             child: Icon(
               CatchIcons.brokenImageOutlined,
-              size: 28,
+              size: CatchIcon.tile,
               color: t.ink2,
             ),
           ),
         ),
       );
     } else if (isActive) {
-      content = Container(
+      content = ColoredBox(
         color: t.primarySoft,
         child: Center(
-          child: Icon(CatchIcons.addRounded, size: 36, color: t.primary),
+          child: Icon(
+            CatchIcons.addRounded,
+            size: CatchIcon.hero,
+            color: t.primary,
+          ),
         ),
       );
     } else {
-      content = Container(color: t.raised);
+      content = ColoredBox(color: t.raised);
     }
 
     return Semantics(
@@ -97,23 +101,31 @@ class PhotoSlot extends StatelessWidget {
                   children: [
                     content,
                     if (isLoading)
-                      Container(
-                        color: Colors.black45,
-                        child: const Center(
-                          child: CatchLoadingIndicator(color: Colors.white),
+                      ColoredBox(
+                        color: CatchTokens.editorialDark.withValues(
+                          alpha: CatchOpacity.photoUploadLoadingScrim,
+                        ),
+                        child: Center(
+                          child: CatchLoadingIndicator(
+                            color: CatchTokens.editorialLight,
+                          ),
                         ),
                       ),
                     if (!isLoading && url != null)
                       Positioned(
-                        bottom: 6,
-                        right: 6,
+                        bottom: CatchSpacing.micro6,
+                        right: CatchSpacing.micro6,
                         child: CatchIconTile(
                           icon: CatchIcons.editOutlined,
                           iconColor: t.ink,
-                          backgroundColor: t.surface.withValues(alpha: 0.85),
-                          borderColor: Colors.transparent,
-                          size: 22,
-                          iconSize: 14,
+                          backgroundColor: t.surface.withValues(
+                            alpha: CatchOpacity.photoSlotEditChrome,
+                          ),
+                          borderColor: t.surface.withValues(
+                            alpha: CatchOpacity.photoSlotEditChrome,
+                          ),
+                          size: CatchIcon.row,
+                          iconSize: CatchIcon.sm,
                           radius: CatchRadius.pill,
                         ),
                       ),
@@ -122,22 +134,24 @@ class PhotoSlot extends StatelessWidget {
                         promptLabel != null &&
                         promptLabel.isNotEmpty)
                       Positioned(
-                        left: 6,
-                        right: 34,
-                        bottom: 6,
+                        left: CatchSpacing.micro6,
+                        right: CatchLayout.photoSlotDeleteControlInset,
+                        bottom: CatchSpacing.micro6,
                         child: CatchSurface(
                           radius: CatchRadius.sm,
-                          backgroundColor: Colors.black.withValues(alpha: 0.58),
+                          backgroundColor: CatchTokens.editorialDark.withValues(
+                            alpha: CatchOpacity.photoPromptScrim,
+                          ),
                           borderWidth: 0,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 4,
+                            horizontal: CatchSpacing.micro6,
+                            vertical: CatchSpacing.s1,
                           ),
                           child: Text(
                             prompt!.displayPrompt,
                             style: CatchTextStyles.labelS(
                               context,
-                              color: Colors.white,
+                              color: CatchTokens.editorialLight,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -148,7 +162,7 @@ class PhotoSlot extends StatelessWidget {
                 ),
               ),
               Material(
-                color: Colors.transparent,
+                type: MaterialType.transparency,
                 borderRadius: borderRadius,
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
@@ -158,12 +172,14 @@ class PhotoSlot extends StatelessWidget {
               ),
               if (!isLoading && onDelete != null)
                 Positioned(
-                  top: 4,
-                  right: 4,
+                  top: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
                   child: Tooltip(
                     message: 'Delete photo ${index + 1}',
                     child: Material(
-                      color: t.surface.withValues(alpha: 0.9),
+                      color: t.surface.withValues(
+                        alpha: CatchOpacity.photoSlotDeleteChrome,
+                      ),
                       shape: const CircleBorder(),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
@@ -171,7 +187,7 @@ class PhotoSlot extends StatelessWidget {
                         customBorder: const CircleBorder(),
                         onTap: onDelete,
                         child: SizedBox.square(
-                          dimension: 28,
+                          dimension: CatchLayout.photoSlotDeleteExtent,
                           child: Icon(
                             CatchIcons.closeRounded,
                             size: 18,
@@ -185,7 +201,7 @@ class PhotoSlot extends StatelessWidget {
               IgnorePointer(
                 child: CatchSurface(
                   borderRadius: borderRadius,
-                  backgroundColor: Colors.transparent,
+                  tone: CatchSurfaceTone.transparent,
                   borderColor: isReorderTarget ? t.primary : t.line,
                   borderWidth: isReorderTarget ? 2 : 1,
                   child: const SizedBox.expand(),

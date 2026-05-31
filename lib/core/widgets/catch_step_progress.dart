@@ -58,7 +58,7 @@ class CatchStepProgress extends StatelessWidget {
                 margin: EdgeInsets.only(
                   right: index < totalSteps - 1 ? CatchSpacing.s1 : 0,
                 ),
-                height: 4,
+                height: CatchSpacing.s1,
                 decoration: BoxDecoration(
                   color: index <= clampedStep ? t.primary : t.line,
                   borderRadius: BorderRadius.circular(CatchRadius.pill),

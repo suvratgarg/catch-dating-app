@@ -33,13 +33,12 @@ class AttendedEventTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              gradient: t.heroGrad,
-              borderRadius: BorderRadius.circular(18),
-            ),
+          CatchSurface(
+            width: CatchLayout.attendedEventTileArtExtent,
+            height: CatchLayout.attendedEventTileArtExtent,
+            radius: CatchRadius.attendedEventTile,
+            gradient: t.heroGrad,
+            borderWidth: 0,
             child: Icon(CatchIcons.favoriteRounded, color: t.primaryInk),
           ),
           gapW14,

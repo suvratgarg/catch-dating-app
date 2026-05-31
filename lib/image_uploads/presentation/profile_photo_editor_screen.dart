@@ -4,11 +4,13 @@ import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -188,8 +190,8 @@ class _ProfilePhotoEditorScreenState
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: AppBar(
-        title: Text(widget.photo == null ? 'Add photo' : 'Edit photo'),
+      appBar: CatchTopBar(
+        title: widget.photo == null ? 'Add photo' : 'Edit photo',
       ),
       body: SafeArea(
         child: ListView(
@@ -200,71 +202,89 @@ class _ProfilePhotoEditorScreenState
             CatchSpacing.s6,
           ),
           children: [
-            CatchSurface(
-              backgroundColor: t.raised,
-              borderColor: t.line,
-              clipBehavior: Clip.antiAlias,
-              child: AspectRatio(
-                aspectRatio: profilePhotoAspectRatio,
-                child: _PhotoEditorPreview(
-                  cropKey: _cropKey,
-                  bytes: _imageBytes,
-                  url: widget.photo?.url,
-                  loading: _loadingImage,
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.maxContentWidth,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CatchSurface(
+                      backgroundColor: t.raised,
+                      borderColor: t.line,
+                      clipBehavior: Clip.antiAlias,
+                      child: AspectRatio(
+                        aspectRatio: profilePhotoAspectRatio,
+                        child: _PhotoEditorPreview(
+                          cropKey: _cropKey,
+                          bytes: _imageBytes,
+                          url: widget.photo?.url,
+                          loading: _loadingImage,
+                        ),
+                      ),
+                    ),
+                    gapH16,
+                    CatchFormFieldLabel(
+                      label: 'Photo prompt',
+                      isOptional: true,
+                    ),
+                    gapH8,
+                    CatchSelectMenu<_PhotoPromptChoice>(
+                      values: promptChoices,
+                      value: selectedPromptChoice,
+                      itemLabel: (choice) => choice.label,
+                      semanticLabel: 'Photo prompt',
+                      prefixIcon: Icon(CatchIcons.autoAwesomeOutlined),
+                      onChanged: _saving || _deleting
+                          ? null
+                          : (choice) => setState(() => _promptId = choice?.id),
+                    ),
+                    gapH20,
+                    CatchButton(
+                      label: _saving ? 'Saving' : 'Save changes',
+                      onPressed: canSave ? _save : null,
+                      isLoading: _saving,
+                      fullWidth: true,
+                    ),
+                    gapH12,
+                    CatchButton(
+                      label: widget.photo == null
+                          ? 'Choose photo'
+                          : 'Change photo',
+                      onPressed: _saving || _deleting ? null : _replaceImage,
+                      icon: Icon(CatchIcons.photoLibraryOutlined),
+                      variant: CatchButtonVariant.secondary,
+                      fullWidth: true,
+                    ),
+                    if (widget.photo != null) ...[
+                      gapH12,
+                      CatchButton(
+                        label: _deleting ? 'Deleting' : 'Delete photo',
+                        onPressed: canDelete ? _deletePhoto : null,
+                        isLoading: _deleting,
+                        icon: Icon(CatchIcons.deleteOutlineRounded),
+                        variant: CatchButtonVariant.danger,
+                        fullWidth: true,
+                        semanticsLabel: canDelete
+                            ? 'Delete photo ${widget.index + 1}'
+                            : 'Delete photo unavailable',
+                      ),
+                      if (!widget.canDelete) ...[
+                        gapH8,
+                        Text(
+                          'Keep at least $minimumProfilePhotoCount photos on your profile.',
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ],
                 ),
               ),
             ),
-            gapH16,
-            CatchFormFieldLabel(label: 'Photo prompt', isOptional: true),
-            gapH8,
-            CatchSelectMenu<_PhotoPromptChoice>(
-              values: promptChoices,
-              value: selectedPromptChoice,
-              itemLabel: (choice) => choice.label,
-              semanticLabel: 'Photo prompt',
-              prefixIcon: Icon(CatchIcons.autoAwesomeOutlined),
-              onChanged: _saving || _deleting
-                  ? null
-                  : (choice) => setState(() => _promptId = choice?.id),
-            ),
-            gapH20,
-            CatchButton(
-              label: _saving ? 'Saving' : 'Save changes',
-              onPressed: canSave ? _save : null,
-              isLoading: _saving,
-              fullWidth: true,
-            ),
-            gapH12,
-            CatchButton(
-              label: widget.photo == null ? 'Choose photo' : 'Change photo',
-              onPressed: _saving || _deleting ? null : _replaceImage,
-              icon: Icon(CatchIcons.photoLibraryOutlined),
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
-            ),
-            if (widget.photo != null) ...[
-              gapH12,
-              CatchButton(
-                label: _deleting ? 'Deleting' : 'Delete photo',
-                onPressed: canDelete ? _deletePhoto : null,
-                isLoading: _deleting,
-                icon: Icon(CatchIcons.deleteOutlineRounded),
-                variant: CatchButtonVariant.danger,
-                fullWidth: true,
-                semanticsLabel: canDelete
-                    ? 'Delete photo ${widget.index + 1}'
-                    : 'Delete photo unavailable',
-              ),
-              if (!widget.canDelete) ...[
-                gapH8,
-                Text(
-                  'Keep at least $minimumProfilePhotoCount photos on your profile.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: t.ink2),
-                ),
-              ],
-            ],
           ],
         ),
       ),
@@ -307,7 +327,9 @@ class _PhotoEditorPreview extends StatelessWidget {
           child: InteractiveViewer(
             minScale: 1,
             maxScale: 4,
-            boundaryMargin: const EdgeInsets.all(160),
+            boundaryMargin: const EdgeInsets.all(
+              CatchLayout.profilePhotoEditorBoundaryMargin,
+            ),
             child: SizedBox.expand(
               child: Image.memory(imageBytes, fit: BoxFit.cover),
             ),

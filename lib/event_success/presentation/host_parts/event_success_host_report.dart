@@ -145,7 +145,7 @@ class _HostReportSignalGrid extends StatelessWidget {
                   children: [
                     Text(
                       'How reliable is this report?',
-                      style: CatchTextStyles.titleM(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
                     Text(

@@ -212,7 +212,7 @@ class _ClubHostSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -279,7 +279,7 @@ class _ClubHostRow extends StatelessWidget {
             children: [
               Text(
                 'Hosted by ${host.displayName}',
-                style: CatchTextStyles.titleM(context),
+                style: CatchTextStyles.sectionTitle(context),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -306,12 +306,19 @@ class _ClubHostRow extends StatelessWidget {
           IconButton.filledTonal(
             tooltip: 'Message host',
             onPressed: onMessage,
-            icon: Icon(CatchIcons.chatBubbleOutlineRounded, size: 20),
+            icon: Icon(
+              CatchIcons.chatBubbleOutlineRounded,
+              size: CatchIcon.control,
+            ),
           ),
         ],
         if (showChevron) ...[
           gapW8,
-          Icon(CatchIcons.chevronRightRounded, size: 24, color: t.ink3),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.lg,
+            color: t.ink3,
+          ),
         ],
       ],
     );
@@ -344,7 +351,7 @@ class _ClubOwnerHostManagementSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -585,7 +592,7 @@ class _ClubContactSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -644,15 +651,15 @@ class _ContactRow extends StatelessWidget {
       button: true,
       label: label,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.only(bottom: CatchSpacing.micro10),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
             child: Row(
               children: [
-                Icon(icon, size: 18, color: t.primary),
+                Icon(icon, size: CatchIcon.md, color: t.primary),
                 gapW10,
                 Expanded(
                   child: Text(
@@ -660,7 +667,11 @@ class _ContactRow extends StatelessWidget {
                     style: CatchTextStyles.bodyLead(context, color: t.ink),
                   ),
                 ),
-                Icon(CatchIcons.openInNewRounded, size: 14, color: t.ink3),
+                Icon(
+                  CatchIcons.openInNewRounded,
+                  size: CatchIcon.sm,
+                  color: t.ink3,
+                ),
               ],
             ),
           ),
@@ -681,7 +692,7 @@ class _GuestPrompt extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         children: [
           Text(

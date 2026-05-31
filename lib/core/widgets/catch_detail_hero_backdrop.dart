@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:flutter/material.dart';
 
 class CatchDetailHeroBackdrop extends StatelessWidget {
@@ -24,11 +25,13 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (hasImage(resolvedImageUrl))
-          Image.network(
-            resolvedImageUrl!,
-            fit: BoxFit.cover,
-            semanticLabel: semanticLabel,
-            errorBuilder: (_, _, _) => const _CatchDetailHeroFallback(),
+          GradedImage(
+            child: Image.network(
+              resolvedImageUrl!,
+              fit: BoxFit.cover,
+              semanticLabel: semanticLabel,
+              errorBuilder: (_, _, _) => const _CatchDetailHeroFallback(),
+            ),
           )
         else
           const _CatchDetailHeroFallback(),
@@ -74,9 +77,15 @@ class _CatchDetailHeroScrim extends StatelessWidget {
           end: Alignment.bottomCenter,
           stops: const [0.0, 0.45, 1.0],
           colors: [
-            Colors.black.withValues(alpha: 0.10),
-            Colors.black.withValues(alpha: 0.16),
-            Colors.black.withValues(alpha: 0.70),
+            CatchTokens.editorialDark.withValues(
+              alpha: CatchOpacity.photoScrimLight,
+            ),
+            CatchTokens.editorialDark.withValues(
+              alpha: CatchOpacity.photoScrimMedium,
+            ),
+            CatchTokens.editorialDark.withValues(
+              alpha: CatchOpacity.onDarkMuted,
+            ),
           ],
         ),
       ),

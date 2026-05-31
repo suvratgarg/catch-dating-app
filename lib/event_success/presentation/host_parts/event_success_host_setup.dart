@@ -283,7 +283,7 @@ class _TargetAttendeeControl extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: 150,
+            width: CatchLayout.hostTargetStepperWidth,
             child: CatchNumberStepper(
               value: value,
               min: 1,
@@ -311,7 +311,9 @@ class _ReadinessIssues extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
-      borderColor: t.warning.withValues(alpha: 0.32),
+      borderColor: t.warning.withValues(
+        alpha: CatchOpacity.readinessWarningBorder,
+      ),
       padding: const EdgeInsets.all(CatchSpacing.s3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,7 +388,11 @@ class _UnsavedChangesPill extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(CatchIcons.fiberManualRecord, size: 8, color: t.warning),
+        Icon(
+          CatchIcons.fiberManualRecord,
+          size: CatchIcon.unsavedDot,
+          color: t.warning,
+        ),
         gapW6,
         Text(
           'Unsaved changes',

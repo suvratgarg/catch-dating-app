@@ -844,7 +844,7 @@ class _RosterFilterHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (title != null) ...[
-          Text(title!, style: CatchTextStyles.titleM(context)),
+          Text(title!, style: CatchTextStyles.sectionTitle(context)),
           if (subtitle != null) ...[
             gapH4,
             Text(
@@ -895,20 +895,28 @@ class _RosterFilterTile extends StatelessWidget {
       child: Material(
         color: selected
             ? t.ink
-            : _filterBackground(spec.tone, t).withValues(alpha: 0.42),
+            : _filterBackground(
+                spec.tone,
+                t,
+              ).withValues(alpha: CatchOpacity.rosterFilterFill),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(CatchRadius.md),
           side: BorderSide(
             color: selected
                 ? Colors.transparent
-                : _filterForeground(spec.tone, t).withValues(alpha: 0.20),
+                : _filterForeground(
+                    spec.tone,
+                    t,
+                  ).withValues(alpha: CatchOpacity.rosterFilterBorder),
           ),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 56),
+            constraints: const BoxConstraints(
+              minHeight: CatchLayout.rosterFilterTileMinHeight,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: CatchSpacing.s2,
@@ -934,7 +942,9 @@ class _RosterFilterTile extends StatelessWidget {
                     style: CatchTextStyles.labelL(
                       context,
                       color: selected
-                          ? t.surface.withValues(alpha: 0.78)
+                          ? t.surface.withValues(
+                              alpha: CatchOpacity.rosterFilterSelectedLabel,
+                            )
                           : t.ink2,
                     ),
                   ),
@@ -950,12 +960,22 @@ class _RosterFilterTile extends StatelessWidget {
 
 Color _filterBackground(CatchBadgeTone tone, CatchTokens t) {
   return switch (tone) {
-    CatchBadgeTone.success => t.success.withValues(alpha: 0.10),
-    CatchBadgeTone.warning => t.gold.withValues(alpha: 0.14),
-    CatchBadgeTone.brand => t.primary.withValues(alpha: 0.10),
-    CatchBadgeTone.danger => t.danger.withValues(alpha: 0.08),
+    CatchBadgeTone.success => t.success.withValues(
+      alpha: CatchOpacity.photoScrimLight,
+    ),
+    CatchBadgeTone.warning => t.gold.withValues(
+      alpha: CatchOpacity.warningFill,
+    ),
+    CatchBadgeTone.brand => t.primary.withValues(
+      alpha: CatchOpacity.photoScrimLight,
+    ),
+    CatchBadgeTone.danger => t.danger.withValues(
+      alpha: CatchOpacity.controlOverlayPressed,
+    ),
     CatchBadgeTone.solid => t.surface,
-    CatchBadgeTone.live => t.primarySoft.withValues(alpha: 0.36),
+    CatchBadgeTone.live => t.primarySoft.withValues(
+      alpha: CatchOpacity.eventSuccessBouncyGlow,
+    ),
     CatchBadgeTone.neutral => t.raised,
   };
 }
@@ -1057,7 +1077,7 @@ class _TableEmptyState extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(CatchIcons.groupOutlined, color: t.ink3, size: 22),
+        Icon(CatchIcons.groupOutlined, color: t.ink3, size: CatchIcon.row),
         gapW10,
         Expanded(
           child: Column(
@@ -1202,7 +1222,7 @@ class _DecisionControls extends StatelessWidget {
           message: 'Open profile',
           child: IconButton(
             visualDensity: VisualDensity.compact,
-            iconSize: 18,
+            iconSize: CatchIcon.md,
             color: t.ink2,
             onPressed: () => _openPublicProfile(context, uid),
             icon: Icon(CatchIcons.personSearchOutlined),
@@ -1212,7 +1232,7 @@ class _DecisionControls extends StatelessWidget {
           message: 'Approve request',
           child: IconButton(
             visualDensity: VisualDensity.compact,
-            iconSize: 18,
+            iconSize: CatchIcon.md,
             color: t.success,
             onPressed: isPending ? null : onApprove,
             icon: Icon(CatchIcons.checkCircleOutlineRounded),
@@ -1222,7 +1242,7 @@ class _DecisionControls extends StatelessWidget {
           message: 'Decline request',
           child: IconButton(
             visualDensity: VisualDensity.compact,
-            iconSize: 18,
+            iconSize: CatchIcon.md,
             color: t.danger,
             onPressed: isPending ? null : onDecline,
             icon: Icon(CatchIcons.cancelOutlined),

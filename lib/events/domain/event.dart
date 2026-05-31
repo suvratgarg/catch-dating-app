@@ -4,6 +4,7 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
@@ -73,6 +74,7 @@ abstract class Event with _$Event {
     double? startingPointLng,
     String? locationDetails,
     @JsonKey(includeIfNull: false) String? photoUrl,
+    @Default([]) List<UploadedPhoto> eventPhotos,
     @Default(EventFormatSnapshot.socialRun()) EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
@@ -115,6 +117,11 @@ abstract class Event with _$Event {
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>
       effectiveStartingPointLat != null && effectiveStartingPointLng != null;
+  String? get primaryPhotoUrl {
+    if (eventPhotos.isNotEmpty) return eventPhotos.first.url;
+    return photoUrl;
+  }
+
   EventMeetingLocation? get effectiveMeetingLocation =>
       meetingLocation ??
       EventMeetingLocation.legacy(

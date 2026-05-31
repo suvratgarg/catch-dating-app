@@ -203,7 +203,7 @@ class _NotificationBellButton extends StatelessWidget {
     final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
 
     return SizedBox.square(
-      dimension: 44,
+      dimension: CatchLayout.eventInfoTileExtent,
       child: Badge(
         isLabelVisible: unreadCount > 0,
         label: Text(

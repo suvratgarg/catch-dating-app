@@ -107,8 +107,8 @@ class _CupertinoPickerSheet extends StatelessWidget {
     required this.onDone,
   });
 
-  static const _pickerHeight = 216.0;
-  static const _toolbarHeight = 52.0;
+  static const _pickerHeight = CatchLayout.iosPickerHeight;
+  static const _toolbarHeight = CatchLayout.iosPickerToolbarHeight;
 
   final String title;
   final Widget child;
@@ -135,7 +135,9 @@ class _CupertinoPickerSheet extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CatchSpacing.s4,
+                        ),
                         onPressed: onCancel,
                         child: Text(
                           'Cancel',
@@ -144,7 +146,9 @@ class _CupertinoPickerSheet extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 96),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchLayout.iosPickerTitleSidePadding,
+                      ),
                       child: Text(
                         title,
                         maxLines: 1,
@@ -156,7 +160,9 @@ class _CupertinoPickerSheet extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: CupertinoButton(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CatchSpacing.s4,
+                        ),
                         onPressed: onDone,
                         child: Text(
                           'Done',

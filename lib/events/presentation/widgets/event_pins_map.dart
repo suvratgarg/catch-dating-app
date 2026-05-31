@@ -11,7 +11,7 @@ import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_a
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
-const double _placeholderPinSize = 42;
+const double _placeholderPinSize = CatchLayout.mapPlaceholderPinSize;
 
 class EventPinsMap extends StatefulWidget {
   const EventPinsMap({
@@ -142,8 +142,12 @@ class _EventPinsMapState extends State<EventPinsMap> {
           center: center,
           radius: ringRadiusKm * 1000,
           strokeWidth: 2,
-          strokeColor: t.primary.withValues(alpha: 0.38),
-          fillColor: t.primary.withValues(alpha: 0.08),
+          strokeColor: t.primary.withValues(
+            alpha: CatchOpacity.mapDistanceRingStroke,
+          ),
+          fillColor: t.primary.withValues(
+            alpha: CatchOpacity.mapDistanceRingFill,
+          ),
           consumeTapEvents: widget.onDistanceRingTapped != null,
           onTap: widget.onDistanceRingTapped,
         ),
@@ -152,7 +156,9 @@ class _EventPinsMapState extends State<EventPinsMap> {
         center: center,
         radius: 42,
         strokeWidth: 3,
-        strokeColor: Colors.white.withValues(alpha: 0.92),
+        strokeColor: CatchTokens.editorialLight.withValues(
+          alpha: CatchOpacity.mapUserLocationStroke,
+        ),
         fillColor: t.primary,
       ),
     };
@@ -336,16 +342,20 @@ class _EventPinsMapPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return ColoredBox(
-      color: t.primarySoft,
+    return DecoratedBox(
+      decoration: BoxDecoration(color: t.primarySoft),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          if (items.isEmpty) return const SizedBox.shrink();
           final markerTop = constraints.maxHeight * 0.32;
           final markerWidth = constraints.maxWidth / (items.length + 1);
 
           return Stack(
             children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _EventPinsMapPlaceholderPainter(tokens: t),
+                ),
+              ),
               for (final indexed in items.indexed)
                 Positioned(
                   left:
@@ -381,6 +391,139 @@ class _EventPinsMapPlaceholder extends StatelessWidget {
       ),
     );
   }
+}
+
+class _EventPinsMapPlaceholderPainter extends CustomPainter {
+  const _EventPinsMapPlaceholderPainter({required this.tokens});
+
+  final CatchTokens tokens;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final basePaint = Paint()..color = tokens.primarySoft;
+    canvas.drawRect(Offset.zero & size, basePaint);
+
+    final waterPaint = Paint()
+      ..color = tokens.primary.withValues(
+        alpha: CatchOpacity.mapDistanceRingFill,
+      )
+      ..style = PaintingStyle.fill;
+    final waterPath = Path()
+      ..moveTo(size.width * 0.58, 0)
+      ..quadraticBezierTo(
+        size.width * 0.88,
+        size.height * 0.08,
+        size.width,
+        size.height * 0.22,
+      )
+      ..lineTo(size.width, size.height)
+      ..quadraticBezierTo(
+        size.width * 0.76,
+        size.height * 0.78,
+        size.width * 0.64,
+        size.height * 0.52,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height * 0.26,
+        size.width * 0.58,
+        0,
+      )
+      ..close();
+    canvas.drawPath(waterPath, waterPaint);
+
+    final parkPaint = Paint()
+      ..color = tokens.success.withValues(alpha: CatchOpacity.photoScrimLight)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * 0.07,
+          size.height * 0.14,
+          size.width * 0.26,
+          size.height * 0.20,
+        ),
+        const Radius.circular(CatchRadius.md),
+      ),
+      parkPaint,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          size.width * 0.22,
+          size.height * 0.58,
+          size.width * 0.32,
+          size.height * 0.22,
+        ),
+        const Radius.circular(CatchRadius.lg),
+      ),
+      parkPaint,
+    );
+
+    final roadPaint = Paint()
+      ..color = tokens.ink.withValues(alpha: CatchOpacity.photoScrimMedium)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    final minorRoadPaint = Paint()
+      ..color = tokens.ink.withValues(alpha: CatchOpacity.photoScrimLight)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (var i = -2; i < 8; i += 1) {
+      final y = size.height * (i * 0.16);
+      canvas.drawLine(
+        Offset(-size.width * 0.1, y),
+        Offset(size.width * 1.1, y + size.height * 0.34),
+        i.isEven ? roadPaint : minorRoadPaint,
+      );
+    }
+    for (var i = 0; i < 7; i += 1) {
+      final x = size.width * (i * 0.18);
+      canvas.drawLine(
+        Offset(x, -size.height * 0.08),
+        Offset(x - size.width * 0.22, size.height * 1.08),
+        minorRoadPaint,
+      );
+    }
+
+    final routePaint = Paint()
+      ..color = tokens.primary.withValues(
+        alpha: CatchOpacity.mapDistanceRingStroke,
+      )
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    final routePath = Path()
+      ..moveTo(size.width * 0.12, size.height * 0.74)
+      ..cubicTo(
+        size.width * 0.32,
+        size.height * 0.66,
+        size.width * 0.45,
+        size.height * 0.80,
+        size.width * 0.60,
+        size.height * 0.68,
+      )
+      ..cubicTo(
+        size.width * 0.72,
+        size.height * 0.58,
+        size.width * 0.78,
+        size.height * 0.38,
+        size.width * 0.92,
+        size.height * 0.32,
+      );
+    canvas.drawPath(routePath, routePaint);
+
+    final dotPaint = Paint()
+      ..color = tokens.ink.withValues(alpha: CatchOpacity.warningFill);
+    for (var i = 0; i < 12; i += 1) {
+      final x = size.width * ((i * 0.19) % 1.0);
+      final y = size.height * (0.12 + ((i * 0.31) % 0.74));
+      canvas.drawCircle(Offset(x, y), 3, dotPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _EventPinsMapPlaceholderPainter oldDelegate) =>
+      oldDelegate.tokens != tokens;
 }
 
 bool _samePoint(LocationCoordinate a, LocationCoordinate b) =>

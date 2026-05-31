@@ -331,13 +331,13 @@ void main() {
   });
 
   group('CreateClubController', () {
-    test('picks a cover image and reads preview bytes', () async {
-      final image = XFile.fromData(
-        Uint8List.fromList(const [1, 2, 3]),
-        name: 'club-cover.png',
-      );
+    test('picks multiple club photos and reads preview bytes', () async {
+      final images = [
+        XFile.fromData(Uint8List.fromList(const [1]), name: 'club-a.png'),
+        XFile.fromData(Uint8List.fromList(const [2]), name: 'club-b.png'),
+      ];
       final fakeImageUploadRepository = FakeImageUploadRepository(
-        pickedImage: image,
+        pickedImages: images,
       );
       final container = ProviderContainer(
         overrides: [
@@ -350,14 +350,14 @@ void main() {
 
       final picked = await container
           .read(createClubControllerProvider.notifier)
-          .pickCoverImage();
+          .pickClubPhotos();
 
-      expect(picked?.image, image);
-      expect(picked?.bytes, [1, 2, 3]);
+      expect(picked.map((photo) => photo.image), images);
+      expect(picked.map((photo) => photo.bytes.single), [1, 2]);
     });
 
     test(
-      'creates a club through the repository when there is no cover image',
+      'creates a club through the repository when there are no club photos',
       () async {
         final fakeRepository = FakeClubsRepository();
         final fakeImageUploadRepository = FakeImageUploadRepository();
@@ -401,7 +401,7 @@ void main() {
     test('creates the club before uploading new club media', () async {
       final fakeRepository = FakeClubsRepository()..generatedId = 'club-42';
       final fakeImageUploadRepository = FakeImageUploadRepository(
-        pickedImage: XFile('/tmp/club-cover.jpg'),
+        pickedImage: XFile('/tmp/club-photo.jpg'),
       );
       final container = ProviderContainer(
         overrides: [
@@ -438,7 +438,9 @@ void main() {
             location: buildClub().location,
             area: 'Bandra',
             description: 'Easy social club',
-            coverImage: fakeImageUploadRepository.pickedImage,
+            clubPhotoInputs: [
+              NewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+            ],
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-42');
@@ -450,6 +452,55 @@ void main() {
       expect(
         fakeRepository.lastUpdatedFields,
         containsPair('imageUrl', fakeImageUploadRepository.uploadResult),
+      );
+    });
+
+    test('creates a club with multiple ordered club photos', () async {
+      final fakeRepository = FakeClubsRepository()..generatedId = 'club-42';
+      final photos = [XFile('/tmp/club-a.jpg'), XFile('/tmp/club-b.jpg')];
+      final fakeImageUploadRepository = FakeImageUploadRepository();
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(createClubControllerProvider.notifier)
+          .submit(
+            name: 'Sunset Striders',
+            location: buildClub().location,
+            area: 'Bandra',
+            description: 'Easy social club',
+            clubPhotoInputs: [
+              for (final photo in photos) NewClubPhotoInput(photo),
+            ],
+          );
+
+      expect(fakeImageUploadRepository.lastUploadClubId, 'club-42');
+      expect(fakeImageUploadRepository.uploadedClubPhotoPositions, [0, 1]);
+      expect(fakeImageUploadRepository.uploadedClubPhotoImages, photos);
+      final fields = fakeRepository.lastUpdatedFields!;
+      expect(fields['imageUrl'], fakeImageUploadRepository.uploadResult);
+      final clubPhotos = fields['clubPhotos'] as List<Object?>;
+      expect(clubPhotos, hasLength(2));
+      expect(
+        clubPhotos.cast<Map<String, Object?>>().map(
+          (photo) => photo['position'],
+        ),
+        [0, 1],
       );
     });
 
@@ -540,7 +591,7 @@ void main() {
       expect(fields['location'], 'indore');
       expect(fields['area'], 'Vijay Nagar');
       expect(fields['description'], 'Updated description');
-      // When no new cover is uploaded, imageUrl stays as the existing one.
+      // When no new club photo is uploaded, imageUrl stays as the existing one.
       expect(fields['imageUrl'], existingClub.imageUrl);
       expect(fields['instagramHandle'], isNull);
       expect(fields['phoneNumber'], isNull);
@@ -548,14 +599,14 @@ void main() {
       expect(fakeImageUploadRepository.lastUploadClubId, isNull);
     });
 
-    test('uploads a replacement cover when editing with a new image', () async {
+    test('uploads a replacement club photo when editing', () async {
       final existingClub = buildClub(
         id: 'club-1',
         imageUrl: 'https://example.com/old.jpg',
       );
       final fakeRepository = FakeClubsRepository();
       final fakeImageUploadRepository = FakeImageUploadRepository(
-        pickedImage: XFile('/tmp/club-cover.jpg'),
+        pickedImage: XFile('/tmp/club-photo.jpg'),
         uploadResult: 'https://example.com/new.jpg',
       );
       final container = ProviderContainer(
@@ -584,7 +635,9 @@ void main() {
             area: existingClub.area,
             description: existingClub.description,
             existingClub: existingClub,
-            coverImage: fakeImageUploadRepository.pickedImage,
+            clubPhotoInputs: [
+              NewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+            ],
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
@@ -607,7 +660,7 @@ void main() {
         );
         final fakeRepository = FakeClubsRepository();
         final fakeImageUploadRepository = FakeImageUploadRepository(
-          pickedImage: XFile('/tmp/club-cover.jpg'),
+          pickedImage: XFile('/tmp/club-photo.jpg'),
           uploadResult: 'https://example.com/new.jpg',
         );
         final container = ProviderContainer(
@@ -636,15 +689,18 @@ void main() {
               area: 'Ignored Area',
               description: 'Ignored description',
               existingClub: existingClub,
-              coverImage: fakeImageUploadRepository.pickedImage,
+              clubPhotoInputs: [
+                NewClubPhotoInput(fakeImageUploadRepository.pickedImage!),
+              ],
             );
 
         expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
         expect(fakeImageUploadRepository.lastUploadUid, 'cohost-1');
         expect(fakeRepository.lastUpdatedClubId, 'club-1');
-        expect(fakeRepository.lastUpdatedFields, {
-          'imageUrl': 'https://example.com/new.jpg',
-        });
+        final fields = fakeRepository.lastUpdatedFields!;
+        expect(fields.keys, unorderedEquals(['imageUrl', 'clubPhotos']));
+        expect(fields['imageUrl'], 'https://example.com/new.jpg');
+        expect(fields['clubPhotos'], isA<List<Object?>>());
       },
     );
 

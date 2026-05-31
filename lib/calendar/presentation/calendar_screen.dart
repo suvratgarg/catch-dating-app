@@ -133,8 +133,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       final alignment = _agendaRevealAlignment(dayContext);
       Scrollable.ensureVisible(
         dayContext,
-        duration: const Duration(milliseconds: 320),
-        curve: Curves.easeOutCubic,
+        duration: CatchMotion.calendarScroll,
+        curve: CatchMotion.easeOutCubicCurve,
         alignment: alignment,
       );
     });
@@ -286,7 +286,7 @@ class _CalendarDateHeader extends StatelessWidget {
     final weekdayHeight = scaler.scale(13) * 1.45;
     final dateHeight = scaler.scale(13) * 1.30;
     final weekStripHeight =
-        (CatchSpacing.s2 * 2) +
+        CatchLayout.calendarWeekStripVerticalInsetTotal +
         weekdayHeight +
         CatchSpacing.micro2 +
         dateHeight +
@@ -301,7 +301,7 @@ class _CalendarDateHeader extends StatelessWidget {
           monthWeekdayHeight +
           CatchSpacing.s2 +
           (monthDayHeight * 6) +
-          (CatchSpacing.micro6 * 5) +
+          CatchLayout.calendarMonthGridGapTotal +
           CatchSpacing.s3 +
           CatchSpacing.micro2;
     }
@@ -378,7 +378,7 @@ class _CalendarTitleRow extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: CatchTextStyles.displayM(context),
+            style: CatchTextStyles.headlineS(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -452,35 +452,45 @@ class _CalendarStatsHeader extends StatelessWidget {
         CatchSpacing.s5,
         CatchSpacing.s3,
       ),
-      child: CatchSurface(
-        padding: const EdgeInsets.all(CatchSpacing.micro14),
-        radius: CatchRadius.md,
-        borderColor: t.line,
-        child: Row(
-          children: [
-            Expanded(
-              child: StatColumn(
-                label: 'Planned',
-                value: '${summary.events.length}',
-              ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: CatchSurface(
+            padding: const EdgeInsets.all(CatchSpacing.micro14),
+            radius: CatchRadius.md,
+            borderColor: t.line,
+            child: Row(
+              children: [
+                Expanded(
+                  child: StatColumn(
+                    key: const ValueKey('calendar.stats.planned'),
+                    label: 'Planned',
+                    value: '${summary.events.length}',
+                  ),
+                ),
+                const _StatDivider(),
+                Expanded(
+                  child: StatColumn(
+                    key: const ValueKey('calendar.stats.distance'),
+                    label: 'Distance',
+                    value: '${summary.totalDistance.round()} km',
+                  ),
+                ),
+                const _StatDivider(),
+                Expanded(
+                  child: StatColumn(
+                    key: const ValueKey('calendar.stats.next'),
+                    label: 'Next',
+                    value: summary.nextEvent == null
+                        ? 'None'
+                        : EventFormatters.time(summary.nextEvent!.startTime),
+                  ),
+                ),
+              ],
             ),
-            const _StatDivider(),
-            Expanded(
-              child: StatColumn(
-                label: 'Distance',
-                value: '${summary.totalDistance.round()} km',
-              ),
-            ),
-            const _StatDivider(),
-            Expanded(
-              child: StatColumn(
-                label: 'Next',
-                value: summary.nextEvent == null
-                    ? 'None'
-                    : EventFormatters.time(summary.nextEvent!.startTime),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -614,11 +624,15 @@ class _StatDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Container(
-      width: 1,
-      height: 44,
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      color: t.line,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.calendarStatDividerHorizontalMargin,
+      ),
+      child: SizedBox(
+        width: CatchStroke.hairline,
+        height: CatchLayout.calendarStatDividerHeight,
+        child: ColoredBox(color: t.line),
+      ),
     );
   }
 }
@@ -638,9 +652,13 @@ class _CalendarMessage extends StatelessWidget {
         message: body,
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
-        iconSize: 44,
+        iconSize: CatchLayout.calendarEmptyIconSize,
         padding: const EdgeInsets.all(CatchSpacing.s6),
         titleStyle: CatchTextStyles.titleL(context),
+        messageStyle: CatchTextStyles.proseM(
+          context,
+          color: CatchTokens.of(context).ink2,
+        ),
       ),
     );
   }

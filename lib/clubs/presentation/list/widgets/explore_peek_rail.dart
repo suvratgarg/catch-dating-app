@@ -22,8 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-const double _ticketRailCardWidth = 336;
-const double _ticketRailHeight = 352;
+const double _ticketRailCardWidth = CatchLayout.exploreTicketRailCardWidth;
+const double _ticketRailHeight = CatchLayout.exploreTicketRailHeight;
 const double _ticketRailCardSpacing = CatchSpacing.s3;
 const double _mapAreaScopeThresholdMeters = 25000;
 const String _seeAllNearbyEventsLabel = 'See all nearby events';
@@ -213,7 +213,7 @@ class _CollapsedMapSummary extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: CatchTextStyles.titleM(context),
+            style: CatchTextStyles.sectionTitle(context),
           ),
           gapH4,
           Text(
@@ -395,7 +395,7 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
                       : '${items.length} events near you',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               gapW8,
@@ -548,7 +548,7 @@ class _PeekRailSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 132),
+          CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
           gapH10,
           SizedBox(
             height: _ticketRailHeight,

@@ -30,7 +30,7 @@ class WhenWhereCard extends StatelessWidget {
     final style = surfaceStyle;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       radius: CatchRadius.md,
       backgroundColor: style?.surfaceBackground,
       borderColor: style?.borderColor ?? t.line,
@@ -38,31 +38,39 @@ class WhenWhereCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: style?.primarySoftColor ?? t.primarySoft,
-                  borderRadius: BorderRadius.circular(10),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: CatchLayout.eventInfoTileExtent,
+                  minHeight: CatchLayout.eventInfoTileExtent,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '${start.day}',
-                      style: CatchTextStyles.statCompact(
-                        context,
-                        color: style?.primaryColor ?? t.primary,
+                child: CatchSurface(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CatchSpacing.micro6,
+                    vertical: CatchSpacing.s1,
+                  ),
+                  radius: CatchRadius.infoTile,
+                  backgroundColor: style?.primarySoftColor ?? t.primarySoft,
+                  borderWidth: 0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${start.day}',
+                        style: CatchTextStyles.statCompact(
+                          context,
+                          color: style?.primaryColor ?? t.primary,
+                        ),
                       ),
-                    ),
-                    Text(
-                      EventFormatters.shortMonth(start).toUpperCase(),
-                      style: CatchTextStyles.statusLabel(
-                        context,
-                        color: style?.primaryColor ?? t.primary,
+                      Text(
+                        EventFormatters.shortMonth(start).toUpperCase(),
+                        style: CatchTextStyles.statusLabel(
+                          context,
+                          color: style?.primaryColor ?? t.primary,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               gapW12,
@@ -91,7 +99,7 @@ class WhenWhereCard extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
             child: Divider(color: style?.dividerColor ?? t.line, height: 1),
           ),
           Semantics(
@@ -100,7 +108,9 @@ class WhenWhereCard extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: canOpenLocation ? onLocationTap : null,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(
+                  CatchRadius.interactiveTile,
+                ),
                 child: Row(
                   children: [
                     CatchIconTile(
@@ -108,9 +118,9 @@ class WhenWhereCard extends StatelessWidget {
                       iconColor: style?.bodyColor ?? t.ink2,
                       backgroundColor: style?.raisedBackground ?? t.raised,
                       borderColor: style?.borderColor ?? t.line,
-                      size: 44,
-                      iconSize: 20,
-                      radius: 10,
+                      size: CatchLayout.eventInfoTileExtent,
+                      iconSize: CatchIcon.control,
+                      radius: CatchRadius.infoTile,
                     ),
                     gapW12,
                     Expanded(
@@ -142,7 +152,7 @@ class WhenWhereCard extends StatelessWidget {
                       Icon(
                         CatchIcons.chevronRightRounded,
                         color: style?.mutedColor ?? t.ink3,
-                        size: 20,
+                        size: CatchIcon.control,
                       ),
                   ],
                 ),

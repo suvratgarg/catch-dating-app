@@ -11,11 +11,10 @@ import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surfac
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_visual_atoms.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-const double _dateRailWidth = 66;
-const double _ticketNotchRadius = 12;
-const double _ticketNotchDepth = 8;
+const double _dateRailWidth = CatchLayout.eventDateRailWidth;
+const double _ticketNotchRadius = CatchSpacing.s3;
+const double _ticketNotchDepth = CatchSpacing.s2;
 
 enum EventDateRailCardStripPosition { single, first, middle, last }
 
@@ -48,7 +47,7 @@ class EventDateRailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind);
+    final visual = eventActivityVisual(event.activityKind, context: context);
     final capacity = EventCapacityPresenter(event);
     final effectiveStatus = statusLabel?.trim();
     final effectiveSupporting = supportingLabel?.trim();
@@ -70,8 +69,9 @@ class EventDateRailCard extends StatelessWidget {
       clipper: _DateRailTicketClipper(position: stripPosition),
       clipBehavior: Clip.antiAlias,
       color: t.surface,
-      elevation: stripPosition == EventDateRailCardStripPosition.single ? 4 : 0,
-      shadowColor: Colors.black.withValues(alpha: 0.14),
+      elevation: stripPosition == EventDateRailCardStripPosition.single
+          ? CatchElevation.physicalTicket
+          : 0,
       child: CatchSurface(
         onTap: onTap,
         radius: CatchRadius.md,
@@ -103,7 +103,7 @@ class EventDateRailCard extends StatelessWidget {
                               EventActivityStamp(
                                 visual: visual,
                                 size: 26,
-                                iconSize: 14,
+                                iconSize: CatchIcon.sm,
                               ),
                               gapW8,
                               Expanded(
@@ -142,7 +142,7 @@ class EventDateRailCard extends StatelessWidget {
                               style: CatchTextStyles.supporting(
                                 context,
                                 color: t.ink2,
-                              ).copyWith(height: 1.2),
+                              ),
                             ),
                           ],
                           gapH8,
@@ -184,7 +184,7 @@ class EventDateRailCard extends StatelessWidget {
               top: perforationTop,
               bottom: perforationBottom,
               child: IgnorePointer(
-                child: _PerforationLine(color: t.ink.withValues(alpha: 0.22)),
+                child: _PerforationLine(color: t.ticketPerforationLine),
               ),
             ),
             Positioned.fill(
@@ -377,10 +377,8 @@ class _DateRail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final onColor =
-        ThemeData.estimateBrightnessForColor(color) == Brightness.dark
-        ? Colors.white
-        : t.ink;
+    final onColor = t.onFill(color);
+    final mutedOnColor = t.onFillMuted(color);
     return Container(
       width: _dateRailWidth,
       padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s4),
@@ -390,11 +388,9 @@ class _DateRail extends StatelessWidget {
         children: [
           Text(
             EventFormatters.shortWeekday(startTime).toUpperCase(),
-            style: CatchTextStyles.mono(context, color: onColor).copyWith(
-              fontSize: 10,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0,
-              color: onColor.withValues(alpha: 0.76),
+            style: CatchTextStyles.monoLabelS(
+              context,
+              color: mutedOnColor,
             ),
           ),
           gapH4,
@@ -410,12 +406,7 @@ class _DateRail extends StatelessWidget {
           gapH3,
           Text(
             EventFormatters.shortMonth(startTime).toUpperCase(),
-            style: CatchTextStyles.mono(context, color: onColor).copyWith(
-              fontSize: 9,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0,
-              color: onColor.withValues(alpha: 0.76),
-            ),
+            style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
           ),
         ],
       ),
@@ -435,13 +426,7 @@ class _MonoLabel extends StatelessWidget {
       label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: GoogleFonts.ibmPlexMono(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0,
-        height: 1.15,
-        color: color,
-      ),
+      style: CatchTextStyles.monoLabel(context, color: color),
     );
   }
 }

@@ -122,13 +122,13 @@ class EventPolicyStep extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s5,
-          16,
+          CatchSpacing.s4,
           CatchSpacing.s5,
-          24,
+          CatchSpacing.s6,
         ),
         children: [
           CatchSurface(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(CatchSpacing.s3),
             tone: CatchSurfaceTone.primarySoft,
             radius: CatchRadius.md,
             borderWidth: 0,
@@ -190,8 +190,8 @@ class EventPolicyStep extends StatelessWidget {
           const FieldLabel('Admission format'),
           gapH8,
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
                 Semantics(
@@ -217,7 +217,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CatchSpacing.s3),
               tone: CatchSurfaceTone.surface,
               radius: CatchRadius.md,
               borderColor: t.line,
@@ -227,7 +227,11 @@ class EventPolicyStep extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(CatchIcons.keyOutlined, color: t.primary, size: 18),
+                      Icon(
+                        CatchIcons.keyOutlined,
+                        color: t.primary,
+                        size: CatchIcon.md,
+                      ),
                       gapW8,
                       Expanded(
                         child: Text(
@@ -265,7 +269,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CatchSpacing.s3),
               tone: CatchSurfaceTone.surface,
               radius: CatchRadius.md,
               borderColor: t.line,
@@ -337,14 +341,18 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CatchSpacing.s3),
               tone: CatchSurfaceTone.surface,
               radius: CatchRadius.md,
               borderColor: t.line,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.howToRegOutlined, color: t.primary, size: 18),
+                  Icon(
+                    CatchIcons.howToRegOutlined,
+                    color: t.primary,
+                    size: CatchIcon.md,
+                  ),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -359,7 +367,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(CatchSpacing.s3),
               tone: CatchSurfaceTone.surface,
               radius: CatchRadius.md,
               borderColor: t.line,
@@ -474,8 +482,8 @@ class EventPolicyStep extends StatelessWidget {
           const FieldLabel('Cancellation policy'),
           gapH8,
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
                 Semantics(
@@ -499,7 +507,7 @@ class EventPolicyStep extends StatelessWidget {
           ),
           gapH12,
           CatchSurface(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(CatchSpacing.s3),
             tone: CatchSurfaceTone.surface,
             radius: CatchRadius.md,
             child: Text(

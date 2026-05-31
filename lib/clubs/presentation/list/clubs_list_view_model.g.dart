@@ -323,7 +323,7 @@ final class ExploreSourceClubsProvider
 }
 
 String _$exploreSourceClubsHash() =>
-    r'2c3d177b9c89091efaaf20214309ab1f8579f323';
+    r'51fb947f75d1d40444e01ec6252463d38720f19e';
 
 @ProviderFor(filteredClubs)
 final filteredClubsProvider = FilteredClubsProvider._();

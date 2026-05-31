@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/clubs/presentation/create/widgets/create_club_cover_picker.dart';
+import 'package:catch_dating_app/clubs/presentation/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 
 class ClubBasicsStep extends StatelessWidget {
@@ -16,11 +17,13 @@ class ClubBasicsStep extends StatelessWidget {
     required this.selectedCity,
     required this.onCityChanged,
     required this.areaController,
-    required this.coverImageBytes,
+    required this.clubPhotoPreviews,
     required this.existingImageUrl,
     required this.profileImageBytes,
     required this.existingProfileImageUrl,
-    required this.onPickCover,
+    required this.onPickClubPhotos,
+    required this.onRemoveClubPhoto,
+    required this.onReorderClubPhoto,
     required this.onPickProfileImage,
     this.detailsEnabled = true,
   });
@@ -30,11 +33,13 @@ class ClubBasicsStep extends StatelessWidget {
   final CityOption? selectedCity;
   final ValueChanged<CityOption?> onCityChanged;
   final TextEditingController areaController;
-  final Uint8List? coverImageBytes;
+  final List<OrderedPhotoPreview> clubPhotoPreviews;
   final String? existingImageUrl;
   final Uint8List? profileImageBytes;
   final String? existingProfileImageUrl;
-  final VoidCallback? onPickCover;
+  final VoidCallback? onPickClubPhotos;
+  final ValueChanged<int>? onRemoveClubPhoto;
+  final void Function(int fromIndex, int toIndex)? onReorderClubPhoto;
   final VoidCallback? onPickProfileImage;
   final bool detailsEnabled;
 
@@ -57,10 +62,12 @@ class ClubBasicsStep extends StatelessWidget {
               onTap: onPickProfileImage,
             ),
             gapH16,
-            CreateClubCoverPicker(
-              coverImageBytes: coverImageBytes,
+            CreateClubPhotosPicker(
+              photos: clubPhotoPreviews,
               existingImageUrl: existingImageUrl,
-              onTap: onPickCover,
+              onAddPhotos: onPickClubPhotos,
+              onRemovePhoto: onRemoveClubPhoto,
+              onReorderPhoto: onReorderClubPhoto,
             ),
             gapH20,
             CatchTextField(

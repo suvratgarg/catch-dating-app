@@ -15,16 +15,16 @@ class EmptyHeroCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s5),
-      radius: 22,
+      radius: CatchRadius.heroCard,
       gradient: t.heroGrad,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
           Positioned(
-            right: -40,
-            top: -40,
+            right: CatchLayout.emptyHeroArtOffset,
+            top: CatchLayout.emptyHeroArtOffset,
             child: CustomPaint(
-              size: const Size(200, 200),
+              size: const Size.square(CatchLayout.emptyHeroArtSize),
               painter: _ConcentricCirclesPainter(),
             ),
           ),
@@ -33,20 +33,26 @@ class EmptyHeroCard extends StatelessWidget {
             children: [
               Text(
                 '● NO EVENTS BOOKED',
-                style: CatchTextStyles.kicker(context, color: Colors.white),
+                style: CatchTextStyles.kicker(
+                  context,
+                  color: CatchTokens.editorialLight,
+                ),
               ),
               gapH10,
               Text(
                 'Your catches unlock\nafter your first event.',
-                style: CatchTextStyles.heroHeadline(
+                style: CatchTextStyles.headline(
                   context,
-                  color: Colors.white,
+                  color: CatchTokens.editorialLight,
                 ),
               ),
               gapH8,
               Text(
                 "Book a group event. Show up. Meet people.\nThen we'll hand you the roster.",
-                style: CatchTextStyles.supporting(context, color: Colors.white),
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.editorialLight,
+                ),
               ),
               gapH16,
               CatchButton(
@@ -68,12 +74,14 @@ class _ConcentricCirclesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.25)
+      ..color = CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.emptyHeroArtStroke,
+      )
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+      ..strokeWidth = CatchStroke.hairline;
     final cx = size.width / 2;
     final cy = size.height / 2;
-    for (final r in [40.0, 60.0, 80.0]) {
+    for (final r in CatchLayout.emptyHeroCircleRadii) {
       canvas.drawCircle(Offset(cx, cy), r, paint);
     }
   }

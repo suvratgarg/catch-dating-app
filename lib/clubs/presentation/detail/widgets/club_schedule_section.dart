@@ -50,7 +50,7 @@ class ClubScheduleSection extends StatelessWidget {
                     ? 'Publish an event when this club is ready to meet.'
                     : 'Future events will appear here once the host publishes one.',
                 layout: CatchEmptyStateLayout.inline,
-                iconSize: 22,
+                iconSize: CatchIcon.row,
                 iconContainerSize: 44,
                 padding: const EdgeInsets.all(CatchSpacing.s4),
                 titleStyle: CatchTextStyles.sectionTitle(context),

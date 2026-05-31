@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/uploaded_photo.schema.json",
+  "title": "UploadedPhoto",
+  "description": "Canonical uploaded image object for ordered media galleries, logos, and event photos.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "url",
+    "storagePath",
+    "thumbnailUrl",
+    "thumbnailStoragePath",
+    "position",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "url": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/url"
+    },
+    "storagePath": {
+      "$ref": "#/definitions/storageObjectPath"
+    },
+    "thumbnailUrl": {
+      "anyOf": [
+        {"$ref": "../shared/profile_common.schema.json#/definitions/url"},
+        {"type": "null"}
+      ]
+    },
+    "thumbnailStoragePath": {
+      "anyOf": [
+        {"$ref": "#/definitions/storageObjectPath"},
+        {"type": "null"}
+      ]
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 19
+    },
+    "moderation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "reason": {
+          "type": ["string", "null"],
+          "maxLength": 240
+        },
+        "reviewedAt": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableTimestamp"
+        }
+      }
+    },
+    "createdAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "definitions": {
+    "storageObjectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^/\\u0000][^\\u0000]*$"
+    }
+  }
+}

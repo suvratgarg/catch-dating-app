@@ -32,13 +32,13 @@ class StatColumn extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: align,
       children: [
-        if (icon != null) ...[Icon(icon, color: t.primary, size: 18), gapH6],
+        if (icon != null) ...[Icon(icon, color: t.primary, size: CatchIcon.md), gapH6],
         if (value != null)
           Text(
             value!,
             style: monoValue
                 ? CatchTextStyles.mono(context, color: valueColor)
-                : CatchTextStyles.titleM(context, color: valueColor),
+                : CatchTextStyles.sectionTitle(context, color: valueColor),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: center ? TextAlign.center : null,

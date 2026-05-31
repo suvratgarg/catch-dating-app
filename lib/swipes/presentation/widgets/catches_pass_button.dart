@@ -20,16 +20,22 @@ class CatchesPassButton extends StatelessWidget {
         button: true,
         child: Material(
           key: SwipeKeys.passButton,
-          color: t.surface.withValues(alpha: 0.96),
+          color: t.surface.withValues(alpha: CatchOpacity.passButtonFill),
           shape: CircleBorder(side: BorderSide(color: t.line)),
-          elevation: 5,
-          shadowColor: Colors.black.withValues(alpha: 0.24),
+          elevation: CatchElevation.physicalPassControl,
+          shadowColor: CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.passButtonShadow,
+          ),
           child: InkWell(
             customBorder: const CircleBorder(),
             onTap: onPressed,
             child: SizedBox.square(
-              dimension: 64,
-              child: Icon(CatchIcons.closeRounded, color: passColor, size: 34),
+              dimension: CatchLayout.passButtonExtent,
+              child: Icon(
+                CatchIcons.closeRounded,
+                color: passColor,
+                size: CatchIcon.passButton,
+              ),
             ),
           ),
         ),

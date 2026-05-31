@@ -12,6 +12,7 @@ class WelcomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    const d = CatchTokens.sunsetDark;
     final t = CatchTokens.of(context);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -23,39 +24,40 @@ class WelcomePage extends ConsumerWidget {
             const Positioned.fill(child: _TrackPattern()),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(28, 24, 28, 28),
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s7,
+                  CatchSpacing.s6,
+                  CatchSpacing.s7,
+                  CatchSpacing.s7,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'CATCH',
-                      style: CatchTextStyles.kicker(
-                        context,
-                        color: Colors.white,
-                      ),
+                      style: CatchTextStyles.kicker(context, color: d.ink),
                     ),
                     gapH12,
                     Image.asset(
                       'assets/branding/catch_icon.png',
-                      width: 52,
-                      height: 52,
+                      width: CatchLayout.welcomeBrandMarkExtent,
+                      height: CatchLayout.welcomeBrandMarkExtent,
                       semanticLabel: 'Catch',
                     ),
                     const Spacer(),
                     Text(
                       'Love arrives\nat mile\nthree.',
-                      style: CatchTextStyles.heroImpact(
-                        context,
-                        color: Colors.white,
-                      ),
+                      style: CatchTextStyles.display(context, color: d.ink),
                     ),
                     gapH16,
                     Text(
                       'Meet someone on a group event. Swipe on people you '
                       'actually ran with - not strangers 30 miles away.',
-                      style: CatchTextStyles.bodyLead(
+                      style: CatchTextStyles.proseL(
                         context,
-                        color: Colors.white.withValues(alpha: 0.88),
+                        color: d.ink.withValues(
+                          alpha: CatchOpacity.welcomeHeroBody,
+                        ),
                       ),
                     ),
                     gapH24,
@@ -73,9 +75,13 @@ class WelcomePage extends ConsumerWidget {
                       variant: CatchButtonVariant.secondary,
                       size: CatchButtonSize.lg,
                       fullWidth: true,
-                      backgroundColor: Colors.white.withValues(alpha: 0.14),
-                      foregroundColor: Colors.white,
-                      borderColor: Colors.white.withValues(alpha: 0.42),
+                      backgroundColor: d.ink.withValues(
+                        alpha: CatchOpacity.welcomeSecondaryButtonFill,
+                      ),
+                      foregroundColor: d.ink,
+                      borderColor: d.ink.withValues(
+                        alpha: CatchOpacity.welcomeSecondaryButtonBorder,
+                      ),
                     ),
                   ],
                 ),
@@ -118,7 +124,9 @@ class _TrackPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.16)
+      ..color = CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.welcomeTrackPattern,
+      )
       ..strokeWidth = _stripeWidth;
 
     _drawStripedCircle(

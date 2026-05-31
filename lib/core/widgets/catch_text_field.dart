@@ -315,7 +315,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
           }
           return IconButton(
             tooltip: 'Clear ${widget.label}',
-            icon: Icon(CatchIcons.closeRounded, size: 16),
+            icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
             onPressed: () {
               _controller.clear();
               widget.onChanged?.call('');
@@ -346,7 +346,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
     if (widget.maxLines != 1 || widget.minLines != null) return null;
 
     final extent = CatchControlMetrics.iconExtent(_controlSize);
-    return BoxConstraints.tightFor(width: extent, height: extent);
+    return CatchControlMetrics.squareConstraints(extent);
   }
 
   CatchControlSize get _controlSize {

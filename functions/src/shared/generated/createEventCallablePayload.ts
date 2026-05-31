@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {UploadedPhoto} from "./uploadedPhoto";
+
 /**
  * Callable payload accepted by createEvent.
  */
@@ -26,6 +28,10 @@ export interface CreateEventCallablePayload {
   startingPointLng: number;
   locationDetails?: string | null;
   photoUrl?: string | null;
+  /**
+   * @maxItems 12
+   */
+  eventPhotos?: UploadedPhoto[];
   distanceKm: number;
   pace: "easy" | "moderate" | "fast" | "competitive";
   capacityLimit: number;

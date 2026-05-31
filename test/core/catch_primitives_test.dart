@@ -45,7 +45,7 @@ void main() {
           child: Builder(
             builder: (context) {
               styles = [
-                CatchTextStyles.displayM(context),
+                CatchTextStyles.headlineS(context),
                 CatchTextStyles.titleL(context),
                 CatchTextStyles.bodyL(context),
                 CatchTextStyles.bodyS(context),
@@ -244,7 +244,7 @@ void main() {
     final label = tester.widget<Text>(find.text('Primary action'));
 
     expect(taps, 1);
-    expect(label.style?.color, Colors.white);
+    expect(label.style?.color, CatchTokens.sunsetDark.primaryInk);
   });
 
   testWidgets('CatchTextButton applies token color and tap semantics', (

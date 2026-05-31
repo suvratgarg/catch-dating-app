@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-const double _clubsBrowseHeaderHeight = 88;
+const double _clubsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 
 class ClubsSliverHeader extends CatchSliverHeader {
   ClubsSliverHeader({bool showSearchField = true})
@@ -75,7 +75,11 @@ class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
               child: IconBtn(
                 size: 44,
                 onTap: () => context.pushNamed(Routes.createClubScreen.name),
-                child: Icon(CatchIcons.add, size: 20, color: t.ink),
+                child: Icon(
+                  CatchIcons.add,
+                  size: CatchIcon.control,
+                  color: t.ink,
+                ),
               ),
             ),
           ),

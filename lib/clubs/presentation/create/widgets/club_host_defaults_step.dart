@@ -85,7 +85,7 @@ class _DefaultActivityCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Default activity', style: CatchTextStyles.titleM(context)),
+          Text('Default activity', style: CatchTextStyles.sectionTitle(context)),
           gapH4,
           Text(
             'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
@@ -238,7 +238,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Default event policy', style: CatchTextStyles.titleM(context)),
+          Text('Default event policy', style: CatchTextStyles.sectionTitle(context)),
           gapH4,
           Text(
             'These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.',

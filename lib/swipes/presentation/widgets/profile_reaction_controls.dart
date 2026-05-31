@@ -142,7 +142,7 @@ class _ProfileReactionCommentSheetState
           const Spacer(),
           CatchButton(
             label: 'Send like',
-            icon: Icon(CatchIcons.favoriteBorderRounded, size: 18),
+            icon: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
             onPressed: _canSend ? _submit : null,
             size: CatchButtonSize.sm,
           ),
@@ -205,11 +205,15 @@ class _ReactionControlButton extends StatelessWidget {
     final palette = ProfileCardPalette.of(context);
     final isOverlay = style == ProfileReactionControlsStyle.overlay;
     final background = isOverlay
-        ? Colors.white.withValues(alpha: 0.94)
+        ? CatchTokens.editorialLight.withValues(
+            alpha: CatchOpacity.reactionOverlayFill,
+          )
         : palette.chipFill;
     final foreground = isOverlay ? palette.accent : palette.textSecondary;
     final border = isOverlay
-        ? Colors.white.withValues(alpha: 0.70)
+        ? CatchTokens.editorialLight.withValues(
+            alpha: CatchOpacity.reactionOverlayBorder,
+          )
         : palette.chipBorder;
 
     return Tooltip(
@@ -221,8 +225,12 @@ class _ReactionControlButton extends StatelessWidget {
           customBorder: const CircleBorder(),
           onTap: onPressed,
           child: SizedBox.square(
-            dimension: 44,
-            child: Icon(icon, color: foreground, size: 21),
+            dimension: CatchLayout.reactionControlExtent,
+            child: Icon(
+              icon,
+              color: foreground,
+              size: CatchLayout.reactionControlIconSize,
+            ),
           ),
         ),
       ),

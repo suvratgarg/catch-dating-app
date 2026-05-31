@@ -18,6 +18,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.profile,
     required this.onReport,
     required this.onBlock,
+    this.onShareCard,
   });
 
   final String name;
@@ -26,6 +27,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
   final PublicProfile? profile;
   final VoidCallback onReport;
   final VoidCallback onBlock;
+  final VoidCallback? onShareCard;
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -50,6 +52,8 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
             tooltip: 'Chat actions',
             onSelected: (value) {
               switch (value) {
+                case 'shareCard':
+                  onShareCard?.call();
                 case 'report':
                   onReport();
                 case 'block':
@@ -58,6 +62,14 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
               }
             },
             items: [
+              if (onShareCard != null)
+                CatchActionMenuItem(
+                  value: 'shareCard',
+                  label: 'Share card',
+                  icon: CatchIcons.platformShare(
+                    platform: Theme.of(context).platform,
+                  ),
+                ),
               CatchActionMenuItem(
                 value: 'report',
                 label: 'Report',
@@ -96,9 +108,9 @@ class _ChatTitle extends StatelessWidget {
       label: onTap == null ? null : 'View $name profile',
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
           child: Row(
             children: [
               PersonAvatar(size: 36, name: name, imageUrl: photoUrl),

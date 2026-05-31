@@ -359,17 +359,22 @@ class CreateClubCall {
 class FakeImageUploadRepository implements ImageUploadRepository {
   FakeImageUploadRepository({
     this.pickedImage,
+    List<XFile>? pickedImages,
     this.uploadResult = 'https://example.com/club-cover.jpg',
-  });
+  }) : pickedImages = pickedImages ?? const [];
 
   XFile? pickedImage;
+  List<XFile> pickedImages;
   Object? pickError;
   Object? uploadError;
   String uploadResult;
   String? lastUploadUid;
   String? lastUploadClubId;
   String? lastUploadEventId;
+  int? lastUploadPosition;
   XFile? lastUploadedImage;
+  final uploadedClubPhotoPositions = <int>[];
+  final uploadedClubPhotoImages = <XFile>[];
 
   @override
   Future<XFile?> pickImage({
@@ -383,9 +388,22 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   }
 
   @override
+  Future<List<XFile>> pickImages({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+    int? limit,
+  }) async {
+    if (pickError != null) {
+      throw pickError!;
+    }
+    return limit == null ? pickedImages : pickedImages.take(limit).toList();
+  }
+
+  @override
   Future<String> upload({
     required String storagePath,
     required XFile image,
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
@@ -398,12 +416,54 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Future<UploadedImage> uploadWithMetadata({
     required String storagePath,
     required XFile image,
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
   }) async {
     if (uploadError != null) {
       throw uploadError!;
     }
     lastUploadedImage = image;
     return UploadedImage(url: uploadResult, storagePath: '$storagePath.jpg');
+  }
+
+  @override
+  Future<UploadedImage> uploadClubPhoto({
+    String? uid,
+    required String clubId,
+    required int position,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadUid = uid;
+    lastUploadClubId = clubId;
+    lastUploadPosition = position;
+    lastUploadedImage = image;
+    uploadedClubPhotoPositions.add(position);
+    uploadedClubPhotoImages.add(image);
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: 'clubs/$clubId/photos/${position}_test.jpg',
+    );
+  }
+
+  @override
+  Future<UploadedImage> uploadClubLogo({
+    String? uid,
+    required String clubId,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadUid = uid;
+    lastUploadClubId = clubId;
+    lastUploadPosition = 0;
+    lastUploadedImage = image;
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: 'clubs/$clubId/logo/test.jpg',
+    );
   }
 
   @override
@@ -438,9 +498,10 @@ class FakeImageUploadRepository implements ImageUploadRepository {
 
   @override
   Future<String> uploadEventPhoto({
-    required String uid,
-    required String clubId,
+    String? uid,
+    String? clubId,
     required String eventId,
+    int position = 0,
     required XFile image,
   }) async {
     if (uploadError != null) {
@@ -449,8 +510,27 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     lastUploadUid = uid;
     lastUploadClubId = clubId;
     lastUploadEventId = eventId;
+    lastUploadPosition = position;
     lastUploadedImage = image;
     return uploadResult;
+  }
+
+  @override
+  Future<UploadedImage> uploadEventPhotoWithMetadata({
+    required String eventId,
+    required int position,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadEventId = eventId;
+    lastUploadPosition = position;
+    lastUploadedImage = image;
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: 'events/$eventId/photos/${position}_test.jpg',
+    );
   }
 
   @override

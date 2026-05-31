@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
+import 'package:catch_dating_app/core/theme/catch_fonts.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppTheme {
-  // Catch orange - matches CatchTokens.sunsetLight.primary.
-  static const _seedColor = Color(0xFFFF4E1F);
+  // Neutral seed — most UI reads CatchTokens directly; the M3 scheme is secondary.
+  static const _seedColor = Color(0xFF16140F);
 
   static final light = _build(
     colorScheme: ColorScheme.fromSeed(seedColor: _seedColor),
@@ -35,7 +36,12 @@ abstract final class AppTheme {
 
       // Register the active Catch design tokens as a ThemeExtension so any
       // widget can call CatchTokens.of(context) to read exact design values.
-      extensions: <ThemeExtension<dynamic>>[tokens],
+      extensions: <ThemeExtension<dynamic>>[
+        tokens,
+        colorScheme.brightness == Brightness.dark
+            ? ActivityPalette.dark
+            : ActivityPalette.light,
+      ],
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -64,10 +70,11 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
-          textStyle: GoogleFonts.inter(
+          // No color — the button's state-aware foregroundColor wins.
+          textStyle: CatchFonts.sans(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            letterSpacing: 0,
+            height: 1,
           ),
         ),
       ),
@@ -80,10 +87,10 @@ abstract final class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
-          textStyle: GoogleFonts.inter(
+          textStyle: CatchFonts.sans(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            letterSpacing: 0,
+            height: 1,
           ),
         ),
       ),
@@ -93,11 +100,10 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: tokens.bg,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: CatchFonts.sans(
           fontSize: 17,
           fontWeight: FontWeight.w700,
           height: 1.18,
-          letterSpacing: 0,
           color: tokens.ink,
         ),
         iconTheme: IconThemeData(color: tokens.ink),
@@ -105,11 +111,10 @@ abstract final class AppTheme {
 
       snackBarTheme: SnackBarThemeData(
         backgroundColor: tokens.ink,
-        contentTextStyle: GoogleFonts.inter(
+        contentTextStyle: CatchFonts.sans(
           fontSize: 13,
           fontWeight: FontWeight.w600,
           height: 1.35,
-          letterSpacing: 0,
           color: tokens.bg,
         ),
         actionTextColor: tokens.primarySoft,
@@ -118,11 +123,10 @@ abstract final class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: tokens.primary,
-          textStyle: GoogleFonts.inter(
+          textStyle: CatchFonts.sans(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             height: 1.2,
-            letterSpacing: 0,
           ),
         ),
       ),
@@ -137,11 +141,10 @@ abstract final class AppTheme {
       menuButtonTheme: MenuButtonThemeData(
         style: ButtonStyle(
           textStyle: WidgetStatePropertyAll(
-            GoogleFonts.inter(
+            CatchFonts.sans(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               height: 1.3,
-              letterSpacing: 0,
               color: tokens.ink,
             ),
           ),
@@ -159,8 +162,9 @@ abstract final class AppTheme {
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
-          return GoogleFonts.inter(
+          return CatchFonts.sans(
             fontSize: 11,
+            height: 1.2,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
             color: selected ? tokens.primary : tokens.ink3,
           );
@@ -181,8 +185,9 @@ abstract final class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: tokens.raised,
         selectedColor: tokens.primarySoft,
-        labelStyle: GoogleFonts.inter(
+        labelStyle: CatchFonts.sans(
           fontSize: 13,
+          height: 1.2,
           fontWeight: FontWeight.w500,
           color: tokens.ink,
         ),
@@ -195,22 +200,21 @@ abstract final class AppTheme {
   }
 
   static TextTheme _textTheme(TextTheme base, CatchTokens tokens) {
-    final inter = GoogleFonts.interTextTheme(base);
+    // Every slot below is overridden, so the Inter baseline fully replaces the
+    // default Material text theme (functional fallbacks for un-styled widgets).
     TextStyle style(
       double size,
       FontWeight weight,
       double height,
       Color color,
-    ) => GoogleFonts.inter(
+    ) => CatchFonts.sans(
       fontSize: size,
       fontWeight: weight,
       height: height,
-      letterSpacing: 0,
-      decoration: TextDecoration.none,
       color: color,
     );
 
-    return inter.copyWith(
+    return base.copyWith(
       displayLarge: style(40, FontWeight.w800, 1.02, tokens.ink),
       displayMedium: style(32, FontWeight.w800, 1.04, tokens.ink),
       displaySmall: style(26, FontWeight.w800, 1.08, tokens.ink),

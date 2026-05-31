@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
@@ -140,9 +141,9 @@ class _EventFocusRailState extends ConsumerState<EventFocusRail> {
                       ? () => _dragDistance = 0
                       : null,
                   child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    switchInCurve: Curves.easeOutCubic,
-                    switchOutCurve: Curves.easeInCubic,
+                    duration: CatchMotion.base,
+                    switchInCurve: CatchMotion.easeOutCubicCurve,
+                    switchOutCurve: CatchMotion.easeInCubicCurve,
                     transitionBuilder: (child, animation) =>
                         FadeTransition(opacity: animation, child: child),
                     child: _EventFocusCard(

@@ -2,6 +2,8 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
+import {UploadedPhoto} from "./uploadedPhoto";
+
 /**
  * Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.
  */
@@ -38,6 +40,11 @@ export interface ClubDocument {
   };
   imageUrl: string | null;
   profileImageUrl: string | null;
+  /**
+   * @maxItems 12
+   */
+  clubPhotos?: UploadedPhoto[];
+  logoPhoto?: UploadedPhoto | null;
   /**
    * @maxItems 20
    */

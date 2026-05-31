@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -100,81 +102,103 @@ class _PendingCheckoutBody extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(CatchSpacing.s5),
           children: [
-            gapH24,
-            Icon(
-              failed
-                  ? CatchIcons.errorOutlineRounded
-                  : CatchIcons.receiptLongOutlined,
-              color: failed ? t.danger : t.primary,
-              size: 42,
-            ),
-            gapH16,
-            Text(
-              failed ? 'Payment not completed' : 'Checkout is waiting',
-              style: CatchTextStyles.displayS(context),
-            ),
-            gapH8,
-            Text(
-              failed
-                  ? 'Stripe did not complete this booking. If money moved, it will stay visible in payment history while support resolves it.'
-                  : 'Finish payment in Stripe. Your spot is reserved only after Stripe confirms the payment and Catch writes the booking.',
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
-            ),
-            gapH20,
-            CatchSurface(
-              padding: const EdgeInsets.all(CatchSpacing.s4),
-              borderColor: t.line,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(event.title, style: CatchTextStyles.titleM(context)),
-                  gapH8,
-                  Text(
-                    EventFormatters.priceInPaise(
-                      data.amountInPaise,
-                      currencyCode: data.currency,
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: CatchLayout.maxContentWidth,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    gapH24,
+                    Icon(
+                      failed
+                          ? CatchIcons.errorOutlineRounded
+                          : CatchIcons.receiptLongOutlined,
+                      color: failed ? t.danger : t.primary,
+                      size: 42,
                     ),
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                  gapH12,
-                  CatchBadge(
-                    label: failed ? 'Failed' : 'Pending',
-                    tone: failed
-                        ? CatchBadgeTone.danger
-                        : CatchBadgeTone.warning,
-                  ),
-                ],
+                    gapH16,
+                    Text(
+                      failed ? 'Payment not completed' : 'Checkout is waiting',
+                      style: CatchTextStyles.titleL(context),
+                    ),
+                    gapH8,
+                    Text(
+                      failed
+                          ? 'Stripe did not complete this booking. If money moved, it will stay visible in payment history while support resolves it.'
+                          : 'Finish payment in Stripe. Your spot is reserved only after Stripe confirms the payment and Catch writes the booking.',
+                      style: CatchTextStyles.proseM(context, color: t.ink2),
+                    ),
+                    gapH20,
+                    CatchSurface(
+                      padding: const EdgeInsets.all(CatchSpacing.s4),
+                      borderColor: t.line,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            event.title,
+                            style: CatchTextStyles.sectionTitle(context),
+                          ),
+                          gapH8,
+                          Text(
+                            EventFormatters.priceInPaise(
+                              data.amountInPaise,
+                              currencyCode: data.currency,
+                            ),
+                            style: CatchTextStyles.supporting(
+                              context,
+                              color: t.ink2,
+                            ),
+                          ),
+                          gapH12,
+                          CatchBadge(
+                            label: failed ? 'Failed' : 'Pending',
+                            tone: failed
+                                ? CatchBadgeTone.danger
+                                : CatchBadgeTone.warning,
+                          ),
+                        ],
+                      ),
+                    ),
+                    gapH20,
+                    if (!failed && data.checkoutUrl != null)
+                      CatchButton(
+                        label: 'Open Stripe checkout',
+                        onPressed: () => unawaited(
+                          controller.openCheckout(data.checkoutUrl!),
+                        ),
+                        icon: Icon(CatchIcons.openInNewRounded),
+                        fullWidth: true,
+                      ),
+                    if (!failed && data.checkoutUrl != null) gapH12,
+                    CatchButton(
+                      label: 'View payment history',
+                      onPressed: () =>
+                          context.goNamed(Routes.paymentHistoryScreen.name),
+                      variant: CatchButtonVariant.secondary,
+                      icon: Icon(CatchIcons.receiptLongOutlined),
+                      fullWidth: true,
+                    ),
+                    gapH12,
+                    CatchButton(
+                      label: 'Back to event',
+                      onPressed: () => context.goNamed(
+                        Routes.eventDetailScreen.name,
+                        pathParameters: {
+                          'clubId': event.clubId,
+                          'eventId': event.id,
+                        },
+                        extra: event,
+                      ),
+                      variant: CatchButtonVariant.secondary,
+                      icon: Icon(CatchIcons.eventOutlined),
+                      fullWidth: true,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            gapH20,
-            if (!failed && data.checkoutUrl != null)
-              CatchButton(
-                label: 'Open Stripe checkout',
-                onPressed: () =>
-                    unawaited(controller.openCheckout(data.checkoutUrl!)),
-                icon: Icon(CatchIcons.openInNewRounded),
-                fullWidth: true,
-              ),
-            if (!failed && data.checkoutUrl != null) gapH12,
-            CatchButton(
-              label: 'View payment history',
-              onPressed: () =>
-                  context.goNamed(Routes.paymentHistoryScreen.name),
-              variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.receiptLongOutlined),
-              fullWidth: true,
-            ),
-            gapH12,
-            CatchButton(
-              label: 'Back to event',
-              onPressed: () => context.goNamed(
-                Routes.eventDetailScreen.name,
-                pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-                extra: event,
-              ),
-              variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.eventOutlined),
-              fullWidth: true,
             ),
           ],
         ),
@@ -222,6 +246,7 @@ class _QuickActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(paymentConfirmationControllerProvider);
+    final share = ref.watch(externalShareControllerProvider);
 
     return Row(
       children: [
@@ -250,7 +275,9 @@ class _QuickActions extends ConsumerWidget {
               platform: Theme.of(context).platform,
             ),
             label: 'Invite friend',
-            onTap: () => unawaited(controller.inviteFriend(event)),
+            onTap: () => unawaited(
+              showEventShareCardSheet(context, event: event, share: share),
+            ),
           ),
         ),
       ],
@@ -283,7 +310,7 @@ class _ActionTile extends StatelessWidget {
       borderColor: t.line,
       child: Column(
         children: [
-          Icon(icon, size: 20, color: t.primary),
+          Icon(icon, size: CatchIcon.control, color: t.primary),
           gapH6,
           Text(
             label,
@@ -319,7 +346,7 @@ class _HeadsUp extends StatelessWidget {
             'Bring a water bottle and arrive by the meeting time. '
             'Catches unlock automatically when the event finishes — '
             'keep your phone charged.',
-            style: CatchTextStyles.supporting(context, color: t.ink),
+            style: CatchTextStyles.proseM(context, color: t.ink),
           ),
         ],
       ),
@@ -335,14 +362,18 @@ class _ReferralBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final controller = ref.watch(paymentConfirmationControllerProvider);
+    final share = ref.watch(externalShareControllerProvider);
 
     return CatchSurface(
       key: PaymentConfirmationKeys.referralShare,
-      onTap: () => unawaited(controller.shareReferral(event)),
+      onTap: () => unawaited(
+        showEventShareCardSheet(context, event: event, share: share),
+      ),
       padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
-      borderColor: t.primary.withValues(alpha: 0.24),
+      borderColor: t.primary.withValues(
+        alpha: CatchOpacity.paymentReferralBorder,
+      ),
       borderWidth: 1.5,
       child: Row(
         children: [
@@ -359,7 +390,7 @@ class _ReferralBanner extends ConsumerWidget {
                 gapH2,
                 Text(
                   'The best invites happen while the plan still feels fresh.',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  style: CatchTextStyles.proseM(context, color: t.ink2),
                 ),
               ],
             ),

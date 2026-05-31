@@ -79,7 +79,11 @@ class _PrivateAfterglowRecapCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(CatchIcons.lockOutlineRounded, size: 18, color: t.primary),
+                Icon(
+                  CatchIcons.lockOutlineRounded,
+                  size: CatchIcon.md,
+                  color: t.primary,
+                ),
                 gapW8,
                 Expanded(
                   child: Text(
@@ -163,11 +167,11 @@ class _AfterglowBeatRow extends StatefulWidget {
 class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
     with TickerProviderStateMixin {
   late final AnimationController _entry = AnimationController(
-    duration: const Duration(milliseconds: 480),
+    duration: CatchMotion.afterglowBeatEntry,
     vsync: this,
   );
   late final AnimationController _count = AnimationController(
-    duration: const Duration(milliseconds: 600),
+    duration: CatchMotion.afterglowCountUp,
     vsync: this,
   );
 
@@ -206,46 +210,42 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
     return AnimatedBuilder(
       animation: Listenable.merge([_entry, _count]),
       builder: (context, _) {
-        final entry = Curves.easeOutCubic.transform(_entry.value);
-        final slide = (1 - entry) * 14;
+        final entry = CatchMotion.easeOutCubicCurve.transform(_entry.value);
+        final slide = (1 - entry) * CatchLayout.afterglowBeatSlideOffset;
         return Opacity(
           opacity: entry,
           child: Transform.translate(
             offset: Offset(0, slide),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.surface,
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
-                border: Border.all(color: t.line),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s3),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(beat.icon, size: 20, color: t.primary),
-                    gapW10,
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            beat.label,
-                            style: CatchTextStyles.sectionTitle(context),
+            child: CatchSurface(
+              backgroundColor: t.surface,
+              borderColor: t.line,
+              radius: CatchRadius.sm,
+              padding: const EdgeInsets.all(CatchSpacing.s3),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(beat.icon, size: CatchIcon.control, color: t.primary),
+                  gapW10,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          beat.label,
+                          style: CatchTextStyles.sectionTitle(context),
+                        ),
+                        gapH2,
+                        Text(
+                          _animatedValueString(beat),
+                          style: CatchTextStyles.supporting(
+                            context,
+                            color: t.ink2,
                           ),
-                          gapH2,
-                          Text(
-                            _animatedValueString(beat),
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -260,7 +260,7 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
   String _animatedValueString(_AfterglowBeat beat) {
     final target = beat.countValue;
     if (target == null) return beat.value;
-    final eased = Curves.easeOutCubic.transform(_count.value);
+    final eased = CatchMotion.easeOutCubicCurve.transform(_count.value);
     final live = (target * eased).round();
     final pattern = RegExp(r'\d+');
     final match = pattern.firstMatch(beat.value);

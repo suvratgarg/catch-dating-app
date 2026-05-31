@@ -40,15 +40,19 @@ class EventDetailHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     final t = CatchTokens.of(context);
     final width = MediaQuery.of(context).size.width;
     final isTicketPresentation =
         presentationMode != EventDetailPresentationMode.standard;
     final isSpotlight =
         presentationMode == EventDetailPresentationMode.spotlightDark;
+    final overlayScrim = CatchTokens.editorialDark.withValues(
+      alpha: CatchOpacity.eventHeroOverlayScrim,
+    );
     final expandedHeight = isTicketPresentation
-        ? (width > 600 ? 360.0 : 430.0)
-        : (width > 600 ? 220.0 : 260.0);
+        ? (width > CatchLayout.maxContentWidth ? 360.0 : 430.0)
+        : (width > CatchLayout.maxContentWidth ? 220.0 : 260.0);
     final collapsedBackground = isSpotlight ? t.ink : t.surface;
     final collapsedForeground = isSpotlight ? t.primaryInk : t.ink;
 
@@ -70,51 +74,59 @@ class EventDetailHeroAppBar extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(CatchSpacing.s2),
         child: CatchTopBarIconAction(
           icon: CatchIcons.backArrow,
           tooltip: 'Back',
-          backgroundColor: Colors.black.withValues(alpha: 0.35),
+          backgroundColor: overlayScrim,
           onPressed: onBack,
-          foregroundColor: Colors.white,
+          foregroundColor: d.ink,
         ),
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(CatchSpacing.s2),
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
               icon: CatchIcons.platformShare(
                 platform: Theme.of(context).platform,
               ),
               tooltip: 'Share event',
-              backgroundColor: Colors.black.withValues(alpha: 0.35),
+              backgroundColor: overlayScrim,
               onPressed: () => onShare(buttonContext),
-              foregroundColor: Colors.white,
+              foregroundColor: d.ink,
             ),
           ),
         ),
         if (showAddToCalendar)
           Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+            padding: const EdgeInsets.only(
+              top: CatchSpacing.s2,
+              bottom: CatchSpacing.s2,
+              right: CatchSpacing.s2,
+            ),
             child: Builder(
               builder: (buttonContext) => CatchTopBarIconAction(
                 icon: CatchIcons.calendarAdd,
                 tooltip: 'Add to calendar',
-                backgroundColor: Colors.black.withValues(alpha: 0.35),
+                backgroundColor: overlayScrim,
                 onPressed: () => onAddToCalendar(buttonContext),
-                foregroundColor: Colors.white,
+                foregroundColor: d.ink,
               ),
             ),
           ),
         Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+          padding: const EdgeInsets.only(
+            top: CatchSpacing.s2,
+            bottom: CatchSpacing.s2,
+            right: CatchSpacing.s2,
+          ),
           child: CatchTopBarIconAction(
             icon: isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
             tooltip: isSaved ? 'Unsave event' : 'Save event',
-            backgroundColor: Colors.black.withValues(alpha: 0.35),
+            backgroundColor: overlayScrim,
             onPressed: savePending ? null : onToggleSaved,
-            foregroundColor: Colors.white,
+            foregroundColor: d.ink,
           ),
         ),
       ],
@@ -139,6 +151,7 @@ class _LegacyEventHeroSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -151,7 +164,7 @@ class _LegacyEventHeroSurface extends StatelessWidget {
             event.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.displayL(context, color: Colors.white),
+            style: CatchTextStyles.headline(context, color: d.ink),
           ),
         ),
       ],
@@ -192,18 +205,17 @@ class _EventDetailTicketSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind);
+    final visual = eventActivityVisual(event.activityKind, context: context);
     final isSpotlight =
         presentationMode == EventDetailPresentationMode.spotlightDark;
     final bodyColor = isSpotlight ? t.ink : t.surface;
     final titleColor = isSpotlight ? t.primaryInk : t.ink;
     final metaColor = isSpotlight
-        ? t.primaryInk.withValues(alpha: 0.72)
+        ? t.primaryInk.withValues(alpha: CatchOpacity.eventHeroMutedInk)
         : t.ink2;
-    final lineColor = isSpotlight
-        ? Colors.white.withValues(alpha: 0.13)
-        : t.line2;
+    final lineColor = isSpotlight ? d.line : t.line2;
 
     return ColoredBox(
       color: bodyColor,
@@ -242,7 +254,7 @@ class _EventDetailTicketSurface extends StatelessWidget {
                       visual: visual,
                       dense: true,
                       iconAlignment: Alignment.centerRight,
-                      iconSize: 220,
+                      iconSize: CatchLayout.eventHeroBackdropIconSize,
                       iconOpacity: 0.15,
                       patternOpacity: 0.24,
                     ),
@@ -253,9 +265,13 @@ class _EventDetailTicketSurface extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withValues(alpha: 0.10),
-                            Colors.black.withValues(
-                              alpha: isSpotlight ? 0.52 : 0.34,
+                            CatchTokens.editorialDark.withValues(
+                              alpha: CatchOpacity.eventHeroGradientMidScrim,
+                            ),
+                            CatchTokens.editorialDark.withValues(
+                              alpha: isSpotlight
+                                  ? CatchOpacity.eventHeroSpotlightBottomScrim
+                                  : CatchOpacity.eventHeroGradientBottomScrim,
                             ),
                           ],
                           stops: const [0, 0.52, 1],
@@ -336,13 +352,18 @@ class _HeroActivityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     return CatchSurface(
-      width: 56,
-      height: 56,
-      borderRadius: BorderRadius.circular(28),
-      backgroundColor: Colors.white.withValues(alpha: 0.18),
-      borderColor: Colors.white.withValues(alpha: 0.42),
-      child: Icon(visual.icon, color: Colors.white, size: 26),
+      width: CatchLayout.eventHeroBadgeExtent,
+      height: CatchLayout.eventHeroBadgeExtent,
+      borderRadius: BorderRadius.circular(CatchLayout.eventHeroBadgeExtent / 2),
+      backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
+      borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
+      child: Icon(
+        visual.icon,
+        color: d.ink,
+        size: CatchLayout.eventHeroBadgeIconSize,
+      ),
     );
   }
 }
@@ -354,13 +375,14 @@ class _HeroTimeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     return CatchSurface(
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s3,
         vertical: CatchSpacing.s2,
       ),
       radius: CatchRadius.md,
-      backgroundColor: Colors.black.withValues(alpha: 0.62),
+      backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
       borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -368,17 +390,17 @@ class _HeroTimeChip extends StatelessWidget {
         children: [
           Text(
             EventFormatters.shortWeekday(event.startTime).toUpperCase(),
-            style: CatchTextStyles.mono(
+            style: CatchTextStyles.monoLabel(
               context,
-              color: Colors.white70,
-            ).copyWith(fontSize: 11, fontWeight: FontWeight.w700),
+              color: d.ink.withValues(alpha: CatchOpacity.eventHeroMutedInk),
+            ),
           ),
           gapH2,
           Text(
             EventFormatters.time(event.startTime),
-            style: CatchTextStyles.titleM(
+            style: CatchTextStyles.sectionTitle(
               context,
-              color: Colors.white,
+              color: d.ink,
             ).copyWith(fontWeight: FontWeight.w800),
           ),
         ],

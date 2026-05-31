@@ -7,9 +7,9 @@ class CatchPageDots extends StatelessWidget {
     required this.selectedIndex,
     required this.itemCount,
     this.semanticLabel,
-    this.selectedWidth = 22,
-    this.dotWidth = 6,
-    this.dotHeight = 6,
+    this.selectedWidth = CatchLayout.pageDotSelectedWidth,
+    this.dotWidth = CatchLayout.pageDotExtent,
+    this.dotHeight = CatchLayout.pageDotExtent,
   });
 
   final int selectedIndex;
@@ -31,14 +31,14 @@ class CatchPageDots extends StatelessWidget {
         children: [
           for (var index = 0; index < itemCount; index += 1)
             AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutCubic,
+              duration: CatchMotion.micro,
+              curve: CatchMotion.easeOutCubicCurve,
               width: index == selectedIndex ? selectedWidth : dotWidth,
               height: dotHeight,
               decoration: BoxDecoration(
                 color: index == selectedIndex
                     ? t.primary
-                    : t.line2.withValues(alpha: 0.9),
+                    : t.line2.withValues(alpha: CatchOpacity.pageDotInactive),
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
               ),
             ),

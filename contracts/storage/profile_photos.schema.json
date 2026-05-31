@@ -8,6 +8,7 @@
   "x-storage-read": "any authenticated user",
   "x-storage-write": "owner (uid path segment must equal request.auth.uid)",
   "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "[0-5]_[0-9]+\\.(jpg|jpeg|png)",
   "x-storage-max-bytes": 8388608,
   "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
   "x-storage-related-collection": "users",
@@ -23,7 +24,7 @@
     },
     "fileName": {
       "type": "string",
-      "description": "Conventional pattern: {photoIndex}_{timestamp}.{ext}"
+      "description": "Required pattern: {photoIndex}_{timestamp}.{ext}, with photoIndex 0-5 and ext jpg/jpeg/png."
     }
   }
 }

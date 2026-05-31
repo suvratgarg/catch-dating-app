@@ -114,7 +114,9 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 label: 'Synchronized partner reveal',
                 tone: CatchBadgeTone.live,
                 icon: CatchIcons.boltRounded,
-                backgroundColor: t.surface.withValues(alpha: 0.14),
+                backgroundColor: t.surface.withValues(
+                  alpha: CatchOpacity.warningFill,
+                ),
                 foregroundColor: t.surface,
               ),
               gapW8,
@@ -122,25 +124,39 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 label: revealSet.kind.label,
                 tone: CatchBadgeTone.neutral,
                 icon: revealSet.kind.icon,
-                backgroundColor: t.surface.withValues(alpha: 0.12),
-                foregroundColor: t.surface.withValues(alpha: 0.88),
-                borderColor: t.surface.withValues(alpha: 0.16),
+                backgroundColor: t.surface.withValues(
+                  alpha: CatchOpacity.subtleFill,
+                ),
+                foregroundColor: t.surface.withValues(
+                  alpha: CatchOpacity.floatingControlFill,
+                ),
+                borderColor: t.surface.withValues(
+                  alpha: CatchOpacity.photoScrimMedium,
+                ),
               ),
               CatchBadge(
                 label: roundCount == 0
                     ? 'No assignments'
                     : '${plan.revealedThroughRoundIndex(referenceNow) + 1}/$roundCount shown',
                 tone: CatchBadgeTone.neutral,
-                backgroundColor: t.surface.withValues(alpha: 0.12),
-                foregroundColor: t.surface.withValues(alpha: 0.88),
-                borderColor: t.surface.withValues(alpha: 0.16),
+                backgroundColor: t.surface.withValues(
+                  alpha: CatchOpacity.subtleFill,
+                ),
+                foregroundColor: t.surface.withValues(
+                  alpha: CatchOpacity.floatingControlFill,
+                ),
+                borderColor: t.surface.withValues(
+                  alpha: CatchOpacity.photoScrimMedium,
+                ),
               ),
             ],
           ),
           gapH16,
           LayoutBuilder(
             builder: (context, constraints) {
-              final compact = constraints.maxWidth < 520;
+              final compact =
+                  constraints.maxWidth <
+                  ComponentBreakpoints.eventSuccessRevealHostCompactBreakpoint;
               final number = _CountdownNumber(
                 value: isCountingDown
                     ? '$remainingSeconds'

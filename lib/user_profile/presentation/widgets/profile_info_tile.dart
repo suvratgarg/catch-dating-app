@@ -62,8 +62,8 @@ class ProfileInfoTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 1),
-          child: Icon(icon, size: 20, color: t.ink2),
+          padding: const EdgeInsets.only(top: CatchStroke.hairline),
+          child: Icon(icon, size: CatchIcon.control, color: t.ink2),
         ),
         gapW12,
         Expanded(
@@ -136,7 +136,11 @@ class _ProfileInfoChevron extends StatelessWidget {
         turns: isExpanded ? -0.25 : 0,
         duration: CatchMotion.base,
         curve: CatchMotion.standardCurve,
-        child: Icon(CatchIcons.chevronRightRounded, color: t.ink3, size: 20),
+        child: Icon(
+          CatchIcons.chevronRightRounded,
+          color: t.ink3,
+          size: CatchIcon.control,
+        ),
       ),
     );
 

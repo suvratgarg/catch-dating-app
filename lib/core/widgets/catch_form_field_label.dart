@@ -57,9 +57,14 @@ class _OptionalBadge extends StatelessWidget {
     final color = hasError ? t.danger : t.ink3;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.micro6,
+        vertical: CatchSpacing.micro2,
+      ),
       decoration: BoxDecoration(
-        color: hasError ? t.danger.withValues(alpha: 0.08) : t.raised,
+        color: hasError
+            ? t.danger.withValues(alpha: CatchOpacity.controlOverlayPressed)
+            : t.raised,
         borderRadius: BorderRadius.circular(CatchRadius.sm),
       ),
       child: Text(

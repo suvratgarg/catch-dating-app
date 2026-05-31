@@ -85,7 +85,7 @@ class _HostPaymentAccountCardState
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

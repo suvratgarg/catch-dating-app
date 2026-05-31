@@ -45,7 +45,6 @@ export 'callables/start_event_success_first_hello_mission_callable_request.g.dar
 export 'callables/submit_event_success_wingman_request_callable_request.g.dart';
 export 'callables/transfer_club_ownership_callable_request.g.dart';
 export 'callables/unblock_user_callable_request.g.dart';
-export 'callables/update_club_patch.g.dart';
 export 'callables/update_event_callable_request.g.dart';
 export 'callables/update_event_review_callable_request.g.dart';
 export 'callables/update_user_profile_patch.g.dart';

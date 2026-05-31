@@ -230,7 +230,7 @@ class _CounterRow extends StatelessWidget {
           icon: Icon(CatchIcons.removeCircleOutlineRounded),
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
         ),
-        Text('$value', style: CatchTextStyles.titleM(context)),
+        Text('$value', style: CatchTextStyles.sectionTitle(context)),
         IconButton(
           tooltip: 'Increase people met',
           icon: Icon(CatchIcons.addCircleOutlineRounded),

@@ -342,7 +342,9 @@ class _MapPickerSearchRow extends StatelessWidget {
         CatchTopBarIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          backgroundColor: t.surface.withValues(alpha: 0.94),
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.locationPickerTopChromeFill,
+          ),
           size: CatchControlMetrics.floatingMinHeight,
           onPressed: onBack,
         ),
@@ -390,12 +392,12 @@ class _PlaceSearchPanel extends StatelessWidget {
           size: CatchTextFieldSize.floating,
           shape: CatchTextFieldShape.pill,
           tone: CatchTextFieldTone.raised,
-          prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
+          prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
           suffixText: stateText,
           suffixIcon: isPending
               ? const Center(
                   child: SizedBox.square(
-                    dimension: 18,
+                    dimension: CatchIcon.md,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 )
@@ -479,7 +481,9 @@ class _SelectedPointPanel extends StatelessWidget {
       elevation: CatchSurfaceElevation.overlay,
       borderColor: t.line,
       radius: CatchRadius.md,
-      backgroundColor: t.surface.withValues(alpha: 0.96),
+      backgroundColor: t.surface.withValues(
+        alpha: CatchOpacity.locationPickerPanelFill,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

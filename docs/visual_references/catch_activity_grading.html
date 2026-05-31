@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Catch — Activity emblems + grading (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F4F1; --paper-2:#FCFCFB; --ink:#16140F; --ink-2:#5B554D; --ink-3:#9C958A;
+    --line:rgba(22,20,15,.12);
+    --serif:'Instrument Serif',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+    /* confident MID-TONE pigments — lighter than deep-ink, richer than candy, never beige */
+    --run:#D85A3C; --dinner:#C44D6A; --pickle:#2F9E7A; --quiz:#4356A8; --yoga:#8A5FB0; --bar:#B14488;
+    --cream:#F6EFE6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;padding:44px 36px 90px;max-width:1180px;margin:0 auto;}
+  .kick{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);}
+  h1{font-family:var(--serif);font-size:52px;line-height:.98;margin-top:8px;}
+  h1 em{font-style:italic;}
+  .sub{max-width:660px;margin-top:14px;font-size:15px;line-height:1.55;color:var(--ink-2);}
+  h2{font-family:var(--serif);font-size:30px;margin:48px 0 6px;}
+  h2 em{font-style:italic;}
+  .note{font-size:13.5px;line-height:1.55;color:var(--ink-2);max-width:680px;margin-bottom:20px;}
+  .grid{display:grid;gap:16px;}
+  .g3{grid-template-columns:repeat(3,1fr);} .g2{grid-template-columns:repeat(2,1fr);}
+  .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px;}
+  figure{margin:0;} figcaption{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-top:8px;}
+  .photo{width:100%;height:150px;object-fit:cover;border-radius:8px;display:block;}
+  .graded{position:relative;border-radius:8px;overflow:hidden;}
+  .graded img{filter:saturate(.76) contrast(1.04) brightness(.99) sepia(.09);}
+  .graded::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(216,90,60,.08),rgba(22,20,15,.12));mix-blend-mode:multiply;}
+
+  /* Activity art tile: mid-tone pigment + symbolic emblem + stamp */
+  .art{position:relative;height:160px;border-radius:12px;overflow:hidden;color:var(--cream);display:flex;align-items:center;justify-content:center;}
+  .art svg{width:74px;height:74px;opacity:.95;}
+  .art .stamp{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1.4px solid currentColor;padding:4px 7px;transform:rotate(-3deg);}
+  .art.faintpat{background-image:radial-gradient(rgba(246,239,230,.10) 1.2px,transparent 1.3px);background-size:15px 15px;}
+  .run{background:var(--run);} .dinner{background:var(--dinner);} .pickle{background:var(--pickle);}
+  .quiz{background:var(--quiz);} .yoga{background:var(--yoga);} .bar{background:var(--bar);}
+
+  /* candy reference */
+  .cur{height:160px;border-radius:12px;}
+  .cur-run{background:linear-gradient(135deg,#FF5B2E,#FF9A58,#FFE0B8);}
+  .cur-dinner{background:linear-gradient(135deg,#D98A24,#E85D75,#FFE0B8);}
+  .cur-quiz{background:linear-gradient(135deg,#25316D,#4E5FC8,#FFC857);}
+
+  /* Ticket */
+  .ticket{background:var(--paper-2);border-radius:16px;overflow:hidden;box-shadow:0 14px 34px rgba(22,20,15,.10),0 2px 6px rgba(22,20,15,.06);position:relative;}
+  .ticket .media{height:150px;position:relative;display:flex;align-items:center;justify-content:center;color:var(--cream);}
+  .ticket .media svg{width:70px;height:70px;}
+  .ticket .media .stamp{position:absolute;left:12px;bottom:12px;font-family:var(--mono);font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1.4px solid currentColor;padding:4px 7px;transform:rotate(-3deg);}
+  .ticket .media .clock{position:absolute;right:12px;top:12px;width:34px;height:34px;border-radius:50%;border:2px solid rgba(246,239,230,.85);}
+  .ticket .perf{height:18px;position:relative;}
+  .ticket .perf::after{content:"";position:absolute;left:16px;right:16px;top:50%;border-top:2px dashed var(--line);}
+  .ticket::before,.ticket::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:var(--paper);top:150px;transform:translateY(-50%);}
+  .ticket::before{left:-9px;} .ticket::after{right:-9px;}
+  .ticket .stub{padding:6px 16px 16px;}
+  .ticket .stub .tl{font-family:var(--mono);font-size:11px;letter-spacing:.06em;}
+  .ticket .stub .t{font-family:var(--serif);font-style:italic;font-size:24px;line-height:1.0;margin-top:6px;}
+  .ticket .stub .m{font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-top:8px;}
+
+  /* B&W vs activity-color system demo */
+  .mini{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--paper-2);}
+  .mini .mk{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);}
+  .mini h3{font-family:var(--serif);font-size:26px;font-style:italic;margin-top:6px;}
+  .mini p{font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.5;}
+  .pill{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border-radius:999px;font-weight:600;font-size:14px;margin-top:14px;}
+  .pill.ink{background:var(--ink);color:var(--paper);}
+  .pill.act{background:var(--pickle);color:var(--cream);}
+</style>
+</head>
+<body>
+
+<div class="kick">Catch · Systematic theming · v2 — lighter + symbolic</div>
+<h1>Color means <em>activity.</em> Photos share one <em>grade.</em></h1>
+<p class="sub">Fixes from your notes: pigments lifted to confident mid-tones (not dark, not candy, not beige), abstract patterns replaced with a bespoke <em>emblem</em> per activity, and grading kept as a display-time layer. There is no separate brand accent — the activity color is the only chroma, used where it carries meaning.</p>
+
+<h2>1 · Bespoke activity emblems <em>(the real upgrade)</em></h2>
+<p class="note">A distinct screen-printed symbol per activity — a route, a plate, a paddle, a question, a lotus, a martini — on a confident mid-tone field. These become a small custom icon set in Flutter (beyond the current Phosphor glyphs), so the symbol actually says what the event is.</p>
+<div class="grid g3">
+  <figure><div class="label" style="color:var(--run)">Social run</div><div class="art run faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 46 Q22 26 34 38 T56 22"/><circle cx="8" cy="46" r="3.4" fill="currentColor" stroke="none"/><path d="M56 22 v-11 h9 v6 h-9"/></svg>
+    <span class="stamp">Social run</span></div></figure>
+  <figure><div class="label" style="color:var(--dinner)">Dinner</div><div class="art dinner faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="37" cy="32" r="15"/><circle cx="37" cy="32" r="7.5"/><path d="M12 13 v38 M9 13 v10 a3 3 0 0 0 6 0 v-10"/></svg>
+    <span class="stamp">Dinner</span></div></figure>
+  <figure><div class="label" style="color:var(--quiz)">Pub quiz</div><div class="art quiz faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14 h40 a4 4 0 0 1 4 4 v20 a4 4 0 0 1 -4 4 h-20 l-11 9 v-9 h-9 a4 4 0 0 1 -4 -4 v-20 a4 4 0 0 1 4 -4z"/><path d="M26 23 a6 6 0 1 1 8 8 c-2 1.5 -2 3 -2 5"/><circle cx="32" cy="41.5" r="1.6" fill="currentColor" stroke="none"/></svg>
+    <span class="stamp">Pub quiz</span></div></figure>
+</div>
+<div style="height:14px"></div>
+<div class="grid g3">
+  <figure><div class="label" style="color:var(--pickle)">Pickleball</div><div class="art pickle faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="27" cy="25" rx="15" ry="17"/><path d="M21 40 l-7 14 M32 41 l4 8"/><circle cx="48" cy="44" r="7"/></svg>
+    <span class="stamp">Pickleball</span></div></figure>
+  <figure><div class="label" style="color:var(--yoga)">Yoga</div><div class="art yoga faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 42 c-11 0 -19 -9 -19 -9 c5 -6 13 -6 19 1 c6 -7 14 -7 19 -1 c0 0 -8 9 -19 9z"/><path d="M32 42 c-6 -5 -8 -16 -8 -16 c6 0 8 7 8 11 c0 -4 2 -11 8 -11 c0 0 -2 11 -8 16z"/><path d="M14 47 h36"/></svg>
+    <span class="stamp">Yoga</span></div></figure>
+  <figure><div class="label" style="color:var(--bar)">Bar crawl</div><div class="art bar faintpat">
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 16 h34 l-17 19 z"/><path d="M32 35 v15"/><path d="M23 50 h18"/><path d="M44 20 l5 -7"/><circle cx="49" cy="13" r="2.4" fill="currentColor" stroke="none"/></svg>
+    <span class="stamp">Bar crawl</span></div></figure>
+</div>
+
+<h2>2 · Lighter, and not candy — vs today</h2>
+<p class="note">Left: today's bright pastel gradient. Right: the confident mid-tone emblem. Bolder where it counts (the symbol), calmer everywhere else.</p>
+<div class="grid g2">
+  <figure><div class="label">Today · candy gradient</div><div class="cur cur-run"></div></figure>
+  <figure><div class="label" style="color:var(--run)">Proposed · mid-tone emblem</div><div class="art run faintpat"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 46 Q22 26 34 38 T56 22"/><circle cx="8" cy="46" r="3.4" fill="currentColor" stroke="none"/><path d="M56 22 v-11 h9 v6 h-9"/></svg><span class="stamp">Social run</span></div></figure>
+</div>
+
+<h2>3 · Re-graded tickets keep your anatomy</h2>
+<p class="note">Same ticket: perforation, rotated stamp, clock mark, mono timeline, serif title — now on the lifted pigment + emblem.</p>
+<div class="grid g2">
+  <div class="ticket">
+    <div class="media run faintpat"><div class="clock"></div><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 46 Q22 26 34 38 T56 22"/><circle cx="8" cy="46" r="3.4" fill="currentColor" stroke="none"/><path d="M56 22 v-11 h9 v6 h-9"/></svg><span class="stamp">Social run</span></div>
+    <div class="perf"></div>
+    <div class="stub"><div class="tl" style="color:var(--run)">6:30 PM / IN 1H</div><div class="t">Sundowner 5K, then sodas</div><div class="m">Sundowner Run Club · 18 going · 7 left · Free</div></div>
+  </div>
+  <div class="ticket">
+    <div class="media dinner faintpat"><div class="clock"></div><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="37" cy="32" r="15"/><circle cx="37" cy="32" r="7.5"/><path d="M12 13 v38 M9 13 v10 a3 3 0 0 0 6 0 v-10"/></svg><span class="stamp">Dinner</span></div>
+    <div class="perf"></div>
+    <div class="stub"><div class="tl" style="color:var(--dinner)">8:00 PM / TONIGHT</div><div class="t">Long table, short questions</div><div class="m">Slow Tables · 7 of 10 seats · ₹1,400</div></div>
+  </div>
+</div>
+
+<h2>4 · One grade unifies real photos</h2>
+<p class="note">Applied at display time (non-destructive). Top: raw uploads. Bottom: the same photos under one warm-desaturated grade — one family, and consistent with the emblem pigments.</p>
+<div class="grid g3">
+  <figure><div class="label">Raw</div><img class="photo" src="https://picsum.photos/seed/ugc11/400/300"></figure>
+  <figure><div class="label">Raw</div><img class="photo" src="https://picsum.photos/seed/ugc22/400/300"></figure>
+  <figure><div class="label">Raw</div><img class="photo" src="https://picsum.photos/seed/ugc33/400/300"></figure>
+</div>
+<div style="height:12px"></div>
+<div class="grid g3">
+  <figure><div class="label" style="color:var(--run)">Graded</div><div class="graded"><img class="photo" src="https://picsum.photos/seed/ugc11/400/300"></div></figure>
+  <figure><div class="label" style="color:var(--run)">Graded</div><div class="graded"><img class="photo" src="https://picsum.photos/seed/ugc22/400/300"></div></figure>
+  <figure><div class="label" style="color:var(--run)">Graded</div><div class="graded"><img class="photo" src="https://picsum.photos/seed/ugc33/400/300"></div></figure>
+</div>
+
+<h2>5 · No brand accent — color <em>means</em> activity</h2>
+<p class="note">Neutral surfaces stay pure black &amp; white. Color only appears where an activity gives it. So the same "primary button" is ink on a profile, and the activity color on an event.</p>
+<div class="grid g2">
+  <div class="mini">
+    <div class="mk">Profile · neutral surface</div>
+    <h3>Aanya, 27</h3>
+    <p>Black &amp; white. No decorative color anywhere — type and photography carry it.</p>
+    <span class="pill ink">Like Aanya</span>
+  </div>
+  <div class="mini">
+    <div class="mk" style="color:var(--pickle)">Pickleball event · activity surface</div>
+    <h3>Bandra mixed doubles</h3>
+    <p>The CTA, kicker, and clock borrow the activity color. Color = information.</p>
+    <span class="pill act">Reserve a spot</span>
+  </div>
+</div>
+
+</body>
+</html>

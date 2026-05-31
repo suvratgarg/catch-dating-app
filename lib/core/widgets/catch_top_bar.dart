@@ -26,7 +26,7 @@ class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.onBack,
     this.backgroundColor,
     this.border = false,
-    this.height = 56,
+    this.height = CatchLayout.topBarHeight,
     this.bottom,
   });
 
@@ -143,7 +143,7 @@ class CatchTopBarTabBar extends StatefulWidget implements PreferredSizeWidget {
   final TabController? controller;
 
   @override
-  Size get preferredSize => const Size.fromHeight(48);
+  Size get preferredSize => const Size.fromHeight(CatchLayout.topBarTabHeight);
 
   @override
   State<CatchTopBarTabBar> createState() => _CatchTopBarTabBarState();
@@ -199,7 +199,7 @@ class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
             groupValue: _controller!.index,
             backgroundColor: t.raised,
             thumbColor: t.surface,
-            padding: const EdgeInsets.all(3),
+            padding: const EdgeInsets.all(CatchSpacing.micro3),
             onValueChanged: (index) {
               if (index == null || index == _controller!.index) return;
               _controller!.animateTo(index);
@@ -398,7 +398,7 @@ class CatchCollapsedSliverTitle extends StatelessWidget {
     this.style,
   });
 
-  static const double _fadeExtent = 72;
+  static const double _fadeExtent = CatchLayout.topBarCollapsedFadeExtent;
 
   final String title;
   final Key? textKey;
@@ -454,7 +454,8 @@ class CatchSliverHeader {
 
   /// Pinned search header height for one compact search field plus the
   /// vertical padding used by simple search-only headers.
-  static const double compactSearchBottomHeight = 68;
+  static const double compactSearchBottomHeight =
+      CatchLayout.topBarCompactSearchBottomHeight;
   static const double searchControlTopPadding = CatchSpacing.s2;
   static const double contentAfterSearchGap = CatchSpacing.s3;
 

@@ -11,8 +11,10 @@ import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_sliver_he
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_draggable_sheet_shell.dart';
@@ -25,17 +27,19 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const double _exploreSheetPeekSize = 0.11;
-const double _exploreSheetMapSize = 0.70;
-const double _exploreSheetFullSize = 1.0;
-const double _exploreMotionRevealOvershootSize = 0.655;
-const double _exploreHeaderContentHeight = 60;
-const double _exploreFilterRailHeight = 52;
-const Duration _exploreMotionRevealDropDuration = Duration(milliseconds: 280);
-const Duration _exploreMotionRevealSettleDuration = Duration(milliseconds: 170);
+const double _exploreSheetPeekSize = CatchLayout.exploreSheetPeekSize;
+const double _exploreSheetMapSize = CatchLayout.exploreSheetMapSize;
+const double _exploreSheetFullSize = CatchLayout.exploreSheetFullSize;
+const double _exploreMotionRevealOvershootSize =
+    CatchLayout.exploreSheetRevealOvershootSize;
+const double _exploreHeaderContentHeight =
+    CatchLayout.exploreHeaderContentHeight;
+const double _exploreFilterRailHeight = CatchLayout.exploreFilterRailHeight;
+const Duration _exploreMotionRevealDropDuration = CatchMotion.revealDrop;
+const Duration _exploreMotionRevealSettleDuration = CatchMotion.revealSettle;
 
 /// Explore screen — multi-modal discovery surface.
 ///
@@ -118,8 +122,12 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
       _mapViewModelFromExploreFeed,
     );
     final mapRevealProgress = _mapRevealProgress;
-    final lidProgress = Curves.easeOutCubic.transform(mapRevealProgress);
-    final spacerProgress = Curves.easeInOutCubic.transform(mapRevealProgress);
+    final lidProgress = CatchMotion.easeOutCubicCurve.transform(
+      mapRevealProgress,
+    );
+    final spacerProgress = CatchMotion.easeInOutCubicCurve.transform(
+      mapRevealProgress,
+    );
     final topInset = MediaQuery.paddingOf(context).top;
     final chromeHeight = topInset + _exploreChromeHeightFor(context);
     final sheetTopExclusion = chromeHeight * (1 - spacerProgress);
@@ -205,13 +213,13 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
   }
 
   void _showMap() {
-    HapticFeedback.selectionClick();
+    catchSelectionHaptic();
     _stopMotionRevealListener();
     unawaited(
       _snapTo(
         _exploreSheetMapSize,
         duration: CatchMotion.slow,
-        curve: Curves.easeOutCubic,
+        curve: CatchMotion.easeOutCubicCurve,
       ),
     );
   }
@@ -225,7 +233,7 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
     if (!_sheetController.isAttached || _settlingSheet) return;
 
     _settlingSheet = true;
-    unawaited(HapticFeedback.lightImpact());
+    catchTransitionHaptic();
     try {
       await _snapTo(
         _exploreMotionRevealOvershootSize,
@@ -244,7 +252,7 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
   }
 
   void _showList() {
-    HapticFeedback.selectionClick();
+    catchSelectionHaptic();
     if (_selectedMapEventId != null) {
       setState(() => _selectedMapEventId = null);
     }
@@ -253,7 +261,7 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
   }
 
   void _selectMapEvent(Event event) {
-    HapticFeedback.selectionClick();
+    catchSelectionHaptic();
     setState(() => _selectedMapEventId = event.id);
     unawaited(_snapTo(_exploreSheetMapSize));
   }
@@ -269,7 +277,7 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
   }
 
   void _cycleDistanceFilter() {
-    HapticFeedback.selectionClick();
+    catchSelectionHaptic();
     final controller = ref.read(clubBrowseFiltersProvider.notifier);
     final current = ref.read(clubBrowseFiltersProvider).distanceFilter;
     controller.setDistanceFilter(switch (current) {
@@ -590,11 +598,11 @@ class _SheetSkeletonList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CatchSkeleton.card(height: 160),
+        CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
         gapH16,
-        CatchSkeleton.card(height: 96),
+        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
         gapH12,
-        CatchSkeleton.card(height: 96),
+        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
       ],
     );
   }
@@ -651,14 +659,11 @@ class _FloatingActionPill extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 20, color: t.ink),
+            Icon(icon, size: CatchIcon.control, color: t.ink),
             gapW8,
             Text(
               label,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: t.ink,
-                fontWeight: FontWeight.w700,
-              ),
+              style: CatchTextStyles.sectionTitle(context, color: t.ink),
             ),
           ],
         ),

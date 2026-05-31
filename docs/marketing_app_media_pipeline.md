@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.0.0
-updated: 2026-05-25
+version: 1.1.0
+updated: 2026-05-31
 owner: marketing_website
 status: active
 ---
@@ -56,3 +56,8 @@ image is missing, stale, or not synced to the website.
 The manifest names fixture keys such as `salesDemo.host.liveConsole`, but it
 does not create that synthetic data. The screenshot harness should treat those
 keys as an input contract owned by the sales-grade demo data workstream.
+
+The screenshot harness and capture catalog that render these slots are planned in
+[`plans/ui_capture_pipeline_plan.md`](plans/ui_capture_pipeline_plan.md) — one
+deterministic harness (reusing the golden `matchCatchGolden` foundation) shared
+between per-screen visual review and these marketing captures.

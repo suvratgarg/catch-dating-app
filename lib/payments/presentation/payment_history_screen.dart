@@ -89,9 +89,22 @@ class _PaymentList extends ConsumerWidget {
             vertical: CatchSpacing.s3,
           ),
           itemCount: payments.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) =>
-              _PaymentTile(payment: payments[index]),
+          separatorBuilder: (context, _) => Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Divider(color: CatchTokens.of(context).line, height: 1),
+            ),
+          ),
+          itemBuilder: (context, index) => Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: _PaymentTile(payment: payments[index]),
+            ),
+          ),
         );
       },
     );
@@ -132,7 +145,7 @@ class _PaymentTile extends ConsumerWidget {
                     children: [
                       Text(
                         eventTitle,
-                        style: CatchTextStyles.bodyLead(context),
+                        style: CatchTextStyles.sectionTitle(context),
                       ),
                       gapH4,
                       Text(
@@ -225,7 +238,7 @@ class _PaymentTile extends ConsumerWidget {
                           payment.amount,
                           currencyCode: payment.currency,
                         ),
-                        style: CatchTextStyles.displayS(context),
+                        style: CatchTextStyles.titleL(context),
                       ),
                     ],
                   ),
@@ -267,19 +280,26 @@ class _PaymentTile extends ConsumerWidget {
                             ),
                           );
                         },
-                        icon: Icon(CatchIcons.helpOutlineRounded, size: 18),
+                        icon: Icon(
+                          CatchIcons.helpOutlineRounded,
+                          size: CatchIcon.md,
+                        ),
                         label: const Text('Get help with this booking'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: t.warning,
                           side: BorderSide(
-                            color: t.warning.withValues(alpha: 0.4),
+                            color: t.warning.withValues(
+                              alpha: CatchOpacity.paymentHelpBorder,
+                            ),
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                               CatchRadius.pill,
                             ),
                           ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: CatchSpacing.s3,
+                          ),
                         ),
                       ),
                     ),

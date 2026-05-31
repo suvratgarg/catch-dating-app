@@ -65,6 +65,9 @@ import {
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {isClubHost} from "../shared/clubHosts";
 import {
+  normalizeUploadedPhotosForFirestore,
+} from "../shared/uploadedPhotoNormalization";
+import {
   effectiveInteractionModelFor,
   eventSuccessPrimitivesFor,
   isEventSuccessAssignmentAlgorithm,
@@ -687,6 +690,7 @@ function buildCreateEventDoc(
   deps: EventMutationDeps
 ): Omit<EventDocument, "clubId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason"> {
+  const eventPhotos = normalizeUploadedPhotosForFirestore(data.eventPhotos);
   const meetingLocation = normalizeMeetingLocationForCreate(data);
   const maxMen = data.constraints?.maxMen;
   const maxWomen = data.constraints?.maxWomen;
@@ -726,7 +730,8 @@ function buildCreateEventDoc(
     startingPointLat: meetingLocation.latitude,
     startingPointLng: meetingLocation.longitude,
     locationDetails: meetingLocation.notes ?? null,
-    photoUrl: data.photoUrl ?? null,
+    photoUrl: primaryPhotoUrl(eventPhotos) ?? data.photoUrl ?? null,
+    eventPhotos,
     eventFormat: normalizeEventFormat(
       (data as CreateEventPayloadWithPolicy).eventFormat
     ),
@@ -1335,7 +1340,13 @@ function buildUpdateEventPatch(
     patch.startingPointLng = meetingLocation.longitude;
     patch.locationDetails = meetingLocation.notes ?? null;
   }
-  if (fields.photoUrl !== undefined) patch.photoUrl = fields.photoUrl;
+  if (fields.eventPhotos !== undefined) {
+    const eventPhotos = normalizeUploadedPhotosForFirestore(fields.eventPhotos);
+    patch.eventPhotos = eventPhotos;
+    patch.photoUrl = primaryPhotoUrl(eventPhotos);
+  } else if (fields.photoUrl !== undefined) {
+    patch.photoUrl = fields.photoUrl;
+  }
   if (fields.distanceKm !== undefined) patch.distanceKm = fields.distanceKm;
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;
@@ -1356,6 +1367,21 @@ function buildUpdateEventPatch(
     }
   }
   return patch;
+}
+
+/**
+ * Extracts the first usable full-size URL from an uploaded photo gallery.
+ * @param {unknown[] | undefined} photos Candidate uploaded photo records.
+ * @return {string|null} First full-size URL, or null when unavailable.
+ */
+function primaryPhotoUrl(
+  photos: unknown[] | undefined
+): string | null {
+  if (!Array.isArray(photos) || photos.length === 0) return null;
+  const first = photos[0];
+  if (first === null || typeof first !== "object") return null;
+  const url = (first as {url?: unknown}).url;
+  return typeof url === "string" && url.trim().length > 0 ? url : null;
 }
 
 /**

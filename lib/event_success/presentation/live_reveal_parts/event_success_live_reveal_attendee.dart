@@ -90,15 +90,16 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
     };
 
     final revealColor = showAssignment ? t.success : t.primary;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: revealColor.withValues(alpha: 0.24)),
+    return CatchSurface(
+      backgroundColor: t.surface.withValues(
+        alpha: CatchOpacity.revealAttendeePanelFill,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
-        child: Column(
+      radius: CatchRadius.sm,
+      borderColor: revealColor.withValues(
+        alpha: CatchOpacity.revealAttendeeBorder,
+      ),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
@@ -177,28 +178,26 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
               ],
             ],
             gapH14,
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: t.ink.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
+            CatchSurface(
+              backgroundColor: t.ink.withValues(
+                alpha: CatchOpacity.revealAttendeeActionDock,
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s2),
-                child: CatchButton(
-                  label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-                  variant: optedOut
-                      ? CatchButtonVariant.primary
-                      : CatchButtonVariant.secondary,
-                  isLoading: mutation.isPending,
-                  onPressed: mutation.isPending
-                      ? null
-                      : () => _toggleOptOut(ref, optedOut: !optedOut),
-                  fullWidth: true,
-                ),
+              radius: CatchRadius.sm,
+              borderWidth: 0,
+              padding: const EdgeInsets.all(CatchSpacing.s2),
+              child: CatchButton(
+                label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+                variant: optedOut
+                    ? CatchButtonVariant.primary
+                    : CatchButtonVariant.secondary,
+                isLoading: mutation.isPending,
+                onPressed: mutation.isPending
+                    ? null
+                    : () => _toggleOptOut(ref, optedOut: !optedOut),
+                fullWidth: true,
               ),
             ),
           ],
-        ),
       ),
     );
   }

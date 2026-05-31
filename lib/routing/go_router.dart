@@ -8,9 +8,9 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/create/create_club_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_concept/explore_concept_widgets.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -100,7 +100,6 @@ enum Routes {
   settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history'),
   paymentConfirmationScreen('/payment-confirmation'),
-  exploreConceptLabScreen('/dev/explore-concept-lab'),
   eventPolicyLabScreen('/dev/event-policy-lab'),
   eventSuccessLabScreen('/dev/event-success-lab'),
   eventSuccessManualQaScreen('/dev/event-success-manual-qa'),
@@ -178,21 +177,7 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     child: _clubDetailScreen(state),
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: (context, animation, _, child) {
-      final curvedAnimation = CurvedAnimation(
-        parent: animation,
-        curve: CatchMotion.standardCurve,
-        reverseCurve: Curves.easeInCubic,
-      );
-      final scale = Tween<double>(
-        begin: 0.985,
-        end: 1,
-      ).animate(curvedAnimation);
-      return FadeTransition(
-        opacity: curvedAnimation,
-        child: ScaleTransition(scale: scale, child: child),
-      );
-    },
+    transitionsBuilder: catchFadeScalePageTransition,
   );
 }
 
@@ -207,21 +192,7 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
     child: child,
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      final curvedAnimation = CurvedAnimation(
-        parent: animation,
-        curve: CatchMotion.standardCurve,
-        reverseCurve: Curves.easeInCubic,
-      );
-      final scale = Tween<double>(
-        begin: 0.985,
-        end: 1,
-      ).animate(curvedAnimation);
-      return FadeTransition(
-        opacity: curvedAnimation,
-        child: ScaleTransition(scale: scale, child: child),
-      );
-    },
+    transitionsBuilder: catchFadeScalePageTransition,
   );
 }
 
@@ -395,12 +366,6 @@ GoRouter goRouter(Ref ref) {
           return PaymentConfirmationScreen(data: data);
         },
       ),
-      if (AppConfig.enableEventPolicyLab)
-        GoRoute(
-          path: Routes.exploreConceptLabScreen.path,
-          name: Routes.exploreConceptLabScreen.name,
-          builder: (context, state) => const ExploreConceptPreviewScreen(),
-        ),
       if (AppConfig.enableEventPolicyLab)
         GoRoute(
           path: Routes.eventPolicyLabScreen.path,
@@ -653,10 +618,6 @@ String _initialLocationFromPlatform() {
 
 /// Routes that unauthenticated users may access for read-only browsing.
 bool _isPublicRoute(String matchedLocation) {
-  if (AppConfig.enableEventPolicyLab &&
-      matchedLocation == Routes.exploreConceptLabScreen.path) {
-    return true;
-  }
   if (AppConfig.enableEventPolicyLab &&
       matchedLocation == Routes.eventPolicyLabScreen.path) {
     return true;

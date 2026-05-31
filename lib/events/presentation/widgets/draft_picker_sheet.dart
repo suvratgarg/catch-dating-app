@@ -170,7 +170,7 @@ class _DraftCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       onTap: isDeleting ? null : onTap,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       borderColor: CatchTokens.of(context).line,
       child: Row(
         children: [
@@ -200,7 +200,7 @@ class _DraftCard extends StatelessWidget {
             onPressed: isDeleting ? null : onDelete,
             icon: isDeleting
                 ? const SizedBox.square(
-                    dimension: 18,
+                    dimension: CatchIcon.md,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : Icon(

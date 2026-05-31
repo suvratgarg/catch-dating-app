@@ -31,6 +31,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/profilePhoto.ts",
   },
   {
+    name: "UploadedPhoto",
+    source: "embedded/uploaded_photo.schema.json",
+    typeOutput: "functions/src/shared/generated/uploadedPhoto.ts",
+  },
+  {
     name: "ActivityPreferences",
     source: "embedded/activity_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/activityPreferences.ts",
@@ -601,6 +606,10 @@ const FIRESTORE_ADMIN_EMBEDDED_SPECS = [
   {
     name: "ProfilePhoto",
     source: "embedded/profile_photo.schema.json",
+  },
+  {
+    name: "UploadedPhoto",
+    source: "embedded/uploaded_photo.schema.json",
   },
   {
     name: "ActivityPreferences",

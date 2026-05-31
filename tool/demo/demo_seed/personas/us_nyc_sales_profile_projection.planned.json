@@ -1,0 +1,2701 @@
+{
+  "schemaVersion": 1,
+  "kind": "sales-demo-persona-profile-projection",
+  "catalogId": "us-nyc-sales-personas-v1",
+  "catalogLabel": "U.S. New York sales persona draft v1",
+  "assetStatuses": [
+    "planned"
+  ],
+  "personaCount": 24,
+  "projectedPhotoCount": 96,
+  "personas": [
+    {
+      "id": "nyc_maya_shah_001",
+      "firstName": "Maya",
+      "lastName": "Shah",
+      "displayName": "Maya Shah",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-02-11",
+      "heightCm": 160,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Product designer",
+      "company": "Independent",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A small group, clean timing, and a cortado while everyone is still glowing from the conversation."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Convincing the group to try the bakery I saved three weeks ago."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I make plans that actually happen and I bring an extra hair tie."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_portrait",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/01-hero-portrait.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "sidewalk_coffee",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/02-sidewalk-coffee.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/02-sidewalk-coffee.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/02-sidewalk-coffee.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/02-sidewalk-coffee.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "gallery_opening",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/03-gallery-opening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/03-gallery-opening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/03-gallery-opening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/03-gallery-opening.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "weekend_market",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/04-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/maya-shah/thumbs/04-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/maya-shah/04-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/maya-shah/thumbs/04-riverside-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_jordan_ellis_002",
+      "firstName": "Jordan",
+      "lastName": "Ellis",
+      "displayName": "Jordan Ellis",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1994-09-04",
+      "heightCm": 183,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Startup operator",
+      "company": "Founders Office",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A steady loop, a little friendly trash talk, and one great breakfast spot after."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Finding the table with the best people-watching and ordering for the group."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am punctual, I listen closely, and I never leave anyone alone at the back."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_track",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/01-hero-track.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/01-hero-track.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/01-hero-track.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/01-hero-track.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "bridge_walk",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/02-bridge-walk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/02-bridge-walk.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/02-bridge-walk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/02-bridge-walk.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "dinner_window",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/03-dinner-window.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/03-dinner-window.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/03-dinner-window.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/03-dinner-window.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "weekend_basketball",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/04-weekend-basketball.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/jordan-ellis/thumbs/04-weekend-basketball.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/04-weekend-basketball.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/jordan-ellis/thumbs/04-weekend-basketball.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_sofia_martinez_003",
+      "firstName": "Sofia",
+      "lastName": "Martinez",
+      "displayName": "Sofia Martinez",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1998-06-18",
+      "heightCm": 165,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Brand strategist",
+      "company": "Studio West",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A scenic plan where nobody is trying too hard but everyone is a little proud after."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Taking one chaotic group photo and then finding tacos."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I ask follow-up questions and remember the answer."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_pier",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/01-hero-pier.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/01-hero-pier.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/01-hero-pier.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/01-hero-pier.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "pickleball_court",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/02-pickleball-court.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/02-pickleball-court.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/02-pickleball-court.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/02-pickleball-court.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "rooftop_dinner",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/03-rooftop-dinner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/03-rooftop-dinner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/03-rooftop-dinner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/03-rooftop-dinner.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "bookstore_weekend",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/04-bookstore-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/sofia-martinez/thumbs/04-bookstore-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/04-bookstore-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/sofia-martinez/thumbs/04-bookstore-weekend.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_ethan_brooks_004",
+      "firstName": "Ethan",
+      "lastName": "Brooks",
+      "displayName": "Ethan Brooks",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1993-12-03",
+      "heightCm": 188,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Software engineer",
+      "company": "Northstar",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A bridge walk, a good view, and someone who will debate the best bagel on the way back."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Stretching for exactly two minutes and calling it mobility."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am calm under pressure and weirdly good at finding the practical answer."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_bridge",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/01-hero-bridge.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/01-hero-bridge.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/01-hero-bridge.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/01-hero-bridge.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "trail_overlook",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/02-morning-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/02-morning-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/02-morning-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/02-morning-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "kitchen_cooking",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/03-kitchen-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/03-kitchen-cooking.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/03-kitchen-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/03-kitchen-cooking.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "museum_steps",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/04-museum-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/ethan-brooks/thumbs/04-museum-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/04-museum-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/ethan-brooks/thumbs/04-museum-steps.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_aisha_williams_005",
+      "firstName": "Aisha",
+      "lastName": "Williams",
+      "displayName": "Aisha Williams",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1995-04-22",
+      "heightCm": 170,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Emergency nurse",
+      "company": "Mount Sinai",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Good conversation, a plan that feels easy, and brunch where nobody talks about work for ten minutes."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Checking on everyone, then pretending I do not want fries."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I can be decisive without making it a personality."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_park",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/01-hero-park.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/01-hero-park.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/01-hero-park.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/01-hero-park.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "friends_brunch",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/02-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/02-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/02-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/02-friends-brunch.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "night_shift_coffee",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/03-night-shift-coffee.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/03-night-shift-coffee.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/03-night-shift-coffee.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/03-night-shift-coffee.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "saturday_jazz",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/04-saturday-jazz.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/aisha-williams/thumbs/04-saturday-jazz.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/aisha-williams/04-saturday-jazz.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/aisha-williams/thumbs/04-saturday-jazz.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_daniel_kim_006",
+      "firstName": "Daniel",
+      "lastName": "Kim",
+      "displayName": "Daniel Kim",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-08-15",
+      "heightCm": 176,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Architect",
+      "company": "Line Studio",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A plan with good architecture, room to talk, and a coffee shop with real chairs."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Taking a photo of a building detail nobody else noticed."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am quietly competitive about showing up for people."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_esplanade",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/01-hero-esplanade.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/01-hero-esplanade.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/01-hero-esplanade.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/01-hero-esplanade.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "group_walk_steps",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/02-group-walk-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/02-group-walk-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/02-group-walk-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/02-group-walk-steps.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "studio_model",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/03-studio-model.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/03-studio-model.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/03-studio-model.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/03-studio-model.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "dumpling_weekend",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/04-dumpling-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/daniel-kim/thumbs/04-dumpling-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/daniel-kim/04-dumpling-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/daniel-kim/thumbs/04-dumpling-weekend.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_priya_desai_007",
+      "firstName": "Priya",
+      "lastName": "Desai",
+      "displayName": "Priya Desai",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1999-01-27",
+      "heightCm": 157,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Venture associate",
+      "company": "Seedline",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A sunrise loop before the inbox gets loud and a group that actually stays for coffee."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Pitching a second breakfast like it is a board memo."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I make people feel invited without making it a production."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_sunrise",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/01-hero-sunrise.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/01-hero-sunrise.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/01-hero-sunrise.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/01-hero-sunrise.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "coffee_sidewalk",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/02-coffee-sidewalk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/02-coffee-sidewalk.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/02-coffee-sidewalk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/02-coffee-sidewalk.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "work_event",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/03-work-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/03-work-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/03-work-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/03-work-event.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "park_picnic",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/04-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/priya-desai/thumbs/04-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/priya-desai/04-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/priya-desai/thumbs/04-park-picnic.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_marcus_chen_008",
+      "firstName": "Marcus",
+      "lastName": "Chen",
+      "displayName": "Marcus Chen",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1996-10-09",
+      "heightCm": 180,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Music producer",
+      "company": "Independent",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Skyline views, a playlist swap, and no one pretending the plan needs to be complicated."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Making a shared playlist before everyone forgets the good songs."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I can keep the energy light without dodging the real conversation."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_waterfront",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/01-hero-waterfront.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/01-hero-waterfront.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/01-hero-waterfront.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/01-hero-waterfront.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "pickleball_court",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/02-pickleball-court.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/02-pickleball-court.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/02-pickleball-court.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/02-pickleball-court.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "studio_booth",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/03-studio-booth.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/03-studio-booth.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/03-studio-booth.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/03-studio-booth.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "rooftop_sunset",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/04-rooftop-sunset.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/marcus-chen/thumbs/04-rooftop-sunset.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/marcus-chen/04-rooftop-sunset.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/marcus-chen/thumbs/04-rooftop-sunset.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_chloe_bennett_009",
+      "firstName": "Chloe",
+      "lastName": "Bennett",
+      "displayName": "Chloe Bennett",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-11-30",
+      "heightCm": 168,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Interior designer",
+      "company": "Borough Studio",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A scenic loop, one good playlist, and a coffee spot with outdoor chairs after."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Rearranging the table so everyone can actually hear each other."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I notice the quiet person and pull them into the conversation."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_brownstone",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/01-hero-brownstone.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/01-hero-brownstone.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/01-hero-brownstone.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/01-hero-brownstone.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "sidewalk_cappuccino",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/02-sidewalk-cappuccino.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/02-sidewalk-cappuccino.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/02-sidewalk-cappuccino.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/02-sidewalk-cappuccino.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "rooftop_table",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/03-rooftop-table.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/03-rooftop-table.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/03-rooftop-table.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/03-rooftop-table.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "friends_brunch_corner",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/04-friends-brunch-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/chloe-bennett/thumbs/04-friends-brunch-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/04-friends-brunch-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/chloe-bennett/thumbs/04-friends-brunch-corner.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_noah_patel_010",
+      "firstName": "Noah",
+      "lastName": "Patel",
+      "displayName": "Noah Patel",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1995-07-16",
+      "heightCm": 181,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Product manager",
+      "company": "Ledger Labs",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A good route, an on-time start, and a group that turns coffee into a second event."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Making the reservation nobody believed we could get."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I confirm the plan and still leave room for spontaneity."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_soho",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/01-hero-soho.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/01-hero-soho.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/01-hero-soho.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/01-hero-soho.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "pickleball_after_point",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/02-pickleball-after-point.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/02-pickleball-after-point.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/02-pickleball-after-point.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/02-pickleball-after-point.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "restaurant_counter",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/03-restaurant-counter.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/03-restaurant-counter.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/03-restaurant-counter.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/03-restaurant-counter.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "founder_event",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/04-founder-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/noah-patel/thumbs/04-founder-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/noah-patel/04-founder-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/noah-patel/thumbs/04-founder-event.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_olivia_nguyen_011",
+      "firstName": "Olivia",
+      "lastName": "Nguyen",
+      "displayName": "Olivia Nguyen",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1996-05-08",
+      "heightCm": 162,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "UX researcher",
+      "company": "Atlas Health",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route with a view, an easy pace, and somebody who notices the weird storefronts."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Finding the market stall with the longest line and deciding it is research."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I remember tiny details and use them for good."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_chinatown",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/01-hero-chinatown.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/01-hero-chinatown.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/01-hero-chinatown.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/01-hero-chinatown.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "weekend_market",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/02-weekend-market.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/02-weekend-market.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/02-weekend-market.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/02-weekend-market.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "gallery_wall",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/03-gallery-wall.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/03-gallery-wall.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/03-gallery-wall.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/03-gallery-wall.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "easy_riverside_run",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/04-easy-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/04-easy-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/04-easy-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/olivia-nguyen/thumbs/04-easy-riverside-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_caleb_johnson_012",
+      "firstName": "Caleb",
+      "lastName": "Johnson",
+      "displayName": "Caleb Johnson",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1993-03-19",
+      "heightCm": 186,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Civil rights attorney",
+      "company": "Public Counsel",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Good weather, nobody getting dropped, and a cafe where the conversation keeps going."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Debriefing over coffee like the group just solved a case."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I can disagree kindly and still keep the table laughing."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_courthouse_steps",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/01-hero-courthouse-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/01-hero-courthouse-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/01-hero-courthouse-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/01-hero-courthouse-steps.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "coffee_booth",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/02-coffee-booth.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/02-coffee-booth.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/02-coffee-booth.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/02-coffee-booth.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "park_picnic",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/03-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/03-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/03-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/03-park-picnic.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "jazz_corner",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/04-jazz-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/caleb-johnson/thumbs/04-jazz-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/04-jazz-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/caleb-johnson/thumbs/04-jazz-corner.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_emma_rodriguez_013",
+      "firstName": "Emma",
+      "lastName": "Rodriguez",
+      "displayName": "Emma Rodriguez",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1994-12-12",
+      "heightCm": 166,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Sous chef",
+      "company": "Private restaurant group",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route that ends near something actually delicious."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Ordering one extra plate because someone will absolutely want it."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I feed people and I say what I mean kindly."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_west_village",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/01-hero-west-village.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/01-hero-west-village.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/01-hero-west-village.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/01-hero-west-village.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "restaurant_bar",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/02-restaurant-bar.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/02-restaurant-bar.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/02-restaurant-bar.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/02-restaurant-bar.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "home_cooking",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/03-home-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/03-home-cooking.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/03-home-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/03-home-cooking.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "public_tennis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/04-public-tennis.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/04-public-tennis.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/04-public-tennis.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/emma-rodriguez/thumbs/04-public-tennis.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_liam_oconnor_014",
+      "firstName": "Liam",
+      "lastName": "O'Connor",
+      "displayName": "Liam O'Connor",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-01-24",
+      "heightCm": 184,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Physical therapist",
+      "company": "Union Square PT",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A steady pace, no ego, and breakfast where everyone can sit down."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Claiming I will stretch later and then actually doing it."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I notice when someone needs the pace to change."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_park_path",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/01-hero-park-path.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/01-hero-park-path.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/01-hero-park-path.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/01-hero-park-path.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "morning_run",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/02-morning-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/02-morning-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/02-morning-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/02-morning-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "prospect_park_day",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/03-prospect-park-day.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/03-prospect-park-day.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/03-prospect-park-day.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/03-prospect-park-day.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "brunch_corner",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/04-brunch-corner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/liam-oconnor/thumbs/04-brunch-corner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/04-brunch-corner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/liam-oconnor/thumbs/04-brunch-corner.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_nia_okafor_015",
+      "firstName": "Nia",
+      "lastName": "Okafor",
+      "displayName": "Nia Okafor",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1998-09-05",
+      "heightCm": 172,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Climate policy analyst",
+      "company": "Civic Futures",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route with trees, a little city noise, and people who can talk about anything."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Convincing everyone the museum cafe is better than it looks."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am calm in chaos and very serious about good questions."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_museum_block",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/01-hero-museum-block.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/01-hero-museum-block.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/01-hero-museum-block.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/01-hero-museum-block.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "policy_event",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/02-policy-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/02-policy-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/02-policy-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/02-policy-event.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "friends_brunch",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/03-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/03-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/03-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/03-friends-brunch.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "museum_afternoon",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/04-museum-afternoon.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/nia-okafor/thumbs/04-museum-afternoon.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/nia-okafor/04-museum-afternoon.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/nia-okafor/thumbs/04-museum-afternoon.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_arjun_mehta_016",
+      "firstName": "Arjun",
+      "lastName": "Mehta",
+      "displayName": "Arjun Mehta",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1997-04-03",
+      "heightCm": 178,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Data scientist",
+      "company": "TransitAI",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route with one good skyline view and no debate about splitting the pace."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Quietly finding the best table and pretending it was luck."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I listen first and then say the thing everyone was thinking."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_east_village",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/01-hero-east-village.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/01-hero-east-village.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/01-hero-east-village.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/01-hero-east-village.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "pickleball_candid",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/02-pickleball-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/02-pickleball-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/02-pickleball-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/02-pickleball-candid.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "coffee_laptop_closed",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/03-coffee-laptop-closed.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/03-coffee-laptop-closed.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/03-coffee-laptop-closed.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/03-coffee-laptop-closed.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "bookstore_stack",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/04-bookstore-stack.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/arjun-mehta/thumbs/04-bookstore-stack.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/04-bookstore-stack.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/arjun-mehta/thumbs/04-bookstore-stack.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_grace_liu_017",
+      "firstName": "Grace",
+      "lastName": "Liu",
+      "displayName": "Grace Liu",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1995-10-14",
+      "heightCm": 164,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Art curator",
+      "company": "Independent",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route with a weird public sculpture and someone who will humor my detours."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Finding dumplings and explaining why the lighting is good."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am decisive about plans and gentle about people."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_gallery_block",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/01-hero-gallery-block.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/01-hero-gallery-block.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/01-hero-gallery-block.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/01-hero-gallery-block.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "gallery_opening",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/02-gallery-opening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/02-gallery-opening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/02-gallery-opening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/02-gallery-opening.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "dumpling_counter",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/03-dumpling-counter.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/03-dumpling-counter.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/03-dumpling-counter.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/03-dumpling-counter.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "city_steps",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/04-city-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/grace-liu/thumbs/04-city-steps.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/grace-liu/04-city-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/grace-liu/thumbs/04-city-steps.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_miles_anderson_018",
+      "firstName": "Miles",
+      "lastName": "Anderson",
+      "displayName": "Miles Anderson",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1996-02-20",
+      "heightCm": 182,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Documentary filmmaker",
+      "company": "Freelance",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Golden-hour light, a route with a story, and no one checking their phone after."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Asking one too many questions because everyone is more interesting than they think."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I can make plans feel easy without disappearing into them."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_fort_greene",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/01-hero-fort-greene.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/01-hero-fort-greene.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/01-hero-fort-greene.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/01-hero-fort-greene.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "studio_edit",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/02-studio-edit.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/02-studio-edit.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/02-studio-edit.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/02-studio-edit.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "rooftop_film_night",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/03-rooftop-film-night.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/03-rooftop-film-night.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/03-rooftop-film-night.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/03-rooftop-film-night.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "group_walk_candid",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/04-group-walk-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/miles-anderson/thumbs/04-group-walk-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/miles-anderson/04-group-walk-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/miles-anderson/thumbs/04-group-walk-candid.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_hannah_cohen_019",
+      "firstName": "Hannah",
+      "lastName": "Cohen",
+      "displayName": "Hannah Cohen",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1993-08-11",
+      "heightCm": 169,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Pediatric resident",
+      "company": "NYU Langone",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "Early enough that the city is quiet, late enough that coffee is open."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Asking three follow-ups and then ordering pancakes for the table."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I am steady when plans change."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_union_square",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/01-hero-union-square.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/01-hero-union-square.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/01-hero-union-square.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/01-hero-union-square.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "easy_run",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/02-easy-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/02-easy-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/02-easy-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/02-easy-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "coffee_window",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/03-coffee-window.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/03-coffee-window.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/03-coffee-window.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/03-coffee-window.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "park_picnic",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/04-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/hannah-cohen/thumbs/04-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/04-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/hannah-cohen/thumbs/04-park-picnic.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_andre_baptiste_020",
+      "firstName": "Andre",
+      "lastName": "Baptiste",
+      "displayName": "Andre Baptiste",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1994-06-02",
+      "heightCm": 185,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Finance operations lead",
+      "company": "HarborPay",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A clean route, a little friendly pressure, and the best breakfast within ten blocks."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Quietly becoming the person with the reservation plan."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I can handle logistics without making them everyone else's problem."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_financial_district",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/01-hero-financial-district.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/01-hero-financial-district.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/01-hero-financial-district.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/01-hero-financial-district.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "rooftop_dinner",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/02-rooftop-dinner.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/02-rooftop-dinner.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/02-rooftop-dinner.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/02-rooftop-dinner.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "neighborhood_candid",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/03-neighborhood-candid.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/03-neighborhood-candid.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/03-neighborhood-candid.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/03-neighborhood-candid.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "riverside_run",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/04-riverside-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/andre-baptiste/thumbs/04-riverside-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/04-riverside-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/andre-baptiste/thumbs/04-riverside-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_isabella_romano_021",
+      "firstName": "Isabella",
+      "lastName": "Romano",
+      "displayName": "Isabella Romano",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1999-02-07",
+      "heightCm": 158,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Fashion buyer",
+      "company": "Mercer & Lane",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A cute route, comfortable shoes, and a group photo where everyone looks good."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Making the table split appetizers because commitment is healthy."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I hype people up and I am honest about the outfit."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_nolita",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/01-hero-nolita.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/01-hero-nolita.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/01-hero-nolita.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/01-hero-nolita.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "gallery_mirror",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/02-gallery-mirror.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/02-gallery-mirror.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/02-gallery-mirror.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/02-gallery-mirror.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "friends_brunch",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/03-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/03-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/03-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/03-friends-brunch.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "buying_event",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/04-buying-event.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/isabella-romano/thumbs/04-buying-event.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/isabella-romano/04-buying-event.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/isabella-romano/thumbs/04-buying-event.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_samir_khan_022",
+      "firstName": "Samir",
+      "lastName": "Khan",
+      "displayName": "Samir Khan",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1995-12-18",
+      "heightCm": 177,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Urban planner",
+      "company": "CityWorks",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A smart route, one excellent view, and the feeling that the city is on our side."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Pointing out a street redesign nobody asked about but everyone ends up debating."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I make maps for people, literally and emotionally."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_brooklyn_heights",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/01-hero-brooklyn-heights.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/01-hero-brooklyn-heights.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/01-hero-brooklyn-heights.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/01-hero-brooklyn-heights.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "bridge_run",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/02-bridge-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/02-bridge-run.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/02-bridge-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/02-bridge-run.jpg",
+          "promptId": "proofIRun",
+          "prompt": "Proof I actually event",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "coffee_map",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/03-coffee-map.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/03-coffee-map.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/03-coffee-map.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/03-coffee-map.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "hudson_day_trip",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/04-hudson-day-trip.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/samir-khan/thumbs/04-hudson-day-trip.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/samir-khan/04-hudson-day-trip.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/samir-khan/thumbs/04-hudson-day-trip.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_taylor_reed_023",
+      "firstName": "Taylor",
+      "lastName": "Reed",
+      "displayName": "Taylor Reed",
+      "gender": "woman",
+      "pronouns": "she/her",
+      "dateOfBirth": "1997-06-26",
+      "heightCm": 174,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Creative director",
+      "company": "Noon House",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A city route with good light and people who can keep a conversation moving."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Finding the corner table and turning strangers into a group chat."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I know when to lead and when to let things breathe."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_dumbo",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/01-hero-dumbo.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/01-hero-dumbo.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/01-hero-dumbo.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/01-hero-dumbo.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "friends_brunch",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/02-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/02-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/02-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/02-friends-brunch.jpg",
+          "promptId": "favoritePeople",
+          "prompt": "My favorite people know me as",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "studio_session",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/03-studio-session.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/03-studio-session.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/03-studio-session.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/03-studio-session.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "museum_evening",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/04-museum-evening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/taylor-reed/thumbs/04-museum-evening.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/taylor-reed/04-museum-evening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/taylor-reed/thumbs/04-museum-evening.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "nyc_victor_alvarez_024",
+      "firstName": "Victor",
+      "lastName": "Alvarez",
+      "displayName": "Victor Alvarez",
+      "gender": "man",
+      "pronouns": "he/him",
+      "dateOfBirth": "1992-09-29",
+      "heightCm": 179,
+      "countryCode": "US",
+      "citySlug": "new-york",
+      "cityLabel": "New York",
+      "occupation": "Restaurant general manager",
+      "company": "East River Hospitality",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "prompt": "A perfect event with me looks like...",
+          "answer": "A route that ends where the coffee is strong and the staff knows someone."
+        },
+        {
+          "promptId": "afterEvent",
+          "prompt": "After an event, you can usually find me...",
+          "answer": "Making sure nobody leaves hungry."
+        },
+        {
+          "promptId": "greenFlag",
+          "prompt": "My green flag is...",
+          "answer": "I handle the details and still make it feel easy."
+        }
+      ],
+      "photoPrompts": [
+        {
+          "photoIndex": 0,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        },
+        {
+          "photoIndex": 1,
+          "promptId": "notRunning",
+          "prompt": "When I'm not running"
+        },
+        {
+          "photoIndex": 2,
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy"
+        },
+        {
+          "photoIndex": 3,
+          "promptId": "captionThis",
+          "prompt": "First thought?"
+        }
+      ],
+      "profilePhotos": [
+        {
+          "id": "hero_lower_east_side",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/01-hero-lower-east-side.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/01-hero-lower-east-side.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/01-hero-lower-east-side.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/01-hero-lower-east-side.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 0,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "restaurant_service",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/02-restaurant-service.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/02-restaurant-service.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/02-restaurant-service.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/02-restaurant-service.jpg",
+          "promptId": "notRunning",
+          "prompt": "When I'm not running",
+          "position": 1,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "jazz_bar",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/03-jazz-bar.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/03-jazz-bar.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/03-jazz-bar.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/03-jazz-bar.jpg",
+          "promptId": "weekendEnergy",
+          "prompt": "Weekend energy",
+          "position": 2,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "city_steps_weekend",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/04-city-steps-weekend.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/us-nyc-v1/victor-alvarez/thumbs/04-city-steps-weekend.jpg",
+          "storagePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/04-city-steps-weekend.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/us-nyc-v1/victor-alvarez/thumbs/04-city-steps-weekend.jpg",
+          "promptId": "captionThis",
+          "prompt": "First thought?",
+          "position": 3,
+          "moderation": {
+            "status": "approved",
+            "synthetic": true
+          }
+        }
+      ]
+    }
+  ]
+}

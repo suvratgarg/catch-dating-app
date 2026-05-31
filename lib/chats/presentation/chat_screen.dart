@@ -9,8 +9,11 @@ import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
+import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -94,8 +97,8 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         unawaited(
           _scrollController.animateTo(
             target,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
+            duration: CatchMotion.chatScroll,
+            curve: CatchMotion.easeOutCurve,
           ),
         );
         return;
@@ -158,8 +161,8 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       unawaited(
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
+          duration: CatchMotion.chatScroll,
+          curve: CatchMotion.easeOutCurve,
         ),
       );
     }
@@ -255,6 +258,31 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     );
   }
 
+  void _showShareCard({
+    required List<ChatMessage> messages,
+    required String? uid,
+    required Event? event,
+    required ExternalShareController share,
+  }) {
+    if (uid == null) return;
+    if (!hasShareableChatMessages(messages)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Send a message before sharing a card.')),
+      );
+      return;
+    }
+
+    unawaited(
+      showChatShareCardSheet(
+        context,
+        messages: messages,
+        currentUid: uid,
+        event: event,
+        share: share,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(uidProvider, (_, next) {
@@ -299,6 +327,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     final otherProfileAsync = otherUid == null || isSuvbot
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(watchPublicProfileProvider(otherUid));
+    final share = ref.watch(externalShareControllerProvider);
     final profile = otherProfileAsync.asData?.value ?? widget.initialProfile;
     final name = isSuvbot ? 'Suvbot' : profile?.name ?? 'Chat';
     final photoUrl = isSuvbot ? null : profile?.primaryPhotoThumbnailUrl;
@@ -319,6 +348,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       composerDisabledReason = null;
     }
     final initialMessages = messagesAsync.asData?.value;
+    final event = eventAsync.asData?.value;
     if (!_didScrollToLatestMessage &&
         initialMessages != null &&
         initialMessages.isNotEmpty) {
@@ -344,11 +374,18 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
                   targetUserId: otherUid,
                   targetName: profile?.name ?? 'this person',
                 ),
+          onShareCard: otherUid == null || isSuvbot
+              ? null
+              : () => _showShareCard(
+                  messages: messagesAsync.asData?.value ?? const [],
+                  uid: uid,
+                  event: event,
+                  share: share,
+                ),
         ),
         body: Column(
           children: [
-            if (!isSuvbot)
-              ChatEventContextHeader(event: eventAsync.asData?.value),
+            if (!isSuvbot) ChatEventContextHeader(event: event),
             Expanded(
               child: ChatMessageList(
                 messagesAsync: messagesAsync,

@@ -1,0 +1,426 @@
+{
+  "version": 1,
+  "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
+  "source": {
+    "path": "lib/routing/go_router.dart",
+    "normalizedFileSha256": "22ce5b393a7a9832a6d886f07a27f5da9af5be1f3ce321894fe2199b9061cba5",
+    "routeContractSha256": "ae326f3ab9ecc997e8c16843b8b6b25f069f1d3d0449f8d2ae58ea87584375a1",
+    "goRouteCount": 40,
+    "shellBranchCount": 5,
+    "enumRouteCount": 40,
+    "referencedRouteCount": 40
+  },
+  "routes": [
+    {
+      "id": "loadingScreen",
+      "path": "/loading",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "startScreen",
+      "path": "/start",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "authScreen",
+      "path": "/auth",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "onboardingScreen",
+      "path": "/onboarding",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "calendarScreen",
+      "path": "/calendar",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "calendarEventDetailScreen",
+      "path": "/calendar/clubs/:clubId/events/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "savedEventsScreen",
+      "path": "/saved-events",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "savedEventDetailScreen",
+      "path": "/saved-events/clubs/:clubId/events/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "filtersScreen",
+      "path": "/filters",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "dashboardEventDetailScreen",
+      "path": "/dashboard/clubs/:clubId/events/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "dashboardHostEventManageScreen",
+      "path": "/dashboard/clubs/:clubId/events/:eventId/manage",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostEventManageScreen",
+      "path": "/clubs/:clubId/events/:eventId/manage",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "editHostedEventScreen",
+      "path": "/clubs/:clubId/events/:eventId/edit",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventSuccessHostScreen",
+      "path": "/dashboard/clubs/:clubId/events/:eventId/success",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventLocationMapScreen",
+      "path": "/events/:eventId/location",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "dashboardScreen",
+      "path": "/",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "notificationsScreen",
+      "path": "/notifications",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "clubsListScreen",
+      "path": "/clubs",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "clubDetailScreen",
+      "path": "/clubs/:clubId",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "editClubScreen",
+      "path": "/clubs/:clubId/edit",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventDetailScreen",
+      "path": "/clubs/:clubId/events/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "attendanceSheet",
+      "path": "/clubs/:clubId/events/:eventId/attendance",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventSuccessCompanionScreen",
+      "path": "/clubs/:clubId/events/:eventId/companion",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "createClubScreen",
+      "path": "/clubs/create-club",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "createEventScreen",
+      "path": "/clubs/:clubId/create-event",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "swipeHubScreen",
+      "path": "/catches",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "swipeEventScreen",
+      "path": "/catches/:eventId",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventRecapScreen",
+      "path": "/catches/:eventId/recap",
+      "pathParameters": [
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "matchesListScreen",
+      "path": "/chats",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "chatScreen",
+      "path": "/chats/:matchId",
+      "pathParameters": [
+        "matchId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "profileScreen",
+      "path": "/you",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "reviewsHistoryScreen",
+      "path": "/you/reviews",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "publicProfileScreen",
+      "path": "/profiles/:uid",
+      "pathParameters": [
+        "uid"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "settingsScreen",
+      "path": "/settings",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "paymentHistoryScreen",
+      "path": "/payment-history",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "paymentConfirmationScreen",
+      "path": "/payment-confirmation",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventPolicyLabScreen",
+      "path": "/dev/event-policy-lab",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventSuccessLabScreen",
+      "path": "/dev/event-success-lab",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventSuccessManualQaScreen",
+      "path": "/dev/event-success-manual-qa",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "eventSuccessPreviewScreen",
+      "path": "/dev/event-success-preview/:clubId/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": true,
+      "referencedByGoRouter": true
+    }
+  ],
+  "goRouterRouteReferences": [
+    "attendanceSheet",
+    "authScreen",
+    "calendarEventDetailScreen",
+    "calendarScreen",
+    "chatScreen",
+    "clubDetailScreen",
+    "clubsListScreen",
+    "createClubScreen",
+    "createEventScreen",
+    "dashboardEventDetailScreen",
+    "dashboardHostEventManageScreen",
+    "dashboardScreen",
+    "editClubScreen",
+    "editHostedEventScreen",
+    "eventDetailScreen",
+    "eventLocationMapScreen",
+    "eventPolicyLabScreen",
+    "eventRecapScreen",
+    "eventSuccessCompanionScreen",
+    "eventSuccessHostScreen",
+    "eventSuccessLabScreen",
+    "eventSuccessManualQaScreen",
+    "eventSuccessPreviewScreen",
+    "filtersScreen",
+    "hostEventManageScreen",
+    "loadingScreen",
+    "matchesListScreen",
+    "notificationsScreen",
+    "onboardingScreen",
+    "paymentConfirmationScreen",
+    "paymentHistoryScreen",
+    "profileScreen",
+    "publicProfileScreen",
+    "reviewsHistoryScreen",
+    "savedEventDetailScreen",
+    "savedEventsScreen",
+    "settingsScreen",
+    "startScreen",
+    "swipeEventScreen",
+    "swipeHubScreen"
+  ]
+}

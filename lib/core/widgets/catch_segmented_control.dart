@@ -70,10 +70,10 @@ class CatchSegmentedControl<T> extends StatelessWidget {
 
     return Container(
       width: expanded ? double.infinity : null,
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(CatchSpacing.s1),
       decoration: BoxDecoration(
         color: t.raised,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(CatchRadius.segmentedOuter),
         border: Border.all(color: t.line),
       ),
       child: Row(
@@ -130,7 +130,7 @@ class _SegmentButton<T> extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (segment.icon != null)
-          Icon(segment.icon, size: 20, color: foreground),
+          Icon(segment.icon, size: CatchIcon.control, color: foreground),
         if (segment.icon != null && segment.label != null) gapW8,
         if (segment.label != null)
           if (expanded)
@@ -152,27 +152,21 @@ class _SegmentButton<T> extends StatelessWidget {
       selected: selected,
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
         child: InkWell(
           onTap: onTap,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeInOut,
+            duration: CatchMotion.micro,
+            curve: CatchMotion.easeInOutCurve,
             padding: EdgeInsets.symmetric(
               horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s2,
               vertical: CatchSpacing.s3,
             ),
             decoration: BoxDecoration(
               color: selected ? activeBackground : Colors.transparent,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(CatchRadius.segmentedInner),
               boxShadow: selected && style == CatchSegmentedControlStyle.surface
-                  ? [
-                      BoxShadow(
-                        color: t.ink.withValues(alpha: 0.08),
-                        blurRadius: 14,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
+                  ? CatchElevation.segmentedSelected(t)
                   : null,
             ),
             child: content,

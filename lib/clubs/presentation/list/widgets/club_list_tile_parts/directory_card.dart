@@ -58,51 +58,22 @@ class _DirectoryPhotoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final palette = ClubCoverVisualPalette.forClub(club);
+    final palette = ClubCoverVisualPalette.forClub(context, club);
     final visibleTags = _visibleTags(club);
 
-    return CatchSurface(
+    return CatchPolaroid(
       onTap: onTap,
-      borderColor: t.line,
-      radius: CatchRadius.lg,
-      elevation: CatchSurfaceElevation.card,
-      clipBehavior: Clip.antiAlias,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            child: _ClubPhotoMedia(club: club, sash: sash, palette: palette),
-          ),
-          gapH10,
-          _DirectoryMonoLabel(_directoryCaption(club), color: t.ink3),
-          gapH4,
-          _ClubTitleLine(
-            club: club,
-            maxLines: 1,
-            style: CatchTextStyles.clubDisplay(
-              context,
-              size: 30,
-              height: 0.98,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          gapH4,
-          Text(
-            club.description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-          gapH10,
-          _ClubHostActionRow(club: club, isJoined: isJoined, isHost: isHost),
-          if (visibleTags.isNotEmpty) ...[
-            gapH10,
-            ClubTagWrap(tags: visibleTags.take(3).toList(growable: false)),
-          ],
-        ],
+      media: _ClubPhotoMediaOverlay(club: club),
+      mediaOverlay: _ClubPhotoChrome(club: club, sash: sash, palette: palette),
+      caption: _directoryCaption(club),
+      captionColor: t.ink3,
+      title: club.name,
+      subtitle: club.description,
+      footer: _ClubDirectoryFooter(
+        club: club,
+        isJoined: isJoined,
+        isHost: isHost,
+        visibleTags: visibleTags,
       ),
     );
   }
@@ -126,114 +97,41 @@ class _DirectoryIdentityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final palette = ClubCoverVisualPalette.forClub(club);
+    final palette = ClubCoverVisualPalette.forClub(context, club);
     final visibleTags = _visibleTags(club);
 
-    return CatchSurface(
+    return CatchPolaroid(
       onTap: onTap,
-      borderColor: t.line,
-      radius: CatchRadius.lg,
-      elevation: CatchSurfaceElevation.card,
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              sash == null ? CatchSpacing.s5 : CatchSpacing.s8,
-              CatchSpacing.s5,
-              CatchSpacing.s5,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _ClubFallbackCrest(club: club, palette: palette),
-                    gapW14,
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _DirectoryMonoLabel(
-                            _directoryCaption(club),
-                            color: t.ink3,
-                          ),
-                          gapH4,
-                          _ClubTitleLine(
-                            club: club,
-                            maxLines: 2,
-                            style: CatchTextStyles.clubDisplay(
-                              context,
-                              size: 30,
-                              height: 0.98,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          gapH8,
-                          Text(
-                            club.description,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.bodyLead(
-                              context,
-                              color: t.ink2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    gapW10,
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClubMemberSeal(
-                          label: clubMemberCountLabel(club),
-                          accent: palette.accent,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                gapH18,
-                _ClubRule(color: t.line),
-                gapH14,
-                _ClubHostActionRow(
-                  club: club,
-                  isJoined: isJoined,
-                  isHost: isHost,
-                ),
-                if (visibleTags.isNotEmpty) ...[
-                  gapH16,
-                  _ClubRule(color: t.line),
-                  gapH14,
-                  ClubTagWrap(
-                    tags: visibleTags.take(3).toList(growable: false),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (sash != null)
-            Positioned(
-              top: 0,
-              left: 0,
-              child: CatchCornerSash(
-                label: sash!.label,
-                icon: sash!.icon,
-                tone: sash!.tone,
-              ),
-            ),
-        ],
+      media: ClubPolaroidArtwork(club: club),
+      mediaOverlay: _ClubPhotoChrome(club: club, sash: sash, palette: palette),
+      caption: _directoryCaption(club),
+      captionColor: t.ink3,
+      title: club.name,
+      titleMaxLines: 2,
+      subtitle: club.description,
+      footer: _ClubDirectoryFooter(
+        club: club,
+        isJoined: isJoined,
+        isHost: isHost,
+        visibleTags: visibleTags,
       ),
     );
   }
 }
 
-class _ClubPhotoMedia extends StatelessWidget {
-  const _ClubPhotoMedia({
+class _ClubPhotoMediaOverlay extends StatelessWidget {
+  const _ClubPhotoMediaOverlay({required this.club});
+
+  final Club club;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ClubImage(club: club, coverOnly: true, fallbackCompact: false);
+  }
+}
+
+class _ClubPhotoChrome extends StatelessWidget {
+  const _ClubPhotoChrome({
     required this.club,
     required this.sash,
     required this.palette,
@@ -245,60 +143,41 @@ class _ClubPhotoMedia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth.isFinite
-            ? constraints.maxWidth
-            : 360.0;
-        final mediaHeight = (width * 9 / 16).clamp(168.0, 220.0);
-
-        return SizedBox(
-          height: mediaHeight,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _ClubImage(
-                club: club,
-                coverOnly: true,
-                fallbackCompact: false,
-                showFallbackLocationChip: false,
-                showFallbackFooterLabel: false,
-              ),
-              const _ClubPhotoScrim(),
-              Positioned(
-                top: CatchSpacing.s3,
-                left: CatchSpacing.s3,
-                child: _ClubLogoCrest(
-                  club: club,
-                  palette: palette,
-                  size: 38,
-                  borderColor: Colors.white,
-                  borderWidth: 2,
-                ),
-              ),
-              if (sash != null)
-                Positioned(
-                  left: 0,
-                  bottom: 0,
-                  child: CatchCornerSash(
-                    label: sash!.label,
-                    icon: sash!.icon,
-                    tone: sash!.tone,
-                  ),
-                ),
-              Positioned(
-                top: CatchSpacing.s3,
-                right: CatchSpacing.s3,
-                child: ClubMemberSeal(
-                  label: clubMemberCountLabel(club),
-                  accent: palette.accent,
-                  compact: true,
-                ),
-              ),
-            ],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const _ClubPhotoScrim(),
+        Positioned(
+          top: CatchSpacing.s3,
+          left: CatchSpacing.s3,
+          child: _ClubLogoCrest(
+            club: club,
+            palette: palette,
+            size: 38,
+            borderColor: CatchTokens.editorialLight,
+            borderWidth: 2,
           ),
-        );
-      },
+        ),
+        if (sash != null)
+          Positioned(
+            left: 0,
+            bottom: 0,
+            child: CatchCornerSash(
+              label: sash!.label,
+              icon: sash!.icon,
+              tone: sash!.tone,
+            ),
+          ),
+        Positioned(
+          top: CatchSpacing.s3,
+          right: CatchSpacing.s3,
+          child: ClubMemberSeal(
+            label: clubMemberCountLabel(club),
+            accent: palette.accent,
+            compact: true,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -316,9 +195,13 @@ class _ClubPhotoScrim extends StatelessWidget {
             end: Alignment.bottomCenter,
             stops: const [0.0, 0.48, 1.0],
             colors: [
-              Colors.black.withValues(alpha: 0.10),
+              CatchTokens.editorialDark.withValues(
+                alpha: CatchOpacity.photoScrimLight,
+              ),
               Colors.transparent,
-              Colors.black.withValues(alpha: 0.18),
+              CatchTokens.editorialDark.withValues(
+                alpha: CatchOpacity.eventSuccessSubtleBorder,
+              ),
             ],
           ),
         ),
@@ -367,24 +250,6 @@ class _ClubLogoCrest extends StatelessWidget {
   }
 }
 
-class _ClubFallbackCrest extends StatelessWidget {
-  const _ClubFallbackCrest({required this.club, required this.palette});
-
-  final Club club;
-  final ClubCoverVisualPalette palette;
-
-  @override
-  Widget build(BuildContext context) {
-    return _ClubLogoCrest(
-      club: club,
-      palette: palette,
-      size: 74,
-      borderColor: palette.iconBorder,
-      borderWidth: 3,
-    );
-  }
-}
-
 class _ClubLogoFallback extends StatelessWidget {
   const _ClubLogoFallback({required this.club});
 
@@ -392,11 +257,45 @@ class _ClubLogoFallback extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClubCoverFallback(
-      club: club,
-      compact: true,
-      showLocationChip: false,
-      showFooterLabel: false,
+    return const SizedBox.expand();
+  }
+}
+
+class _ClubDirectoryFooter extends StatelessWidget {
+  const _ClubDirectoryFooter({
+    required this.club,
+    required this.isJoined,
+    required this.isHost,
+    required this.visibleTags,
+  });
+
+  final Club club;
+  final bool isJoined;
+  final bool isHost;
+  final List<String> visibleTags;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (club.rating > 0) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ClubRatingPill(rating: club.rating),
+          ),
+          gapH10,
+        ],
+        _ClubHostActionRow(club: club, isJoined: isJoined, isHost: isHost),
+        if (visibleTags.isNotEmpty) ...[
+          gapH10,
+          _ClubRule(color: t.line),
+          gapH10,
+          ClubTagWrap(tags: visibleTags.take(3).toList(growable: false)),
+        ],
+      ],
     );
   }
 }
@@ -411,29 +310,6 @@ class _ClubRule extends StatelessWidget {
     return SizedBox(
       height: 1,
       child: DecoratedBox(decoration: BoxDecoration(color: color)),
-    );
-  }
-}
-
-class _DirectoryMonoLabel extends StatelessWidget {
-  const _DirectoryMonoLabel(this.label, {required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: GoogleFonts.ibmPlexMono(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0,
-        height: 1.15,
-        color: color,
-      ),
     );
   }
 }
@@ -578,41 +454,5 @@ class _JoinClubButton extends ConsumerWidget {
           .get(clubMembershipControllerProvider.notifier)
           .join(clubId);
     });
-  }
-}
-
-class _ClubTitleLine extends StatelessWidget {
-  const _ClubTitleLine({
-    required this.club,
-    required this.style,
-    required this.maxLines,
-  });
-
-  final Club club;
-  final TextStyle style;
-  final int maxLines;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Text(
-            club.name,
-            maxLines: maxLines,
-            overflow: TextOverflow.ellipsis,
-            style: style,
-          ),
-        ),
-        if (club.rating > 0) ...[
-          gapW8,
-          Padding(
-            padding: const EdgeInsets.only(bottom: 2),
-            child: ClubRatingPill(rating: club.rating),
-          ),
-        ],
-      ],
-    );
   }
 }

@@ -58,6 +58,8 @@ UpdateEventCallableRequest updateEventCallableRequestFromEvent(
     'startingPointLng': meetingLocation.longitude,
     'locationDetails': meetingLocation.notes,
     'photoUrl': event.photoUrl,
+    if (event.eventPhotos.isNotEmpty)
+      'eventPhotos': event.eventPhotos.map((photo) => photo.toJson()).toList(),
     'distanceKm': event.distanceKm,
     'pace': event.pace.name,
     'description': event.description,

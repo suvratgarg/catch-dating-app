@@ -52,7 +52,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Small starter groups',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
@@ -465,65 +465,61 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s3),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: CatchTextField(
-                    label: 'Group label',
-                    initialValue: group.label,
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (value) {
-                      group.label = value;
-                      onChanged();
-                    },
-                  ),
+    return CatchSurface(
+      borderColor: t.line,
+      radius: CatchRadius.sm,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: CatchTextField(
+                  label: 'Group label',
+                  initialValue: group.label,
+                  textCapitalization: TextCapitalization.words,
+                  onChanged: (value) {
+                    group.label = value;
+                    onChanged();
+                  },
                 ),
-                gapW8,
-                IconButton(
-                  tooltip: 'Remove group',
-                  icon: Icon(CatchIcons.deleteOutlineRounded),
-                  onPressed: onRemoveGroup,
-                ),
-              ],
-            ),
-            gapH10,
-            for (
-              var memberIndex = 0;
-              memberIndex < group.memberUids.length;
-              memberIndex++
-            ) ...[
-              _GroupOverrideMemberEditor(
-                value: group.memberUids[memberIndex],
-                participantUids: participantUids,
-                participantLabel: participantLabel,
-                onChanged: (value) {
-                  group.memberUids[memberIndex] = value;
-                  onChanged();
-                },
-                onRemove: () => onRemoveMember(group.memberUids[memberIndex]),
               ),
-              gapH8,
+              gapW8,
+              IconButton(
+                tooltip: 'Remove group',
+                icon: Icon(CatchIcons.deleteOutlineRounded),
+                onPressed: onRemoveGroup,
+              ),
             ],
-            CatchButton(
-              label: 'Add attendee',
-              icon: Icon(CatchIcons.personAddAlt1Rounded),
-              size: CatchButtonSize.sm,
-              variant: CatchButtonVariant.secondary,
-              onPressed: onAddMember,
+          ),
+          gapH10,
+          for (
+            var memberIndex = 0;
+            memberIndex < group.memberUids.length;
+            memberIndex++
+          ) ...[
+            _GroupOverrideMemberEditor(
+              value: group.memberUids[memberIndex],
+              participantUids: participantUids,
+              participantLabel: participantLabel,
+              onChanged: (value) {
+                group.memberUids[memberIndex] = value;
+                onChanged();
+              },
+              onRemove: () => onRemoveMember(group.memberUids[memberIndex]),
             ),
+            gapH8,
           ],
-        ),
+          CatchButton(
+            label: 'Add attendee',
+            icon: Icon(CatchIcons.personAddAlt1Rounded),
+            size: CatchButtonSize.sm,
+            variant: CatchButtonVariant.secondary,
+            onPressed: onAddMember,
+          ),
+        ],
       ),
     );
   }
@@ -621,7 +617,7 @@ class _RotationsHostCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Timed partner rotations',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(

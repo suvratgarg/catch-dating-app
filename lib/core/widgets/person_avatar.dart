@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -92,10 +94,11 @@ class PersonAvatar extends StatelessWidget {
           child: Center(
             child: Text(
               '+$_count',
-              style: CatchTextStyles.statusLabel(
+              style: CatchTextStyles.avatarCount(
                 context,
+                size: innerSize * 0.30,
                 color: t.surface,
-              ).copyWith(fontSize: innerSize * 0.30, height: 1),
+              ),
             ),
           ),
         ),
@@ -148,12 +151,15 @@ class PersonAvatar extends StatelessWidget {
             right: 0,
             bottom: 0,
             child: Container(
-              width: 9,
-              height: 9,
+              width: CatchLayout.avatarStatusDotExtent,
+              height: CatchLayout.avatarStatusDotExtent,
               decoration: BoxDecoration(
                 color: t.success,
                 shape: BoxShape.circle,
-                border: Border.all(color: t.surface, width: 1.5),
+                border: Border.all(
+                  color: t.surface,
+                  width: CatchStroke.underline,
+                ),
               ),
             ),
           ),
@@ -180,7 +186,9 @@ class PersonAvatar extends StatelessWidget {
         ),
         DecoratedBox(
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.16),
+            color: CatchTokens.editorialDark.withValues(
+              alpha: CatchOpacity.avatarPhotoScrim,
+            ),
           ),
         ),
       ],
@@ -261,20 +269,15 @@ class _GradientPlaceholder extends StatelessWidget {
   final String name;
   final double size;
 
-  static const _palettes = [
-    [Color(0xFFFF8A5B), Color(0xFFFF3E6F)],
-    [Color(0xFF6B8CFF), Color(0xFFA3E4FF)],
-    [Color(0xFFFFCE54), Color(0xFFFF7846)],
-    [Color(0xFF2E8F6B), Color(0xFF9AD469)],
-    [Color(0xFFA86BFF), Color(0xFFFF6BC7)],
-    [Color(0xFF1F3A4D), Color(0xFF6B9BB8)],
-    [Color(0xFFE74F3B), Color(0xFFFFA26E)],
-    [Color(0xFF4B3A2E), Color(0xFFB68A5F)],
-    [Color(0xFF0F2F2F), Color(0xFF3EA89B)],
-    [Color(0xFFC24B2C), Color(0xFFF2B06E)],
-    [Color(0xFF2C3E50), Color(0xFF7FAFCE)],
-    [Color(0xFFD48A2D), Color(0xFFF6D27A)],
-  ];
+  static final _palettes = () {
+    final kinds = ActivityKind.values;
+    final palette = ActivityPalette.light;
+    return List.generate(12, (i) {
+      final a = palette.forKind(kinds[i % kinds.length]);
+      final b = palette.forKind(kinds[(i + 5) % kinds.length]);
+      return [a.accent, b.accent];
+    });
+  }();
 
   int _hash() {
     int h = 0;

@@ -144,7 +144,7 @@ class StrideCard extends StatelessWidget {
           ),
           gapH10,
           SizedBox(
-            height: 58,
+            height: CatchLayout.strideChartHeight,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -245,9 +245,13 @@ class StrideBarColumn extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: fraction > 0
-                      ? t.primary.withValues(alpha: isToday ? 0.5 : 1)
+                      ? t.primary.withValues(
+                          alpha: isToday
+                              ? CatchOpacity.strideTodayBar
+                              : CatchOpacity.visible,
+                        )
                       : t.line2,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(CatchRadius.xs),
                 ),
               ),
             ),
@@ -281,12 +285,11 @@ class _StrideActionButton extends StatelessWidget {
     return TextButton.icon(
       onPressed: onPressed,
       icon: isBusy
-          ? const SizedBox(
-              width: 16,
-              height: 16,
+          ? const SizedBox.square(
+              dimension: CatchIcon.xs,
               child: CatchLoadingIndicator(strokeWidth: 2),
             )
-          : Icon(icon, size: 16),
+          : Icon(icon, size: CatchIcon.xs),
       label: Text(label, style: CatchTextStyles.labelL(context)),
     );
   }
@@ -311,13 +314,16 @@ class _StrideSectionStateCard extends StatelessWidget {
       child: Row(
         children: [
           if (isLoading)
-            const SizedBox(
-              width: 18,
-              height: 18,
+            const SizedBox.square(
+              dimension: CatchIcon.md,
               child: CatchLoadingIndicator(strokeWidth: 2),
             )
           else
-            Icon(CatchIcons.errorOutlineRounded, color: t.primary, size: 18),
+            Icon(
+              CatchIcons.errorOutlineRounded,
+              color: t.primary,
+              size: CatchIcon.md,
+            ),
           gapW10,
           Expanded(
             child: Text(

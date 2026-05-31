@@ -32,7 +32,9 @@ class ChatListTile extends StatelessWidget {
       onTap: onTap,
       tone: CatchSurfaceTone.surface,
       backgroundColor: hasUnread ? t.primarySoft : null,
-      borderColor: hasUnread ? t.primary.withValues(alpha: 0.36) : t.line,
+      borderColor: hasUnread
+          ? t.primary.withValues(alpha: CatchOpacity.chatUnreadBorder)
+          : t.line,
       radius: CatchRadius.md,
       padding: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
@@ -43,7 +45,7 @@ class ChatListTile extends StatelessWidget {
               left: 0,
               top: 0,
               bottom: 0,
-              width: 4,
+              width: CatchLayout.chatUnreadStripWidth,
               child: ColoredBox(
                 color: t.primary,
                 child: const SizedBox.expand(),
@@ -76,13 +78,15 @@ class ChatListTile extends StatelessWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: hasUnread
-                                  ? CatchTextStyles.cardTitle(context)
+                                  ? CatchTextStyles.titleL(context)
                                   : CatchTextStyles.sectionTitle(context),
                             ),
                           ),
                           const SizedBox(width: CatchSpacing.s2),
                           Padding(
-                            padding: const EdgeInsets.only(top: 2),
+                            padding: const EdgeInsets.only(
+                              top: CatchSpacing.micro2,
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -143,7 +147,7 @@ class _UnreadCountPill extends StatelessWidget {
         tone: CatchBadgeTone.brand,
         backgroundColor: t.primary,
         foregroundColor: t.primaryInk,
-        borderColor: Colors.transparent,
+        borderColor: t.primary,
       ),
     );
   }

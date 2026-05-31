@@ -79,7 +79,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
           controller: _controller,
           style: MenuStyle(
             backgroundColor: WidgetStatePropertyAll(t.surface),
-            elevation: const WidgetStatePropertyAll(8),
+            elevation: const WidgetStatePropertyAll(CatchElevation.menu),
             shadowColor: WidgetStatePropertyAll(t.overlay),
             surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
             shape: WidgetStatePropertyAll(
@@ -219,8 +219,8 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
 
   double get _itemHeight {
     return switch (widget.size) {
-      CatchSelectMenuSize.compact => 44,
-      CatchSelectMenuSize.md => 48,
+      CatchSelectMenuSize.compact => CatchLayout.menuItemHeightCompact,
+      CatchSelectMenuSize.md => CatchLayout.menuItemHeight,
     };
   }
 

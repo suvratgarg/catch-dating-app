@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -5,7 +6,7 @@ import 'package:catch_dating_app/matches/presentation/widgets/chat_search_field.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const double _chatsBrowseHeaderHeight = 88;
+const double _chatsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 
 class ChatsSliverHeader extends CatchSliverHeader {
   ChatsSliverHeader({bool showSearchAction = true})

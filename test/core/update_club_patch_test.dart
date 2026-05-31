@@ -3,6 +3,7 @@
 // `contracts/callables/update_club_payload.schema.json`.
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +21,8 @@ void main() {
         hostAvatarUrl: 'https://example.test/avatar.png',
         imageUrl: 'https://example.test/cover.png',
         profileImageUrl: 'https://example.test/profile.png',
+        clubPhotos: [_uploadedPhoto(id: 'club-photo-1')],
+        logoPhoto: _uploadedPhoto(id: 'club-logo-1'),
         tags: const ['social'],
         instagramHandle: 'x',
         phoneNumber: '+10000000000',
@@ -86,3 +89,12 @@ void main() {
     });
   });
 }
+
+UploadedPhoto _uploadedPhoto({required String id}) => UploadedPhoto(
+  id: id,
+  url: 'https://example.test/$id.jpg',
+  storagePath: 'clubs/club-1/photos/$id.jpg',
+  position: 0,
+  createdAt: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
+  updatedAt: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
+);

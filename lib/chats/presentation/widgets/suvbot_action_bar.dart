@@ -229,9 +229,11 @@ class _SuvbotButton extends StatelessWidget {
         ? t.accent
         : t.ink;
     final background = destructive
-        ? colors.errorContainer.withValues(alpha: 0.24)
+        ? colors.errorContainer.withValues(
+            alpha: CatchOpacity.suvbotDestructiveFill,
+          )
         : prominent
-        ? t.accent.withValues(alpha: 0.12)
+        ? t.accent.withValues(alpha: CatchOpacity.subtleFill)
         : t.surface;
 
     return CatchButton(
@@ -302,10 +304,10 @@ class _CircleActionButton extends StatelessWidget {
     return Tooltip(
       message: label,
       child: SizedBox.square(
-        dimension: 34,
+        dimension: CatchLayout.suvbotCircleActionExtent,
         child: IconButton(
           onPressed: pending ? null : onPressed,
-          icon: Icon(icon, size: 18),
+          icon: Icon(icon, size: CatchIcon.md),
           color: t.ink2,
           style: IconButton.styleFrom(
             backgroundColor: t.surface,
@@ -334,7 +336,7 @@ class _SuvbotLoadingControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      height: 84,
+      height: CatchLayout.suvbotLoadingControlsHeight,
       child: Center(child: CatchLoadingIndicator(strokeWidth: 2)),
     );
   }
@@ -380,7 +382,7 @@ Future<void> _showResetSheet(
             children: [
               Text(
                 'Reset demo state',
-                style: CatchTextStyles.cardTitle(context),
+                style: CatchTextStyles.titleL(context),
               ),
               const SizedBox(height: CatchSpacing.s1),
               Text(
@@ -479,7 +481,7 @@ class _MatchTesterSheetState extends State<_MatchTesterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Match tester', style: CatchTextStyles.cardTitle(context)),
+          Text('Match tester', style: CatchTextStyles.titleL(context)),
           const SizedBox(height: CatchSpacing.s1),
           Text(
             'Enter an allowlisted beta tester phone number.',

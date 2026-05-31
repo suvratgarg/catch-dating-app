@@ -111,9 +111,9 @@ class _HostEventToolsCarouselState extends State<HostEventToolsCarousel> {
                     ? () => _dragDistance = 0
                     : null,
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 220),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
+                  duration: CatchMotion.base,
+                  switchInCurve: CatchMotion.easeOutCubicCurve,
+                  switchOutCurve: CatchMotion.easeInCubicCurve,
                   transitionBuilder: (child, animation) =>
                       FadeTransition(opacity: animation, child: child),
                   child: HostEventToolCard(
@@ -194,7 +194,9 @@ class HostEventToolsPageIndicator extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 6,
-                backgroundColor: t.line2.withValues(alpha: 0.9),
+                backgroundColor: t.line2.withValues(
+                  alpha: CatchOpacity.pageDotInactive,
+                ),
                 valueColor: AlwaysStoppedAnimation<Color>(t.primary),
               ),
             ),
@@ -321,13 +323,19 @@ class HostToolPalette {
 
     return HostToolPalette(
       background: isOpen ? t.primarySoft : t.surface,
-      border: isOpen ? t.primary.withValues(alpha: 0.28) : t.line2,
+      border: isOpen
+          ? t.primary.withValues(alpha: CatchOpacity.gradientBandSoft)
+          : t.line2,
       gradientColors: [
         isOpen
-            ? t.primarySoft.withValues(alpha: 0.78)
-            : t.primarySoft.withValues(alpha: 0.30),
+            ? t.primarySoft.withValues(
+                alpha: CatchOpacity.revealMutedForeground,
+              )
+            : t.primarySoft.withValues(
+                alpha: CatchOpacity.clubCoverPaletteLine,
+              ),
         t.surface,
-        t.raised.withValues(alpha: 0.72),
+        t.raised.withValues(alpha: CatchOpacity.eventHeroMutedInk),
       ],
     );
   }
@@ -337,11 +345,13 @@ class HostToolPalette {
 
     return HostToolPalette(
       background: t.surface,
-      border: t.primary.withValues(alpha: 0.18),
+      border: t.primary.withValues(
+        alpha: CatchOpacity.eventSuccessSubtleBorder,
+      ),
       gradientColors: [
-        t.primarySoft.withValues(alpha: 0.34),
+        t.primarySoft.withValues(alpha: CatchOpacity.eventSuccessMuted),
         t.surface,
-        t.raised.withValues(alpha: 0.72),
+        t.raised.withValues(alpha: CatchOpacity.eventHeroMutedInk),
       ],
     );
   }

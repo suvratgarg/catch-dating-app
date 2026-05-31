@@ -22,6 +22,10 @@ import {UpdateClubCallablePayload} from
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {isClubHost, isClubOwner} from "../shared/clubHosts";
 import {
+  normalizeOptionalUploadedPhotoForFirestore,
+  normalizeUploadedPhotosForFirestore,
+} from "../shared/uploadedPhotoNormalization";
+import {
   normalizeArchiveClubPayload,
   normalizeClubIdPayload,
   normalizeUpdateClubPayload,
@@ -65,7 +69,7 @@ export async function updateClubHandler(
       tx.get(deletedUserRef),
     ]);
     assertCanUpdateClub(clubSnap, deletedUserSnap, hostUserId, data.fields);
-    tx.update(clubRef, data.fields);
+    tx.update(clubRef, clubPatchWithLegacyFields(data.fields));
   });
 
   return {updated: true};
@@ -227,7 +231,10 @@ function assertCanUpdateClub(
   if (
     isClubHost(club, hostUserId) &&
     Object.keys(fields).every((field) =>
-      field === "imageUrl" || field === "profileImageUrl"
+      field === "imageUrl" ||
+        field === "profileImageUrl" ||
+        field === "clubPhotos" ||
+        field === "logoPhoto"
     )
   ) {
     return;
@@ -236,6 +243,43 @@ function assertCanUpdateClub(
     "permission-denied",
     "Only the club owner can manage this club."
   );
+}
+
+function clubPatchWithLegacyFields(
+  fields: UpdateClubCallablePayload["fields"]
+): Record<string, unknown> {
+  const patch: Record<string, unknown> = {...fields};
+  if (fields.clubPhotos !== undefined) {
+    const clubPhotos = normalizeUploadedPhotosForFirestore(fields.clubPhotos);
+    patch.clubPhotos = clubPhotos;
+    patch.imageUrl = primaryPhotoUrl(clubPhotos);
+  }
+  if (fields.logoPhoto !== undefined) {
+    const logoPhoto = normalizeOptionalUploadedPhotoForFirestore(
+      fields.logoPhoto
+    );
+    patch.logoPhoto = logoPhoto;
+    patch.profileImageUrl = thumbnailOrUrl(logoPhoto);
+  }
+  return patch;
+}
+
+function primaryPhotoUrl(photos: unknown[] | undefined): string | null {
+  if (!Array.isArray(photos) || photos.length === 0) return null;
+  const first = photos[0];
+  if (first === null || typeof first !== "object") return null;
+  const url = (first as {url?: unknown}).url;
+  return typeof url === "string" && url.trim().length > 0 ? url : null;
+}
+
+function thumbnailOrUrl(photo: unknown): string | null {
+  if (photo === null || typeof photo !== "object") return null;
+  const thumbnailUrl = (photo as {thumbnailUrl?: unknown}).thumbnailUrl;
+  if (typeof thumbnailUrl === "string" && thumbnailUrl.trim().length > 0) {
+    return thumbnailUrl;
+  }
+  const url = (photo as {url?: unknown}).url;
+  return typeof url === "string" && url.trim().length > 0 ? url : null;
 }
 
 export const archiveClub = onCall(

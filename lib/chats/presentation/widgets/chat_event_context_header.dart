@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -5,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -16,10 +18,16 @@ class ChatEventContextHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final event = this.event;
+    final visual = event == null
+        ? null
+        : eventActivityVisual(event.activityKind, context: context);
+    final accent = visual?.accent ?? t.primary;
     final title = event?.title ?? 'the same event';
     final date = event == null
         ? null
-        : DateFormat('EEE d MMM').format(event!.startTime);
+        : DateFormat('EEE d MMM').format(event.startTime);
+    final stamp = chatContextStampFor(event);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -29,16 +37,16 @@ class ChatEventContextHeader extends StatelessWidget {
         0,
       ),
       child: CatchSurface(
-        tone: CatchSurfaceTone.primarySoft,
-        borderColor: t.line,
+        backgroundColor: visual?.soft ?? t.primarySoft,
+        borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
         padding: const EdgeInsets.all(CatchSpacing.s3),
         child: Row(
           children: [
             CatchIconTile(
-              icon: CatchIcons.directionsRunRounded,
-              iconColor: t.primary,
+              icon: visual?.icon ?? CatchIcons.chatBubbleOutlineRounded,
+              iconColor: accent,
               backgroundColor: t.surface,
-              borderColor: Colors.transparent,
+              borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
               size: 36,
               radius: CatchRadius.pill,
             ),
@@ -48,10 +56,10 @@ class ChatEventContextHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'YOU BOTH RAN',
+                    stamp,
                     style: CatchTextStyles.labelM(
                       context,
-                      color: t.primary,
+                      color: accent,
                     ).copyWith(fontWeight: FontWeight.w800),
                   ),
                   gapH2,

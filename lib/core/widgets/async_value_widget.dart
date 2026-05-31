@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +107,8 @@ class ErrorMessageWidget extends StatelessWidget {
     return Center(
       child: Text(
         errorMessage,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        style: CatchTextStyles.bodyM(
+          context,
           color: Theme.of(context).colorScheme.error,
         ),
         textAlign: TextAlign.center,

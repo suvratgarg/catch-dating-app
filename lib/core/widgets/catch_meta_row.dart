@@ -16,7 +16,7 @@ class CatchMetaDotRow extends StatelessWidget {
     required this.entries,
     this.trailing,
     this.color,
-    this.iconSize = 14,
+    this.iconSize = CatchIcon.sm,
     this.maxLines = 1,
   });
 
@@ -84,7 +84,9 @@ class _MetaEntryFlow extends StatelessWidget {
       if (i > 0) {
         children.add(
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: CatchSpacing.micro6,
+            ),
             child: Text(
               '·',
               style: CatchTextStyles.numericMeta(context, color: color),

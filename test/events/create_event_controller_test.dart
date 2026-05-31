@@ -17,24 +17,29 @@ import 'events_test_helpers.dart';
 class FakeRunImageUploadRepository extends Fake
     implements ImageUploadRepository {
   String uploadResult = 'https://img.example/events/generated-7.jpg';
-  String? uploadedUid;
-  String? uploadedClubId;
   String? uploadedEventId;
+  int? uploadedPosition;
   XFile? uploadedImage;
+  final uploadedPositions = <int>[];
+  final uploadedImages = <XFile>[];
 
   @override
-  Future<String> uploadEventPhoto({
-    required String uid,
-    required String clubId,
+  Future<UploadedImage> uploadEventPhotoWithMetadata({
     required String eventId,
+    required int position,
     required XFile image,
   }) async {
-    uploadedUid = uid;
-    uploadedClubId = clubId;
     uploadedEventId = eventId;
+    uploadedPosition = position;
     uploadedImage = image;
-    return uploadResult;
+    uploadedPositions.add(position);
+    uploadedImages.add(image);
+    return UploadedImage(url: uploadResult, storagePath: uploadedStoragePath);
   }
+
+  String get uploadedStoragePath =>
+      'events/${uploadedEventId ?? 'generated-7'}/photos/'
+      '${uploadedPosition ?? 0}_123.jpg';
 }
 
 void main() {
@@ -64,7 +69,7 @@ void main() {
         addTearDown(uidSubscription.close);
         await container.pump();
 
-        await container
+        final submittedEvent = await container
             .read(createEventControllerProvider.notifier)
             .submit(
               clubId: '  club-7  ',
@@ -94,9 +99,8 @@ void main() {
         final createdEvent = fakeEventRepository.createdEvent;
         expect(createdEvent, isNotNull);
         expect(createdEvent!.id, 'generated-7');
-        expect(fakeImageUploadRepository.uploadedUid, 'host-1');
-        expect(fakeImageUploadRepository.uploadedClubId, 'club-7');
         expect(fakeImageUploadRepository.uploadedEventId, 'generated-7');
+        expect(fakeImageUploadRepository.uploadedPosition, 0);
         expect(fakeImageUploadRepository.uploadedImage, photo);
         expect(createdEvent.clubId, 'club-7');
         expect(createdEvent.startTime, DateTime(2025, 3, 1, 6));
@@ -106,10 +110,7 @@ void main() {
         expect(createdEvent.startingPointLat, 19.076);
         expect(createdEvent.startingPointLng, 72.8777);
         expect(createdEvent.locationDetails, isNull);
-        expect(
-          createdEvent.photoUrl,
-          'https://img.example/events/generated-7.jpg',
-        );
+        expect(createdEvent.photoUrl, isNull);
         expect(createdEvent.distanceKm, 7.5);
         expect(createdEvent.pace, PaceLevel.moderate);
         expect(createdEvent.capacityLimit, 18);
@@ -126,8 +127,68 @@ void main() {
           ),
         );
         expect(createdEvent.eventFormat, const EventFormatSnapshot.socialRun());
+        final updatedEvent = fakeEventRepository.updatedEvent;
+        expect(updatedEvent, isNotNull);
+        expect(updatedEvent!.photoUrl, fakeImageUploadRepository.uploadResult);
+        expect(updatedEvent.eventPhotos, hasLength(1));
+        expect(
+          updatedEvent.eventPhotos.single.storagePath,
+          'events/generated-7/photos/0_123.jpg',
+        );
+        expect(submittedEvent.photoUrl, fakeImageUploadRepository.uploadResult);
       },
     );
+
+    test('uploads multiple event photos in the submitted order', () async {
+      final fakeEventRepository = FakeEventRepository()
+        ..generatedId = 'generated-9';
+      final fakeImageUploadRepository = FakeRunImageUploadRepository();
+      final photos = [XFile('event-a.jpg'), XFile('event-b.jpg')];
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      final submittedEvent = await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-7',
+            startTime: DateTime(2025, 3, 1, 6),
+            endTime: DateTime(2025, 3, 1, 7),
+            meetingLocation: _meetingLocation(name: 'Marine Drive'),
+            eventFormat: const EventFormatSnapshot.socialRun(),
+            distanceKm: 5,
+            pace: PaceLevel.easy,
+            description: 'Morning run',
+            currency: defaultCurrencyCode,
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+            photoImages: photos,
+          );
+
+      expect(fakeImageUploadRepository.uploadedPositions, [0, 1]);
+      expect(fakeImageUploadRepository.uploadedImages, photos);
+      expect(submittedEvent.eventPhotos, hasLength(2));
+      expect(submittedEvent.eventPhotos.map((photo) => photo.position), [0, 1]);
+      expect(submittedEvent.eventPhotos.map((photo) => photo.storagePath), [
+        'events/generated-9/photos/0_123.jpg',
+        'events/generated-9/photos/1_123.jpg',
+      ]);
+      expect(submittedEvent.photoUrl, submittedEvent.eventPhotos.first.url);
+    });
 
     test('sends enabled event-success defaults through createEvent', () async {
       final fakeEventRepository = FakeEventRepository();

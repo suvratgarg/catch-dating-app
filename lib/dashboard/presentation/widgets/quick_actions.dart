@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -14,7 +15,7 @@ class QuickActions extends StatelessWidget {
 
   final Club? hostedClubShortcut;
 
-  static const double _iconBoxSize = 36;
+  static const double _iconBoxSize = CatchSpacing.s9;
   static const double _tileSpacing = CatchSpacing.s3;
 
   void _onTap(BuildContext context, _QuickAction action) {
@@ -28,7 +29,11 @@ class QuickActions extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 320 ? actions.length : 2;
+        final columns =
+            constraints.maxWidth >=
+                ComponentBreakpoints.quickActionsWideBreakpoint
+            ? actions.length
+            : 2;
         final tileWidth =
             (constraints.maxWidth - (_tileSpacing * (columns - 1))) / columns;
 
@@ -102,9 +107,9 @@ class _QuickActionTile extends StatelessWidget {
             icon: action.icon,
             iconColor: t.primary,
             backgroundColor: t.primarySoft,
-            borderColor: Colors.transparent,
+            borderColor: t.primarySoft,
             size: QuickActions._iconBoxSize,
-            iconSize: 18,
+            iconSize: CatchIcon.md,
             radius: CatchRadius.sm,
           ),
           gapH8,

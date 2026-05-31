@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/name_overlay.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -24,7 +26,7 @@ Widget _profileCardHarness({required ThemeData theme}) {
         body: Center(
           child: SizedBox(
             width: 340,
-            height: 620,
+            height: 820,
             child: ProfileSurface(profile: profile),
           ),
         ),
@@ -64,14 +66,20 @@ void main() {
       await tester.pumpWidget(_profileCardHarness(theme: AppTheme.light));
       await tester.pump();
 
-      expect(find.text('Photo coming soon'), findsOneWidget);
+      expect(find.byType(EventActivityBackdrop), findsOneWidget);
       expect(
-        find.text('A perfect event with me looks like...'),
+        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
         findsOneWidget,
       );
-      expect(find.text('Something casual'), findsOneWidget);
       expect(find.text('5:00-7:00/km'), findsWidgets);
-      expect(find.text('Running rhythm'), findsOneWidget);
+      expect(find.text('RUNNING RHYTHM'), findsOneWidget);
+      await tester.drag(
+        find.byKey(CatchProfileView.scrollViewKey),
+        const Offset(0, -360),
+      );
+      await tester.pump();
+      expect(find.text('LOOKING FOR'), findsOneWidget);
+      expect(find.text('Something casual'), findsOneWidget);
       expect(
         tester.getSemantics(find.byType(ProfileSurface)).hint,
         'Preview how your profile appears to other runners. Scroll to read the full profile.',
@@ -87,10 +95,53 @@ void main() {
     await tester.pumpWidget(_profileCardHarness(theme: AppTheme.dark));
     await tester.pump();
 
-    expect(find.text('Photo coming soon'), findsOneWidget);
-    expect(find.text('Manan'), findsOneWidget);
-    expect(find.text('Running rhythm'), findsOneWidget);
+    expect(find.byType(EventActivityBackdrop), findsOneWidget);
+    expect(find.text('Manan, 26'), findsOneWidget);
+    expect(find.text('RUNNING RHYTHM'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('ProfileSurface tolerates text scale 1.5 in light and dark', (
+    tester,
+  ) async {
+    final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
+      city: 'indore',
+      relationshipGoal: RelationshipGoal.relationship,
+      height: 178,
+      occupation: 'Product designer',
+      company: 'Catch',
+      education: EducationLevel.masters,
+      drinking: DrinkingHabit.socially,
+      workout: WorkoutFrequency.often,
+    );
+
+    for (final theme in [AppTheme.light, AppTheme.dark]) {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: theme,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.5)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: SizedBox(
+                width: 390,
+                height: 844,
+                child: ProfileSurface(profile: profile),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Manan, 26'), findsOneWidget);
+      expect(find.byType(EventActivityBackdrop), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
   });
 
   testWidgets('ProfileSurface omits prompt cards when prompts are blank', (
@@ -118,8 +169,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('A perfect event with me looks like...'), findsNothing);
-    expect(find.text('Running rhythm'), findsOneWidget);
+    expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsNothing);
+    expect(find.text('RUNNING RHYTHM'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -199,10 +250,15 @@ void main() {
       await tester.pump();
 
       expect(
-        find.text('A perfect event with me looks like...'),
+        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
         findsOneWidget,
       );
-      expect(find.text('Details'), findsOneWidget);
+      await tester.drag(
+        find.byKey(CatchProfileView.scrollViewKey),
+        const Offset(0, -360),
+      );
+      await tester.pump();
+      expect(find.text('DETAILS'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
@@ -251,8 +307,13 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Why you might click'), findsOneWidget);
+      expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
       expect(find.text('You met at Thursday Morning Event'), findsOneWidget);
+      await tester.drag(
+        find.byKey(CatchProfileView.scrollViewKey),
+        const Offset(0, -360),
+      );
+      await tester.pump();
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -308,6 +369,11 @@ void main() {
   testWidgets('ProfileSurface lets users react to compatibility signals', (
     tester,
   ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(800, 900);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     ProfileReactionTarget? reactedTarget;
     final viewer = buildUser().copyWith(
       activityPreferences: const ActivityPreferences(

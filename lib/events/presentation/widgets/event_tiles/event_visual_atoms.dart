@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
 
@@ -9,8 +10,8 @@ class EventActivityStamp extends StatelessWidget {
   const EventActivityStamp({
     super.key,
     required this.visual,
-    this.size = 42,
-    this.iconSize = 22,
+    this.size = CatchLayout.eventActivityStampExtent,
+    this.iconSize = CatchLayout.eventActivityStampIconSize,
   });
 
   final EventActivityVisualSpec visual;
@@ -19,16 +20,15 @@ class EventActivityStamp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return CatchSurface(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: visual.soft.withValues(alpha: 0.72),
-        border: Border.all(color: visual.accent.withValues(alpha: 0.54)),
+      radius: CatchRadius.pill,
+      backgroundColor: visual.soft.withValues(alpha: CatchOpacity.scrimFill),
+      borderColor: visual.accent.withValues(alpha: CatchOpacity.mutedBorder),
+      child: Center(
+        child: Icon(visual.icon, size: iconSize, color: visual.deep),
       ),
-      alignment: Alignment.center,
-      child: Icon(visual.icon, size: iconSize, color: visual.deep),
     );
   }
 }
@@ -126,32 +126,27 @@ class EventStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final dark = tone == EventStatusPillTone.dark;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: dark
-            ? Colors.black.withValues(alpha: 0.68)
-            : color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-      ),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: dark
+          ? t.darkPillFill
+          : color.withValues(alpha: CatchOpacity.subtleFill),
+      borderWidth: 0,
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: dark ? CatchSpacing.s3 : 8,
-          vertical: dark ? CatchSpacing.s1 : 4,
+          horizontal: dark ? CatchSpacing.s3 : CatchSpacing.s2,
+          vertical: dark ? CatchSpacing.s1 : CatchSpacing.s1,
         ),
         child: Text(
           label.toUpperCase(),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style:
-              CatchTextStyles.mono(
-                context,
-                color: dark ? Colors.white : color,
-              ).copyWith(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0,
-              ),
+          style: CatchTextStyles.monoLabel(
+            context,
+            color: dark ? t.darkPillInk : color,
+          ),
         ),
       ),
     );

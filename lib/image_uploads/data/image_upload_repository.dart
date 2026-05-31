@@ -1,7 +1,11 @@
+import 'dart:math' as math;
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image/image.dart' as image_lib;
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,7 +14,9 @@ part 'image_upload_repository.g.dart';
 enum ImageUploadPurpose {
   profilePhoto,
   clubCover,
+  clubPhoto,
   clubProfileImage,
+  clubLogo,
   eventPhoto,
   chatImage,
 }
@@ -48,6 +54,18 @@ class _StorageUploadContract {
   bool allowsContentType(String contentType) {
     return RegExp('^$contentTypePattern\$').hasMatch(contentType);
   }
+}
+
+class _PreparedUpload {
+  const _PreparedUpload({
+    required this.bytes,
+    required this.extension,
+    required this.contentType,
+  });
+
+  final Uint8List bytes;
+  final String extension;
+  final String contentType;
 }
 
 class ImageUploadRepository {
@@ -90,6 +108,21 @@ class ImageUploadRepository {
     maxBytes: 8388608,
     contentTypePattern: 'image/.*',
   );
+  static const _clubPhotosContract = _StorageUploadContract(
+    resource: 'club_photos',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
+  static const _clubLogoImagesContract = _StorageUploadContract(
+    resource: 'club_logo_images',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
+  static const _eventPhotosContract = _StorageUploadContract(
+    resource: 'event_photos',
+    maxBytes: 8388608,
+    contentTypePattern: 'image/.*',
+  );
   static const _matchChatImagesContract = _StorageUploadContract(
     resource: 'match_chat_images',
     maxBytes: 8388608,
@@ -115,6 +148,21 @@ class ImageUploadRepository {
     );
   }
 
+  Future<List<XFile>> pickImages({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+    int? limit,
+  }) {
+    final policy = policyForPurpose(purpose);
+    return _picker.pickMultiImage(
+      maxWidth: policy.maxWidth,
+      maxHeight: policy.maxHeight,
+      imageQuality: imageQuality ?? policy.quality,
+      limit: limit,
+      requestFullMetadata: false,
+    );
+  }
+
   // ── Generic upload ────────────────────────────────────────────────────────
 
   /// Uploads [image] to [storagePath] and returns the download URL.
@@ -124,28 +172,34 @@ class ImageUploadRepository {
   Future<String> upload({
     required String storagePath,
     required XFile image,
-  }) async =>
-      (await uploadWithMetadata(storagePath: storagePath, image: image)).url;
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+  }) async => (await uploadWithMetadata(
+    storagePath: storagePath,
+    image: image,
+    purpose: purpose,
+  )).url;
 
   /// Uploads [image] and returns both the download URL and final Storage path.
   Future<UploadedImage> uploadWithMetadata({
     required String storagePath,
     required XFile image,
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
   }) async {
     return withBackendErrorContext(
       () async {
-        final bytes = await image.readAsBytes();
-        final ext = _normalizedExt(image.name);
-        final contentType = _contentTypeForExt(ext);
+        final prepared = await _prepareUpload(image: image, purpose: purpose);
         _assertUploadConformsToStorageContract(
           storagePath: storagePath,
-          byteLength: bytes.length,
+          byteLength: prepared.bytes.length,
           reportedContentType: image.mimeType,
-          effectiveContentType: contentType,
+          effectiveContentType: prepared.contentType,
         );
-        final finalStoragePath = '$storagePath.$ext';
+        final finalStoragePath = '$storagePath.${prepared.extension}';
         final ref = _storage.ref(finalStoragePath);
-        await ref.putData(bytes, SettableMetadata(contentType: contentType));
+        await ref.putData(
+          prepared.bytes,
+          SettableMetadata(contentType: prepared.contentType),
+        );
         final url = await ref.getDownloadURL();
         return UploadedImage(url: url, storagePath: finalStoragePath);
       },
@@ -167,6 +221,7 @@ class ImageUploadRepository {
     storagePath:
         'users/$uid/photos/${index}_${DateTime.now().millisecondsSinceEpoch}',
     image: image,
+    purpose: ImageUploadPurpose.profilePhoto,
   );
 
   Future<UploadedImage> uploadUserProfilePhoto({
@@ -178,6 +233,21 @@ class ImageUploadRepository {
     return uploadWithMetadata(
       storagePath: 'users/$uid/photos/${index}_$millis',
       image: image,
+      purpose: ImageUploadPurpose.profilePhoto,
+    );
+  }
+
+  Future<UploadedImage> uploadClubPhoto({
+    String? uid,
+    required String clubId,
+    required int position,
+    required XFile image,
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return uploadWithMetadata(
+      storagePath: 'clubs/$clubId/photos/${position}_$millis',
+      image: image,
+      purpose: ImageUploadPurpose.clubPhoto,
     );
   }
 
@@ -185,12 +255,26 @@ class ImageUploadRepository {
     required String uid,
     required String clubId,
     required XFile image,
+  }) async {
+    final upload = await uploadClubPhoto(
+      uid: uid,
+      clubId: clubId,
+      position: 0,
+      image: image,
+    );
+    return upload.url;
+  }
+
+  Future<UploadedImage> uploadClubLogo({
+    String? uid,
+    required String clubId,
+    required XFile image,
   }) {
     final millis = DateTime.now().millisecondsSinceEpoch;
-    return upload(
-      storagePath:
-          'users/$uid/hostedMedia/club_${_fileToken(clubId)}_cover_$millis',
+    return uploadWithMetadata(
+      storagePath: 'clubs/$clubId/logo/$millis',
       image: image,
+      purpose: ImageUploadPurpose.clubLogo,
     );
   }
 
@@ -198,27 +282,36 @@ class ImageUploadRepository {
     required String uid,
     required String clubId,
     required XFile image,
-  }) {
-    final millis = DateTime.now().millisecondsSinceEpoch;
-    return upload(
-      storagePath:
-          'users/$uid/hostedMedia/club_${_fileToken(clubId)}_profile_$millis',
-      image: image,
-    );
+  }) async {
+    final upload = await uploadClubLogo(uid: uid, clubId: clubId, image: image);
+    return upload.url;
   }
 
   Future<String> uploadEventPhoto({
-    required String uid,
-    required String clubId,
+    String? uid,
+    String? clubId,
     required String eventId,
+    int position = 0,
     required XFile image,
   }) {
     final millis = DateTime.now().millisecondsSinceEpoch;
     return upload(
-      storagePath:
-          'users/$uid/hostedMedia/event_${_fileToken(clubId)}_'
-          '${_fileToken(eventId)}_$millis',
+      storagePath: 'events/$eventId/photos/${position}_$millis',
       image: image,
+      purpose: ImageUploadPurpose.eventPhoto,
+    );
+  }
+
+  Future<UploadedImage> uploadEventPhotoWithMetadata({
+    required String eventId,
+    required int position,
+    required XFile image,
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return uploadWithMetadata(
+      storagePath: 'events/$eventId/photos/${position}_$millis',
+      image: image,
+      purpose: ImageUploadPurpose.eventPhoto,
     );
   }
 
@@ -231,6 +324,7 @@ class ImageUploadRepository {
         'matches/$matchId/images/${messageId}_'
         '${DateTime.now().millisecondsSinceEpoch}',
     image: image,
+    purpose: ImageUploadPurpose.chatImage,
   );
 
   // ── Internal ──────────────────────────────────────────────────────────────
@@ -239,10 +333,64 @@ class ImageUploadRepository {
     return switch (purpose) {
       ImageUploadPurpose.profilePhoto => profilePhotoPolicy,
       ImageUploadPurpose.clubCover => clubCoverPolicy,
+      ImageUploadPurpose.clubPhoto => clubCoverPolicy,
       ImageUploadPurpose.clubProfileImage => clubProfileImagePolicy,
+      ImageUploadPurpose.clubLogo => clubProfileImagePolicy,
       ImageUploadPurpose.eventPhoto => eventPhotoPolicy,
       ImageUploadPurpose.chatImage => chatImagePolicy,
     };
+  }
+
+  static Future<_PreparedUpload> _prepareUpload({
+    required XFile image,
+    required ImageUploadPurpose purpose,
+  }) async {
+    final originalBytes = await image.readAsBytes();
+    final originalExt = _normalizedExt(image.name);
+    final compressedBytes = _compressedImageBytes(
+      originalBytes,
+      policy: policyForPurpose(purpose),
+    );
+    if (compressedBytes == null) {
+      return _PreparedUpload(
+        bytes: originalBytes,
+        extension: originalExt,
+        contentType: _contentTypeForExt(originalExt),
+      );
+    }
+    return _PreparedUpload(
+      bytes: compressedBytes,
+      extension: 'jpg',
+      contentType: 'image/jpeg',
+    );
+  }
+
+  static Uint8List? _compressedImageBytes(
+    Uint8List bytes, {
+    required ImageUploadPolicy policy,
+  }) {
+    try {
+      final decoded = image_lib.decodeImage(bytes);
+      if (decoded == null) return null;
+      var normalized = image_lib.bakeOrientation(decoded);
+      final scale = math.min(
+        policy.maxWidth / normalized.width,
+        policy.maxHeight / normalized.height,
+      );
+      if (scale < 1) {
+        normalized = image_lib.copyResize(
+          normalized,
+          width: math.max(1, (normalized.width * scale).round()),
+          height: math.max(1, (normalized.height * scale).round()),
+          interpolation: image_lib.Interpolation.average,
+        );
+      }
+      return Uint8List.fromList(
+        image_lib.encodeJpg(normalized, quality: policy.quality),
+      );
+    } on Object {
+      return null;
+    }
   }
 
   static String _ext(String filename) {
@@ -313,17 +461,21 @@ class ImageUploadRepository {
         storagePath.contains('/hostedMedia/')) {
       return _hostedMediaContract;
     }
+    if (storagePath.startsWith('clubs/') && storagePath.contains('/photos/')) {
+      return _clubPhotosContract;
+    }
+    if (storagePath.startsWith('clubs/') && storagePath.contains('/logo/')) {
+      return _clubLogoImagesContract;
+    }
+    if (storagePath.startsWith('events/') && storagePath.contains('/photos/')) {
+      return _eventPhotosContract;
+    }
     if (storagePath.startsWith('matches/') &&
         storagePath.contains('/images/')) {
       return _matchChatImagesContract;
     }
     return null;
   }
-}
-
-String _fileToken(String value) {
-  final token = value.replaceAll(RegExp(r'[^A-Za-z0-9_-]+'), '_');
-  return token.isEmpty ? 'media' : token;
 }
 
 String _formatBytes(int bytes) {

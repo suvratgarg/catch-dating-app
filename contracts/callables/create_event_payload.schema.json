@@ -31,6 +31,11 @@
     "startingPointLng": {"type": "number", "minimum": -180, "maximum": 180},
     "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
     "photoUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+    "eventPhotos": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {"$ref": "../embedded/uploaded_photo.schema.json"}
+    },
     "distanceKm": {"type": "number", "minimum": 0, "maximum": 100},
     "pace": {"$ref": "../shared/event_common.schema.json#/definitions/paceLevel"},
     "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},

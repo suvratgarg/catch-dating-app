@@ -22,6 +22,17 @@
         "hostAvatarUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
         "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
         "profileImageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+        "clubPhotos": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {"$ref": "../embedded/uploaded_photo.schema.json"}
+        },
+        "logoPhoto": {
+          "anyOf": [
+            {"$ref": "../embedded/uploaded_photo.schema.json"},
+            {"type": "null"}
+          ]
+        },
         "tags": {
           "type": "array",
           "items": {"type": "string", "minLength": 1, "maxLength": 40},

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
@@ -201,20 +202,20 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Icon(CatchIcons.cloudOffOutlined, size: 48),
-                  const SizedBox(height: 24),
+                  gapH24,
                   Text(
                     'Could not verify app version',
                     style: textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
+                  gapH12,
                   Text(
                     'Check your connection and try again.',
                     style: textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
                   if (diagnostic != null) ...[
-                    const SizedBox(height: 12),
+                    gapH12,
                     Text(
                       diagnostic,
                       style: textTheme.bodySmall?.copyWith(
@@ -223,7 +224,7 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                   ],
-                  const SizedBox(height: 24),
+                  gapH24,
                   CatchButton(
                     label: 'Try again',
                     onPressed: onRetry,

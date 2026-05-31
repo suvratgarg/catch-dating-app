@@ -10,9 +10,9 @@ import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const _celebrationInk = Colors.white;
-const _celebrationCream = Colors.white;
-const _celebrationActionInk = Color(0xFF24110A);
+const _celebrationInk = CatchCelebrationColors.ink;
+const _celebrationCream = CatchCelebrationColors.cream;
+const _celebrationActionInk = CatchCelebrationColors.actionInk;
 
 class CelebrationDetail {
   const CelebrationDetail({
@@ -160,7 +160,7 @@ class _CatchCelebrationScreenState
                         ],
                         Text(
                           widget.title,
-                          style: CatchTextStyles.displayXL(
+                          style: CatchTextStyles.display(
                             context,
                             color: _celebrationCream,
                           ),
@@ -236,8 +236,8 @@ class _CelebrationIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 86,
-      height: 86,
+      width: CatchLayout.celebrationIconExtent,
+      height: CatchLayout.celebrationIconExtent,
       decoration: BoxDecoration(
         color: _celebrationCream.withValues(alpha: 0.22),
         shape: BoxShape.circle,

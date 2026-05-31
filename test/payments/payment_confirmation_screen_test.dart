@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
@@ -99,6 +100,38 @@ void main() {
         find.text('Bring someone you actually want there'),
         findsOneWidget,
       );
+    });
+
+    testWidgets('invite and referral surfaces open rich event share cards', (
+      tester,
+    ) async {
+      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final club = buildClub(id: 'club-1');
+
+      await _pumpPaymentConfirmation(
+        tester,
+        data: confirmationData,
+        event: event,
+        club: club,
+      );
+
+      await tester.ensureVisible(find.text('Invite friend'));
+      await tester.tap(find.text('Invite friend'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EventShareCard), findsOneWidget);
+      expect(find.text('CATCH INVITE'), findsOneWidget);
+
+      Navigator.of(tester.element(find.byType(EventShareCard))).pop();
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(
+        find.byKey(PaymentConfirmationKeys.referralShare),
+      );
+      await tester.tap(find.byKey(PaymentConfirmationKeys.referralShare));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EventShareCard), findsOneWidget);
     });
 
     testWidgets('Back to home button pops to root', (tester) async {

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/storage/club_logo_images.schema.json",
+  "title": "ClubLogoImagesStoragePath",
+  "description": "Original club logo images stored at clubs/{clubId}/logo/{fileName}. Host writes require club ownership or host membership.",
+  "type": "object",
+  "x-storage-rules-match": "match /clubs/{clubId}/logo/{fileName}",
+  "x-storage-read": "public (download URLs are used for public club media)",
+  "x-storage-write": "club host or owner",
+  "x-storage-content-type-pattern": "image/.*",
+  "x-storage-file-name-pattern": "[0-9]+\\.(jpg|jpeg|png)",
+  "x-storage-max-bytes": 8388608,
+  "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
+  "x-storage-related-collection": "clubs",
+  "x-storage-known-consumers": [
+    "lib/clubs/presentation/create/create_club_controller.dart",
+    "functions/src/clubs/generateClubLogoThumbnail.ts"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "description": "Club document id; path segment."
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Required pattern: {timestamp}.{ext}, with ext jpg/jpeg/png."
+    }
+  }
+}

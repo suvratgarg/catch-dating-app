@@ -97,6 +97,7 @@ export 'update_club_callable_payload.g.dart';
 export 'update_event_callable_payload.g.dart';
 export 'update_event_review_callable_payload.g.dart';
 export 'update_user_profile_callable_payload.g.dart';
+export 'uploaded_photo.g.dart';
 export 'user_event_schedule_lock_document.g.dart';
 export 'user_profile_document.g.dart';
 export 'verify_razorpay_payment_callable_payload.g.dart';

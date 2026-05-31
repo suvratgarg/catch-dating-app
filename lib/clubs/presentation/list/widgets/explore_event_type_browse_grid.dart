@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -12,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ExploreEventTypeBrowseGrid extends ConsumerWidget {
   const ExploreEventTypeBrowseGrid({super.key});
@@ -55,7 +55,7 @@ class _EventTypeBrowseContent extends StatelessWidget {
         CatchSpacing.s5,
         CatchSpacing.s5,
         CatchSpacing.s5,
-        CatchSpacing.s16 + CatchSpacing.s5,
+        CatchLayout.eventTypeBrowseBottomPadding,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,14 +80,21 @@ class _EventTypeBrowseContent extends StatelessWidget {
           gapH12,
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 360 ? 2 : 1;
+              final columns =
+                  constraints.maxWidth >=
+                      ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint
+                  ? 2
+                  : 1;
               const spacing = CatchSpacing.s3;
               final rawTileWidth =
                   (constraints.maxWidth - spacing * (columns - 1)) / columns;
-              final tileWidth = math.min(rawTileWidth, 340.0);
+              final tileWidth = math.min(
+                rawTileWidth,
+                CatchLayout.eventTypeTileMaxWidth,
+              );
               final tileHeight = columns >= 2
-                  ? CatchSpacing.s9 * 2
-                  : CatchSpacing.s11 * 2;
+                  ? CatchLayout.eventTypeTileTwoColumnHeight
+                  : CatchLayout.eventTypeTileSingleColumnHeight;
               return Wrap(
                 alignment: WrapAlignment.center,
                 spacing: spacing,
@@ -133,7 +140,7 @@ class _EventTypeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(activityKind);
+    final visual = eventActivityVisual(activityKind, context: context);
     return Semantics(
       button: true,
       selected: active,
@@ -143,7 +150,7 @@ class _EventTypeTile extends StatelessWidget {
         radius: CatchRadius.md,
         borderColor: active ? visual.accent : t.line2,
         backgroundColor: active
-            ? visual.soft.withValues(alpha: 0.62)
+            ? visual.soft.withValues(alpha: CatchOpacity.eventTypeTileFill)
             : t.surface,
         elevation: CatchSurfaceElevation.card,
         clipBehavior: Clip.antiAlias,
@@ -152,8 +159,8 @@ class _EventTypeTile extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             Positioned(
-              top: -30,
-              right: -28,
+              top: CatchLayout.eventTypeColorCueTopOffset,
+              right: -CatchSpacing.s7,
               child: _EventTypeColorCue(visual: visual, active: active),
             ),
             Positioned(
@@ -162,8 +169,12 @@ class _EventTypeTile extends StatelessWidget {
               bottom: 0,
               child: Icon(
                 active ? CatchIcons.checkRounded : CatchIcons.forwardArrow,
-                size: active ? 16 : 14,
-                color: visual.deep.withValues(alpha: active ? 0.88 : 0.66),
+                size: active ? CatchIcon.xs : CatchIcon.sm,
+                color: visual.deep.withValues(
+                  alpha: active
+                      ? CatchOpacity.floatingControlFill
+                      : CatchOpacity.darkPillFill,
+                ),
               ),
             ),
             Padding(
@@ -181,12 +192,10 @@ class _EventTypeTile extends StatelessWidget {
                     visual.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.getFont(
-                      'Instrument Serif',
-                      fontSize: 26,
-                      fontStyle: FontStyle.italic,
+                    style: CatchTextStyles.eventDisplay(
+                      context,
+                      size: CatchLayout.eventTypeDisplaySize,
                       height: 0.98,
-                      letterSpacing: 0,
                       color: t.ink,
                     ),
                   ),
@@ -195,12 +204,7 @@ class _EventTypeTile extends StatelessWidget {
                     _countLabel(count).toUpperCase(),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.ibmPlexMono(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0,
-                      color: t.ink3,
-                    ),
+                    style: CatchTextStyles.monoLabel(context, color: t.ink3),
                   ),
                 ],
               ),
@@ -221,25 +225,37 @@ class _EventTypeColorCue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: active ? 102 : 92,
+      dimension: active
+          ? CatchLayout.eventTypeColorCueActiveExtent
+          : CatchLayout.eventTypeColorCueInactiveExtent,
       child: DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              visual.accent.withValues(alpha: active ? 1.0 : 0.92),
-              visual.deep.withValues(alpha: active ? 0.7 : 0.58),
+              visual.accent.withValues(
+                alpha: active
+                    ? CatchOpacity.eventTypeCueAccentActive
+                    : CatchOpacity.eventTypeCueAccentInactive,
+              ),
+              visual.deep.withValues(
+                alpha: active
+                    ? CatchOpacity.eventTypeCueDeepActive
+                    : CatchOpacity.eventTypeCueDeepInactive,
+              ),
               Colors.transparent,
             ],
             stops: const [0, 0.52, 1],
           ),
-          boxShadow: [
-            BoxShadow(
-              color: visual.accent.withValues(alpha: active ? 0.34 : 0.26),
-              blurRadius: 18,
-              spreadRadius: 1,
+          boxShadow: CatchElevation.glow(
+            visual.accent.withValues(
+              alpha: active
+                  ? CatchOpacity.eventTypeCueGlowActive
+                  : CatchOpacity.eventTypeCueGlowInactive,
             ),
-          ],
+            blurRadius: CatchSpacing.micro18,
+            spreadRadius: CatchStroke.hairline,
+          ),
         ),
       ),
     );
@@ -261,9 +277,9 @@ class _EventTypeBrowseSkeleton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.text(width: 172),
+          CatchSkeleton.text(width: CatchLayout.eventTypeSkeletonTextWidth),
           gapH12,
-          CatchSkeleton.card(height: 120),
+          CatchSkeleton.card(height: CatchLayout.eventTypeSkeletonCardHeight),
         ],
       ),
     );

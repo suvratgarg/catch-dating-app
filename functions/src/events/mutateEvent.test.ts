@@ -347,6 +347,7 @@ test("createEventHandler creates a server-owned event for the club host",
       startingPointLng: 72.82,
       locationDetails: null,
       photoUrl: null,
+      eventPhotos: [],
       eventFormat: {
         version: 1,
         activityKind: "socialRun",

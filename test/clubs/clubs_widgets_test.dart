@@ -27,7 +27,7 @@ import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_sliver_he
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_cover_fallback.dart';
+import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -1312,7 +1312,7 @@ void main() {
         );
         expect(
           expandedTitle.style?.fontFamily,
-          contains(CatchFonts.clubDisplayFamily.split(' ').first),
+          contains(CatchFonts.serifFamily.split(' ').first),
         );
 
         await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
@@ -1337,7 +1337,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubCoverFallback), findsNothing);
+      expect(find.byType(ClubPolaroidArtwork), findsNothing);
       expect(find.text('MM'), findsNothing);
       expect(find.text('Morning Miles'), findsOneWidget);
       expect(find.text('Bandra, Mumbai'), findsOneWidget);
@@ -1383,7 +1383,7 @@ void main() {
         final collapsedTitleText = tester.widget<Text>(collapsedTitle);
         expect(
           collapsedTitleText.style?.fontFamily,
-          contains(CatchFonts.clubDisplayFamily.split(' ').first),
+          contains(CatchFonts.serifFamily.split(' ').first),
         );
       },
     );
@@ -1464,7 +1464,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(ClubCoverFallback), findsOneWidget);
+      expect(find.byType(ClubPolaroidArtwork), findsWidgets);
       expect(find.text('NC'), findsNothing);
       expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
       // Directory cards use the area as the caption when no next event is set;
@@ -2970,18 +2970,20 @@ void main() {
       await _pumpClubUi(tester);
     });
 
-    testWidgets('CreateClubScreen picks and previews a cover image', (
+    testWidgets('CreateClubScreen picks and previews club photos', (
       tester,
     ) async {
       SharedPreferences.setMockInitialValues({});
       const transparentPixel =
           'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
       final fakeImageUploadRepository = FakeImageUploadRepository(
-        pickedImage: XFile.fromData(
-          base64Decode(transparentPixel),
-          name: 'club-cover-test.png',
-          mimeType: 'image/png',
-        ),
+        pickedImages: [
+          XFile.fromData(
+            base64Decode(transparentPixel),
+            name: 'club-photo-test.png',
+            mimeType: 'image/png',
+          ),
+        ],
       );
 
       await tester.pumpWidget(
@@ -2999,10 +3001,14 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      await tester.tap(find.text('Add cover photo'));
+      // Cover picker sits below the fold in the create form — scroll it into
+      // view before tapping (standard for a long scrollable form).
+      await tester.ensureVisible(find.text('Add club photos'));
+      await _pumpClubUi(tester);
+      await tester.tap(find.text('Add club photos'));
       await _pumpClubUi(tester);
 
-      expect(find.byIcon(CatchIcons.editOutlined), findsOneWidget);
+      expect(find.bySemanticsLabel('Photo 1'), findsOneWidget);
     });
 
     testWidgets('CreateClubScreen shows mutation errors inline', (

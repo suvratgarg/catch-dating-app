@@ -64,7 +64,7 @@ class SavedEventsScreen extends ConsumerWidget {
                   sliver: SliverToBoxAdapter(
                     child: Text(
                       'Events you saved',
-                      style: CatchTextStyles.displayM(context),
+                      style: CatchTextStyles.headlineS(context),
                     ),
                   ),
                 ),
@@ -122,7 +122,7 @@ class _SavedEventsMessage extends StatelessWidget {
         message: message,
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
-        iconSize: 44,
+        iconSize: CatchLayout.eventInfoTileExtent,
         padding: const EdgeInsets.all(CatchSpacing.s6),
         titleStyle: CatchTextStyles.titleL(context),
       ),

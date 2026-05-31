@@ -170,12 +170,12 @@ class EventSuccessLiveHostMode extends StatelessWidget {
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
                   resolvedPlan.activeStep.title,
-                  style: CatchTextStyles.displayS(context),
+                  style: CatchTextStyles.titleL(context),
                 ),
                 const SizedBox(height: CatchSpacing.s2),
                 Text(
                   resolvedPlan.activeStep.hostInstruction,
-                  style: CatchTextStyles.bodyLead(context),
+                  style: CatchTextStyles.proseM(context),
                 ),
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
@@ -226,7 +226,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s4),
           CatchSurface(
             tone: CatchSurfaceTone.primarySoft,
-            borderColor: Colors.transparent,
+            borderColor: t.surface.withValues(alpha: CatchOpacity.none),
             padding: const EdgeInsets.all(CatchSpacing.s4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,12 +241,12 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
                 const SizedBox(height: CatchSpacing.s3),
                 Text(
                   resolvedState.eventTitle,
-                  style: CatchTextStyles.displayS(context),
+                  style: CatchTextStyles.titleL(context),
                 ),
                 const SizedBox(height: CatchSpacing.s2),
                 Text(
                   resolvedState.podLabel,
-                  style: CatchTextStyles.bodyLead(context),
+                  style: CatchTextStyles.proseM(context),
                 ),
               ],
             ),
@@ -399,7 +399,10 @@ class _PlaybookSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(draft.playbook.title, style: CatchTextStyles.titleM(context)),
+          Text(
+            draft.playbook.title,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           const SizedBox(height: CatchSpacing.s2),
           Text(
             draft.playbook.summary,
@@ -453,7 +456,9 @@ class _ModuleToggleRow extends StatelessWidget {
       child: CatchSurface(
         tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
         radius: CatchRadius.sm,
-        borderColor: selected ? Colors.transparent : t.line,
+        borderColor: selected
+            ? t.surface.withValues(alpha: CatchOpacity.none)
+            : t.line,
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s3,
           CatchSpacing.s2,
@@ -504,7 +509,9 @@ class _IssueList extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
-      borderColor: t.warning.withValues(alpha: 0.28),
+      borderColor: t.warning.withValues(
+        alpha: CatchOpacity.eventSuccessWarningBorder,
+      ),
       padding: const EdgeInsets.all(CatchSpacing.s3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -756,10 +763,10 @@ class _ConversationCueRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 3),
+            padding: const EdgeInsets.only(top: CatchSpacing.micro3),
             child: Icon(
               CatchIcons.arrowForwardRounded,
-              size: 16,
+              size: CatchIcon.xs,
               color: t.ink3,
             ),
           ),
@@ -929,11 +936,15 @@ class EventSuccessDarkPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = foregroundColor ?? Colors.white;
+    final color = foregroundColor ?? CatchTokens.editorialLight;
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: Colors.white.withValues(alpha: 0.12),
-      borderColor: Colors.white.withValues(alpha: 0.18),
+      backgroundColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.revealSurfaceFill,
+      ),
+      borderColor: CatchTokens.editorialLight.withValues(
+        alpha: CatchOpacity.eventSuccessSubtleBorder,
+      ),
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s3,
         vertical: CatchSpacing.s2,

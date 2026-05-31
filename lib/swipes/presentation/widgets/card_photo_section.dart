@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
@@ -30,10 +32,12 @@ class CardPhotoSection extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           if (url != null)
-            Image.network(
-              url!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => const _PhotoFallback(),
+            GradedImage(
+              child: Image.network(
+                url!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const _PhotoFallback(),
+              ),
             )
           else
             const _PhotoFallback(),
@@ -46,24 +50,30 @@ class CardPhotoSection extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   stops: const [0.0, 0.50, 1.0],
                   colors: [
-                    Colors.black.withValues(alpha: 0.04),
+                    CatchTokens.editorialDark.withValues(
+                      alpha: CatchOpacity.photoScrimLow,
+                    ),
                     Colors.transparent,
-                    Colors.black.withValues(alpha: 0.74),
+                    CatchTokens.editorialDark.withValues(
+                      alpha: CatchOpacity.eventRecapTileScrim,
+                    ),
                   ],
                 ),
               ),
             ),
             Positioned(
-              left: 20,
-              right: reactionTarget == null || onReact == null ? 20 : 92,
-              bottom: 28,
+              left: CatchSpacing.s5,
+              right: reactionTarget == null || onReact == null
+                  ? CatchSpacing.s5
+                  : CatchLayout.profileCardOverlayTrailingInset,
+              bottom: CatchSpacing.s7,
               child: overlayChild!,
             ),
           ],
           if (reactionTarget != null && onReact != null)
             Positioned(
-              right: 18,
-              bottom: 24,
+              right: CatchSpacing.micro18,
+              bottom: CatchSpacing.s6,
               child: ProfileReactionControls(
                 target: reactionTarget!,
                 onReact: onReact!,
@@ -92,8 +102,10 @@ class _PhotoFallback extends StatelessWidget {
           children: [
             Icon(
               CatchIcons.personRounded,
-              color: palette.textMuted.withValues(alpha: 0.72),
-              size: 52,
+              color: palette.textMuted.withValues(
+                alpha: CatchOpacity.eventHeroMutedInk,
+              ),
+              size: CatchIcon.avatarLg,
             ),
             gapH8,
             Text(

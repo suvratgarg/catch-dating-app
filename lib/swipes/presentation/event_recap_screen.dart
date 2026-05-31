@@ -84,60 +84,74 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
               CatchSpacing.s6,
             ),
             children: [
-              _RecapHero(
-                event: event,
-                checkedInCount: viewModel.checkedInCount,
-              ),
-              gapH24,
-              Text(
-                'Who brought the vibe?',
-                style: CatchTextStyles.titleL(context),
-              ),
-              gapH4,
-              Text(
-                "Tap people you remember. They'll be easier to spot when you open the catches deck.",
-                style: CatchTextStyles.bodyLead(context, color: t.ink2),
-              ),
-              gapH14,
-              if (attendeeIds.isEmpty)
-                const _EmptyRoster()
-              else
-                GridView.builder(
-                  itemCount: attendeeIds.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: responsiveGridCount(
-                      MediaQuery.of(context).size.width,
-                    ),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.74,
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
                   ),
-                  itemBuilder: (context, index) {
-                    final attendeeId = attendeeIds[index];
-                    return _VibeTile(
-                      key: SwipeKeys.vibeTile(attendeeId),
-                      uid: attendeeId,
-                      selected: _selectedVibes.contains(attendeeId),
-                      onTap: () => setState(() {
-                        _selectedVibes.contains(attendeeId)
-                            ? _selectedVibes.remove(attendeeId)
-                            : _selectedVibes.add(attendeeId);
-                      }),
-                    );
-                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _RecapHero(
+                        event: event,
+                        checkedInCount: viewModel.checkedInCount,
+                      ),
+                      gapH24,
+                      Text(
+                        'Who brought the vibe?',
+                        style: CatchTextStyles.titleL(context),
+                      ),
+                      gapH4,
+                      Text(
+                        "Tap people you remember. They'll be easier to spot when you open the catches deck.",
+                        style: CatchTextStyles.proseM(context, color: t.ink2),
+                      ),
+                      gapH14,
+                      if (attendeeIds.isEmpty)
+                        const _EmptyRoster()
+                      else
+                        GridView.builder(
+                          itemCount: attendeeIds.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: responsiveGridCount(
+                                  MediaQuery.of(context).size.width,
+                                ),
+                                crossAxisSpacing: CatchLayout.eventRecapGridGap,
+                                mainAxisSpacing: CatchLayout.eventRecapGridGap,
+                                childAspectRatio:
+                                    CatchAspectRatio.eventRecapVibeTile,
+                              ),
+                          itemBuilder: (context, index) {
+                            final attendeeId = attendeeIds[index];
+                            return _VibeTile(
+                              key: SwipeKeys.vibeTile(attendeeId),
+                              uid: attendeeId,
+                              selected: _selectedVibes.contains(attendeeId),
+                              onTap: () => setState(() {
+                                _selectedVibes.contains(attendeeId)
+                                    ? _selectedVibes.remove(attendeeId)
+                                    : _selectedVibes.add(attendeeId);
+                              }),
+                            );
+                          },
+                        ),
+                      gapH24,
+                      CatchButton(
+                        key: SwipeKeys.openCatchesDeckButton,
+                        label: 'Open catches deck',
+                        onPressed: () => context.goNamed(
+                          Routes.swipeEventScreen.name,
+                          pathParameters: {'eventId': event.id},
+                          extra: _selectedVibes,
+                        ),
+                        fullWidth: true,
+                      ),
+                    ],
+                  ),
                 ),
-              gapH24,
-              CatchButton(
-                key: SwipeKeys.openCatchesDeckButton,
-                label: 'Open catches deck',
-                onPressed: () => context.goNamed(
-                  Routes.swipeEventScreen.name,
-                  pathParameters: {'eventId': event.id},
-                  extra: _selectedVibes,
-                ),
-                fullWidth: true,
               ),
             ],
           );
@@ -173,20 +187,24 @@ class _RecapHero extends StatelessWidget {
             '${event.title.toUpperCase()} · COMPLETE',
             style: CatchTextStyles.labelM(
               context,
-              color: t.surface.withValues(alpha: 0.68),
+              color: t.surface.withValues(
+                alpha: CatchOpacity.eventRecapHeroKicker,
+              ),
             ).copyWith(fontWeight: FontWeight.w800),
           ),
           gapH10,
           Text(
             event.distanceLabel,
-            style: CatchTextStyles.displayL(context, color: t.surface),
+            style: CatchTextStyles.headline(context, color: t.surface),
           ),
           gapH4,
           Text(
             '${event.activitySummaryLabel} · $checkedInCount checked in',
             style: CatchTextStyles.supporting(
               context,
-              color: t.surface.withValues(alpha: 0.76),
+              color: t.surface.withValues(
+                alpha: CatchOpacity.eventRecapHeroMeta,
+              ),
             ),
           ),
           gapH18,
@@ -214,7 +232,7 @@ class _RecapStat extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(right: CatchLayout.eventRecapStatInset),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -222,7 +240,9 @@ class _RecapStat extends StatelessWidget {
               label.toUpperCase(),
               style: CatchTextStyles.supporting(
                 context,
-                color: t.surface.withValues(alpha: 0.56),
+                color: t.surface.withValues(
+                  alpha: CatchOpacity.eventRecapHeroStatLabel,
+                ),
               ),
             ),
             gapH3,
@@ -264,62 +284,64 @@ class _VibeTile extends ConsumerWidget {
         button: true,
         selected: selected,
         label: profile?.name ?? 'Runner',
-        child: GestureDetector(
+        child: CatchSurface(
           onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            decoration: BoxDecoration(
-              color: t.surface,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              border: Border.all(
-                color: selected ? t.primary : t.line,
-                width: selected ? 3 : 1,
-              ),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _ProfilePhoto(profile: profile),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.74),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Text(
-                    profile?.name ?? 'Runner',
-                    style: CatchTextStyles.labelM(context, color: Colors.white),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (selected)
-                  Positioned(
-                    right: 8,
-                    top: 8,
-                    child: CircleAvatar(
-                      radius: 14,
-                      backgroundColor: t.primary,
-                      child: Icon(
-                        CatchIcons.checkRounded,
-                        size: 16,
-                        color: t.primaryInk,
+          backgroundColor: t.surface,
+          radius: CatchRadius.md,
+          borderColor: selected ? t.primary : t.line,
+          borderWidth: selected ? CatchStroke.selection : CatchStroke.hairline,
+          duration: CatchMotion.micro,
+          clipBehavior: Clip.antiAlias,
+          padding: EdgeInsets.zero,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _ProfilePhoto(profile: profile),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      CatchTokens.editorialDark.withValues(
+                        alpha: CatchOpacity.none,
                       ),
+                      CatchTokens.editorialDark.withValues(
+                        alpha: CatchOpacity.eventRecapTileScrim,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                left: CatchSpacing.s2,
+                right: CatchSpacing.s2,
+                bottom: CatchSpacing.s2,
+                child: Text(
+                  profile?.name ?? 'Runner',
+                  style: CatchTextStyles.labelM(
+                    context,
+                    color: CatchTokens.editorialLight,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (selected)
+                Positioned(
+                  right: CatchSpacing.s2,
+                  top: CatchSpacing.s2,
+                  child: CircleAvatar(
+                    radius: CatchLayout.selectionBadgeRadius,
+                    backgroundColor: t.primary,
+                    child: Icon(
+                      CatchIcons.checkRounded,
+                      size: CatchIcon.xs,
+                      color: t.primaryInk,
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
@@ -339,7 +361,7 @@ class _ProfilePhoto extends StatelessWidget {
       return Container(
         color: CatchTokens.of(context).primarySoft,
         alignment: Alignment.center,
-        child: Icon(CatchIcons.personRounded, size: 38),
+        child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
       );
     }
     return Image.network(photoUrl, fit: BoxFit.cover);

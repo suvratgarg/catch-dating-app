@@ -11,6 +11,7 @@ import 'package:catch_dating_app/clubs/presentation/create/widgets/club_details_
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_event_success_defaults_step.dart';
 import 'package:catch_dating_app/clubs/presentation/create/widgets/club_host_defaults_step.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -19,8 +20,11 @@ import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/form_step_flow.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const _maxClubPhotos = 6;
 
 class CreateClubScreen extends ConsumerStatefulWidget {
   const CreateClubScreen({super.key, this.initialClub});
@@ -47,7 +51,9 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   int _currentStep = 0;
   String? _selectedCity;
-  PickedClubCover? _coverImage;
+  final _clubPhotos = <_ClubPhotoDraft>[];
+  var _clubPhotosTouched = false;
+  var _nextPickedClubPhotoId = 0;
   PickedClubProfileImage? _profileImage;
   bool _checkedDraft = false;
   bool _restoredDraft = false;
@@ -89,6 +95,10 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       _phoneController.text = club.phoneNumber ?? '';
       _emailController.text = club.email ?? '';
       _hostDefaults = club.hostDefaults;
+      _clubPhotos.addAll(
+        ([...club.clubPhotos]..sort((a, b) => a.position.compareTo(b.position)))
+            .map(_ExistingClubPhotoDraft.new),
+      );
       return;
     }
 
@@ -151,15 +161,47 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     _hostDefaults = draft.hostDefaults;
   }
 
-  Future<void> _pickCoverImage() async {
-    final image = await ref
+  Future<void> _pickClubPhotos() async {
+    final remainingSlots = _maxClubPhotos - _clubPhotos.length;
+    if (remainingSlots <= 0) return;
+    final photos = await ref
         .read(createClubControllerProvider.notifier)
-        .pickCoverImage();
-    if (!mounted || image == null) {
+        .pickClubPhotos(limit: remainingSlots);
+    if (!mounted || photos.isEmpty) {
       return;
     }
     setState(() {
-      _coverImage = image;
+      _clubPhotos.addAll(
+        photos
+            .take(remainingSlots)
+            .map(
+              (photo) => _PickedClubPhotoDraft(_nextPickedClubPhotoId++, photo),
+            ),
+      );
+      _clubPhotosTouched = true;
+    });
+  }
+
+  void _removeClubPhoto(int index) {
+    if (index < 0 || index >= _clubPhotos.length) return;
+    setState(() {
+      _clubPhotos.removeAt(index);
+      _clubPhotosTouched = true;
+    });
+  }
+
+  void _reorderClubPhoto(int fromIndex, int toIndex) {
+    if (fromIndex == toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= _clubPhotos.length ||
+        toIndex >= _clubPhotos.length) {
+      return;
+    }
+    setState(() {
+      final moved = _clubPhotos.removeAt(fromIndex);
+      _clubPhotos.insert(toIndex, moved);
+      _clubPhotosTouched = true;
     });
   }
 
@@ -202,8 +244,8 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
     setState(() => _currentStep = step);
     _pageController.animateToPage(
       step,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeInOut,
+      duration: CatchMotion.pageStep,
+      curve: CatchMotion.easeInOutCurve,
     );
   }
 
@@ -238,7 +280,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
             color: CatchTokens.of(context).bg,
           ),
         ),
-        duration: const Duration(seconds: 2),
+        duration: CatchMotion.snackbar,
       ),
     );
     _restoredDraft = true;
@@ -256,7 +298,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                   area: _areaController.text.trim(),
                   description: _descriptionController.text.trim(),
                   existingClub: widget.initialClub,
-                  coverImage: _coverImage?.image,
+                  clubPhotoInputs: _clubPhotoInputsForSubmit,
                   profileImage: _profileImage?.image,
                   instagramHandle: _trimmedTextOrNull(_instagramController),
                   phoneNumber: _trimmedTextOrNull(_phoneController),
@@ -277,6 +319,15 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
   static String? _trimmedTextOrNull(TextEditingController controller) {
     final text = controller.text.trim();
     return text.isEmpty ? null : text;
+  }
+
+  List<OrderedPhotoPreview> get _clubPhotoPreviews => [
+    for (final photo in _clubPhotos) photo.preview,
+  ];
+
+  List<ClubPhotoInput>? get _clubPhotoInputsForSubmit {
+    if (!_clubPhotosTouched) return null;
+    return [for (final photo in _clubPhotos) photo.input];
   }
 
   String get _title => formTitleForStep(_activeSteps, _currentStep);
@@ -330,14 +381,22 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                     }),
                     areaController: _areaController,
                     detailsEnabled: !mediaOnly,
-                    coverImageBytes: _coverImage?.bytes,
-                    existingImageUrl: widget.initialClub?.imageUrl,
+                    clubPhotoPreviews: _clubPhotoPreviews,
+                    existingImageUrl: _clubPhotos.isEmpty
+                        ? widget.initialClub?.imageUrl
+                        : null,
                     profileImageBytes: _profileImage?.bytes,
                     existingProfileImageUrl:
                         widget.initialClub?.profileImageUrl,
-                    onPickCover: submitMutation.isPending
+                    onPickClubPhotos: submitMutation.isPending
                         ? null
-                        : _pickCoverImage,
+                        : _pickClubPhotos,
+                    onRemoveClubPhoto: submitMutation.isPending
+                        ? null
+                        : _removeClubPhoto,
+                    onReorderClubPhoto: submitMutation.isPending
+                        ? null
+                        : _reorderClubPhoto,
                     onPickProfileImage: submitMutation.isPending
                         ? null
                         : _pickProfileImage,
@@ -385,4 +444,40 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
       ),
     );
   }
+}
+
+sealed class _ClubPhotoDraft {
+  const _ClubPhotoDraft();
+
+  OrderedPhotoPreview get preview;
+  ClubPhotoInput get input;
+}
+
+final class _ExistingClubPhotoDraft extends _ClubPhotoDraft {
+  const _ExistingClubPhotoDraft(this.photo);
+
+  final UploadedPhoto photo;
+
+  @override
+  OrderedPhotoPreview get preview => OrderedPhotoPreview(
+    id: 'existing_${photo.id}',
+    imageUrl: photo.thumbnailOrUrl,
+  );
+
+  @override
+  ClubPhotoInput get input => ExistingClubPhotoInput(photo);
+}
+
+final class _PickedClubPhotoDraft extends _ClubPhotoDraft {
+  const _PickedClubPhotoDraft(this.id, this.photo);
+
+  final int id;
+  final PickedClubPhoto photo;
+
+  @override
+  OrderedPhotoPreview get preview =>
+      OrderedPhotoPreview(id: 'picked_$id', bytes: photo.bytes);
+
+  @override
+  ClubPhotoInput get input => NewClubPhotoInput(photo.image);
 }

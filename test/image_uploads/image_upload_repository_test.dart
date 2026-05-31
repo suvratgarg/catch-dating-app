@@ -80,6 +80,31 @@ class TestUploadTask extends Fake implements UploadTask {
 
 class TestTaskSnapshot extends Fake implements TaskSnapshot {}
 
+class RecordingImagePicker extends Fake implements ImagePicker {
+  double? maxWidth;
+  double? maxHeight;
+  int? imageQuality;
+  int? limit;
+  bool? requestFullMetadata;
+  List<XFile> result = const [];
+
+  @override
+  Future<List<XFile>> pickMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    int? limit,
+    bool requestFullMetadata = true,
+  }) async {
+    this.maxWidth = maxWidth;
+    this.maxHeight = maxHeight;
+    this.imageQuality = imageQuality;
+    this.limit = limit;
+    this.requestFullMetadata = requestFullMetadata;
+    return result;
+  }
+}
+
 typedef UploadInvoker =
     Future<Object?> Function(ImageUploadRepository repository, XFile image);
 
@@ -98,6 +123,29 @@ class UploadCase {
 }
 
 void main() {
+  test('pickImages applies purpose policy and requested limit', () async {
+    final picker = RecordingImagePicker()
+      ..result = [
+        XFile.fromData(Uint8List.fromList(const [1]), name: 'one.jpg'),
+      ];
+    final repository = ImageUploadRepository(
+      TestFirebaseStorage(),
+      picker: picker,
+    );
+
+    final picked = await repository.pickImages(
+      purpose: ImageUploadPurpose.eventPhoto,
+      limit: 4,
+    );
+
+    expect(picked, picker.result);
+    expect(picker.maxWidth, ImageUploadRepository.eventPhotoPolicy.maxWidth);
+    expect(picker.maxHeight, ImageUploadRepository.eventPhotoPolicy.maxHeight);
+    expect(picker.imageQuality, ImageUploadRepository.eventPhotoPolicy.quality);
+    expect(picker.limit, 4);
+    expect(picker.requestFullMetadata, false);
+  });
+
   group('ImageUploadRepository storage contract preflight', () {
     for (final uploadCase in _uploadCases) {
       test('${uploadCase.name} uploads valid images', () async {
@@ -205,8 +253,8 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadClubCover',
-    schemaFileName: 'hosted_media.schema.json',
-    expectedPathPrefix: 'users/user-1/hostedMedia/club_club-1_cover_',
+    schemaFileName: 'club_photos.schema.json',
+    expectedPathPrefix: 'clubs/club-1/photos/0_',
     invoke: (repository, image) => repository.uploadClubCover(
       uid: 'user-1',
       clubId: 'club-1',
@@ -215,8 +263,8 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadClubProfileImage',
-    schemaFileName: 'hosted_media.schema.json',
-    expectedPathPrefix: 'users/user-1/hostedMedia/club_club-1_profile_',
+    schemaFileName: 'club_logo_images.schema.json',
+    expectedPathPrefix: 'clubs/club-1/logo/',
     invoke: (repository, image) => repository.uploadClubProfileImage(
       uid: 'user-1',
       clubId: 'club-1',
@@ -225,8 +273,8 @@ final _uploadCases = <UploadCase>[
   ),
   UploadCase(
     name: 'uploadEventPhoto',
-    schemaFileName: 'hosted_media.schema.json',
-    expectedPathPrefix: 'users/user-1/hostedMedia/event_club-1_event-1_',
+    schemaFileName: 'event_photos.schema.json',
+    expectedPathPrefix: 'events/event-1/photos/0_',
     invoke: (repository, image) => repository.uploadEventPhoto(
       uid: 'user-1',
       clubId: 'club-1',

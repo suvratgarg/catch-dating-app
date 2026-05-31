@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -71,137 +72,132 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         ..addAll(userProfile.preferredRunTimes);
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          gapH32,
-          OnboardingStepHeader(
-            title: widget.profileCompletionOnly
-                ? 'Finish your swipe profile'
-                : widget.runPreferencesOnly
-                ? 'Set your run preferences'
-                : 'Your running style',
-            subtitle: widget.profileCompletionOnly
-                ? 'These are optional, but they help us rank compatible people in Catches.'
-                : widget.runPreferencesOnly
-                ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
-                : 'Help us find compatible running partners.',
-          ),
-          gapH32,
+    return OnboardingStepFrame(
+      children: [
+        gapH32,
+        OnboardingStepHeader(
+          title: widget.profileCompletionOnly
+              ? 'Finish your swipe profile'
+              : widget.runPreferencesOnly
+              ? 'Set your run preferences'
+              : 'Your running style',
+          subtitle: widget.profileCompletionOnly
+              ? 'These are optional, but they help us rank compatible people in Catches.'
+              : widget.runPreferencesOnly
+              ? 'We only ask for these before run events so hosts can plan pace groups and distances.'
+              : 'Help us find compatible running partners.',
+        ),
+        gapH32,
 
-          // ── Pace ──────────────────────────────────────────────────────────
-          Text(
-            'Comfortable pace',
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(color: t.ink2),
-          ),
-          gapH8,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
+        // ── Pace ──────────────────────────────────────────────────────────
+        Text(
+          'COMFORTABLE PACE',
+          style: CatchTextStyles.monoLabel(context, color: t.ink2),
+        ),
+        gapH8,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
                 '${formatPace(_paceRange.start)}/km',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: t.ink),
+                style: CatchTextStyles.numericLarge(context, color: t.ink),
               ),
-              Text(
+            ),
+            Flexible(
+              child: Text(
                 '${formatPace(_paceRange.end)}/km',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: t.ink),
+                style: CatchTextStyles.numericLarge(context, color: t.ink),
+                textAlign: TextAlign.end,
               ),
-            ],
-          ),
-          CatchRangeSlider(
-            values: _paceRange,
-            min: 240, // 4:00/km
-            max: 540, // 9:00/km
-            divisions: 20,
-            onChanged: (next) {
-              OnboardingController.completeMutation.reset(ref);
-              setState(() => _paceRange = next);
-            },
-          ),
-          gapH28,
-
-          // ── Distances ─────────────────────────────────────────────────────
-          ChipField<PreferredDistance>(
-            label: 'Preferred distances',
-            isOptional: true,
-            values: PreferredDistance.values,
-            selected: _distances,
-            multiSelect: true,
-            onChanged: (next) {
-              OnboardingController.completeMutation.reset(ref);
-              setState(() {
-                _distances
-                  ..clear()
-                  ..addAll(next);
-              });
-            },
-          ),
-          gapH28,
-
-          // ── Event reasons ───────────────────────────────────────────────────
-          ChipField<RunReason>(
-            label: widget.runPreferencesOnly
-                ? 'Why do you run?'
-                : 'Why do you event?',
-            isOptional: true,
-            values: RunReason.values,
-            selected: _reasons,
-            multiSelect: true,
-            onChanged: (next) {
-              OnboardingController.completeMutation.reset(ref);
-              setState(() {
-                _reasons
-                  ..clear()
-                  ..addAll(next);
-              });
-            },
-          ),
-          gapH28,
-
-          // ── Time of day ───────────────────────────────────────────────────
-          ChipField<PreferredRunTime>(
-            label: widget.runPreferencesOnly
-                ? 'Favorite run times'
-                : 'Favorite event times',
-            isOptional: true,
-            values: PreferredRunTime.values,
-            selected: _runTimes,
-            multiSelect: true,
-            onChanged: (next) {
-              OnboardingController.completeMutation.reset(ref);
-              setState(() {
-                _runTimes
-                  ..clear()
-                  ..addAll(next);
-              });
-            },
-          ),
-
-          if (mutation.hasError) ...[
-            gapH16,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            ),
           ],
-          gapH40,
-          CatchButton(
-            label: widget.runPreferencesOnly
-                ? 'Continue booking'
-                : 'Save run preferences',
-            onPressed: _submit,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
+        ),
+        CatchRangeSlider(
+          values: _paceRange,
+          min: 240, // 4:00/km
+          max: 540, // 9:00/km
+          divisions: 20,
+          onChanged: (next) {
+            OnboardingController.completeMutation.reset(ref);
+            setState(() => _paceRange = next);
+          },
+        ),
+        gapH28,
+
+        // ── Distances ─────────────────────────────────────────────────────
+        ChipField<PreferredDistance>(
+          label: 'Preferred distances',
+          isOptional: true,
+          values: PreferredDistance.values,
+          selected: _distances,
+          multiSelect: true,
+          onChanged: (next) {
+            OnboardingController.completeMutation.reset(ref);
+            setState(() {
+              _distances
+                ..clear()
+                ..addAll(next);
+            });
+          },
+        ),
+        gapH28,
+
+        // ── Event reasons ───────────────────────────────────────────────────
+        ChipField<RunReason>(
+          label: widget.runPreferencesOnly
+              ? 'Why do you run?'
+              : 'Why do you event?',
+          isOptional: true,
+          values: RunReason.values,
+          selected: _reasons,
+          multiSelect: true,
+          onChanged: (next) {
+            OnboardingController.completeMutation.reset(ref);
+            setState(() {
+              _reasons
+                ..clear()
+                ..addAll(next);
+            });
+          },
+        ),
+        gapH28,
+
+        // ── Time of day ───────────────────────────────────────────────────
+        ChipField<PreferredRunTime>(
+          label: widget.runPreferencesOnly
+              ? 'Favorite run times'
+              : 'Favorite event times',
+          isOptional: true,
+          values: PreferredRunTime.values,
+          selected: _runTimes,
+          multiSelect: true,
+          onChanged: (next) {
+            OnboardingController.completeMutation.reset(ref);
+            setState(() {
+              _runTimes
+                ..clear()
+                ..addAll(next);
+            });
+          },
+        ),
+
+        if (mutation.hasError) ...[
+          gapH16,
+          ErrorBanner(message: mutationErrorMessage(mutation)),
         ],
-      ),
+        gapH40,
+        CatchButton(
+          label: widget.runPreferencesOnly
+              ? 'Continue booking'
+              : 'Save run preferences',
+          onPressed: _submit,
+          isLoading: mutation.isPending,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
+        gapH32,
+      ],
     );
   }
 }

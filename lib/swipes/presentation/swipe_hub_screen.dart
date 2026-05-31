@@ -86,36 +86,48 @@ class _CatchesHubContent extends StatelessWidget {
           CatchSpacing.s6,
         ),
         children: [
-          const _CatchesHeader(),
-          gapH16,
-          _CatchesIntroCard(
-            event: featuredRun,
-            remaining: remaining,
-            onTap: () => context.pushNamed(
-              Routes.swipeEventScreen.name,
-              pathParameters: {'eventId': featuredRun.id},
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _CatchesHeader(),
+                  gapH16,
+                  _CatchesIntroCard(
+                    event: featuredRun,
+                    remaining: remaining,
+                    onTap: () => context.pushNamed(
+                      Routes.swipeEventScreen.name,
+                      pathParameters: {'eventId': featuredRun.id},
+                    ),
+                  ),
+                  gapH24,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Open catch windows',
+                          style: CatchTextStyles.titleL(context),
+                        ),
+                      ),
+                      Text(
+                        '${activeEvents.length}',
+                        style: CatchTextStyles.mono(context, color: t.primary),
+                      ),
+                    ],
+                  ),
+                  gapH12,
+                  for (final event in activeEvents) ...[
+                    AttendedEventTile(event: event),
+                    if (event != activeEvents.last) gapH12,
+                  ],
+                ],
+              ),
             ),
           ),
-          gapH24,
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Open catch windows',
-                  style: CatchTextStyles.titleL(context),
-                ),
-              ),
-              Text(
-                '${activeEvents.length}',
-                style: CatchTextStyles.mono(context, color: t.primary),
-              ),
-            ],
-          ),
-          gapH12,
-          for (final event in activeEvents) ...[
-            AttendedEventTile(event: event),
-            if (event != activeEvents.last) gapH12,
-          ],
         ],
       ),
     );
@@ -137,7 +149,7 @@ class _CatchesHeader extends StatelessWidget {
             children: [
               SectionHeader(title: 'Catches', heavy: true),
               gapH2,
-              Text('After the event', style: CatchTextStyles.displayL(context)),
+              Text('After the event', style: CatchTextStyles.headline(context)),
             ],
           ),
         ),
@@ -145,7 +157,7 @@ class _CatchesHeader extends StatelessWidget {
           icon: CatchIcons.favoriteRounded,
           iconColor: t.primary,
           backgroundColor: t.primarySoft,
-          borderColor: Colors.transparent,
+          borderColor: t.primarySoft,
           size: 42,
           radius: CatchRadius.pill,
         ),
@@ -178,12 +190,12 @@ class _CatchesIntroCard extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            right: -34,
-            top: -42,
+            right: CatchLayout.catchesHubBackgroundIconRightOffset,
+            top: CatchLayout.catchesHubBackgroundIconTopOffset,
             child: Icon(
               CatchIcons.favoriteRounded,
-              size: 156,
-              color: Colors.white.withValues(alpha: 0.13),
+              size: CatchLayout.catchesHubBackgroundIconSize,
+              color: t.ink.withValues(alpha: CatchOpacity.clubRatingFill),
             ),
           ),
           Column(
@@ -191,22 +203,21 @@ class _CatchesIntroCard extends StatelessWidget {
             children: [
               Text(
                 '24H WINDOW OPEN',
-                style: CatchTextStyles.kicker(context, color: Colors.white),
+                style: CatchTextStyles.kicker(context, color: t.ink),
               ),
               gapH10,
               Text(
                 "You ran together.\nNow it's okay to swipe.",
-                style: CatchTextStyles.heroHeadline(
-                  context,
-                  color: Colors.white,
-                ),
+                style: CatchTextStyles.headline(context, color: t.ink),
               ),
               gapH10,
               Text(
                 'Only checked-in runners from ${event.title} are here.',
-                style: CatchTextStyles.supporting(
+                style: CatchTextStyles.proseM(
                   context,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: t.ink.withValues(
+                    alpha: CatchOpacity.photoSlotDeleteChrome,
+                  ),
                 ),
               ),
               gapH18,
@@ -251,12 +262,18 @@ class _PillStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Expanded(
       child: CatchSurface(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.micro10,
+        ),
         radius: CatchRadius.md,
-        backgroundColor: Colors.white.withValues(alpha: 0.17),
-        borderColor: Colors.white.withValues(alpha: 0.18),
+        backgroundColor: t.ink.withValues(alpha: CatchOpacity.photoScrimMedium),
+        borderColor: t.ink.withValues(
+          alpha: CatchOpacity.eventSuccessSubtleBorder,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -264,14 +281,13 @@ class _PillStat extends StatelessWidget {
               label,
               style: CatchTextStyles.supporting(
                 context,
-                color: Colors.white.withValues(alpha: 0.78),
+                color: t.ink.withValues(
+                  alpha: CatchOpacity.rosterFilterSelectedLabel,
+                ),
               ),
             ),
             gapH2,
-            Text(
-              value,
-              style: CatchTextStyles.mono(context, color: Colors.white),
-            ),
+            Text(value, style: CatchTextStyles.mono(context, color: t.ink)),
           ],
         ),
       ),
@@ -295,36 +311,55 @@ class _CatchesEmptyState extends StatelessWidget {
           CatchSpacing.s6,
         ),
         children: [
-          const _CatchesHeader(),
-          SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
-          CatchEmptyState(
-            icon: CatchIcons.directionsRunRounded,
-            title: 'No active catches',
-            message:
-                'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
-            action: CatchButton(
-              label: 'Find an event',
-              onPressed: () => context.go(Routes.clubsListScreen.path),
-              variant: CatchButtonVariant.secondary,
-            ),
-          ),
-          gapH18,
-          CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.s4),
-            tone: CatchSurfaceTone.raised,
-            borderColor: t.line,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(CatchIcons.lockClockRounded, color: t.accent, size: 20),
-                gapW10,
-                Expanded(
-                  child: Text(
-                    'Dating stays locked until you actually event together. No cold swiping strangers.',
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const _CatchesHeader(),
+                  gapH40,
+                  CatchEmptyState(
+                    icon: CatchIcons.directionsRunRounded,
+                    title: 'No active catches',
+                    message:
+                        'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
+                    action: CatchButton(
+                      label: 'Find an event',
+                      onPressed: () => context.go(Routes.clubsListScreen.path),
+                      variant: CatchButtonVariant.secondary,
+                    ),
                   ),
-                ),
-              ],
+                  gapH18,
+                  CatchSurface(
+                    padding: const EdgeInsets.all(CatchSpacing.s4),
+                    tone: CatchSurfaceTone.raised,
+                    borderColor: t.line,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          CatchIcons.lockClockRounded,
+                          color: t.primary,
+                          size: CatchIcon.control,
+                        ),
+                        gapW10,
+                        Expanded(
+                          child: Text(
+                            'Dating stays locked until you actually event together. No cold swiping strangers.',
+                            style: CatchTextStyles.proseM(
+                              context,
+                              color: t.ink2,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

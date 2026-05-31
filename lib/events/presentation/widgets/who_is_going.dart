@@ -241,7 +241,7 @@ class _SwipeWindowBanner extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(CatchSpacing.s3),
       tone: surfaceStyle == null
           ? CatchSurfaceTone.primarySoft
           : CatchSurfaceTone.transparent,
@@ -250,7 +250,11 @@ class _SwipeWindowBanner extends StatelessWidget {
       borderWidth: 0,
       child: Row(
         children: [
-          Icon(icon, size: 16, color: surfaceStyle?.primaryColor ?? t.primary),
+          Icon(
+            icon,
+            size: CatchIcon.xs,
+            color: surfaceStyle?.primaryColor ?? t.primary,
+          ),
           gapW8,
           Expanded(
             child: Text(

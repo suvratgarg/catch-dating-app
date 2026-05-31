@@ -12,7 +12,12 @@ class ProfileSectionCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
-    this.margin = const EdgeInsets.fromLTRB(16, 12, 16, 2),
+    this.margin = const EdgeInsets.fromLTRB(
+      CatchSpacing.s4,
+      CatchSpacing.s3,
+      CatchSpacing.s4,
+      CatchSpacing.micro2,
+    ),
     this.reactionTarget,
     this.onReact,
   });

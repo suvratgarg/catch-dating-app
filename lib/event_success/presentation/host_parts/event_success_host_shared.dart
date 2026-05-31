@@ -103,7 +103,7 @@ class _HostActivitySummary extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.primarySoft,
-      borderColor: Colors.transparent,
+      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       padding: const EdgeInsets.all(CatchSpacing.s3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +150,9 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
     final rankingOn = plan.compatibilityAffectsRanking;
     final pack = plan.questionnaireConfig.pack;
     return CatchSurface(
-      borderColor: rankingOn ? Colors.transparent : t.line,
+      borderColor: rankingOn
+          ? t.surface.withValues(alpha: CatchOpacity.none)
+          : t.line,
       tone: rankingOn ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
       padding: const EdgeInsets.all(CatchSpacing.s4),
       child: Row(
@@ -169,7 +171,7 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
                   children: [
                     Text(
                       'Match clue questions',
-                      style: CatchTextStyles.titleM(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                     CatchBadge(
                       label: rankingOn ? 'Can guide pairings' : 'Clues only',
@@ -231,7 +233,7 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Arrival check-in',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               Text(
@@ -299,7 +301,7 @@ class _HostCheckInQrPanel extends StatelessWidget {
         children: [
           CatchSurface(
             radius: CatchRadius.sm,
-            backgroundColor: Colors.white,
+            backgroundColor: CatchTokens.editorialLight,
             borderWidth: 0,
             padding: const EdgeInsets.all(CatchSpacing.s2),
             child: QrImageView(
@@ -307,7 +309,7 @@ class _HostCheckInQrPanel extends StatelessWidget {
               version: QrVersions.auto,
               size: 116,
               padding: EdgeInsets.zero,
-              backgroundColor: Colors.white,
+              backgroundColor: CatchTokens.editorialLight,
             ),
           ),
           gapW12,
@@ -361,7 +363,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   '"Help me say hi" requests',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(

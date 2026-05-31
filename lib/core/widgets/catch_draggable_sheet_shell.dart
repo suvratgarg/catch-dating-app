@@ -41,7 +41,10 @@ class CatchDraggableSheetShell extends StatelessWidget {
                   top: CatchSpacing.s2,
                   bottom: CatchSpacing.s1,
                 ),
-                child: BottomSheetGrabber(width: 48, height: 5),
+                child: BottomSheetGrabber(
+                  width: CatchLayout.sheetGrabberWideWidth,
+                  height: CatchLayout.sheetGrabberTallHeight,
+                ),
               ),
             ),
           Expanded(child: child),

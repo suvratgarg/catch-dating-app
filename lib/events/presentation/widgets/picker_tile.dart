@@ -29,7 +29,7 @@ class PickerTile extends StatelessWidget {
       semanticButton: true,
       child: Row(
         children: [
-          Icon(icon, size: 20, color: t.ink2),
+          Icon(icon, size: CatchIcon.control, color: t.ink2),
           gapW12,
           Expanded(
             child: Text(
@@ -39,7 +39,11 @@ class PickerTile extends StatelessWidget {
                   : CatchTextStyles.bodyLead(context, color: t.ink3),
             ),
           ),
-          Icon(CatchIcons.chevronRightRounded, size: 18, color: t.ink3),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: CatchIcon.md,
+            color: t.ink3,
+          ),
         ],
       ),
     );

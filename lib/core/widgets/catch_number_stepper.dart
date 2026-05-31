@@ -61,9 +61,8 @@ class CatchNumberStepper extends StatelessWidget {
             tooltip: decreaseTooltip,
             icon: Icon(CatchIcons.removeRounded, color: t.ink),
             onPressed: _decrease,
-            constraints: const BoxConstraints.tightFor(
-              width: CatchControlMetrics.stepperIconExtent,
-              height: CatchControlMetrics.stepperIconExtent,
+            constraints: CatchControlMetrics.squareConstraints(
+              CatchControlMetrics.stepperIconExtent,
             ),
             padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
@@ -80,9 +79,8 @@ class CatchNumberStepper extends StatelessWidget {
             tooltip: increaseTooltip,
             icon: Icon(CatchIcons.addRounded, color: t.ink),
             onPressed: _increase,
-            constraints: const BoxConstraints.tightFor(
-              width: CatchControlMetrics.stepperIconExtent,
-              height: CatchControlMetrics.stepperIconExtent,
+            constraints: CatchControlMetrics.squareConstraints(
+              CatchControlMetrics.stepperIconExtent,
             ),
             padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,

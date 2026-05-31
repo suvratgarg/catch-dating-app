@@ -15,7 +15,7 @@ class CatchTextButton extends StatelessWidget {
     required this.onPressed,
     this.tone = CatchTextButtonTone.primary,
     this.foregroundColor,
-    this.minimumSize = const Size(40, 40),
+    this.minimumSize = const Size.square(CatchSpacing.s10),
     this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
   });
 

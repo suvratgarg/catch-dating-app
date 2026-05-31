@@ -25,6 +25,47 @@ node tool/run.mjs run demo:ops --help
 - `migrations/`: historical one-time migrations kept for auditability.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
+- `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
+- `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
+  CI/CD, and App Store/TestFlight operational surfaces.
+
+## Scanner Family
+
+The UI/design scanners are currently stable root wrappers because they are used
+directly by cleanup passes and CI-style checks. Keep these wrapper names stable
+even if their internals move into shared scanner helpers later.
+
+Shared shell mechanics for repo-root setup, mode parsing, and dependency checks
+live in `tool/lib/scanner_shell.sh`; scanner-specific matching rules stay in the
+root wrapper until a larger scanner-engine consolidation is justified.
+
+Use `--summary` for review-friendly output and `--count` for cheap automated
+checks that only need a numeric debt signal.
+
+## Remote Ops Manifest
+
+`tool/remote_ops_manifest.json` is the remote-operations index. It does not
+deploy or mutate anything; it groups the existing tools, workflows, docs, and
+manual console dependencies by blast radius. Keep it current when adding Firebase
+deploy targets, data repair tools, App Check/App Store console steps, or CI/CD
+workflows.
+
+```sh
+node tool/check_remote_ops_manifest.mjs --check
+node tool/check_remote_ops_manifest.mjs --list
+```
+
+## Synthetic Persona Projection
+
+The sales demo persona catalog is projected into app-ready profile JSON before
+UI capture, marketing, and golden-image consumers read it. The checked planned
+asset projection lives at
+`tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json`.
+
+```sh
+node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check
+node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --update
+```
 
 ## Stable Root Entrypoints
 
@@ -33,6 +74,12 @@ or muscle memory already depend on them:
 
 - `tool/audit_registry.dart`
 - `tool/check_data_contract.sh`
+- `tool/check_design_tokens.sh`
+- `tool/check_raw_color_sweep.sh`
+- `tool/check_sizing.sh`
+- `tool/check_ui_allow_debt.sh`
+- `tool/check_ui_local_constant_wrappers.sh`
+- `tool/check_ui_system_raw_values.sh`
 - `tool/deploy_firebase_targets.sh`
 - `tool/firebase_with_env.sh`
 - `tool/flutter_with_env.sh`

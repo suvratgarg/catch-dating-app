@@ -28,6 +28,8 @@ generic audit trackers:
 
 ## Cross-Cutting Docs
 
+- `docs/design_language.md`: **visual identity source of truth** — palette, typography,
+  activity-color system, photo grading, metaphors, and the UI elevation roadmap.
 - `docs/ui_architecture.md`: spacing, slivers, scroll ownership, sticky headers,
   and widget-test layout expectations.
 - `docs/controller_patterns.md`: controller/view-model boundaries and retained

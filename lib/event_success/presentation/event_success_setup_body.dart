@@ -448,8 +448,12 @@ class _FoundationLine extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(CatchIcons.checkRounded, size: 18, color: t.primary),
+            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            child: Icon(
+              CatchIcons.checkRounded,
+              size: CatchIcon.md,
+              color: t.primary,
+            ),
           ),
           gapW8,
           Expanded(
@@ -582,8 +586,12 @@ class _AttendeePromptPreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(CatchIcons.visibilityOutlined, size: 14, color: t.ink2),
+            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            child: Icon(
+              CatchIcons.visibilityOutlined,
+              size: CatchIcon.sm,
+              color: t.ink2,
+            ),
           ),
           gapW6,
           Expanded(
@@ -609,7 +617,7 @@ class _SafetyFooter extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(CatchIcons.shieldOutlined, size: 18, color: t.ink2),
+          Icon(CatchIcons.shieldOutlined, size: CatchIcon.md, color: t.ink2),
           gapW8,
           Expanded(
             child: Text(
@@ -643,7 +651,7 @@ class _PresetReviewCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.primarySoft,
-      borderColor: Colors.transparent,
+      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       radius: CatchRadius.md,
       padding: const EdgeInsets.all(CatchSpacing.s3),
       child: Column(
@@ -662,7 +670,10 @@ class _PresetReviewCard extends StatelessWidget {
                 CatchTextButton(
                   label: 'Reset',
                   onPressed: onReset,
-                  minimumSize: const Size(40, 32),
+                  minimumSize: const Size(
+                    CatchLayout.eventSuccessResetButtonMinWidth,
+                    CatchLayout.eventSuccessResetButtonMinHeight,
+                  ),
                   padding: EdgeInsets.zero,
                 ),
             ],
@@ -822,7 +833,9 @@ class _SetupDisclosureSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+      data: Theme.of(
+        context,
+      ).copyWith(dividerColor: t.surface.withValues(alpha: CatchOpacity.none)),
       child: ExpansionTile(
         maintainState: true,
         initiallyExpanded: initiallyExpanded,

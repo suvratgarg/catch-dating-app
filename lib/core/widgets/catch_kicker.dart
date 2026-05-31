@@ -38,8 +38,8 @@ class CatchKicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final base = switch (size) {
-      CatchKickerSize.sm => CatchTextStyles.kickerCaps(context, color: color),
-      CatchKickerSize.md => CatchTextStyles.kickerCapsLg(context, color: color),
+      CatchKickerSize.sm => CatchTextStyles.kicker(context, color: color),
+      CatchKickerSize.md => CatchTextStyles.kickerLg(context, color: color),
     };
     final trailingText = trailing;
     if (trailingText == null) {

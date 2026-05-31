@@ -162,273 +162,305 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   CatchSpacing.s8,
                 ),
                 children: [
-                  _SettingsSection(
-                    title: 'Account',
-                    children: [
-                      SettingsRow(
-                        label: 'Phone',
-                        value: _formatPhoneForDisplay(phoneNumber),
-                        icon: CatchIcons.phoneOutlined,
-                      ),
-                      SettingsRow(
-                        key: SettingsKeys.reviewHistoryRow,
-                        label: 'Review history',
-                        value: 'Events you reviewed',
-                        icon: CatchIcons.rateReviewOutlined,
-                        onTap: () =>
-                            context.pushNamed(Routes.reviewsHistoryScreen.name),
-                      ),
-                      SettingsRow(
-                        key: SettingsKeys.paymentHistoryRow,
-                        label: 'Payment history',
-                        value: 'Bookings and receipts',
-                        icon: CatchIcons.receiptLongOutlined,
-                        onTap: () =>
-                            context.pushNamed(Routes.paymentHistoryScreen.name),
-                      ),
-                      SettingsRow(
-                        key: SettingsKeys.signOutRow,
-                        label: 'Sign out',
-                        value: 'Leave this device',
-                        icon: CatchIcons.logoutRounded,
-                        danger: true,
-                        trailing: signingOut
-                            ? const SizedBox.square(
-                                dimension: 20,
-                                child: CatchLoadingIndicator(strokeWidth: 2),
-                              )
-                            : null,
-                        onTap: signingOut ? null : _signOut,
-                      ),
-                    ],
-                  ),
-                  gapH20,
-                  if (AppConfig.enableEventPolicyLab ||
-                      AppConfig.enableEventSuccessPreview) ...[
-                    _SettingsSection(
-                      title: 'Development',
-                      children: [
-                        if (AppConfig.enableEventPolicyLab)
-                          SettingsRow(
-                            key: SettingsKeys.eventPolicyLabRow,
-                            label: 'Event policy lab',
-                            value: 'Static booking policy previews',
-                            icon: CatchIcons.scienceOutlined,
-                            onTap: () => context.pushNamed(
-                              Routes.eventPolicyLabScreen.name,
-                            ),
-                          ),
-                        if (AppConfig.enableEventSuccessPreview)
-                          SettingsRow(
-                            key: SettingsKeys.eventSuccessLabRow,
-                            label: 'Event success lab',
-                            value: 'Host, attendee, and report previews',
-                            icon: CatchIcons.autoGraphRounded,
-                            onTap: () => context.pushNamed(
-                              Routes.eventSuccessLabScreen.name,
-                            ),
-                          ),
-                        if (AppConfig.enableEventSuccessPreview)
-                          SettingsRow(
-                            key: SettingsKeys.eventSuccessManualQaRow,
-                            label: 'Event success manual QA',
-                            value: 'Host and attendee side by side',
-                            icon: CatchIcons.splitscreenRounded,
-                            onTap: () => context.pushNamed(
-                              Routes.eventSuccessManualQaScreen.name,
-                            ),
-                          ),
-                      ],
-                    ),
-                    gapH20,
-                  ],
-                  _SettingsSection(
-                    title: 'Discovery',
-                    children: [
-                      SettingsRow(
-                        label: 'Who can see me',
-                        value: 'Runners on my events',
-                        icon: CatchIcons.visibilityOutlined,
-                      ),
-                      SettingsRow(
-                        label: 'Show me on map',
-                        icon: CatchIcons.mapOutlined,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.showOnMapSwitch,
-                          value: _showOnMap,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.showOnMap,
-                                  value: value,
-                                  apply: () => _showOnMap = value,
-                                  rollback: () => _showOnMap = !value,
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  gapH20,
-                  _SettingsSection(
-                    title: 'Notifications',
-                    children: [
-                      SettingsRow(
-                        label: 'Matches and catches',
-                        icon: CatchIcons.favoriteOutline,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.newCatchesSwitch,
-                          value: _newCatches,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.newCatches,
-                                  value: value,
-                                  apply: () => _newCatches = value,
-                                  rollback: () => _newCatches = !value,
-                                ),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Messages',
-                        icon: CatchIcons.chatBubbleOutlineRounded,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.messagesSwitch,
-                          value: _messages,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.messages,
-                                  value: value,
-                                  apply: () => _messages = value,
-                                  rollback: () => _messages = !value,
-                                ),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Event reminders',
-                        icon: CatchIcons.directionsRunOutlined,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.eventRemindersSwitch,
-                          value: _eventReminders,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.eventReminders,
-                                  value: value,
-                                  apply: () => _eventReminders = value,
-                                  rollback: () => _eventReminders = !value,
-                                ),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Event changes and cancellations',
-                        icon: CatchIcons.eventRepeatOutlined,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.eventStatusUpdatesSwitch,
-                          value: _eventStatusUpdates,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference:
-                                      SettingsPreference.eventStatusUpdates,
-                                  value: value,
-                                  apply: () => _eventStatusUpdates = value,
-                                  rollback: () => _eventStatusUpdates = !value,
-                                ),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Club announcements',
-                        icon: CatchIcons.notificationsActiveOutlined,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.clubUpdatesSwitch,
-                          value: _clubUpdates,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.clubUpdates,
-                                  value: value,
-                                  apply: () => _clubUpdates = value,
-                                  rollback: () => _clubUpdates = !value,
-                                ),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Weekly digest',
-                        icon: CatchIcons.markEmailReadOutlined,
-                        trailing: Switch.adaptive(
-                          key: SettingsKeys.weeklyDigestSwitch,
-                          value: _weeklyDigest,
-                          onChanged: savingPreference
-                              ? null
-                              : (value) => _savePref(
-                                  preference: SettingsPreference.weeklyDigest,
-                                  value: value,
-                                  apply: () => _weeklyDigest = value,
-                                  rollback: () => _weeklyDigest = !value,
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  gapH20,
-                  const SectionHeader(title: 'Safety'),
-                  gapH8,
-                  const _BlockedAccountsSection(),
-                  gapH20,
-                  _SettingsSection(
-                    title: 'About',
-                    children: [
-                      SettingsRow(
-                        label: 'Help & support',
-                        value: 'Contact us',
-                        icon: CatchIcons.helpOutline,
-                        onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/help'),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Privacy',
-                        value: 'Policy',
-                        icon: CatchIcons.lockOutline,
-                        onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/privacy'),
-                        ),
-                      ),
-                      SettingsRow(
-                        label: 'Terms',
-                        value: 'Legal',
-                        icon: CatchIcons.descriptionOutlined,
-                        onTap: () => _openExternal(
-                          Uri.parse('https://catchdates.com/terms'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  gapH20,
-                  _SettingsCard(
-                    children: [
-                      SettingsRow(
-                        key: SettingsKeys.deleteAccountRow,
-                        label: 'Delete account',
-                        value: 'Remove your profile',
-                        icon: CatchIcons.deleteOutline,
-                        danger: true,
-                        trailing: deleting
-                            ? const SizedBox.square(
-                                dimension: 20,
-                                child: CatchLoadingIndicator(strokeWidth: 2),
-                              )
-                            : null,
-                        onTap: deleting ? null : _confirmDeleteAccount,
-                      ),
-                    ],
-                  ),
-                  gapH20,
                   Center(
-                    child: Text(
-                      'Catch v1.0 · made for runners and clubs',
-                      style: CatchTextStyles.supporting(context, color: t.ink3),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: CatchLayout.maxContentWidth,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _SettingsSection(
+                            title: 'Account',
+                            children: [
+                              SettingsRow(
+                                label: 'Phone',
+                                value: _formatPhoneForDisplay(phoneNumber),
+                                icon: CatchIcons.phoneOutlined,
+                              ),
+                              SettingsRow(
+                                key: SettingsKeys.reviewHistoryRow,
+                                label: 'Review history',
+                                value: 'Events you reviewed',
+                                icon: CatchIcons.rateReviewOutlined,
+                                onTap: () => context.pushNamed(
+                                  Routes.reviewsHistoryScreen.name,
+                                ),
+                              ),
+                              SettingsRow(
+                                key: SettingsKeys.paymentHistoryRow,
+                                label: 'Payment history',
+                                value: 'Bookings and receipts',
+                                icon: CatchIcons.receiptLongOutlined,
+                                onTap: () => context.pushNamed(
+                                  Routes.paymentHistoryScreen.name,
+                                ),
+                              ),
+                              SettingsRow(
+                                key: SettingsKeys.signOutRow,
+                                label: 'Sign out',
+                                value: 'Leave this device',
+                                icon: CatchIcons.logoutRounded,
+                                danger: true,
+                                trailing: signingOut
+                                    ? const SizedBox.square(
+                                        dimension: CatchIcon.control,
+                                        child: CatchLoadingIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : null,
+                                onTap: signingOut ? null : _signOut,
+                              ),
+                            ],
+                          ),
+                          gapH20,
+                          if (AppConfig.enableEventPolicyLab ||
+                              AppConfig.enableEventSuccessPreview) ...[
+                            _SettingsSection(
+                              title: 'Development',
+                              children: [
+                                if (AppConfig.enableEventPolicyLab)
+                                  SettingsRow(
+                                    key: SettingsKeys.eventPolicyLabRow,
+                                    label: 'Event policy lab',
+                                    value: 'Static booking policy previews',
+                                    icon: CatchIcons.scienceOutlined,
+                                    onTap: () => context.pushNamed(
+                                      Routes.eventPolicyLabScreen.name,
+                                    ),
+                                  ),
+                                if (AppConfig.enableEventSuccessPreview)
+                                  SettingsRow(
+                                    key: SettingsKeys.eventSuccessLabRow,
+                                    label: 'Event success lab',
+                                    value:
+                                        'Host, attendee, and report previews',
+                                    icon: CatchIcons.autoGraphRounded,
+                                    onTap: () => context.pushNamed(
+                                      Routes.eventSuccessLabScreen.name,
+                                    ),
+                                  ),
+                                if (AppConfig.enableEventSuccessPreview)
+                                  SettingsRow(
+                                    key: SettingsKeys.eventSuccessManualQaRow,
+                                    label: 'Event success manual QA',
+                                    value: 'Host and attendee side by side',
+                                    icon: CatchIcons.splitscreenRounded,
+                                    onTap: () => context.pushNamed(
+                                      Routes.eventSuccessManualQaScreen.name,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            gapH20,
+                          ],
+                          _SettingsSection(
+                            title: 'Discovery',
+                            children: [
+                              SettingsRow(
+                                label: 'Who can see me',
+                                value: 'Runners on my events',
+                                icon: CatchIcons.visibilityOutlined,
+                              ),
+                              SettingsRow(
+                                label: 'Show me on map',
+                                icon: CatchIcons.mapOutlined,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.showOnMapSwitch,
+                                  value: _showOnMap,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.showOnMap,
+                                          value: value,
+                                          apply: () => _showOnMap = value,
+                                          rollback: () => _showOnMap = !value,
+                                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          gapH20,
+                          _SettingsSection(
+                            title: 'Notifications',
+                            children: [
+                              SettingsRow(
+                                label: 'Matches and catches',
+                                icon: CatchIcons.favoriteOutline,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.newCatchesSwitch,
+                                  value: _newCatches,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.newCatches,
+                                          value: value,
+                                          apply: () => _newCatches = value,
+                                          rollback: () => _newCatches = !value,
+                                        ),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Messages',
+                                icon: CatchIcons.chatBubbleOutlineRounded,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.messagesSwitch,
+                                  value: _messages,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.messages,
+                                          value: value,
+                                          apply: () => _messages = value,
+                                          rollback: () => _messages = !value,
+                                        ),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Event reminders',
+                                icon: CatchIcons.directionsRunOutlined,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.eventRemindersSwitch,
+                                  value: _eventReminders,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.eventReminders,
+                                          value: value,
+                                          apply: () => _eventReminders = value,
+                                          rollback: () =>
+                                              _eventReminders = !value,
+                                        ),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Event changes and cancellations',
+                                icon: CatchIcons.eventRepeatOutlined,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.eventStatusUpdatesSwitch,
+                                  value: _eventStatusUpdates,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference: SettingsPreference
+                                              .eventStatusUpdates,
+                                          value: value,
+                                          apply: () =>
+                                              _eventStatusUpdates = value,
+                                          rollback: () =>
+                                              _eventStatusUpdates = !value,
+                                        ),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Club announcements',
+                                icon: CatchIcons.notificationsActiveOutlined,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.clubUpdatesSwitch,
+                                  value: _clubUpdates,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.clubUpdates,
+                                          value: value,
+                                          apply: () => _clubUpdates = value,
+                                          rollback: () => _clubUpdates = !value,
+                                        ),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Weekly digest',
+                                icon: CatchIcons.markEmailReadOutlined,
+                                trailing: Switch.adaptive(
+                                  key: SettingsKeys.weeklyDigestSwitch,
+                                  value: _weeklyDigest,
+                                  onChanged: savingPreference
+                                      ? null
+                                      : (value) => _savePref(
+                                          preference:
+                                              SettingsPreference.weeklyDigest,
+                                          value: value,
+                                          apply: () => _weeklyDigest = value,
+                                          rollback: () =>
+                                              _weeklyDigest = !value,
+                                        ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          gapH20,
+                          const SectionHeader(title: 'Safety'),
+                          gapH8,
+                          const _BlockedAccountsSection(),
+                          gapH20,
+                          _SettingsSection(
+                            title: 'About',
+                            children: [
+                              SettingsRow(
+                                label: 'Help & support',
+                                value: 'Contact us',
+                                icon: CatchIcons.helpOutline,
+                                onTap: () => _openExternal(
+                                  Uri.parse('https://catchdates.com/help'),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Privacy',
+                                value: 'Policy',
+                                icon: CatchIcons.lockOutline,
+                                onTap: () => _openExternal(
+                                  Uri.parse('https://catchdates.com/privacy'),
+                                ),
+                              ),
+                              SettingsRow(
+                                label: 'Terms',
+                                value: 'Legal',
+                                icon: CatchIcons.descriptionOutlined,
+                                onTap: () => _openExternal(
+                                  Uri.parse('https://catchdates.com/terms'),
+                                ),
+                              ),
+                            ],
+                          ),
+                          gapH20,
+                          _SettingsCard(
+                            children: [
+                              SettingsRow(
+                                key: SettingsKeys.deleteAccountRow,
+                                label: 'Delete account',
+                                value: 'Remove your profile',
+                                icon: CatchIcons.deleteOutline,
+                                danger: true,
+                                trailing: deleting
+                                    ? const SizedBox.square(
+                                        dimension: CatchIcon.control,
+                                        child: CatchLoadingIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : null,
+                                onTap: deleting ? null : _confirmDeleteAccount,
+                              ),
+                            ],
+                          ),
+                          gapH20,
+                          Center(
+                            child: Text(
+                              'Catch v1.0 · made for runners and clubs',
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: t.ink3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -515,8 +547,8 @@ class _BlockedAccountsSection extends ConsumerWidget {
               title: 'Unable to load blocked accounts',
               message: 'Try again in a moment.',
               surface: false,
-              iconSize: 28,
-              titleStyle: CatchTextStyles.titleM(context),
+              iconSize: CatchIcon.tile,
+              titleStyle: CatchTextStyles.sectionTitle(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
           ),
@@ -529,8 +561,8 @@ class _BlockedAccountsSection extends ConsumerWidget {
                   title: 'No blocked accounts',
                   message: 'People you block will appear here.',
                   surface: false,
-                  iconSize: 28,
-                  titleStyle: CatchTextStyles.titleM(context),
+                  iconSize: CatchIcon.tile,
+                  titleStyle: CatchTextStyles.sectionTitle(context),
                   messageStyle: CatchTextStyles.supporting(
                     context,
                     color: t.ink2,

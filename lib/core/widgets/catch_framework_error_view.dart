@@ -32,7 +32,9 @@ class CatchFrameworkErrorView extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(CatchSpacing.s6),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 460),
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.frameworkErrorMaxWidth,
+              ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: tokens.surface,
@@ -50,7 +52,7 @@ class CatchFrameworkErrorView extends StatelessWidget {
                       gapH18,
                       Text(
                         'Something went wrong',
-                        style: CatchTextStyles.displayM(context),
+                        style: CatchTextStyles.headlineS(context),
                         textAlign: TextAlign.center,
                       ),
                       gapH8,
@@ -88,8 +90,8 @@ class _ErrorIcon extends StatelessWidget {
 
     return Align(
       child: Container(
-        width: 64,
-        height: 64,
+        width: CatchLayout.frameworkErrorIconExtent,
+        height: CatchLayout.frameworkErrorIconExtent,
         decoration: BoxDecoration(
           color: tokens.primarySoft,
           shape: BoxShape.circle,
@@ -97,7 +99,7 @@ class _ErrorIcon extends StatelessWidget {
         child: Icon(
           CatchIcons.errorOutlineRounded,
           color: tokens.danger,
-          size: 30,
+          size: CatchLayout.frameworkErrorIconSize,
         ),
       ),
     );
@@ -139,11 +141,7 @@ class _DebugDetails extends StatelessWidget {
             ),
             child: Text(
               details,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: tokens.ink2,
-                fontFamily: 'monospace',
-                height: 1.35,
-              ),
+              style: CatchTextStyles.debugDetails(context, color: tokens.ink2),
             ),
           ),
         ],

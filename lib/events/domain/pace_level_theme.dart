@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
 
 /// Pace-level background and foreground colors.
 ///
-/// These are traffic-light semantic colors that don't vary by brand palette —
-/// green = easy, blue = moderate, orange = fast, red = competitive.
+/// Brightness-aware: muted, dark-safe tones keyed to [CatchTokens] semantics.
 @immutable
 class PaceLevelColors {
   const PaceLevelColors({required this.bg, required this.fg});
@@ -12,23 +12,24 @@ class PaceLevelColors {
   final Color fg;
 }
 
-extension PaceLevelTheme on PaceLevel {
-  PaceLevelColors get colors => switch (this) {
-    PaceLevel.easy => const PaceLevelColors(
-      bg: Color(0xFFDCFCE7),
-      fg: Color(0xFF166534),
-    ),
-    PaceLevel.moderate => const PaceLevelColors(
-      bg: Color(0xFFDBEAFE),
-      fg: Color(0xFF1E40AF),
-    ),
-    PaceLevel.fast => const PaceLevelColors(
-      bg: Color(0xFFFEF3C7),
-      fg: Color(0xFF92400E),
-    ),
-    PaceLevel.competitive => const PaceLevelColors(
-      bg: Color(0xFFFFE4E6),
-      fg: Color(0xFF9F1239),
-    ),
+/// Returns brightness-aware pace-level colors derived from [CatchTokens].
+PaceLevelColors paceLevelColors(BuildContext context, PaceLevel pace) {
+  final t = CatchTokens.of(context);
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final bgAlpha = isDark ? 0.22 : 0.12;
+
+  Color toneFor(PaceLevel p) => switch (p) {
+    PaceLevel.easy => t.success,
+    PaceLevel.moderate => isDark
+        ? CatchPaceColors.moderateDark
+        : CatchPaceColors.moderateLight,
+    PaceLevel.fast => t.warning,
+    PaceLevel.competitive => t.danger,
   };
+
+  final fg = toneFor(pace);
+  return PaceLevelColors(
+    bg: Color.alphaBlend(fg.withValues(alpha: bgAlpha), t.surface),
+    fg: fg,
+  );
 }

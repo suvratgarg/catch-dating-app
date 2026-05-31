@@ -1,0 +1,269 @@
+import 'dart:typed_data';
+
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
+import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
+
+class OrderedPhotoPreview {
+  const OrderedPhotoPreview({required this.id, this.bytes, this.imageUrl});
+
+  final String id;
+  final Uint8List? bytes;
+  final String? imageUrl;
+
+  bool get hasImage => bytes != null || imageUrl != null;
+}
+
+class OrderedPhotoPicker extends StatefulWidget {
+  const OrderedPhotoPicker({
+    super.key,
+    required this.label,
+    required this.photos,
+    required this.onAddPhotos,
+    required this.onRemovePhoto,
+    required this.onReorderPhoto,
+    required this.emptyActionLabel,
+    required this.addActionLabel,
+    this.maxPhotos = 6,
+    this.crossAxisCount = 2,
+    this.childAspectRatio = CatchAspectRatio.wide16x9,
+  });
+
+  final Widget label;
+  final List<OrderedPhotoPreview> photos;
+  final VoidCallback? onAddPhotos;
+  final ValueChanged<int>? onRemovePhoto;
+  final void Function(int fromIndex, int toIndex)? onReorderPhoto;
+  final String emptyActionLabel;
+  final String addActionLabel;
+  final int maxPhotos;
+  final int crossAxisCount;
+  final double childAspectRatio;
+
+  @override
+  State<OrderedPhotoPicker> createState() => _OrderedPhotoPickerState();
+}
+
+class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
+  int? _draggedIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final photos = widget.photos.where((photo) => photo.hasImage).toList();
+    final canAdd =
+        widget.onAddPhotos != null && photos.length < widget.maxPhotos;
+    final canReorder = widget.onReorderPhoto != null && photos.length > 1;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        widget.label,
+        gapH8,
+        if (photos.isEmpty)
+          AspectRatio(
+            aspectRatio: CatchAspectRatio.wide16x9,
+            child: _AddPhotoTile(
+              label: widget.emptyActionLabel,
+              onTap: widget.onAddPhotos,
+            ),
+          )
+        else
+          ReorderableBuilder<int>.builder(
+            itemCount: photos.length,
+            animationConfig: const ReorderableAnimationConfig(
+              enableAnimations: false,
+            ),
+            enableDraggable: canReorder,
+            onDragStarted: (index) => _draggedIndex = index,
+            onReorder: canReorder
+                ? (reorderedListFunction) {
+                    final originalOrder = List<int>.generate(
+                      photos.length,
+                      (index) => index,
+                    );
+                    final reorderedOrder = reorderedListFunction(originalOrder);
+                    final fromIndex = _draggedIndex;
+                    _draggedIndex = null;
+                    if (fromIndex == null) return;
+                    final toIndex = reorderedOrder.indexOf(fromIndex);
+                    if (toIndex == -1 || toIndex == fromIndex) return;
+                    widget.onReorderPhoto!(fromIndex, toIndex);
+                  }
+                : null,
+            childBuilder: (itemBuilder) {
+              final itemCount = photos.length + (canAdd ? 1 : 0);
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: itemCount,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: widget.crossAxisCount,
+                  mainAxisSpacing: CatchSpacing.s2,
+                  crossAxisSpacing: CatchSpacing.s2,
+                  childAspectRatio: widget.childAspectRatio,
+                ),
+                itemBuilder: (context, index) {
+                  if (index >= photos.length) {
+                    return _AddPhotoTile(
+                      label: widget.addActionLabel,
+                      onTap: widget.onAddPhotos,
+                    );
+                  }
+                  final photo = photos[index];
+                  return itemBuilder(
+                    _OrderedPhotoTile(
+                      key: ValueKey(photo.id),
+                      photo: photo,
+                      index: index,
+                      canReorder: canReorder,
+                      onRemove: widget.onRemovePhoto == null
+                          ? null
+                          : () => widget.onRemovePhoto!(index),
+                    ),
+                    index,
+                  );
+                },
+              );
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _OrderedPhotoTile extends StatelessWidget {
+  const _OrderedPhotoTile({
+    super.key,
+    required this.photo,
+    required this.index,
+    required this.canReorder,
+    this.onRemove,
+  });
+
+  final OrderedPhotoPreview photo;
+  final int index;
+  final bool canReorder;
+  final VoidCallback? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final borderRadius = BorderRadius.circular(CatchRadius.md);
+
+    return Semantics(
+      image: true,
+      label: 'Photo ${index + 1}',
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: t.raised, borderRadius: borderRadius),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (photo.bytes != null)
+                Image.memory(photo.bytes!, fit: BoxFit.cover)
+              else
+                Image.network(
+                  photo.imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => ColoredBox(color: t.raised),
+                ),
+              if (onRemove != null)
+                Positioned(
+                  top: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
+                  child: Tooltip(
+                    message: 'Remove photo ${index + 1}',
+                    child: Material(
+                      color: t.surface.withValues(
+                        alpha: CatchOpacity.photoSlotDeleteChrome,
+                      ),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        key: ValueKey('ordered_photo_remove_$index'),
+                        customBorder: const CircleBorder(),
+                        onTap: onRemove,
+                        child: SizedBox.square(
+                          dimension: CatchLayout.photoSlotDeleteExtent,
+                          child: Icon(
+                            CatchIcons.closeRounded,
+                            size: CatchIcon.sm,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              if (canReorder)
+                Positioned(
+                  bottom: CatchSpacing.s1,
+                  right: CatchSpacing.s1,
+                  child: CatchIconTile(
+                    icon: CatchIcons.dragIndicatorRounded,
+                    iconColor: t.ink,
+                    backgroundColor: t.surface.withValues(
+                      alpha: CatchOpacity.imageEditControlFill,
+                    ),
+                    borderColor: Colors.transparent,
+                    size: CatchIcon.row,
+                    iconSize: CatchIcon.sm,
+                    radius: CatchRadius.pill,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddPhotoTile extends StatelessWidget {
+  const _AddPhotoTile({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final borderRadius = BorderRadius.circular(CatchRadius.md);
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      label: label,
+      child: Material(
+        color: t.raised,
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: ValueKey('ordered_photo_add_$label'),
+          onTap: onTap,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                CatchIcons.addPhotoAlternateOutlined,
+                size: CatchIcon.hero,
+                color: t.ink2,
+              ),
+              gapH8,
+              Text(
+                label,
+                style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

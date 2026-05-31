@@ -16,15 +16,44 @@ class OnboardingStepHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(title, style: CatchTextStyles.formQuestion(context, color: t.ink)),
+        Text(title, style: CatchTextStyles.headlineS(context, color: t.ink)),
         if (subtitle != null && subtitle!.isNotEmpty) ...[
           gapH8,
           Text(
             subtitle!,
-            style: CatchTextStyles.bodyLead(context, color: t.ink2),
+            style: CatchTextStyles.proseM(context, color: t.ink2),
           ),
         ],
       ],
+    );
+  }
+}
+
+class OnboardingStepFrame extends StatelessWidget {
+  const OnboardingStepFrame({
+    super.key,
+    required this.children,
+    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
+  });
+
+  final List<Widget> children;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: padding,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
+          ),
+        ),
+      ),
     );
   }
 }

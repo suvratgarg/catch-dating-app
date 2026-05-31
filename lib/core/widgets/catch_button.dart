@@ -67,7 +67,11 @@ class _CatchButtonState extends State<CatchButton> {
         if (_enabled && (_hovered || _pressed))
           Positioned.fill(
             child: ColoredBox(
-              color: Colors.black.withValues(alpha: _pressed ? 0.08 : 0.04),
+              color: CatchTokens.editorialDark.withValues(
+                alpha: _pressed
+                    ? CatchOpacity.controlOverlayPressed
+                    : CatchOpacity.controlOverlayHover,
+              ),
             ),
           ),
         Padding(
@@ -112,7 +116,9 @@ class _CatchButtonState extends State<CatchButton> {
                     onHover: (hovered) => setState(() => _hovered = hovered),
                     onHighlightChanged: (pressed) =>
                         setState(() => _pressed = pressed),
-                    splashColor: palette.foreground.withValues(alpha: 0.08),
+                    splashColor: palette.foreground.withValues(
+                      alpha: CatchOpacity.controlOverlayPressed,
+                    ),
                     highlightColor: Colors.transparent,
                     child: buttonContent,
                   ),
@@ -217,10 +223,12 @@ class _LoadingDots extends StatelessWidget {
           padding: EdgeInsets.only(left: index == 0 ? 0 : CatchSpacing.s1),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.4 + index * 0.2),
+              color: color.withValues(
+                alpha: CatchOpacity.loadingDotAlphas[index],
+              ),
               borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
-            child: const SizedBox.square(dimension: 6),
+            child: const SizedBox.square(dimension: CatchSpacing.micro6),
           ),
         );
       }),
@@ -232,43 +240,34 @@ class _ButtonSizeSpec {
   const _ButtonSizeSpec({
     required this.height,
     required this.padding,
-    required this.fontSize,
     required this.gap,
+    required this.textStyle,
   });
 
   final double height;
   final double padding;
-  final double fontSize;
   final double gap;
-
-  TextStyle textStyle(BuildContext context) {
-    return CatchTextStyles.labelL(context).copyWith(
-      fontSize: fontSize,
-      fontWeight: FontWeight.w600,
-      height: 1,
-      letterSpacing: 0,
-    );
-  }
+  final TextStyle Function(BuildContext context) textStyle;
 
   static _ButtonSizeSpec from(CatchButtonSize size) {
     return switch (size) {
-      CatchButtonSize.sm => const _ButtonSizeSpec(
-        height: 36,
-        padding: 14,
-        fontSize: 13,
-        gap: 6,
+      CatchButtonSize.sm => _ButtonSizeSpec(
+        height: CatchSpacing.s9,
+        padding: CatchSpacing.micro14,
+        gap: CatchSpacing.micro6,
+        textStyle: CatchTextStyles.buttonSm,
       ),
-      CatchButtonSize.md => const _ButtonSizeSpec(
-        height: 48,
-        padding: 20,
-        fontSize: 15,
-        gap: 6,
+      CatchButtonSize.md => _ButtonSizeSpec(
+        height: CatchSpacing.s12,
+        padding: CatchSpacing.s5,
+        gap: CatchSpacing.micro6,
+        textStyle: CatchTextStyles.buttonMd,
       ),
-      CatchButtonSize.lg => const _ButtonSizeSpec(
-        height: 56,
-        padding: 24,
-        fontSize: 16,
-        gap: 6,
+      CatchButtonSize.lg => _ButtonSizeSpec(
+        height: CatchSpacing.s12 + CatchSpacing.s2,
+        padding: CatchSpacing.s6,
+        gap: CatchSpacing.micro6,
+        textStyle: CatchTextStyles.buttonLg,
       ),
     };
   }
@@ -316,11 +315,11 @@ class _ButtonPalette {
       ),
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,
-        foreground: Colors.white,
+        foreground: CatchTokens.editorialLight,
         border: Colors.transparent,
       ),
       CatchButtonVariant.light => _ButtonPalette(
-        background: Colors.white,
+        background: CatchTokens.editorialLight,
         foreground: CatchTokens.sunsetLight.ink,
         border: Colors.transparent,
       ),
