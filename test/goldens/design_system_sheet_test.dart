@@ -14,9 +14,13 @@ import 'support/golden_pump.dart';
 /// dark. Regenerate intentionally with:
 ///   flutter test --update-goldens test/goldens
 void main() {
-  testWidgets('design system sheet (light + dark)', (tester) async {
-    await matchCatchGolden(tester, 'design_system_sheet', builder: _sheet);
-  });
+  testWidgets(
+    'design system sheet (light + dark)',
+    (tester) async {
+      await matchCatchGolden(tester, 'design_system_sheet', builder: _sheet);
+    },
+    tags: const ['golden'],
+  );
 }
 
 Widget _sheet(BuildContext context) {

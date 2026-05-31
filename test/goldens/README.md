@@ -14,6 +14,10 @@ flutter test --update-goldens test/goldens   # regenerate baselines (review the 
 
 Baselines live in `test/goldens/baseline/<name>.<light|dark>.png`.
 
+These tests are tagged `golden`. The Ubuntu Flutter CI unit/widget step runs
+with `--exclude-tags=golden` because the committed baselines are macOS-rendered
+and exact PNG comparison is host-rasterizer sensitive.
+
 ## What's covered
 
 | Golden | What it locks |
@@ -73,6 +77,7 @@ intended.
 
 ## CI
 
-Run `flutter test test/goldens` on the pinned platform alongside the other gates
-(see `docs/release_operations.md`). A diff means a reviewer must confirm the visual
-change and regenerate baselines.
+Do not run these exact PNG goldens in the default Ubuntu Flutter CI job. Run
+`flutter test test/goldens` on the pinned platform alongside visual-review gates
+(see `docs/release_operations.md`). A diff means a reviewer must confirm the
+visual change and regenerate baselines.

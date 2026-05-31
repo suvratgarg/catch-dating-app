@@ -18,16 +18,20 @@ import 'support/golden_pump.dart';
 final _heroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
 
 void main() {
-  testWidgets('profile redesign (light + dark)', (tester) async {
-    await matchCatchGolden(
-      tester,
-      'profile_redesign',
-      size: const Size(440, 1820),
-      precache: <ImageProvider<Object>>[_heroImage],
-      builder: (context) =>
-          CatchProfileView(data: _fixture, onReact: (target, comment) {}),
-    );
-  });
+  testWidgets(
+    'profile redesign (light + dark)',
+    (tester) async {
+      await matchCatchGolden(
+        tester,
+        'profile_redesign',
+        size: const Size(440, 1820),
+        precache: <ImageProvider<Object>>[_heroImage],
+        builder: (context) =>
+            CatchProfileView(data: _fixture, onReact: (target, comment) {}),
+      );
+    },
+    tags: const ['golden'],
+  );
 }
 
 ProfileReactionTarget _target(
