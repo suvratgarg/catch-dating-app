@@ -69,7 +69,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
       child: Column(
         children: [
           Expanded(
@@ -82,7 +82,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     gapH32,
                     Text(
                       "What's your number?",
-                      style: CatchTextStyles.formQuestion(
+                      style: CatchTextStyles.headlineS(
                         context,
                         color: t.ink,
                       ),
@@ -180,7 +180,7 @@ class _CountryCodeSelector extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return SizedBox(
-      width: 120,
+      width: CatchLayout.countryCodeSelectorWidth,
       height: CatchTextField.mdControlHeight,
       child: CatchControlShell(
         padding: EdgeInsets.zero,
@@ -203,10 +203,12 @@ class _CountryCodeSelector extends StatelessWidget {
           textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
           dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
           searchStyle: CatchTextStyles.bodyLead(context, color: t.ink),
-          headerTextStyle: CatchTextStyles.titleM(context, color: t.ink),
+          headerTextStyle: CatchTextStyles.sectionTitle(context, color: t.ink),
           dialogBackgroundColor: t.surface,
           backgroundColor: t.surface,
-          barrierColor: Colors.black.withValues(alpha: 0.54),
+          barrierColor: CatchTokens.editorialDark.withValues(
+            alpha: CatchOpacity.mutedBorder,
+          ),
           boxDecoration: BoxDecoration(
             color: t.surface,
             borderRadius: BorderRadius.circular(CatchRadius.md),
@@ -231,10 +233,12 @@ class _CountryCodeSelector extends StatelessWidget {
             ),
           ),
           closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          margin: const EdgeInsets.only(right: 6),
-          flagWidth: 24,
-          flagDecoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+          margin: const EdgeInsets.only(right: CatchSpacing.micro6),
+          flagWidth: CatchSpacing.s6,
+          flagDecoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(CatchRadius.xs),
+          ),
         ),
       ),
     );

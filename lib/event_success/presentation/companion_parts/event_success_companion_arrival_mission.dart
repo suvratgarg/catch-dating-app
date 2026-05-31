@@ -35,7 +35,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
   void initState() {
     super.initState();
     _celebration = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: CatchMotion.arrivalCelebration,
       vsync: this,
     );
   }
@@ -71,7 +71,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
             gapH12,
             Text(
               'Start your First Hello.',
-              style: CatchTextStyles.displayS(context).copyWith(height: 1.04),
+              style: CatchTextStyles.titleL(context),
             ),
             gapH6,
             Text(
@@ -83,7 +83,11 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.nearMeOutlined, size: 18, color: t.primary),
+                  Icon(
+                    CatchIcons.nearMeOutlined,
+                    size: CatchIcon.md,
+                    color: t.primary,
+                  ),
                   gapW8,
                   Expanded(
                     child: Text(
@@ -138,7 +142,11 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                 builder: (context, _) {
                   final v = _celebration.value;
                   // Triangle wave: alpha rises 0→peak then falls back to 0.
-                  final alpha = (v < 0.5 ? v * 2 : (1 - v) * 2) * 0.62;
+                  final alpha =
+                      (v < CatchOpacity.arrivalCelebrationLowMultiplier
+                          ? v * 2
+                          : (1 - v) * 2) *
+                      CatchOpacity.arrivalCelebrationPeak;
                   return DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(CatchRadius.sm),
@@ -146,13 +154,22 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          const Color(0xFFFFB36B).withValues(alpha: alpha),
-                          const Color(
-                            0xFFFF6F61,
-                          ).withValues(alpha: alpha * 0.85),
-                          const Color(
-                            0xFFFFD166,
-                          ).withValues(alpha: alpha * 0.5),
+                          CatchEventSuccessColors.arrivalCelebrationWarm
+                              .withValues(alpha: alpha),
+                          CatchEventSuccessColors.arrivalCelebrationHot
+                              .withValues(
+                                alpha:
+                                    alpha *
+                                    CatchOpacity
+                                        .arrivalCelebrationMidMultiplier,
+                              ),
+                          CatchEventSuccessColors.arrivalCelebrationGold
+                              .withValues(
+                                alpha:
+                                    alpha *
+                                    CatchOpacity
+                                        .arrivalCelebrationLowMultiplier,
+                              ),
                         ],
                       ),
                     ),
@@ -190,7 +207,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
         gapH12,
         Text(
           'Find ${mission.targetDisplayName}.',
-          style: CatchTextStyles.displayS(context).copyWith(height: 1.04),
+          style: CatchTextStyles.titleL(context),
         ),
         gapH6,
         Text(
@@ -204,7 +221,7 @@ class _FirstHelloCheckInCardState extends ConsumerState<_FirstHelloCheckInCard>
             children: [
               Icon(
                 CatchIcons.questionAnswerOutlined,
-                size: 18,
+                size: CatchIcon.md,
                 color: t.primary,
               ),
               gapW8,

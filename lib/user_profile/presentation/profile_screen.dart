@@ -226,14 +226,21 @@ class _PreviewTabSliverBody extends StatelessWidget {
     return SliverFillRemaining(
       child: Padding(
         padding: profileTabBodyPadding,
-        child: PreviewTab(
-          profile: profile,
-          scrollController: scrollController,
-          scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
-            onForwardScroll: onForwardScroll,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: PreviewTab(
+              profile: profile,
+              scrollController: scrollController,
+              scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
+                onForwardScroll: onForwardScroll,
+              ),
+              bottomPadding: 0,
+              onLeadingOverscroll: onLeadingOverscroll,
+            ),
           ),
-          bottomPadding: 0,
-          onLeadingOverscroll: onLeadingOverscroll,
         ),
       ),
     );

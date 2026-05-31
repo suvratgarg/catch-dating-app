@@ -86,7 +86,7 @@ class ScrollableProfile extends ConsumerWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(30),
+                  bottom: Radius.circular(CatchRadius.profilePhotoBottom),
                 ),
                 child: CardPhotoSection(
                   url: primaryPhoto?.url,
@@ -293,7 +293,10 @@ class _PhotoPromptOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       prompt.displayPrompt,
-      style: CatchTextStyles.cardTitle(context, color: Colors.white),
+      style: CatchTextStyles.titleL(
+        context,
+        color: CatchTokens.editorialLight,
+      ),
       maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
@@ -328,7 +331,7 @@ class _RunningIdentityCard extends StatelessWidget {
         children: [
           Text(
             '${_firstName(profile.name)} likes ${_formatRunMood(profile)}',
-            style: CatchTextStyles.cardTitle(
+            style: CatchTextStyles.titleL(
               context,
               color: palette.textPrimary,
             ),
@@ -395,11 +398,18 @@ class _EventIdentityTagPill extends StatelessWidget {
       radius: CatchRadius.pill,
       backgroundColor: palette.chipFill,
       borderColor: palette.chipBorder,
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.profileTagPillHorizontalPadding,
+        vertical: CatchLayout.profileTagPillVerticalPadding,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_runTagIcon(tag.kind), size: 14, color: palette.textSecondary),
+          Icon(
+            _runTagIcon(tag.kind),
+            size: CatchIcon.sm,
+            color: palette.textSecondary,
+          ),
           gapW6,
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 190),
@@ -439,11 +449,18 @@ class _RunStatPill extends StatelessWidget {
         radius: CatchRadius.md,
         backgroundColor: palette.surfaceRaised,
         borderColor: palette.chipBorder,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchLayout.profileRunStatHorizontalPadding,
+          vertical: CatchLayout.profileRunStatVerticalPadding,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 17, color: palette.textSecondary),
+            Icon(
+              icon,
+              size: CatchIcon.profileRunStat,
+              color: palette.textSecondary,
+            ),
             gapH8,
             Text(
               label,

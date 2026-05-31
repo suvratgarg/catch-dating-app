@@ -370,7 +370,8 @@ class _LiveNowConsole extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
+    const stage = CatchTokens.sunsetDark;
+    final stageForeground = stage.ink;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -381,9 +382,9 @@ class _LiveNowConsole extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              t.ink,
-              Color.lerp(t.ink, t.primary, 0.52)!,
-              Color.lerp(t.accent, t.gold, 0.18)!,
+              stage.bg,
+              Color.lerp(stage.bg, stage.raised, 0.52)!,
+              Color.lerp(stage.raised, stage.gold, 0.18)!,
             ],
           ),
           padding: const EdgeInsets.all(CatchSpacing.s4),
@@ -398,24 +399,40 @@ class _LiveNowConsole extends StatelessWidget {
                     label: 'Live now',
                     tone: CatchBadgeTone.live,
                     icon: CatchIcons.autoAwesomeRounded,
-                    backgroundColor: t.surface.withValues(alpha: 0.14),
-                    foregroundColor: t.surface,
-                    borderColor: t.surface.withValues(alpha: 0.18),
+                    backgroundColor: stageForeground.withValues(
+                      alpha: CatchOpacity.warningFill,
+                    ),
+                    foregroundColor: stageForeground,
+                    borderColor: stageForeground.withValues(
+                      alpha: CatchOpacity.eventSuccessSubtleBorder,
+                    ),
                   ),
                   CatchBadge(
                     label:
                         'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
                     tone: CatchBadgeTone.neutral,
-                    backgroundColor: t.surface.withValues(alpha: 0.12),
-                    foregroundColor: t.surface.withValues(alpha: 0.90),
-                    borderColor: t.surface.withValues(alpha: 0.16),
+                    backgroundColor: stageForeground.withValues(
+                      alpha: CatchOpacity.subtleFill,
+                    ),
+                    foregroundColor: stageForeground.withValues(
+                      alpha: CatchOpacity.eventSuccessPanelFill,
+                    ),
+                    borderColor: stageForeground.withValues(
+                      alpha: CatchOpacity.photoScrimMedium,
+                    ),
                   ),
                   CatchBadge(
                     label: plan.activeStep.stage.label,
                     tone: CatchBadgeTone.neutral,
-                    backgroundColor: t.surface.withValues(alpha: 0.12),
-                    foregroundColor: t.surface.withValues(alpha: 0.90),
-                    borderColor: t.surface.withValues(alpha: 0.16),
+                    backgroundColor: stageForeground.withValues(
+                      alpha: CatchOpacity.subtleFill,
+                    ),
+                    foregroundColor: stageForeground.withValues(
+                      alpha: CatchOpacity.eventSuccessPanelFill,
+                    ),
+                    borderColor: stageForeground.withValues(
+                      alpha: CatchOpacity.photoScrimMedium,
+                    ),
                   ),
                 ],
               ),
@@ -428,29 +445,37 @@ class _LiveNowConsole extends StatelessWidget {
               gapH16,
               Text(
                 plan.activeStep.title,
-                style: CatchTextStyles.titleL(context, color: t.surface),
+                style: CatchTextStyles.titleL(context, color: stageForeground),
               ),
               gapH6,
               Text(
                 plan.activeStep.hostInstruction,
-                style: CatchTextStyles.bodyLead(
+                style: CatchTextStyles.proseM(
                   context,
-                  color: t.surface.withValues(alpha: 0.84),
+                  color: stageForeground.withValues(
+                    alpha: CatchOpacity.eventSuccessChrome,
+                  ),
                 ),
               ),
               gapH12,
               CatchSurface(
                 padding: const EdgeInsets.all(CatchSpacing.s3),
-                backgroundColor: t.surface.withValues(alpha: 0.10),
-                borderColor: t.surface.withValues(alpha: 0.14),
+                backgroundColor: stageForeground.withValues(
+                  alpha: CatchOpacity.photoScrimLight,
+                ),
+                borderColor: stageForeground.withValues(
+                  alpha: CatchOpacity.warningFill,
+                ),
                 radius: CatchRadius.sm,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
                       CatchIcons.phoneIphoneRounded,
-                      size: 18,
-                      color: t.surface.withValues(alpha: 0.82),
+                      size: CatchIcon.md,
+                      color: stageForeground.withValues(
+                        alpha: CatchOpacity.eventSuccessProminent,
+                      ),
                     ),
                     gapW8,
                     Expanded(
@@ -458,7 +483,9 @@ class _LiveNowConsole extends StatelessWidget {
                         'Attendees at ${event.locationName} see: ${plan.activeStep.attendeeExperience}',
                         style: CatchTextStyles.supporting(
                           context,
-                          color: t.surface.withValues(alpha: 0.82),
+                          color: stageForeground.withValues(
+                            alpha: CatchOpacity.eventSuccessProminent,
+                          ),
                         ),
                       ),
                     ),
@@ -514,7 +541,7 @@ class _LiveCheckInQrCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Host check-in QR',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
             ],
@@ -545,8 +572,7 @@ class _LiveNowProgressMeter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final foreground = t.surface;
+    final foreground = CatchTokens.sunsetDark.ink;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -570,7 +596,9 @@ class _LiveNowProgressMeter extends StatelessWidget {
           child: LinearProgressIndicator(
             value: value.clamp(0, 1).toDouble(),
             minHeight: 8,
-            backgroundColor: foreground.withValues(alpha: 0.14),
+            backgroundColor: foreground.withValues(
+              alpha: CatchOpacity.warningFill,
+            ),
             valueColor: AlwaysStoppedAnimation<Color>(foreground),
           ),
         ),
@@ -636,7 +664,7 @@ class _LiveSectionHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: CatchTextStyles.titleM(context)),
+        Text(title, style: CatchTextStyles.sectionTitle(context)),
         gapH4,
         Text(
           subtitle,

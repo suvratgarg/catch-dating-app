@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class ChatSearchField extends ConsumerWidget {
       textInputAction: TextInputAction.done,
       onSubmitted: onSubmitted,
       onFocusChanged: onFocusChanged,
-      prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
+      prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
       showClearButton: true,
     );
   }

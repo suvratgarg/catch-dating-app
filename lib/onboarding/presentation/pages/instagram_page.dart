@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -38,39 +40,35 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          gapH32,
-          const OnboardingStepHeader(title: "What's your Instagram?"),
-          gapH8,
-          Text(
-            'This helps us verify you for early access. Your handle is never shown to other users.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-          gapH32,
-          CatchTextField(
-            controller: _controller,
-            label: 'Instagram handle',
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _submit(),
-            prefixText: '@',
-          ),
-          gapH40,
-          CatchButton(
-            label: 'Continue',
-            onPressed: _submit,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
-        ],
-      ),
+    final t = CatchTokens.of(context);
+
+    return OnboardingStepFrame(
+      children: [
+        gapH32,
+        const OnboardingStepHeader(title: "What's your Instagram?"),
+        gapH8,
+        Text(
+          'This helps us verify you for early access. Your handle is never shown to other users.',
+          style: CatchTextStyles.proseM(context, color: t.ink2),
+        ),
+        gapH32,
+        CatchTextField(
+          controller: _controller,
+          label: 'Instagram handle',
+          keyboardType: TextInputType.text,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _submit(),
+          prefixText: '@',
+        ),
+        gapH40,
+        CatchButton(
+          label: 'Continue',
+          onPressed: _submit,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
+        gapH32,
+      ],
     );
   }
 }

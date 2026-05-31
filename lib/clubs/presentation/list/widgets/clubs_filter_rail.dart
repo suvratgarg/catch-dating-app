@@ -104,7 +104,11 @@ class _RailDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 1, height: 22, color: color);
+    return SizedBox(
+      width: CatchStroke.hairline,
+      height: CatchLayout.clubFilterDividerHeight,
+      child: ColoredBox(color: color),
+    );
   }
 }
 

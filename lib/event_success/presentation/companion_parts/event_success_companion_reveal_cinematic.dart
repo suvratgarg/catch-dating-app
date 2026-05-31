@@ -58,15 +58,15 @@ class _RevealCinematicOverlayState extends State<_RevealCinematicOverlay>
   void initState() {
     super.initState();
     _tick = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: CatchMotion.revealCinematicTick,
       vsync: this,
     );
     _climax = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: CatchMotion.revealCinematicClimax,
       vsync: this,
     );
     _settle = AnimationController(
-      duration: const Duration(milliseconds: 700),
+      duration: CatchMotion.revealCinematicSettle,
       vsync: this,
     );
     if (_kStageAnimationsEnabled) _tick!.repeat();
@@ -291,7 +291,10 @@ class _RevealCinematicPainter extends CustomPainter {
         if (flash > 0) {
           canvas.drawRect(
             Offset.zero & size,
-            Paint()..color = Colors.white.withValues(alpha: flash * 0.62),
+            Paint()
+              ..color = CatchTokens.editorialLight.withValues(
+                alpha: flash * CatchOpacity.revealCinematicFlash,
+              ),
           );
         }
         _paintVignette(canvas, size, center, 0.55 * (1 - climaxProgress * 0.6));
@@ -337,8 +340,8 @@ class _RevealCinematicPainter extends CustomPainter {
       ),
       radius: 0.92,
       colors: [
-        Colors.transparent,
-        Colors.black.withValues(alpha: strength.clamp(0.0, 1.0)),
+        CatchTokens.editorialDark.withValues(alpha: CatchOpacity.none),
+        CatchTokens.editorialDark.withValues(alpha: strength.clamp(0.0, 1.0)),
       ],
       stops: const [0.34, 1.0],
     );
@@ -466,7 +469,10 @@ class _RevealCinematicPainter extends CustomPainter {
       point,
       particle.size * (1 + 0.18 * tickShift),
       Paint()
-        ..color = color.withValues(alpha: 0.7 * alphaScale.clamp(0.0, 1.0)),
+        ..color = color.withValues(
+          alpha:
+              CatchOpacity.revealCinematicParticle * alphaScale.clamp(0.0, 1.0),
+        ),
     );
   }
 

@@ -55,11 +55,17 @@ class ChatMessageList extends StatelessWidget {
           itemCount: messages.length,
           itemBuilder: (context, i) {
             final msg = messages[i];
+            final previous = i == 0 ? null : messages[i - 1];
+            final next = i == messages.length - 1 ? null : messages[i + 1];
+            final isFirstInGroup = previous?.senderId != msg.senderId;
+            final isLastInGroup = next?.senderId != msg.senderId;
             return MessageBubble(
               text: msg.text,
               isMe: msg.senderId == currentUid,
               sentAt: msg.sentAt,
               imageUrl: msg.imageUrl,
+              isFirstInGroup: isFirstInGroup,
+              isLastInGroup: isLastInGroup,
             );
           },
         );

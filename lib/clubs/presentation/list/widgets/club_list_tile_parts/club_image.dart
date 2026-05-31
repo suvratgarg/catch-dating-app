@@ -6,16 +6,12 @@ class _ClubImage extends StatelessWidget {
     this.preferProfileImage = false,
     this.coverOnly = false,
     this.fallbackCompact = true,
-    this.showFallbackLocationChip,
-    this.showFallbackFooterLabel,
   });
 
   final Club club;
   final bool preferProfileImage;
   final bool coverOnly;
   final bool fallbackCompact;
-  final bool? showFallbackLocationChip;
-  final bool? showFallbackFooterLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -29,19 +25,17 @@ class _ClubImage extends StatelessWidget {
     }
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _placeholder(),
+      return GradedImage(
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _placeholder(),
+        ),
       );
     }
     return _placeholder();
   }
 
-  Widget _placeholder() => ClubCoverFallback(
-    club: club,
-    compact: fallbackCompact,
-    showLocationChip: showFallbackLocationChip,
-    showFooterLabel: showFallbackFooterLabel,
-  );
+  Widget _placeholder() =>
+      ClubPolaroidArtwork(club: club, compact: fallbackCompact);
 }

@@ -48,7 +48,19 @@ class ProfileTab extends ConsumerWidget {
         key: scrollViewKey,
         physics: physics,
         padding: profileTabBodyPadding,
-        children: children,
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -71,7 +83,19 @@ class ProfileTabSliverBody extends ConsumerWidget {
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
         padding: profileTabBodyPadding,
-        sliver: SliverList.list(children: children),
+        sliver: SliverToBoxAdapter(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -760,7 +784,9 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
             child: LinearProgressIndicator(
               minHeight: 7,
               value: progress,
-              backgroundColor: t.line.withValues(alpha: 0.7),
+              backgroundColor: t.line.withValues(
+                alpha: CatchOpacity.profileProgressTrack,
+              ),
               valueColor: AlwaysStoppedAnimation<Color>(
                 summary.isStrong ? t.success : t.primary,
               ),
@@ -769,7 +795,7 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
           gapH10,
           Text(
             '${summary.completedItems} of ${summary.totalItems} profile basics complete',
-            style: CatchTextStyles.bodyLead(context, color: t.ink2),
+            style: CatchTextStyles.proseM(context, color: t.ink2),
           ),
           if (suggestions.isNotEmpty) ...[
             gapH12,
@@ -797,7 +823,7 @@ class _ProfileQualitySuggestionRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 2),
+          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
           child: Icon(
             CatchIcons.addCircleOutlineRounded,
             size: 16,
@@ -816,7 +842,7 @@ class _ProfileQualitySuggestionRow extends StatelessWidget {
               gapH2,
               Text(
                 suggestion.detail,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                style: CatchTextStyles.proseM(context, color: t.ink2),
               ),
             ],
           ),

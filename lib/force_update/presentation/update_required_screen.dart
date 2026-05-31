@@ -28,11 +28,15 @@ class UpdateRequiredScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(CatchIcons.systemUpdateOutlined, size: 72, color: t.primary),
+              Icon(
+                CatchIcons.systemUpdateOutlined,
+                size: CatchIcon.forceUpdate,
+                color: t.primary,
+              ),
               gapH32,
               Text(
                 'Update required',
-                style: CatchTextStyles.displayL(
+                style: CatchTextStyles.headline(
                   context,
                 ).copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,7 @@ class ClubsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(CatchSpacing.s5),
         child: CatchEmptyState(
           icon: CatchIcons.groupsOutlined,
           title: title,

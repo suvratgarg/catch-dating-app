@@ -34,6 +34,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_success_step.
 import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/events/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/where_step.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 DateTime _systemNow() => DateTime.now();
+const _maxEventPhotos = 6;
 
 class CreateEventScreen extends ConsumerStatefulWidget {
   const CreateEventScreen({
@@ -48,9 +50,13 @@ class CreateEventScreen extends ConsumerStatefulWidget {
     required this.club,
     this.loadMapTiles = true,
     this.now = _systemNow,
+    this.initialDraft,
+    this.initialStep = 0,
   });
 
   final Club club;
+  final EventDraft? initialDraft;
+  final int initialStep;
 
   /// Tests can disable network tiles while still exercising map callbacks.
   final bool loadMapTiles;
@@ -63,7 +69,7 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
-  final _pageController = PageController();
+  late final PageController _pageController;
   int _currentStep = 0;
   Event? _createdEvent;
 
@@ -113,7 +119,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   EventInteractionModel _selectedInteractionModel =
       ActivityKind.socialRun.defaultInteractionModel;
   PaceLevel? _selectedPace;
-  PickedEventPhoto? _eventPhoto;
+  final _eventPhotos = <_PickedEventPhotoDraft>[];
+  var _nextPickedEventPhotoId = 0;
 
   // Step 3 — Rules
   final _minAgeController = TextEditingController();
@@ -209,7 +216,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   @override
   void initState() {
     super.initState();
+    _currentStep = widget.initialStep.clamp(0, _stepSpecs.length - 1).toInt();
+    _pageController = PageController(initialPage: _currentStep);
     _applyClubDefaults(widget.club.hostDefaults);
+    final initialDraft = widget.initialDraft;
+    if (initialDraft != null) {
+      _activeDraftId = initialDraft.id;
+      _applyDraftValues(initialDraft);
+      _lastSavedDraftSignature = _currentDraftContentSignature;
+    }
     _initialDraftContentSignature = _currentDraftContentSignature;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_checkedDrafts) {
@@ -316,12 +331,42 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
   }
 
-  Future<void> _pickEventPhoto() async {
+  Future<void> _pickEventPhotos() async {
+    final remainingSlots = _maxEventPhotos - _eventPhotos.length;
+    if (remainingSlots <= 0) return;
     final picked = await ref
         .read(createEventControllerProvider.notifier)
-        .pickEventPhoto();
-    if (!mounted || picked == null) return;
-    setState(() => _eventPhoto = picked);
+        .pickEventPhotos(limit: remainingSlots);
+    if (!mounted || picked.isEmpty) return;
+    setState(() {
+      _eventPhotos.addAll(
+        picked
+            .take(remainingSlots)
+            .map(
+              (photo) =>
+                  _PickedEventPhotoDraft(_nextPickedEventPhotoId++, photo),
+            ),
+      );
+    });
+  }
+
+  void _removeEventPhoto(int index) {
+    if (index < 0 || index >= _eventPhotos.length) return;
+    setState(() => _eventPhotos.removeAt(index));
+  }
+
+  void _reorderEventPhoto(int fromIndex, int toIndex) {
+    if (fromIndex == toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= _eventPhotos.length ||
+        toIndex >= _eventPhotos.length) {
+      return;
+    }
+    setState(() {
+      final moved = _eventPhotos.removeAt(fromIndex);
+      _eventPhotos.insert(toIndex, moved);
+    });
   }
 
   void _back() {
@@ -370,8 +415,8 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     setState(() => _currentStep = step);
     _pageController.animateToPage(
       step,
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeInOut,
+      duration: CatchMotion.pageStep,
+      curve: CatchMotion.easeInOutCurve,
     );
   }
 
@@ -413,7 +458,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             constraints: _constraints,
             eventPolicy: _eventPolicy,
             inviteCode: _trimmedTextOrNull(_inviteCodeController),
-            photoImage: _eventPhoto?.image,
+            photoImages: [
+              for (final eventPhoto in _eventPhotos) eventPhoto.photo.image,
+            ],
             eventSuccessDefaults: _eventSuccessDefaults,
           );
       if (mounted) {
@@ -474,6 +521,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
     cancellationPolicy: _selectedCancellationPolicyId.name,
     eventSuccessDefaults: _eventSuccessDefaults,
+    eventPhotoIds: [
+      for (final eventPhoto in _eventPhotos) eventPhoto.id,
+    ].join(','),
   );
 
   Future<void> _checkForDrafts() async {
@@ -497,105 +547,104 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   void _restoreFromDraft(EventDraft draft) {
     _activeDraftId = draft.id;
 
-    setState(() {
-      // Event details
-      if (draft.distance != null) {
-        _distanceController.text = draft.distance!;
-      }
-      if (draft.capacity != null) {
-        _capacityController.text = draft.capacity!;
-      }
-      if (draft.price != null) {
-        _priceController.text = draft.price!;
-      }
-      if (draft.description != null) {
-        _descriptionController.text = draft.description!;
-      }
-      _selectedActivityKind = _activityKindFromName(draft.activityKind);
-      _customActivityLabelController.text = draft.customActivityLabel ?? '';
-      _selectedInteractionModel = _interactionModelFromName(
-        draft.interactionModel,
-        fallback: _selectedActivityKind.defaultInteractionModel,
-      );
-      if (draft.paceName != null) {
-        try {
-          _selectedPace = PaceLevel.values.byName(draft.paceName!);
-        } catch (_) {
-          // Draft contained an unrecognized pace name — ignore and use default.
-        }
-      }
-
-      // Where
-      if (draft.meetingPoint != null) {
-        _meetingPointController.text = draft.meetingPoint!;
-      }
-      if (draft.locationDetails != null) {
-        _locationDetailsController.text = draft.locationDetails!;
-      }
-      _meetingLocationAddress = draft.meetingLocationAddress;
-      _meetingLocationPlaceId = draft.meetingLocationPlaceId;
-      if (draft.startingPointLat != null && draft.startingPointLng != null) {
-        _startingPoint = LocationCoordinate(
-          draft.startingPointLat!,
-          draft.startingPointLng!,
-        );
-      }
-
-      // When
-      if (draft.selectedDateMillis != null) {
-        final date = DateTime.fromMillisecondsSinceEpoch(
-          draft.selectedDateMillis!,
-        );
-        _selectedDate = date;
-        _dateController.text =
-            '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-      }
-      if (draft.selectedStartHour != null &&
-          draft.selectedStartMinute != null) {
-        _selectedStartTime = TimeOfDay(
-          hour: draft.selectedStartHour!,
-          minute: draft.selectedStartMinute!,
-        );
-        _startTimeController.text = _formatClockTime(_selectedStartTime!);
-      }
-      _durationMinutes = draft.durationMinutes;
-
-      // Rules
-      if (draft.minAge != null) {
-        _minAgeController.text = draft.minAge!;
-      }
-      if (draft.maxAge != null) {
-        _maxAgeController.text = draft.maxAge!;
-      }
-      if (draft.maxMen != null) {
-        _maxMenController.text = draft.maxMen!;
-      }
-      if (draft.maxWomen != null) {
-        _maxWomenController.text = draft.maxWomen!;
-      }
-      _selectedAdmissionPreset = _admissionPresetFromName(
-        draft.admissionPreset,
-      );
-      _cohortCapsEnabled =
-          draft.admissionPreset == 'fixedCohortCaps' ||
-          draft.maxMen != null ||
-          draft.maxWomen != null;
-      if (draft.inviteCode != null) {
-        _inviteCodeController.text = draft.inviteCode!;
-      }
-      _dynamicPricingEnabled = draft.dynamicPricingEnabled;
-      if (draft.dynamicPricingStep != null) {
-        _dynamicPricingStepController.text = draft.dynamicPricingStep!;
-      }
-      if (draft.dynamicPricingMax != null) {
-        _dynamicPricingMaxController.text = draft.dynamicPricingMax!;
-      }
-      _selectedCancellationPolicyId = _cancellationPolicyFromName(
-        draft.cancellationPolicy,
-      );
-      _eventSuccessDefaults = draft.eventSuccessDefaults;
-    });
+    setState(() => _applyDraftValues(draft));
     _lastSavedDraftSignature = _currentDraftContentSignature;
+  }
+
+  void _applyDraftValues(EventDraft draft) {
+    // Event details
+    if (draft.distance != null) {
+      _distanceController.text = draft.distance!;
+    }
+    if (draft.capacity != null) {
+      _capacityController.text = draft.capacity!;
+    }
+    if (draft.price != null) {
+      _priceController.text = draft.price!;
+    }
+    if (draft.description != null) {
+      _descriptionController.text = draft.description!;
+    }
+    _selectedActivityKind = _activityKindFromName(draft.activityKind);
+    _customActivityLabelController.text = draft.customActivityLabel ?? '';
+    _selectedInteractionModel = _interactionModelFromName(
+      draft.interactionModel,
+      fallback: _selectedActivityKind.defaultInteractionModel,
+    );
+    if (draft.paceName != null) {
+      try {
+        _selectedPace = PaceLevel.values.byName(draft.paceName!);
+      } catch (_) {
+        // Draft contained an unrecognized pace name — ignore and use default.
+      }
+    }
+
+    // Where
+    if (draft.meetingPoint != null) {
+      _meetingPointController.text = draft.meetingPoint!;
+    }
+    if (draft.locationDetails != null) {
+      _locationDetailsController.text = draft.locationDetails!;
+    }
+    _meetingLocationAddress = draft.meetingLocationAddress;
+    _meetingLocationPlaceId = draft.meetingLocationPlaceId;
+    if (draft.startingPointLat != null && draft.startingPointLng != null) {
+      _startingPoint = LocationCoordinate(
+        draft.startingPointLat!,
+        draft.startingPointLng!,
+      );
+    }
+
+    // When
+    if (draft.selectedDateMillis != null) {
+      final date = DateTime.fromMillisecondsSinceEpoch(
+        draft.selectedDateMillis!,
+      );
+      _selectedDate = date;
+      _dateController.text =
+          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    }
+    if (draft.selectedStartHour != null && draft.selectedStartMinute != null) {
+      _selectedStartTime = TimeOfDay(
+        hour: draft.selectedStartHour!,
+        minute: draft.selectedStartMinute!,
+      );
+      _startTimeController.text = _formatClockTime(_selectedStartTime!);
+    }
+    _durationMinutes = draft.durationMinutes;
+
+    // Rules
+    if (draft.minAge != null) {
+      _minAgeController.text = draft.minAge!;
+    }
+    if (draft.maxAge != null) {
+      _maxAgeController.text = draft.maxAge!;
+    }
+    if (draft.maxMen != null) {
+      _maxMenController.text = draft.maxMen!;
+    }
+    if (draft.maxWomen != null) {
+      _maxWomenController.text = draft.maxWomen!;
+    }
+    _selectedAdmissionPreset = _admissionPresetFromName(draft.admissionPreset);
+    _cohortCapsEnabled =
+        draft.admissionPreset == 'fixedCohortCaps' ||
+        draft.maxMen != null ||
+        draft.maxWomen != null;
+    if (draft.inviteCode != null) {
+      _inviteCodeController.text = draft.inviteCode!;
+    }
+    _dynamicPricingEnabled = draft.dynamicPricingEnabled;
+    if (draft.dynamicPricingStep != null) {
+      _dynamicPricingStepController.text = draft.dynamicPricingStep!;
+    }
+    if (draft.dynamicPricingMax != null) {
+      _dynamicPricingMaxController.text = draft.dynamicPricingMax!;
+    }
+    _selectedCancellationPolicyId = _cancellationPolicyFromName(
+      draft.cancellationPolicy,
+    );
+    _eventSuccessDefaults = draft.eventSuccessDefaults;
   }
 
   Future<void> _deleteDraftFromPicker(EventDraft draft) {
@@ -664,7 +713,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             color: CatchTokens.of(context).bg,
           ),
         ),
-        duration: const Duration(seconds: 2),
+        duration: CatchMotion.snackbar,
       ),
     );
   }
@@ -693,6 +742,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final text = controller.text.trim();
     return text.isEmpty ? null : text;
   }
+
+  List<OrderedPhotoPreview> get _eventPhotoPreviews => [
+    for (final photo in _eventPhotos) photo.preview,
+  ];
 
   String? get _customActivityLabelDraftValue {
     if (_selectedActivityKind != ActivityKind.openActivity) return null;
@@ -904,8 +957,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 children: [
                   EventDetailsStep(
                     formKey: _eventDetailsFormKey,
-                    photoImageBytes: _eventPhoto?.bytes,
-                    onPickPhoto: _pickEventPhoto,
+                    photoPreviews: _eventPhotoPreviews,
+                    onPickPhotos: _pickEventPhotos,
+                    onRemovePhoto: _removeEventPhoto,
+                    onReorderPhoto: _reorderEventPhoto,
                     distanceController: _distanceController,
                     customActivityLabelController:
                         _customActivityLabelController,
@@ -1020,4 +1075,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       ),
     );
   }
+}
+
+final class _PickedEventPhotoDraft {
+  const _PickedEventPhotoDraft(this.id, this.photo);
+
+  final int id;
+  final PickedEventPhoto photo;
+
+  OrderedPhotoPreview get preview =>
+      OrderedPhotoPreview(id: 'picked_event_$id', bytes: photo.bytes);
 }

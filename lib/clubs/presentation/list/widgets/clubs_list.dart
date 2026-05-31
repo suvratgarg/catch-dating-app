@@ -147,9 +147,9 @@ class _ClubDirectorySkeletonList extends StatelessWidget {
     return const Column(
       children: [
         _ClubDirectorySkeletonCard(),
-        SizedBox(height: 14),
+        gapH14,
         _ClubDirectorySkeletonCard(),
-        SizedBox(height: 14),
+        gapH14,
         _ClubDirectorySkeletonCard(),
       ],
     );
@@ -169,33 +169,53 @@ class _ClubDirectorySkeletonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.card(height: 120),
+          CatchSkeleton.card(height: CatchLayout.eventTypeSkeletonCardHeight),
           Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(CatchSpacing.micro14),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchSkeleton.text(width: 180),
+                CatchSkeleton.text(
+                  width: CatchLayout.clubDirectorySkeletonTitleWidth,
+                ),
                 gapH8,
-                CatchSkeleton.text(width: 132),
+                CatchSkeleton.text(
+                  width: CatchLayout.clubDirectorySkeletonSubtitleWidth,
+                ),
                 gapH12,
                 Row(
                   children: [
-                    CatchSkeleton.card(width: 72, height: 24),
+                    CatchSkeleton.card(
+                      width: CatchLayout.clubDirectorySkeletonShortChipWidth,
+                      height: CatchSpacing.s6,
+                    ),
                     gapW8,
-                    CatchSkeleton.card(width: 96, height: 24),
+                    CatchSkeleton.card(
+                      width: CatchLayout.clubDirectorySkeletonLongChipWidth,
+                      height: CatchSpacing.s6,
+                    ),
                   ],
                 ),
                 gapH12,
-                Container(height: 1, color: t.line),
+                SizedBox(
+                  height: CatchStroke.hairline,
+                  child: ColoredBox(color: t.line),
+                ),
                 gapH12,
                 Row(
                   children: [
-                    CatchSkeleton.circle(size: 18),
+                    CatchSkeleton.circle(size: CatchIcon.md),
                     gapW8,
-                    Expanded(child: CatchSkeleton.text(width: 140)),
+                    Expanded(
+                      child: CatchSkeleton.text(
+                        width: CatchLayout.clubDirectorySkeletonFooterWidth,
+                      ),
+                    ),
                     gapW12,
-                    CatchSkeleton.card(width: 70, height: 36),
+                    CatchSkeleton.card(
+                      width: CatchLayout.clubDirectorySkeletonActionWidth,
+                      height: CatchSpacing.s9,
+                    ),
                   ],
                 ),
               ],

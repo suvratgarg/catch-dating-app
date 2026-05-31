@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
@@ -24,7 +25,7 @@ class Recommendations extends StatelessWidget {
           ),
           showDivider: false,
           height: null,
-          spacing: 10,
+          spacing: CatchLayout.recommendationRailGap,
           headerPadding: EdgeInsets.zero,
           listPadding: EdgeInsets.zero,
         );

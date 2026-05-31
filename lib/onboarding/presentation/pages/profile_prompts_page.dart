@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -94,50 +95,47 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
     final answeredCount = answers.length;
     final mutation = ref.watch(OnboardingController.completeMutation);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          gapH32,
-          OnboardingStepHeader(
-            title: widget.profileCompletionOnly
-                ? 'Add prompts to start swiping'
-                : 'Add your profile prompts',
-            subtitle: widget.profileCompletionOnly
-                ? 'Prompts give people something real to respond to before you match.'
-                : 'Give people specific things to like, comment on, and ask about.',
+    return OnboardingStepFrame(
+      children: [
+        gapH32,
+        OnboardingStepHeader(
+          title: widget.profileCompletionOnly
+              ? 'Add prompts to start swiping'
+              : 'Add your profile prompts',
+          subtitle: widget.profileCompletionOnly
+              ? 'Prompts give people something real to respond to before you match.'
+              : 'Give people specific things to like, comment on, and ask about.',
+        ),
+        gapH24,
+        for (final promptId in defaultProfilePromptIds) ...[
+          _PromptField(
+            definition: profilePromptDefinition(promptId),
+            controller: _controllers[promptId]!,
           ),
-          gapH24,
-          for (final promptId in defaultProfilePromptIds) ...[
-            _PromptField(
-              definition: profilePromptDefinition(promptId),
-              controller: _controllers[promptId]!,
-            ),
-            gapH18,
-          ],
-          Text(
-            '$answeredCount / ${defaultProfilePromptIds.length} prompts answered',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: canContinue ? t.success : t.ink2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          if (mutation.hasError) ...[
-            gapH16,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
-          ],
-          gapH16,
-          CatchButton(
-            label: 'Continue',
-            onPressed: canContinue && !mutation.isPending ? _continue : null,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          gapH32,
+          gapH18,
         ],
-      ),
+        Text(
+          '$answeredCount / ${defaultProfilePromptIds.length} prompts answered',
+          style: CatchTextStyles.statusLabel(
+            context,
+            color: canContinue ? t.success : t.ink2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        if (mutation.hasError) ...[
+          gapH16,
+          ErrorBanner(message: mutationErrorMessage(mutation)),
+        ],
+        gapH16,
+        CatchButton(
+          label: 'Continue',
+          onPressed: canContinue && !mutation.isPending ? _continue : null,
+          isLoading: mutation.isPending,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
+        gapH32,
+      ],
     );
   }
 }

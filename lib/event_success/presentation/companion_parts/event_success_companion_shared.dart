@@ -41,10 +41,10 @@ class _CompanionStageScaffold extends StatelessWidget {
     return Scaffold(
       key: const ValueKey('eventSuccessCompanionStage'),
       backgroundColor: stageTheme.background,
-      body: AnimatedContainer(
+      body: CatchSurface(
         duration: CatchMotion.slow,
-        curve: CatchMotion.standardCurve,
-        decoration: BoxDecoration(gradient: stageTheme.gradient),
+        radius: CatchRadius.none,
+        gradient: stageTheme.gradient,
         child: Stack(
           children: [
             Positioned.fill(
@@ -71,28 +71,32 @@ class _CompanionStageScaffold extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          CatchSpacing.s4,
-                          CatchSpacing.s3,
-                          CatchSpacing.s4,
-                          CatchSpacing.s5,
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                          maxWidth: CatchLayout.maxContentWidth,
                         ),
-                        child: _CompanionMomentStage(
-                          event: event,
-                          plan: plan,
-                          presentation: presentation,
-                          stageTheme: stageTheme,
-                          attended: attended,
-                          showSelfCheckIn: showSelfCheckIn,
-                          eventEnded: eventEnded,
-                          momentKey: momentKey,
-                          momentKind: momentKind,
-                          content: content,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            CatchSpacing.s4,
+                            CatchSpacing.s3,
+                            CatchSpacing.s4,
+                            CatchSpacing.s5,
+                          ),
+                          child: _CompanionMomentStage(
+                            event: event,
+                            plan: plan,
+                            presentation: presentation,
+                            stageTheme: stageTheme,
+                            attended: attended,
+                            showSelfCheckIn: showSelfCheckIn,
+                            eventEnded: eventEnded,
+                            momentKey: momentKey,
+                            momentKind: momentKind,
+                            content: content,
+                          ),
                         ),
                       ),
                     ),
@@ -174,12 +178,12 @@ class _CompanionMomentStage extends StatelessWidget {
         AnimatedSwitcher(
           duration: CatchMotion.slow,
           switchInCurve: CatchMotion.standardCurve,
-          switchOutCurve: Curves.easeInCubic,
+          switchOutCurve: CatchMotion.easeInCubicCurve,
           transitionBuilder: (child, animation) {
             final curved = CurvedAnimation(
               parent: animation,
               curve: CatchMotion.standardCurve,
-              reverseCurve: Curves.easeInCubic,
+              reverseCurve: CatchMotion.easeInCubicCurve,
             );
             final offset = Tween<Offset>(
               begin: const Offset(0, 0.16),
@@ -201,17 +205,19 @@ class _CompanionMomentStage extends StatelessWidget {
               children: [
                 Text(
                   presentation.headline,
-                  style: CatchTextStyles.displayL(
+                  style: CatchTextStyles.headline(
                     context,
                     color: stageTheme.foreground,
-                  ).copyWith(height: 1.02, letterSpacing: 0),
+                  ),
                 ),
                 gapH10,
                 Text(
                   presentation.body,
                   style: CatchTextStyles.bodyL(
                     context,
-                    color: stageTheme.foreground.withValues(alpha: 0.82),
+                    color: stageTheme.foreground.withValues(
+                      alpha: CatchOpacity.eventSuccessProminent,
+                    ),
                   ),
                 ),
                 gapH16,
@@ -242,9 +248,13 @@ class _StageNav extends StatelessWidget {
       children: [
         IconButton.filledTonal(
           tooltip: 'Back',
-          color: canPop ? foreground : foreground.withValues(alpha: 0.36),
+          color: canPop
+              ? foreground
+              : foreground.withValues(alpha: CatchOpacity.eventSuccessDisabled),
           style: IconButton.styleFrom(
-            backgroundColor: foreground.withValues(alpha: 0.12),
+            backgroundColor: foreground.withValues(
+              alpha: CatchOpacity.subtleFill,
+            ),
           ),
           onPressed: canPop ? () => _popCompanion(context) : null,
           icon: Icon(CatchIcons.arrowBackRounded),
@@ -256,17 +266,19 @@ class _StageNav extends StatelessWidget {
             textAlign: TextAlign.center,
             style: CatchTextStyles.labelL(
               context,
-              color: foreground.withValues(alpha: 0.84),
+              color: foreground.withValues(
+                alpha: CatchOpacity.eventSuccessChrome,
+              ),
             ),
           ),
         ),
         gapW8,
         SizedBox(
-          width: 48,
-          height: 48,
+          width: CatchLayout.eventSuccessStageNavExtent,
+          height: CatchLayout.eventSuccessStageNavExtent,
           child: Icon(
             CatchIcons.radioButtonCheckedRounded,
-            color: foreground.withValues(alpha: 0.34),
+            color: foreground.withValues(alpha: CatchOpacity.eventSuccessMuted),
           ),
         ),
       ],
@@ -313,17 +325,21 @@ class _CompanionHero extends StatelessWidget {
               icon: attended
                   ? CatchIcons.checkRounded
                   : CatchIcons.qrCode2Rounded,
-              backgroundColor: fg.withValues(alpha: 0.12),
+              backgroundColor: fg.withValues(alpha: CatchOpacity.subtleFill),
               foregroundColor: fg,
-              borderColor: fg.withValues(alpha: 0.18),
+              borderColor: fg.withValues(
+                alpha: CatchOpacity.eventSuccessSubtleBorder,
+              ),
             ),
             CatchBadge(
               label: presentation.badgeLabel,
               tone: presentation.badgeTone,
               icon: presentation.icon,
-              backgroundColor: fg.withValues(alpha: 0.12),
+              backgroundColor: fg.withValues(alpha: CatchOpacity.subtleFill),
               foregroundColor: fg,
-              borderColor: fg.withValues(alpha: 0.18),
+              borderColor: fg.withValues(
+                alpha: CatchOpacity.eventSuccessSubtleBorder,
+              ),
             ),
           ],
         ),
@@ -334,7 +350,7 @@ class _CompanionHero extends StatelessWidget {
           '${plan.playbook.title} · ${event.locationName}',
           style: CatchTextStyles.supporting(
             context,
-            color: fg.withValues(alpha: 0.72),
+            color: fg.withValues(alpha: CatchOpacity.eventSuccessMutedInk),
           ),
         ),
       ],
@@ -361,7 +377,7 @@ class _StageGlyphState extends State<_StageGlyph>
     vsync: this,
   );
   late final AnimationController _breathController = AnimationController(
-    duration: const Duration(seconds: 4),
+    duration: CatchMotion.cinematicShort,
     vsync: this,
   );
 
@@ -401,26 +417,23 @@ class _StageGlyphState extends State<_StageGlyph>
         final glowAlpha = 0.20 + (breath * 0.12);
         return Transform.scale(
           scale: scale,
-          child: Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: widget.stageTheme.foreground.withValues(alpha: 0.12),
-              border: Border.all(
-                color: widget.stageTheme.foreground.withValues(alpha: 0.18),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.stageTheme.accent.withValues(alpha: glowAlpha),
-                  blurRadius: glow,
-                  spreadRadius: 2,
-                ),
-              ],
+          child: CatchSurface(
+            width: CatchLayout.eventSuccessStageGlyphExtent,
+            height: CatchLayout.eventSuccessStageGlyphExtent,
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            backgroundColor: widget.stageTheme.foreground.withValues(
+              alpha: CatchOpacity.subtleFill,
+            ),
+            borderColor: widget.stageTheme.foreground.withValues(
+              alpha: CatchOpacity.eventSuccessSubtleBorder,
+            ),
+            boxShadow: CatchElevation.glow(
+              widget.stageTheme.accent.withValues(alpha: glowAlpha),
+              blurRadius: glow,
             ),
             child: Icon(
               widget.icon,
-              size: 40,
+              size: CatchLayout.eventSuccessStageGlyphIconSize,
               color: widget.stageTheme.foreground,
             ),
           ),
@@ -438,14 +451,14 @@ class _StagePrivacyLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s3),
-      decoration: BoxDecoration(
-        color: stageTheme.foreground.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(
-          color: stageTheme.foreground.withValues(alpha: 0.15),
-        ),
+      radius: CatchRadius.sm,
+      backgroundColor: stageTheme.foreground.withValues(
+        alpha: CatchOpacity.clubCoverHighlightOverlay,
+      ),
+      borderColor: stageTheme.foreground.withValues(
+        alpha: CatchOpacity.eventSuccessPrivacyBorder,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,7 +466,9 @@ class _StagePrivacyLine extends StatelessWidget {
           Icon(
             CatchIcons.lockOutlineRounded,
             size: 18,
-            color: stageTheme.foreground.withValues(alpha: 0.82),
+            color: stageTheme.foreground.withValues(
+              alpha: CatchOpacity.eventSuccessProminent,
+            ),
           ),
           gapW8,
           Expanded(
@@ -461,7 +476,9 @@ class _StagePrivacyLine extends StatelessWidget {
               text,
               style: CatchTextStyles.supporting(
                 context,
-                color: stageTheme.foreground.withValues(alpha: 0.82),
+                color: stageTheme.foreground.withValues(
+                  alpha: CatchOpacity.eventSuccessProminent,
+                ),
               ),
             ),
           ),
@@ -505,7 +522,7 @@ class _StagePanel extends StatefulWidget {
 class _StagePanelState extends State<_StagePanel>
     with SingleTickerProviderStateMixin {
   late final AnimationController _breath = AnimationController(
-    duration: const Duration(seconds: 6),
+    duration: CatchMotion.cinematicMedium,
     vsync: this,
   );
 
@@ -528,15 +545,17 @@ class _StagePanelState extends State<_StagePanel>
       animation: _breath,
       builder: (context, child) {
         final breath = 0.5 - 0.5 * math.cos(_breath.value * math.pi);
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: t.surface.withValues(alpha: 0.90),
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            border: Border.all(
-              color: t.surface.withValues(alpha: 0.22 + breath * 0.12),
-            ),
+        return CatchSurface(
+          radius: CatchRadius.sm,
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.eventSuccessPanelFill,
           ),
-          child: child,
+          borderColor: t.surface.withValues(
+            alpha:
+                CatchOpacity.eventSuccessPanelBorderBase +
+                breath * CatchOpacity.eventSuccessPanelBorderBreath,
+          ),
+          child: child!,
         );
       },
       child: Padding(
@@ -555,12 +574,12 @@ class _StageActionDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.ink.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: t.surface.withValues(alpha: 0.14)),
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.ink.withValues(
+        alpha: CatchOpacity.eventSuccessActionDockFill,
       ),
+      borderColor: t.surface.withValues(alpha: CatchOpacity.warningFill),
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s2),
         child: child,
@@ -577,11 +596,9 @@ class _StageSoftBand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-      ),
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.primarySoft,
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s3),
         child: child,
@@ -610,81 +627,96 @@ class _CompanionStageTheme {
     required EventSuccessAttendeeMoment moment,
     required EventSuccessPlan plan,
   }) {
-    final t = CatchTokens.of(context);
+    const d = CatchTokens.sunsetDark;
+    final activityPalette = ActivityPalette.of(context);
+    final kinds = ActivityKind.values;
+
+    // Pick a distinct pigment per moment kind for visual variety.
+    ActivitySwatch swatchFor(EventSuccessAttendeeMomentKind k) =>
+        activityPalette.forKind(kinds[k.index % kinds.length]);
+    final extraSwatch = activityPalette.forKind(
+      kinds[(moment.kind.index + 5) % kinds.length],
+    );
+
+    Color backgroundFor(ActivitySwatch s) => Color.alphaBlend(
+      s.deep.withValues(alpha: CatchOpacity.eventSuccessStageBgBlend),
+      d.bg,
+    );
+    Color midFor(ActivitySwatch s) => Color.alphaBlend(
+      s.accent.withValues(alpha: CatchOpacity.eventSuccessStageMidBlend),
+      s.deep,
+    );
+
     final palette = switch (moment.kind) {
       EventSuccessAttendeeMomentKind.preArrival => (
-        bg: const Color(0xFF123B46),
-        mid: const Color(0xFF2F6E64),
-        accent: const Color(0xFFF5B85B),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.path,
       ),
       EventSuccessAttendeeMomentKind.selfCheckIn => (
-        bg: const Color(0xFF173A59),
-        mid: const Color(0xFF2D7A89),
-        accent: const Color(0xFFFFC85A),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.gate,
       ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn => (
-        bg: const Color(0xFF3C2A58),
-        mid: const Color(0xFFAF5F7E),
-        accent: const Color(0xFFFFD166),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.signal,
       ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire => (
-        bg: const Color(0xFF4B244A),
-        mid: const Color(0xFFB9486E),
-        accent: const Color(0xFFFFD166),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.spark,
       ),
       EventSuccessAttendeeMomentKind.liveStepContext ||
       EventSuccessAttendeeMomentKind.socialPrompt ||
       EventSuccessAttendeeMomentKind.conversationCues => (
-        bg: const Color(0xFF183A37),
-        mid: const Color(0xFF4C8D74),
-        accent: const Color(0xFFFFB36B),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.rhythm,
       ),
       EventSuccessAttendeeMomentKind.assignment => (
-        bg: const Color(0xFF23345E),
-        mid: const Color(0xFF5D5FEF),
-        accent: const Color(0xFF72E0C3),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: extraSwatch.accent,
         motif: _StageMotif.orbit,
       ),
       EventSuccessAttendeeMomentKind.liveReveal => (
-        bg: plan.revealStatus == EventSuccessRevealStatus.revealed
-            ? const Color(0xFF2A245F)
-            : const Color(0xFF251B37),
-        mid: plan.revealStatus == EventSuccessRevealStatus.revealed
-            ? const Color(0xFFAF4D98)
-            : const Color(0xFF6B3EA3),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
         accent: plan.revealStatus == EventSuccessRevealStatus.revealed
-            ? const Color(0xFFFFD166)
-            : const Color(0xFF7AE7C7),
+            ? swatchFor(moment.kind).accent
+            : extraSwatch.accent,
         motif: _StageMotif.reveal,
       ),
       EventSuccessAttendeeMomentKind.wingmanRequest => (
-        bg: const Color(0xFF26364F),
-        mid: const Color(0xFF8A5C8F),
-        accent: const Color(0xFFFFC0A4),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.signal,
       ),
       EventSuccessAttendeeMomentKind.postEvent => (
-        bg: const Color(0xFF202A44),
-        mid: const Color(0xFF5F5B9E),
-        accent: const Color(0xFFFFD166),
+        bg: backgroundFor(swatchFor(moment.kind)),
+        mid: midFor(swatchFor(moment.kind)),
+        accent: swatchFor(moment.kind).accent,
         motif: _StageMotif.afterglow,
       ),
       EventSuccessAttendeeMomentKind.none => (
-        bg: t.ink,
-        mid: Color.lerp(t.ink, t.primary, 0.46)!,
-        accent: t.gold,
+        bg: d.ink,
+        mid: Color.lerp(d.ink, d.primary, 0.46)!,
+        accent: d.gold,
         motif: _StageMotif.path,
       ),
     };
 
     return _CompanionStageTheme(
       background: palette.bg,
-      foreground: Colors.white,
+      foreground: d.ink,
       accent: palette.accent,
       motif: palette.motif,
       gradient: LinearGradient(
@@ -726,7 +758,7 @@ class _AnimatedStageMotifBackgroundState
     extends State<_AnimatedStageMotifBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 16),
+    duration: CatchMotion.ambientLoop,
     vsync: this,
   );
 
@@ -783,11 +815,13 @@ class _StageMotifPainter extends CustomPainter {
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.4
-      ..color = foreground.withValues(alpha: 0.12);
+      ..color = foreground.withValues(
+        alpha: CatchOpacity.eventSuccessMotifBase,
+      );
     final accentPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.2
-      ..color = accent.withValues(alpha: 0.34);
+      ..color = accent.withValues(alpha: CatchOpacity.eventSuccessMotifAccent);
 
     final twoPi = math.pi * 2;
     // Two phase rotations let secondary motion lead/lag the primary, giving
@@ -1175,7 +1209,7 @@ class _CompanionStageContentTransition extends StatelessWidget {
     return AnimatedSwitcher(
       duration: CatchMotion.slow,
       switchInCurve: CatchMotion.standardCurve,
-      switchOutCurve: Curves.easeInCubic,
+      switchOutCurve: CatchMotion.easeInCubicCurve,
       transitionBuilder: (child, animation) {
         final fade = CurvedAnimation(
           parent: animation,
@@ -1261,7 +1295,7 @@ class _StageBouncyPress extends StatefulWidget {
 class _StageBouncyPressState extends State<_StageBouncyPress>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 220),
+    duration: CatchMotion.base,
     vsync: this,
   );
 
@@ -1270,14 +1304,14 @@ class _StageBouncyPressState extends State<_StageBouncyPress>
       tween: Tween<double>(
         begin: 0,
         end: 1,
-      ).chain(CurveTween(curve: Curves.easeOut)),
+      ).chain(CurveTween(curve: CatchMotion.easeOutCurve)),
       weight: 35,
     ),
     TweenSequenceItem(
       tween: Tween<double>(
         begin: 1,
         end: 0,
-      ).chain(CurveTween(curve: Curves.elasticOut)),
+      ).chain(CurveTween(curve: CatchMotion.elasticOutCurve)),
       weight: 65,
     ),
   ]).animate(_controller);
@@ -1328,19 +1362,20 @@ class _StageBouncyPressState extends State<_StageBouncyPress>
             final flare = _down ? 0.0 : (_press.value * (1 - _press.value) * 4);
             return Transform.scale(
               scale: scale,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: widget.borderRadius,
-                  boxShadow: [
-                    if (flare > 0.04)
-                      BoxShadow(
-                        color: glow.withValues(alpha: 0.36 * flare),
-                        blurRadius: 22 * flare,
-                        spreadRadius: 1.5 * flare,
-                      ),
-                  ],
-                ),
-                child: child,
+              child: CatchSurface(
+                tone: CatchSurfaceTone.transparent,
+                borderRadius: widget.borderRadius,
+                boxShadow: flare > CatchOpacity.controlOverlayHover
+                    ? CatchElevation.glow(
+                        glow.withValues(
+                          alpha: CatchOpacity.eventSuccessBouncyGlow * flare,
+                        ),
+                        blurRadius:
+                            CatchLayout.eventSuccessBouncyGlowBlur * flare,
+                        spreadRadius: CatchStroke.underline * flare,
+                      )
+                    : CatchElevation.none,
+                child: child!,
               ),
             );
           },
@@ -1369,22 +1404,24 @@ class _StageBouncyChip extends StatelessWidget {
     final t = CatchTokens.of(context);
     final background = active ? t.ink : t.surface;
     final foreground = active ? t.surface : t.ink;
-    final border = active ? Colors.transparent : t.line2;
+    final border = active
+        ? t.surface.withValues(alpha: CatchOpacity.none)
+        : t.line2;
     final radius = BorderRadius.circular(CatchRadius.pill);
     return _StageBouncyPress(
       onTap: onTap,
       glowColor: t.primary,
       borderRadius: radius,
       semanticLabel: label,
-      child: AnimatedContainer(
+      child: CatchSurface(
         duration: CatchMotion.fast,
-        curve: CatchMotion.standardCurve,
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: radius,
-          border: Border.all(color: border),
+        borderRadius: radius,
+        backgroundColor: background,
+        borderColor: border,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CatchSpacing.micro14,
+          vertical: CatchSpacing.s2,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         child: Text(
           label,
           maxLines: 1,
@@ -1417,7 +1454,7 @@ class _LiveArrivalRing extends StatefulWidget {
 class _LiveArrivalRingState extends State<_LiveArrivalRing>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
-    duration: const Duration(milliseconds: 700),
+    duration: CatchMotion.pulse,
     vsync: this,
   );
 
@@ -1481,24 +1518,30 @@ class _ArrivalRingCard extends StatelessWidget {
         ? (checkedInCount == 1 ? 'person here so far' : 'people here so far')
         : 'waiting for the room to fill';
     return SizedBox(
-      width: 140,
-      height: 140,
+      width: CatchLayout.eventSuccessArrivalRingExtent,
+      height: CatchLayout.eventSuccessArrivalRingExtent,
       child: CustomPaint(
         painter: _ArrivalRingPainter(
           dotCount: math.min(checkedInCount, 24),
           activeAccent: stageTheme.accent,
-          dimForeground: fg.withValues(alpha: 0.18),
-          accentForeground: fg.withValues(alpha: 0.72),
+          dimForeground: fg.withValues(
+            alpha: CatchOpacity.eventSuccessSubtleBorder,
+          ),
+          accentForeground: fg.withValues(
+            alpha: CatchOpacity.eventSuccessArrivalAccent,
+          ),
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: CatchLayout.eventSuccessArrivalRingInnerPadding,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   '$checkedInCount',
-                  style: CatchTextStyles.displayM(context, color: fg).copyWith(
+                  style: CatchTextStyles.headlineS(context, color: fg).copyWith(
                     height: 1.0,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -1509,7 +1552,9 @@ class _ArrivalRingCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: CatchTextStyles.labelS(
                     context,
-                    color: fg.withValues(alpha: 0.78),
+                    color: fg.withValues(
+                      alpha: CatchOpacity.eventSuccessArrivalCaption,
+                    ),
                   ),
                 ),
               ],
@@ -1536,7 +1581,7 @@ class _LiveOthersInRoomLine extends StatefulWidget {
 class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
-    duration: const Duration(milliseconds: 700),
+    duration: CatchMotion.pulse,
     vsync: this,
   );
 
@@ -1573,13 +1618,13 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
       animation: _pulse,
       builder: (context, _) {
         final pulse = math.sin(_pulse.value * math.pi);
-        final glowAlpha = 0.18 + pulse * 0.22;
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            color: t.primarySoft,
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
-            border: Border.all(color: t.primary.withValues(alpha: glowAlpha)),
-          ),
+        final glowAlpha =
+            CatchOpacity.eventSuccessRoomGlowBase +
+            pulse * CatchOpacity.eventSuccessRoomGlowPulse;
+        return CatchSurface(
+          radius: CatchRadius.pill,
+          backgroundColor: t.primarySoft,
+          borderColor: t.primary.withValues(alpha: glowAlpha),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: CatchSpacing.s3,
@@ -1588,7 +1633,11 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(CatchIcons.groups3Outlined, size: 16, color: t.primary),
+                Icon(
+                  CatchIcons.groups3Outlined,
+                  size: CatchIcon.xs,
+                  color: t.primary,
+                ),
                 gapW6,
                 Text(
                   count == 1
@@ -1636,7 +1685,9 @@ class _ArrivalRingPainter extends CustomPainter {
       final filled = i < dotCount;
       final isHighlight = filled && (i % 6 == 0);
       final color = isHighlight
-          ? activeAccent.withValues(alpha: 0.92)
+          ? activeAccent.withValues(
+              alpha: CatchOpacity.eventSuccessArrivalHighlight,
+            )
           : filled
           ? accentForeground
           : dimForeground;

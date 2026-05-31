@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
@@ -51,97 +52,89 @@ class PhotosPage extends ConsumerWidget {
       uploadingCount: uploadState.loadingIndices.length,
     );
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          gapH32,
-          OnboardingStepHeader(
-            title: profileCompletionOnly
-                ? 'Complete your profile to swipe'
-                : 'Show yourself',
-            subtitle: profileCompletionOnly
-                ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
-                : 'Add at least 2 photos so others can find you.',
-          ),
-          gapH8,
-          Row(
-            children: [
-              Icon(CatchIcons.bolt, size: 16, color: t.accent),
-              gapW8,
-              Expanded(
-                child: Text(
-                  profileCompletionOnly
-                      ? 'This only gates swiping. Event booking stays available.'
-                      : 'Running photos boost catches by 2.3×',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: t.accent),
-                ),
+    return OnboardingStepFrame(
+      children: [
+        gapH32,
+        OnboardingStepHeader(
+          title: profileCompletionOnly
+              ? 'Complete your profile to swipe'
+              : 'Show yourself',
+          subtitle: profileCompletionOnly
+              ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
+              : 'Add at least 2 photos so others can find you.',
+        ),
+        gapH8,
+        Row(
+          children: [
+            Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.ink2),
+            gapW8,
+            Expanded(
+              child: Text(
+                profileCompletionOnly
+                    ? 'This only gates swiping. Event booking stays available.'
+                    : 'Running photos boost catches by 2.3×',
+                style: CatchTextStyles.supporting(context, color: t.ink2),
               ),
-            ],
-          ),
-          gapH24,
-          PhotoGrid(
-            profilePhotos: profilePhotos,
-            loadingIndices: uploadState.loadingIndices,
-            onSlotTapped: (index) {
-              unawaited(
-                openProfilePhotoEditor(
-                  context: context,
-                  ref: ref,
-                  index: index,
-                  photo: index < profilePhotos.length
-                      ? profilePhotos[index]
-                      : null,
-                  canDelete: profilePhotos.length > minimumProfilePhotoCount,
-                ),
-              );
-            },
-            onDeletePhoto: (index) {
-              unawaited(
-                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                  await tx
-                      .get(photoUploadControllerProvider.notifier)
-                      .deletePhoto(index);
-                }),
-              );
-            },
-            onReorderPhoto: (fromIndex, toIndex) {
-              unawaited(
-                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                  await tx
-                      .get(photoUploadControllerProvider.notifier)
-                      .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
-                }),
-              );
-            },
-          ),
-          gapH24,
-          CatchButton(
-            label: 'Continue',
-            onPressed: canContinue
-                ? () => ref
-                      .read(onboardingControllerProvider.notifier)
-                      .goToStepAndSaveDraft(OnboardingStep.prompts)
-                : null,
-            fullWidth: true,
-            size: CatchButtonSize.lg,
-          ),
-          if (continueHint != null) ...[
-            gapH12,
-            Text(
-              continueHint,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: t.ink2),
-              textAlign: TextAlign.center,
             ),
           ],
-          gapH32,
+        ),
+        gapH24,
+        PhotoGrid(
+          profilePhotos: profilePhotos,
+          loadingIndices: uploadState.loadingIndices,
+          onSlotTapped: (index) {
+            unawaited(
+              openProfilePhotoEditor(
+                context: context,
+                ref: ref,
+                index: index,
+                photo: index < profilePhotos.length
+                    ? profilePhotos[index]
+                    : null,
+                canDelete: profilePhotos.length > minimumProfilePhotoCount,
+              ),
+            );
+          },
+          onDeletePhoto: (index) {
+            unawaited(
+              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                await tx
+                    .get(photoUploadControllerProvider.notifier)
+                    .deletePhoto(index);
+              }),
+            );
+          },
+          onReorderPhoto: (fromIndex, toIndex) {
+            unawaited(
+              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                await tx
+                    .get(photoUploadControllerProvider.notifier)
+                    .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
+              }),
+            );
+          },
+        ),
+        gapH24,
+        CatchButton(
+          label: 'Continue',
+          onPressed: canContinue
+              ? () => ref
+                    .read(onboardingControllerProvider.notifier)
+                    .goToStepAndSaveDraft(OnboardingStep.prompts)
+              : null,
+          fullWidth: true,
+          size: CatchButtonSize.lg,
+        ),
+        if (continueHint != null) ...[
+          gapH12,
+          Text(
+            continueHint,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+            textAlign: TextAlign.center,
+          ),
         ],
-      ),
+        gapH32,
+      ],
     );
   }
 

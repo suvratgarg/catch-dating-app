@@ -1,15 +1,18 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/photo_slot.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
+import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
 
 /// A 3×2 grid of photo slots for displaying and editing a user's profile photos.
 ///
 /// Slots are filled densely: filled slots are tappable to replace, the next
 /// empty slot shows a + icon and is tappable to add, remaining empty slots
 /// are inactive.
-class PhotoGrid extends StatelessWidget {
+class PhotoGrid extends StatefulWidget {
   const PhotoGrid({
     super.key,
     required this.profilePhotos,
@@ -30,83 +33,86 @@ class PhotoGrid extends StatelessWidget {
   static const _crossAxisCount = 3;
 
   @override
+  State<PhotoGrid> createState() => _PhotoGridState();
+}
+
+class _PhotoGridState extends State<PhotoGrid> {
+  int? _draggedIndex;
+
+  @override
   Widget build(BuildContext context) {
-    final photos = normalizeProfilePhotos(profilePhotos);
+    final photos = normalizeProfilePhotos(widget.profilePhotos);
     final photosByPosition = {
       for (final photo in photos) photo.position: photo,
     };
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: _crossAxisCount,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-        childAspectRatio: 3 / 4,
+    final canReorder =
+        widget.onReorderPhoto != null &&
+        widget.loadingIndices.isEmpty &&
+        photos.length > 1;
+
+    return ReorderableBuilder<int>.builder(
+      itemCount: photos.length,
+      animationConfig: const ReorderableAnimationConfig(
+        enableAnimations: false,
       ),
-      itemCount: maximumProfilePhotoCount,
-      itemBuilder: (context, index) {
-        final photo = photosByPosition[index];
-        final isLoading = loadingIndices.contains(index);
-        final isActive = index <= photos.length;
-        PhotoSlot slot({bool isReorderTarget = false}) => PhotoSlot(
-          key: PhotoGridKeys.slot(index),
-          index: index,
-          url: photo?.url,
-          prompt: photo?.prompt,
-          isLoading: isLoading,
-          isActive: isActive,
-          onTap: () => onSlotTapped(index),
-          onDelete: photo != null && canDeletePhotos && onDeletePhoto != null
-              ? () => onDeletePhoto!(index)
-              : null,
-          isReorderTarget: isReorderTarget,
-        );
-        if (photo == null || isLoading || onReorderPhoto == null) {
-          return slot();
-        }
-        return DragTarget<int>(
-          onWillAcceptWithDetails: (details) =>
-              details.data != index && details.data < photos.length,
-          onAcceptWithDetails: (details) =>
-              onReorderPhoto!(details.data, index),
-          builder: (context, candidateData, rejectedData) {
-            final isTarget = candidateData.isNotEmpty;
-            return LongPressDraggable<int>(
-              data: index,
-              feedback: _PhotoDragFeedback(photo: photo, index: index),
-              childWhenDragging: Opacity(opacity: 0.35, child: slot()),
-              child: slot(isReorderTarget: isTarget),
+      enableDraggable: canReorder,
+      onDragStarted: (index) => _draggedIndex = index,
+      onReorder: canReorder
+          ? (reorderedListFunction) {
+              final originalOrder = List<int>.generate(
+                photos.length,
+                (index) => index,
+              );
+              final reorderedOrder = reorderedListFunction(originalOrder);
+              final fromIndex = _draggedIndex;
+              _draggedIndex = null;
+              if (fromIndex == null) return;
+              final toIndex = reorderedOrder.indexOf(fromIndex);
+              if (toIndex == -1 || toIndex == fromIndex) return;
+              widget.onReorderPhoto!(fromIndex, toIndex);
+            }
+          : null,
+      childBuilder: (itemBuilder) {
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: PhotoGrid._crossAxisCount,
+            mainAxisSpacing: CatchSpacing.s2,
+            crossAxisSpacing: CatchSpacing.s2,
+            childAspectRatio: CatchAspectRatio.portrait3x4,
+          ),
+          itemCount: maximumProfilePhotoCount,
+          itemBuilder: (context, index) {
+            final photo = photosByPosition[index];
+            final isLoading = widget.loadingIndices.contains(index);
+            final isActive = index <= photos.length;
+            final slot = PhotoSlot(
+              key: PhotoGridKeys.slot(index),
+              index: index,
+              url: photo?.url,
+              prompt: photo?.prompt,
+              isLoading: isLoading,
+              isActive: isActive,
+              onTap: () => widget.onSlotTapped(index),
+              onDelete:
+                  photo != null &&
+                      widget.canDeletePhotos &&
+                      widget.onDeletePhoto != null
+                  ? () => widget.onDeletePhoto!(index)
+                  : null,
+            );
+            if (photo == null) return slot;
+            return itemBuilder(
+              KeyedSubtree(
+                key: ValueKey('profile_photo_${photo.storagePath}'),
+                child: slot,
+              ),
+              index,
             );
           },
         );
       },
-    );
-  }
-}
-
-class _PhotoDragFeedback extends StatelessWidget {
-  const _PhotoDragFeedback({required this.photo, required this.index});
-
-  final ProfilePhoto photo;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: SizedBox(
-        width: 112,
-        height: 150,
-        child: PhotoSlot(
-          index: index,
-          url: photo.url,
-          prompt: photo.prompt,
-          isLoading: false,
-          isActive: true,
-          onTap: () {},
-        ),
-      ),
     );
   }
 }

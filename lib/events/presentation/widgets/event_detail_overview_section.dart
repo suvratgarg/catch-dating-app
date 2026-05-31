@@ -104,7 +104,7 @@ class _WhatToExpectSection extends StatelessWidget {
     final items = _expectationItems(event);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
@@ -147,7 +147,7 @@ class _EventPolicySummary extends StatelessWidget {
     final cancellation = policy.cancellationPolicy;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(CatchSpacing.micro14),
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
@@ -219,7 +219,11 @@ class _PolicyLine extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: surfaceStyle?.primaryColor ?? t.primary, size: 18),
+        Icon(
+          icon,
+          color: surfaceStyle?.primaryColor ?? t.primary,
+          size: CatchIcon.md,
+        ),
         gapW8,
         Expanded(
           child: Column(

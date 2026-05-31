@@ -3,7 +3,7 @@ import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/shared/club_cover_fallback.dart';
+import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -61,7 +61,7 @@ List<Widget> buildExploreEventsSlivers(
         // natural intrinsic size while we clip down to a fixed paint area.
         child: ClipRect(
           child: SizedBox(
-            height: 180,
+            height: CatchLayout.exploreErrorSliverHeight,
             child: OverflowBox(
               alignment: Alignment.topCenter,
               minHeight: 0,
@@ -433,76 +433,31 @@ class _ExploreClubPolaroidCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isSynthetic = _isSyntheticExploreClub(club);
-    final card = CatchSurface(
+    final card = CatchPolaroid(
       onTap: isSynthetic ? null : () => _openClub(context, club),
       radius: CatchRadius.sm,
-      borderColor: t.line,
-      elevation: CatchSurfaceElevation.card,
-      backgroundColor: t.surface,
-      padding: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        key: const ValueKey('explore-club-polaroid-padding'),
-        padding: clubInteractionMediaPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AspectRatio(
-              aspectRatio: 4 / 3,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    _ExploreClubCover(club: club),
-                    Positioned(
-                      top: CatchSpacing.s3,
-                      right: CatchSpacing.s3,
-                      child: _ExploreDarkPill(
-                        label: clubMemberCountLabel(club),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            gapH10,
-            _ExploreMonoLabel(
-              (club.nextEventLabel ?? 'Club to know').toUpperCase(),
-              color: t.ink3,
-            ),
-            gapH3,
-            Text(
-              club.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.clubDisplay(
-                context,
-                size: 30,
-                height: 0.98,
-              ),
-            ),
-            gapH3,
-            Text(
-              _clubSupportingLabel(club),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-            gapH10,
-            Row(
-              children: [
-                Expanded(child: _ExploreClubTags(club: club)),
-                gapW10,
-                _ExploreDarkPill(
-                  label: isSynthetic ? 'Preview' : 'View club',
-                  compact: true,
-                ),
-              ],
-            ),
-          ],
-        ),
+      padding: clubInteractionMediaPadding,
+      paddingKey: const ValueKey('explore-club-polaroid-padding'),
+      media: _ExploreClubCover(club: club),
+      mediaOverlay: Positioned(
+        top: CatchSpacing.s3,
+        right: CatchSpacing.s3,
+        child: _ExploreDarkPill(label: clubMemberCountLabel(club)),
+      ),
+      caption: (club.nextEventLabel ?? 'Club to know').toUpperCase(),
+      captionColor: t.ink3,
+      title: club.name,
+      titleStyle: CatchTextStyles.clubDisplay(context, size: 30, height: 0.98),
+      subtitle: _clubSupportingLabel(club),
+      footer: Row(
+        children: [
+          Expanded(child: _ExploreClubTags(club: club)),
+          gapW10,
+          _ExploreDarkPill(
+            label: isSynthetic ? 'Preview' : 'View club',
+            compact: true,
+          ),
+        ],
       ),
     );
     if (isSynthetic) return card;
@@ -522,7 +477,7 @@ class _ExploreFeedClubRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final palette = ClubCoverVisualPalette.forClub(club);
+    final palette = ClubCoverVisualPalette.forClub(context, club);
     final isSynthetic = _isSyntheticExploreClub(club);
     return CatchSurface(
       onTap: isSynthetic ? null : () => _openClub(context, club),
@@ -534,7 +489,10 @@ class _ExploreFeedClubRow extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox.square(
-            dimension: 64,
+            // Fixed compact cover thumbnail (not scaling media). A bounded box
+            // gives the cover determinate constraints — an AspectRatio here gets
+            // unbounded width (Row) and height (SliverList) and cannot lay out.
+            dimension: CatchLayout.clubCoverThumbnailExtent,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(CatchRadius.md),
               child: _ExploreClubCover(club: club, compact: true),
@@ -571,8 +529,10 @@ class _ExploreFeedClubRow extends StatelessWidget {
           gapW12,
           Icon(
             CatchIcons.forwardArrow,
-            size: 18,
-            color: isSynthetic ? t.ink3.withValues(alpha: 0.32) : t.ink3,
+            size: CatchIcon.md,
+            color: isSynthetic
+                ? t.ink3.withValues(alpha: CatchOpacity.exploreMutedAffordance)
+                : t.ink3,
           ),
         ],
       ),
@@ -590,22 +550,13 @@ class _ExploreClubCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = club.imageUrl?.trim();
     if (url == null || url.isEmpty) {
-      return ClubCoverFallback(
-        club: club,
-        compact: compact,
-        showLocationChip: false,
-        showFooterLabel: false,
-      );
+      return ClubPolaroidArtwork(club: club, compact: compact);
     }
     return Image.network(
       url,
       fit: BoxFit.cover,
-      errorBuilder: (_, _, _) => ClubCoverFallback(
-        club: club,
-        compact: compact,
-        showLocationChip: false,
-        showFooterLabel: false,
-      ),
+      errorBuilder: (_, _, _) =>
+          ClubPolaroidArtwork(club: club, compact: compact),
     );
   }
 }
@@ -638,20 +589,21 @@ class _ExploreDarkPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.ink,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
+    return CatchSurface(
+      radius: CatchRadius.pill,
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      padding: EdgeInsets.symmetric(
+        horizontal: compact
+            ? CatchLayout.compactDarkPillHorizontalPadding
+            : CatchSpacing.s3,
+        vertical: compact
+            ? CatchLayout.compactDarkPillVerticalPadding
+            : CatchSpacing.s2,
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 11 : CatchSpacing.s3,
-          vertical: compact ? 7 : 8,
-        ),
-        child: Text(
-          label,
-          style: CatchTextStyles.labelM(context, color: t.primaryInk),
-        ),
+      child: Text(
+        label,
+        style: CatchTextStyles.labelM(context, color: t.primaryInk),
       ),
     );
   }
@@ -669,10 +621,7 @@ class _ExploreMonoLabel extends StatelessWidget {
       label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.mono(
-        context,
-        color: color,
-      ).copyWith(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0),
+      style: CatchTextStyles.kicker(context, color: color),
     );
   }
 }
@@ -714,7 +663,9 @@ class _ExploreEventsLoadingSliver extends StatelessWidget {
           borderColor: t.line,
           elevation: CatchSurfaceElevation.card,
           radius: CatchRadius.lg,
-          child: CatchSkeleton.card(height: 160),
+          child: CatchSkeleton.card(
+            height: CatchLayout.exploreEventsSkeletonHeight,
+          ),
         ),
       ),
     );

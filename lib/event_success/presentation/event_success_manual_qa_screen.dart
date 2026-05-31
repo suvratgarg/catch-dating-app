@@ -85,7 +85,7 @@ class _EventSuccessManualQaScreenState
       appBar: AppBar(
         title: Text(
           'Event success manual QA',
-          style: CatchTextStyles.titleM(context),
+          style: CatchTextStyles.sectionTitle(context),
         ),
       ),
       body: SafeArea(
@@ -442,7 +442,7 @@ class _ManualQaHero extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [t.accent, t.ink],
       ),
-      borderColor: Colors.transparent,
+      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       padding: const EdgeInsets.all(CatchSpacing.s5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -466,14 +466,16 @@ class _ManualQaHero extends StatelessWidget {
           gapH20,
           Text(
             data.event.title,
-            style: CatchTextStyles.displayL(context, color: t.accentInk),
+            style: CatchTextStyles.headline(context, color: t.accentInk),
           ),
           gapH8,
           Text(
             '${data.playbook.title} · ${data.plan.structureConfig.unitKind.label} · ${data.moment.label}',
             style: CatchTextStyles.bodyL(
               context,
-              color: t.accentInk.withValues(alpha: 0.86),
+              color: t.accentInk.withValues(
+                alpha: CatchOpacity.manualQaHeroMeta,
+              ),
             ),
           ),
           gapH20,
@@ -523,7 +525,10 @@ class _ManualQaControls extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Fixture scenario', style: CatchTextStyles.titleM(context)),
+          Text(
+            'Fixture scenario',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH12,
           _ControlLabel('Event format'),
           gapH8,
@@ -718,7 +723,7 @@ class _QaDeviceFrame extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: CatchTextStyles.titleM(context)),
+                Text(title, style: CatchTextStyles.sectionTitle(context)),
                 gapH4,
                 Text(
                   subtitle,
@@ -750,7 +755,10 @@ class _QaDeviceFrame extends StatelessWidget {
               radius: CatchRadius.lg,
               borderColor: t.line,
               padding: EdgeInsets.zero,
-              child: SizedBox(height: 780, child: child),
+              child: SizedBox(
+                height: CatchLayout.manualQaEditorHeight,
+                child: child,
+              ),
             ),
           ),
         ],
@@ -875,8 +883,12 @@ class _DarkPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      backgroundColor: t.accentInk.withValues(alpha: 0.14),
-      borderColor: t.accentInk.withValues(alpha: 0.22),
+      backgroundColor: t.accentInk.withValues(
+        alpha: CatchOpacity.manualQaPillFill,
+      ),
+      borderColor: t.accentInk.withValues(
+        alpha: CatchOpacity.manualQaPillBorder,
+      ),
       radius: CatchRadius.pill,
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s3,

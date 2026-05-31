@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
@@ -37,5 +39,24 @@ void main() {
       await sharedParams!.files!.single.readAsString(),
       'name,amount\nAsha,400\n',
     );
+  });
+
+  test('sharePngFile forwards a named png file to share launcher', () async {
+    ShareParams? sharedParams;
+    final controller = ExternalShareController((params) async {
+      sharedParams = params;
+    });
+    final bytes = Uint8List.fromList([1, 2, 3]);
+
+    await controller.sharePngFile(
+      pngBytes: bytes,
+      fileName: 'chat-card.png',
+      subject: 'Chat card',
+    );
+
+    expect(sharedParams?.subject, 'Chat card');
+    expect(sharedParams?.fileNameOverrides, ['chat-card.png']);
+    expect(sharedParams?.files, hasLength(1));
+    expect(await sharedParams!.files!.single.readAsBytes(), bytes);
   });
 }

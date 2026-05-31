@@ -80,7 +80,11 @@ class ProfileInfoSection extends StatelessWidget {
           Divider(
             height: 1,
             indent: 36,
-            color: CatchTokens.of(context).line.withValues(alpha: 0.62),
+            color: CatchTokens.of(
+              context,
+            ).line.withValues(
+              alpha: CatchOpacity.profileInfoDivider,
+            ),
           ),
         );
       }

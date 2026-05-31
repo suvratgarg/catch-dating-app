@@ -796,7 +796,7 @@ class _EditScopeNotice extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: CatchTextStyles.titleM(context),
+                        style: CatchTextStyles.sectionTitle(context),
                       ),
                     ),
                     if (scheduleLocked && !isCancelled)
@@ -1134,7 +1134,7 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Policy locked', style: CatchTextStyles.titleM(context)),
+          Text('Policy locked', style: CatchTextStyles.sectionTitle(context)),
           gapH4,
           Text(
             'Capacity, pricing, admission, and cancellation policy lock once the event starts or someone books or joins the waitlist.',
@@ -1222,7 +1222,7 @@ class _ReadOnlyScheduleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(event.shortDateLabel, style: CatchTextStyles.titleM(context)),
+          Text(event.shortDateLabel, style: CatchTextStyles.sectionTitle(context)),
           gapH4,
           Text(event.timeRangeLabel, style: CatchTextStyles.bodyLead(context)),
           gapH8,
@@ -1274,7 +1274,7 @@ class _DurationStepper extends StatelessWidget {
             child: Center(
               child: Text(
                 EventFormatters.durationMinutes(durationMinutes),
-                style: CatchTextStyles.titleM(context),
+                style: CatchTextStyles.sectionTitle(context),
               ),
             ),
           ),

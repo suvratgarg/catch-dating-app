@@ -50,59 +50,55 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
   Widget build(BuildContext context) {
     final mutation = ref.watch(OnboardingController.saveProfileMutation);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            gapH32,
-            const OnboardingStepHeader(title: 'How do you identify?'),
-            gapH32,
-            ChipField<Gender>(
-              label: 'I am a...',
-              values: Gender.values,
-              selected: _gender != null ? {_gender!} : {},
-              multiSelect: false,
-              chipKeyBuilder: OnboardingFormKeys.genderChip,
-              validator: (_) =>
-                  _gender == null ? 'Please select your gender' : null,
-              onChanged: (next) {
-                OnboardingController.saveProfileMutation.reset(ref);
-                setState(() => _gender = next.isEmpty ? null : next.first);
-              },
-            ),
-            gapH24,
-            ChipField<Gender>(
-              label: 'Show me',
-              values: Gender.values,
-              selected: _interestedIn,
-              multiSelect: true,
-              chipKeyBuilder: OnboardingFormKeys.interestedInChip,
-              validator: (_) => _interestedIn.isEmpty
-                  ? 'Please select who you want to see'
-                  : null,
-              onChanged: (next) {
-                OnboardingController.saveProfileMutation.reset(ref);
-                setState(() => _interestedIn = next);
-              },
-            ),
-            if (mutation.hasError) ...[
-              gapH16,
-              ErrorBanner(message: mutationErrorMessage(mutation)),
-            ],
-            gapH40,
-            CatchButton(
-              label: 'Continue',
-              onPressed: _submit,
-              isLoading: mutation.isPending,
-              fullWidth: true,
-              size: CatchButtonSize.lg,
-            ),
-            gapH32,
+    return Form(
+      key: _formKey,
+      child: OnboardingStepFrame(
+        children: [
+          gapH32,
+          const OnboardingStepHeader(title: 'How do you identify?'),
+          gapH32,
+          ChipField<Gender>(
+            label: 'I am a...',
+            values: Gender.values,
+            selected: _gender != null ? {_gender!} : {},
+            multiSelect: false,
+            chipKeyBuilder: OnboardingFormKeys.genderChip,
+            validator: (_) =>
+                _gender == null ? 'Please select your gender' : null,
+            onChanged: (next) {
+              OnboardingController.saveProfileMutation.reset(ref);
+              setState(() => _gender = next.isEmpty ? null : next.first);
+            },
+          ),
+          gapH24,
+          ChipField<Gender>(
+            label: 'Show me',
+            values: Gender.values,
+            selected: _interestedIn,
+            multiSelect: true,
+            chipKeyBuilder: OnboardingFormKeys.interestedInChip,
+            validator: (_) => _interestedIn.isEmpty
+                ? 'Please select who you want to see'
+                : null,
+            onChanged: (next) {
+              OnboardingController.saveProfileMutation.reset(ref);
+              setState(() => _interestedIn = next);
+            },
+          ),
+          if (mutation.hasError) ...[
+            gapH16,
+            ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
-        ),
+          gapH40,
+          CatchButton(
+            label: 'Continue',
+            onPressed: _submit,
+            isLoading: mutation.isPending,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+          gapH32,
+        ],
       ),
     );
   }

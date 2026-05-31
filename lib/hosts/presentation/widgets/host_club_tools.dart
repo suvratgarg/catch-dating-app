@@ -86,7 +86,7 @@ class HostClubManagementPanel extends StatelessWidget {
                   club.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
                 gapH4,
                 Text(
@@ -139,14 +139,14 @@ class HostClubManagementPanel extends StatelessWidget {
                 CatchButton(
                   label: 'Add event',
                   onPressed: onCreateEvent,
-                  icon: Icon(CatchIcons.addRounded, size: 18),
+                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
                   fullWidth: true,
                 ),
                 gapH10,
                 CatchButton(
                   label: 'Edit club',
                   onPressed: onEditClub,
-                  icon: Icon(CatchIcons.editOutlined, size: 18),
+                  icon: Icon(CatchIcons.editOutlined, size: CatchIcon.md),
                   variant: CatchButtonVariant.secondary,
                   fullWidth: true,
                 ),

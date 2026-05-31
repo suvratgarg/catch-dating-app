@@ -1,7 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Presentation-only visual taxonomy for event activity surfaces.
@@ -102,106 +104,94 @@ const allActivityKindsForVisuals = <ActivityKind>[
   ActivityKind.openActivity,
 ];
 
-EventActivityVisualSpec eventActivityVisual(ActivityKind kind) {
-  return switch (kind) {
-    ActivityKind.socialRun => const EventActivityVisualSpec(
-      activityKind: ActivityKind.socialRun,
-      label: 'Social run',
-      colors: [Color(0xFFFF5B2E), Color(0xFFFF9A58), Color(0xFFFFE0B8)],
-      pattern: EventActivityPattern.routeDots,
-    ),
-    ActivityKind.running => const EventActivityVisualSpec(
-      activityKind: ActivityKind.running,
-      label: 'Running',
-      colors: [Color(0xFFE9472E), Color(0xFFFF7448), Color(0xFFFFC7A6)],
-      pattern: EventActivityPattern.routeDashes,
-    ),
-    ActivityKind.walking => const EventActivityVisualSpec(
-      activityKind: ActivityKind.walking,
-      label: 'Walking',
-      colors: [Color(0xFF4F8A5B), Color(0xFFA8C96F), Color(0xFFECF2C2)],
-      pattern: EventActivityPattern.stepDots,
-    ),
-    ActivityKind.pickleball => const EventActivityVisualSpec(
-      activityKind: ActivityKind.pickleball,
-      label: 'Pickleball',
-      colors: [Color(0xFF9BCB3D), Color(0xFF36C6A6), Color(0xFFE8F8B5)],
-      pattern: EventActivityPattern.courtLines,
-    ),
-    ActivityKind.padel => const EventActivityVisualSpec(
-      activityKind: ActivityKind.padel,
-      label: 'Padel',
-      colors: [Color(0xFF00A7A7), Color(0xFF55D6B7), Color(0xFFD9FFF3)],
-      pattern: EventActivityPattern.glassGrid,
-    ),
-    ActivityKind.tennis => const EventActivityVisualSpec(
-      activityKind: ActivityKind.tennis,
-      label: 'Tennis',
-      colors: [Color(0xFF2E9E44), Color(0xFFD6DA45), Color(0xFFF7F0A8)],
-      pattern: EventActivityPattern.courtArcs,
-    ),
-    ActivityKind.badminton => const EventActivityVisualSpec(
-      activityKind: ActivityKind.badminton,
-      label: 'Badminton',
-      colors: [Color(0xFF4F70C8), Color(0xFF8FC7FF), Color(0xFFF0F7FF)],
-      pattern: EventActivityPattern.shuttleStrokes,
-    ),
-    ActivityKind.cycling => const EventActivityVisualSpec(
-      activityKind: ActivityKind.cycling,
-      label: 'Cycling',
-      colors: [Color(0xFF2563EB), Color(0xFF36BDF8), Color(0xFFCCF2FF)],
-      pattern: EventActivityPattern.wheelArcs,
-    ),
-    ActivityKind.spinClass => const EventActivityVisualSpec(
-      activityKind: ActivityKind.spinClass,
-      label: 'Spin class',
-      colors: [Color(0xFF304ED8), Color(0xFF21C7D9), Color(0xFFD6F8FA)],
-      pattern: EventActivityPattern.rhythmRings,
-    ),
-    ActivityKind.yoga => const EventActivityVisualSpec(
-      activityKind: ActivityKind.yoga,
-      label: 'Yoga',
-      colors: [Color(0xFF8E75C9), Color(0xFFF0A6CA), Color(0xFFF9E8F1)],
-      pattern: EventActivityPattern.mandalaArcs,
-    ),
-    ActivityKind.strengthTraining => const EventActivityVisualSpec(
-      activityKind: ActivityKind.strengthTraining,
-      label: 'Strength',
-      colors: [Color(0xFF31373A), Color(0xFFB84A3A), Color(0xFFF2C98D)],
-      pattern: EventActivityPattern.barMarks,
-    ),
-    ActivityKind.dinner => const EventActivityVisualSpec(
-      activityKind: ActivityKind.dinner,
-      label: 'Dinner',
-      colors: [Color(0xFFD98A24), Color(0xFFE85D75), Color(0xFFFFE0B8)],
-      pattern: EventActivityPattern.plateCircles,
-    ),
-    ActivityKind.pubQuiz => const EventActivityVisualSpec(
-      activityKind: ActivityKind.pubQuiz,
-      label: 'Pub quiz',
-      colors: [Color(0xFF25316D), Color(0xFF4E5FC8), Color(0xFFFFC857)],
-      pattern: EventActivityPattern.quizCards,
-    ),
-    ActivityKind.barCrawl => const EventActivityVisualSpec(
-      activityKind: ActivityKind.barCrawl,
-      label: 'Bar crawl',
-      colors: [Color(0xFFC02672), Color(0xFF6D3FC8), Color(0xFFF7A8C8)],
-      pattern: EventActivityPattern.neonDots,
-    ),
-    ActivityKind.singlesMixer => const EventActivityVisualSpec(
-      activityKind: ActivityKind.singlesMixer,
-      label: 'Singles mixer',
-      colors: [Color(0xFFFF5F6D), Color(0xFF35C2B6), Color(0xFFFFE7A3)],
-      pattern: EventActivityPattern.overlapCircles,
-    ),
-    ActivityKind.openActivity => const EventActivityVisualSpec(
-      activityKind: ActivityKind.openActivity,
-      label: 'Open format',
-      colors: [Color(0xFF56616B), Color(0xFFB8A06A), Color(0xFFF3EFE5)],
-      pattern: EventActivityPattern.stampGrid,
-    ),
-  };
+/// Resolves the presentation spec for [kind]. Colors come from the centralized,
+/// dark-aware [ActivityPalette] (design_language §3); label + pattern are
+/// mode-independent metadata. Pass [context] for the correct light/dark swatch;
+/// without it (const/preview/sandbox call sites) the light palette is used.
+EventActivityVisualSpec eventActivityVisual(
+  ActivityKind kind, {
+  BuildContext? context,
+}) {
+  final swatch = context != null
+      ? ActivityPalette.of(context).forKind(kind)
+      : ActivityPalette.light.forKind(kind);
+  final meta = _activityMeta(kind);
+  return EventActivityVisualSpec(
+    activityKind: kind,
+    label: meta.label,
+    colors: <Color>[swatch.accent, swatch.deep, swatch.soft],
+    pattern: meta.pattern,
+  );
 }
+
+typedef _ActivityMeta = ({String label, EventActivityPattern pattern});
+
+_ActivityMeta _activityMeta(ActivityKind kind) => switch (kind) {
+  ActivityKind.socialRun => (
+    label: 'Social run',
+    pattern: EventActivityPattern.routeDots,
+  ),
+  ActivityKind.running => (
+    label: 'Running',
+    pattern: EventActivityPattern.routeDashes,
+  ),
+  ActivityKind.walking => (
+    label: 'Walking',
+    pattern: EventActivityPattern.stepDots,
+  ),
+  ActivityKind.pickleball => (
+    label: 'Pickleball',
+    pattern: EventActivityPattern.courtLines,
+  ),
+  ActivityKind.padel => (
+    label: 'Padel',
+    pattern: EventActivityPattern.glassGrid,
+  ),
+  ActivityKind.tennis => (
+    label: 'Tennis',
+    pattern: EventActivityPattern.courtArcs,
+  ),
+  ActivityKind.badminton => (
+    label: 'Badminton',
+    pattern: EventActivityPattern.shuttleStrokes,
+  ),
+  ActivityKind.cycling => (
+    label: 'Cycling',
+    pattern: EventActivityPattern.wheelArcs,
+  ),
+  ActivityKind.spinClass => (
+    label: 'Spin class',
+    pattern: EventActivityPattern.rhythmRings,
+  ),
+  ActivityKind.yoga => (
+    label: 'Yoga',
+    pattern: EventActivityPattern.mandalaArcs,
+  ),
+  ActivityKind.strengthTraining => (
+    label: 'Strength',
+    pattern: EventActivityPattern.barMarks,
+  ),
+  ActivityKind.dinner => (
+    label: 'Dinner',
+    pattern: EventActivityPattern.plateCircles,
+  ),
+  ActivityKind.pubQuiz => (
+    label: 'Pub quiz',
+    pattern: EventActivityPattern.quizCards,
+  ),
+  ActivityKind.barCrawl => (
+    label: 'Bar crawl',
+    pattern: EventActivityPattern.neonDots,
+  ),
+  ActivityKind.singlesMixer => (
+    label: 'Singles mixer',
+    pattern: EventActivityPattern.overlapCircles,
+  ),
+  ActivityKind.openActivity => (
+    label: 'Open format',
+    pattern: EventActivityPattern.stampGrid,
+  ),
+};
 
 class EventActivityBackdrop extends StatelessWidget {
   const EventActivityBackdrop({
@@ -231,26 +221,29 @@ class EventActivityBackdrop extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
+              // Confident mid-tone duotone (pigment → deep), not a pastel sweep.
               colors: dense
-                  ? [visual.accent, visual.deep, visual.soft, visual.accent]
-                  : visual.colors,
-              stops: dense ? const [0, 0.42, 0.74, 1] : null,
+                  ? [visual.accent, visual.deep, visual.accent]
+                  : [visual.accent, visual.deep],
+              stops: dense ? const [0, 0.6, 1] : null,
             ),
           ),
         ),
         CustomPaint(
           painter: _ActivityPatternPainter(
             pattern: visual.pattern,
+            // token:allow: CustomPainter pattern fill over the activity-color backdrop (theme-independent art)
             color: Colors.white.withValues(alpha: patternOpacity),
           ),
         ),
         Align(
           alignment: iconAlignment,
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(CatchSpacing.micro18),
             child: Icon(
               visual.icon,
               size: iconSize,
+              // token:allow: activity glyph fill over the activity-color backdrop (theme-independent art)
               color: Colors.white.withValues(alpha: iconOpacity),
             ),
           ),
@@ -397,7 +390,7 @@ class _ActivityPatternPainter extends CustomPainter {
           canvas.drawRRect(
             RRect.fromRectAndRadius(
               Rect.fromLTWH(x, size.height * 0.34, 24, 18),
-              const Radius.circular(3),
+              const Radius.circular(CatchSpacing.micro3),
             ),
             paint,
           );
@@ -420,7 +413,11 @@ class _ActivityPatternPainter extends CustomPainter {
         for (var x = 16.0; x < size.width; x += 28) {
           for (var y = 16.0; y < size.height; y += 28) {
             canvas.drawRect(
-              Rect.fromCenter(center: Offset(x, y), width: 3, height: 3),
+              Rect.fromCenter(
+                center: Offset(x, y),
+                width: CatchSpacing.micro3,
+                height: CatchSpacing.micro3,
+              ),
               fill,
             );
           }

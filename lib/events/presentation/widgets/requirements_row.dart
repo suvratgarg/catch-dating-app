@@ -31,8 +31,8 @@ class RequirementsRow extends StatelessWidget {
         ),
         gapH8,
         Wrap(
-          spacing: 6,
-          runSpacing: 6,
+          spacing: CatchSpacing.micro6,
+          runSpacing: CatchSpacing.micro6,
           children: chips.map((l) => VibeTag(label: l)).toList(),
         ),
       ],

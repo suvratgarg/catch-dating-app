@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -120,58 +121,67 @@ class _LabHero extends StatelessWidget {
         CatchSpacing.s5,
         CatchSpacing.s3,
       ),
-      child: CatchSurface(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [t.accent, t.ink],
-        ),
-        borderColor: Colors.transparent,
-        padding: const EdgeInsets.all(CatchSpacing.s5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: CatchSurface(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [t.accent, t.ink],
+            ),
+            borderColor: t.surface.withValues(alpha: CatchOpacity.none),
+            padding: const EdgeInsets.all(CatchSpacing.s5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchBadge(
-                  label: 'Work in progress',
-                  tone: CatchBadgeTone.live,
-                  icon: CatchIcons.constructionRounded,
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    CatchBadge(
+                      label: 'Work in progress',
+                      tone: CatchBadgeTone.live,
+                      icon: CatchIcons.constructionRounded,
+                    ),
+                    CatchBadge(
+                      label: 'Preview only',
+                      tone: CatchBadgeTone.solid,
+                      icon: CatchIcons.visibilityOutlined,
+                    ),
+                  ],
                 ),
-                CatchBadge(
-                  label: 'Preview only',
-                  tone: CatchBadgeTone.solid,
-                  icon: CatchIcons.visibilityOutlined,
+                const SizedBox(height: CatchSpacing.s5),
+                Text(
+                  'Event Success Layer',
+                  style: CatchTextStyles.headline(context, color: t.accentInk),
+                ),
+                const SizedBox(height: CatchSpacing.s3),
+                Text(
+                  'A first-pass workspace for improving what happens during events: structure, attendance, assignments, live reveal moments, host help, feedback, and coaching.',
+                  style: CatchTextStyles.proseL(
+                    context,
+                    color: t.accentInk.withValues(
+                      alpha: CatchOpacity.profileHeroMuted,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: CatchSpacing.s5),
+                Wrap(
+                  spacing: CatchSpacing.s2,
+                  runSpacing: CatchSpacing.s2,
+                  children: [
+                    EventSuccessDarkPill(label: '$playbookCount playbooks'),
+                    const EventSuccessDarkPill(label: 'Dev/staging route'),
+                    const EventSuccessDarkPill(label: 'No Firestore writes'),
+                    const EventSuccessDarkPill(label: 'No booking changes'),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: CatchSpacing.s5),
-            Text(
-              'Event Success Layer',
-              style: CatchTextStyles.displayL(context, color: t.accentInk),
-            ),
-            const SizedBox(height: CatchSpacing.s3),
-            Text(
-              'A first-pass workspace for improving what happens during events: structure, attendance, assignments, live reveal moments, host help, feedback, and coaching.',
-              style: CatchTextStyles.bodyL(
-                context,
-                color: t.accentInk.withValues(alpha: 0.86),
-              ),
-            ),
-            const SizedBox(height: CatchSpacing.s5),
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                EventSuccessDarkPill(label: '$playbookCount playbooks'),
-                const EventSuccessDarkPill(label: 'Dev/staging route'),
-                const EventSuccessDarkPill(label: 'No Firestore writes'),
-                const EventSuccessDarkPill(label: 'No booking changes'),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -187,7 +197,11 @@ class _PromiseGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 640 ? 3 : 1;
+        final columns =
+            constraints.maxWidth >=
+                ComponentBreakpoints.eventSuccessLabPromiseBreakpoint
+            ? 3
+            : 1;
         final width =
             (constraints.maxWidth - (CatchSpacing.s3 * (columns - 1))) /
             columns;
@@ -249,7 +263,7 @@ class _PromiseCard extends StatelessWidget {
         children: [
           Icon(icon, color: t.primary, size: CatchIcon.lg),
           const SizedBox(height: CatchSpacing.s3),
-          Text(title, style: CatchTextStyles.titleM(context)),
+          Text(title, style: CatchTextStyles.sectionTitle(context)),
           const SizedBox(height: CatchSpacing.s2),
           Text(body, style: CatchTextStyles.supporting(context)),
         ],
@@ -294,9 +308,9 @@ class _PlaybookCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: CatchSpacing.s3),
-          Text(playbook.title, style: CatchTextStyles.displayS(context)),
+          Text(playbook.title, style: CatchTextStyles.titleL(context)),
           const SizedBox(height: CatchSpacing.s2),
-          Text(playbook.summary, style: CatchTextStyles.bodyLead(context)),
+          Text(playbook.summary, style: CatchTextStyles.proseM(context)),
           const SizedBox(height: CatchSpacing.s4),
           _CapacityRow(capacity: playbook.capacity),
           const SizedBox(height: CatchSpacing.s4),
@@ -376,7 +390,7 @@ class _RunOfShow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Run of show', style: CatchTextStyles.titleM(context)),
+        Text('Run of show', style: CatchTextStyles.sectionTitle(context)),
         const SizedBox(height: CatchSpacing.s3),
         for (final step in playbook.runOfShow) ...[
           Row(
@@ -385,8 +399,8 @@ class _RunOfShow extends StatelessWidget {
               Column(
                 children: [
                   CatchSurface(
-                    width: 34,
-                    height: 34,
+                    width: CatchLayout.eventSuccessLabStepMarkerExtent,
+                    height: CatchLayout.eventSuccessLabStepMarkerExtent,
                     radius: CatchRadius.pill,
                     backgroundColor: t.primarySoft,
                     borderWidth: 0,
@@ -401,7 +415,11 @@ class _RunOfShow extends StatelessWidget {
                     ),
                   ),
                   if (step != playbook.runOfShow.last)
-                    Container(width: 1, height: 34, color: t.line2),
+                    SizedBox(
+                      width: CatchStroke.hairline,
+                      height: CatchLayout.eventSuccessLabStepMarkerExtent,
+                      child: ColoredBox(color: t.line2),
+                    ),
                 ],
               ),
               const SizedBox(width: CatchSpacing.s3),
@@ -441,7 +459,11 @@ class _ModuleGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 720 ? 2 : 1;
+        final columns =
+            constraints.maxWidth >=
+                ComponentBreakpoints.eventSuccessLabModuleBreakpoint
+            ? 2
+            : 1;
         final width =
             (constraints.maxWidth - (CatchSpacing.s3 * (columns - 1))) /
             columns;
@@ -512,7 +534,7 @@ class _ModuleCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   module.title,
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               const SizedBox(width: CatchSpacing.s2),
@@ -570,7 +592,7 @@ class _CoachPanel extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Sample debrief',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
               CatchBadge(
@@ -642,7 +664,7 @@ class _NotesList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: CatchSpacing.s2),
                   child: CatchStatusDot(color: t.primary, size: 5),
                 ),
                 const SizedBox(width: CatchSpacing.s2),
@@ -672,13 +694,20 @@ class _Section extends StatelessWidget {
         CatchSpacing.s5,
         0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: CatchTextStyles.titleL(context)),
-          const SizedBox(height: CatchSpacing.s3),
-          child,
-        ],
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: CatchLayout.maxContentWidth,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: CatchTextStyles.titleL(context)),
+              const SizedBox(height: CatchSpacing.s3),
+              child,
+            ],
+          ),
+        ),
       ),
     );
   }

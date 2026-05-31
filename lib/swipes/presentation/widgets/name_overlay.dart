@@ -20,6 +20,7 @@ class NameOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     final running = profile.activityPreferences.running;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,17 +33,19 @@ class NameOverlay extends StatelessWidget {
               child: Text(
                 profile.name,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.displayL(context, color: Colors.white),
+                style: CatchTextStyles.headline(context, color: d.ink),
               ),
             ),
             gapW8,
             Padding(
-              padding: const EdgeInsets.only(bottom: 3),
+              padding: const EdgeInsets.only(bottom: CatchSpacing.micro3),
               child: Text(
                 '${profile.age}',
-                style: CatchTextStyles.displayS(
+                style: CatchTextStyles.titleL(
                   context,
-                  color: Colors.white.withValues(alpha: 0.92),
+                  color: d.ink.withValues(
+                    alpha: CatchOpacity.eventSuccessArrivalHighlight,
+                  ),
                 ),
               ),
             ),
@@ -55,15 +58,15 @@ class NameOverlay extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.locationOnOutlined,
-                size: 16,
-                color: Colors.white.withValues(alpha: 0.86),
+                size: CatchIcon.xs,
+                color: d.ink.withValues(alpha: CatchOpacity.profileHeroMuted),
               ),
               gapW4,
               Text(
                 cityLabel(profile.city),
                 style: CatchTextStyles.labelL(
                   context,
-                  color: Colors.white.withValues(alpha: 0.86),
+                  color: d.ink.withValues(alpha: CatchOpacity.profileHeroMuted),
                 ),
               ),
             ],
@@ -102,15 +105,23 @@ class _HeroSignalChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const d = CatchTokens.sunsetDark;
     return CatchSurface(
       radius: CatchRadius.pill,
-      backgroundColor: Colors.black.withValues(alpha: 0.32),
-      borderColor: Colors.white.withValues(alpha: 0.20),
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      backgroundColor: d.overlay,
+      borderColor: d.ink.withValues(alpha: CatchOpacity.revealGlowBase),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.heroSignalChipHorizontalPadding,
+        vertical: CatchLayout.heroSignalChipVerticalPadding,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white.withValues(alpha: 0.90), size: 15),
+          Icon(
+            icon,
+            color: d.ink.withValues(alpha: CatchOpacity.eventSuccessPanelFill),
+            size: CatchIcon.heroSignalChip,
+          ),
           gapW6,
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 210),
@@ -118,7 +129,7 @@ class _HeroSignalChip extends StatelessWidget {
               label,
               style: CatchTextStyles.labelL(
                 context,
-                color: Colors.white.withValues(alpha: 0.96),
+                color: d.ink.withValues(alpha: CatchOpacity.passButtonFill),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -142,12 +153,21 @@ class GoalPill extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.pill,
       backgroundColor: palette.accentSoft,
-      borderColor: palette.accent.withValues(alpha: 0.28),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      borderColor: palette.accent.withValues(
+        alpha: CatchOpacity.gradientBandSoft,
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.micro6,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(CatchIcons.favoriteRounded, color: palette.accent, size: 14),
+          Icon(
+            CatchIcons.favoriteRounded,
+            color: palette.accent,
+            size: CatchIcon.sm,
+          ),
           gapW6,
           Text(
             goal.label,

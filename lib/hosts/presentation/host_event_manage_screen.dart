@@ -209,11 +209,15 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                 radius: CatchRadius.lg,
                 child: Row(
                   children: [
-                    Icon(CatchIcons.lockRounded, color: t.surface, size: 18),
+                    Icon(
+                      CatchIcons.lockRounded,
+                      color: t.surface,
+                      size: CatchIcon.md,
+                    ),
                     gapW10,
                     Text(
                       'FULL',
-                      style: CatchTextStyles.titleM(context, color: t.surface),
+                      style: CatchTextStyles.sectionTitle(context, color: t.surface),
                     ),
                   ],
                 ),
@@ -354,9 +358,8 @@ class _HostPrivateAccessCard extends ConsumerWidget {
       loading: () => _PrivateAccessShell(
         child: Row(
           children: [
-            const SizedBox(
-              width: 18,
-              height: 18,
+            const SizedBox.square(
+              dimension: CatchIcon.md,
               child: CatchLoadingIndicator(strokeWidth: 2),
             ),
             gapW12,
@@ -435,7 +438,7 @@ class _PrivateAccessBody extends ConsumerWidget {
                   children: [
                     Text(
                       'Private access',
-                      style: CatchTextStyles.titleM(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
                     Text(
@@ -557,7 +560,7 @@ class _HostEventActionsCard extends ConsumerWidget {
                   children: [
                     Text(
                       'Host actions',
-                      style: CatchTextStyles.titleM(context),
+                      style: CatchTextStyles.sectionTitle(context),
                     ),
                     gapH4,
                     Text(
@@ -630,7 +633,9 @@ class _HostEventActionsCard extends ConsumerWidget {
               isLoading: deleteMutation.isPending,
               fullWidth: true,
               foregroundColor: t.danger,
-              borderColor: t.danger.withValues(alpha: 0.45),
+              borderColor: t.danger.withValues(
+                alpha: CatchOpacity.hostDangerBorder,
+              ),
             ),
         ],
       ),
@@ -777,7 +782,7 @@ class _HostEventSummaryRow extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, color: t.ink2, size: 18),
+            Icon(icon, color: t.ink2, size: CatchIcon.md),
             gapW10,
             Text(
               label,

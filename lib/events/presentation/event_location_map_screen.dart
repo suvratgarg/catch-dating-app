@@ -123,17 +123,16 @@ class EventLocationMapScreen extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: t.primarySoft,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                        CatchSurface(
+                          width: CatchLayout.eventInfoTileExtent,
+                          height: CatchLayout.eventInfoTileExtent,
+                          backgroundColor: t.primarySoft,
+                          radius: CatchRadius.interactiveTile,
+                          borderWidth: 0,
                           child: Icon(
                             CatchIcons.locationOnOutlined,
                             color: t.primary,
-                            size: 22,
+                            size: CatchIcon.row,
                           ),
                         ),
                         const SizedBox(width: CatchSpacing.s3),
@@ -144,7 +143,7 @@ class EventLocationMapScreen extends ConsumerWidget {
                             children: [
                               Text(
                                 event.locationName,
-                                style: CatchTextStyles.titleM(context),
+                                style: CatchTextStyles.sectionTitle(context),
                               ),
                               if (event.locationNotes != null &&
                                   event.locationNotes!.isNotEmpty) ...[
@@ -165,7 +164,10 @@ class EventLocationMapScreen extends ConsumerWidget {
                     const SizedBox(height: CatchSpacing.s3),
                     CatchButton(
                       label: 'Get directions',
-                      icon: Icon(CatchIcons.directionsOutlined, size: 18),
+                      icon: Icon(
+                        CatchIcons.directionsOutlined,
+                        size: CatchIcon.md,
+                      ),
                       fullWidth: true,
                       onPressed: () => unawaited(
                         ref

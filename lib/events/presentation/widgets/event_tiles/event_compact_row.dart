@@ -11,6 +11,10 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
 import 'package:flutter/material.dart';
 
+const double _chevronIconSize = CatchSpacing.s5;
+const double _datePillWidth = CatchLayout.eventCompactDatePillWidth;
+const double _datePillHeight = CatchLayout.eventCompactDatePillHeight;
+
 class EventCompactRow extends StatelessWidget {
   const EventCompactRow({
     super.key,
@@ -32,7 +36,7 @@ class EventCompactRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final visual = eventActivityVisual(event.activityKind);
+    final visual = eventActivityVisual(event.activityKind, context: context);
     final capacity = EventCapacityPresenter(event);
     final effectiveStatus = statusLabel?.trim();
     final entries =
@@ -104,7 +108,11 @@ class EventCompactRow extends StatelessWidget {
             ),
           ),
           gapW8,
-          Icon(CatchIcons.chevronRightRounded, size: 20, color: t.ink3),
+          Icon(
+            CatchIcons.chevronRightRounded,
+            size: _chevronIconSize,
+            color: t.ink3,
+          ),
         ],
       ),
     );
@@ -122,11 +130,11 @@ class _EventCompactDatePill extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      width: 52,
-      height: 58,
+      width: _datePillWidth,
+      height: _datePillHeight,
       radius: CatchRadius.md,
-      backgroundColor: accent.withValues(alpha: 0.12),
-      borderColor: accent.withValues(alpha: 0.22),
+      backgroundColor: accent.withValues(alpha: CatchOpacity.subtleFill),
+      borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

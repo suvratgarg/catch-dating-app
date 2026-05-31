@@ -43,7 +43,7 @@ class _ProfileTitle extends StatelessWidget {
             Expanded(
               child: Text(
                 'Profile',
-                style: CatchTextStyles.screenHeadline(context),
+                style: CatchTextStyles.headline(context),
               ),
             ),
             const SizedBox(width: CatchSpacing.s2),

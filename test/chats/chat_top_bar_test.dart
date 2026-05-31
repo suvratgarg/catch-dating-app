@@ -40,6 +40,34 @@ void main() {
     expect(find.text('Report'), findsOneWidget);
     expect(find.text('Block'), findsOneWidget);
   });
+
+  testWidgets('runs share-card action from the overflow menu', (tester) async {
+    var shared = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          appBar: ChatTopBar(
+            name: 'Taylor',
+            photoUrl: null,
+            otherUid: 'runner-2',
+            profile: _profile,
+            onReport: () {},
+            onBlock: () {},
+            onShareCard: () => shared = true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Chat actions'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Share card'));
+    await pumpFeatureUi(tester);
+
+    expect(shared, isTrue);
+  });
 }
 
 GoRouter _buildRouter() {

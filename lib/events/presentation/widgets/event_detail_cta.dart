@@ -51,7 +51,9 @@ class EventDetailCta extends ConsumerWidget {
     final referenceNow = now ?? DateTime.now();
     final ctaBackground = darkSurface ? t.ink : null;
     final ctaDivider = darkSurface
-        ? Colors.white.withValues(alpha: 0.12)
+        ? CatchTokens.editorialLight.withValues(
+            alpha: CatchOpacity.eventDetailCtaDarkDivider,
+          )
         : null;
 
     final eligibility = _eligibilityForParticipation(
@@ -380,7 +382,11 @@ class BookedLeading extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(CatchIcons.checkCircleRounded, color: t.primary, size: 18),
+        Icon(
+          CatchIcons.checkCircleRounded,
+          color: t.primary,
+          size: CatchIcon.md,
+        ),
         gapW6,
         Text("You're in!", style: CatchTextStyles.labelL(context)),
       ],
@@ -397,7 +403,11 @@ class AttendedLeading extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(CatchIcons.directionsRunRounded, color: t.primary, size: 18),
+        Icon(
+          CatchIcons.directionsRunRounded,
+          color: t.primary,
+          size: CatchIcon.md,
+        ),
         gapW6,
         Text('Completed', style: CatchTextStyles.labelL(context)),
       ],

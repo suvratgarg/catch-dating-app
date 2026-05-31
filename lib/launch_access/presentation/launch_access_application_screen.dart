@@ -154,7 +154,7 @@ class _LaunchAccessApplicationFormState
           children: [
             Text(
               'Join the next city drop',
-              style: CatchTextStyles.displayM(context, color: t.ink),
+              style: CatchTextStyles.headlineS(context, color: t.ink),
             ),
             gapH8,
             Text(

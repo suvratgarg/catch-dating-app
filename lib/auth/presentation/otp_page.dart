@@ -124,14 +124,14 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         !sendMutation.isPending;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           gapH32,
           Text(
             'Enter the code',
-            style: CatchTextStyles.formQuestion(context, color: t.ink),
+            style: CatchTextStyles.headlineS(context, color: t.ink),
           ),
           gapH8,
           Text(

@@ -57,13 +57,13 @@ class EligibilityStep extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s5,
-          16,
+          CatchSpacing.s4,
           CatchSpacing.s5,
-          24,
+          CatchSpacing.s6,
         ),
         children: [
           CatchSurface(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(CatchSpacing.s3),
             tone: CatchSurfaceTone.primarySoft,
             radius: CatchRadius.md,
             borderWidth: 0,

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,7 @@ class ClubsSearchField extends ConsumerWidget {
       textInputAction: TextInputAction.done,
       onSubmitted: onSubmitted,
       onFocusChanged: onFocusChanged,
-      prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
+      prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
       showClearButton: true,
     );
   }

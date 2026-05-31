@@ -93,6 +93,7 @@ void main() {
         'Hindu',
         'English, Hindi',
       ]);
+      expect(content.relationshipGoal, isNull);
       expect(content.lifestyle.map((fact) => fact.text), [
         'Socially',
         'Never',
@@ -151,6 +152,7 @@ void main() {
 
       final content = ProfileCardContent.fromProfile(profile);
 
+      expect(content.relationshipGoal, RelationshipGoal.casual);
       expect(
         content.attributes.any((fact) => fact.text == 'Something casual'),
         isFalse,

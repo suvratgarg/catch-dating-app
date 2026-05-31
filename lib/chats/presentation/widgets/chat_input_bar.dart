@@ -42,9 +42,8 @@ class ChatInputBar extends StatelessWidget {
             IconButton(
               onPressed: disabled ? null : onSendImage,
               icon: sendingImage
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                  ? const SizedBox.square(
+                      dimension: CatchIcon.control,
                       child: CatchLoadingIndicator(strokeWidth: 2),
                     )
                   : Icon(CatchIcons.imageOutlined, color: t.ink2),
@@ -72,9 +71,8 @@ class ChatInputBar extends StatelessWidget {
             onPressed: disabled ? null : onSend,
             tooltip: 'Send message',
             icon: sending
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                ? const SizedBox.square(
+                    dimension: CatchIcon.control,
                     child: CatchLoadingIndicator(strokeWidth: 2),
                   )
                 : Icon(CatchIcons.sendRounded),

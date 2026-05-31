@@ -229,6 +229,7 @@ class _ProfileBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Stack(
       children: [
         Positioned.fill(
@@ -242,10 +243,10 @@ class _ProfileBody extends StatelessWidget {
           ),
         ),
         if (submitting)
-          const Positioned.fill(
+          Positioned.fill(
             child: ColoredBox(
-              color: Color(0x66000000),
-              child: CatchLoadingIndicator(),
+              color: t.overlay,
+              child: const CatchLoadingIndicator(),
             ),
           ),
       ],

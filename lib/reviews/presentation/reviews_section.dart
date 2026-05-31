@@ -215,14 +215,14 @@ class ReviewsPreviewSection extends StatelessWidget {
             layout: compactEmptyState
                 ? CatchEmptyStateLayout.inline
                 : CatchEmptyStateLayout.stacked,
-            iconSize: compactEmptyState ? 22 : 28,
+            iconSize: compactEmptyState ? CatchIcon.row : CatchIcon.tile,
             iconContainerSize: compactEmptyState ? 44 : null,
             padding: compactEmptyState
                 ? const EdgeInsets.all(CatchSpacing.s4)
                 : const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
             titleStyle: compactEmptyState
                 ? CatchTextStyles.sectionTitle(context)
-                : CatchTextStyles.titleM(context),
+                : CatchTextStyles.sectionTitle(context),
             messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
           )
         else ...[
@@ -298,7 +298,7 @@ class ReviewCard extends StatelessWidget {
                     onTap: onEdit!,
                     child: Icon(
                       CatchIcons.editOutlined,
-                      size: 16,
+                      size: CatchIcon.xs,
                       color: t.primary,
                     ),
                   ),

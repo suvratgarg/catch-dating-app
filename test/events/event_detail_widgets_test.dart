@@ -20,6 +20,7 @@ import 'package:catch_dating_app/events/presentation/event_location_map_screen.d
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_share_card.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -1134,7 +1135,7 @@ void main() {
       expect(find.text('Home'), findsOneWidget);
     });
 
-    testWidgets('booked attendee invite card shares a deep event link', (
+    testWidgets('booked attendee invite card shares a rich event invite', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1;
@@ -1183,12 +1184,27 @@ void main() {
         find.text('Bring someone into the room'),
       );
       await tester.tap(find.text('Invite a friend'));
+      await tester.pumpAndSettle();
+
+      expect(sharedParams, isNull);
+      expect(find.byType(EventShareCard), findsOneWidget);
+      expect(find.text('CATCH INVITE'), findsOneWidget);
+
+      await tester.tap(find.byType(CatchButton).last);
       await tester.pump();
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        for (var i = 0; i < 20 && sharedParams == null; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+      });
 
       expect(sharedParams?.subject, 'Join me at ${event.title}');
       expect(sharedParams?.text, contains(event.title));
       expect(sharedParams?.text, contains('Bandra'));
       expect(sharedParams?.text, contains('invite=VIP42'));
+      expect(sharedParams?.files, hasLength(1));
+      expect(sharedParams?.fileNameOverrides, ['catch-event-invite.png']);
     });
 
     testWidgets('saved event button renders selected and unsaves', (

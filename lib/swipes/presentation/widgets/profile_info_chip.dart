@@ -19,13 +19,20 @@ class ProfileInfoChip extends StatelessWidget {
       radius: CatchRadius.pill,
       backgroundColor: palette.chipFill,
       borderColor: palette.chipBorder,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.profileInfoChipHorizontalPadding,
+        vertical: CatchLayout.profileInfoChipVerticalPadding,
+      ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 260),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: palette.textSecondary, size: 13),
+            Icon(
+              icon,
+              color: palette.textSecondary,
+              size: CatchIcon.profileInfoChip,
+            ),
             gapW6,
             Flexible(
               child: Text(

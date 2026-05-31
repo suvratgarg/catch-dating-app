@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -109,7 +110,7 @@ class _LabHeader extends StatelessWidget {
         gapH12,
         Text(
           scenario.title,
-          style: CatchTextStyles.displayS(context, color: t.ink),
+          style: CatchTextStyles.titleL(context, color: t.ink),
         ),
         gapH6,
         Text(
@@ -119,7 +120,9 @@ class _LabHeader extends StatelessWidget {
         gapH16,
         LayoutBuilder(
           builder: (context, constraints) {
-            final compact = constraints.maxWidth < 560;
+            final compact =
+                constraints.maxWidth <
+                ComponentBreakpoints.eventPolicyLabMetricsBreakpoint;
             final children = [
               _MetricTile(
                 icon: CatchIcons.groupOutlined,
@@ -274,7 +277,7 @@ class _ScenarioCard extends StatelessWidget {
     final color = selected ? t.primary : t.ink;
 
     return SizedBox(
-      width: 220,
+      width: CatchLayout.eventPolicyLabScenarioCardWidth,
       child: CatchSurface(
         key: EventPolicyLabKeys.scenarioCard(scenario.id),
         onTap: onTap,
@@ -501,7 +504,10 @@ class _ResultRow extends StatelessWidget {
                   children: [
                     Text(
                       row.probeLabel,
-                      style: CatchTextStyles.titleM(context, color: t.ink),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     gapH4,
                     Text(
@@ -609,7 +615,10 @@ class _CancellationRow extends StatelessWidget {
                   children: [
                     Text(
                       row.probeLabel,
-                      style: CatchTextStyles.titleM(context, color: t.ink),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: t.ink,
+                      ),
                     ),
                     gapH4,
                     Text(
@@ -689,10 +698,7 @@ class _DebugOutput extends StatelessWidget {
             child: SelectableText(
               key: EventPolicyLabKeys.debugOutput,
               encoder.convert(result.toDebugMap()),
-              style: CatchTextStyles.mono(
-                context,
-                color: t.surface,
-              ).copyWith(fontSize: 12),
+              style: CatchTextStyles.debugDetails(context, color: t.surface),
             ),
           ),
         ),
@@ -714,12 +720,12 @@ class _SectionTitle extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, size: 18, color: t.primary),
+        Icon(icon, size: CatchIcon.md, color: t.primary),
         gapW8,
         Expanded(
           child: Text(
             title,
-            style: CatchTextStyles.titleM(context, color: t.ink),
+            style: CatchTextStyles.sectionTitle(context, color: t.ink),
           ),
         ),
         ?trailing,
@@ -746,7 +752,7 @@ class _PolicyLine extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: t.primary),
+        Icon(icon, size: CatchIcon.md, color: t.primary),
         gapW10,
         Expanded(
           child: Text(

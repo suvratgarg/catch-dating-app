@@ -91,6 +91,8 @@ void main() {
       );
       await _pumpClubFlow(tester);
 
+      await tester.ensureVisible(find.text(club.name));
+      await _pumpClubFlow(tester);
       await tester.tap(find.text(club.name));
       await _pumpClubFlow(tester);
 

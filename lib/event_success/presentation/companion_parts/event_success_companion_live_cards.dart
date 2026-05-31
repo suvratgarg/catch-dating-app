@@ -118,56 +118,53 @@ class _GroupRotationSlotRow extends StatelessWidget {
         .toList(growable: false);
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.primarySoft,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
+      child: CatchSurface(
+        backgroundColor: t.primarySoft,
+        radius: CatchRadius.sm,
+        borderWidth: 0,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                CatchBadge(
+                  label: slot.label,
+                  tone: _isStrongRotationSignal(slot.compatibility)
+                      ? CatchBadgeTone.success
+                      : CatchBadgeTone.neutral,
+                ),
+                CatchBadge(
+                  label: slot.unitLabel,
+                  tone: CatchBadgeTone.neutral,
+                  icon: CatchIcons.tableRestaurantOutlined,
+                ),
+              ],
+            ),
+            gapH8,
+            Text(timeRange, style: CatchTextStyles.supporting(context)),
+            gapH8,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchBadge(
+                  label: '${slot.peerUids.length + 1} people',
+                  tone: CatchBadgeTone.neutral,
+                  icon: CatchIcons.groupOutlined,
+                ),
+                for (final name in peerNames)
                   CatchBadge(
-                    label: slot.label,
-                    tone: _isStrongRotationSignal(slot.compatibility)
-                        ? CatchBadgeTone.success
-                        : CatchBadgeTone.neutral,
-                  ),
-                  CatchBadge(
-                    label: slot.unitLabel,
+                    label: name,
                     tone: CatchBadgeTone.neutral,
-                    icon: CatchIcons.tableRestaurantOutlined,
+                    icon: CatchIcons.personOutlineRounded,
                   ),
-                ],
-              ),
-              gapH8,
-              Text(timeRange, style: CatchTextStyles.supporting(context)),
-              gapH8,
-              Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  CatchBadge(
-                    label: '${slot.peerUids.length + 1} people',
-                    tone: CatchBadgeTone.neutral,
-                    icon: CatchIcons.groupOutlined,
-                  ),
-                  for (final name in peerNames)
-                    CatchBadge(
-                      label: name,
-                      tone: CatchBadgeTone.neutral,
-                      icon: CatchIcons.personOutlineRounded,
-                    ),
-                ],
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -280,30 +277,27 @@ class _RotationSlotRow extends StatelessWidget {
         '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.primarySoft,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s3),
-          child: Row(
-            children: [
-              CatchBadge(
-                label: slot.label,
-                tone: _isStrongRotationSignal(slot.compatibility)
-                    ? CatchBadgeTone.success
-                    : CatchBadgeTone.neutral,
+      child: CatchSurface(
+        backgroundColor: t.primarySoft,
+        radius: CatchRadius.sm,
+        borderWidth: 0,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Row(
+          children: [
+            CatchBadge(
+              label: slot.label,
+              tone: _isStrongRotationSignal(slot.compatibility)
+                  ? CatchBadgeTone.success
+                  : CatchBadgeTone.neutral,
+            ),
+            gapW8,
+            Expanded(
+              child: Text(
+                '$timeRange · $peerName',
+                style: CatchTextStyles.supporting(context),
               ),
-              gapW8,
-              Expanded(
-                child: Text(
-                  '$timeRange · $peerName',
-                  style: CatchTextStyles.supporting(context),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -432,8 +426,8 @@ class _PreviewLine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: Icon(icon, size: 16, color: t.ink2),
+          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+          child: Icon(icon, size: CatchIcon.xs, color: t.ink2),
         ),
         gapW6,
         Expanded(child: Text(text, style: CatchTextStyles.supporting(context))),
@@ -601,7 +595,7 @@ class _EventCheckInQrScannerSheetState
                 Expanded(
                   child: Text(
                     'Scan host QR',
-                    style: CatchTextStyles.titleM(context),
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
                 IconButton(
@@ -614,7 +608,7 @@ class _EventCheckInQrScannerSheetState
             gapH10,
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(CatchRadius.sm),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -626,21 +620,25 @@ class _EventCheckInQrScannerSheetState
                     DecoratedBox(
                       decoration: BoxDecoration(
                         border: Border.all(color: t.primary, width: 3),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(CatchRadius.sm),
                       ),
                     ),
                     if (_errorText != null)
                       Align(
                         alignment: Alignment.bottomCenter,
-                        child: Container(
+                        child: CatchSurface(
                           width: double.infinity,
                           padding: const EdgeInsets.all(CatchSpacing.s3),
-                          color: t.ink.withValues(alpha: 0.84),
+                          backgroundColor: t.ink.withValues(
+                            alpha: CatchOpacity.eventSuccessQrErrorFill,
+                          ),
+                          borderWidth: 0,
+                          radius: CatchRadius.none,
                           child: Text(
                             _errorText!,
                             style: CatchTextStyles.supporting(
                               context,
-                              color: Colors.white,
+                              color: CatchTokens.editorialLight,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -702,10 +700,7 @@ class _StagePromptCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH12,
-          Text(
-            prompt,
-            style: CatchTextStyles.titleL(context).copyWith(height: 1.12),
-          ),
+          Text(prompt, style: CatchTextStyles.titleL(context)),
         ],
       ),
     );
@@ -763,43 +758,39 @@ class _StageCueLine extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.primarySoft,
-          borderRadius: BorderRadius.circular(CatchRadius.sm),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      cue.title,
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
+      child: CatchSurface(
+        backgroundColor: t.primarySoft,
+        radius: CatchRadius.sm,
+        borderWidth: 0,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    cue.title,
+                    style: CatchTextStyles.sectionTitle(context),
                   ),
-                  IconButton(
-                    tooltip:
-                        cue.moment ==
-                            EventSuccessConversationCueMoment.postEvent
-                        ? 'Copy opener'
-                        : 'Copy cue',
-                    icon: Icon(CatchIcons.contentCopyRounded, size: 18),
-                    onPressed: () => _copyCue(context, cue),
-                  ),
-                ],
-              ),
-              gapH4,
-              Text(
-                cue.body,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ),
+                ),
+                IconButton(
+                  tooltip:
+                      cue.moment == EventSuccessConversationCueMoment.postEvent
+                      ? 'Copy opener'
+                      : 'Copy cue',
+                  icon: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.md),
+                  onPressed: () => _copyCue(context, cue),
+                ),
+              ],
+            ),
+            gapH4,
+            Text(
+              cue.body,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ],
         ),
       ),
     );
@@ -842,7 +833,7 @@ class _StageSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: color),
+        Icon(icon, size: CatchIcon.md, color: color),
         gapW6,
         Expanded(
           child: Text(

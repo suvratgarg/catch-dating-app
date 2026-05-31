@@ -12,8 +12,12 @@ class _CountdownNumber extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 112),
       child: CatchSurface(
-        backgroundColor: t.surface.withValues(alpha: 0.12),
-        borderColor: t.surface.withValues(alpha: 0.18),
+        backgroundColor: t.surface.withValues(
+          alpha: CatchOpacity.revealSurfaceFill,
+        ),
+        borderColor: t.surface.withValues(
+          alpha: CatchOpacity.revealSurfaceBorder,
+        ),
         padding: const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
           vertical: CatchSpacing.s3,
@@ -30,10 +34,7 @@ class _CountdownNumber extends StatelessWidget {
               child: Text(
                 value,
                 key: ValueKey(value),
-                style: CatchTextStyles.displayL(
-                  context,
-                  color: t.surface,
-                ).copyWith(fontSize: 48, height: 1, letterSpacing: 0),
+                style: CatchTextStyles.display(context, color: t.surface),
               ),
             ),
             gapH4,
@@ -41,7 +42,9 @@ class _CountdownNumber extends StatelessWidget {
               caption,
               style: CatchTextStyles.labelS(
                 context,
-                color: t.surface.withValues(alpha: 0.78),
+                color: t.surface.withValues(
+                  alpha: CatchOpacity.revealMutedForeground,
+                ),
               ),
             ),
           ],
@@ -72,7 +75,9 @@ class _RevealHostCopy extends StatelessWidget {
           body,
           style: CatchTextStyles.supporting(
             context,
-            color: t.surface.withValues(alpha: 0.78),
+            color: t.surface.withValues(
+              alpha: CatchOpacity.revealMutedForeground,
+            ),
           ),
         ),
       ],
@@ -93,7 +98,7 @@ class _RevealProgressBar extends StatelessWidget {
       child: LinearProgressIndicator(
         minHeight: 7,
         value: progress.clamp(0, 1).toDouble(),
-        backgroundColor: t.surface.withValues(alpha: 0.14),
+        backgroundColor: t.surface.withValues(alpha: CatchOpacity.warningFill),
         valueColor: AlwaysStoppedAnimation<Color>(t.gold),
       ),
     );
@@ -131,19 +136,29 @@ class _AttendeeCountdown extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFF170F24),
-              const Color(0xFF2A1844),
+              Color.alphaBlend(
+                t.primary.withValues(alpha: CatchOpacity.revealGradientStart),
+                t.bg,
+              ),
+              Color.alphaBlend(
+                t.primary.withValues(alpha: CatchOpacity.revealSurfaceBorder),
+                t.bg,
+              ),
               Color.lerp(t.ink, t.primary, 0.42)!,
             ],
           ),
-          border: Border.all(color: t.gold.withValues(alpha: 0.34)),
-          boxShadow: [
-            BoxShadow(
-              color: t.primary.withValues(alpha: 0.20 + urgency * 0.12),
-              blurRadius: 26 + urgency * 18,
-              offset: const Offset(0, 14),
+          border: Border.all(
+            color: t.gold.withValues(alpha: CatchOpacity.revealGoldBorder),
+          ),
+          boxShadow: CatchElevation.glow(
+            t.primary.withValues(
+              alpha:
+                  CatchOpacity.revealGlowBase +
+                  urgency * CatchOpacity.revealGlowUrgency,
             ),
-          ],
+            blurRadius: 26 + urgency * 18,
+            spreadRadius: 0,
+          ),
         ),
         child: Stack(
           children: [
@@ -153,7 +168,7 @@ class _AttendeeCountdown extends StatelessWidget {
                   progress: progress,
                   intensity: urgency,
                   accent: t.gold,
-                  foreground: Colors.white,
+                  foreground: t.ink,
                 ),
               ),
             ),
@@ -171,17 +186,25 @@ class _AttendeeCountdown extends StatelessWidget {
                         label: 'Room hold',
                         tone: CatchBadgeTone.live,
                         icon: CatchIcons.lockClockRounded,
-                        backgroundColor: Colors.white.withValues(alpha: 0.14),
-                        foregroundColor: Colors.white,
-                        borderColor: Colors.white.withValues(alpha: 0.16),
+                        backgroundColor: t.ink.withValues(
+                          alpha: CatchOpacity.warningFill,
+                        ),
+                        foregroundColor: t.ink,
+                        borderColor: t.ink.withValues(
+                          alpha: CatchOpacity.revealBeatBorderInactive,
+                        ),
                       ),
                       CatchBadge(
                         label: kind.label,
                         tone: CatchBadgeTone.neutral,
                         icon: kind.icon,
-                        backgroundColor: t.gold.withValues(alpha: 0.18),
-                        foregroundColor: Colors.white,
-                        borderColor: t.gold.withValues(alpha: 0.24),
+                        backgroundColor: t.gold.withValues(
+                          alpha: CatchOpacity.revealSurfaceBorder,
+                        ),
+                        foregroundColor: t.ink,
+                        borderColor: t.gold.withValues(
+                          alpha: CatchOpacity.revealBeatFillActive,
+                        ),
                       ),
                     ],
                   ),
@@ -195,18 +218,20 @@ class _AttendeeCountdown extends StatelessWidget {
                   Text(
                     _countdownStageHeadline(seconds),
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.displayS(
+                    style: CatchTextStyles.titleL(
                       context,
-                      color: Colors.white,
-                    ).copyWith(letterSpacing: 0),
+                      color: t.ink,
+                    ).copyWith(),
                   ),
                   gapH8,
                   Text(
                     'Everyone gets this ${kind.assignmentNoun} at the same time. No names shown yet.',
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.bodyLead(
+                    style: CatchTextStyles.proseM(
                       context,
-                      color: Colors.white.withValues(alpha: 0.78),
+                      color: t.ink.withValues(
+                        alpha: CatchOpacity.revealMutedForeground,
+                      ),
                     ),
                   ),
                   gapH18,
@@ -236,6 +261,7 @@ class _CountdownStageDial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final side = (constraints.maxWidth * 0.68)
@@ -244,8 +270,8 @@ class _CountdownStageDial extends StatelessWidget {
         return Center(
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: progress.clamp(0, 1).toDouble()),
-            duration: const Duration(milliseconds: 240),
-            curve: Curves.easeOutCubic,
+            duration: CatchMotion.revealDrop,
+            curve: CatchMotion.easeOutCubicCurve,
             builder: (context, animatedProgress, _) {
               return SizedBox.square(
                 dimension: side,
@@ -258,7 +284,7 @@ class _CountdownStageDial extends StatelessWidget {
                         progress: animatedProgress,
                         intensity: intensity,
                         accent: CatchTokens.of(context).gold,
-                        foreground: Colors.white,
+                        foreground: t.ink,
                       ),
                     ),
                     AnimatedScale(
@@ -271,8 +297,8 @@ class _CountdownStageDial extends StatelessWidget {
                       curve: CatchMotion.springCurve,
                       child: AnimatedSwitcher(
                         duration: CatchMotion.fast,
-                        switchInCurve: Curves.easeOutBack,
-                        switchOutCurve: Curves.easeInCubic,
+                        switchInCurve: CatchMotion.easeOutBackCurve,
+                        switchOutCurve: CatchMotion.easeInCubicCurve,
                         transitionBuilder: (child, animation) {
                           final slide = Tween<Offset>(
                             begin: const Offset(0, -0.16),
@@ -295,19 +321,17 @@ class _CountdownStageDial extends StatelessWidget {
                         child: Text(
                           '$seconds',
                           key: ValueKey(seconds),
-                          style:
-                              CatchTextStyles.displayL(
-                                context,
-                                color: Colors.white,
-                              ).copyWith(
+                          style: CatchTextStyles.headline(context, color: t.ink)
+                              .copyWith(
                                 fontSize: side * 0.45,
                                 height: 0.9,
-                                letterSpacing: 0,
                                 shadows: [
                                   Shadow(
-                                    color: CatchTokens.of(
-                                      context,
-                                    ).gold.withValues(alpha: 0.48),
+                                    color: CatchTokens.of(context).gold
+                                        .withValues(
+                                          alpha:
+                                              CatchOpacity.lightOverlayBorder,
+                                        ),
                                     blurRadius: 22 + intensity * 16,
                                   ),
                                 ],
@@ -321,8 +345,10 @@ class _CountdownStageDial extends StatelessWidget {
                         'SECONDS',
                         style: CatchTextStyles.labelS(
                           context,
-                          color: Colors.white.withValues(alpha: 0.68),
-                        ).copyWith(letterSpacing: 0),
+                          color: t.ink.withValues(
+                            alpha: CatchOpacity.darkPillFill,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -386,25 +412,28 @@ class _CountdownBeatPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final color = active || complete ? t.gold : Colors.white;
-    return AnimatedContainer(
+    final color = active || complete ? t.gold : t.ink;
+    return CatchSurface(
       duration: CatchMotion.fast,
-      curve: CatchMotion.standardCurve,
+      radius: CatchRadius.pill,
+      backgroundColor: color.withValues(
+        alpha: active
+            ? CatchOpacity.revealBeatFillActive
+            : CatchOpacity.revealBeatFillInactive,
+      ),
+      borderColor: color.withValues(
+        alpha: active
+            ? CatchOpacity.revealBeatBorderActive
+            : CatchOpacity.revealBeatBorderInactive,
+      ),
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.s2,
         vertical: CatchSpacing.s2,
       ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: active ? 0.24 : 0.10),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(
-          color: color.withValues(alpha: active ? 0.52 : 0.16),
-        ),
-      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 14, color: color),
+          Icon(icon, size: CatchIcon.sm, color: color),
           gapW4,
           Flexible(
             child: Text(
@@ -412,10 +441,7 @@ class _CountdownBeatPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: CatchTextStyles.labelS(
-                context,
-                color: color,
-              ).copyWith(letterSpacing: 0),
+              style: CatchTextStyles.labelS(context, color: color),
             ),
           ),
         ],
@@ -462,43 +488,39 @@ class _CountdownCuePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.13)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s3),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: CatchTokens.of(context).gold, size: 18),
-            gapW10,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: CatchTextStyles.sectionTitle(
-                      context,
-                      color: Colors.white,
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.ink.withValues(alpha: CatchOpacity.revealCueFill),
+      borderColor: t.ink.withValues(alpha: CatchOpacity.revealCueBorder),
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: t.gold, size: CatchIcon.md),
+          gapW10,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
+                ),
+                gapH2,
+                Text(
+                  body,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: t.ink.withValues(
+                      alpha: CatchOpacity.eventSuccessMutedInk,
                     ),
                   ),
-                  gapH2,
-                  Text(
-                    body,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: Colors.white.withValues(alpha: 0.72),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -521,18 +543,28 @@ class _CountdownAtmospherePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width * 0.5, size.height * 0.28);
     final glowPaint = Paint()
-      ..color = accent.withValues(alpha: 0.08 + intensity * 0.07)
+      ..color = accent.withValues(
+        alpha:
+            CatchOpacity.revealAtmosphereGlowBase +
+            intensity * CatchOpacity.revealAtmosphereGlowUrgency,
+      )
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 36 + intensity * 18);
     canvas.drawCircle(center, size.shortestSide * 0.42, glowPaint);
 
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
-      ..color = foreground.withValues(alpha: 0.10);
+      ..color = foreground.withValues(
+        alpha: CatchOpacity.revealAtmosphereLineBase,
+      );
     final hotLinePaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.8
-      ..color = accent.withValues(alpha: 0.22 + intensity * 0.16);
+      ..color = accent.withValues(
+        alpha:
+            CatchOpacity.revealAtmosphereHotLineBase +
+            intensity * CatchOpacity.revealAtmosphereHotLineUrgency,
+      );
 
     for (var i = 0; i < 9; i++) {
       final y = size.height * (0.18 + i * 0.075);
@@ -576,14 +608,18 @@ class _CountdownDialPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 9
       ..strokeCap = StrokeCap.round
-      ..color = foreground.withValues(alpha: 0.13);
+      ..color = foreground.withValues(alpha: CatchOpacity.revealDialBase);
     canvas.drawCircle(center, radius, basePaint);
 
     final glowPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 18 + intensity * 8
       ..strokeCap = StrokeCap.round
-      ..color = accent.withValues(alpha: 0.16 + intensity * 0.10)
+      ..color = accent.withValues(
+        alpha:
+            CatchOpacity.revealDialGlowBase +
+            intensity * CatchOpacity.revealDialGlowUrgency,
+      )
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 14 + intensity * 8);
     canvas.drawArc(
       rect,
@@ -600,8 +636,8 @@ class _CountdownDialPainter extends CustomPainter {
       ..shader = SweepGradient(
         transform: const GradientRotation(-math.pi / 2),
         colors: [
-          accent.withValues(alpha: 0.40),
-          foreground.withValues(alpha: 0.90),
+          accent.withValues(alpha: CatchOpacity.revealDialSweepAccent),
+          foreground.withValues(alpha: CatchOpacity.revealDialSweepForeground),
           accent,
         ],
       ).createShader(rect);
@@ -639,13 +675,20 @@ class _CountdownDialPainter extends CustomPainter {
     canvas.drawCircle(
       center,
       radius * 0.68,
-      Paint()..color = foreground.withValues(alpha: 0.045),
+      Paint()
+        ..color = foreground.withValues(
+          alpha: CatchOpacity.revealDialCenterFill,
+        ),
     );
     canvas.drawCircle(
       center,
       radius * (0.35 + intensity * 0.06),
       Paint()
-        ..color = accent.withValues(alpha: 0.08 + intensity * 0.06)
+        ..color = accent.withValues(
+          alpha:
+              CatchOpacity.revealDialInnerGlowBase +
+              intensity * CatchOpacity.revealDialInnerGlowUrgency,
+        )
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, 20),
     );
   }
@@ -672,36 +715,34 @@ class _WaitingRevealCue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: t.primary.withValues(alpha: 0.18)),
+    return CatchSurface(
+      radius: CatchRadius.sm,
+      backgroundColor: t.primarySoft,
+      borderColor: t.primary.withValues(
+        alpha: CatchOpacity.revealSurfaceBorder,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s3),
-        child: Row(
-          children: [
-            Icon(CatchIcons.lockClockRounded, color: t.primary),
-            gapW10,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'The room is holding for the reveal.',
-                    style: CatchTextStyles.sectionTitle(context),
-                  ),
-                  gapH2,
-                  Text(
-                    'The host controls the ${kind.assignmentNoun} unlock from live mode.',
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
-                  ),
-                ],
-              ),
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        children: [
+          Icon(CatchIcons.lockClockRounded, color: t.primary),
+          gapW10,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'The room is holding for the reveal.',
+                  style: CatchTextStyles.sectionTitle(context),
+                ),
+                gapH2,
+                Text(
+                  'The host controls the ${kind.assignmentNoun} unlock from live mode.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -826,13 +867,13 @@ class _AssignmentUnlockedShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(CatchSpacing.s3),
-      decoration: BoxDecoration(
-        color: t.success.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(CatchRadius.sm),
-        border: Border.all(color: t.success.withValues(alpha: 0.22)),
+      radius: CatchRadius.sm,
+      backgroundColor: t.success.withValues(
+        alpha: CatchOpacity.revealGradientStart,
       ),
+      borderColor: t.success.withValues(alpha: CatchOpacity.subtleBorder),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1011,12 +1052,14 @@ class _RevealRoundRail extends StatelessWidget {
                 : CatchBadgeTone.neutral,
             backgroundColor: foreground == null
                 ? color.withValues(
-                    alpha: index <= revealedThrough ? 0.18 : 0.10,
+                    alpha: index <= revealedThrough
+                        ? CatchOpacity.revealSurfaceBorder
+                        : CatchOpacity.revealBeatFillInactive,
                   )
                 : null,
             foregroundColor: foreground == null ? color : null,
             borderColor: foreground == null
-                ? color.withValues(alpha: 0.14)
+                ? color.withValues(alpha: CatchOpacity.warningFill)
                 : null,
           ),
       ],

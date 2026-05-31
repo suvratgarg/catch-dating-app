@@ -115,29 +115,41 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s4,
-                CatchSpacing.s5,
-                CatchSpacing.s8,
-              ),
-              sliver: SliverList.list(
-                children: [
-                  _EventPreviewHero(preview: preview),
-                  gapH16,
-                  _IntegrationNotesCard(notes: preview.integrationNotes),
-                  gapH16,
-                  EventSuccessHostSetupFlow(initialDraft: preview.hostDraft),
-                  gapH16,
-                  EventSuccessLiveHostMode(plan: preview.livePlan),
-                  gapH16,
-                  EventSuccessAttendeeCompanionPreview(
-                    state: preview.attendeeState,
+            SliverToBoxAdapter(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: CatchLayout.maxContentWidth,
                   ),
-                  gapH16,
-                  EventSuccessPostEventReport(brief: preview.brief),
-                ],
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      CatchSpacing.s5,
+                      CatchSpacing.s4,
+                      CatchSpacing.s5,
+                      CatchSpacing.s8,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _EventPreviewHero(preview: preview),
+                        gapH16,
+                        _IntegrationNotesCard(notes: preview.integrationNotes),
+                        gapH16,
+                        EventSuccessHostSetupFlow(
+                          initialDraft: preview.hostDraft,
+                        ),
+                        gapH16,
+                        EventSuccessLiveHostMode(plan: preview.livePlan),
+                        gapH16,
+                        EventSuccessAttendeeCompanionPreview(
+                          state: preview.attendeeState,
+                        ),
+                        gapH16,
+                        EventSuccessPostEventReport(brief: preview.brief),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -164,7 +176,7 @@ class _EventPreviewHero extends StatelessWidget {
         end: Alignment.bottomRight,
         colors: [t.accent, t.ink],
       ),
-      borderColor: Colors.transparent,
+      borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       padding: const EdgeInsets.all(CatchSpacing.s5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,14 +200,16 @@ class _EventPreviewHero extends StatelessWidget {
           gapH20,
           Text(
             event.title,
-            style: CatchTextStyles.displayL(context, color: t.accentInk),
+            style: CatchTextStyles.headline(context, color: t.accentInk),
           ),
           gapH8,
           Text(
             '$clubName · ${preview.playbook.title}',
             style: CatchTextStyles.bodyL(
               context,
-              color: t.accentInk.withValues(alpha: 0.86),
+              color: t.accentInk.withValues(
+                alpha: CatchOpacity.eventSuccessPreviewMeta,
+              ),
             ),
           ),
           gapH20,
@@ -249,7 +263,7 @@ class _IntegrationNotesCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'How this maps to the live app',
-                  style: CatchTextStyles.titleM(context),
+                  style: CatchTextStyles.sectionTitle(context),
                 ),
               ),
             ],
@@ -259,7 +273,11 @@ class _IntegrationNotesCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(CatchIcons.checkRounded, size: 18, color: t.success),
+                Icon(
+                  CatchIcons.checkRounded,
+                  size: CatchIcon.md,
+                  color: t.success,
+                ),
                 gapW8,
                 Expanded(
                   child: Text(

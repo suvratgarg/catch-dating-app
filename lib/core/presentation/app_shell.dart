@@ -156,7 +156,12 @@ class _GuestAuthCtaBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchBottomDock(
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.micro10,
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+      ),
       child: CatchButton(
         label: 'Continue with phone',
         onPressed: () => context.go(_authLocation(context)),
@@ -227,10 +232,12 @@ class AppShellNavigationBar extends StatelessWidget {
           onTap: onDestinationSelected,
           activeColor: t.primary,
           inactiveColor: t.ink3,
-          backgroundColor: t.surface.withValues(alpha: 0.96),
+          backgroundColor: t.surface.withValues(
+            alpha: CatchOpacity.appShellNavigationBarFill,
+          ),
           border: Border(top: BorderSide(color: t.line)),
-          height: 50,
-          iconSize: 30,
+          height: CatchLayout.appShellCupertinoNavHeight,
+          iconSize: CatchIcon.appShellCupertinoNav,
           items: [
             const BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.house),
@@ -337,8 +344,8 @@ class AppShellNavigationBadge extends StatelessWidget {
     final label = count > 99 ? '99+' : '$count';
 
     return SizedBox(
-      width: 38,
-      height: 30,
+      width: CatchLayout.appShellNavigationBadgeWidth,
+      height: CatchLayout.appShellNavigationBadgeHeight,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

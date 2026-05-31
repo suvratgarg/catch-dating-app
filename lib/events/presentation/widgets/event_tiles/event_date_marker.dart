@@ -4,6 +4,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_status_dot.dart';
 import 'package:flutter/material.dart';
 
+const double _dateMarkerRadius = CatchSpacing.s3;
+const double _monthMarkerHeight = CatchSpacing.s10;
+
 enum EventDateMarkerLayout { weekStrip, monthGrid }
 
 class EventDateMarker extends StatelessWidget {
@@ -79,12 +82,12 @@ class _WeekMarker extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(_dateMarkerRadius),
           child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
             decoration: BoxDecoration(
               color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(_dateMarkerRadius),
             ),
             child: Column(
               children: [
@@ -92,7 +95,9 @@ class _WeekMarker extends StatelessWidget {
                   day,
                   style: CatchTextStyles.statusLabel(
                     context,
-                    color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
+                    color: active
+                        ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
+                        : t.ink3,
                   ),
                 ),
                 gapH2,
@@ -141,7 +146,7 @@ class _MonthMarker extends StatelessWidget {
         ? t.surface
         : enabled
         ? t.ink
-        : t.ink3.withValues(alpha: 0.36);
+        : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
     final dayText = Text(
       '${date.day}',
       style: CatchTextStyles.labelL(context, color: textColor),
@@ -155,18 +160,26 @@ class _MonthMarker extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(_dateMarkerRadius),
           child: Ink(
-            height: 40,
+            height: _monthMarkerHeight,
             decoration: BoxDecoration(
               color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(_dateMarkerRadius),
               border: today && !active ? Border.all(color: t.line2) : null,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                enabled ? dayText : Opacity(opacity: 0, child: dayText),
+                enabled
+                    ? dayText
+                    : Visibility(
+                        visible: false,
+                        maintainState: true,
+                        maintainAnimation: true,
+                        maintainSize: true,
+                        child: dayText,
+                      ),
                 gapH4,
                 CatchStatusDot(
                   color: hasEvent && enabled ? t.primary : Colors.transparent,

@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart'
-    show CatchRadius, CatchSpacing;
+    show CatchIcon, CatchLayout, CatchOpacity, CatchRadius, CatchSpacing;
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
@@ -76,12 +76,19 @@ class _ConfidenceSignalPill extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.pill,
       backgroundColor: palette.accentSoft,
-      borderColor: palette.accent.withValues(alpha: 0.22),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      borderColor: palette.accent.withValues(alpha: CatchOpacity.subtleBorder),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchLayout.profileSignalChipHorizontalPadding,
+        vertical: CatchLayout.profileSignalChipVerticalPadding,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(_confidenceIcon(signal.kind), size: 14, color: palette.accent),
+          Icon(
+            _confidenceIcon(signal.kind),
+            size: CatchIcon.sm,
+            color: palette.accent,
+          ),
           gapW6,
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 190),
@@ -119,7 +126,7 @@ class _CompatibilityReasonRow extends StatelessWidget {
           backgroundColor: palette.surfaceRaised,
           borderColor: palette.chipBorder,
           size: 26,
-          iconSize: 14,
+          iconSize: CatchIcon.sm,
           radius: CatchRadius.pill,
         ),
         gapW10,

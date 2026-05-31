@@ -137,7 +137,13 @@ void main() {
       expect(find.text('Calendar'), findsOneWidget);
       expect(find.text(_monthYearLabel(firstEventStart)), findsOneWidget);
       expect(find.text('Planned'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('calendar.stats.planned')),
+          matching: find.text('2'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('13 km'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
@@ -194,7 +200,13 @@ void main() {
       );
 
       expect(find.text('Planned'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('calendar.stats.planned')),
+          matching: find.text('2'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('13 km'), findsOneWidget);
       expect(find.text('Old Saved Start'), findsNothing);
 

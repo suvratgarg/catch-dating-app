@@ -61,7 +61,10 @@ class WhenStep extends StatelessWidget {
                 dateController.text.isEmpty ? 'Please select a date' : null,
             builder: (field) => field.hasError
                 ? Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 4),
+                    padding: const EdgeInsets.only(
+                      top: CatchSpacing.s1,
+                      left: CatchSpacing.s1,
+                    ),
                     child: Text(
                       field.errorText!,
                       style: CatchTextStyles.supporting(
@@ -89,7 +92,10 @@ class WhenStep extends StatelessWidget {
                 startTimeController.text.isEmpty ? 'Required' : null,
             builder: (field) => field.hasError
                 ? Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 4),
+                    padding: const EdgeInsets.only(
+                      top: CatchSpacing.s1,
+                      left: CatchSpacing.s1,
+                    ),
                     child: Text(
                       field.errorText!,
                       style: CatchTextStyles.supporting(
@@ -102,7 +108,10 @@ class WhenStep extends StatelessWidget {
           ),
           if (scheduleErrorText != null)
             Padding(
-              padding: const EdgeInsets.only(top: 4, left: 4),
+              padding: const EdgeInsets.only(
+                top: CatchSpacing.s1,
+                left: CatchSpacing.s1,
+              ),
               child: Text(
                 scheduleErrorText!,
                 style: CatchTextStyles.supporting(context, color: t.primary),

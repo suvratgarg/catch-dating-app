@@ -60,7 +60,7 @@ class _DashboardHeaderContent extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.screenHeadline(context),
+                    style: CatchTextStyles.headline(context),
                   ),
                 ],
               ),

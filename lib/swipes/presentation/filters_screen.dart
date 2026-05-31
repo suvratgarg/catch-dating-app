@@ -160,8 +160,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                       _FilterSection(
                         title: 'Interested in',
                         child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                          spacing: CatchSpacing.s2,
+                          runSpacing: CatchSpacing.s2,
                           children: [
                             for (final gender in Gender.values)
                               CatchChip(
@@ -228,7 +228,7 @@ class _FilterSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 18),
+      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro18),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: t.line)),
       ),

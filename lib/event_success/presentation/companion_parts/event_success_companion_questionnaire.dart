@@ -111,7 +111,7 @@ class _CompatibilityQuestionnaireSectionState
           AnimatedSwitcher(
             duration: CatchMotion.base,
             switchInCurve: CatchMotion.springCurve,
-            switchOutCurve: Curves.easeInCubic,
+            switchOutCurve: CatchMotion.easeInCubicCurve,
             child: KeyedSubtree(
               key: ValueKey(activeQuestion.id),
               child: Column(
@@ -268,19 +268,16 @@ class _QuestionProgressRail extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(CatchRadius.pill),
                 onTap: () => onSelect(index),
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: index == activeIndex
-                        ? t.primary
-                        : index < answeredCount
-                        ? t.primarySoft
-                        : t.surface,
-                    border: Border.all(color: t.line),
-                  ),
+                child: CatchSurface(
+                  width: CatchLayout.questionnaireDotExtent,
+                  height: CatchLayout.questionnaireDotExtent,
+                  radius: CatchRadius.pill,
+                  backgroundColor: index == activeIndex
+                      ? t.primary
+                      : index < answeredCount
+                      ? t.primarySoft
+                      : t.surface,
+                  borderColor: t.line,
                   child: Text(
                     '${index + 1}',
                     style: CatchTextStyles.labelS(

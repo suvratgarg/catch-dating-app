@@ -81,60 +81,81 @@ class DashboardEmptySliverBody extends StatelessWidget {
         CatchSpacing.s5,
         CatchSpacing.s6,
       ),
-      sliver: SliverList(
-        delegate: SliverChildListDelegate([
-          const EmptyHeroCard(),
-          gapH20,
-          if (weeklyActivitySection != null) ...[
-            DashboardStrideSection(section: weeklyActivitySection!),
-            gapH20,
-          ],
-          QuickActions(hostedClubShortcut: hostedClubShortcut),
-          if (followedClubIds.isNotEmpty) ...[
-            gapH20,
-            DashboardClubsRail(clubIds: followedClubIds),
-          ],
-          gapH20,
-          Text('How Catch works', style: CatchTextStyles.titleL(context)),
-          gapH10,
-          ...List.generate(DashboardEmpty._steps.length, (i) {
-            final s = DashboardEmpty._steps[i];
-            return Column(
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: CatchSpacing.micro14,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                const EmptyHeroCard(),
+                gapH20,
+                if (weeklyActivitySection != null) ...[
+                  DashboardStrideSection(section: weeklyActivitySection!),
+                  gapH20,
+                ],
+                QuickActions(hostedClubShortcut: hostedClubShortcut),
+                if (followedClubIds.isNotEmpty) ...[
+                  gapH20,
+                  DashboardClubsRail(clubIds: followedClubIds),
+                ],
+                gapH20,
+                Text('How Catch works', style: CatchTextStyles.titleL(context)),
+                gapH10,
+                ...List.generate(DashboardEmpty._steps.length, (i) {
+                  final s = DashboardEmpty._steps[i];
+                  return Column(
                     children: [
-                      Text(
-                        s.$1,
-                        style: CatchTextStyles.mono(context, color: t.primary),
-                      ),
-                      gapW14,
-                      Expanded(
-                        child: Column(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: CatchSpacing.micro14,
+                        ),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(s.$2, style: CatchTextStyles.titleM(context)),
-                            gapH3,
                             Text(
-                              s.$3,
-                              style: CatchTextStyles.bodyLead(context),
+                              s.$1,
+                              style: CatchTextStyles.mono(
+                                context,
+                                color: t.primary,
+                              ),
+                            ),
+                            gapW14,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    s.$2,
+                                    style: CatchTextStyles.sectionTitle(
+                                      context,
+                                    ),
+                                  ),
+                                  gapH3,
+                                  Text(
+                                    s.$3,
+                                    style: CatchTextStyles.proseM(
+                                      context,
+                                      color: t.ink2,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
+                      if (i < DashboardEmpty._steps.length - 1)
+                        Divider(color: t.line, height: 1),
                     ],
-                  ),
-                ),
-                if (i < DashboardEmpty._steps.length - 1)
-                  Divider(color: t.line, height: 1),
+                  );
+                }),
               ],
-            );
-          }),
-        ]),
+            ),
+          ),
+        ),
       ),
     );
   }

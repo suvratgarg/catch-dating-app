@@ -116,34 +116,46 @@ class DashboardFullSliverBody extends ConsumerWidget {
         CatchSpacing.s5,
         CatchSpacing.s6,
       ),
-      sliver: SliverList(
-        delegate: SliverChildListDelegate([
-          if (focusEvents.isNotEmpty) ...[
-            EventFocusRail(
-              upcomingEvents: viewModel.upcomingEvents,
-              arrivalAction: viewModel.arrivalAction,
-              activeSwipeEvent: viewModel.activeSwipeEvent,
-              pendingReviewEvent: viewModel.pendingReviewEvent,
-              reviewer: user,
-              clubNameBuilder: (event) => clubNames?[event.clubId],
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: CatchLayout.maxContentWidth,
             ),
-            gapH18,
-          ],
-          if (viewModel.hostEventTools.isNotEmpty) ...[
-            HostToolsRail(tools: viewModel.hostEventTools),
-            gapH18,
-          ],
-          DashboardStrideSection(section: viewModel.weeklyActivitySection),
-          gapH18,
-          QuickActions(hostedClubShortcut: viewModel.hostedClubShortcut),
-          if (followedClubIds.isNotEmpty) ...[
-            gapH18,
-            DashboardClubsRail(clubIds: followedClubIds),
-          ],
-          ..._buildRecommendedEventsSection(
-            recommendationsSection: viewModel.recommendationsSection,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (focusEvents.isNotEmpty) ...[
+                  EventFocusRail(
+                    upcomingEvents: viewModel.upcomingEvents,
+                    arrivalAction: viewModel.arrivalAction,
+                    activeSwipeEvent: viewModel.activeSwipeEvent,
+                    pendingReviewEvent: viewModel.pendingReviewEvent,
+                    reviewer: user,
+                    clubNameBuilder: (event) => clubNames?[event.clubId],
+                  ),
+                  gapH18,
+                ],
+                if (viewModel.hostEventTools.isNotEmpty) ...[
+                  HostToolsRail(tools: viewModel.hostEventTools),
+                  gapH18,
+                ],
+                DashboardStrideSection(
+                  section: viewModel.weeklyActivitySection,
+                ),
+                gapH18,
+                QuickActions(hostedClubShortcut: viewModel.hostedClubShortcut),
+                if (followedClubIds.isNotEmpty) ...[
+                  gapH18,
+                  DashboardClubsRail(clubIds: followedClubIds),
+                ],
+                ..._buildRecommendedEventsSection(
+                  recommendationsSection: viewModel.recommendationsSection,
+                ),
+              ],
+            ),
           ),
-        ]),
+        ),
       ),
     );
   }
@@ -242,13 +254,16 @@ class _DashboardSectionStateCard extends StatelessWidget {
       child: Row(
         children: [
           if (isLoading) ...[
-            const SizedBox(
-              width: 18,
-              height: 18,
+            const SizedBox.square(
+              dimension: CatchIcon.md,
               child: CatchLoadingIndicator(strokeWidth: 2),
             ),
           ] else ...[
-            Icon(CatchIcons.errorOutlineRounded, color: t.primary, size: 18),
+            Icon(
+              CatchIcons.errorOutlineRounded,
+              color: t.primary,
+              size: CatchIcon.md,
+            ),
           ],
           gapW10,
           Expanded(

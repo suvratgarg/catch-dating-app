@@ -12,7 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_redesign/catch_profile_view.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -52,6 +52,23 @@ Future<void> _pumpProfileTab(WidgetTester tester, UserProfile user) async {
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(_profileTab(user));
   await tester.pump();
+}
+
+UserProfile _profilePreviewScrollFixture() {
+  return buildUser(name: 'Suvrat Garg').copyWith(
+    relationshipGoal: RelationshipGoal.relationship,
+    height: 178,
+    occupation: 'Product designer',
+    company: 'Catch',
+    education: EducationLevel.masters,
+    religion: Religion.hindu,
+    languages: const [Language.english, Language.hindi],
+    drinking: DrinkingHabit.socially,
+    smoking: SmokingHabit.never,
+    workout: WorkoutFrequency.often,
+    diet: DietaryPreference.vegetarian,
+    children: ChildrenStatus.wantSomeday,
+  );
 }
 
 Future<void> _pumpEditableProfileTab(
@@ -189,7 +206,7 @@ void main() {
       ProviderScope(
         overrides: [
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(name: 'Suvrat Garg')),
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
           ),
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
@@ -226,7 +243,7 @@ void main() {
       ProviderScope(
         overrides: [
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(name: 'Suvrat Garg')),
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
           ),
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
@@ -270,7 +287,7 @@ void main() {
       ProviderScope(
         overrides: [
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(name: 'Suvrat Garg')),
+            (ref) => Stream.value(_profilePreviewScrollFixture()),
           ),
         ],
         child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
@@ -283,16 +300,14 @@ void main() {
 
     expect(tester.widget<PreviewTab>(find.byType(PreviewTab)).bottomPadding, 0);
 
-    final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
-    final previewScroll = tester.widget<SingleChildScrollView>(
-      previewScrollView,
-    );
+    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
     final previewController = previewScroll.controller!;
     final tabBarBottom = tester.getBottomLeft(find.byType(TabBar)).dy;
 
     expect(previewController.offset, 0);
 
-    await tester.drag(previewScrollView, const Offset(0, -420));
+    await tester.drag(previewScrollView, const Offset(0, -900));
     await pumpFeatureUi(tester);
 
     expect(previewController.offset, greaterThan(0));
@@ -331,10 +346,8 @@ void main() {
     await tester.tap(find.text('Preview'));
     await pumpFeatureUi(tester);
 
-    final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
-    final previewScroll = tester.widget<SingleChildScrollView>(
-      previewScrollView,
-    );
+    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
 
     expect(find.text('Profile').hitTestable(), findsOneWidget);
     expect(previewScroll.controller!.offset, 0);
@@ -376,10 +389,8 @@ void main() {
 
     expect(find.text('Profile').hitTestable(), findsNothing);
 
-    final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
-    final previewScroll = tester.widget<SingleChildScrollView>(
-      previewScrollView,
-    );
+    final previewScrollView = find.byKey(CatchProfileView.scrollViewKey);
+    final previewScroll = tester.widget<CustomScrollView>(previewScrollView);
     expect(previewScroll.controller!.offset, 0);
 
     await tester.drag(previewScrollView, const Offset(0, 220));

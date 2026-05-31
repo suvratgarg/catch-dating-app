@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/widgets/create_event_photo_picker.dart';
 import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -16,8 +17,10 @@ class EventDetailsStep extends StatelessWidget {
   const EventDetailsStep({
     super.key,
     required this.formKey,
-    required this.photoImageBytes,
-    required this.onPickPhoto,
+    required this.photoPreviews,
+    required this.onPickPhotos,
+    required this.onRemovePhoto,
+    required this.onReorderPhoto,
     required this.distanceController,
     required this.customActivityLabelController,
     required this.descriptionController,
@@ -30,8 +33,10 @@ class EventDetailsStep extends StatelessWidget {
   });
 
   final GlobalKey<FormState> formKey;
-  final Uint8List? photoImageBytes;
-  final VoidCallback? onPickPhoto;
+  final List<OrderedPhotoPreview> photoPreviews;
+  final VoidCallback? onPickPhotos;
+  final ValueChanged<int>? onRemovePhoto;
+  final void Function(int fromIndex, int toIndex)? onReorderPhoto;
   final TextEditingController distanceController;
   final TextEditingController customActivityLabelController;
   final TextEditingController descriptionController;
@@ -58,16 +63,18 @@ class EventDetailsStep extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CreateEventPhotoPicker(
-              photoImageBytes: photoImageBytes,
-              onTap: onPickPhoto,
+              photos: photoPreviews,
+              onAddPhotos: onPickPhotos,
+              onRemovePhoto: onRemovePhoto,
+              onReorderPhoto: onReorderPhoto,
             ),
             gapH20,
             const FieldLabel('Activity type'),
             gapH8,
             Wrap(
               key: CreateEventFormKeys.activityType,
-              spacing: 8,
-              runSpacing: 8,
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
               children: ActivityKind.eventCreationDefaults
                   .map(
                     (activityKind) => Semantics(
@@ -108,8 +115,8 @@ class EventDetailsStep extends StatelessWidget {
               gapH8,
               Wrap(
                 key: CreateEventFormKeys.customInteractionModel,
-                spacing: 8,
-                runSpacing: 8,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
                 children: EventInteractionModel.values
                     .map(
                       (model) => Semantics(
@@ -162,8 +169,8 @@ class EventDetailsStep extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: CatchSpacing.s2,
+                      runSpacing: CatchSpacing.s2,
                       children: PaceLevel.values
                           .map(
                             (p) => Semantics(
@@ -187,7 +194,10 @@ class EventDetailsStep extends StatelessWidget {
                     ),
                     if (field.hasError)
                       Padding(
-                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        padding: const EdgeInsets.only(
+                          top: CatchSpacing.micro6,
+                          left: CatchSpacing.s1,
+                        ),
                         child: Text(
                           field.errorText!,
                           style: CatchTextStyles.supporting(

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -29,12 +30,17 @@ class ClubAvatarRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchHorizontalRail(
       title: 'Your clubs',
-      height: 108,
-      spacing: 14,
+      height: CatchLayout.clubAvatarRailHeight,
+      spacing: CatchSpacing.micro14,
       showDivider: showDivider,
       headerPadding:
           headerPadding ??
-          const EdgeInsets.fromLTRB(CatchSpacing.s5, 14, CatchSpacing.s5, 8),
+          const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.micro14,
+            CatchSpacing.s5,
+            CatchSpacing.s2,
+          ),
       listPadding:
           listPadding ??
           const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
@@ -74,21 +80,22 @@ class _CreateClubButton extends StatelessWidget {
           onTap: onTap,
           behavior: HitTestBehavior.opaque,
           child: SizedBox(
-            width: 76,
+            width: CatchLayout.clubAvatarRailColumnWidth,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: t.raised,
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    border: Border.all(color: t.line2),
+                CatchSurface(
+                  width: CatchLayout.clubCreateButtonExtent,
+                  height: CatchLayout.clubCreateButtonExtent,
+                  radius: CatchRadius.pill,
+                  backgroundColor: t.raised,
+                  borderColor: t.line2,
+                  child: Icon(
+                    CatchIcons.addRounded,
+                    size: CatchIcon.row,
+                    color: t.ink2,
                   ),
-                  alignment: Alignment.center,
-                  child: Icon(CatchIcons.addRounded, size: 22, color: t.ink2),
                 ),
                 gapH6,
                 Text(

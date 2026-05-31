@@ -6,95 +6,45 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
+import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 
-class CreateClubCoverPicker extends StatelessWidget {
-  const CreateClubCoverPicker({
+class CreateClubPhotosPicker extends StatelessWidget {
+  const CreateClubPhotosPicker({
     super.key,
-    required this.coverImageBytes,
+    required this.photos,
     this.existingImageUrl,
-    required this.onTap,
+    required this.onAddPhotos,
+    required this.onRemovePhoto,
+    required this.onReorderPhoto,
   });
 
-  final Uint8List? coverImageBytes;
+  final List<OrderedPhotoPreview> photos;
   final String? existingImageUrl;
-  final VoidCallback? onTap;
+  final VoidCallback? onAddPhotos;
+  final ValueChanged<int>? onRemovePhoto;
+  final void Function(int fromIndex, int toIndex)? onReorderPhoto;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final hasCover = coverImageBytes != null || existingImageUrl != null;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CatchFormFieldLabel(label: 'Cover photo', isOptional: true),
-        gapH8,
-        Semantics(
-          button: true,
-          label: hasCover ? 'Change club cover photo' : 'Add club cover photo',
-          child: GestureDetector(
-            onTap: onTap,
-            child: AspectRatio(
-              aspectRatio: 16 / 9,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.md),
-                child: hasCover
-                    ? Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if (coverImageBytes != null)
-                            Image.memory(coverImageBytes!, fit: BoxFit.cover)
-                          else
-                            Image.network(
-                              existingImageUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) =>
-                                  Container(color: t.raised),
-                            ),
-                          Positioned(
-                            bottom: 8,
-                            right: 8,
-                            child: CatchIconTile(
-                              icon: CatchIcons.editOutlined,
-                              iconColor: t.ink,
-                              backgroundColor: t.surface.withValues(
-                                alpha: 0.85,
-                              ),
-                              borderColor: Colors.transparent,
-                              size: 28,
-                              iconSize: 16,
-                              radius: CatchRadius.pill,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Container(
-                        color: t.raised,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              CatchIcons.addPhotoAlternateOutlined,
-                              size: 40,
-                              color: t.ink2,
-                            ),
-                            gapH8,
-                            Text(
-                              'Add cover photo',
-                              style: CatchTextStyles.bodyLead(
-                                context,
-                                color: t.ink2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+    final visiblePhotos = photos.isNotEmpty
+        ? photos
+        : [
+            if (existingImageUrl != null)
+              OrderedPhotoPreview(
+                id: 'existing_legacy_club_cover',
+                imageUrl: existingImageUrl,
               ),
-            ),
-          ),
-        ),
-      ],
+          ];
+    final hasEditablePhotos = photos.isNotEmpty;
+    return OrderedPhotoPicker(
+      label: const CatchFormFieldLabel(label: 'Club photos', isOptional: true),
+      photos: visiblePhotos,
+      onAddPhotos: onAddPhotos,
+      onRemovePhoto: hasEditablePhotos ? onRemovePhoto : null,
+      onReorderPhoto: hasEditablePhotos ? onReorderPhoto : null,
+      emptyActionLabel: 'Add club photos',
+      addActionLabel: 'Add photos',
     );
   }
 }
@@ -131,9 +81,10 @@ class CreateClubProfileImagePicker extends StatelessWidget {
               : 'Add club profile image',
           child: GestureDetector(
             onTap: onTap,
-            child: SizedBox(
-              width: 112,
-              height: 112,
+            // A small fixed avatar; a full-width square here pushes the rest of
+            // the create form off-screen.
+            child: SizedBox.square(
+              dimension: CatchLayout.clubProfileImagePickerExtent,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.md),
                 child: hasImage
@@ -156,11 +107,11 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                               icon: CatchIcons.editOutlined,
                               iconColor: t.ink,
                               backgroundColor: t.surface.withValues(
-                                alpha: 0.85,
+                                alpha: CatchOpacity.imageEditControlFill,
                               ),
                               borderColor: Colors.transparent,
                               size: 28,
-                              iconSize: 16,
+                              iconSize: CatchIcon.xs,
                               radius: CatchRadius.pill,
                             ),
                           ),

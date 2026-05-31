@@ -53,7 +53,7 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
             value: normalized.enabled,
             onChanged: (value) =>
                 onChanged(normalized.copyWith(enabled: value)),
-            title: Text(title, style: CatchTextStyles.titleM(context)),
+            title: Text(title, style: CatchTextStyles.sectionTitle(context)),
             subtitle: Text(
               subtitle,
               style: CatchTextStyles.supporting(context, color: t.ink2),

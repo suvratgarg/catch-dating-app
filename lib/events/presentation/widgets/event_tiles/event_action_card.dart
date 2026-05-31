@@ -47,17 +47,20 @@ class EventActionCard extends StatelessWidget {
         gradientColors ??
         [
           urgent
-              ? t.primarySoft.withValues(alpha: 0.62)
-              : t.primarySoft.withValues(alpha: 0.28),
+              ? t.primarySoft.withValues(alpha: CatchOpacity.gradientBand)
+              : t.primarySoft.withValues(alpha: CatchOpacity.gradientBandSoft),
           t.surface,
-          t.raised.withValues(alpha: 0.62),
+          t.raised.withValues(alpha: CatchOpacity.gradientBand),
         ];
 
     return CatchSurface(
       padding: EdgeInsets.zero,
       backgroundColor: backgroundColor ?? t.surface,
       borderColor:
-          borderColor ?? (urgent ? t.primary.withValues(alpha: 0.32) : t.line2),
+          borderColor ??
+          (urgent
+              ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
+              : t.line2),
       radius: radius,
       elevation: CatchSurfaceElevation.card,
       gradient: LinearGradient(
@@ -78,7 +81,7 @@ class EventActionCard extends StatelessWidget {
               title ?? event.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.displayM(context),
+              style: CatchTextStyles.headlineS(context),
             ),
             if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
               gapH4,
@@ -189,7 +192,7 @@ class _EventActionCardActions extends StatelessWidget {
           if (index > 0) gapH10,
           CatchButton(
             label: actions[index].label,
-            icon: Icon(actions[index].icon, size: 18),
+            icon: Icon(actions[index].icon, size: CatchIcon.md),
             variant: actions[index].variant,
             fullWidth: true,
             isLoading: actions[index].isLoading,

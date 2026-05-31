@@ -99,82 +99,68 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     final shouldAutofocus = data.step == OnboardingStep.nameDob;
     final age = _age();
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            gapH32,
-            const OnboardingStepHeader(title: 'What\'s your name?'),
-            gapH32,
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: CatchTextField(
-                    label: 'First name (displayed)',
-                    controller: _firstNameController,
-                    autofocus: shouldAutofocus,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.givenName],
-                    validator: (v) =>
-                        validateRequiredProfileName(v, label: 'First name'),
-                  ),
-                ),
-                gapW12,
-                Expanded(
-                  child: CatchTextField(
-                    label: 'Last name',
-                    controller: _lastNameController,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    autofillHints: const [AutofillHints.familyName],
-                    helperText:
-                        'Private. We never show this on your public profile.',
-                    validator: (v) =>
-                        validateRequiredProfileName(v, label: 'Last name'),
-                  ),
-                ),
-              ],
-            ),
-            gapH24,
-            CatchTextField(
-              label: 'Date of birth',
-              controller: _dateController,
-              readOnly: true,
-              onTap: _pickDate,
-              prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
-              suffixText: age != null ? 'Age $age' : null,
-              validator: (_) => validateRequiredDateOfBirth(_selectedDate),
-            ),
-            gapH24,
-            CatchTextField(
-              label: 'Mobile number',
-              controller: _phoneController,
-              readOnly: true,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.done,
-              autofillHints: const [AutofillHints.telephoneNumberNational],
-              prefixIcon: Icon(CatchIcons.phoneOutlined),
-              prefixText: '${data.countryCode} ',
-              suffixIcon: Icon(CatchIcons.verifiedRounded),
-              helperText: 'Verified via OTP',
-              helperTone: CatchTextFieldSupportTone.success,
-              validator: validateRequiredPhoneNumber,
-            ),
-            gapH40,
-            CatchButton(
-              label: 'Continue',
-              onPressed: _submit,
-              fullWidth: true,
-              size: CatchButtonSize.lg,
-            ),
-            gapH32,
-          ],
-        ),
+    return Form(
+      key: _formKey,
+      child: OnboardingStepFrame(
+        children: [
+          gapH32,
+          const OnboardingStepHeader(title: 'What\'s your name?'),
+          gapH32,
+          CatchTextField(
+            label: 'First name (displayed)',
+            controller: _firstNameController,
+            autofocus: shouldAutofocus,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.givenName],
+            validator: (v) =>
+                validateRequiredProfileName(v, label: 'First name'),
+          ),
+          gapH16,
+          CatchTextField(
+            label: 'Last name',
+            controller: _lastNameController,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            autofillHints: const [AutofillHints.familyName],
+            helperText: 'Private. We never show this on your public profile.',
+            validator: (v) =>
+                validateRequiredProfileName(v, label: 'Last name'),
+          ),
+          gapH24,
+          CatchTextField(
+            label: 'Date of birth',
+            controller: _dateController,
+            readOnly: true,
+            onTap: _pickDate,
+            prefixIcon: Icon(CatchIcons.calendarTodayOutlined),
+            suffixText: age != null ? 'Age $age' : null,
+            validator: (_) => validateRequiredDateOfBirth(_selectedDate),
+          ),
+          gapH24,
+          CatchTextField(
+            label: 'Mobile number',
+            controller: _phoneController,
+            readOnly: true,
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.telephoneNumberNational],
+            prefixIcon: Icon(CatchIcons.phoneOutlined),
+            prefixText: '${data.countryCode} ',
+            suffixIcon: Icon(CatchIcons.verifiedRounded),
+            helperText: 'Verified via OTP',
+            helperTone: CatchTextFieldSupportTone.success,
+            validator: validateRequiredPhoneNumber,
+          ),
+          gapH40,
+          CatchButton(
+            label: 'Continue',
+            onPressed: _submit,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+          gapH32,
+        ],
       ),
     );
   }

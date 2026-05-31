@@ -48,7 +48,7 @@ class _NewMatchAvatar extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: SizedBox(
-            width: 64,
+            width: CatchLayout.chatNewMatchTileWidth,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

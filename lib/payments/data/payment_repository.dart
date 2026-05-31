@@ -143,7 +143,7 @@ class PaymentRepository {
           'email': userEmail,
           'contact': userContact,
         },
-        'theme': {'color': '#FF4E1F'},
+        'theme': {'color': '#16140F'},
       });
 
       // Step 3: Wait for the Razorpay callback with a timeout so a hung

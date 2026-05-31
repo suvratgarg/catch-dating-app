@@ -27,12 +27,12 @@ class ChatsEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: MediaQuery.sizeOf(context).height * 0.10),
+          const SizedBox(height: CatchSpacing.s10),
           CatchEmptyState(
             icon: CatchIcons.favoriteRounded,
             title: title,
             message: message,
-            titleStyle: CatchTextStyles.displayM(context),
+            titleStyle: CatchTextStyles.headlineS(context),
           ),
         ],
       ),

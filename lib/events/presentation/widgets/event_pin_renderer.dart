@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
@@ -136,10 +138,9 @@ class EventPinRenderer {
     final textPainter = TextPainter(
       text: TextSpan(
         text: spec.timeLabel,
-        style: TextStyle(
+        style: CatchTextStyles.mapPinTime(
           color: palette.foreground,
-          fontSize: 13 * scale,
-          fontWeight: FontWeight.w700,
+          scale: scale,
         ),
       ),
       textAlign: TextAlign.center,
@@ -159,7 +160,7 @@ class EventPinRenderer {
 
     if (spec.selected) {
       final shadowPaint = ui.Paint()
-        ..color = const Color.fromRGBO(26, 20, 16, 0.18)
+        ..color = CatchMapPinColors.shadow
         ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, 5 * scale);
       canvas.drawRRect(
         ui.RRect.fromRectAndRadius(
@@ -229,7 +230,7 @@ class EventPinRenderer {
     final label = count > 99 ? '99+' : count.toString();
 
     final shadowPaint = ui.Paint()
-      ..color = const Color.fromRGBO(26, 20, 16, 0.18)
+      ..color = CatchMapPinColors.shadow
       ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, 5 * scale);
     canvas.drawCircle(
       ui.Offset(radius, radius + 2 * scale),
@@ -238,12 +239,12 @@ class EventPinRenderer {
     );
 
     final bgPaint = ui.Paint()
-      ..color = const Color(0xFFFF4E1F)
+      ..color = CatchMapPinColors.brand
       ..style = ui.PaintingStyle.fill;
     canvas.drawCircle(ui.Offset(radius, radius), radius, bgPaint);
 
     final ringPaint = ui.Paint()
-      ..color = const Color(0xFFFFFFFF)
+      ..color = CatchTokens.editorialLight
       ..style = ui.PaintingStyle.stroke
       ..strokeWidth = 2.5 * scale;
     canvas.drawCircle(ui.Offset(radius, radius), radius - scale, ringPaint);
@@ -251,10 +252,9 @@ class EventPinRenderer {
     final textPainter = TextPainter(
       text: TextSpan(
         text: label,
-        style: TextStyle(
-          color: const Color(0xFFFFFFFF),
-          fontSize: 14 * scale,
-          fontWeight: FontWeight.w800,
+        style: CatchTextStyles.mapPinCluster(
+          color: CatchTokens.editorialLight,
+          scale: scale,
         ),
       ),
       textAlign: TextAlign.center,
@@ -282,43 +282,43 @@ class EventPinRenderer {
     return switch (status) {
       // Joined / hosted — bold filled brand pill.
       EventTileStatus.joined || EventTileStatus.hosted => const _PinPalette(
-        background: Color(0xFFFF4E1F),
-        foreground: Color(0xFFFFFFFF),
-        border: Color(0xFFB8350F),
+        background: CatchMapPinColors.brand,
+        foreground: CatchTokens.editorialLight,
+        border: CatchMapPinColors.brandBorder,
       ),
       // Saved — dark filled chip with light text.
       EventTileStatus.saved => const _PinPalette(
-        background: Color(0xFF1A1410),
-        foreground: Color(0xFFFFFFFF),
-        border: Color(0xFF1A1410),
+        background: CatchTokens.editorialDark,
+        foreground: CatchTokens.editorialLight,
+        border: CatchTokens.editorialDark,
       ),
       // Waitlisted / full — warning tint.
       EventTileStatus.waitlisted || EventTileStatus.full => const _PinPalette(
-        background: Color(0xFFFFE2D4),
-        foreground: Color(0xFFB8350F),
-        border: Color(0xFFB8350F),
+        background: CatchMapPinColors.brandTint,
+        foreground: CatchMapPinColors.brandBorder,
+        border: CatchMapPinColors.brandBorder,
       ),
       // Past / ineligible / cancelled — muted (rarely shown on map but
       // covered for completeness).
       EventTileStatus.past ||
       EventTileStatus.ineligible ||
       EventTileStatus.cancelled => const _PinPalette(
-        background: Color(0xFFEFE7DD),
-        foreground: Color(0xFF7C6B5A),
-        border: Color(0xFF7C6B5A),
+        background: CatchMapPinColors.mutedFill,
+        foreground: CatchMapPinColors.mutedInk,
+        border: CatchMapPinColors.mutedInk,
       ),
       EventTileStatus.attended => const _PinPalette(
-        background: Color(0xFF2F7D45),
-        foreground: Color(0xFFFFFFFF),
-        border: Color(0xFF205A30),
+        background: CatchMapPinColors.success,
+        foreground: CatchTokens.editorialLight,
+        border: CatchMapPinColors.successBorder,
       ),
       // Default — surface chip with brand outline. Recommended and open use
       // the same map treatment intentionally: pins signal geography, not
       // curation.
       EventTileStatus.recommended || EventTileStatus.open => const _PinPalette(
-        background: Color(0xFFFFFFFF),
-        foreground: Color(0xFFFF4E1F),
-        border: Color(0xFFFF4E1F),
+        background: CatchTokens.editorialLight,
+        foreground: CatchMapPinColors.brand,
+        border: CatchMapPinColors.brand,
       ),
     };
   }

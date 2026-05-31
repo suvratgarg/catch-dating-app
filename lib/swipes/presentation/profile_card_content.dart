@@ -14,6 +14,7 @@ class ProfileCardContent {
     required this.additionalPhotos,
     required this.attributes,
     required this.lifestyle,
+    required this.relationshipGoal,
     required this.profilePrompts,
     required this.insights,
   });
@@ -71,6 +72,7 @@ class ProfileCardContent {
       additionalPhotos: additionalPhotos,
       attributes: attributes,
       lifestyle: lifestyle,
+      relationshipGoal: profile.relationshipGoal,
       profilePrompts: normalizeProfilePromptAnswers(profile.profilePrompts),
       insights: ProfileCardInsights.fromProfile(
         profile,
@@ -84,6 +86,7 @@ class ProfileCardContent {
   final List<ProfileCardPhoto> additionalPhotos;
   final List<ProfileCardFact> attributes;
   final List<ProfileCardFact> lifestyle;
+  final RelationshipGoal? relationshipGoal;
   final List<ProfilePromptAnswer> profilePrompts;
   final ProfileCardInsights insights;
 

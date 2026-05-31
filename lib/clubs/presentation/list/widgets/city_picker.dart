@@ -184,7 +184,7 @@ class _CityPickerSheet extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'City',
-                        style: CatchTextStyles.titleM(context),
+                        style: CatchTextStyles.sectionTitle(context),
                       ),
                     ),
                     Icon(
@@ -267,7 +267,7 @@ class _CityOptionTile extends StatelessWidget {
                   ),
                 ),
                 if (selected)
-                  Icon(CatchIcons.checkRounded, size: 18, color: t.primary),
+                  Icon(CatchIcons.checkRounded, size: CatchIcon.md, color: t.primary),
               ],
             ),
           ),

@@ -1,19 +1,15 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-const double eventTicketMediaHeight = 136;
-const double eventTicketDividerHeight = 20;
-const double eventTicketNotchRadius = 10;
-const double eventTicketNotchDepth = 8;
+const double eventTicketDividerHeight = CatchLayout.eventTicketDividerHeight;
+const double eventTicketNotchRadius = CatchLayout.eventTicketNotchRadius;
+const double eventTicketNotchDepth = CatchLayout.eventTicketNotchDepth;
 
 Widget eventHeroSurface({required Object tag, required Widget child}) {
-  return Hero(
-    tag: tag,
-    transitionOnUserGestures: true,
-    child: Material(color: Colors.transparent, child: child),
-  );
+  return catchHeroSurface(tag: tag, child: child);
 }
 
 class EventTicketPerforatedDivider extends StatelessWidget {

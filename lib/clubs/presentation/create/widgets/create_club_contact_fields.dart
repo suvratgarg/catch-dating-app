@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,10 +22,7 @@ class CreateClubContactFields extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Contact (optional)',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        Text('Contact (optional)', style: CatchTextStyles.titleS(context)),
         gapH12,
         CatchTextField(
           label: 'Instagram handle',
