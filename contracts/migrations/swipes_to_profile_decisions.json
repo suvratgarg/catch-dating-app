@@ -46,9 +46,8 @@
   ],
   "liveApply": {
     "validatedAt": "2026-05-26",
-    "validationTool": "tool/data/validate_profile_decision_migration.mjs --legacy-source",
-    "backfillTool": "tool/data/backfill_profile_decisions.mjs",
-    "cleanupTool": "tool/data/retire_legacy_profile_decisions.mjs",
+    "toolingStatus": "one_time_tools_retired",
+    "toolingRetiredAt": "2026-06-02",
     "dev": {
       "legacyDecisionCountBefore": 11,
       "backfilledProfileDecisions": 11,
@@ -70,8 +69,8 @@
   },
   "guards": [
     "tool/contracts/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
-    "./tool/check_data_contract.sh events the path literal scanner before seed and rules checks.",
-    "tool/data/validate_profile_decision_migration.mjs --legacy-source compares legacy and current storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before live cleanup.",
-    "tool/data/retire_legacy_profile_decisions.mjs deletes old swipes only after validation reports no missing, stale, or invalid current docs."
+    "./tool/check_data_contract.sh runs the path literal scanner before seed and rules checks.",
+    "Live dev, staging, and prod cleanup is complete; the one-time parity, backfill, and cleanup tools were retired on 2026-06-02.",
+    "Future reintroduction is guarded by schema path literal checks, Firestore rules, and the generated decision schema."
   ]
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-p0-spec
-version: 0.4.0
-updated: 2026-06-01
+version: 0.5.0
+updated: 2026-06-02
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -42,18 +42,19 @@ between the original build spec and the live implementation.
   `RawChip`.
 - `tool/check_ui_local_constant_wrappers.sh --summary` and
   `tool/check_ui_allow_debt.sh --summary` return `0`.
+- `tool/check_sizing.sh`, `tool/check_ui_local_constant_wrappers.sh`,
+  `tool/check_ui_system_raw_values.sh`, and `tool/check_ui_allow_debt.sh` are
+  analyzer-output wrappers over Catch UI plugin diagnostics rather than shell scanners.
+- The shared shell scanner helper has been retired.
 - `tool/check_design_tokens.sh` and `tool/check_raw_color_sweep.sh` are gone in the
   current worktree; do not revive them.
 - `test/lint_contracts/font_family_set_test.dart` guards plugin font-family drift.
 
 ## Remaining Work
 
-1. **Decide whether remaining shell scanners should move into analyzer rules.**
-   - Still live: `check_sizing.sh`, `check_ui_local_constant_wrappers.sh`,
-     `check_ui_system_raw_values.sh`, and `check_ui_allow_debt.sh`.
-   - Acceptance: migrate enforceable checks into analyzer rules, keep the allow-debt
-     meta-gate as shell if needed, and remove/retire shell scanners only when no live
-     CI or tooling consumer remains.
+No P0 implementation task remains in this spec. Future work should come from a
+specific analyzer false positive/false negative, a new deterministic UI invariant,
+or a decision to escalate an existing `INFO` rule to `WARNING`.
 
 ## Parked / Not P0
 

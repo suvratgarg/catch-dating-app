@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-lint-rules-plan
-version: 0.2.0
-updated: 2026-06-01
+version: 0.3.0
+updated: 2026-06-02
 owner: ui_elevation_initiative
 dri: TBD
 status: remaining_work
@@ -29,14 +29,28 @@ unimplemented or still-weak lint/governance work.
   - `catch_no_raw_text_style`
   - `catch_no_raw_font_drift`
   - `catch_no_raw_radius`
+  - `catch_no_raw_content_dimension`
+  - `catch_no_local_design_constant`
+  - `catch_no_raw_icon_source`
+  - `catch_no_raw_icon_size`
+  - `catch_no_raw_alpha`
+  - `catch_no_raw_shadow`
+  - `catch_no_raw_motion`
+  - `catch_no_raw_breakpoint`
+  - `catch_no_raw_surface_shell`
+  - `catch_no_allow_debt`
   - `catch_no_widget_returning_method`
 - Semantic spacing exists through `CatchGaps`, `CatchInsets`, and the UI architecture
   docs.
 - Color/text/font drift count is currently `0` via `tool/check_catch_ui_lint_drift.sh`.
 - P0 alignment gaps from `catch_ui_lint_p0_spec.md` are closed: no retired sandbox
   exclusions, line-level art exceptions instead of whole-file color exemptions,
-  completed radius coverage, narrowed Chip/Card/Badge material-control scope, and zero
-  local-constant/allow-debt shell counts.
+  completed radius coverage, narrowed Chip/Card/Badge material-control scope, and
+  analyzer-backed local-constant/allow-debt counts.
+- Former shell scanner entry points are now analyzer-output wrappers:
+  `check_sizing.sh`, `check_ui_local_constant_wrappers.sh`,
+  `check_ui_system_raw_values.sh`, and `check_ui_allow_debt.sh`.
+- The shared shell scanner helper is retired because no scanner wrapper consumes it.
 
 ## Phase 0 - Token Foundation Still Open
 
@@ -64,36 +78,18 @@ again.
 
 ## Phase 1.5 - Scanner Family Migration
 
-Keep this as the next concrete enforcement milestone.
-
-1. **`catch_no_raw_content_dimension` from `check_sizing.sh`.**
-   - Current shell count is `0`.
-   - Migration is optional until the shell gate becomes maintenance burden.
-
-2. **`catch_no_local_design_constant` from `check_ui_local_constant_wrappers.sh`.**
-   - Current shell count is `0`.
-   - The scanner allows token-backed named `EdgeInsets` contracts and still flags raw
-     private constants.
-
-3. **Fold `check_ui_system_raw_values.sh` into analyzer rules.**
-   - Current shell count is `0`.
-   - Only migrate if it prevents real regression beyond the existing plugin rules.
-
-4. **Keep or retarget `check_ui_allow_debt.sh`.**
-   - Current count is `0`.
-   - This meta-gate may stay shell-based because analyzer rules do not naturally count
-     their own suppressions across the tree.
-
-5. **Retire `tool/lib/scanner_shell.sh` only after all shell consumers are gone.**
-   - Do not remove it while any root scanner still sources it.
+Closed on 2026-06-02. The deterministic scanner surfaces now live in
+`packages/catch_ui_lints`; the historical root commands are analyzer-report
+wrappers only.
 
 ## Phase 2 - P1 Rule Candidates
 
 Implement only after the current scanner/lint policy is stable.
 
-- Group A value rules: raw stroke, shadow/elevation, opacity, icon size, and motion.
-- Group B primitive bypass: ad-hoc card/surface detection and preferred Catch image
-  primitive.
+- Group A value rules: raw stroke and any shadow/opacity/icon/motion refinements that
+  need resolved symbol identity beyond the migrated parsed-AST checks.
+- Group B primitive bypass: preferred Catch image primitive and calibrated
+  card/surface refinements beyond `catch_no_raw_surface_shell`.
 - Group C component proliferation: private widget complexity and max build nesting depth.
 - Group D boundaries: import boundaries, raw values only in theme, single icon set.
 - Group E accessibility: required semantic labels for icon-only controls and meaningful

@@ -56,6 +56,53 @@ const _rawControlReplacements = <String, String>{
   'RawChip': 'CatchChip',
 };
 
+const _rawButtonControlConstructors = <String>{
+  'CupertinoButton',
+  'DropdownButton',
+  'ElevatedButton',
+  'FilledButton',
+  'FloatingActionButton',
+  'OutlinedButton',
+  'PopupMenuButton',
+  'Radio',
+  'RangeSlider',
+  'SegmentedButton',
+  'Slider',
+  'Switch',
+  'TextButton',
+  'TextField',
+  'TextFormField',
+};
+
+const _surfaceShellConstructors = <String>{
+  'AnimatedContainer',
+  'Container',
+  'DecoratedBox',
+};
+
+final _allowDebtPattern = RegExp(
+  r'(?:alpha|breakpoint|color-sweep|control|icon-size|motion|radius|shadow|sizing|spacing|surface|token|typography|ui-system):allow:|ignore(?:_for_file)?:[^\n]*\bcatch_[a-z0-9_]+',
+);
+
+const _localDesignConstantWords = <String>{
+  'alpha',
+  'color',
+  'duration',
+  'elevation',
+  'extent',
+  'gap',
+  'height',
+  'inset',
+  'margin',
+  'offset',
+  'opacity',
+  'padding',
+  'radius',
+  'shadow',
+  'size',
+  'width',
+};
+
 const _tokenPrefixes = <String>{
   'CatchIcon',
   'CatchLayout',
@@ -121,6 +168,12 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const noRawButtonControl = LintCode(
+    'catch_no_raw_button_control',
+    'Use a Catch control primitive or add the missing primitive instead of this raw Material/Cupertino input control.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
   static const noRawColor = LintCode(
     'catch_no_raw_color',
     'Use CatchTokens, ActivityPalette, or a named color role instead of a raw Color/Colors/CupertinoColors value.',
@@ -145,6 +198,66 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.WARNING,
   );
 
+  static const noRawContentDimension = LintCode(
+    'catch_no_raw_content_dimension',
+    'Use flexible constraints, aspect ratios, CatchLayout, or a named dimension contract instead of a raw fixed content dimension.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noLocalDesignConstant = LintCode(
+    'catch_no_local_design_constant',
+    'Route private feature UI constants through Catch tokens or a shared primitive instead of owning raw design values locally.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
+  static const noRawIconSource = LintCode(
+    'catch_no_raw_icon_source',
+    'Use CatchIcons or a semantic icon contract instead of referencing Icons directly in app UI.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawIconSize = LintCode(
+    'catch_no_raw_icon_size',
+    'Use CatchIcon size tokens or a primitive-owned semantic icon size instead of a raw icon size.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawAlpha = LintCode(
+    'catch_no_raw_alpha',
+    'Use CatchOpacity or a named opacity contract instead of a raw alpha/opacity value.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawShadow = LintCode(
+    'catch_no_raw_shadow',
+    'Use CatchElevation/CatchSurface elevation roles or a named component shadow contract instead of raw shadow/elevation values.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawMotion = LintCode(
+    'catch_no_raw_motion',
+    'Use CatchMotion or a named motion helper instead of raw Duration/Curves values in app UI.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawBreakpoint = LintCode(
+    'catch_no_raw_breakpoint',
+    'Use CatchLayout breakpoints or a named responsive contract instead of hardcoded width checks.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawSurfaceShell = LintCode(
+    'catch_no_raw_surface_shell',
+    'Use CatchSurface or a shared surface primitive instead of hand-rolling a local decorated surface.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noAllowDebt = LintCode(
+    'catch_no_allow_debt',
+    'Remove temporary Catch UI allow debt or replace it with a narrow source-of-truth exception.',
+    severity: DiagnosticSeverity.WARNING,
+  );
+
   static const noWidgetReturningMethod = LintCode(
     'catch_no_widget_returning_method',
     'Extract private Widget-returning helpers in feature presentation code to named Widget classes.',
@@ -162,10 +275,21 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     preferSemanticInsets,
     eventDetailPrefersPhotoThumbnail,
     noRawMaterialControl,
+    noRawButtonControl,
     noRawColor,
     noRawTextStyle,
     noRawFontDrift,
     noRawRadius,
+    noRawContentDimension,
+    noLocalDesignConstant,
+    noRawIconSource,
+    noRawIconSize,
+    noRawAlpha,
+    noRawShadow,
+    noRawMotion,
+    noRawBreakpoint,
+    noRawSurfaceShell,
+    noAllowDebt,
     noWidgetReturningMethod,
   ];
 
@@ -184,6 +308,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isEventDetailPath: _isEventDetailPath(path),
       isColorExemptPath: false,
       isFeaturePresentationPath: _isFeaturePresentationPath(path),
+      isSizingScannerPath: _isSizingScannerPath(path),
+      isUiSystemScannerPath: _isUiSystemScannerPath(path),
       allowRawControlConstructors: _isCoreWidgetPrimitivePath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
@@ -195,6 +321,8 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     registry.addPrefixedIdentifier(this, visitor);
     registry.addPropertyAccess(this, visitor);
     registry.addSimpleStringLiteral(this, visitor);
+    registry.addCompilationUnit(this, visitor);
+    registry.addVariableDeclaration(this, visitor);
   }
 
   String _normalizedPath(RuleContext context) {
@@ -218,6 +346,17 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
         !path.contains('/lib/core/');
   }
 
+  bool _isSizingScannerPath(String path) {
+    return !path.contains('/lib/labs/') && !path.contains('explore_concept');
+  }
+
+  bool _isUiSystemScannerPath(String path) {
+    if (!_isSizingScannerPath(path)) return false;
+    return path.contains('/lib/core/widgets/') ||
+        path.contains('/lib/core/presentation/') ||
+        path.contains('/presentation/');
+  }
+
   bool _isCoreWidgetPrimitivePath(String path) {
     return path.contains('/lib/core/widgets/');
   }
@@ -231,6 +370,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isEventDetailPath,
     required this.isColorExemptPath,
     required this.isFeaturePresentationPath,
+    required this.isSizingScannerPath,
+    required this.isUiSystemScannerPath,
     required this.allowRawControlConstructors,
   }) : _lineStarts = _computeLineStarts(source);
 
@@ -240,8 +381,37 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isEventDetailPath;
   final bool isColorExemptPath;
   final bool isFeaturePresentationPath;
+  final bool isSizingScannerPath;
+  final bool isUiSystemScannerPath;
   final bool allowRawControlConstructors;
   final List<int> _lineStarts;
+
+  @override
+  void visitCompilationUnit(CompilationUnit node) {
+    for (final match in _allowDebtPattern.allMatches(source)) {
+      if (_isThemeIndependentArtAllow(match.start)) continue;
+      rule.reportAtOffset(
+        match.start,
+        match.end - match.start,
+        diagnosticCode: CatchUiLayoutRules.noAllowDebt,
+      );
+    }
+  }
+
+  @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    if (!isFeaturePresentationPath) return;
+    if (!isSizingScannerPath) return;
+    if (_isInsideCustomPainter(node)) return;
+    if (!_isPrivateDesignConstant(node)) return;
+
+    final initializer = node.initializer;
+    if (initializer == null) return;
+    if (_expressionUsesToken(initializer)) return;
+    if (!_expressionContainsRawDesignValue(initializer)) return;
+
+    _reportAtNode(node, CatchUiLayoutRules.noLocalDesignConstant);
+  }
 
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
@@ -268,6 +438,27 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         CatchUiLayoutRules.noRawMaterialControl,
         arguments: [_rawControlReplacements[typeName] ?? 'a Catch primitive'],
       );
+    }
+
+    if (isUiSystemScannerPath &&
+        _rawButtonControlConstructors.contains(typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawButtonControl);
+    }
+
+    if (_isRawContentDimensionConstructor(node, typeName, constructorName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawContentDimension);
+    }
+
+    if (isUiSystemScannerPath && _isRawShadowConstructor(node, typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawShadow);
+    }
+
+    if (isUiSystemScannerPath && _isRawMotionConstructor(node, typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawMotion);
+    }
+
+    if (_isLocalDecoratedSurfaceShell(node, typeName)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawSurfaceShell);
     }
 
     if (!isColorExemptPath && _isRawColorConstructor(node)) {
@@ -303,6 +494,22 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         diagnosticCode: CatchUiLayoutRules.rawUiSpacing,
       );
     }
+
+    if (_isRawContentDimensionNamedArgument(node)) {
+      _reportAtNode(node.expression, CatchUiLayoutRules.noRawContentDimension);
+    }
+
+    if (isUiSystemScannerPath && _isRawIconSizeNamedArgument(node)) {
+      _reportAtNode(node.expression, CatchUiLayoutRules.noRawIconSize);
+    }
+
+    if (isUiSystemScannerPath && _isRawAlphaNamedArgument(node)) {
+      _reportAtNode(node.expression, CatchUiLayoutRules.noRawAlpha);
+    }
+
+    if (isUiSystemScannerPath && _isRawShadowNamedArgument(node)) {
+      _reportAtNode(node.expression, CatchUiLayoutRules.noRawShadow);
+    }
   }
 
   @override
@@ -323,6 +530,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           diagnosticCode: CatchUiLayoutRules.noTokenArithmetic,
         );
       }
+    }
+
+    if (isUiSystemScannerPath && _isRawBreakpointComparison(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawBreakpoint);
     }
   }
 
@@ -360,6 +571,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    if (isUiSystemScannerPath && node.prefix.name == 'Icons') {
+      _reportAtNode(node, CatchUiLayoutRules.noRawIconSource);
+    }
+
+    if (isUiSystemScannerPath && node.prefix.name == 'Curves') {
+      _reportAtNode(node, CatchUiLayoutRules.noRawMotion);
+    }
+
     if (!isColorExemptPath && _isRawColorIdentifier(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawColor);
     }
@@ -378,6 +597,228 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (!_isFontFamilyNamedArgument(node)) return;
 
     _reportAtNode(node, CatchUiLayoutRules.noRawFontDrift);
+  }
+
+  bool _isThemeIndependentArtAllow(int offset) {
+    final isKnownArtPath =
+        path.endsWith('/lib/core/widgets/graded_image.dart') ||
+        path.endsWith('/lib/events/presentation/event_activity_visuals.dart');
+    return isKnownArtPath &&
+        _lineForOffsetText(offset).contains('theme-independent art');
+  }
+
+  bool _isPrivateDesignConstant(VariableDeclaration node) {
+    final name = node.name.lexeme;
+    if (!name.startsWith('_')) return false;
+
+    final parent = node.parent;
+    if (parent is! VariableDeclarationList) return false;
+
+    final keyword = parent.keyword?.lexeme;
+    if (keyword != 'const' && keyword != 'final') return false;
+
+    final lowerName = name.toLowerCase();
+    return _localDesignConstantWords.any(lowerName.contains);
+  }
+
+  bool _isInsideCustomPainter(AstNode node) {
+    var current = node.parent;
+    while (current != null) {
+      if (current is ClassDeclaration) {
+        final extendsClause = current.extendsClause;
+        return extendsClause?.superclass.name.lexeme == 'CustomPainter';
+      }
+      current = current.parent;
+    }
+    return false;
+  }
+
+  bool _expressionUsesToken(Expression expression) {
+    final text = expression.toSource();
+    if (_isTokenReference(expression)) return true;
+    return _tokenPrefixes.any((prefix) => text.contains('$prefix.')) ||
+        text.contains('ActivityPalette.') ||
+        text.contains('CatchFonts.') ||
+        text.contains('CatchTextStyles.') ||
+        text.contains('Sizes.');
+  }
+
+  bool _expressionContainsRawDesignValue(Expression expression) {
+    final text = expression.toSource();
+    if (RegExp(
+      r'\b(?:Color|Duration|Size|Offset|EdgeInsets(?:Directional|Geometry)?|BorderRadius|Radius)\b',
+    ).hasMatch(text)) {
+      return true;
+    }
+    if (RegExp(r'\b(?:Colors|CupertinoColors|Curves|Icons)\.').hasMatch(text)) {
+      return true;
+    }
+
+    for (final match in RegExp(
+      r'(?<![A-Za-z0-9_])-?\d+(?:\.\d+)?(?![A-Za-z0-9_])',
+    ).allMatches(text)) {
+      final value = double.tryParse(match.group(0)!);
+      if (value != null && value.abs() > _hairlineLiteralLimit) return true;
+    }
+
+    return false;
+  }
+
+  bool _isRawContentDimensionConstructor(
+    InstanceCreationExpression node,
+    String typeName,
+    String? constructorName,
+  ) {
+    if (!isSizingScannerPath) return false;
+
+    if (typeName == 'Size') {
+      if (constructorName != null && constructorName != 'square') {
+        return false;
+      }
+      return node.argumentList.arguments.any(
+        (argument) => _isNumberAtLeast(argument, 4),
+      );
+    }
+
+    if (typeName == 'BoxConstraints') {
+      return constructorName == 'tight' ||
+          constructorName == 'tightFor' ||
+          constructorName == 'expand';
+    }
+
+    return false;
+  }
+
+  bool _isRawContentDimensionNamedArgument(NamedExpression node) {
+    if (!isSizingScannerPath) return false;
+
+    final name = node.name.label.name;
+    if (name != 'height' && name != 'width' && name != 'dimension') {
+      return false;
+    }
+    if (!_isNumberAtLeast(node.expression, 4)) return false;
+    return !_isIconConstructorContext(node);
+  }
+
+  bool _isRawIconSizeNamedArgument(NamedExpression node) {
+    final name = node.name.label.name;
+    if (name == 'iconSize') return _isNumberAtLeast(node.expression, 4);
+    if (name != 'size') return false;
+    if (!_isNumberAtLeast(node.expression, 4)) return false;
+
+    final constructorType = _ancestorConstructorType(node);
+    return constructorType == 'Icon' || constructorType == 'IconThemeData';
+  }
+
+  bool _isRawAlphaNamedArgument(NamedExpression node) {
+    final name = node.name.label.name;
+    if (name != 'alpha' && name != 'opacity') return false;
+    return _isNumberBetween(node.expression, min: 0, max: 1);
+  }
+
+  bool _isRawShadowConstructor(
+    InstanceCreationExpression node,
+    String typeName,
+  ) {
+    return typeName == 'BoxShadow';
+  }
+
+  bool _isRawShadowNamedArgument(NamedExpression node) {
+    final name = node.name.label.name;
+    if (name == 'elevation') return _isNumberAtLeast(node.expression, 1);
+    if (name == 'shadowColor') return _isRawColorExpression(node.expression);
+    return false;
+  }
+
+  bool _isRawMotionConstructor(
+    InstanceCreationExpression node,
+    String typeName,
+  ) {
+    if (typeName == 'Duration') return true;
+    if (typeName != 'CurveTween') return false;
+    return node.toSource().contains('Curves.');
+  }
+
+  bool _isLocalDecoratedSurfaceShell(
+    InstanceCreationExpression node,
+    String typeName,
+  ) {
+    if (!isUiSystemScannerPath) return false;
+    if (!isFeaturePresentationPath) return false;
+    if (!_surfaceShellConstructors.contains(typeName)) return false;
+
+    final decoration = _namedArgument(node, 'decoration');
+    if (decoration == null) return false;
+    if (decoration is! InstanceCreationExpression) return false;
+    if (_constructorTypeName(decoration) != 'BoxDecoration') return false;
+
+    final text = decoration.toSource();
+    return text.contains('gradient:') ||
+        text.contains('borderRadius:') ||
+        text.contains('Border.all') ||
+        text.contains('boxShadow:') ||
+        text.contains('shape:');
+  }
+
+  bool _isRawBreakpointComparison(BinaryExpression node) {
+    final operator = node.operator.type;
+    if (operator != TokenType.LT &&
+        operator != TokenType.LT_EQ &&
+        operator != TokenType.GT &&
+        operator != TokenType.GT_EQ) {
+      return false;
+    }
+
+    return (_looksLikeWidthExpression(node.leftOperand) &&
+            _isNumberAtLeast(node.rightOperand, 100)) ||
+        (_looksLikeWidthExpression(node.rightOperand) &&
+            _isNumberAtLeast(node.leftOperand, 100));
+  }
+
+  bool _looksLikeWidthExpression(Expression expression) {
+    final text = expression.toSource();
+    return RegExp(
+      r'\b(?:constraints\.(?:maxWidth|minWidth)|MediaQuery\.of\(context\)\.size\.width|size\.width|width)\b',
+    ).hasMatch(text);
+  }
+
+  bool _isRawColorExpression(Expression expression) {
+    if (expression is InstanceCreationExpression) {
+      return _isRawColorConstructor(expression);
+    }
+    if (expression is PrefixedIdentifier) {
+      return _isRawColorIdentifier(expression);
+    }
+    if (expression is PropertyAccess) {
+      return _isRawColorPropertyAccess(expression);
+    }
+    return false;
+  }
+
+  bool _isIconConstructorContext(AstNode node) {
+    final constructorType = _ancestorConstructorType(node);
+    return constructorType == 'Icon' || constructorType == 'IconThemeData';
+  }
+
+  Expression? _namedArgument(InstanceCreationExpression node, String name) {
+    for (final argument in node.argumentList.arguments) {
+      if (argument is NamedExpression && argument.name.label.name == name) {
+        return argument.expression;
+      }
+    }
+    return null;
+  }
+
+  String? _ancestorConstructorType(AstNode node) {
+    var current = node.parent;
+    while (current != null) {
+      if (current is InstanceCreationExpression) {
+        return _constructorTypeName(current);
+      }
+      if (current is Statement || current is CollectionElement) return null;
+      current = current.parent;
+    }
+    return null;
   }
 
   void _checkSizedBoxSpacing(InstanceCreationExpression node) {
@@ -596,7 +1037,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     LintCode diagnosticCode, {
     List<Object> arguments = const [],
   }) {
-    if (_hasTokenAllowComment(node)) return;
+    if (diagnosticCode != CatchUiLayoutRules.noAllowDebt &&
+        _hasUiAllowComment(node)) {
+      return;
+    }
 
     rule.reportAtNode(
       node,
@@ -605,9 +1049,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     );
   }
 
-  bool _hasTokenAllowComment(AstNode node) {
+  bool _hasUiAllowComment(AstNode node) {
     final line = _lineForOffset(node.offset);
-    return _lineContainsTokenAllow(line) || _lineContainsTokenAllow(line - 1);
+    return _lineContainsUiAllow(line) || _lineContainsUiAllow(line - 1);
   }
 
   int _lineForOffset(int offset) {
@@ -628,14 +1072,21 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return 0;
   }
 
-  bool _lineContainsTokenAllow(int line) {
+  bool _lineContainsUiAllow(int line) {
     if (line < 0 || line >= _lineStarts.length) return false;
+    return _allowDebtPattern.hasMatch(_textForLine(line));
+  }
 
+  String _lineForOffsetText(int offset) {
+    return _textForLine(_lineForOffset(offset));
+  }
+
+  String _textForLine(int line) {
     final start = _lineStarts[line];
     final end = line + 1 < _lineStarts.length
         ? _lineStarts[line + 1]
         : source.length;
-    return source.substring(start, end).contains('token:allow:');
+    return source.substring(start, end);
   }
 
   ListLiteral? _childrenArgument(InstanceCreationExpression node) {
@@ -690,6 +1141,34 @@ bool _isPositiveNumberLiteral(Expression expression) {
     return expression.value > _hairlineLiteralLimit;
   }
   return false;
+}
+
+bool _isNumberAtLeast(Expression expression, double minimum) {
+  final value = _numberLiteralValue(expression);
+  return value != null && value >= minimum;
+}
+
+bool _isNumberBetween(
+  Expression expression, {
+  required double min,
+  required double max,
+}) {
+  final value = _numberLiteralValue(expression);
+  return value != null && value >= min && value <= max;
+}
+
+double? _numberLiteralValue(Expression expression) {
+  if (expression is IntegerLiteral) return expression.value?.toDouble();
+  if (expression is DoubleLiteral) return expression.value;
+  if (expression is PrefixExpression &&
+      expression.operator.type == TokenType.MINUS) {
+    final operandValue = _numberLiteralValue(expression.operand);
+    return operandValue == null ? null : -operandValue;
+  }
+  if (expression is ParenthesizedExpression) {
+    return _numberLiteralValue(expression.expression);
+  }
+  return null;
 }
 
 bool _isTokenReference(Expression expression) {

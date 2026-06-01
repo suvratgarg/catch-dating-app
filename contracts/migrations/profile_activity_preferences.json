@@ -47,11 +47,12 @@
     {
       "id": "cleanup",
       "status": "complete_remote",
-      "description": "tool/data/retire_legacy_profile_fields.mjs copied remaining legacy root running fields into activityPreferences.running and deleted root fields in dev, staging, and prod on 2026-05-26."
+      "description": "Remote cleanup copied remaining legacy root running fields into activityPreferences.running and deleted root fields in dev, staging, and prod on 2026-05-26. The one-time cleanup tool was retired on 2026-06-02."
     }
   ],
   "liveApply": {
-    "cleanupTool": "tool/data/retire_legacy_profile_fields.mjs",
+    "toolingStatus": "one_time_tool_retired",
+    "toolingRetiredAt": "2026-06-02",
     "appliedAt": "2026-05-26",
     "dev": {
       "usersChanged": 73,
@@ -75,6 +76,6 @@
   "guards": [
     "contracts/firestore/users.schema.json and contracts/firestore/public_profiles.schema.json require activityPreferences.",
     "tool/data/validate_firestore_data.mjs validates activityPreferences and warns on retired root profile fields; run with --fail-on-warning after cleanup.",
-    "tool/data/retire_legacy_profile_fields.mjs is dry-run-first and requires --apply plus --allow-prod for production writes."
+    "No active cleanup tool remains; retired root profile fields should not reappear after the completed dev, staging, and prod cleanup."
   ]
 }

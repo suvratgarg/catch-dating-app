@@ -292,15 +292,15 @@ Keep `min_version` broad unless the release intentionally changes the public
 marketing version. Use the platform build gates for schema/API compatibility
 work because they are less ambiguous than semantic version strings.
 
-For storage/API migrations such as `swipes` to `profileDecisions`:
+For storage/API migrations:
 
 1. Deploy backend support that can tolerate both old and new clients.
 2. Ship the client release with dual-read/dual-write support.
 3. Wait until the released build is actually available through the relevant
    store or distribution channel.
 4. Raise the Remote Config `min_build_*` value for released platforms.
-5. Rerun the migration parity gate, for example:
-   `node tool/data/validate_profile_decision_migration.mjs --env prod --require-parity`.
+5. Rerun the migration-specific parity gate and record the prod evidence before
+   cleanup.
 6. Cut over backend triggers or remove legacy write support only after the
    parity gate passes with the force-update gate in place.
 
@@ -308,6 +308,10 @@ Remote Config shortens the compatibility window, but it does not eliminate it
 at release time. A client can start offline, fetch can fail, and store rollout
 timing can lag. Keep legacy-compatible reads/writes until the explicit parity
 and force-update cutover step is complete.
+
+The `swipes` to `profileDecisions` migration is already complete: dev, staging,
+and prod cleanup finished on 2026-05-26, and the one-time migration tools were
+retired on 2026-06-02.
 
 The checked-in baseline template is `firebase/remote_config.template.json`.
 Its default values are deliberately non-blocking. Use it to seed a project or

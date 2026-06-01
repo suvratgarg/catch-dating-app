@@ -25,8 +25,6 @@ node tool/contracts/check_firestore_rules_semantics.mjs
 echo "==> Checking demo seed contract validation"
 node --check tool/demo/seed_demo_data.mjs
 node --check tool/data/recompute_public_profiles.mjs
-node --check tool/data/validate_profile_decision_migration.mjs
-node --check tool/data/backfill_profile_decisions.mjs
 node --check tool/data/backfill_profile_photos.mjs
 node --check tool/data/repair_future_event_attendance.mjs
 node --check functions/scripts/backfill-profile-thumbnails.cjs
@@ -34,8 +32,6 @@ node --test tool/demo/seed_demo_data_append.test.mjs \
   tool/demo/seed_demo_data_schema.test.mjs \
   tool/firebase/firebase_project_resolver.test.mjs \
   tool/data/recompute_public_profiles.test.mjs \
-  tool/data/validate_profile_decision_migration.test.mjs \
-  tool/data/backfill_profile_decisions.test.mjs \
   tool/data/backfill_profile_photos.test.mjs \
   tool/data/repair_future_event_attendance.test.mjs
 node tool/demo/seed_demo_data.mjs --scenario smoke --json >/dev/null

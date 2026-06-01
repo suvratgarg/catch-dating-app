@@ -1,7 +1,7 @@
 ---
 doc_id: catch-ui-debt-inventory
-version: 1.2
-updated: 2026-06-01
+version: 1.3
+updated: 2026-06-02
 owner: ui_elevation_initiative
 status: watch
 audience: codex (execution)
@@ -19,13 +19,15 @@ worktree.
 
 - Raw color, text-style, and font drift are enforced by `packages/catch_ui_lints`
   plus `tool/check_catch_ui_lint_drift.sh`; verified count: `0`.
-- Fixed sizing drift is covered by `tool/check_sizing.sh`; verified count: `0`.
-- Broader system raw-value drift is covered by `tool/check_ui_system_raw_values.sh`;
-  verified count: `0`.
-- `tool/check_ui_local_constant_wrappers.sh --summary` returns `0`; token-backed named
-  `EdgeInsets` constants are treated as semantic contracts rather than raw-value debt.
-- `tool/check_ui_allow_debt.sh --summary` returns `0`; only fixed theme-independent art
-  exceptions are accepted by the gate.
+- Fixed sizing drift is covered by analyzer diagnostic
+  `catch_no_raw_content_dimension`, reported through `tool/check_sizing.sh`.
+- Broader system raw-value drift is covered by migrated Catch UI analyzer diagnostics,
+  reported through `tool/check_ui_system_raw_values.sh`.
+- Local private design constants are covered by `catch_no_local_design_constant`,
+  reported through `tool/check_ui_local_constant_wrappers.sh`.
+- UI allow-comment debt is covered by `catch_no_allow_debt`, reported through
+  `tool/check_ui_allow_debt.sh`; only fixed theme-independent art exceptions remain
+  intentionally exempt.
 - The old "dashboard raw Badge" item is stale. The remaining raw `Badge` hit is
   inside the `CatchBadge` primitive implementation, where it belongs.
 - Naive `BoxDecoration`/private-widget counts are triage signals, not debt by

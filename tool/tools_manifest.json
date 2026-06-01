@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-06-01",
+  "updated": "2026-06-02",
   "tools": [
     {
       "id": "tool:runner",
@@ -100,12 +100,12 @@
     },
     {
       "id": "scanner:sizing",
-      "category": "scanners",
+      "category": "lint",
       "path": "tool/check_sizing.sh",
       "command": "bash tool/check_sizing.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans UI code for raw sizing values that should use shared layout tokens.",
+      "description": "Reports catch_no_raw_content_dimension diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_sizing.sh",
         "bash tool/check_sizing.sh --count"
@@ -113,12 +113,12 @@
     },
     {
       "id": "scanner:ui-allow-debt",
-      "category": "scanners",
+      "category": "lint",
       "path": "tool/check_ui_allow_debt.sh",
       "command": "bash tool/check_ui_allow_debt.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans UI code for temporary allow-list comments that should not accumulate.",
+      "description": "Reports catch_no_allow_debt diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_ui_allow_debt.sh",
         "bash tool/check_ui_allow_debt.sh --count"
@@ -126,12 +126,12 @@
     },
     {
       "id": "scanner:ui-local-constant-wrappers",
-      "category": "scanners",
+      "category": "lint",
       "path": "tool/check_ui_local_constant_wrappers.sh",
       "command": "bash tool/check_ui_local_constant_wrappers.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans UI code for local wrapper constants that hide token debt.",
+      "description": "Reports catch_no_local_design_constant diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_ui_local_constant_wrappers.sh",
         "bash tool/check_ui_local_constant_wrappers.sh --count"
@@ -139,12 +139,12 @@
     },
     {
       "id": "scanner:ui-system-raw-values",
-      "category": "scanners",
+      "category": "lint",
       "path": "tool/check_ui_system_raw_values.sh",
       "command": "bash tool/check_ui_system_raw_values.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans core UI system code for raw values that should use shared tokens.",
+      "description": "Reports migrated UI-system raw-value diagnostics from the Catch UI analyzer plugin.",
       "checks": [
         "bash -n tool/check_ui_system_raw_values.sh",
         "bash tool/check_ui_system_raw_values.sh --count"
@@ -354,36 +354,6 @@
       "checks": ["node --check tool/data/repair_future_event_attendance.mjs", "node --test tool/data/repair_future_event_attendance.test.mjs"]
     },
     {
-      "id": "data:validate-profile-decision-migration",
-      "category": "data",
-      "path": "tool/data/validate_profile_decision_migration.mjs",
-      "command": "node tool/data/validate_profile_decision_migration.mjs",
-      "safety": "remote-read",
-      "status": "active",
-      "description": "Compares legacy swipes and future profile decision storage.",
-      "checks": ["node --check tool/data/validate_profile_decision_migration.mjs", "node --test tool/data/validate_profile_decision_migration.test.mjs"]
-    },
-    {
-      "id": "data:backfill-profile-decisions",
-      "category": "data",
-      "path": "tool/data/backfill_profile_decisions.mjs",
-      "command": "node tool/data/backfill_profile_decisions.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Backfills profile decision documents from legacy swipe docs.",
-      "checks": ["node --check tool/data/backfill_profile_decisions.mjs", "node --test tool/data/backfill_profile_decisions.test.mjs"]
-    },
-    {
-      "id": "data:retire-legacy-profile-decisions",
-      "category": "data",
-      "path": "tool/data/retire_legacy_profile_decisions.mjs",
-      "command": "node tool/data/retire_legacy_profile_decisions.mjs",
-      "safety": "remote-destructive-apply-guarded",
-      "status": "active",
-      "description": "Deletes legacy swipes profile decision docs after parity validation.",
-      "checks": ["node --check tool/data/retire_legacy_profile_decisions.mjs", "node --test tool/data/retire_legacy_profile_decisions.test.mjs"]
-    },
-    {
       "id": "data:backfill-profile-photos",
       "category": "data",
       "path": "tool/data/backfill_profile_photos.mjs",
@@ -392,16 +362,6 @@
       "status": "active",
       "description": "Backfills grouped profile photo fields.",
       "checks": ["node --check tool/data/backfill_profile_photos.mjs", "node --test tool/data/backfill_profile_photos.test.mjs"]
-    },
-    {
-      "id": "data:retire-legacy-profile-fields",
-      "category": "data",
-      "path": "tool/data/retire_legacy_profile_fields.mjs",
-      "command": "node tool/data/retire_legacy_profile_fields.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "active",
-      "description": "Deletes retired legacy profile fields after structured profile migrations.",
-      "checks": ["node --check tool/data/retire_legacy_profile_fields.mjs"]
     },
     {
       "id": "data:strip-profile-coordinates",
@@ -596,26 +556,6 @@
       "status": "active",
       "description": "Writes the iOS Google Maps xcconfig for a selected environment.",
       "checks": ["bash -n tool/write_ios_maps_key_xcconfig.sh"]
-    },
-    {
-      "id": "migration:relationship-docs",
-      "category": "migrations",
-      "path": "tool/migrations/firestore_relationship_migration.mjs",
-      "command": "node tool/migrations/firestore_relationship_migration.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "watch",
-      "description": "Historical relationship-doc migration for legacy chat messages; dry-run only unless an explicit owner ticket authorizes --apply.",
-      "checks": ["node --check tool/migrations/firestore_relationship_migration.mjs"]
-    },
-    {
-      "id": "migration:runs-to-events",
-      "category": "migrations",
-      "path": "tool/migrations/migrate_run_data_to_events.mjs",
-      "command": "node tool/migrations/migrate_run_data_to_events.mjs",
-      "safety": "remote-write-apply-guarded",
-      "status": "watch",
-      "description": "Historical run-data to event-data migration; dry-run only unless an explicit owner ticket authorizes --apply.",
-      "checks": ["node --check tool/migrations/migrate_run_data_to_events.mjs"]
     },
     {
       "id": "marketing:device-frame",
