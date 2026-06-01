@@ -27,7 +27,7 @@ Keep entries small and self-describing — one line is fine.
 - `ClubIdentityAtoms` — shared club-card member, tag, host, role, and rating atoms. See [club_identity_atoms.dart](../lib/clubs/presentation/shared/club_identity_atoms.dart).
 - `CatchTextStyles.kicker` / `kickerLg` — tracked-mono caps kicker labels (the former `kickerCaps` / `kickerCapsLg` were consolidated here in the 2026-05-30 type-scale pass; ~30 named styles total).
 - `CatchTextStyles.numericLarge` — tabular numerals for counts/distances on cards.
-- Typography is now **bundled + optically sized** via `CatchFonts` (`FontVariation('opsz'/'wght')`); add new styles through `CatchFonts.serif/sans/mono`, never raw `TextStyle`/`GoogleFonts` (enforced by `tool/check_design_tokens.sh`).
+- Typography is now **bundled + optically sized** via `CatchFonts` (`FontVariation('opsz'/'wght')`); add new styles through `CatchFonts.serif/sans/mono`, never raw `TextStyle`/`GoogleFonts` (enforced by Catch UI analyzer lints).
 
 ## Screens to migrate to the new event card primitives
 
@@ -42,7 +42,10 @@ Keep entries small and self-describing — one line is fine.
 - [x] Retired **`CatchEventCardCompact`**, **`CatchEventCardHero`**, **`EventRailTile`**, **`EventMapTile`**, and **`CatchEventCardPeek`** — list/agenda surfaces now use `EventDateRailCard`; selected non-spotlight map pins and the nearby map rail use `CatchEventTicketCard`, while the selected spotlight pin keeps `CatchEventSpotlightCard`.
 - [x] Consolidated card atoms for **club identity**, **event status**, **capacity copy**, and **activity clock/progress** — use `club_identity_atoms.dart`, `event_capacity_presenter.dart`, and `event_visual_atoms.dart` before adding new club/event card variants.
 - [x] Retired **`EventHeroTile`**, **`EventTileStatusBadge`**, and **`EventTileFactWrap`** — the remaining production booked-event and host-event action surfaces now share `EventActionCard`, while dense event rows use `EventCompactRow` or `EventDateRailCard`.
-- [ ] Delete **`ClubCoverFallback`** only after the remaining production no-image club surfaces migrate to the new club visual primitive. Current blockers: `_ExploreClubCover` in [explore_events_section.dart](../lib/clubs/presentation/list/widgets/explore_events_section.dart) for mixed-feed club cards, `_ClubImage._placeholder` in [club_image.dart](../lib/clubs/presentation/list/widgets/club_list_tile_parts/club_image.dart) for avatar/directory tiles, `_ClubLogoFallback` in [directory_card.dart](../lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart), and the fallback assertions in [clubs_widgets_test.dart](../test/clubs/clubs_widgets_test.dart). The new club detail hero path no longer depends on this widget.
+- [x] Retired **`ClubCoverFallback`** — the old delete task was stale. Club cover
+  fallbacks now route through `ClubPolaroidArtwork`; `_ExploreClubCover` grades remote
+  photos with `GradedImage`, and `_ClubLogoFallback` remains a logo-specific directory
+  fallback rather than the old cover primitive.
 - [ ] Audit all `Wrap(spacing: CatchSpacing.s1, runSpacing: ..., children: [CatchBadge(...), ...])` uses — many should become `CatchMetaDotRow`.
 - [ ] **`CatchBadgeTone.live`** — the orange "LIVE" pill is overloaded language (suggests streaming/video). Audit every use site; "Event today" with `CatchStatusDot(success)` is usually right. Sites: [club_list_tile_parts/avatar_chip.dart](../lib/clubs/presentation/list/widgets/club_list_tile_parts/avatar_chip.dart), [event_tile_atoms.dart](../lib/events/presentation/widgets/event_tiles/event_tile_atoms.dart) (`hosted` status).
 
@@ -72,7 +75,7 @@ Keep entries small and self-describing — one line is fine.
 
 - [ ] **`CatchSegmentedControl`** already exists but isn't used on Explore; once we want a "Events / Clubs" lens toggle, adopt it.
 - [x] **`CatchEmptyState`** — Explore event empty states now use time-aware copy with one-tap shifts such as "Nothing tonight" → "See weekend" and "Nothing this week" → "See anytime".
-- [ ] **Skeleton library** ([catch_skeleton.dart](../lib/core/widgets/catch_skeleton.dart)) — the current shimmer styles assume Sunset cream. Audit dark-mode rendering.
+- [ ] **Skeleton library** ([catch_skeleton.dart](../lib/core/widgets/catch_skeleton.dart)) — audit whether constructor placeholder fills should become token-aware in dark mode.
 - [ ] **`CatchSurface`** — add `elevation: CatchSurfaceElevation.floating` between `raised` and `overlay` for cards that hover but aren't quite overlays (selected map pin, peek rail "now" card).
 
 ## Discovered while implementing the Explore refresh
