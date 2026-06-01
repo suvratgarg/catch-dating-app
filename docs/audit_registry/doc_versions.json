@@ -22,15 +22,15 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.13",
-    "updated": "2026-05-27",
+    "version": "4.1.14",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.6",
-    "updated": "2026-05-22",
+    "version": "2.5.7",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
@@ -141,15 +141,15 @@
   },
   "ui_architecture": {
     "path": "docs/ui_architecture.md",
-    "version": "1.0.0",
-    "updated": "2026-05-22",
+    "version": "1.2.1",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, or scroll-heavy widget tests."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.159",
-    "updated": "2026-05-28",
+    "version": "2.5.164",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },

@@ -51,13 +51,30 @@ class CaptureArtifact {
   final File file;
 }
 
+enum CaptureOutputLayout {
+  captureFirst,
+  themeFirst;
+
+  static CaptureOutputLayout fromName(String name) => switch (name) {
+    'capture-first' || '' => CaptureOutputLayout.captureFirst,
+    'theme-first' => CaptureOutputLayout.themeFirst,
+    _ => throw ArgumentError.value(
+      name,
+      'name',
+      'Unknown capture output layout.',
+    ),
+  };
+}
+
 Future<List<CaptureArtifact>> captureCatchWidget(
   WidgetTester tester, {
   required String id,
   required WidgetBuilder builder,
   required Directory outputDirectory,
   CaptureDevice device = CaptureDevice.reviewPhone,
+  double pixelRatio = 1.0,
   double textScale = 1.0,
+  CaptureOutputLayout outputLayout = CaptureOutputLayout.captureFirst,
   List<CaptureTheme> themes = CaptureTheme.all,
   List<ImageProvider<Object>> precache = const <ImageProvider<Object>>[],
   Iterable providerOverrides = const [],
@@ -93,13 +110,36 @@ Future<List<CaptureArtifact>> captureCatchWidget(
     );
     await _pumpCaptureFrame(tester);
 
-    final file = File('${outputDirectory.path}/$id/${theme.name}.png');
-    await tester.runAsync(() => _writeBoundaryPng(boundaryKey, file));
+    final file = _captureFile(
+      outputDirectory: outputDirectory,
+      id: id,
+      theme: theme,
+      layout: outputLayout,
+    );
+    await tester.runAsync(
+      () => _writeBoundaryPng(boundaryKey, file, pixelRatio: pixelRatio),
+    );
     artifacts.add(CaptureArtifact(id: id, theme: theme, file: file));
   }
 
   await tester.pump(const Duration(milliseconds: 50));
   return artifacts;
+}
+
+File _captureFile({
+  required Directory outputDirectory,
+  required String id,
+  required CaptureTheme theme,
+  required CaptureOutputLayout layout,
+}) {
+  return switch (layout) {
+    CaptureOutputLayout.captureFirst => File(
+      '${outputDirectory.path}/$id/${theme.name}.png',
+    ),
+    CaptureOutputLayout.themeFirst => File(
+      '${outputDirectory.path}/${theme.name}/$id.png',
+    ),
+  };
 }
 
 Future<void> _pumpCaptureFrame(WidgetTester tester) async {
@@ -108,10 +148,14 @@ Future<void> _pumpCaptureFrame(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 250));
 }
 
-Future<void> _writeBoundaryPng(GlobalKey key, File file) async {
+Future<void> _writeBoundaryPng(
+  GlobalKey key,
+  File file, {
+  required double pixelRatio,
+}) async {
   final boundary =
       key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage(pixelRatio: 1.0);
+  final image = await boundary.toImage(pixelRatio: pixelRatio);
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   image.dispose();
 

@@ -20,6 +20,14 @@ const _textScaleArg = String.fromEnvironment(
   'CAPTURE_TEXT_SCALE',
   defaultValue: '1.0',
 );
+const _pixelRatioArg = String.fromEnvironment(
+  'CAPTURE_DPR',
+  defaultValue: '1.0',
+);
+const _outputLayoutArg = String.fromEnvironment(
+  'CAPTURE_OUTPUT_LAYOUT',
+  defaultValue: 'capture-first',
+);
 
 void main() {
   final captureIds = _captureIdsArg
@@ -29,6 +37,8 @@ void main() {
       .toList(growable: false);
   final outputDirectory = Directory(_outputDirArg);
   final textScale = double.tryParse(_textScaleArg) ?? 1.0;
+  final pixelRatio = double.tryParse(_pixelRatioArg) ?? 1.0;
+  final outputLayout = CaptureOutputLayout.fromName(_outputLayoutArg);
 
   for (final captureId in captureIds) {
     testWidgets('captures $captureId', (tester) async {
@@ -41,7 +51,9 @@ void main() {
         id: entry.id,
         builder: entry.builder,
         device: device,
+        pixelRatio: pixelRatio,
         textScale: textScale,
+        outputLayout: outputLayout,
         outputDirectory: outputDirectory,
         precache: entry.precache,
         providerOverrides: entry.providerOverrides,

@@ -10,7 +10,12 @@ const docSummariesPath = '$registryDir/doc_summaries.json';
 const rulesPath = '$registryDir/rules.json';
 
 const trackedPaths = [
+  '.github/workflows',
+  'analysis_options.yaml',
   'lib',
+  'packages',
+  'pubspec.lock',
+  'pubspec.yaml',
   'test',
   'functions/src',
   'functions/test',
@@ -363,6 +368,9 @@ String _areaFor(String path) {
   }
   if (parts.first == 'docs') return 'docs';
   if (parts.first == 'tool') return 'tooling';
+  if (parts.first == 'packages') {
+    return parts.length > 1 ? parts[1] : 'packages';
+  }
   if (parts.first == 'functions') {
     return parts.length > 2 ? parts[2] : 'functions';
   }

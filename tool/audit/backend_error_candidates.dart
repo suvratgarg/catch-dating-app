@@ -201,7 +201,7 @@ void _printText(List<String> roots, List<Candidate> candidates) {
   for (final entry in _summary(candidates).entries) {
     stdout.writeln('${entry.key}: ${entry.value}');
   }
-  stdout.writeln('');
+  stdout.writeln();
   for (final candidate in candidates) {
     stdout.writeln(
       '${candidate.status.name} | ${candidate.rule.id} | '
@@ -213,12 +213,12 @@ void _printText(List<String> roots, List<Candidate> candidates) {
 
 void _printMarkdown(List<String> roots, List<Candidate> candidates) {
   stdout.writeln('# Backend Error Candidate Scan');
-  stdout.writeln('');
+  stdout.writeln();
   stdout.writeln('- Roots: `${roots.join('`, `')}`');
   for (final entry in _summary(candidates).entries) {
     stdout.writeln('- ${entry.key}: ${entry.value}');
   }
-  stdout.writeln('');
+  stdout.writeln();
   stdout.writeln('| Status | Rule | Location | Recommendation |');
   stdout.writeln('|---|---|---|---|');
   for (final candidate in candidates) {

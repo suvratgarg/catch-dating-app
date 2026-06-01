@@ -25,14 +25,17 @@ jobs:
       - name: Static analysis
         run: flutter analyze --no-fatal-infos
 
+      - name: Riverpod lint plugin smoke check
+        run: bash tool/check_riverpod_lint.sh
+
+      - name: Catch UI lint plugin smoke check
+        run: bash tool/check_catch_ui_lints.sh
+
       - name: Sizing doctrine check
         run: bash tool/check_sizing.sh
 
       - name: UI local-constant wrappers check
         run: bash tool/check_ui_local_constant_wrappers.sh
-
-      - name: Design-token drift check
-        run: bash tool/check_design_tokens.sh
 
       - name: Unit & widget tests
         # Exact PNG goldens are generated against the local desktop renderer and

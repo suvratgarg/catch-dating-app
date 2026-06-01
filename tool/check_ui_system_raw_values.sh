@@ -4,7 +4,7 @@
 #
 # This is a deterministic migration-target finder for values that should not
 # keep being invented inside feature screens. It complements:
-#   - tool/check_raw_color_sweep.sh  (visible raw colors)
+#   - Catch UI analyzer lints        (visible raw colors/fonts/text styles)
 #   - tool/check_sizing.sh           (fixed content dimensions)
 #
 # Findings should usually be migrated to CatchSpacing, CatchRadius, CatchIcon,
@@ -239,7 +239,7 @@ fi
 echo "UI-system raw-value targets: $total"
 echo "Files with targets: $files"
 echo "Scope: lib/core/widgets, lib/core/presentation, lib/*/presentation; generated files, labs, and explore_concept excluded."
-echo "Note: raw visible colors are counted separately by tool/check_raw_color_sweep.sh; fixed content dimensions by tool/check_sizing.sh."
+echo "Note: raw visible colors/fonts/text styles are counted by Catch UI analyzer lints; fixed content dimensions by tool/check_sizing.sh."
 
 if [ "$total" -gt 0 ]; then
   echo ""

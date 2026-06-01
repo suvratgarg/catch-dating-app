@@ -1,0 +1,568 @@
+{
+  "version": 1,
+  "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
+  "coverage": {
+    "routes": 40,
+    "captures": 31,
+    "statusCounts": {
+      "excluded": 6,
+      "captured": 28,
+      "alias": 6
+    }
+  },
+  "profile": {
+    "command": "node tool/ui_capture/run_captures.mjs --profile design-gallery",
+    "pixelRatio": 3.0,
+    "outputLayout": "theme-first"
+  },
+  "shots": [
+    {
+      "id": "profile_self",
+      "routes": [
+        "profileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/profile_self.png",
+        "dark": "dark/profile_self.png"
+      },
+      "whatItIs": "Profile Self",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "start_welcome",
+      "routes": [
+        "startScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/start_welcome.png",
+        "dark": "dark/start_welcome.png"
+      },
+      "whatItIs": "Start Welcome",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "auth_phone_entry",
+      "routes": [
+        "authScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/auth_phone_entry.png",
+        "dark": "dark/auth_phone_entry.png"
+      },
+      "whatItIs": "Auth Phone Entry",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "onboarding_welcome",
+      "routes": [
+        "onboardingScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/onboarding_welcome.png",
+        "dark": "dark/onboarding_welcome.png"
+      },
+      "whatItIs": "Onboarding Welcome",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_member",
+      "routes": [
+        "eventDetailScreen",
+        "calendarEventDetailScreen",
+        "savedEventDetailScreen",
+        "dashboardEventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_member.png",
+        "dark": "dark/event_detail_member.png"
+      },
+      "whatItIs": "Event Detail Member",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_member_ticket",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_member_ticket.png",
+        "dark": "dark/event_detail_member_ticket.png"
+      },
+      "whatItIs": "Event Detail Member Ticket",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_detail_member_spotlight",
+      "routes": [
+        "eventDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_detail_member_spotlight.png",
+        "dark": "dark/event_detail_member_spotlight.png"
+      },
+      "whatItIs": "Event Detail Member Spotlight",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "dashboard_home",
+      "routes": [
+        "dashboardScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/dashboard_home.png",
+        "dark": "dark/dashboard_home.png"
+      },
+      "whatItIs": "Dashboard Home",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "club_detail_member",
+      "routes": [
+        "clubDetailScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/club_detail_member.png",
+        "dark": "dark/club_detail_member.png"
+      },
+      "whatItIs": "Club Detail Member",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "calendar_planned_events",
+      "routes": [
+        "calendarScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/calendar_planned_events.png",
+        "dark": "dark/calendar_planned_events.png"
+      },
+      "whatItIs": "Calendar Planned Events",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "saved_events_list",
+      "routes": [
+        "savedEventsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/saved_events_list.png",
+        "dark": "dark/saved_events_list.png"
+      },
+      "whatItIs": "Saved Events List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "filters_preferences",
+      "routes": [
+        "filtersScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/filters_preferences.png",
+        "dark": "dark/filters_preferences.png"
+      },
+      "whatItIs": "Filters Preferences",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_location_map",
+      "routes": [
+        "eventLocationMapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_location_map.png",
+        "dark": "dark/event_location_map.png"
+      },
+      "whatItIs": "Event Location Map",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "member_event_discovery",
+      "routes": [
+        "clubsListScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/member_event_discovery.png",
+        "dark": "dark/member_event_discovery.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.member.eventDiscovery"
+      ],
+      "whatItIs": "Member Event Discovery",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "create_club_basics",
+      "routes": [
+        "createClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/create_club_basics.png",
+        "dark": "dark/create_club_basics.png"
+      },
+      "whatItIs": "Create Club Basics",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_club_basics",
+      "routes": [
+        "editClubScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_club_basics.png",
+        "dark": "dark/edit_club_basics.png"
+      },
+      "whatItIs": "Edit Club Basics",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_event_setup",
+      "routes": [
+        "createEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_event_setup.png",
+        "dark": "dark/host_event_setup.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.eventSetup"
+      ],
+      "whatItIs": "Host Event Setup",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "edit_hosted_event",
+      "routes": [
+        "editHostedEventScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/edit_hosted_event.png",
+        "dark": "dark/edit_hosted_event.png"
+      },
+      "whatItIs": "Edit Hosted Event",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_live_console",
+      "routes": [
+        "hostEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_live_console.png",
+        "dark": "dark/host_live_console.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.liveConsole"
+      ],
+      "whatItIs": "Host Live Console",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_post_event_report",
+      "routes": [
+        "hostEventManageScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_post_event_report.png",
+        "dark": "dark/host_post_event_report.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.host.postEventReport"
+      ],
+      "whatItIs": "Host Post Event Report",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "post_run_catch_window",
+      "routes": [
+        "swipeEventScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/post_run_catch_window.png",
+        "dark": "dark/post_run_catch_window.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.member.postRunCatchWindow"
+      ],
+      "whatItIs": "Post Run Catch Window",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "swipe_hub_active",
+      "routes": [
+        "swipeHubScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/swipe_hub_active.png",
+        "dark": "dark/swipe_hub_active.png"
+      },
+      "whatItIs": "Swipe Hub Active",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "notifications_activity",
+      "routes": [
+        "notificationsScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/notifications_activity.png",
+        "dark": "dark/notifications_activity.png"
+      },
+      "whatItIs": "Notifications Activity",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_recap_attendees",
+      "routes": [
+        "eventRecapScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_recap_attendees.png",
+        "dark": "dark/event_recap_attendees.png"
+      },
+      "whatItIs": "Event Recap Attendees",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "event_success_companion",
+      "routes": [
+        "eventSuccessCompanionScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/event_success_companion.png",
+        "dark": "dark/event_success_companion.png"
+      },
+      "whatItIs": "Event Success Companion",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "match_chat_context",
+      "routes": [
+        "chatScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/match_chat_context.png",
+        "dark": "dark/match_chat_context.png"
+      },
+      "marketingFixtureKeys": [
+        "salesDemo.member.matchChatContext"
+      ],
+      "whatItIs": "Match Chat Context",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "matches_list_context",
+      "routes": [
+        "matchesListScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/matches_list_context.png",
+        "dark": "dark/matches_list_context.png"
+      },
+      "whatItIs": "Matches List Context",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "public_profile_member",
+      "routes": [
+        "publicProfileScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/public_profile_member.png",
+        "dark": "dark/public_profile_member.png"
+      },
+      "whatItIs": "Public Profile Member",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "reviews_history_list",
+      "routes": [
+        "reviewsHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/reviews_history_list.png",
+        "dark": "dark/reviews_history_list.png"
+      },
+      "whatItIs": "Reviews History List",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "settings_account",
+      "routes": [
+        "settingsScreen"
+      ],
+      "device": "review-tall",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/settings_account.png",
+        "dark": "dark/settings_account.png"
+      },
+      "whatItIs": "Settings Account",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "payment_history_empty",
+      "routes": [
+        "paymentHistoryScreen"
+      ],
+      "device": "review-phone",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/payment_history_empty.png",
+        "dark": "dark/payment_history_empty.png"
+      },
+      "whatItIs": "Payment History Empty",
+      "keepChangeNotes": ""
+    }
+  ]
+}

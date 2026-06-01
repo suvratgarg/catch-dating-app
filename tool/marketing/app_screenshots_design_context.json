@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "generatedBy": "tool/marketing/export_app_screenshots.mjs --design-json",
+  "coordinateSystem": "px",
+  "description": "Figma/AI-friendly design context for app-derived marketing screenshots.",
+  "captures": [
+    {
+      "type": "marketing-app-capture",
+      "id": "member-event-discovery",
+      "status": "active",
+      "audience": "member",
+      "surface": "Event discovery",
+      "fixtureKey": "salesDemo.member.eventDiscovery",
+      "captureId": "member_event_discovery",
+      "routeIds": [
+        "clubsListScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/member-event-discovery.png",
+        "websitePath": "website/assets/app-screenshots/member-event-discovery.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/member-event-discovery.svg"
+      },
+      "copy": {
+        "alt": "Catch event discovery screen showing hosted singles events",
+        "caption": "Members browse real hosted events before any dating surface opens.",
+        "walkthroughStep": "Discover"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "post-run-catch-window",
+      "status": "active",
+      "audience": "member",
+      "surface": "Post-event catch window",
+      "fixtureKey": "salesDemo.member.postRunCatchWindow",
+      "captureId": "post_run_catch_window",
+      "routeIds": [
+        "swipeEventScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/post-run-catch-window.png",
+        "websitePath": "website/assets/app-screenshots/post-run-catch-window.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/post-run-catch-window.svg"
+      },
+      "copy": {
+        "alt": "Catch post-event roster screen for the 24 hour catch window",
+        "caption": "The roster opens after attendance creates shared context.",
+        "walkthroughStep": "Unlock"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "match-chat-context",
+      "status": "active",
+      "audience": "member",
+      "surface": "Contextual match chat",
+      "fixtureKey": "salesDemo.member.matchChatContext",
+      "captureId": "match_chat_context",
+      "routeIds": [
+        "chatScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/match-chat-context.png",
+        "websitePath": "website/assets/app-screenshots/match-chat-context.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/match-chat-context.svg"
+      },
+      "copy": {
+        "alt": "Catch match chat screen with shared event context",
+        "caption": "Matches start with the room they already shared.",
+        "walkthroughStep": "Match"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-event-setup",
+      "status": "active",
+      "audience": "host",
+      "surface": "Host event setup",
+      "fixtureKey": "salesDemo.host.eventSetup",
+      "captureId": "host_event_setup",
+      "routeIds": [
+        "createEventScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-event-setup.png",
+        "websitePath": "website/assets/app-screenshots/host-event-setup.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/host-event-setup.svg"
+      },
+      "copy": {
+        "alt": "Catch host event setup screen",
+        "caption": "Create the event, set the access model, and preview the guest experience.",
+        "walkthroughStep": "Setup"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-live-console",
+      "status": "active",
+      "audience": "host",
+      "surface": "Host live console",
+      "fixtureKey": "salesDemo.host.liveConsole",
+      "captureId": "host_live_console",
+      "routeIds": [
+        "hostEventManageScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
+        "websitePath": "website/assets/app-screenshots/host-live-console.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/host-live-console.svg"
+      },
+      "copy": {
+        "alt": "Catch host live console with roster and check-in controls",
+        "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
+        "walkthroughStep": "Live"
+      }
+    },
+    {
+      "type": "marketing-app-capture",
+      "id": "host-post-event-report",
+      "status": "active",
+      "audience": "host",
+      "surface": "Host post-event report",
+      "fixtureKey": "salesDemo.host.postEventReport",
+      "captureId": "host_post_event_report",
+      "routeIds": [
+        "hostEventManageScreen"
+      ],
+      "device": {
+        "id": "iphone-17-pro",
+        "logicalSize": {
+          "width": 402,
+          "height": 874
+        },
+        "outputScale": 2,
+        "safeArea": {
+          "top": 59,
+          "right": 0,
+          "bottom": 34,
+          "left": 0
+        },
+        "frame": {
+          "framedSize": {
+            "width": 1020,
+            "height": 1964
+          },
+          "canvasMargin": 64,
+          "frameInset": 44,
+          "outerRadius": 136,
+          "screenRadius": 104,
+          "dynamicIsland": {
+            "width": 252,
+            "height": 74,
+            "top": 24
+          }
+        }
+      },
+      "assets": {
+        "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
+        "websitePath": "website/assets/app-screenshots/host-post-event-report.png",
+        "placeholderPath": "website/assets/app-screenshots/placeholders/host-post-event-report.svg"
+      },
+      "copy": {
+        "alt": "Catch host post-event report screen",
+        "caption": "Review attendance and event momentum after the room closes.",
+        "walkthroughStep": "Report"
+      }
+    }
+  ]
+}

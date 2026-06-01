@@ -7,6 +7,9 @@
 # this scanner still reports allow-comment debt.
 #
 # Supported markers:
+#   token:allow:
+#   ignore: catch_*
+#   ignore_for_file: catch_*
 #   ui-system:allow:
 #   color-sweep:allow:
 #   sizing:allow:
@@ -64,7 +67,7 @@ fi
 tmp="$(mktemp "${TMPDIR:-/tmp}/catch-ui-allow-debt.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 
-pattern='(ui-system|color-sweep|sizing|spacing|radius|icon-size|typography|motion|surface|alpha|shadow|breakpoint|control):allow:'
+pattern='(token|ui-system|color-sweep|sizing|spacing|radius|icon-size|typography|motion|surface|alpha|shadow|breakpoint|control):allow:|ignore(_for_file)?:[^\n]*\bcatch_[a-z0-9_]+'
 
 rg -n \
   --glob '!**/*.g.dart' \
@@ -75,8 +78,12 @@ rg -n \
   | perl -ne '
       chomp;
       my $line = $_;
-      while ($line =~ /\b(ui-system|color-sweep|sizing|spacing|radius|icon-size|typography|motion|surface|alpha|shadow|breakpoint|control):allow:/g) {
+      while ($line =~ /\b(token|ui-system|color-sweep|sizing|spacing|radius|icon-size|typography|motion|surface|alpha|shadow|breakpoint|control):allow:/g) {
+        next if $line =~ m{^lib/(?:core/widgets/graded_image|events/presentation/event_activity_visuals)\.dart:\d+:.*token:allow:.*theme-independent art};
         print "$1:$line\n";
+      }
+      while ($line =~ /\bignore(?:_for_file)?:[^\n]*\b(catch_[a-z0-9_]+)/g) {
+        print "catch-ignore:$line\n";
       }
     ' \
   | sort -t: -k1,1 -k2,2 -k3,3n >"$tmp" || true

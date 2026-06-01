@@ -1,0 +1,24 @@
+Catch design context pack
+
+Upload surface for Claude Design and other AI design tools. This pack is generated
+from the live Flutter design system; do not edit generated files by hand.
+
+Use the design_system files to establish or refresh the organization-level design
+system. Use gallery shots as per-screen taste anchors during a redesign chat.
+
+Generated sources:
+- docs/design_language.md
+- lib/core/theme/catch_tokens.dart
+- lib/core/theme/activity_palette.dart
+- lib/core/theme/catch_text_styles.dart
+- lib/core/theme/catch_fonts.dart
+- test/ui_captures/catalog/screen_capture_catalog.dart
+
+Regenerate:
+node tool/design/build_context_pack.mjs
+
+Check drift:
+node tool/design/build_context_pack.mjs --check
+
+Render high-DPR gallery PNGs when needed:
+node tool/ui_capture/run_captures.mjs --profile design-gallery
