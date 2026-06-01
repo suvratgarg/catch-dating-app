@@ -51,6 +51,10 @@ const admin = requireFromFunctions("firebase-admin");
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
 const MATCH_MESSAGE_LIMIT = 18;
+const DEFAULT_PERSONA_PROFILE_PROJECTION_PATH = path.join(
+  repoRoot,
+  "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json"
+);
 
 const profilePromptsById = promptsById(profilePromptCatalog);
 const photoPromptsById = promptsById(photoPromptCatalog);
@@ -159,6 +163,53 @@ function promptsById(catalog) {
   return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
 }
 
+export function loadSeedPersonaProfileProjection(
+  filePath = DEFAULT_PERSONA_PROFILE_PROJECTION_PATH
+) {
+  const resolvedPath = path.resolve(repoRoot, filePath);
+  const projection = JSON.parse(fs.readFileSync(resolvedPath, "utf8"));
+  if (projection?.kind !== "sales-demo-persona-profile-projection") {
+    throw new Error(
+      `${path.relative(repoRoot, resolvedPath)} must be a sales demo persona profile projection.`
+    );
+  }
+  if (!Array.isArray(projection.personas) || projection.personas.length === 0) {
+    throw new Error(
+      `${path.relative(repoRoot, resolvedPath)} must contain at least one persona.`
+    );
+  }
+  for (const [index, persona] of projection.personas.entries()) {
+    validateSeedPersonaProjection(persona, {
+      source: `${path.relative(repoRoot, resolvedPath)}.personas[${index}]`,
+    });
+  }
+  return projection;
+}
+
+function validateSeedPersonaProjection(persona, {source}) {
+  for (const field of [
+    "id",
+    "firstName",
+    "lastName",
+    "displayName",
+    "gender",
+    "dateOfBirth",
+  ]) {
+    if (typeof persona?.[field] !== "string" || persona[field].trim() === "") {
+      throw new Error(`${source}.${field} must be a non-empty string.`);
+    }
+  }
+  if (!validGender(persona.gender)) {
+    throw new Error(`${source}.gender must be a valid profile gender.`);
+  }
+  if (!Array.isArray(persona.profilePrompts) || persona.profilePrompts.length === 0) {
+    throw new Error(`${source}.profilePrompts must be non-empty.`);
+  }
+  if (!Array.isArray(persona.profilePhotos) || persona.profilePhotos.length === 0) {
+    throw new Error(`${source}.profilePhotos must be non-empty.`);
+  }
+}
+
 function profilePromptAnswer(promptId, answer) {
   const prompt = profilePromptsById.get(promptId);
   if (!prompt) throw new Error(`Unknown profile prompt id: ${promptId}`);
@@ -177,6 +228,59 @@ function photoPromptAnswer(photoIndex, promptId) {
     promptId: prompt.id,
     prompt: prompt.title,
   };
+}
+
+function profilePromptsFromProjection(persona) {
+  return persona.profilePrompts.map((prompt) =>
+    profilePromptAnswer(prompt.promptId, prompt.answer)
+  );
+}
+
+function profilePhotosFromProjection({uid, persona}) {
+  return persona.profilePhotos
+    .slice()
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    .map((photo, index) => {
+      const storagePath = nonEmptyString(photo.storagePath) ??
+        `users/${uid}/photos/${index}.jpg`;
+      const thumbnailStoragePath = nonEmptyString(photo.thumbnailStoragePath) ??
+        thumbnailStoragePathForStoragePath(storagePath);
+      const promptId = nonEmptyString(photo.promptId);
+      return {
+        id: nonEmptyString(photo.id) ??
+          profilePhotoIdForStoragePath(storagePath, index),
+        url: nonEmptyString(photo.url) ??
+          `https://example.test/${uid}/photos/${index}.jpg`,
+        thumbnailUrl: nonEmptyString(photo.thumbnailUrl) ??
+          nonEmptyString(photo.url) ??
+          `https://example.test/${uid}/photos/${index}.jpg`,
+        storagePath,
+        thumbnailStoragePath,
+        prompt: promptId ? photoPromptAnswer(index, promptId) : null,
+        moderation: {status: moderationStatus(photo.moderation?.status)},
+        position: index,
+        createdAt: admin.firestore.Timestamp.fromMillis(0),
+        updatedAt: admin.firestore.Timestamp.fromMillis(0),
+      };
+    });
+}
+
+function moderationStatus(value) {
+  return ["pending", "approved", "rejected"].includes(value) ? value : "approved";
+}
+
+function timestampFromBirthDate(value) {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid persona dateOfBirth: ${value}`);
+  }
+  return admin.firestore.Timestamp.fromDate(date);
+}
+
+function nonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0 ?
+    value.trim() :
+    null;
 }
 
 function profilePromptsForIndex(index) {
@@ -321,11 +425,15 @@ export async function main(argv = process.argv.slice(2)) {
     db,
     anchorProfiles.map((profile) => profile.uid)
   );
+  const personaProjection = loadSeedPersonaProfileProjection(
+    args.personaProfileProjection
+  );
   const seed = buildSeed({
     scenarioName: args.scenario,
     scenario,
     seedPrefix: args.seedPrefix,
     anchorProfiles,
+    personaProjection,
     now: args.appendAnchors ?
       await readExistingSeedTime(db, `${args.seedPrefix}_${args.scenario}`) :
       new Date(),
@@ -394,6 +502,7 @@ function parseArgs(argv) {
     deleteOnly: false,
     appendAnchors: false,
     emulatorHost: null,
+    personaProfileProjection: DEFAULT_PERSONA_PROFILE_PROJECTION_PATH,
     json: false,
     includeScheduleLocks: false,
     help: false,
@@ -414,6 +523,7 @@ function parseArgs(argv) {
     else if (arg === "--append-anchors") parsed.appendAnchors = true;
     else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") parsed.emulatorHost = requireValue(argv, ++i, arg);
+    else if (arg === "--persona-profile-projection") parsed.personaProfileProjection = requireValue(argv, ++i, arg);
     else if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
     else if (arg === "--project") parsed.project = requireValue(argv, ++i, arg);
     else if (arg === "--scenario") parsed.scenario = requireValue(argv, ++i, arg);
@@ -541,6 +651,7 @@ function buildSeed({
   scenario,
   seedPrefix,
   anchorProfiles,
+  personaProjection,
   now,
   includeScheduleLocks = false,
 }) {
@@ -550,7 +661,12 @@ function buildSeed({
     seedPrefix,
     scenario: scenarioName,
   };
-  const users = buildSyntheticUsers({scenario, seedPrefix, seedMarker});
+  const users = buildSyntheticUsers({
+    scenario,
+    seedPrefix,
+    seedMarker,
+    personaProjection,
+  });
   const clubs = [];
   const memberships = [];
   const events = [];
@@ -706,39 +822,34 @@ function buildSeed({
   };
 }
 
-function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
+function buildSyntheticUsers({scenario, seedPrefix, seedMarker, personaProjection}) {
   const users = [];
   const usedDisplayNames = new Set();
+  const personas = personaProjection.personas;
   let index = 0;
   for (const city of scenario.cities) {
     const cityMeta = cityData[city];
     for (let cityUserIndex = 0; cityUserIndex < scenario.usersPerCity; cityUserIndex += 1) {
       const uid = `${seedPrefix}_user_${String(index + 1).padStart(3, "0")}`;
-      const firstName = firstNames[index % firstNames.length];
-      const lastName = lastNames[(index * 3) % lastNames.length];
-      const gender = ["woman", "man", "woman", "man", "nonBinary", "woman", "man", "other"][index % 8];
-      const age = 23 + (index % 16);
+      const persona = personas[index % personas.length];
+      const firstName = persona.firstName;
+      const lastName = persona.lastName;
+      const gender = persona.gender;
       const displayName = uniqueSyntheticDisplayName({
-        firstName,
-        lastName,
+        firstName: persona.displayName,
+        lastName: "",
         city,
         usedDisplayNames,
       });
       const lat = cityMeta.lat + (((index % 7) - 3) * 0.008);
       const lng = cityMeta.lng + ((((index + 3) % 7) - 3) * 0.008);
-      const repetition = Math.floor(index / firstNames.length);
-      const photo = profilePhotos[(index + repetition) % profilePhotos.length];
-      const thumbnail = thumbnailUrlForPhoto(photo);
-      const profilePrompts = profilePromptsForIndex(index);
-      const photoPrompts = photoPromptsForIndex(index);
-      const photoUrls = [photo];
-      const photoThumbnailUrls = thumbnail ? [thumbnail] : [];
-      const profilePhotosForUser = profilePhotosFromLegacyArrays({
+      const profilePrompts = profilePromptsFromProjection(persona);
+      const profilePhotosForUser = profilePhotosFromProjection({
         uid,
-        photoUrls,
-        photoThumbnailUrls,
-        photoPrompts,
+        persona,
       });
+      const dateOfBirth = timestampFromBirthDate(persona.dateOfBirth);
+      const age = ageFromTimestamp(dateOfBirth) ?? 30;
       const activityPreferences = {
         running: {
           paceMinSecsPerKm: 275 + (index % 5) * 15,
@@ -755,11 +866,11 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         firstName,
         lastName,
         displayName,
-        dateOfBirth: dateOfBirthForAge(age, index),
+        dateOfBirth,
         gender,
         phoneNumber: `+919900${String(index + 1).padStart(6, "0")}`,
         profileComplete: true,
-        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index + 1}@example.test`,
+        email: `${emailSegment(firstName)}.${emailSegment(lastName)}.${index + 1}@example.test`,
         profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}events${index + 1}`,
         profilePhotos: profilePhotosForUser,
@@ -769,9 +880,9 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         interestedInGenders: interestedInFor(gender, index),
         minAgePreference: 22,
         maxAgePreference: 42,
-        height: 155 + (index % 38),
-        occupation: occupations[index % occupations.length],
-        company: companies[index % companies.length],
+        height: persona.heightCm ?? 155 + (index % 38),
+        occupation: persona.occupation ?? occupations[index % occupations.length],
+        company: persona.company ?? companies[index % companies.length],
         education: ["bachelors", "masters", "someCollege", "phd", "tradeSchool"][index % 5],
         religion: ["hindu", "muslim", "christian", "sikh", "jain", "nonReligious"][index % 6],
         languages: languageSet(city, index),
@@ -812,7 +923,9 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
 }
 
 function uniqueSyntheticDisplayName({firstName, lastName, city, usedDisplayNames}) {
-  const base = `${firstName} ${lastName}`;
+  const base = [firstName, lastName].filter((part) =>
+    typeof part === "string" && part.trim().length > 0
+  ).join(" ");
   if (!usedDisplayNames.has(base)) {
     usedDisplayNames.add(base);
     return base;
@@ -827,6 +940,13 @@ function uniqueSyntheticDisplayName({firstName, lastName, city, usedDisplayNames
   }
   usedDisplayNames.add(candidate);
   return candidate;
+}
+
+function emailSegment(value) {
+  return String(value || "demo")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .replace(/^$/, "demo");
 }
 
 export function publicProfileFromUserDoc(userDoc) {
@@ -3016,6 +3136,10 @@ Options:
   --include-schedule-locks       Also write denormalized schedule lock docs.
                                  Usually unnecessary for demo worlds because
                                  Functions query canonical event/participation docs.
+  --persona-profile-projection <path>
+                                 Checked sales demo profile projection used for
+                                 synthetic seed identities. Default:
+                                 ${path.relative(repoRoot, DEFAULT_PERSONA_PROFILE_PROJECTION_PATH)}.
   --allow-prod                   Required when writing to the prod Firebase project.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.

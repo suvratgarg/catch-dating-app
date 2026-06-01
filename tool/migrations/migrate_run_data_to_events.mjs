@@ -12,6 +12,8 @@ const requireFromFunctions = createRequire(
 const admin = requireFromFunctions("firebase-admin");
 
 const BATCH_LIMIT = 450;
+const HISTORICAL_MIGRATION_NOTICE =
+  "Historical one-time migration kept for auditability. Do not run writes without an explicit migration owner/ticket and a reviewed dry run.";
 const DEMO_FIELDS = [
   "synthetic",
   "seedPrefix",
@@ -33,6 +35,11 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const projectId = resolveProjectId(args);
+  if (args.apply && !args.ownerTicket) {
+    throw new Error(
+      "Refusing historical migration writes without --owner-ticket <id>."
+    );
+  }
   if (isProductionTarget(args, projectId) && args.apply && !args.confirmProd) {
     throw new Error("Refusing prod writes without --confirm-prod.");
   }
@@ -40,6 +47,7 @@ export async function main(argv = process.argv.slice(2)) {
   admin.initializeApp({projectId});
   const db = admin.firestore();
   const plan = await buildMigrationPlan(db);
+  plan.summary.ownerTicket = args.ownerTicket;
 
   if (args.json) {
     console.log(JSON.stringify(plan.summary, null, 2));
@@ -545,6 +553,7 @@ function parseArgs(argv) {
     project: null,
     apply: false,
     confirmProd: false,
+    ownerTicket: null,
     json: false,
     help: false,
   };
@@ -554,6 +563,9 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--apply") parsed.apply = true;
     else if (arg === "--confirm-prod") parsed.confirmProd = true;
+    else if (arg === "--owner-ticket") {
+      parsed.ownerTicket = requireValue(argv, ++i, arg);
+    }
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
     else if (arg === "--project") parsed.project = requireValue(argv, ++i, arg);
@@ -593,11 +605,15 @@ function isProductionTarget(parsed, projectId) {
 function printHelp() {
   console.log(`Usage: node tool/migrations/migrate_run_data_to_events.mjs --env <env> [options]
 
+${HISTORICAL_MIGRATION_NOTICE}
+
 Copies legacy runClubs/runs data into clubs/events and updates old runId fields.
 
 Options:
   --apply          Apply writes. Default is dry-run.
   --confirm-prod   Required with --apply for the prod alias/project.
+  --owner-ticket <id>
+                   Required with --apply for historical auditability.
   --json           Print JSON summary.
   --env <env>      Resolve project id from .firebaserc.
   --project <id>   Explicit Firebase project id.
@@ -607,6 +623,7 @@ Options:
 
 function printSummary(summary) {
   console.log("Legacy run data migration plan");
+  if (summary.ownerTicket) console.log(`Owner ticket: ${summary.ownerTicket}`);
   console.log(`Source: ${JSON.stringify(summary.source)}`);
   console.log(`Target writes: ${JSON.stringify(summary.targetWrites)}`);
   console.log(`Total writes: ${summary.totalWrites}`);

@@ -9,6 +9,8 @@ const requireFromFunctions = createRequire(
   path.join(repoRoot, "functions/package.json")
 );
 const admin = requireFromFunctions("firebase-admin");
+const HISTORICAL_MIGRATION_NOTICE =
+  "Historical one-time migration kept for auditability. Do not run writes without an explicit migration owner/ticket and a reviewed dry run.";
 
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
@@ -18,6 +20,11 @@ if (args.help) {
 
 if (args.emulatorHost) {
   process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
+}
+if (args.apply && !args.ownerTicket) {
+  throw new Error(
+    "Refusing historical migration writes without --owner-ticket <id>."
+  );
 }
 
 admin.initializeApp({projectId: args.project});
@@ -44,6 +51,7 @@ function parseArgs(argv) {
     project: process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || "demo",
     emulatorHost: null,
     apply: false,
+    ownerTicket: null,
     json: false,
     help: false,
   };
@@ -52,6 +60,9 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--apply") parsed.apply = true;
+    else if (arg === "--owner-ticket") {
+      parsed.ownerTicket = requireValue(argv, ++i, arg);
+    }
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") {
@@ -77,6 +88,8 @@ function requireValue(argv, index, flag) {
 function printHelp() {
   console.log(`Usage: node tool/migrations/firestore_relationship_migration.mjs [options]
 
+${HISTORICAL_MIGRATION_NOTICE}
+
 Copies legacy chats/{matchId}/messages into matches/{matchId}/messages.
 Relationship/action documents are now created by callables and direct edge
 repositories only; this tool no longer reconstructs edge documents from legacy
@@ -84,6 +97,7 @@ parent-document arrays.
 
 Options:
   --apply                 Write the planned docs. Default is dry-run.
+  --owner-ticket <id>     Required with --apply for historical auditability.
   --json                  Print summary as JSON.
   --project <id>          Firebase project id. Defaults to env project or demo.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.
@@ -115,6 +129,7 @@ async function buildMigrationPlan(firestore) {
       project: args.project,
       emulatorHost: args.emulatorHost,
       apply: args.apply,
+      ownerTicket: args.ownerTicket,
       messageCopies: messageCopies.length,
       warnings,
     },
@@ -124,6 +139,7 @@ async function buildMigrationPlan(firestore) {
 function printSummary(summary) {
   console.log("Firestore relationship migration plan");
   console.log(`Project: ${summary.project}`);
+  if (summary.ownerTicket) console.log(`Owner ticket: ${summary.ownerTicket}`);
   if (summary.emulatorHost) console.log(`Emulator: ${summary.emulatorHost}`);
   console.log(`messageCopies: ${summary.messageCopies}`);
   if (summary.warnings.length) {

@@ -77,6 +77,7 @@ function validateManifest(manifest) {
     }
     if (ids.has(operation.id)) errors.push(`${label}: duplicate operation id.`);
     ids.add(operation.id);
+    validateRemoteSafety({errors, operation, label});
     if (!Array.isArray(operation.entrypoints) || operation.entrypoints.length === 0) {
       errors.push(`${label}: entrypoints must be a non-empty array.`);
       continue;
@@ -92,6 +93,49 @@ function validateManifest(manifest) {
     }
   }
   return errors;
+}
+
+function validateRemoteSafety({errors, operation, label}) {
+  const requiredChecks = validateTextArray({
+    errors,
+    label,
+    object: operation,
+    key: "requiredChecks",
+    required: operation.safety?.startsWith("remote") === true,
+  });
+  validateTextArray({
+    errors,
+    label,
+    object: operation,
+    key: "notes",
+    required: operation.safety?.startsWith("remote") === true,
+  });
+  if (operation.safety === "remote-read-write-apply-guarded") {
+    const checksText = requiredChecks.join("\n").toLowerCase();
+    if (!checksText.includes("dry run") || !checksText.includes("--apply")) {
+      errors.push(
+        `${label}: remote read/write operations must document dry-run-before-apply behavior.`
+      );
+    }
+  }
+}
+
+function validateTextArray({errors, label, object, key, required = false}) {
+  const value = object[key];
+  if (value == null) {
+    if (required) errors.push(`${label}: ${key} is required.`);
+    return [];
+  }
+  if (!Array.isArray(value)) {
+    errors.push(`${label}: ${key} must be an array.`);
+    return [];
+  }
+  for (const [index, item] of value.entries()) {
+    if (typeof item !== "string" || item.trim() === "") {
+      errors.push(`${label}.${key}[${index}]: must be a non-empty string.`);
+    }
+  }
+  return value;
 }
 
 function validateEntrypoint({errors, toolIds, operationId, index, entry}) {
@@ -114,11 +158,22 @@ function validateEntrypoint({errors, toolIds, operationId, index, entry}) {
     if (!toolIds.has(entry.ref)) errors.push(`${label}: unknown tool id ${entry.ref}.`);
     return;
   }
-  if (entry.kind === "manual") return;
+  if (entry.kind === "manual") {
+    validateManualEntrypoint({errors, label, entry});
+    return;
+  }
 
   const absolutePath = fromRepo(entry.ref);
   if (!fs.existsSync(absolutePath)) {
     errors.push(`${label}: missing ${entry.kind} path ${entry.ref}.`);
+  }
+}
+
+function validateManualEntrypoint({errors, label, entry}) {
+  for (const key of ["owner", "ticket", "guardrail"]) {
+    if (typeof entry[key] !== "string" || entry[key].trim() === "") {
+      errors.push(`${label}: manual entrypoint requires ${key}.`);
+    }
   }
 }
 
