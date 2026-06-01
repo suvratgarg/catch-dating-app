@@ -30,7 +30,7 @@ class SwipeHubScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       body: uidAsync.when(
-        loading: () => const CatchSkeletonList(count: 3),
+        loading: () => const CatchSkeletonList(),
         error: (e, _) => CatchErrorState.fromError(
           e,
           context: AppErrorContext.auth,
@@ -42,7 +42,7 @@ class SwipeHubScreen extends ConsumerWidget {
           final eventsAsync = ref.watch(watchAttendedEventsProvider(uid));
 
           return eventsAsync.when(
-            loading: () => const CatchSkeletonList(count: 3),
+            loading: () => const CatchSkeletonList(),
             error: (e, _) => CatchErrorState.fromError(
               e,
               context: AppErrorContext.event,
@@ -147,7 +147,7 @@ class _CatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SectionHeader(title: 'Catches', heavy: true),
+              const SectionHeader(title: 'Catches', heavy: true),
               gapH2,
               Text('After the event', style: CatchTextStyles.headline(context)),
             ],
@@ -158,7 +158,6 @@ class _CatchesHeader extends StatelessWidget {
           iconColor: t.primary,
           backgroundColor: t.primarySoft,
           borderColor: t.primarySoft,
-          size: 42,
           radius: CatchRadius.pill,
         ),
       ],
@@ -183,7 +182,7 @@ class _CatchesIntroCard extends StatelessWidget {
 
     return CatchSurface(
       onTap: onTap,
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       gradient: t.heroGrad,
       borderWidth: 0,
       clipBehavior: Clip.antiAlias,
@@ -334,7 +333,7 @@ class _CatchesEmptyState extends StatelessWidget {
                   ),
                   gapH18,
                   CatchSurface(
-                    padding: const EdgeInsets.all(CatchSpacing.s4),
+                    padding: CatchInsets.content,
                     tone: CatchSurfaceTone.raised,
                     borderColor: t.line,
                     child: Row(

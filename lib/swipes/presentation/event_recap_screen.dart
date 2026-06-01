@@ -77,12 +77,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           final attendeeIds = viewModel.attendeeIds;
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s3,
-              CatchSpacing.s5,
-              CatchSpacing.s6,
-            ),
+            padding: CatchInsets.pageBodyTight,
             children: [
               Center(
                 child: ConstrainedBox(
@@ -176,10 +171,9 @@ class _RecapHero extends StatelessWidget {
         : 'Catch window closed';
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       backgroundColor: t.ink,
       borderWidth: 0,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -377,7 +371,6 @@ class _EmptyRoster extends StatelessWidget {
       icon: CatchIcons.groupOffRounded,
       title: 'No runners to tag',
       message: 'No other checked-in runners are attached to this event yet.',
-      surface: true,
     );
   }
 }

@@ -83,7 +83,7 @@ ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
       uid: uid,
       role: ClubMembershipRole.member,
       status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026, 1, 1),
+      joinedAt: DateTime(2026),
     );
 
 dynamic _membershipsOverride(UserProfile user, List<String> clubIds) =>
@@ -111,7 +111,7 @@ void main() {
           StreamController<List<Event>>.broadcast();
       addTearDown(signedUpEventsController.close);
 
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -139,7 +139,7 @@ void main() {
     testWidgets('shows an error when booked events fail to load', (
       tester,
     ) async {
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -169,7 +169,7 @@ void main() {
     testWidgets('shows the empty dashboard when there are no booked events', (
       tester,
     ) async {
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -198,12 +198,8 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(
-        uid: 'runner-1',
-        name: 'Manan Sethi',
-        displayName: 'Subrath',
-      );
-      final joinedClub = buildClub(id: 'club-1', name: 'Home Run Club');
+      final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
+      final joinedClub = buildClub(name: 'Home Run Club');
       final nextEvent = buildEvent(
         bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
@@ -255,7 +251,7 @@ void main() {
     testWidgets('dashboard clubs rail renders joined clubs from club ids', (
       tester,
     ) async {
-      final joinedClub = buildClub(id: 'club-1', name: 'Home Run Club');
+      final joinedClub = buildClub(name: 'Home Run Club');
 
       await tester.pumpWidget(
         ProviderScope(
@@ -279,7 +275,7 @@ void main() {
     testWidgets('shows notification action with unread badge instead of tabs', (
       tester,
     ) async {
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -363,7 +359,6 @@ void main() {
     ) async {
       final upcomingEvent = buildEvent(
         id: 'event-upcoming',
-        clubId: 'club-1',
         meetingPoint: 'India Gate lawns east side',
         startTime: DateTime.now().add(const Duration(days: 2)),
         distanceKm: 7,
@@ -411,7 +406,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -449,7 +444,7 @@ void main() {
       'surfaces attended-events errors instead of hiding the section',
       (tester) async {
         final joinedClubIds = ['club-1'];
-        final user = buildUser(uid: 'runner-1');
+        final user = buildUser();
 
         await tester.pumpWidget(
           ProviderScope(
@@ -485,7 +480,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
 
       await tester.pumpWidget(
         ProviderScope(
@@ -526,7 +521,7 @@ void main() {
       'surfaces recommendation errors instead of hiding the section',
       (tester) async {
         final joinedClubIds = ['club-1'];
-        final user = buildUser(uid: 'runner-1');
+        final user = buildUser();
 
         await tester.pumpWidget(
           ProviderScope(
@@ -571,7 +566,7 @@ void main() {
     ) async {
       final now = DateTime.now();
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
       final nextEvent = buildEvent(
         id: 'next-event',
         bookedCount: 1,
@@ -585,7 +580,6 @@ void main() {
       );
       final recommendedRun = buildEvent(
         id: 'recommended-event',
-        clubId: 'club-1',
         meetingPoint: 'Race Course Road main gate',
         distanceKm: 12,
         priceInPaise: 15000,
@@ -664,7 +658,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
       final nextEvent = buildEvent(
         id: 'next-event',
         bookedCount: 1,
@@ -754,11 +748,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final joinedClubIds = ['club-1'];
-      final user = buildUser(
-        uid: 'runner-1',
-        name: 'Manan Sethi',
-        displayName: 'Subrath',
-      );
+      final user = buildUser(name: 'Manan Sethi', displayName: 'Subrath');
       final nextEvent = buildEvent(
         id: 'next-event',
         bookedCount: 1,
@@ -811,13 +801,13 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', name: 'Suvrat Garg').copyWith(
+      final user = buildUser(name: 'Suvrat Garg').copyWith(
         profilePhotos: [
           ProfilePhoto.uploaded(
             position: 0,
             url: 'https://example.test/full-profile.jpg',
             storagePath: 'test-profiles/runner-1/0.jpg',
-            now: DateTime(2026, 1, 1),
+            now: DateTime(2026),
           ).copyWith(thumbnailUrl: 'https://example.test/profile-thumb.jpg'),
         ],
       );
@@ -859,7 +849,7 @@ void main() {
       tester,
     ) async {
       final now = DateTime.now();
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
       final event = buildEvent(
         id: 'check-in-event',
         bookedCount: 1,
@@ -916,7 +906,7 @@ void main() {
     ) async {
       Uri? launchedUri;
       CalendarEventPayload? calendarEvent;
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
       final event = buildEvent(
         id: 'directions-event',
         bookedCount: 1,
@@ -982,7 +972,7 @@ void main() {
     testWidgets(
       'event focus uses full-width snapping cards with stacked actions',
       (tester) async {
-        final user = buildUser(uid: 'runner-1');
+        final user = buildUser();
         final firstRun = buildEvent(
           id: 'event-focus-first',
           bookedCount: 1,
@@ -1054,7 +1044,7 @@ void main() {
       'event focus combines catching and review for an attended event',
       (tester) async {
         final now = DateTime.now();
-        final user = buildUser(uid: 'runner-1');
+        final user = buildUser();
         final attendedRun = buildEvent(
           id: 'attended-event',
           checkedInCount: 2,
@@ -1118,11 +1108,7 @@ void main() {
             dashboardRecommendedEventsProvider(
               _recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(_noRecommendationCandidates),
-            ..._dashboardHostOverrides(
-              user,
-              hostedClubId: 'club-host',
-              hostedEvents: [hostedRun],
-            ),
+            ..._dashboardHostOverrides(user, hostedEvents: [hostedRun]),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -1185,11 +1171,7 @@ void main() {
             dashboardRecommendedEventsProvider(
               _recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(_noRecommendationCandidates),
-            ..._dashboardHostOverrides(
-              user,
-              hostedClubId: 'club-host',
-              hostedEvents: hostedEvents,
-            ),
+            ..._dashboardHostOverrides(user, hostedEvents: hostedEvents),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -1581,7 +1563,7 @@ List _dashboardHostOverrides(
   return [
     clubsRepositoryProvider.overrideWith(
       (ref) => club_test.FakeClubsRepository()
-        ..clubsById['club-1'] = buildClub(id: 'club-1')
+        ..clubsById['club-1'] = buildClub()
         ..clubsById[hostedClubId] = buildClub(
           id: hostedClubId,
           hostUserId: user.uid,

@@ -120,15 +120,10 @@ class EventPolicyStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.formStepBody,
         children: [
           CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.s3),
+            padding: CatchInsets.contentDense,
             tone: CatchSurfaceTone.primarySoft,
             radius: CatchRadius.md,
             borderWidth: 0,
@@ -217,8 +212,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(CatchSpacing.s3),
-              tone: CatchSurfaceTone.surface,
+              padding: CatchInsets.contentDense,
               radius: CatchRadius.md,
               borderColor: t.line,
               child: Column(
@@ -269,8 +263,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(CatchSpacing.s3),
-              tone: CatchSurfaceTone.surface,
+              padding: CatchInsets.contentDense,
               radius: CatchRadius.md,
               borderColor: t.line,
               child: Column(
@@ -341,8 +334,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.requestToJoin) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(CatchSpacing.s3),
-              tone: CatchSurfaceTone.surface,
+              padding: CatchInsets.contentDense,
               radius: CatchRadius.md,
               borderColor: t.line,
               child: Row(
@@ -367,8 +359,7 @@ class EventPolicyStep extends StatelessWidget {
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
             gapH20,
             CatchSurface(
-              padding: const EdgeInsets.all(CatchSpacing.s3),
-              tone: CatchSurfaceTone.surface,
+              padding: CatchInsets.contentDense,
               radius: CatchRadius.md,
               borderColor: t.line,
               child: Column(
@@ -507,8 +498,7 @@ class EventPolicyStep extends StatelessWidget {
           ),
           gapH12,
           CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.s3),
-            tone: CatchSurfaceTone.surface,
+            padding: CatchInsets.contentDense,
             radius: CatchRadius.md,
             child: Text(
               'Host payout is released after event completion. If the host cancels, attendees are made complete before any host payout.',

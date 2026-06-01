@@ -32,10 +32,7 @@ class ChatInputBar extends StatelessWidget {
     final disabled = sending || sendingImage;
 
     return CatchBottomDock(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Row(
         children: [
           if (showImageButton)

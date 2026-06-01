@@ -34,7 +34,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
       body: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+          padding: CatchInsets.contentHorizontal,
           child: !config.gateEnabled
               ? const _LaunchAccessDisabledView()
               : uidAsync.when(

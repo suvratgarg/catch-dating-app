@@ -9,9 +9,9 @@ void main() {
   out.createSync(recursive: true);
 
   final previews = <String, PreviewPalette>{
-    'electric_sunset': PreviewPalette.electricSunset,
-    'nitron': PreviewPalette.nitron,
-    'editorial_sport': PreviewPalette.editorialSport,
+    'locked_light': PreviewPalette.lockedLight,
+    'locked_dark_event': PreviewPalette.lockedDarkEvent,
+    'activity_editorial': PreviewPalette.activityEditorial,
   };
 
   final rendered = <String, img.Image>{};
@@ -66,7 +66,6 @@ img.Image renderPreview(PreviewPalette p) {
       x2: 420,
       y2: y - 38,
       color: rgba(p.lineHex, 70),
-      thickness: 1,
     );
   }
 
@@ -415,7 +414,6 @@ void rounded(
       y2: y + h,
       color: border,
       radius: safeRadius,
-      thickness: 1,
     );
   }
 }
@@ -561,8 +559,8 @@ class PreviewPalette {
   img.Color get metricBorder => rgba(metricBorderHex, 90);
   img.Color get metricInk => rgb(metricInkHex);
 
-  static const electricSunset = PreviewPalette(
-    name: 'ELECTRIC SUNSET',
+  static const lockedLight = PreviewPalette(
+    name: 'LOCKED LIGHT',
     headline: 'Show up. Then swipe.',
     stageHex: 0xfff2e7,
     bezelHex: 0x15100d,
@@ -606,8 +604,8 @@ class PreviewPalette {
     isDark: false,
   );
 
-  static const nitron = PreviewPalette(
-    name: 'NITRON',
+  static const lockedDarkEvent = PreviewPalette(
+    name: 'LOCKED DARK EVENT',
     headline: 'The after-event window.',
     stageHex: 0x060a12,
     bezelHex: 0x000000,
@@ -651,8 +649,8 @@ class PreviewPalette {
     isDark: true,
   );
 
-  static const editorialSport = PreviewPalette(
-    name: 'EDITORIAL SPORT',
+  static const activityEditorial = PreviewPalette(
+    name: 'ACTIVITY EDITORIAL',
     headline: 'A better way to meet.',
     stageHex: 0xede6da,
     bezelHex: 0x17130e,

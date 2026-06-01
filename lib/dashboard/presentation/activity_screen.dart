@@ -45,12 +45,7 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
           }
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s3,
-              CatchSpacing.s5,
-              CatchSpacing.s8,
-            ),
+            padding: CatchInsets.pageBodyRelaxedTight,
             children: [ActivitySection(uid: uid, showMarkAllReadAction: false)],
           );
         },

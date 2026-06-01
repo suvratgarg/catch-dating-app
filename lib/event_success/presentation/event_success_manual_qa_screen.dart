@@ -90,7 +90,7 @@ class _EventSuccessManualQaScreenState
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(CatchSpacing.s5),
+          padding: CatchInsets.contentRelaxed,
           children: [
             _ManualQaHero(data: data),
             gapH16,
@@ -443,7 +443,7 @@ class _ManualQaHero extends StatelessWidget {
         colors: [t.accent, t.ink],
       ),
       borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -521,7 +521,7 @@ class _ManualQaControls extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -530,7 +530,7 @@ class _ManualQaControls extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
           gapH12,
-          _ControlLabel('Event format'),
+          const _ControlLabel('Event format'),
           gapH8,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -714,12 +714,12 @@ class _QaDeviceFrame extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s2),
+            padding: CatchInsets.iconChipContent,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -734,8 +734,7 @@ class _QaDeviceFrame extends StatelessWidget {
                   spacing: CatchSpacing.s2,
                   runSpacing: CatchSpacing.s2,
                   children: [
-                    for (final badge in badges)
-                      CatchBadge(label: badge, tone: CatchBadgeTone.neutral),
+                    for (final badge in badges) CatchBadge(label: badge),
                   ],
                 ),
               ],
@@ -743,16 +742,12 @@ class _QaDeviceFrame extends StatelessWidget {
           ),
           if (controls != null) ...[
             gapH8,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
-              child: controls!,
-            ),
+            Padding(padding: CatchInsets.inlineHorizontal, child: controls!),
           ],
           gapH8,
           ClipRRect(
             borderRadius: BorderRadius.circular(CatchRadius.lg),
             child: CatchSurface(
-              radius: CatchRadius.lg,
               borderColor: t.line,
               padding: EdgeInsets.zero,
               child: SizedBox(
@@ -825,7 +820,7 @@ class _AttendeeQaControls extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _ControlLabel('Attendee choices'),
+        const _ControlLabel('Attendee choices'),
         gapH8,
         Wrap(
           spacing: CatchSpacing.s2,
@@ -890,10 +885,7 @@ class _DarkPill extends StatelessWidget {
         alpha: CatchOpacity.manualQaPillBorder,
       ),
       radius: CatchRadius.pill,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Text(
         label,
         style: CatchTextStyles.labelL(context, color: t.accentInk),
@@ -949,7 +941,6 @@ enum _ManualQaScenario {
       unitKind: EventSuccessUnitKind.wholeGroup,
       unitSize: 22,
       unitCount: 1,
-      revealCountdownSeconds: 10,
     ),
     _ManualQaScenario.racketPairs => const EventSuccessStructureConfig(
       unitKind: EventSuccessUnitKind.pairs,
@@ -962,13 +953,11 @@ enum _ManualQaScenario {
       unitSize: 5,
       unitCount: 3,
       rotationIntervalMinutes: 20,
-      revealCountdownSeconds: 10,
     ),
     _ManualQaScenario.singlesMixer => const EventSuccessStructureConfig(
       unitKind: EventSuccessUnitKind.pairs,
       unitSize: 2,
       rotationIntervalMinutes: 12,
-      revealCountdownSeconds: 10,
     ),
   };
 
@@ -1650,7 +1639,6 @@ class _ManualQaFixtures {
       metNewPeopleCount: metNewPeopleCount,
       welcomeRating: 4,
       structureRating: 5,
-      safetyConcern: false,
       privateNote: 'QA fixture feedback',
       createdAt: now,
       updatedAt: now,
@@ -1706,7 +1694,7 @@ class _ManualQaFixtures {
       city: 'Bengaluru',
       occupation: 'Product designer',
       relationshipGoal: RelationshipGoal.relationship,
-      activityPreferences: ActivityPreferences(
+      activityPreferences: const ActivityPreferences(
         running: RunningPreferences(
           preferredDistances: [PreferredDistance.fiveK],
           runningReasons: [RunReason.social],

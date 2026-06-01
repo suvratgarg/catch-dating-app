@@ -154,7 +154,6 @@ class _PromptField extends StatelessWidget {
       hintText: definition.placeholder,
       helperText:
           '${controller.text.length} / $maximumProfilePromptAnswerLength',
-      helperTone: CatchTextFieldSupportTone.neutral,
       keyboardType: TextInputType.multiline,
       textInputAction: TextInputAction.newline,
       textCapitalization: TextCapitalization.sentences,

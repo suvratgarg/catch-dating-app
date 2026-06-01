@@ -117,7 +117,7 @@ class EventLocationMapScreen extends ConsumerWidget {
                 tone: CatchSurfaceTone.raised,
                 elevation: CatchSurfaceElevation.overlay,
                 borderColor: t.line,
-                padding: const EdgeInsets.all(CatchSpacing.s4),
+                padding: CatchInsets.content,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [

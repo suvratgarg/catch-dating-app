@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 /// Hero visual for the event detail screen.
 ///
-/// Wraps [CatchEventThumbnail] with activity artwork preferred so the detail
-/// header stays color-coded by the same mutable visual schema as Explore cards.
+/// Wraps [CatchEventThumbnail] so real event photos lead when available, with
+/// the shared activity artwork retained as the no-photo fallback.
 class EventPhotoHeader extends StatelessWidget {
   const EventPhotoHeader({super.key, required this.event});
 
@@ -21,8 +21,6 @@ class EventPhotoHeader extends StatelessWidget {
         photoUrl: event.photoUrl,
         pace: event.pace,
         activityKind: event.activityKind,
-        scrim: CatchEventThumbnailScrim.bottom,
-        preferActivityArtwork: true,
       ),
     );
   }

@@ -1,5 +1,9 @@
 part of '../event_success_companion_screen.dart';
 
+const EdgeInsets _wingmanCandidateRowGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+
 class _WingmanRequestSection extends ConsumerStatefulWidget {
   const _WingmanRequestSection({
     required this.event,
@@ -117,7 +121,7 @@ class _WingmanRequestSectionState
           else
             for (final candidate in widget.candidates)
               Padding(
-                padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+                padding: _wingmanCandidateRowGap,
                 child: PersonRow(
                   data: PersonRowData(
                     name: candidate.name,

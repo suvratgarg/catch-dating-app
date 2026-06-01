@@ -19,25 +19,18 @@ List<Widget> buildClubDirectorySlivers({
     SliverToBoxAdapter(
       child: SectionHeader(
         title: 'Club directory',
-        uppercase: false,
         titleStyle: CatchTextStyles.titleL(context),
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          14,
-          CatchSpacing.s5,
-          8,
-        ),
+        padding: CatchInsets.sectionHeader,
       ),
     ),
     SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+      padding: CatchInsets.pageHorizontal,
       sliver: SliverList.list(
         children: [
           for (var index = 0; index < clubs.length; index += 1) ...[
             if (index > 0) gapH14,
             ClubListTile(
               club: clubs[index],
-              variant: ClubListTileVariant.directory,
               isJoined: joinedClubIds.contains(clubs[index].id),
               isHost: hostedClubIds.contains(clubs[index].id),
             ),

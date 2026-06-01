@@ -74,12 +74,7 @@ class _ReviewsHistoryList extends ConsumerWidget {
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s8,
-          ),
+          padding: CatchInsets.pageBodyRelaxed,
           itemCount: reviews.length,
           separatorBuilder: (_, _) => gapH14,
           itemBuilder: (context, index) =>
@@ -149,7 +144,7 @@ class _ReviewsHistoryEmpty extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s5),
+        padding: CatchInsets.contentRelaxed,
         child: CatchEmptyState(
           icon: CatchIcons.rateReviewOutlined,
           title: title,

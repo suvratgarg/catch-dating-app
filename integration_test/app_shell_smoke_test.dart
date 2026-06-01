@@ -92,7 +92,7 @@ void main() {
   testWidgets('unauthenticated launch opens public club discovery', (
     tester,
   ) async {
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final club = club_helpers.buildClub();
 
     await _pumpCatchApp(
       tester,
@@ -108,11 +108,7 @@ void main() {
   testWidgets(
     'public club discovery opens club details through the real route',
     (tester) async {
-      final club = club_helpers.buildClub(
-        id: 'club-1',
-        name: 'Stride Social',
-        description: 'Morning runners who like easy city loops.',
-      );
+      final club = club_helpers.buildClub();
 
       await _pumpCatchApp(
         tester,
@@ -132,7 +128,7 @@ void main() {
   );
 
   testWidgets('phone auth route sends and verifies an OTP', (tester) async {
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final club = club_helpers.buildClub();
     final authRepository = onboarding_helpers.FakeAuthRepository()
       ..onVerifyPhoneNumber =
           ({
@@ -179,8 +175,8 @@ void main() {
   testWidgets('club detail joins through the membership action', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
@@ -206,8 +202,8 @@ void main() {
   testWidgets('club detail leaves through the membership action', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
@@ -232,7 +228,7 @@ void main() {
   });
 
   testWidgets('clubs tab creates a new club', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
@@ -269,7 +265,7 @@ void main() {
   testWidgets('clubs tab uploads a picked cover while creating a club', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final clubsRepository = club_helpers.FakeClubsRepository();
     final pickedCover = await _generatedPngXFile('club-cover.png');
     final imageUploadRepository = club_helpers.FakeImageUploadRepository(
@@ -318,10 +314,8 @@ void main() {
   });
 
   testWidgets('host edits a club from club detail', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final club = club_helpers.buildClub(
-      id: 'club-1',
-      name: 'Stride Social',
       hostUserId: user.uid,
       hostName: user.name,
     );
@@ -362,8 +356,8 @@ void main() {
   testWidgets('club schedule opens an event detail route with booking CTA', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
@@ -398,8 +392,8 @@ void main() {
   testWidgets('event detail books a free event and shows confirmation', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
@@ -443,12 +437,11 @@ void main() {
     'event detail books a paid event and opens payment confirmation',
     (tester) async {
       final user = event_helpers.buildUser(
-        uid: 'runner-1',
         name: 'Suvrat Garg',
         email: 'suvrat@example.com',
         phoneNumber: '+919876543210',
       );
-      final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+      final club = club_helpers.buildClub();
       final run = event_helpers.buildEvent(
         id: 'paid-run-1',
         clubId: club.id,
@@ -506,8 +499,8 @@ void main() {
   );
 
   testWidgets('event detail cancels an existing booking', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
@@ -545,14 +538,13 @@ void main() {
   });
 
   testWidgets('event detail joins a waitlist for a full event', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
-      capacityLimit: 20,
       bookedCount: 20,
     );
     final eventRepository = event_helpers.FakeEventRepository();
@@ -585,10 +577,8 @@ void main() {
   });
 
   testWidgets('host creates an event from club detail', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final club = club_helpers.buildClub(
-      id: 'club-1',
-      name: 'Stride Social',
       hostUserId: user.uid,
       hostName: user.name,
     );
@@ -631,7 +621,7 @@ void main() {
   testWidgets('matches list opens chat and resets unread state', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final match = Match(
       id: 'match-1',
       user1Id: user.uid,
@@ -713,8 +703,8 @@ void main() {
   });
 
   testWidgets('dashboard next-event card opens event detail', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
@@ -747,8 +737,8 @@ void main() {
   });
 
   testWidgets('dashboard self check-in records attendance', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'check-in-run-1',
       clubId: club.id,
@@ -784,8 +774,6 @@ void main() {
   testWidgets('dashboard host attendance toggles an attendee', (tester) async {
     final host = event_helpers.buildUser(uid: 'host-1', name: 'Suvrat Garg');
     final club = club_helpers.buildClub(
-      id: 'club-1',
-      name: 'Stride Social',
       hostUserId: host.uid,
       hostName: host.name,
     );
@@ -840,8 +828,8 @@ void main() {
   });
 
   testWidgets('dashboard recommended event opens event detail', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final nextRun = event_helpers.buildEvent(
       id: 'run-1',
       clubId: club.id,
@@ -884,8 +872,8 @@ void main() {
   testWidgets('catches tab opens the swipe deck for an attended event', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
       clubId: club.id,
@@ -916,8 +904,8 @@ void main() {
   });
 
   testWidgets('catches deck records like and pass decisions', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
       clubId: club.id,
@@ -986,7 +974,7 @@ void main() {
   });
 
   testWidgets('settings opens payment history from profile', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
 
     await _pumpCatchApp(
       tester,
@@ -1008,7 +996,7 @@ void main() {
   });
 
   testWidgets('settings opens review history from profile', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
 
     await _pumpCatchApp(
       tester,
@@ -1026,8 +1014,8 @@ void main() {
   });
 
   testWidgets('attended event detail submits a review', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final run = event_helpers.buildEvent(
       id: 'review-run-1',
       clubId: club.id,
@@ -1082,10 +1070,9 @@ void main() {
   testWidgets('review history edits and deletes an existing review', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final run = event_helpers.buildEvent(
       id: 'review-run-1',
-      clubId: 'club-1',
       meetingPoint: 'Carter Road Amphitheatre',
     );
     final review = event_helpers.buildReview(
@@ -1142,7 +1129,7 @@ void main() {
   });
 
   testWidgets('settings signs out through auth controller', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final authRepository = _FakeAuthRepository();
 
     await _pumpCatchApp(
@@ -1172,7 +1159,7 @@ void main() {
     'settings updates notification preferences and unblocks account',
     (tester) async {
       final user = event_helpers
-          .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
+          .buildUser(name: 'Suvrat Garg')
           .copyWith(prefsWeeklyDigest: false);
       final userProfileRepository = _FakeUserProfileRepository();
       final safetyRepository = _FakeSafetyRepository(
@@ -1180,7 +1167,7 @@ void main() {
           BlockedUser(
             uid: 'blocked-1',
             source: 'chat',
-            createdAt: DateTime(2026, 5, 1),
+            createdAt: DateTime(2026, 5),
           ),
         ],
       );
@@ -1229,7 +1216,7 @@ void main() {
   testWidgets('settings requests account deletion after confirmation', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
     final safetyRepository = _FakeSafetyRepository();
 
     await _pumpCatchApp(
@@ -1264,10 +1251,7 @@ void main() {
   testWidgets(
     'authenticated shell initializes push messaging and crash context',
     (tester) async {
-      final user = event_helpers.buildUser(
-        uid: 'runner-1',
-        name: 'Suvrat Garg',
-      );
+      final user = event_helpers.buildUser(name: 'Suvrat Garg');
       final fcmService = _RecordingFcmService();
       final crashReporter = _RecordingCrashReporter();
       final errorLogger = ErrorLogger(
@@ -1294,8 +1278,8 @@ void main() {
   );
 
   testWidgets('app router reports screen views to analytics', (tester) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final club = club_helpers.buildClub();
     final reporter = _RecordingAnalyticsReporter();
 
     await _pumpCatchApp(
@@ -1323,7 +1307,7 @@ void main() {
     tester,
   ) async {
     final user = event_helpers
-        .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
+        .buildUser(name: 'Suvrat Garg')
         .copyWith(profileComplete: false, profilePhotos: const []);
 
     await _pumpCatchApp(
@@ -1339,12 +1323,8 @@ void main() {
   testWidgets('authenticated shell loads the five primary feature tabs', (
     tester,
   ) async {
-    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final joinedClub = club_helpers.buildClub(
-      id: 'club-1',
-      name: 'Stride Social',
-      nextEventLabel: 'Sat 6:30 AM',
-    );
+    final user = event_helpers.buildUser(name: 'Suvrat Garg');
+    final joinedClub = club_helpers.buildClub(nextEventLabel: 'Sat 6:30 AM');
     final nextRun = event_helpers.buildEvent(
       id: 'run-1',
       clubId: joinedClub.id,
@@ -1671,7 +1651,7 @@ List<Object> _appOverrides({
                     uid: uid,
                     role: ClubMembershipRole.member,
                     status: ClubMembershipStatus.active,
-                    joinedAt: DateTime(2026, 1, 1),
+                    joinedAt: DateTime(2026),
                   )
                 : null,
           ),
@@ -1767,7 +1747,7 @@ List<Object> _appOverrides({
               uid: uid,
               role: ClubMembershipRole.member,
               status: ClubMembershipStatus.active,
-              joinedAt: DateTime(2026, 1, 1),
+              joinedAt: DateTime(2026),
             ),
         ]),
       ),

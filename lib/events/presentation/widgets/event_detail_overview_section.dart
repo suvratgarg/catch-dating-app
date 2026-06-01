@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -29,30 +29,24 @@ class EventDetailOverviewSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final description = event.description.trim();
 
-    return Column(
+    return CatchSectionList(
+      gap: CatchLayout.detailScreenContentGap,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         EventStatsGrid(event: event, surfaceStyle: surfaceStyle),
-        gapH20,
         WhenWhereCard(
           event: event,
           onLocationTap: onLocationTap,
           surfaceStyle: surfaceStyle,
         ),
-        if (description.isNotEmpty) ...[
-          gapH20,
+        if (description.isNotEmpty)
           _EventDescription(
             description: description,
             surfaceStyle: surfaceStyle,
           ),
-        ],
-        if (event.hasRequirements) ...[
-          gapH20,
+        if (event.hasRequirements)
           RequirementsRow(event: event, surfaceStyle: surfaceStyle),
-        ],
-        gapH20,
         _WhatToExpectSection(event: event, surfaceStyle: surfaceStyle),
-        gapH20,
         _EventPolicySummary(event: event, surfaceStyle: surfaceStyle),
       ],
     );
@@ -79,7 +73,7 @@ class _EventDescription extends StatelessWidget {
             color: surfaceStyle?.headingColor,
           ),
         ),
-        gapH8,
+        const SizedBox(height: CatchLayout.detailScreenSupportingGap),
         Text(
           description,
           style: CatchTextStyles.bodyLead(
@@ -104,7 +98,7 @@ class _WhatToExpectSection extends StatelessWidget {
     final items = _expectationItems(event);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
@@ -118,7 +112,7 @@ class _WhatToExpectSection extends StatelessWidget {
               color: surfaceStyle?.headingColor,
             ),
           ),
-          gapH10,
+          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           for (final item in items) ...[
             _PolicyLine(
               icon: item.icon,
@@ -126,7 +120,8 @@ class _WhatToExpectSection extends StatelessWidget {
               body: item.body,
               surfaceStyle: surfaceStyle,
             ),
-            if (item != items.last) gapH10,
+            if (item != items.last)
+              const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           ],
         ],
       ),
@@ -147,7 +142,7 @@ class _EventPolicySummary extends StatelessWidget {
     final cancellation = policy.cancellationPolicy;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
@@ -161,7 +156,7 @@ class _EventPolicySummary extends StatelessWidget {
               color: surfaceStyle?.headingColor,
             ),
           ),
-          gapH10,
+          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           _PolicyLine(
             icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
@@ -169,7 +164,7 @@ class _EventPolicySummary extends StatelessWidget {
             surfaceStyle: surfaceStyle,
           ),
           if (policy.usesDemandPricing) ...[
-            gapH10,
+            const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
             _PolicyLine(
               icon: CatchIcons.trendingUpRounded,
               title: 'Demand pricing',
@@ -180,14 +175,14 @@ class _EventPolicySummary extends StatelessWidget {
               surfaceStyle: surfaceStyle,
             ),
           ],
-          gapH10,
+          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           _PolicyLine(
             icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
             surfaceStyle: surfaceStyle,
           ),
-          gapH10,
+          const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           _PolicyLine(
             icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,
@@ -224,7 +219,7 @@ class _PolicyLine extends StatelessWidget {
           color: surfaceStyle?.primaryColor ?? t.primary,
           size: CatchIcon.md,
         ),
-        gapW8,
+        const SizedBox(width: CatchSpacing.s2),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +231,7 @@ class _PolicyLine extends StatelessWidget {
                   color: surfaceStyle?.headingColor,
                 ),
               ),
-              gapH2,
+              const SizedBox(height: CatchSpacing.micro2),
               Text(
                 body,
                 style: CatchTextStyles.supporting(

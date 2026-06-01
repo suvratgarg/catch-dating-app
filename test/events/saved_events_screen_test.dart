@@ -66,8 +66,6 @@ void main() {
 
     testWidgets('opens saved event detail from the list', (tester) async {
       final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
         startTime: DateTime.now().add(const Duration(days: 1)),
         meetingPoint: 'Future Park',
       );
@@ -121,7 +119,7 @@ Future<void> _pumpSavedEvents(
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()
-                ..clubsById['club-1'] = buildClub(id: 'club-1'),
+                ..clubsById['club-1'] = buildClub(),
         ),
         watchSavedEventDetailsForUserProvider(
           'runner-1',

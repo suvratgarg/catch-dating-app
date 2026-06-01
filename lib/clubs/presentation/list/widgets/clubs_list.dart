@@ -43,12 +43,7 @@ class ClubsList extends ConsumerWidget {
     return switch (viewModelAsync) {
       AsyncLoading() => const SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s6,
-          ),
+          padding: CatchInsets.pageBody,
           child: _ClubDirectorySkeletonList(),
         ),
       ),
@@ -169,9 +164,9 @@ class _ClubDirectorySkeletonCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.card(height: CatchLayout.eventTypeSkeletonCardHeight),
+          CatchSkeleton.card(),
           Padding(
-            padding: const EdgeInsets.all(CatchSpacing.micro14),
+            padding: CatchInsets.tileContentCompact,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

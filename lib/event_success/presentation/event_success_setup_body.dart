@@ -20,6 +20,26 @@ import 'package:catch_dating_app/event_success/presentation/event_success_struct
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+const EdgeInsets _foundationLineIconInset = EdgeInsets.only(
+  top: CatchSpacing.micro2,
+);
+const EdgeInsets _setupNestedControlPadding = EdgeInsets.only(
+  left: CatchSpacing.s4,
+  bottom: CatchSpacing.s2,
+);
+const EdgeInsets _attendeePromptPreviewPadding = EdgeInsets.only(
+  top: CatchSpacing.s2,
+);
+const EdgeInsets _attendeePromptPreviewIconInset = EdgeInsets.only(
+  top: CatchSpacing.micro2,
+);
+const EdgeInsets _disclosureChildrenPadding = EdgeInsets.only(
+  top: CatchSpacing.s2,
+);
+const EdgeInsets _disclosureSubtitlePadding = EdgeInsets.only(
+  top: CatchSpacing.s1,
+);
+
 /// Shared event-success setup body used by both the create-event last step
 /// (`EventSuccessDefaultsPanel`) and the Host Manage Setup tab (`_SetupTab`).
 ///
@@ -413,7 +433,7 @@ class _StageCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -443,12 +463,12 @@ class _FoundationLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
+      padding: CatchInsets.controlVerticalTight,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            padding: _foundationLineIconInset,
             child: Icon(
               CatchIcons.checkRounded,
               size: CatchIcon.md,
@@ -493,10 +513,7 @@ class _RotationCadenceChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: CatchSpacing.s4,
-        bottom: CatchSpacing.s2,
-      ),
+      padding: _setupNestedControlPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -541,10 +558,7 @@ class _RevealCountdownChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: CatchSpacing.s4,
-        bottom: CatchSpacing.s2,
-      ),
+      padding: _setupNestedControlPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -581,12 +595,12 @@ class _AttendeePromptPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: CatchSpacing.s2),
+      padding: _attendeePromptPreviewPadding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+            padding: _attendeePromptPreviewIconInset,
             child: Icon(
               CatchIcons.visibilityOutlined,
               size: CatchIcon.sm,
@@ -613,7 +627,7 @@ class _SafetyFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+      padding: CatchInsets.inlineHorizontal,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -653,7 +667,7 @@ class _PresetReviewCard extends StatelessWidget {
       tone: CatchSurfaceTone.primarySoft,
       borderColor: t.surface.withValues(alpha: CatchOpacity.none),
       radius: CatchRadius.md,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -689,13 +703,9 @@ class _PresetReviewCard extends StatelessWidget {
                 tone: CatchBadgeTone.brand,
                 icon: CatchIcons.autoAwesomeOutlined,
               ),
-              CatchBadge(
-                label: profile.interactionModel.label,
-                tone: CatchBadgeTone.neutral,
-              ),
+              CatchBadge(label: profile.interactionModel.label),
               CatchBadge(
                 label: _capacitySummary(draft),
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.groups2Outlined,
               ),
             ],
@@ -840,14 +850,14 @@ class _SetupDisclosureSection extends StatelessWidget {
         maintainState: true,
         initiallyExpanded: initiallyExpanded,
         tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(top: CatchSpacing.s2),
+        childrenPadding: _disclosureChildrenPadding,
         shape: const Border(),
         collapsedShape: const Border(),
         iconColor: t.primary,
         collapsedIconColor: t.ink2,
         title: Text(title, style: CatchTextStyles.labelL(context)),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.s1),
+          padding: _disclosureSubtitlePadding,
           child: Text(
             subtitle,
             style: CatchTextStyles.supporting(context, color: t.ink2),

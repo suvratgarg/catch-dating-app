@@ -61,7 +61,7 @@ class EventCompactRow extends StatelessWidget {
       onTap: onTap,
       borderColor: t.line,
       backgroundColor: t.surface,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -88,10 +88,7 @@ class EventCompactRow extends StatelessWidget {
                     if (effectiveStatus != null &&
                         effectiveStatus.isNotEmpty) ...[
                       gapW8,
-                      CatchBadge(
-                        label: effectiveStatus,
-                        tone: CatchBadgeTone.neutral,
-                      ),
+                      CatchBadge(label: effectiveStatus),
                     ],
                   ],
                 ),
@@ -103,7 +100,7 @@ class EventCompactRow extends StatelessWidget {
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
                 gapH8,
-                CatchMetaDotRow(entries: entries, maxLines: 1),
+                CatchMetaDotRow(entries: entries),
               ],
             ),
           ),

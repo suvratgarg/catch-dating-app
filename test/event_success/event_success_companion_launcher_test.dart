@@ -22,7 +22,7 @@ void main() {
   group('EventSuccessCompanionLaunchRegistry', () {
     test('does not launch from an initial attended snapshot', () {
       final registry = EventSuccessCompanionLaunchRegistry();
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final attended = buildEventParticipation(
         event: event,
         uid: 'runner-1',
@@ -39,7 +39,7 @@ void main() {
 
     test('detects a signed-up to attended transition once', () {
       final registry = EventSuccessCompanionLaunchRegistry();
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final signedUp = buildEventParticipation(event: event, uid: 'runner-1');
       final attended = buildEventParticipation(
         event: event,
@@ -104,7 +104,7 @@ void main() {
     testWidgets('pushes the companion route when a live guide exists', (
       tester,
     ) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final resultCompleter = Completer<EventSuccessCompanionLaunchResult>();
 
       await _pumpLauncherHarness(
@@ -126,7 +126,7 @@ void main() {
     });
 
     testWidgets('stays put when no live guide exists', (tester) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final resultCompleter = Completer<EventSuccessCompanionLaunchResult>();
 
       await _pumpLauncherHarness(
@@ -149,7 +149,7 @@ void main() {
     });
 
     testWidgets('does not launch for the hosting user', (tester) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final resultCompleter = Completer<EventSuccessCompanionLaunchResult>();
 
       await _pumpLauncherHarness(
@@ -177,8 +177,6 @@ void main() {
     ) async {
       final now = DateTime.now();
       final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
         startTime: now.subtract(const Duration(hours: 2)),
         endTime: now.subtract(const Duration(hours: 1)),
       );
@@ -209,7 +207,7 @@ void main() {
     testWidgets('fetches the event for a foreground attendance transition', (
       tester,
     ) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final participation = buildEventParticipation(
         event: event,
         uid: 'runner-1',
@@ -247,10 +245,7 @@ Future<void> _pumpLauncherHarness(
   EventParticipation? participation,
 }) async {
   final clubsRepository = FakeClubsRepository()
-    ..clubsById[event.clubId] = buildClub(
-      id: event.clubId,
-      hostUserId: 'host-1',
-    );
+    ..clubsById[event.clubId] = buildClub(id: event.clubId);
   final eventSuccessRepository = _FakeEventSuccessRepository(plan: plan);
   late final GoRouter router;
   router = GoRouter(

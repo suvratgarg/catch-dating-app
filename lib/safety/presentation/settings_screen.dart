@@ -155,12 +155,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             child: Scaffold(
               appBar: const CatchTopBar(title: 'Settings'),
               body: ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s3,
-                  CatchSpacing.s5,
-                  CatchSpacing.s8,
-                ),
+                padding: CatchInsets.pageBodyRelaxedTight,
                 children: [
                   Center(
                     child: ConstrainedBox(
@@ -537,11 +532,11 @@ class _BlockedAccountsSection extends ConsumerWidget {
       children: [
         blockedUsersAsync.when(
           loading: () => const Padding(
-            padding: EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             child: CatchLoadingIndicator(),
           ),
           error: (_, _) => Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             child: CatchEmptyState(
               icon: CatchIcons.blockOutlined,
               title: 'Unable to load blocked accounts',
@@ -555,7 +550,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
           data: (blockedUsers) {
             if (blockedUsers.isEmpty) {
               return Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s4),
+                padding: CatchInsets.content,
                 child: CatchEmptyState(
                   icon: CatchIcons.verifiedUserOutlined,
                   title: 'No blocked accounts',

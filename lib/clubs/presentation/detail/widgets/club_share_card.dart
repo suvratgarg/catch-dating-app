@@ -58,7 +58,7 @@ class ClubShareCard extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: t.bg,
         borderColor: t.line2,
-        padding: const EdgeInsets.all(CatchSpacing.s4),
+        padding: CatchInsets.content,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

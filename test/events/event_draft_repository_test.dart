@@ -81,14 +81,10 @@ void main() {
       });
 
       test('save with same ID updates instead of duplicating', () async {
-        final draft1 = buildDraft(id: 'draft-1', distance: '5');
+        final draft1 = buildDraft(distance: '5');
         await repo.saveDraft(userId: 'user-1', draft: draft1);
 
-        final draft2 = buildDraft(
-          id: 'draft-1',
-          distance: '10',
-          meetingPoint: 'Park',
-        );
+        final draft2 = buildDraft(distance: '10', meetingPoint: 'Park');
         await repo.saveDraft(userId: 'user-1', draft: draft2);
 
         final drafts = await repo.loadDrafts(
@@ -219,7 +215,7 @@ void main() {
       test('different clubIds produce isolated lists', () async {
         await repo.saveDraft(
           userId: 'user-1',
-          draft: buildDraft(id: 'd-1', clubId: 'club-1'),
+          draft: buildDraft(id: 'd-1'),
         );
         await repo.saveDraft(
           userId: 'user-1',

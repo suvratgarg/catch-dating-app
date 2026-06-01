@@ -74,7 +74,6 @@ class EventShareCard extends StatelessWidget {
                     iconAlignment: Alignment.centerRight,
                     iconSize: CatchLayout.eventHeroBackdropIconSize,
                     iconOpacity: CatchOpacity.fallbackArtworkIcon,
-                    patternOpacity: CatchOpacity.ticketPerforationLine,
                   ),
                   Positioned(
                     top: CatchSpacing.s5,
@@ -87,10 +86,7 @@ class EventShareCard extends StatelessWidget {
                         alpha: CatchOpacity.subtleBorder,
                       ),
                       radius: CatchRadius.pill,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: CatchSpacing.s3,
-                        vertical: CatchSpacing.micro6,
-                      ),
+                      padding: CatchInsets.compactLabelContent,
                       child: Text(
                         'CATCH INVITE',
                         style: CatchTextStyles.labelS(
@@ -159,7 +155,7 @@ class EventShareCard extends StatelessWidget {
               child: ColoredBox(
                 color: t.surface,
                 child: Padding(
-                  padding: const EdgeInsets.all(CatchSpacing.s5),
+                  padding: CatchInsets.contentRelaxed,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -264,10 +260,7 @@ class _EventSharePill extends StatelessWidget {
       backgroundColor: t.primarySoft,
       borderColor: t.primary.withValues(alpha: CatchOpacity.subtleBorder),
       radius: CatchRadius.pill,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.micro6,
-      ),
+      padding: CatchInsets.compactLabelContent,
       child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),
     );
   }

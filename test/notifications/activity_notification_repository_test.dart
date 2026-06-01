@@ -18,10 +18,7 @@ void main() {
     test(
       'watchActivity returns newest user-scoped notifications first',
       () async {
-        final older = _notification(
-          id: 'older',
-          createdAt: DateTime(2026, 5, 1),
-        );
+        final older = _notification(id: 'older', createdAt: DateTime(2026, 5));
         final newer = _notification(
           id: 'newer',
           createdAt: DateTime(2026, 5, 2),

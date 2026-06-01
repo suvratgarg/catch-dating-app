@@ -156,10 +156,7 @@ class GoalPill extends StatelessWidget {
       borderColor: palette.accent.withValues(
         alpha: CatchOpacity.gradientBandSoft,
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.micro6,
-      ),
+      padding: CatchInsets.compactLabelContent,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

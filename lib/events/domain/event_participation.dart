@@ -33,10 +33,10 @@ abstract class EventParticipation with _$EventParticipation {
     @NullableTimestampConverter() DateTime? attendedAt,
     @NullableTimestampConverter() DateTime? cancelledAt,
     @NullableTimestampConverter() DateTime? deletedAt,
-    @JsonKey(unknownEnumValue: null) Gender? genderAtSignup,
+    @JsonKey() Gender? genderAtSignup,
     String? cohortAtSignup,
     String? paymentId,
-    @JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,
+    @JsonKey() EventJoinRequestStatus? hostApprovalStatus,
     @NullableTimestampConverter() DateTime? hostApprovalDecidedAt,
     String? hostApprovalDecidedBy,
   }) = _EventParticipation;

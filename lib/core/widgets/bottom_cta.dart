@@ -63,7 +63,7 @@ class BottomCTA extends StatelessWidget {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-    return Container(
+    return ColoredBox(
       color: backgroundColor ?? t.surface,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -72,9 +72,9 @@ class BottomCTA extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(
               CatchSpacing.s4,
-              12,
+              CatchSpacing.s3,
               CatchSpacing.s4,
-              12 + bottomPadding,
+              CatchSpacing.s3 + bottomPadding,
             ),
             child: Row(
               children: [

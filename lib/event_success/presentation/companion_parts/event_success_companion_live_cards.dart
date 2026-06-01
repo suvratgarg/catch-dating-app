@@ -1,5 +1,21 @@
 part of '../event_success_companion_screen.dart';
 
+const EdgeInsets _companionRotationSlotGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+const EdgeInsets _companionPreviewIconInset = EdgeInsets.only(
+  top: CatchSpacing.micro2,
+);
+const EdgeInsets _companionQrSheetPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s4,
+  CatchSpacing.s5,
+);
+const EdgeInsets _companionStageCueGap = EdgeInsets.only(
+  bottom: CatchSpacing.s3,
+);
+
 class _MicroPodCard extends ConsumerWidget {
   const _MicroPodCard({
     required this.event,
@@ -55,7 +71,6 @@ class _MicroPodCard extends ConsumerWidget {
               if (peersLoading)
                 CatchBadge(
                   label: 'Loading group members',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.hourglassEmptyRounded,
                 )
               else
@@ -117,12 +132,12 @@ class _GroupRotationSlotRow extends StatelessWidget {
         .whereType<String>()
         .toList(growable: false);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _companionRotationSlotGap,
       child: CatchSurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
         borderWidth: 0,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -139,7 +154,6 @@ class _GroupRotationSlotRow extends StatelessWidget {
                 ),
                 CatchBadge(
                   label: slot.unitLabel,
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.tableRestaurantOutlined,
                 ),
               ],
@@ -153,13 +167,11 @@ class _GroupRotationSlotRow extends StatelessWidget {
               children: [
                 CatchBadge(
                   label: '${slot.peerUids.length + 1} people',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.groupOutlined,
                 ),
                 for (final name in peerNames)
                   CatchBadge(
                     label: name,
-                    tone: CatchBadgeTone.neutral,
                     icon: CatchIcons.personOutlineRounded,
                   ),
               ],
@@ -225,7 +237,6 @@ class _RotationScheduleCard extends ConsumerWidget {
             if (peersLoading)
               CatchBadge(
                 label: 'Loading partner names',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.hourglassEmptyRounded,
               )
             else
@@ -276,12 +287,12 @@ class _RotationSlotRow extends StatelessWidget {
         '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
         '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _companionRotationSlotGap,
       child: CatchSurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
         borderWidth: 0,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Row(
           children: [
             CatchBadge(
@@ -426,7 +437,7 @@ class _PreviewLine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.micro2),
+          padding: _companionPreviewIconInset,
           child: Icon(icon, size: CatchIcon.xs, color: t.ink2),
         ),
         gapW6,
@@ -579,12 +590,7 @@ class _EventCheckInQrScannerSheetState
     return SizedBox(
       height: height,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s4,
-          CatchSpacing.s4,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-        ),
+        padding: _companionQrSheetPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -614,7 +620,6 @@ class _EventCheckInQrScannerSheetState
                   children: [
                     MobileScanner(
                       controller: _controller,
-                      fit: BoxFit.cover,
                       onDetect: _handleCapture,
                     ),
                     DecoratedBox(
@@ -628,7 +633,7 @@ class _EventCheckInQrScannerSheetState
                         alignment: Alignment.bottomCenter,
                         child: CatchSurface(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(CatchSpacing.s3),
+                          padding: CatchInsets.contentDense,
                           backgroundColor: t.ink.withValues(
                             alpha: CatchOpacity.eventSuccessQrErrorFill,
                           ),
@@ -757,12 +762,12 @@ class _StageCueLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      padding: _companionStageCueGap,
       child: CatchSurface(
         backgroundColor: t.primarySoft,
         radius: CatchRadius.sm,
         borderWidth: 0,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -867,22 +872,16 @@ class _PeopleTokenRow extends StatelessWidget {
       spacing: CatchSpacing.s2,
       runSpacing: CatchSpacing.s2,
       children: [
-        CatchBadge(
-          label: countLabel,
-          tone: CatchBadgeTone.neutral,
-          icon: CatchIcons.groupOutlined,
-        ),
+        CatchBadge(label: countLabel, icon: CatchIcons.groupOutlined),
         if (loading)
           CatchBadge(
             label: loadingLabel,
-            tone: CatchBadgeTone.neutral,
             icon: CatchIcons.hourglassEmptyRounded,
           )
         else
           for (final profile in profiles)
             CatchBadge(
               label: profile.name,
-              tone: CatchBadgeTone.neutral,
               icon: CatchIcons.personOutlineRounded,
             ),
       ],

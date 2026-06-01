@@ -1,5 +1,16 @@
 part of '../event_success_companion_screen.dart';
 
+const EdgeInsets _companionMomentStagePadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s4,
+  CatchSpacing.s3,
+  CatchSpacing.s4,
+  CatchSpacing.s5,
+);
+const EdgeInsets _companionStagePillPadding = EdgeInsets.symmetric(
+  horizontal: CatchSpacing.micro14,
+  vertical: CatchSpacing.s2,
+);
+
 /// Repeating Tickers schedule frames forever, which deadlocks Flutter's
 /// `pumpAndSettle` in widget tests. We auto-disable continuous animations
 /// when the `FLUTTER_TEST` env var is set (the test runner provides it).
@@ -79,12 +90,7 @@ class _CompanionStageScaffold extends StatelessWidget {
                           maxWidth: CatchLayout.maxContentWidth,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            CatchSpacing.s4,
-                            CatchSpacing.s3,
-                            CatchSpacing.s4,
-                            CatchSpacing.s5,
-                          ),
+                          padding: _companionMomentStagePadding,
                           child: _CompanionMomentStage(
                             event: event,
                             plan: plan,
@@ -452,7 +458,7 @@ class _StagePrivacyLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       backgroundColor: stageTheme.foreground.withValues(
         alpha: CatchOpacity.clubCoverHighlightOverlay,
@@ -558,10 +564,7 @@ class _StagePanelState extends State<_StagePanel>
           child: child!,
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
-        child: widget.child,
-      ),
+      child: Padding(padding: CatchInsets.content, child: widget.child),
     );
   }
 }
@@ -580,10 +583,7 @@ class _StageActionDock extends StatelessWidget {
         alpha: CatchOpacity.eventSuccessActionDockFill,
       ),
       borderColor: t.surface.withValues(alpha: CatchOpacity.warningFill),
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s2),
-        child: child,
-      ),
+      child: Padding(padding: CatchInsets.iconChipContent, child: child),
     );
   }
 }
@@ -599,10 +599,7 @@ class _StageSoftBand extends StatelessWidget {
     return CatchSurface(
       radius: CatchRadius.sm,
       backgroundColor: t.primarySoft,
-      child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s3),
-        child: child,
-      ),
+      child: Padding(padding: CatchInsets.contentDense, child: child),
     );
   }
 }
@@ -982,7 +979,6 @@ class EventSuccessMomentPresentation {
         icon: CatchIcons.eventAvailableOutlined,
         badgeTone: CatchBadgeTone.live,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
-        ambientBed: EventSuccessAmbientBed.theatrical,
       ),
       EventSuccessAttendeeMomentKind.selfCheckIn =>
         EventSuccessMomentPresentation(
@@ -995,7 +991,6 @@ class EventSuccessMomentPresentation {
           icon: CatchIcons.qrCode2Rounded,
           badgeTone: CatchBadgeTone.warning,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
-          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.firstHelloCheckIn =>
         EventSuccessMomentPresentation(
@@ -1008,7 +1003,6 @@ class EventSuccessMomentPresentation {
           icon: CatchIcons.wavingHandOutlined,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
-          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.compatibilityQuestionnaire =>
         EventSuccessMomentPresentation(
@@ -1020,7 +1014,6 @@ class EventSuccessMomentPresentation {
           icon: CatchIcons.tuneRounded,
           badgeTone: CatchBadgeTone.brand,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
-          ambientBed: EventSuccessAmbientBed.theatrical,
         ),
       EventSuccessAttendeeMomentKind.liveStepContext =>
         EventSuccessMomentPresentation(
@@ -1248,17 +1241,14 @@ class _PrivacyBadge extends StatelessWidget {
     return switch (audience) {
       _PrivacyAudience.privateToYou => CatchBadge(
         label: 'Private to you',
-        tone: CatchBadgeTone.neutral,
         icon: CatchIcons.lockOutlineRounded,
       ),
       _PrivacyAudience.hostCanSee => CatchBadge(
         label: 'Host can see',
-        tone: CatchBadgeTone.neutral,
         icon: CatchIcons.visibilityOutlined,
       ),
       _PrivacyAudience.catchPrivate => CatchBadge(
         label: 'Catch private',
-        tone: CatchBadgeTone.neutral,
         icon: CatchIcons.shieldOutlined,
       ),
     };
@@ -1414,14 +1404,10 @@ class _StageBouncyChip extends StatelessWidget {
       borderRadius: radius,
       semanticLabel: label,
       child: CatchSurface(
-        duration: CatchMotion.fast,
         borderRadius: radius,
         backgroundColor: background,
         borderColor: border,
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.micro14,
-          vertical: CatchSpacing.s2,
-        ),
+        padding: _companionStagePillPadding,
         child: Text(
           label,
           maxLines: 1,
@@ -1626,10 +1612,7 @@ class _LiveOthersInRoomLineState extends State<_LiveOthersInRoomLine>
           backgroundColor: t.primarySoft,
           borderColor: t.primary.withValues(alpha: glowAlpha),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s3,
-              vertical: CatchSpacing.s2,
-            ),
+            padding: CatchInsets.compactControlContent,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

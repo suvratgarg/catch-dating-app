@@ -20,12 +20,7 @@ class ClubEventSuccessDefaultsStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: ListView(
-        padding: EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.formStepBody,
         children: [
           EventSuccessDefaultsPanel(
             defaults: defaults.eventSuccessForActivity(

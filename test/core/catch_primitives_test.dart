@@ -148,11 +148,7 @@ void main() {
       _wrap(
         const Wrap(
           children: [
-            CatchButton(
-              label: 'Primary',
-              onPressed: null,
-              variant: CatchButtonVariant.primary,
-            ),
+            CatchButton(label: 'Primary', onPressed: null),
             CatchButton(
               label: 'Secondary',
               onPressed: null,
@@ -275,7 +271,6 @@ void main() {
             label: 'Help & support',
             value: 'Contact us',
             icon: CatchIcons.helpOutline,
-            onTap: null,
           ),
         ),
       ),
@@ -303,7 +298,6 @@ void main() {
             builder: (context, setState) => CatchOtpCodeField(
               inputKey: const ValueKey('otp-input'),
               controller: controller,
-              length: 6,
               autofocus: true,
               onChanged: (_) => setState(() {}),
               onSubmitted: (_) {},

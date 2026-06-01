@@ -44,9 +44,9 @@ class MessageBubble extends StatelessWidget {
     );
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: isLastInGroup ? CatchSpacing.s3 : CatchSpacing.micro3,
-      ),
+      padding: isLastInGroup
+          ? CatchInsets.chatBubbleGroupEnd
+          : CatchInsets.chatBubbleGroupContinue,
       child: Row(
         mainAxisAlignment: isMe
             ? MainAxisAlignment.end
@@ -64,10 +64,7 @@ class MessageBubble extends StatelessWidget {
                         .toDouble(),
               ),
               child: CatchSurface(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.micro14,
-                  vertical: CatchSpacing.micro10,
-                ),
+                padding: CatchInsets.chatBubbleContent,
                 backgroundColor: isMe ? t.primary : t.surface,
                 borderColor: isMe ? null : t.line,
                 borderRadius: BorderRadius.only(
@@ -229,7 +226,7 @@ class _MediaMessageBody extends StatelessWidget {
       children: [
         if (imageUrl != null)
           Padding(
-            padding: const EdgeInsets.only(bottom: CatchSpacing.micro6),
+            padding: CatchInsets.chatMediaAttachmentBottom,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(CatchRadius.md),
               child: AspectRatio(

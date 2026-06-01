@@ -23,68 +23,85 @@ class WelcomePage extends ConsumerWidget {
           children: [
             const Positioned.fill(child: _TrackPattern()),
             SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s7,
-                  CatchSpacing.s6,
-                  CatchSpacing.s7,
-                  CatchSpacing.s7,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'CATCH',
-                      style: CatchTextStyles.kicker(context, color: d.ink),
-                    ),
-                    gapH12,
-                    Image.asset(
-                      'assets/branding/catch_icon.png',
-                      width: CatchLayout.welcomeBrandMarkExtent,
-                      height: CatchLayout.welcomeBrandMarkExtent,
-                      semanticLabel: 'Catch',
-                    ),
-                    const Spacer(),
-                    Text(
-                      'Love arrives\nat mile\nthree.',
-                      style: CatchTextStyles.display(context, color: d.ink),
-                    ),
-                    gapH16,
-                    Text(
-                      'Meet someone on a group event. Swipe on people you '
-                      'actually ran with - not strangers 30 miles away.',
-                      style: CatchTextStyles.proseL(
-                        context,
-                        color: d.ink.withValues(
-                          alpha: CatchOpacity.welcomeHeroBody,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: CatchInsets.welcomeHero,
+                        child: IntrinsicHeight(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'CATCH',
+                                style: CatchTextStyles.kicker(
+                                  context,
+                                  color: d.ink,
+                                ),
+                              ),
+                              gapH12,
+                              Image.asset(
+                                'assets/branding/catch_icon.png',
+                                width: CatchLayout.welcomeBrandMarkExtent,
+                                height: CatchLayout.welcomeBrandMarkExtent,
+                                semanticLabel: 'Catch',
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Love arrives\nat mile\nthree.',
+                                style: CatchTextStyles.display(
+                                  context,
+                                  color: d.ink,
+                                ),
+                              ),
+                              gapH16,
+                              Text(
+                                'Meet someone on a group event. Swipe on people you '
+                                'actually ran with - not strangers 30 miles away.',
+                                style: CatchTextStyles.proseL(
+                                  context,
+                                  color: d.ink.withValues(
+                                    alpha: CatchOpacity.welcomeHeroBody,
+                                  ),
+                                ),
+                              ),
+                              gapH24,
+                              CatchButton(
+                                label: 'Explore events',
+                                onPressed: () => context.go('/clubs'),
+                                variant: CatchButtonVariant.light,
+                                size: CatchButtonSize.lg,
+                                fullWidth: true,
+                              ),
+                              gapH12,
+                              CatchButton(
+                                label: 'Continue with phone',
+                                onPressed: () =>
+                                    context.go(_authLocation(context)),
+                                variant: CatchButtonVariant.secondary,
+                                size: CatchButtonSize.lg,
+                                fullWidth: true,
+                                backgroundColor: d.ink.withValues(
+                                  alpha:
+                                      CatchOpacity.welcomeSecondaryButtonFill,
+                                ),
+                                foregroundColor: d.ink,
+                                borderColor: d.ink.withValues(
+                                  alpha:
+                                      CatchOpacity.welcomeSecondaryButtonBorder,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    gapH24,
-                    CatchButton(
-                      label: 'Explore events',
-                      onPressed: () => context.go('/clubs'),
-                      variant: CatchButtonVariant.light,
-                      size: CatchButtonSize.lg,
-                      fullWidth: true,
-                    ),
-                    gapH12,
-                    CatchButton(
-                      label: 'Continue with phone',
-                      onPressed: () => context.go(_authLocation(context)),
-                      variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.lg,
-                      fullWidth: true,
-                      backgroundColor: d.ink.withValues(
-                        alpha: CatchOpacity.welcomeSecondaryButtonFill,
-                      ),
-                      foregroundColor: d.ink,
-                      borderColor: d.ink.withValues(
-                        alpha: CatchOpacity.welcomeSecondaryButtonBorder,
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],

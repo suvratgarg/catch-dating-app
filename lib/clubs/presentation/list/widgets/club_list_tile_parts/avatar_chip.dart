@@ -32,7 +32,6 @@ class _AvatarChip extends StatelessWidget {
           width: _columnWidth,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: _tileSize,
@@ -44,7 +43,7 @@ class _AvatarChip extends StatelessWidget {
                     width: showLiveBadge ? 2 : 1,
                   ),
                 ),
-                padding: const EdgeInsets.all(CatchSpacing.micro2),
+                padding: CatchInsets.iconChipContentTight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
                   child: _ClubImage(club: club, preferProfileImage: true),

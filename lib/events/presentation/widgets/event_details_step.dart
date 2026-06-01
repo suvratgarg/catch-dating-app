@@ -53,12 +53,7 @@ class EventDetailsStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          16,
-          CatchSpacing.s5,
-          24,
-        ),
+        padding: CatchInsets.formStepBody,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

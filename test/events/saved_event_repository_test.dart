@@ -36,7 +36,7 @@ void main() {
       await firestore.collection('savedEvents').doc(id).set({
         'uid': 'runner-1',
         'eventId': 'event-1',
-        'savedAt': DateTime(2026, 1, 1),
+        'savedAt': DateTime(2026),
       });
 
       await repository.unsaveEvent(uid: 'runner-1', eventId: 'event-1');
@@ -63,7 +63,7 @@ void main() {
       await firestore.collection('savedEvents').doc(id).set({
         'uid': 'runner-1',
         'eventId': 'event-1',
-        'savedAt': DateTime(2026, 1, 1),
+        'savedAt': DateTime(2026),
       });
 
       await expectLater(
@@ -99,7 +99,7 @@ void main() {
             .set({
               'uid': 'runner-1',
               'eventId': later.id,
-              'savedAt': DateTime(2026, 1, 1),
+              'savedAt': DateTime(2026),
             });
         await firestore
             .collection('savedEvents')
@@ -107,7 +107,7 @@ void main() {
             .set({
               'uid': 'runner-1',
               'eventId': earlier.id,
-              'savedAt': DateTime(2026, 1, 1),
+              'savedAt': DateTime(2026),
             });
         await firestore
             .collection('savedEvents')
@@ -115,7 +115,7 @@ void main() {
             .set({
               'uid': 'runner-1',
               'eventId': 'deleted-event',
-              'savedAt': DateTime(2026, 1, 1),
+              'savedAt': DateTime(2026),
             });
 
         await expectLater(

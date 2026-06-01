@@ -168,7 +168,7 @@ void main() {
             clubId: 'club-7',
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
-            meetingLocation: _meetingLocation(name: 'Marine Drive'),
+            meetingLocation: _meetingLocation(),
             eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,

@@ -9,8 +9,8 @@ enum CatchControlTone { surface, raised }
 
 abstract final class CatchControlMetrics {
   static const double floatingMinHeight = CatchSpacing.s11;
-  static const double compactMinHeight = CatchSpacing.s12 + CatchSpacing.s1;
-  static const double mdMinHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double compactMinHeight = CatchLayout.controlCompactMinHeight;
+  static const double mdMinHeight = CatchLayout.controlMdMinHeight;
   static const double floatingIconExtent = CatchSpacing.s10;
   static const double compactIconExtent = compactMinHeight;
   static const double mdIconExtent = mdMinHeight;
@@ -56,11 +56,9 @@ abstract final class CatchControlMetrics {
       switch (size) {
         CatchControlSize.floating => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s0,
         ),
         CatchControlSize.compact => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s0,
         ),
         CatchControlSize.md => const EdgeInsets.symmetric(
           horizontal: CatchSpacing.micro14,

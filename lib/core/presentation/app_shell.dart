@@ -236,8 +236,6 @@ class AppShellNavigationBar extends StatelessWidget {
             alpha: CatchOpacity.appShellNavigationBarFill,
           ),
           border: Border(top: BorderSide(color: t.line)),
-          height: CatchLayout.appShellCupertinoNavHeight,
-          iconSize: CatchIcon.appShellCupertinoNav,
           items: [
             const BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.house),
@@ -362,8 +360,8 @@ class AppShellNavigationBadge extends StatelessWidget {
                 constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 1,
+                    horizontal: CatchSpacing.s1,
+                    vertical: CatchStroke.hairline,
                   ),
                   child: Center(
                     child: Text(

@@ -404,7 +404,6 @@ class _CardVariationLabScreen extends StatelessWidget {
                   maxWidth: 520,
                   child: ClubAvatarRail(
                     clubs: fixtures.clubs,
-                    showCreateButton: true,
                     showDivider: false,
                     headerPadding: EdgeInsets.zero,
                     listPadding: EdgeInsets.zero,
@@ -536,23 +535,23 @@ class _CardVariationLabScreen extends StatelessWidget {
                     onEdit: () {},
                   ),
                 ),
-                _LabSample(
+                const _LabSample(
                   title: 'Event Success setup',
                   source: 'EventSuccessHostSetupFlow',
                   maxWidth: 520,
-                  child: const EventSuccessHostSetupFlow(),
+                  child: EventSuccessHostSetupFlow(),
                 ),
-                _LabSample(
+                const _LabSample(
                   title: 'Event Success live host',
                   source: 'EventSuccessLiveHostMode',
                   maxWidth: 520,
-                  child: const EventSuccessLiveHostMode(showStepList: false),
+                  child: EventSuccessLiveHostMode(showStepList: false),
                 ),
-                _LabSample(
+                const _LabSample(
                   title: 'Event Success attendee',
                   source: 'EventSuccessAttendeeCompanionPreview',
                   maxWidth: 520,
-                  child: const EventSuccessAttendeeCompanionPreview(),
+                  child: EventSuccessAttendeeCompanionPreview(),
                 ),
                 _LabSample(
                   title: 'Event Success post-event',
@@ -585,12 +584,12 @@ class _LabIntro extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Wrap(
+          const Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
-            children: const [
+            children: [
               CatchBadge(label: 'Flutter only', tone: CatchBadgeTone.brand),
-              CatchBadge(label: 'Synthetic data', tone: CatchBadgeTone.neutral),
+              CatchBadge(label: 'Synthetic data'),
               CatchBadge(label: 'Not routed', tone: CatchBadgeTone.warning),
             ],
           ),
@@ -1122,8 +1121,7 @@ class _LabFixtures {
       area: area,
       hostUserId: 'host-$id',
       hostName: hostName,
-      hostAvatarUrl: null,
-      createdAt: DateTime(2026, 1, 1),
+      createdAt: DateTime(2026),
       imageUrl: imageUrl,
       profileImageUrl: imageUrl,
       tags: tags,
@@ -1170,7 +1168,6 @@ class _LabFixtures {
       startingPointLat: lat,
       startingPointLng: lng,
       locationDetails: notes,
-      photoUrl: null,
       eventFormat: EventFormatSnapshot.fromActivityKind(kind),
       distanceKm: distanceKm,
       pace: pace,

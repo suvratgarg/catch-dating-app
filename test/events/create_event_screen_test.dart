@@ -653,7 +653,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: buildEvent(id: 'event-preview'),
           onBackToSuccess: () {},
         ),
@@ -684,7 +684,7 @@ void main() {
       final participationRepository = FakeEventParticipationRepository();
       final publicProfiles = FakePublicProfileRepository()
         ..profiles = [
-          buildPublicProfile(uid: 'runner-1', name: 'Harsh'),
+          buildPublicProfile(name: 'Harsh'),
           buildPublicProfile(uid: 'runner-2', name: 'Manan'),
         ];
       final event = buildEvent(
@@ -710,7 +710,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () {},
           initialSection: HostEventManageSection.live,
@@ -783,7 +783,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () {},
         ),
@@ -823,13 +823,13 @@ void main() {
         eventId: event.id,
         clubId: event.clubId,
         inviteCode: 'CATCH-DELHI',
-        createdAt: DateTime(2026, 5, 1),
+        createdAt: DateTime(2026, 5),
       );
 
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () {},
         ),
@@ -866,7 +866,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () {},
         ),
@@ -908,7 +908,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () => returned = true,
         ),
@@ -948,7 +948,7 @@ void main() {
       await pumpEventsTestApp(
         tester,
         HostEventManageScreen(
-          club: buildClub(hostUserId: 'host-1'),
+          club: buildClub(),
           event: event,
           onBackToSuccess: () {},
         ),

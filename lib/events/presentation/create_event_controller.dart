@@ -146,8 +146,6 @@ class CreateEventController extends _$CreateEventController {
       startingPointLat: normalizedMeetingLocation.latitude,
       startingPointLng: normalizedMeetingLocation.longitude,
       locationDetails: normalizedMeetingLocation.notes,
-      photoUrl: null,
-      eventPhotos: const [],
       eventFormat: eventFormat,
       distanceKm: distanceKm,
       pace: pace,

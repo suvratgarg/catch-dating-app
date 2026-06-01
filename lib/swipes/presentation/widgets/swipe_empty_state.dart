@@ -19,7 +19,7 @@ class SwipeEmptyState extends StatelessWidget {
         message: content.message,
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
-        padding: const EdgeInsets.all(CatchSpacing.s8),
+        padding: CatchInsets.emptyStateContent,
         titleStyle: CatchTextStyles.headline(context),
       ),
     );

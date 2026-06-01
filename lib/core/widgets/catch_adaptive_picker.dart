@@ -83,7 +83,6 @@ Future<TimeOfDay?> showCatchTimePicker({
       child: CupertinoDatePicker(
         mode: CupertinoDatePickerMode.time,
         initialDateTime: initialDateTime,
-        use24hFormat: false,
         onDateTimeChanged: (value) {
           selectedTime = TimeOfDay.fromDateTime(value);
         },

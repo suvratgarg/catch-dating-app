@@ -308,6 +308,310 @@ abstract final class CatchSpacing {
   static const double micro18 = 18.0;
 }
 
+/// Semantic vertical and horizontal gaps for common layout relationships.
+///
+/// Use [CatchSpacing] for primitive math inside reusable components. Feature
+/// screens should prefer these relationship tokens so the code says why a gap
+/// exists, not only how large it is.
+abstract final class CatchGaps {
+  /// Tight icon/label or metadata pair spacing.
+  static const double inline = CatchSpacing.s2;
+
+  /// Distance between closely related rows inside the same content cluster.
+  static const double related = CatchSpacing.s3;
+
+  /// Standard gap between controls in one form or settings group.
+  static const double formField = CatchSpacing.s4;
+
+  /// Default gap between peer sections in a page body.
+  static const double section = CatchSpacing.s6;
+
+  /// Extra separation between major page regions.
+  static const double majorSection = CatchSpacing.s8;
+}
+
+/// Semantic inset contracts for repeated screen and component shells.
+///
+/// These are intentionally named for layout roles. Feature screens should use a
+/// role here, or a layout primitive that embeds one, before composing raw
+/// [EdgeInsets] from [CatchSpacing].
+abstract final class CatchInsets {
+  /// Default scroll/body padding for app pages with top chrome.
+  static const EdgeInsets pageBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s6,
+  );
+
+  /// Page body padding for flows that need extra scroll-end breathing room.
+  static const EdgeInsets pageBodyRelaxed = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s8,
+  );
+
+  /// Page body padding when top chrome already supplies some separation.
+  static const EdgeInsets pageBodyTight = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+    CatchSpacing.s5,
+    CatchSpacing.s6,
+  );
+
+  /// Tighter-top page body padding with extra scroll-end breathing room.
+  static const EdgeInsets pageBodyRelaxedTight = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+    CatchSpacing.s5,
+    CatchSpacing.s8,
+  );
+
+  /// Page body padding for content that sits directly under a dense header.
+  static const EdgeInsets pageBodyUnderHeader = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s1,
+    CatchSpacing.s5,
+    CatchSpacing.s6,
+  );
+
+  /// Compact body padding for dense chrome where the content already owns
+  /// vertical separation.
+  static const EdgeInsets pageBodyCompact = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s2,
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+  );
+
+  /// Horizontal page/list gutters when vertical padding is owned elsewhere.
+  static const EdgeInsets pageHorizontal = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s5,
+  );
+
+  /// Wider horizontal gutters for sparse auth/onboarding layouts.
+  static const EdgeInsets pageHorizontalWide = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s6,
+  );
+
+  /// Full-screen welcome hero padding.
+  static const EdgeInsets welcomeHero = EdgeInsets.fromLTRB(
+    CatchSpacing.s7,
+    CatchSpacing.s6,
+    CatchSpacing.s7,
+    CatchSpacing.s7,
+  );
+
+  /// Header/body padding for page-level intro rows before dense content.
+  static const EdgeInsets pageHeaderBody = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s4,
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+  );
+
+  /// Compact page-level intro padding before dense content.
+  static const EdgeInsets pageHeaderCompact = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.s2,
+    CatchSpacing.s5,
+    CatchSpacing.s3,
+  );
+
+  /// Section header padding above compact horizontal rails or lists.
+  static const EdgeInsets sectionHeader = EdgeInsets.fromLTRB(
+    CatchSpacing.s5,
+    CatchSpacing.micro14,
+    CatchSpacing.s5,
+    CatchSpacing.s2,
+  );
+
+  /// Default padding for multi-step creation/edit forms.
+  static const EdgeInsets formStepBody = pageBody;
+
+  /// Form-step padding with more bottom space for final/action-heavy steps.
+  static const EdgeInsets formStepBodyRelaxed = pageBodyRelaxed;
+
+  /// Default content padding inside cards and bordered panels.
+  static const EdgeInsets content = EdgeInsets.all(CatchSpacing.s4);
+
+  /// Dense content padding for compact summary tiles and small controls.
+  static const EdgeInsets contentDense = EdgeInsets.all(CatchSpacing.s3);
+
+  /// Relaxed content padding for empty states, large cards, and share panels.
+  static const EdgeInsets contentRelaxed = EdgeInsets.all(CatchSpacing.s5);
+
+  /// Spacious content padding for hero panels and full-page empty states.
+  static const EdgeInsets contentSpacious = EdgeInsets.all(CatchSpacing.s6);
+
+  /// Horizontal content padding when vertical rhythm is supplied separately.
+  static const EdgeInsets contentHorizontal = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+  );
+
+  /// Inline horizontal padding for compact chips and segmented items.
+  static const EdgeInsets inlineHorizontal = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s2,
+  );
+
+  /// Tight inline horizontal padding for tiny rating/star controls.
+  static const EdgeInsets inlineHorizontalTight = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s1,
+  );
+
+  /// Relaxed inline horizontal padding for pills and message rows.
+  static const EdgeInsets inlineHorizontalRelaxed = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+  );
+
+  /// Micro horizontal padding for compact icon labels.
+  static const EdgeInsets iconLabelHorizontal = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro6,
+  );
+
+  /// Pill horizontal padding for badges and compact chips.
+  static const EdgeInsets pillHorizontal = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro14,
+  );
+
+  /// Tight vertical padding for small controls and menu rows.
+  static const EdgeInsets controlVerticalTight = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s1,
+  );
+
+  /// Compact vertical padding for date markers and dense labels.
+  static const EdgeInsets contentVerticalCompact = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s2,
+  );
+
+  /// Mid-compact vertical padding for button-like empty-state chips.
+  static const EdgeInsets contentVerticalMedium = EdgeInsets.symmetric(
+    vertical: CatchSpacing.micro14,
+  );
+
+  /// Standard vertical padding for rows and list sections.
+  static const EdgeInsets contentVertical = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Large vertical padding for tappable rows.
+  static const EdgeInsets tileVertical = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s4,
+  );
+
+  /// Compact but prominent vertical padding for filter rows and dense tiles.
+  static const EdgeInsets tileVerticalCompact = EdgeInsets.symmetric(
+    vertical: CatchSpacing.micro18,
+  );
+
+  /// Relaxed vertical padding for standalone panel sections.
+  static const EdgeInsets contentVerticalRelaxed = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s5,
+  );
+
+  /// Spacious vertical padding for empty states and loading panels.
+  static const EdgeInsets contentVerticalSpacious = EdgeInsets.symmetric(
+    vertical: CatchSpacing.s6,
+  );
+
+  /// Oversized content padding for standalone empty/error states.
+  static const EdgeInsets emptyStateContent = EdgeInsets.all(CatchSpacing.s8);
+
+  /// Compact tile padding for dense detail facts and status rows.
+  static const EdgeInsets tileContentCompact = EdgeInsets.all(
+    CatchSpacing.micro14,
+  );
+
+  /// Standard tile padding for large tappable rows.
+  static const EdgeInsets tileContent = EdgeInsets.all(CatchSpacing.micro18);
+
+  /// Icon-chip padding for small square/circular icon marks.
+  static const EdgeInsets iconChipContent = EdgeInsets.all(CatchSpacing.s2);
+
+  /// Tight icon-chip padding for nested avatar/status marks.
+  static const EdgeInsets iconChipContentTight = EdgeInsets.all(
+    CatchSpacing.micro2,
+  );
+
+  /// Small info-tile padding where icon and label must stay compact.
+  static const EdgeInsets infoTileContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro6,
+    vertical: CatchSpacing.s1,
+  );
+
+  /// Dense stat/control padding for compact metric chips.
+  static const EdgeInsets statChipContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s2,
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Compact pill/control padding used by status chips and inline actions.
+  static const EdgeInsets compactControlContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.s2,
+  );
+
+  /// Label pill padding for over-media metadata.
+  static const EdgeInsets compactLabelContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.micro6,
+  );
+
+  /// Balanced small-card/control padding.
+  static const EdgeInsets controlContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Dense list body padding where rows own their own vertical rhythm.
+  static const EdgeInsets listBodyDense = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s3,
+    vertical: CatchSpacing.s4,
+  );
+
+  /// Standard list body padding with page-adjacent horizontal gutters.
+  static const EdgeInsets listBody = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.s4,
+    vertical: CatchSpacing.s3,
+  );
+
+  /// Content block padding with slightly stronger bottom separation.
+  static const EdgeInsets contentBlock = EdgeInsets.fromLTRB(
+    CatchSpacing.s4,
+    CatchSpacing.s3,
+    CatchSpacing.s4,
+    CatchSpacing.s4,
+  );
+
+  /// Shared content padding for chat and share-card message bubbles.
+  static const EdgeInsets chatBubbleContent = EdgeInsets.symmetric(
+    horizontal: CatchSpacing.micro14,
+    vertical: CatchSpacing.micro10,
+  );
+
+  /// Gap after the last message in a sender group.
+  static const EdgeInsets chatBubbleGroupEnd = EdgeInsets.only(
+    bottom: CatchSpacing.s3,
+  );
+
+  /// Tight gap between consecutive messages from the same sender.
+  static const EdgeInsets chatBubbleGroupContinue = EdgeInsets.only(
+    bottom: CatchSpacing.micro3,
+  );
+
+  /// Gap between a media attachment and the caption/timestamp in a bubble.
+  static const EdgeInsets chatMediaAttachmentBottom = EdgeInsets.only(
+    bottom: CatchSpacing.micro6,
+  );
+
+  /// Default content padding inside cards and bordered panels.
+  static const EdgeInsets cardContent = content;
+
+  /// Dense card padding for compact summary tiles and small controls.
+  static const EdgeInsets cardContentDense = contentDense;
+}
+
 // ── Radii ─────────────────────────────────────────────────────────────────────
 
 /// Corner radius constants from the design-system radius scale.
@@ -334,6 +638,9 @@ abstract final class CatchRadius {
 /// use shadows only when UI actually floats above content.
 abstract final class CatchElevation {
   static const List<BoxShadow> none = <BoxShadow>[];
+
+  /// Shared physical-shadow color for Material/PhysicalShape surfaces.
+  static const Color physicalShadow = Color.fromRGBO(26, 20, 16, 0.18);
 
   /// Flutter physical elevation for clipped ticket shapes that cannot use
   /// regular [BoxShadow] lists.
@@ -393,11 +700,7 @@ abstract final class CatchElevation {
   ];
 
   static List<BoxShadow> focusRing(CatchTokens t) => <BoxShadow>[
-    BoxShadow(
-      color: t.primarySoft,
-      blurRadius: CatchSpacing.s0,
-      spreadRadius: CatchSpacing.micro3,
-    ),
+    BoxShadow(color: t.primarySoft, spreadRadius: CatchSpacing.micro3),
   ];
 
   static List<BoxShadow> segmentedSelected(CatchTokens t) => <BoxShadow>[
@@ -936,13 +1239,125 @@ abstract final class CatchLayout {
   /// Wrap full-bleed page bodies in [ConstrainedBox] with this maxWidth, centered.
   static const double maxContentWidth = 600;
 
+  /// Shared horizontal gutter for detail screens with sliver-native content.
+  static const double detailScreenHorizontalPadding = CatchSpacing.s5;
+
+  /// Available content width inside a detail screen's horizontal gutters.
+  static double detailScreenContentWidthFor(double width) =>
+      (width - (detailScreenHorizontalPadding * 2))
+          .clamp(0.0, double.infinity)
+          .toDouble();
+
+  /// First content offset after a detail hero or pinned header.
+  static const double detailScreenTopPadding = CatchSpacing.s3;
+
+  /// Standard gap between major sections on detail screens.
+  static const double detailScreenSectionGap = CatchSpacing.s6;
+
+  /// Standard gap between related cards/content inside one detail section.
+  static const double detailScreenContentGap = CatchSpacing.s4;
+
+  /// Space between a section title and its first row/list item.
+  static const double detailScreenSectionTitleBottomGap = CatchSpacing.s4;
+
+  /// Space between a compact title and supporting copy inside one section.
+  static const double detailScreenSupportingGap = CatchSpacing.s2;
+
+  /// Space between dense rows inside a single detail card.
+  static const double detailScreenInlineRowGap = CatchSpacing.micro10;
+
+  /// Bottom breathing room inside sliver-native detail sections.
+  static const double detailScreenBottomPadding = CatchSpacing.s6;
+
+  /// Vertical gap between agenda cards that belong to the same day.
+  static const double agendaItemGap = CatchSpacing.micro10;
+
+  /// Vertical gap between different agenda day groups.
+  static const double agendaGroupGap = CatchSpacing.s6;
+
+  /// Gap between an agenda day label and the first event card.
+  static const double agendaDayLabelBottomGap = CatchSpacing.s2;
+
+  /// Default top and bottom insets for standalone agenda lists.
+  static const double agendaListTopPadding = CatchSpacing.s1;
+  static const double agendaListBottomPadding = detailScreenBottomPadding;
+
+  /// Shared inset for club interaction media on list tiles and detail headers.
+  static const double clubInteractionMediaInset = CatchSpacing.s3;
+  static const EdgeInsets clubInteractionMediaPadding = EdgeInsets.all(
+    clubInteractionMediaInset,
+  );
+
+  /// Club detail hero media and caption sizing.
+  static const double clubDetailHeroCoverHeightRatio = 3 / 4;
+  static const double clubDetailHeroNoCoverPhoneHeight = 220.0;
+  static const double clubDetailHeroNoCoverWideHeight = 164.0;
+  static const double clubDetailHeroCoverWideMinHeight = 164.0;
+  static const double clubDetailHeroCoverWideMaxHeight = 260.0;
+  static const double clubDetailHeroTitleTopPadding = CatchSpacing.s5;
+  static const double clubDetailHeroTitleBottomPadding = CatchSpacing.s3;
+  static const double clubDetailHeroTitleLocationGap = CatchSpacing.s2;
+  static const double clubDetailHeroExpandedTitleSize = 42.0;
+  static const double clubDetailHeroExpandedTitleLineHeight = 0.96;
+  static const double clubDetailHeroCollapsedTitleSize = 28.0;
+  static const double clubDetailHeroCollapsedTitleLineHeight = 0.96;
+  static const double clubDetailHeroLocationLineExtent = 24.0;
+  static const double clubDetailHeroCaptionSlack = CatchSpacing.s1;
+  static const double clubDetailHeroCaptionExtent =
+      clubDetailHeroTitleTopPadding +
+      (clubDetailHeroExpandedTitleSize *
+          clubDetailHeroExpandedTitleLineHeight *
+          2) +
+      clubDetailHeroTitleLocationGap +
+      clubDetailHeroLocationLineExtent +
+      clubDetailHeroTitleBottomPadding +
+      clubDetailHeroCaptionSlack;
+  static double clubDetailHeroLocationTextWidthFor(double captionWidth) =>
+      (captionWidth - CatchIcon.md - CatchSpacing.micro6)
+          .clamp(0.0, double.infinity)
+          .toDouble();
+
+  /// Event detail hero sizing for standard photo/activity headers.
+  static const double eventDetailHeroStandardHeightRatio = 0.58;
+  static const double eventDetailHeroStandardMinHeight = 220.0;
+  static const double eventDetailHeroStandardMaxHeight = 252.0;
+  static const double eventDetailHeroStandardWideHeight = 220.0;
+  static const double eventDetailHeroTitleBottomInset = CatchSpacing.s5;
+
+  /// Event detail hero sizing for ticket and spotlight presentations.
+  static const double eventDetailHeroTicketPhoneHeight = 380.0;
+  static const double eventDetailHeroTicketWideHeight = 360.0;
+  static const double eventDetailTicketCompactHeightThreshold = 360.0;
+  static const double eventDetailTicketVisualCompactRatio = 0.48;
+  static const double eventDetailTicketVisualExpandedRatio = 0.62;
+  static const double eventDetailTicketVisualMinHeight = 96.0;
+  static const double eventDetailTicketVisualMaxHeight = 290.0;
+  static const double eventDetailTicketTitleCompactSize = 30.0;
+  static const double eventDetailTicketTitleExpandedSize = 42.0;
+  static const double eventDetailTicketTitleLineHeight = 0.92;
+
   static const double catchesProfileBottomPadding = 112.0;
   static const double catchesHubBackgroundIconSize = 156.0;
   static const double catchesHubBackgroundIconRightOffset = -34.0;
   static const double catchesHubBackgroundIconTopOffset = -42.0;
+  static const double celebrationViewportVerticalPadding =
+      CatchSpacing.s4 + CatchSpacing.s5;
   static const double bottomActionScrimHeight = 128.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
+  static const double badgeMdVerticalPadding =
+      CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double badgeMdDotExtent =
+      CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double controlCompactMinHeight =
+      CatchSpacing.s12 + CatchSpacing.s1;
+  static const double controlMdMinHeight = CatchSpacing.s12 + CatchSpacing.s2;
+  static const double noticeTitleMessageGap = CatchSpacing.micro2;
+  static const double personUnreadBadgeHorizontalPadding =
+      CatchSpacing.micro6 + CatchStroke.hairline;
+  static const double settingsRowVerticalPadding =
+      CatchSpacing.s3 + CatchStroke.hairline;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
   static const double polaroidBodyReserve = 108.0;
@@ -983,7 +1398,16 @@ abstract final class CatchLayout {
   static const double actionMenuAlignmentX = -160.0;
   static const double avatarStatusDotExtent = 9.0;
   static const double eventHeroBackdropIconSize = 220.0;
+  static const double eventCardBackdropIconSize =
+      CatchSpacing.s16 * 2 + CatchSpacing.s12 + CatchSpacing.s1;
+  static const double eventThumbnailBackdropIconSize =
+      CatchSpacing.s16 * 2 + CatchSpacing.s4;
+  static const double eventActivityGlyphExtent =
+      CatchSpacing.s12 + CatchSpacing.s2;
+  static const double eventActivityGlyphIconSize =
+      CatchIcon.lg + CatchSpacing.micro2;
   static const double eventHeroBadgeExtent = 56.0;
+  static const double eventHeroBadgeRadius = eventHeroBadgeExtent / 2;
   static const double eventHeroBadgeIconSize = 26.0;
   static const double eventSuccessStageNavExtent = CatchSpacing.s12;
   static const double eventSuccessStageGlyphExtent = 88.0;

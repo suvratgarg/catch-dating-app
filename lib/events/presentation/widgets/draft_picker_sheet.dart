@@ -130,9 +130,9 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
                 shrinkWrap: true,
                 padding: const EdgeInsets.fromLTRB(
                   CatchSpacing.s5,
-                  4,
+                  CatchSpacing.s1,
                   CatchSpacing.s5,
-                  12,
+                  CatchSpacing.s3,
                 ),
                 itemCount: _drafts.length,
                 separatorBuilder: (_, _) => gapH8,
@@ -170,7 +170,7 @@ class _DraftCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSurface(
       onTap: isDeleting ? null : onTap,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       borderColor: CatchTokens.of(context).line,
       child: Row(
         children: [

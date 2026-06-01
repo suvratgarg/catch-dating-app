@@ -18,6 +18,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/graded_image.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
@@ -436,7 +437,6 @@ class _ExploreClubPolaroidCard extends StatelessWidget {
     final card = CatchPolaroid(
       onTap: isSynthetic ? null : () => _openClub(context, club),
       radius: CatchRadius.sm,
-      padding: clubInteractionMediaPadding,
       paddingKey: const ValueKey('explore-club-polaroid-padding'),
       media: _ExploreClubCover(club: club),
       mediaOverlay: Positioned(
@@ -484,9 +484,8 @@ class _ExploreFeedClubRow extends StatelessWidget {
       radius: CatchRadius.md,
       borderColor: t.line2,
       elevation: CatchSurfaceElevation.card,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox.square(
             // Fixed compact cover thumbnail (not scaling media). A bounded box
@@ -510,18 +509,14 @@ class _ExploreFeedClubRow extends StatelessWidget {
                   club.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(
-                    context,
-                    size: 27,
-                    height: 1,
-                  ),
+                  style: CatchTextStyles.clubDisplay(context, size: 27),
                 ),
                 gapH4,
                 Text(
                   _clubSupportingLabel(club),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
               ],
             ),
@@ -552,11 +547,13 @@ class _ExploreClubCover extends StatelessWidget {
     if (url == null || url.isEmpty) {
       return ClubPolaroidArtwork(club: club, compact: compact);
     }
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      errorBuilder: (_, _, _) =>
-          ClubPolaroidArtwork(club: club, compact: compact),
+    return GradedImage(
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) =>
+            ClubPolaroidArtwork(club: club, compact: compact),
+      ),
     );
   }
 }
@@ -576,7 +573,7 @@ class _ExploreClubTags extends StatelessWidget {
         color: t.ink3,
       );
     }
-    return ClubTagWrap(tags: tags, uppercase: true);
+    return ClubTagWrap(tags: tags);
   }
 }
 
@@ -662,7 +659,6 @@ class _ExploreEventsLoadingSliver extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           borderColor: t.line,
           elevation: CatchSurfaceElevation.card,
-          radius: CatchRadius.lg,
           child: CatchSkeleton.card(
             height: CatchLayout.exploreEventsSkeletonHeight,
           ),
@@ -689,12 +685,7 @@ class _ExploreEventsEmptySliver extends ConsumerWidget {
     );
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-        ),
+        padding: CatchInsets.pageHeaderBody,
         child: CatchEmptyState(
           icon: CatchIcons.eventAvailable,
           title: emptyState.title,
@@ -893,7 +884,7 @@ Club _syntheticExploreClub(int index) {
     area: spec.area,
     hostUserId: '${_syntheticExploreIdPrefix}host-$index',
     hostName: spec.hostName,
-    createdAt: DateTime(2026, 5, 1),
+    createdAt: DateTime(2026, 5),
     tags: spec.tags,
     memberCount: spec.memberCount,
     rating: spec.rating,

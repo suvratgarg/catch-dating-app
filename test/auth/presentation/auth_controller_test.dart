@@ -42,7 +42,6 @@ void main() {
             step: AuthStep.otp,
             verificationId: 'verification-id',
             phoneNumber: '9999999999',
-            countryCode: '+91',
           ),
         );
         expect(repository.credential, isNull);

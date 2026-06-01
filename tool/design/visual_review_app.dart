@@ -124,16 +124,16 @@ class VisualReviewApp extends StatelessWidget {
               spacing: 20,
               runSpacing: 24,
               children: [
-                _PhoneFrame(
+                const _PhoneFrame(
                   label: 'Catches hub',
-                  child: const SwipeHubScreen(),
+                  child: SwipeHubScreen(),
                 ),
-                _PhoneFrame(label: 'Calendar', child: const CalendarScreen()),
-                _PhoneFrame(
+                const _PhoneFrame(label: 'Calendar', child: CalendarScreen()),
+                const _PhoneFrame(
                   label: 'Map view',
-                  child: const EventMapView(enableNetworkTiles: false),
+                  child: EventMapView(enableNetworkTiles: false),
                 ),
-                _PhoneFrame(label: 'Filters', child: const FiltersScreen()),
+                const _PhoneFrame(label: 'Filters', child: FiltersScreen()),
                 _PhoneFrame(
                   label: 'Event recap',
                   child: EventRecapScreen(eventId: liveRun.id),
@@ -164,7 +164,7 @@ class VisualReviewApp extends StatelessWidget {
                     ),
                   ),
                 ),
-                _PhoneFrame(label: 'Settings', child: const SettingsScreen()),
+                const _PhoneFrame(label: 'Settings', child: SettingsScreen()),
               ],
             ),
           ),
@@ -266,7 +266,6 @@ class _PhoneFrame extends StatelessWidget {
             width: _phoneSize.width * _scale,
             height: _phoneSize.height * _scale,
             child: FittedBox(
-              fit: BoxFit.contain,
               alignment: Alignment.topLeft,
               child: Container(
                 width: _phoneSize.width,
@@ -340,7 +339,7 @@ Club _club() {
     area: 'Bandra',
     hostUserId: 'host-1',
     hostName: 'Priya',
-    createdAt: DateTime(2025, 1, 1),
+    createdAt: DateTime(2025),
     memberCount: 420,
   );
 }
@@ -362,7 +361,6 @@ UserProfile _user() {
     phoneNumber: '+919876543210',
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
-    profilePhotos: const [],
   );
 }
 
@@ -370,7 +368,6 @@ UserProfile _visualReviewUser() {
   return _user().copyWith(
     activityPreferences: const ActivityPreferences(
       running: RunningPreferences(
-        paceMinSecsPerKm: 300,
         paceMaxSecsPerKm: 390,
         preferredDistances: [PreferredDistance.fiveK, PreferredDistance.tenK],
         runningReasons: [RunReason.community, RunReason.social],

@@ -65,20 +65,20 @@ class EventDateRailCard extends StatelessWidget {
         effectiveStatus != null &&
         effectiveStatus.isNotEmpty &&
         effectiveStatus.toLowerCase() != 'full';
-    final card = PhysicalShape(
+    final physicalElevation =
+        stripPosition == EventDateRailCardStripPosition.single
+        ? CatchElevation.physicalTicket
+        : 0.0;
+    final ticket = PhysicalShape(
       clipper: _DateRailTicketClipper(position: stripPosition),
       clipBehavior: Clip.antiAlias,
       color: t.surface,
-      elevation: stripPosition == EventDateRailCardStripPosition.single
-          ? CatchElevation.physicalTicket
-          : 0,
+      shadowColor: CatchElevation.physicalShadow,
       child: CatchSurface(
         onTap: onTap,
         radius: CatchRadius.md,
-        elevation: CatchSurfaceElevation.none,
         backgroundColor: Colors.transparent,
         padding: EdgeInsets.zero,
-        clipBehavior: Clip.none,
         child: Stack(
           children: [
             IntrinsicHeight(
@@ -88,12 +88,7 @@ class EventDateRailCard extends StatelessWidget {
                   _DateRail(startTime: event.startTime, color: visual.accent),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        CatchSpacing.s4,
-                        CatchSpacing.s3,
-                        CatchSpacing.s4,
-                        CatchSpacing.s3,
-                      ),
+                      padding: CatchInsets.listBody,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -201,6 +196,16 @@ class EventDateRailCard extends StatelessWidget {
         ),
       ),
     );
+    final card = physicalElevation == 0
+        ? ticket
+        : CustomPaint(
+            painter: _DateRailTicketShadowPainter(
+              color: CatchElevation.physicalShadow,
+              elevation: physicalElevation,
+              position: stripPosition,
+            ),
+            child: ticket,
+          );
     return heroTag == null
         ? card
         : eventHeroSurface(tag: heroTag!, child: card);
@@ -307,6 +312,36 @@ class _DateRailTicketClipper extends CustomClipper<Path> {
   }
 }
 
+class _DateRailTicketShadowPainter extends CustomPainter {
+  const _DateRailTicketShadowPainter({
+    required this.color,
+    required this.elevation,
+    required this.position,
+  });
+
+  final Color color;
+  final double elevation;
+  final EventDateRailCardStripPosition position;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.isEmpty || elevation <= 0) return;
+    canvas.drawShadow(
+      _dateRailTicketPath(size, position: position),
+      color,
+      elevation,
+      false,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _DateRailTicketShadowPainter oldDelegate) {
+    return oldDelegate.color != color ||
+        oldDelegate.elevation != elevation ||
+        oldDelegate.position != position;
+  }
+}
+
 class _DateRailTicketBorderPainter extends CustomPainter {
   const _DateRailTicketBorderPainter({
     required this.color,
@@ -381,17 +416,14 @@ class _DateRail extends StatelessWidget {
     final mutedOnColor = t.onFillMuted(color);
     return Container(
       width: _dateRailWidth,
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s4),
+      padding: CatchInsets.tileVertical,
       color: color,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             EventFormatters.shortWeekday(startTime).toUpperCase(),
-            style: CatchTextStyles.monoLabelS(
-              context,
-              color: mutedOnColor,
-            ),
+            style: CatchTextStyles.monoLabelS(context, color: mutedOnColor),
           ),
           gapH4,
           Text(

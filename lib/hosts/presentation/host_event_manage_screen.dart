@@ -160,12 +160,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       body: SafeArea(
         child: ListView(
           key: const Key('host_event_manage_scroll_view'),
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            12,
-            CatchSpacing.s5,
-            24,
-          ),
+          padding: CatchInsets.pageBodyTight,
           children: [
             Row(
               children: [
@@ -203,10 +198,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             gapH20,
             if (event.isFull) ...[
               CatchSurface(
-                padding: const EdgeInsets.all(CatchSpacing.s4),
+                padding: CatchInsets.content,
                 backgroundColor: t.ink,
                 borderWidth: 0,
-                radius: CatchRadius.lg,
                 child: Row(
                   children: [
                     Icon(
@@ -217,7 +211,10 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                     gapW10,
                     Text(
                       'FULL',
-                      style: CatchTextStyles.sectionTitle(context, color: t.surface),
+                      style: CatchTextStyles.sectionTitle(
+                        context,
+                        color: t.surface,
+                      ),
                     ),
                   ],
                 ),
@@ -257,7 +254,6 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         gapH20,
         EventSuccessHostSection(
           event: event,
-          initialTab: EventSuccessHostTab.setup,
           showTabs: false,
           fixtureActions: widget.eventSuccessFixtureActions,
         ),
@@ -392,9 +388,8 @@ class _PrivateAccessShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: child,
     );
   }
@@ -543,9 +538,8 @@ class _HostEventActionsCard extends ConsumerWidget {
     final isMutating = cancelMutation.isPending || deleteMutation.isPending;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -726,12 +720,8 @@ class _HostEventSummaryCard extends StatelessWidget {
           );
 
     return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s4,
-        vertical: CatchSpacing.s3,
-      ),
+      padding: CatchInsets.listBody,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         children: [
           _HostEventSummaryRow(

@@ -91,7 +91,7 @@ class _RichShareCardSheetState extends State<RichShareCardSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const BottomSheetGrabber(width: CatchSpacing.s10),
+            const BottomSheetGrabber(),
             gapH16,
             RepaintBoundary(
               key: _captureKey,

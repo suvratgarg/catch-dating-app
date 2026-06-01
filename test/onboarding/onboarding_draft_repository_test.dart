@@ -59,7 +59,7 @@ void main() {
       final providerRepository = container.read(
         onboardingDraftRepositoryProvider,
       );
-      final draft = buildDraft(firstName: 'Asha');
+      final draft = buildDraft();
 
       await providerRepository.saveDraft(uid: 'runner-1', draft: draft);
 

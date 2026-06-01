@@ -686,7 +686,6 @@ void main() {
       text: TextSpan(text: controller.text, style: style),
       textDirection: TextDirection.ltr,
       textScaler: MediaQuery.textScalerOf(context),
-      maxLines: null,
     )..layout(maxWidth: 300);
     final lineWidths = painter.computeLineMetrics().map((line) => line.width);
     final expectedWidth = lineWidths.reduce(math.max);
@@ -918,7 +917,7 @@ void main() {
   });
 
   testWidgets('inline email edit uses the email keyboard', (tester) async {
-    final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
+    final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
 
     final emailTile = find.byWidgetPredicate(
@@ -942,7 +941,7 @@ void main() {
   testWidgets('inline email edit keeps row geometry stable and actions close', (
     tester,
   ) async {
-    final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
+    final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
 
     final emailTile = _profileInfoTile('Email');

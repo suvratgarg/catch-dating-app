@@ -38,9 +38,9 @@ class CatchVerticalSection extends StatelessWidget {
 
   static const _headerPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
-    14,
+    CatchSpacing.micro14,
     CatchSpacing.s5,
-    8,
+    CatchSpacing.s2,
   );
 
   @override
@@ -51,7 +51,6 @@ class CatchVerticalSection extends StatelessWidget {
       children: [
         SectionHeader(
           title: title,
-          uppercase: false,
           titleStyle: CatchTextStyles.titleL(context),
           padding: _headerPadding,
         ),

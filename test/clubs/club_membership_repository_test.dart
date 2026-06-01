@@ -27,7 +27,7 @@ void main() {
         'uid': 'runner-1',
         'role': ClubMembershipRole.member.name,
         'status': ClubMembershipStatus.active.name,
-        'joinedAt': DateTime(2026, 1, 1),
+        'joinedAt': DateTime(2026),
         'leftAt': null,
       });
 

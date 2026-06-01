@@ -116,7 +116,6 @@ void main() {
               participationStatus: EventParticipationStatus.signedUp,
               checkInOpen: true,
               eventEnded: false,
-              arrivalMissionAssigned: false,
             )
             .kind,
         EventSuccessAttendeeMomentKind.compatibilityQuestionnaire,

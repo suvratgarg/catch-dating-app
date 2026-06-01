@@ -82,9 +82,7 @@ class ProfileInfoSection extends StatelessWidget {
             indent: 36,
             color: CatchTokens.of(
               context,
-            ).line.withValues(
-              alpha: CatchOpacity.profileInfoDivider,
-            ),
+            ).line.withValues(alpha: CatchOpacity.profileInfoDivider),
           ),
         );
       }
@@ -103,7 +101,7 @@ class ProfileInfoSection extends StatelessWidget {
     final body = grouped
         ? CatchSurface(
             borderColor: CatchTokens.of(context).line,
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+            padding: CatchInsets.contentHorizontal,
             child: tileList,
           )
         : tileList;

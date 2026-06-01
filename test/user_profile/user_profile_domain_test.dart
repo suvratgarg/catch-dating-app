@@ -21,7 +21,7 @@ void main() {
     test('#21 birthday earlier this year — full year counted', () {
       final now = DateTime.now();
       // DOB = Jan 1, (now.year - 30). Birthday has already passed this year.
-      final dob = DateTime(now.year - 30, 1, 1);
+      final dob = DateTime(now.year - 30);
       final user = buildUser(dateOfBirth: dob);
       expect(user.age, 30);
     });

@@ -115,7 +115,6 @@ class _StackedEmptyStateContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _EmptyStateIcon(
           icon: icon,
@@ -159,7 +158,6 @@ class _InlineEmptyStateContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _EmptyStateIcon(
           icon: icon,

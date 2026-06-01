@@ -325,12 +325,7 @@ class _CalendarDateHeader extends StatelessWidget {
         onVerticalDragUpdate: (details) =>
             onVerticalDragDelta(details.delta.dy),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s2,
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-          ),
+          padding: CatchInsets.pageHeaderCompact,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -458,7 +453,7 @@ class _CalendarStatsHeader extends StatelessWidget {
             maxWidth: CatchLayout.maxContentWidth,
           ),
           child: CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.micro14),
+            padding: CatchInsets.tileContentCompact,
             radius: CatchRadius.md,
             borderColor: t.line,
             child: Row(
@@ -526,7 +521,6 @@ class _WeekStrip extends StatelessWidget {
                 return EventDateMarker(
                   key: _calendarWeekDayKey(date),
                   date: date,
-                  layout: EventDateMarkerLayout.weekStrip,
                   active: DateUtils.isSameDay(date, selectedDate),
                   hasEvent: eventDays.contains(date),
                   onTap: () => onDateSelected(date),
@@ -653,7 +647,7 @@ class _CalendarMessage extends StatelessWidget {
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
         iconSize: CatchLayout.calendarEmptyIconSize,
-        padding: const EdgeInsets.all(CatchSpacing.s6),
+        padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),
         messageStyle: CatchTextStyles.proseM(
           context,

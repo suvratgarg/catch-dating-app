@@ -21,14 +21,13 @@ void main() {
       startingPointLat: 19.076,
       startingPointLng: 72.8777,
       description: 'Old description',
-      distanceKm: 5,
     );
     final repository = FakeEventRepository();
 
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId, hostUserId: 'host-1'),
+        club: buildClub(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),
@@ -80,7 +79,7 @@ void main() {
     await pumpEventsTestApp(
       tester,
       EditHostedEventScreen(
-        club: buildClub(id: event.clubId, hostUserId: 'host-1'),
+        club: buildClub(id: event.clubId),
         event: event,
         now: () => DateTime(2026, 5, 21, 9),
       ),

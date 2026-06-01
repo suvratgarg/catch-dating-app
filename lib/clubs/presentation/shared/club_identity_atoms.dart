@@ -70,7 +70,7 @@ class ClubMemberSeal extends StatelessWidget {
       borderColor: accent.withValues(alpha: CatchOpacity.clubMemberSealBorder),
       borderWidth: CatchStroke.clubMemberSeal,
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s2),
+        padding: CatchInsets.iconChipContent,
         child: Center(
           child: FittedBox(
             fit: BoxFit.scaleDown,

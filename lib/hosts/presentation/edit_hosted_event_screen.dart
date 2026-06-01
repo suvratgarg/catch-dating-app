@@ -300,12 +300,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
         child: Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s4,
-              CatchSpacing.s5,
-              CatchSpacing.s6,
-            ),
+            padding: CatchInsets.pageBody,
             children: [
               _EditScopeNotice(
                 isCancelled: widget.event.isCancelled,
@@ -351,7 +346,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                   ),
                 ],
                 gapH12,
-                FieldLabel('Duration'),
+                const FieldLabel('Duration'),
                 gapH8,
                 _DurationStepper(
                   durationMinutes: _durationMinutes,
@@ -519,12 +514,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-          ),
+          padding: CatchInsets.listBody,
           child: CatchButton(
             key: EditHostedEventKeys.saveButton,
             label: 'Save changes',
@@ -774,9 +764,8 @@ class _EditScopeNotice extends StatelessWidget {
         : 'You can edit schedule, location, event details, capacity, pricing, admission policy, and invite setup until the first booking or waitlist join.';
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -800,10 +789,7 @@ class _EditScopeNotice extends StatelessWidget {
                       ),
                     ),
                     if (scheduleLocked && !isCancelled)
-                      const CatchBadge(
-                        label: 'Locked',
-                        tone: CatchBadgeTone.neutral,
-                      ),
+                      const CatchBadge(label: 'Locked'),
                   ],
                 ),
                 gapH4,
@@ -867,9 +853,8 @@ class _EditablePolicyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1128,9 +1113,8 @@ class _ReadOnlyPolicyCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final policy = event.effectiveEventPolicy;
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1216,13 +1200,15 @@ class _ReadOnlyScheduleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(event.shortDateLabel, style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            event.shortDateLabel,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH4,
           Text(event.timeRangeLabel, style: CatchTextStyles.bodyLead(context)),
           gapH8,
@@ -1266,10 +1252,7 @@ class _DurationStepper extends StatelessWidget {
         gapW10,
         Expanded(
           child: CatchSurface(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s3,
-              vertical: CatchSpacing.s3,
-            ),
+            padding: CatchInsets.controlContent,
             radius: CatchRadius.md,
             child: Center(
               child: Text(

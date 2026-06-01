@@ -38,7 +38,7 @@ ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
       uid: uid,
       role: ClubMembershipRole.member,
       status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026, 1, 1),
+      joinedAt: DateTime(2026),
     );
 
 void main() {
@@ -149,7 +149,7 @@ void main() {
 
       final weekend = exploreTimeWindowFor(ExploreTimeFilter.weekend, now)!;
       expect(weekend.start, DateTime(2026, 5, 29));
-      expect(weekend.end, DateTime(2026, 6, 1));
+      expect(weekend.end, DateTime(2026, 6));
 
       final thisWeek = exploreTimeWindowFor(ExploreTimeFilter.thisWeek, now)!;
       expect(thisWeek.start, now);
@@ -165,11 +165,7 @@ void main() {
     });
 
     test('matchesClubSearchQuery matches name, area, host, and tags', () {
-      final bandraClub = buildClub(
-        id: 'club-1',
-        name: 'Stride Social',
-        area: 'Bandra',
-      );
+      final bandraClub = buildClub();
       final hostClub = buildClub(
         id: 'club-2',
         name: 'Sunrise Crew',
@@ -191,21 +187,18 @@ void main() {
       final now = DateTime(2026, 1, 1, 8);
       final matchingClub = buildClub(
         id: 'matching-club',
-        area: 'Bandra',
         tags: const ['tempo'],
         rating: 4.8,
         nextEventAt: now.add(const Duration(days: 2)),
       );
       final staleEventClub = buildClub(
         id: 'stale-event-club',
-        area: 'Bandra',
         tags: const ['tempo'],
         rating: 4.9,
         nextEventAt: now.subtract(const Duration(hours: 1)),
       );
       final lowRatedClub = buildClub(
         id: 'low-rated-club',
-        area: 'Bandra',
         tags: const ['tempo'],
         rating: 4.2,
         nextEventAt: now.add(const Duration(days: 2)),
@@ -267,7 +260,7 @@ void main() {
     test(
       'mergeExploreSourceClubs keeps hosted clubs outside the city feed',
       () {
-        final cityClub = buildClub(id: 'city-club', location: 'mumbai');
+        final cityClub = buildClub(id: 'city-club');
         final hostedClub = buildClub(
           id: 'hosted-club',
           location: 'indore',
@@ -402,7 +395,7 @@ void main() {
     );
 
     test('filteredClubsProvider applies the normalized search query', () async {
-      final bandraClub = buildClub(id: 'bandra-club', area: 'Bandra');
+      final bandraClub = buildClub(id: 'bandra-club');
       final ashaClub = buildClub(
         id: 'asha-club',
         hostName: 'Asha',
@@ -436,7 +429,7 @@ void main() {
     test(
       'exploreFeedViewModelProvider filters events by device distance',
       () async {
-        final club = buildClub(id: 'club-distance', location: 'mumbai');
+        final club = buildClub(id: 'club-distance');
         final near = event_test.buildEvent(
           id: 'near-event',
           clubId: club.id,
@@ -501,8 +494,8 @@ void main() {
     test(
       'exploreFeedViewModelProvider resolves viewer-specific availability',
       () async {
-        final user = event_test.buildUser(uid: 'runner-1');
-        final club = buildClub(id: 'club-availability', location: 'mumbai');
+        final user = event_test.buildUser();
+        final club = buildClub(id: 'club-availability');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-event',
           clubId: club.id,
@@ -606,7 +599,7 @@ void main() {
       'exploreFeedViewModelProvider does not block on personal event enrichment',
       () async {
         final user = event_test.buildUser(uid: 'runner-enrichment');
-        final club = buildClub(id: 'club-enrichment', location: 'mumbai');
+        final club = buildClub(id: 'club-enrichment');
         final joinedEvent = event_test.buildEvent(
           id: 'joined-enrichment',
           clubId: club.id,

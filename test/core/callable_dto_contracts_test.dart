@@ -54,12 +54,7 @@ void main() {
         longitude: 77.5929,
         notes: 'Meet beside the main entrance.',
       );
-      const constraints = EventConstraints(
-        minAge: 21,
-        maxAge: 45,
-        maxMen: null,
-        maxWomen: null,
-      );
+      const constraints = EventConstraints(minAge: 21, maxAge: 45);
       const eventFormat = EventFormatSnapshot.socialRun();
 
       _expectValid(
@@ -82,7 +77,6 @@ void main() {
           priceInPaise: 49900,
           currency: 'INR',
           constraints: constraints,
-          eventPolicy: null,
           eventFormat: eventFormat,
           eventSuccessDefaults: EventSuccessDefaults.recommendedForActivity(
             ActivityKind.socialRun,
@@ -115,7 +109,7 @@ void main() {
       );
       _expectValid(
         'EventIdCallablePayload',
-        EventIdCallableRequest(
+        const EventIdCallableRequest(
           eventId: 'event-1',
           inviteCode: 'CATCH_2026',
         ).toJson(),
@@ -157,9 +151,7 @@ void main() {
           description: 'Weekly social runs.',
           location: 'bengaluru',
           area: 'Cubbon Park',
-          imageUrl: null,
           instagramHandle: 'cubbonrunners',
-          phoneNumber: null,
           email: 'hello@example.com',
         ).toJson(),
       );

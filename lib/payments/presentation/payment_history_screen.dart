@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -84,10 +85,7 @@ class _PaymentList extends ConsumerWidget {
           );
         }
         return ListView.separated(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s4,
-            vertical: CatchSpacing.s3,
-          ),
+          padding: CatchInsets.listBody,
           itemCount: payments.length,
           separatorBuilder: (context, _) => Center(
             child: ConstrainedBox(
@@ -127,7 +125,7 @@ class _PaymentTile extends ConsumerWidget {
       button: true,
       label: 'Payment for $eventTitle',
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+        padding: CatchInsets.contentVertical,
         child: InkWell(
           key: PaymentHistoryKeys.paymentTile(payment.id),
           borderRadius: BorderRadius.circular(CatchRadius.md),
@@ -265,7 +263,8 @@ class _PaymentTile extends ConsumerWidget {
                     gapH16,
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
+                      child: CatchButton(
+                        label: 'Get help with this booking',
                         onPressed: () {
                           Navigator.of(sheetContext).pop();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -280,27 +279,13 @@ class _PaymentTile extends ConsumerWidget {
                             ),
                           );
                         },
-                        icon: Icon(
-                          CatchIcons.helpOutlineRounded,
-                          size: CatchIcon.md,
+                        icon: Icon(CatchIcons.helpOutlineRounded),
+                        variant: CatchButtonVariant.secondary,
+                        foregroundColor: t.warning,
+                        borderColor: t.warning.withValues(
+                          alpha: CatchOpacity.paymentHelpBorder,
                         ),
-                        label: const Text('Get help with this booking'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: t.warning,
-                          side: BorderSide(
-                            color: t.warning.withValues(
-                              alpha: CatchOpacity.paymentHelpBorder,
-                            ),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              CatchRadius.pill,
-                            ),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: CatchSpacing.s3,
-                          ),
-                        ),
+                        fullWidth: true,
                       ),
                     ),
                   ],

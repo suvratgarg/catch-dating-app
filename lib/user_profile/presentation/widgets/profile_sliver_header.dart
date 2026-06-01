@@ -32,19 +32,11 @@ class _ProfileTitle extends StatelessWidget {
     return Material(
       color: t.bg,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          CatchSpacing.s3,
-        ),
+        padding: CatchInsets.pageHeaderBody,
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                'Profile',
-                style: CatchTextStyles.headline(context),
-              ),
+              child: Text('Profile', style: CatchTextStyles.headline(context)),
             ),
             const SizedBox(width: CatchSpacing.s2),
             const _SettingsButton(),

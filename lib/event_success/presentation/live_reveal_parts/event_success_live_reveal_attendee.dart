@@ -98,106 +98,106 @@ class EventSuccessLiveRevealAttendeeCard extends ConsumerWidget {
       borderColor: revealColor.withValues(
         alpha: CatchOpacity.revealAttendeeBorder,
       ),
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              CatchBadge(
+                label: kind.label,
+                tone: CatchBadgeTone.live,
+                icon: CatchIcons.boltRounded,
+              ),
+              if (assigned != null)
                 CatchBadge(
-                  label: kind.label,
-                  tone: CatchBadgeTone.live,
-                  icon: CatchIcons.boltRounded,
+                  label: isCountingDown
+                      ? 'Unlocking'
+                      : showAssignment
+                      ? 'Revealed'
+                      : 'Waiting',
+                  tone: showAssignment
+                      ? CatchBadgeTone.success
+                      : isCountingDown
+                      ? CatchBadgeTone.warning
+                      : CatchBadgeTone.neutral,
                 ),
-                if (assigned != null)
-                  CatchBadge(
-                    label: isCountingDown
-                        ? 'Unlocking'
-                        : showAssignment
-                        ? 'Revealed'
-                        : 'Waiting',
-                    tone: showAssignment
-                        ? CatchBadgeTone.success
-                        : isCountingDown
-                        ? CatchBadgeTone.warning
-                        : CatchBadgeTone.neutral,
-                  ),
-              ],
-            ),
-            gapH12,
-            Text(title, style: CatchTextStyles.titleL(context)),
-            gapH6,
-            Text(
-              _attendeeSubtitle(
-                assigned: assigned,
-                showAssignment: showAssignment,
-                isCountingDown: isCountingDown,
-              ),
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-            if (assigned != null && !optedOut) ...[
-              gapH16,
-              if (isCountingDown)
-                _AttendeeCountdown(
-                  plan: plan,
-                  now: referenceNow,
-                  kind: kind,
-                  clue: _attendeeClue(assigned, activeRound),
-                )
-              else if (!showAssignment)
-                _WaitingRevealCue(kind: kind)
-              else if (kind == EventSuccessRevealAssignmentKind.rotations)
-                _VisibleRotationSlots(
-                  slots: visibleSlots,
-                  profilesByUid: profilesByUid,
-                  peersLoading: peersLoading,
-                )
-              else if (groupSlots.isNotEmpty)
-                _VisibleGroupRotationSlots(
-                  slots: visibleGroupSlots,
-                  profilesByUid: profilesByUid,
-                  peersLoading: peersLoading,
-                )
-              else
-                _VisiblePodAssignment(
-                  assignment: assigned,
-                  peerProfiles: peerProfiles,
-                  peersLoading: peersLoading,
-                ),
-              if (roundCount > 1) ...[
-                gapH12,
-                _RevealRoundRail(
-                  roundCount: roundCount,
-                  activeRoundIndex: activeRound,
-                  revealedThrough: revealedThrough,
-                  foreground: t.ink,
-                ),
-              ],
             ],
-            gapH14,
-            CatchSurface(
-              backgroundColor: t.ink.withValues(
-                alpha: CatchOpacity.revealAttendeeActionDock,
-              ),
-              radius: CatchRadius.sm,
-              borderWidth: 0,
-              padding: const EdgeInsets.all(CatchSpacing.s2),
-              child: CatchButton(
-                label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
-                variant: optedOut
-                    ? CatchButtonVariant.primary
-                    : CatchButtonVariant.secondary,
-                isLoading: mutation.isPending,
-                onPressed: mutation.isPending
-                    ? null
-                    : () => _toggleOptOut(ref, optedOut: !optedOut),
-                fullWidth: true,
-              ),
+          ),
+          gapH12,
+          Text(title, style: CatchTextStyles.titleL(context)),
+          gapH6,
+          Text(
+            _attendeeSubtitle(
+              assigned: assigned,
+              showAssignment: showAssignment,
+              isCountingDown: isCountingDown,
             ),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          if (assigned != null && !optedOut) ...[
+            gapH16,
+            if (isCountingDown)
+              _AttendeeCountdown(
+                plan: plan,
+                now: referenceNow,
+                kind: kind,
+                clue: _attendeeClue(assigned, activeRound),
+              )
+            else if (!showAssignment)
+              _WaitingRevealCue(kind: kind)
+            else if (kind == EventSuccessRevealAssignmentKind.rotations)
+              _VisibleRotationSlots(
+                slots: visibleSlots,
+                profilesByUid: profilesByUid,
+                peersLoading: peersLoading,
+              )
+            else if (groupSlots.isNotEmpty)
+              _VisibleGroupRotationSlots(
+                slots: visibleGroupSlots,
+                profilesByUid: profilesByUid,
+                peersLoading: peersLoading,
+              )
+            else
+              _VisiblePodAssignment(
+                assignment: assigned,
+                peerProfiles: peerProfiles,
+                peersLoading: peersLoading,
+              ),
+            if (roundCount > 1) ...[
+              gapH12,
+              _RevealRoundRail(
+                roundCount: roundCount,
+                activeRoundIndex: activeRound,
+                revealedThrough: revealedThrough,
+                foreground: t.ink,
+              ),
+            ],
           ],
+          gapH14,
+          CatchSurface(
+            backgroundColor: t.ink.withValues(
+              alpha: CatchOpacity.revealAttendeeActionDock,
+            ),
+            radius: CatchRadius.sm,
+            borderWidth: 0,
+            padding: CatchInsets.iconChipContent,
+            child: CatchButton(
+              label: optedOut ? _joinLabel(kind) : _skipLabel(kind),
+              variant: optedOut
+                  ? CatchButtonVariant.primary
+                  : CatchButtonVariant.secondary,
+              isLoading: mutation.isPending,
+              onPressed: mutation.isPending
+                  ? null
+                  : () => _toggleOptOut(ref, optedOut: !optedOut),
+              fullWidth: true,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -85,9 +85,8 @@ void main() {
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(
-                buildUser(uid: 'runner-1').copyWith(profileComplete: false),
-              ),
+              (ref) =>
+                  Stream.value(buildUser().copyWith(profileComplete: false)),
             ),
             onboardingDraftRepositoryProvider.overrideWithValue(
               draftRepository,
@@ -119,9 +118,9 @@ void main() {
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
-              buildUser(uid: 'runner-1', runPreferencesVersion: 0).copyWith(
-                activityPreferences: const ActivityPreferences(),
-              ),
+              buildUser(
+                runPreferencesVersion: 0,
+              ).copyWith(activityPreferences: const ActivityPreferences()),
             ),
           ),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
@@ -487,9 +486,7 @@ void main() {
       () async {
         final repository = FakeAuthRepository();
         final userProfileRepository = FakeOnboardingUserProfileRepository(
-          currentUser: buildUser(
-            uid: 'runner-1',
-          ).copyWith(profileComplete: false),
+          currentUser: buildUser().copyWith(profileComplete: false),
         );
         final draftRepository = FakeOnboardingDraftRepository();
         final container = createOnboardingTestContainer(
@@ -500,9 +497,8 @@ void main() {
             ),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(
-                buildUser(uid: 'runner-1').copyWith(profileComplete: false),
-              ),
+              (ref) =>
+                  Stream.value(buildUser().copyWith(profileComplete: false)),
             ),
             onboardingDraftRepositoryProvider.overrideWithValue(
               draftRepository,
@@ -553,9 +549,7 @@ void main() {
     test('saves prompts and marks the social profile complete', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository(
-        currentUser: buildUser(
-          uid: 'runner-1',
-        ).copyWith(profileComplete: false),
+        currentUser: buildUser().copyWith(profileComplete: false),
       );
       final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
@@ -566,9 +560,7 @@ void main() {
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(
-              buildUser(uid: 'runner-1').copyWith(profileComplete: false),
-            ),
+            (ref) => Stream.value(buildUser().copyWith(profileComplete: false)),
           ),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],

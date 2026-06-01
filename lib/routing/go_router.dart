@@ -345,7 +345,6 @@ GoRouter goRouter(Ref ref) {
             final Event event => event,
             _ => null,
           },
-          initialSection: HostEventManageSection.setup,
         ),
       ),
       GoRoute(

@@ -28,7 +28,7 @@ ClubMembership _membership({
   uid: uid,
   role: ClubMembershipRole.member,
   status: status,
-  joinedAt: DateTime(2026, 1, 1),
+  joinedAt: DateTime(2026),
 );
 
 void main() {
@@ -185,7 +185,7 @@ void main() {
         startTime: now.subtract(const Duration(hours: 2)),
       );
       final result = buildClubDetailViewModel(
-        clubAsync: AsyncData(buildClub(hostUserId: 'host-1')),
+        clubAsync: AsyncData(buildClub()),
         eventsAsync: AsyncData([futureEvent, pastEvent, soonerFutureRun]),
         reviewsAsync: AsyncData([buildReview()]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
@@ -225,7 +225,7 @@ void main() {
       );
 
       final result = buildClubDetailViewModel(
-        clubAsync: AsyncData(buildClub(hostUserId: 'host-1')),
+        clubAsync: AsyncData(buildClub()),
         eventsAsync: AsyncData([futureEvent]),
         reviewsAsync: const AsyncLoading(),
         userProfileAsync: const AsyncLoading(),
@@ -540,10 +540,8 @@ void main() {
 
     test('updates an existing club without requiring profile state', () async {
       final existingClub = buildClub(
-        id: 'club-1',
         name: 'Old Name',
         description: 'Old description',
-        area: 'Bandra',
         imageUrl: 'https://example.com/old.jpg',
         instagramHandle: '@oldclub',
         phoneNumber: '+91 99999 99999',
@@ -600,10 +598,7 @@ void main() {
     });
 
     test('uploads a replacement club photo when editing', () async {
-      final existingClub = buildClub(
-        id: 'club-1',
-        imageUrl: 'https://example.com/old.jpg',
-      );
+      final existingClub = buildClub(imageUrl: 'https://example.com/old.jpg');
       final fakeRepository = FakeClubsRepository();
       final fakeImageUploadRepository = FakeImageUploadRepository(
         pickedImage: XFile('/tmp/club-photo.jpg'),
@@ -652,7 +647,6 @@ void main() {
       'lets a co-host update club media without changing owner fields',
       () async {
         final existingClub = buildClub(
-          id: 'club-1',
           hostUserId: 'owner-1',
           ownerUserId: 'owner-1',
           hostUserIds: const ['owner-1', 'cohost-1'],
@@ -727,7 +721,7 @@ void main() {
               location: 'mumbai',
               area: 'Bandra',
               description: 'Updated description',
-              existingClub: buildClub(hostUserId: 'host-1'),
+              existingClub: buildClub(),
             ),
         throwsA(isA<StateError>()),
       );

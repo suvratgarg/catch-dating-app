@@ -80,7 +80,6 @@ void main() {
           startingPointLng: 72.001,
           eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.yoga),
           bookedCount: 20,
-          capacityLimit: 20,
         );
         await _seedDiscoverableEvent(firestore, matchingEvent);
         await _seedDiscoverableEvent(firestore, farEvent);

@@ -126,17 +126,14 @@ class AppConfig {
 
   static const bool enableObservabilityCollection = bool.fromEnvironment(
     'ENABLE_OBSERVABILITY_COLLECTION',
-    defaultValue: false,
   );
 
   static const bool emitObservabilitySmokeEvent = bool.fromEnvironment(
     'EMIT_OBSERVABILITY_SMOKE_EVENT',
-    defaultValue: false,
   );
 
   static const bool enableExploreSyntheticVisualFill = bool.fromEnvironment(
     'ENABLE_EXPLORE_SYNTHETIC_VISUAL_FILL',
-    defaultValue: false,
   );
 
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
@@ -145,7 +142,6 @@ class AppConfig {
 
   static const bool useFirebaseEmulators = bool.fromEnvironment(
     'USE_FIREBASE_EMULATORS',
-    defaultValue: false,
   );
 
   // Default true so native push works in release builds without extra flags.
@@ -170,27 +166,22 @@ class AppConfig {
 
   static const String firebaseWebVapidKey = String.fromEnvironment(
     'FIREBASE_WEB_VAPID_KEY',
-    defaultValue: '',
   );
 
   static const String firebaseAppCheckDebugToken = String.fromEnvironment(
     'FIREBASE_APP_CHECK_DEBUG_TOKEN',
-    defaultValue: '',
   );
 
   static const bool useFirebaseAppCheckDebugProvider = bool.fromEnvironment(
     'USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER',
-    defaultValue: false,
   );
 
   static const bool verboseAuthDebugLogs = bool.fromEnvironment(
     'VERBOSE_AUTH_DEBUG_LOGS',
-    defaultValue: false,
   );
 
   static const bool disableAuthAppVerificationForTesting = bool.fromEnvironment(
     'DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING',
-    defaultValue: false,
   );
 
   static bool get shouldDisableAuthAppVerificationForTesting =>
@@ -223,7 +214,6 @@ class AppConfig {
   static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =
       String.fromEnvironment(
         'FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY',
-        defaultValue: '',
       );
 
   static String get firebaseEmulatorHost {

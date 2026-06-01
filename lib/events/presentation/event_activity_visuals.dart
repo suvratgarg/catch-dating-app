@@ -239,7 +239,7 @@ class EventActivityBackdrop extends StatelessWidget {
         Align(
           alignment: iconAlignment,
           child: Padding(
-            padding: const EdgeInsets.all(CatchSpacing.micro18),
+            padding: CatchInsets.tileContent,
             child: Icon(
               visual.icon,
               size: iconSize,
