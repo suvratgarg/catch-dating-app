@@ -23,23 +23,20 @@ node tool/run.mjs run demo:ops --help
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
-- `migrations/`: historical one-time migrations kept for auditability; writes require
-  an explicit owner ticket.
+- Completed one-time migration tools are retired after prod verification; historical
+  evidence lives in the audit registry and migration contract metadata.
 - `marketing/`: app-derived website media manifests and screenshot sync checks.
 - `platform/`: Apple/platform configuration helpers.
 - `ui_capture/`: route inventory, capture coverage, and deterministic screen capture tooling.
 - `remote_ops_manifest.json`: consolidated index for Firebase, App Check, data,
   CI/CD, and App Store/TestFlight operational surfaces.
 
-## Scanner Family
+## Analyzer-Backed UI Reports
 
-The UI/design scanners are currently stable root wrappers because they are used
-directly by cleanup passes and CI-style checks. Keep these wrapper names stable
-even if their internals move into shared scanner helpers later.
-
-Shared shell mechanics for repo-root setup, mode parsing, and dependency checks
-live in `tool/lib/scanner_shell.sh`; scanner-specific matching rules stay in the
-root wrapper until a larger scanner-engine consolidation is justified.
+The old UI/design shell scanners have been retired. Their stable root wrapper
+names remain because cleanup passes, docs, and CI still call them, but the
+matching policy now lives in `packages/catch_ui_lints` and is reported from
+normal `flutter analyze --no-fatal-infos` output.
 
 Use `--summary` for review-friendly output and `--count` for cheap automated
 checks that only need a numeric debt signal.
@@ -59,10 +56,14 @@ plugins are loaded:
 - `tool/check_riverpod_lint.sh`
 - `tool/check_catch_ui_lints.sh`
 
-The migrated Catch UI color/text/font drift count is reported from analyzer
-output instead of the retired shell scanners:
+The migrated Catch UI drift reports are analyzer-output aggregators, not
+standalone scanners:
 
 - `tool/check_catch_ui_lint_drift.sh`
+- `tool/check_sizing.sh`
+- `tool/check_ui_allow_debt.sh`
+- `tool/check_ui_local_constant_wrappers.sh`
+- `tool/check_ui_system_raw_values.sh`
 
 ## Remote Ops Manifest
 

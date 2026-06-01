@@ -10,13 +10,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--code CODE|--all|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--code CODE|--label LABEL|--all|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
   --summary  Print summary only. Exit 1 if drift remains.
   --count    Print only the numeric drift count. Always exit 0.
   --code     Count one Catch UI lint code.
+  --label    Human-readable label for summary output.
   --all      Count all Catch UI lint codes.
 
 Counts:
@@ -44,6 +45,14 @@ while [ $# -gt 0 ]; do
         exit 2
       fi
       CODE_REGEX="$2"
+      LABEL="$2"
+      shift 2
+      ;;
+    --label)
+      if [ $# -lt 2 ]; then
+        usage >&2
+        exit 2
+      fi
       LABEL="$2"
       shift 2
       ;;

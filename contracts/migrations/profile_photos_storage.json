@@ -86,7 +86,7 @@
     {
       "id": "retire_legacy_arrays",
       "status": "complete_remote",
-      "description": "Remote Config min_version is 1.0.1. Local contracts, Dart models, Functions projections, rules, validators, and demo/data tooling now treat profilePhotos as the only canonical profile photo field. Live document cleanup was applied dry-run-first in dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs."
+      "description": "Remote Config min_version is 1.0.1. Local contracts, Dart models, Functions projections, rules, validators, and demo/data tooling now treat profilePhotos as the only canonical profile photo field. Live document cleanup was applied dry-run-first in dev, staging, and prod; the one-time cleanup tool was retired on 2026-06-02."
     }
   ],
   "knownConsumers": [
@@ -135,7 +135,8 @@
       "localCutoverAt": "2026-05-25",
       "remoteCleanupAt": "2026-05-26",
       "remoteConfigMinVersion": "1.0.1",
-      "cleanupTool": "tool/data/retire_legacy_profile_fields.mjs",
+      "toolingStatus": "one_time_tool_retired",
+      "toolingRetiredAt": "2026-06-02",
       "remoteDataCleanup": {
         "dev": {
           "usersChanged": 73,
