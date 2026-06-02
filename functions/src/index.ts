@@ -105,3 +105,7 @@ export {
   syncAlgoliaClubIndex,
   syncAlgoliaEventIndex,
 } from "./search/algoliaExploreIndex";
+export {adminGetOverview} from "./admin/overview";
+export {
+  adminDecideAccessApplication,
+} from "./admin/accessApplications";

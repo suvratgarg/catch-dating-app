@@ -45,56 +45,107 @@
     "bq-participant-momentum": "firebase/firestore-bigquery-export@0.3.2",
     "bq-participant-signal-facts": "firebase/firestore-bigquery-export@0.3.2"
   },
-  "hosting": {
-    "public": "website",
-    "ignore": [
-      "firebase.json",
-      "**/.git/**",
-      "**/.DS_Store",
-      "**/node_modules/**"
-    ],
-    "headers": [
-      {
-        "source": "/.well-known/apple-app-site-association",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ]
-      },
-      {
-        "source": "/.well-known/assetlinks.json",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ]
-      }
-    ],
-    "rewrites": [
-      {
-        "source": "/api/join-waitlist",
-        "function": {
-          "functionId": "joinWaitlist",
-          "region": "asia-south1"
+  "hosting": [
+    {
+      "target": "marketing",
+      "public": "website/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.git/**",
+        "**/.DS_Store",
+        "**/node_modules/**"
+      ],
+      "predeploy": [
+        "npm run web:marketing:build"
+      ],
+      "headers": [
+        {
+          "source": "/.well-known/apple-app-site-association",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "source": "/.well-known/assetlinks.json",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ]
         }
-      },
-      {
-        "source": "/host",
-        "destination": "/host/index.html"
-      },
-      {
-        "source": "/host/**",
-        "destination": "/host/index.html"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
-  },
+      ],
+      "rewrites": [
+        {
+          "source": "/api/join-waitlist",
+          "function": {
+            "functionId": "joinWaitlist",
+            "region": "asia-south1"
+          }
+        },
+        {
+          "source": "/host",
+          "destination": "/host/index.html"
+        },
+        {
+          "source": "/host/**",
+          "destination": "/host/index.html"
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "app",
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.git/**",
+        "**/.DS_Store"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "admin",
+      "public": "admin/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.git/**",
+        "**/.DS_Store",
+        "**/node_modules/**"
+      ],
+      "predeploy": [
+        "npm run web:admin:build"
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
   "firestore": {
     "database": "(default)",
     "location": "asia-south1",

@@ -5,7 +5,9 @@ import path from "node:path";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 
 const sourceManifestPath = fromRepo("tool/marketing/capture_manifest.json");
-const websiteManifestPath = fromRepo("website/assets/app-screenshots/manifest.json");
+const websitePublicPrefix = "website/public/";
+const websiteScreenshotPrefix = `${websitePublicPrefix}assets/app-screenshots/`;
+const websiteManifestPath = fromRepo(`${websiteScreenshotPrefix}manifest.json`);
 const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
@@ -129,9 +131,9 @@ function validateSourceManifest(manifest) {
     }
 
     const websitePath = capture.websitePath ?? "";
-    if (!websitePath.startsWith("website/assets/app-screenshots/")) {
+    if (!websitePath.startsWith(websiteScreenshotPrefix)) {
       errors.push(
-        `${label}: websitePath must stay under website/assets/app-screenshots/.`
+        `${label}: websitePath must stay under ${websiteScreenshotPrefix}.`
       );
     }
     if (websitePath.includes("/placeholders/")) {
@@ -196,10 +198,10 @@ function requireFile(errors, label, key, repoPath) {
 
 function toWebPath(repoPath) {
   const normalized = repoPath.replaceAll(path.sep, "/");
-  if (!normalized.startsWith("website/")) {
+  if (!normalized.startsWith(websitePublicPrefix)) {
     throw new Error(`Cannot expose non-website asset path: ${repoPath}`);
   }
-  return `/${normalized.slice("website/".length)}`;
+  return `/${normalized.slice(websitePublicPrefix.length)}`;
 }
 
 function readJson(filePath) {

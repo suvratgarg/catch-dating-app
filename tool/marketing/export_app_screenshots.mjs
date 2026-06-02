@@ -6,6 +6,7 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const manifestPath = fromRepo("tool/marketing/capture_manifest.json");
 const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
+const designContextPath = fromRepo("tool/marketing/app_screenshots_design_context.json");
 const rawOutputDir = "artifacts/marketing/app-screenshots/raw";
 const supportedDevices = new Set(["iphone-17-pro"]);
 const args = process.argv.slice(2);
@@ -19,6 +20,16 @@ if (command === "--help" || command === "-h" || command === "help") {
   checkExports();
 } else if (command === "--design-json" || command === "design-json") {
   printDesignJson();
+} else if (
+  command === "--update-design-json" ||
+  command === "update-design-json"
+) {
+  updateDesignJson();
+} else if (
+  command === "--check-design-json" ||
+  command === "check-design-json"
+) {
+  checkDesignJson();
 } else if (command === "--update" || command === "update") {
   updateExports();
 } else {
@@ -54,6 +65,58 @@ function printDesignJson() {
   const errors = validateExports(manifest, catalog, {requireSources: false});
   if (errors.length > 0) fail("Marketing app design context export failed.", errors);
 
+  const doc = buildDesignJson(manifest, catalog);
+  const designErrors = validateDesignJson(doc, manifest, catalog);
+  if (designErrors.length > 0) {
+    fail("Marketing app design context export failed.", designErrors);
+  }
+  console.log(JSON.stringify(doc, null, 2));
+}
+
+function updateDesignJson() {
+  const {manifest, catalog} = loadContext();
+  const doc = buildDesignJson(manifest, catalog);
+  const errors = [
+    ...validateExports(manifest, catalog, {requireSources: false}),
+    ...validateDesignJson(doc, manifest, catalog),
+  ];
+  if (errors.length > 0) {
+    fail("Marketing app design context update failed.", errors);
+  }
+
+  fs.writeFileSync(designContextPath, stableJson(doc));
+  console.log(`Wrote ${path.relative(repoRoot, designContextPath)}`);
+}
+
+function checkDesignJson() {
+  const {manifest, catalog} = loadContext();
+  const doc = buildDesignJson(manifest, catalog);
+  const errors = [
+    ...validateExports(manifest, catalog, {requireSources: false}),
+    ...validateDesignJson(doc, manifest, catalog),
+  ];
+  if (errors.length > 0) {
+    fail("Marketing app design context check failed.", errors);
+  }
+
+  const expected = stableJson(doc);
+  const actual = fs.existsSync(designContextPath) ?
+    fs.readFileSync(designContextPath, "utf8") :
+    null;
+  if (actual !== expected) {
+    fail("Marketing app design context artifact is stale.", [
+      `Run: node tool/marketing/export_app_screenshots.mjs --update-design-json`,
+    ]);
+  }
+  console.log(
+    `Marketing app design context artifact is current: ${path.relative(
+      repoRoot,
+      designContextPath
+    )}`
+  );
+}
+
+function buildDesignJson(manifest, catalog) {
   const captures = (manifest.captures ?? []).map((capture) => {
     const entry = findCatalogEntry(catalog, capture.fixtureKey);
     const deviceFrame = deviceFrameSpec(capture.device);
@@ -80,14 +143,14 @@ function printDesignJson() {
     };
   });
 
-  console.log(JSON.stringify({
+  return {
     version: 1,
-    generatedBy: "tool/marketing/export_app_screenshots.mjs design-json",
+    generatedBy: "tool/marketing/export_app_screenshots.mjs --design-json",
     coordinateSystem: "px",
     description:
       "Figma/AI-friendly design context for app-derived marketing screenshots.",
     captures,
-  }, null, 2));
+  };
 }
 
 function updateExports() {
@@ -182,6 +245,72 @@ function validateExports(manifest, catalog, {requireSources}) {
         `${capture.id}: sourcePath is missing at ${capture.sourcePath}; run node tool/marketing/export_app_screenshots.mjs --update.`
       );
     }
+  }
+  return errors;
+}
+
+function validateDesignJson(doc, manifest, catalog) {
+  const errors = [];
+  if (!isRecord(doc)) return ["design JSON must be an object."];
+  if (doc.version !== 1) errors.push("version must be 1.");
+  if (doc.coordinateSystem !== "px") errors.push("coordinateSystem must be px.");
+  if (!Array.isArray(doc.captures)) errors.push("captures must be an array.");
+  if (!Array.isArray(manifest.captures)) {
+    errors.push("capture manifest must contain captures array.");
+    return errors;
+  }
+  if (!Array.isArray(doc.captures)) return errors;
+  if (doc.captures.length !== manifest.captures.length) {
+    errors.push(
+      `captures length must match manifest (${manifest.captures.length}).`
+    );
+  }
+
+  const manifestById = new Map(
+    manifest.captures.map((capture) => [capture.id, capture])
+  );
+  for (const [index, capture] of doc.captures.entries()) {
+    if (!isRecord(capture)) {
+      errors.push(`captures[${index}] must be an object.`);
+      continue;
+    }
+    const manifestCapture = manifestById.get(capture.id);
+    if (!manifestCapture) {
+      errors.push(`captures[${index}].id ${capture.id} is not in the manifest.`);
+      continue;
+    }
+    const prefix = `captures[${index}] ${capture.id}`;
+    for (const field of [
+      "type",
+      "id",
+      "status",
+      "audience",
+      "surface",
+      "fixtureKey",
+      "captureId",
+    ]) {
+      if (typeof capture[field] !== "string" || capture[field].length === 0) {
+        errors.push(`${prefix}: ${field} must be a non-empty string.`);
+      }
+    }
+    if (capture.type !== "marketing-app-capture") {
+      errors.push(`${prefix}: type must be marketing-app-capture.`);
+    }
+    if (!Array.isArray(capture.routeIds) || capture.routeIds.length === 0) {
+      errors.push(`${prefix}: routeIds must be a non-empty array.`);
+    }
+    for (const routeId of capture.routeIds ?? []) {
+      if (typeof routeId !== "string" || routeId.length === 0) {
+        errors.push(`${prefix}: routeIds must contain only non-empty strings.`);
+      }
+    }
+    const catalogEntry = findCatalogEntry(catalog, manifestCapture.fixtureKey);
+    if (catalogEntry && capture.captureId !== catalogEntry.id) {
+      errors.push(`${prefix}: captureId must match catalog entry ${catalogEntry.id}.`);
+    }
+    validateAssetBlock(capture.assets, `${prefix}.assets`, errors);
+    validateCopyBlock(capture.copy, `${prefix}.copy`, errors);
+    validateDeviceBlock(capture.device, `${prefix}.device`, errors);
   }
   return errors;
 }
@@ -351,8 +480,60 @@ function valueAfter(flag) {
   return value;
 }
 
+function validateAssetBlock(assets, prefix, errors) {
+  if (!isRecord(assets)) {
+    errors.push(`${prefix} must be an object.`);
+    return;
+  }
+  for (const field of ["sourcePath", "websitePath", "placeholderPath"]) {
+    if (typeof assets[field] !== "string" || assets[field].length === 0) {
+      errors.push(`${prefix}.${field} must be a non-empty string.`);
+    }
+  }
+}
+
+function validateCopyBlock(copy, prefix, errors) {
+  if (!isRecord(copy)) {
+    errors.push(`${prefix} must be an object.`);
+    return;
+  }
+  for (const field of ["alt", "caption", "walkthroughStep"]) {
+    if (typeof copy[field] !== "string" || copy[field].length === 0) {
+      errors.push(`${prefix}.${field} must be a non-empty string.`);
+    }
+  }
+}
+
+function validateDeviceBlock(device, prefix, errors) {
+  if (!isRecord(device)) {
+    errors.push(`${prefix} must be an object.`);
+    return;
+  }
+  if (!supportedDevices.has(device.id)) {
+    errors.push(`${prefix}.id must be one of ${[...supportedDevices].join(", ")}.`);
+  }
+  for (const [field, value] of [
+    ["logicalSize", device.logicalSize],
+    ["safeArea", device.safeArea],
+    ["frame", device.frame],
+  ]) {
+    if (!isRecord(value)) errors.push(`${prefix}.${field} must be an object.`);
+  }
+  if (typeof device.outputScale !== "number" || device.outputScale <= 0) {
+    errors.push(`${prefix}.outputScale must be a positive number.`);
+  }
+}
+
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function stableJson(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function fail(title, errors) {
@@ -369,6 +550,10 @@ Commands:
   --update           Render active app captures and write framed source PNGs.
   --check            Verify active marketing captures have source PNGs.
   --design-json      Print Figma/AI-friendly capture metadata and frame geometry.
+  --update-design-json
+                     Write checked capture metadata to tool/marketing.
+  --check-design-json
+                     Verify checked capture metadata is current.
 
 Options:
   --ids <ids>        Comma-separated marketing capture ids for --update.

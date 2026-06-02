@@ -1,0 +1,4 @@
+{
+  "extends": "../packages/web-config/tsconfig.vite.json",
+  "include": ["vite.config.ts", "../packages/web-config/vite-react.ts"]
+}
