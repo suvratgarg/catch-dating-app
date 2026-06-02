@@ -127,9 +127,7 @@ String _buildWebsiteCss({
     }
   }
 
-  buffer
-    ..writeln('}')
-    ..writeln();
+  buffer.writeln('}');
 
   return buffer.toString();
 }
@@ -223,9 +221,7 @@ String _buildDartTokens(_TokenRegistry registry) {
     );
   }
 
-  buffer
-    ..writeln('}')
-    ..writeln();
+  buffer.writeln('}');
 
   return buffer.toString();
 }
