@@ -77,44 +77,78 @@ void _popCompanion(BuildContext context) {
 /// Renders [body] inside the stable companion chrome. Loading, error, and
 /// content states all share this scaffold so the app bar never pops in as the
 /// route's data-dependent provider waves resolve.
-Widget _companionScaffold(BuildContext context, Widget body) => Scaffold(
-  backgroundColor: CatchTokens.of(context).bg,
-  appBar: _companionAppBar(context),
-  body: body,
-);
+class _CompanionScaffold extends StatelessWidget {
+  const _CompanionScaffold({required this.body});
 
-Widget _companionLoading(BuildContext context) =>
-    _companionScaffold(context, const Center(child: CatchLoadingIndicator()));
+  final Widget body;
 
-Widget _companionError(
-  BuildContext context,
-  Object error,
-  AppErrorContext errorContext,
-  VoidCallback onRetry,
-) => _companionScaffold(
-  context,
-  Center(
-    child: Padding(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
-      child: CatchInlineErrorState.fromError(
-        error,
-        context: errorContext,
-        onRetry: onRetry,
-      ),
-    ),
-  ),
-);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      appBar: _companionAppBar(context),
+      body: body,
+    );
+  }
+}
 
-Widget _companionMessage(BuildContext context, String title, String message) =>
-    _companionScaffold(
-      context,
-      Center(
+class _CompanionLoading extends StatelessWidget {
+  const _CompanionLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _CompanionScaffold(
+      body: Center(child: CatchLoadingIndicator()),
+    );
+  }
+}
+
+class _CompanionError extends StatelessWidget {
+  const _CompanionError({
+    required this.error,
+    required this.errorContext,
+    required this.onRetry,
+  });
+
+  final Object error;
+  final AppErrorContext errorContext;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CompanionScaffold(
+      body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s5),
+          padding: CatchInsets.contentRelaxed,
+          child: CatchInlineErrorState.fromError(
+            error,
+            context: errorContext,
+            onRetry: onRetry,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompanionMessage extends StatelessWidget {
+  const _CompanionMessage({required this.title, required this.message});
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return _CompanionScaffold(
+      body: Center(
+        child: Padding(
+          padding: CatchInsets.contentRelaxed,
           child: CatchInlineErrorState(title: title, message: message),
         ),
       ),
     );
+  }
+}
 
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
@@ -140,76 +174,70 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
     // Wave 1: core event, profile, participation, and plan load together.
     if (eventAsync.isLoading && event == null) {
-      return _companionLoading(context);
+      return const _CompanionLoading();
     }
     if (eventAsync.hasError) {
-      return _companionError(
-        context,
-        eventAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(watchEventProvider(eventId)),
+      return _CompanionError(
+        error: eventAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(watchEventProvider(eventId)),
       );
     }
     if (event == null) {
-      return _companionMessage(
-        context,
-        'Event not found',
-        'This event is no longer available.',
+      return const _CompanionMessage(
+        title: 'Event not found',
+        message: 'This event is no longer available.',
       );
     }
     if (uid == null) {
-      return _companionMessage(
-        context,
-        'Sign in required',
-        'Sign in to open your event companion.',
+      return const _CompanionMessage(
+        title: 'Sign in required',
+        message: 'Sign in to open your event companion.',
       );
     }
     if (profileAsync.isLoading ||
         participationAsync.isLoading ||
         planAsync.isLoading) {
-      return _companionLoading(context);
+      return const _CompanionLoading();
     }
     if (profileAsync.hasError) {
-      return _companionError(
-        context,
-        profileAsync.error!,
-        AppErrorContext.profile,
-        () => ref.invalidate(watchUserProfileProvider),
+      return _CompanionError(
+        error: profileAsync.error!,
+        errorContext: AppErrorContext.profile,
+        onRetry: () => ref.invalidate(watchUserProfileProvider),
       );
     }
     if (participationAsync.hasError) {
-      return _companionError(
-        context,
-        participationAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(watchEventParticipationProvider(eventId, uid)),
+      return _CompanionError(
+        error: participationAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () =>
+            ref.invalidate(watchEventParticipationProvider(eventId, uid)),
       );
     }
     if (planAsync.hasError) {
-      return _companionError(
-        context,
-        planAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
+      return _CompanionError(
+        error: planAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
       );
     }
 
     final profile = profileAsync.asData?.value;
     final participation = participationAsync.asData?.value;
     if (profile == null || participation == null) {
-      return _companionMessage(
-        context,
-        'No booking found',
-        'Book this event before opening the companion.',
+      return const _CompanionMessage(
+        title: 'No booking found',
+        message: 'Book this event before opening the companion.',
       );
     }
 
     final plan = planAsync.asData?.value;
     if (plan == null) {
-      return _companionMessage(
-        context,
-        'Companion not available',
-        'The host has not enabled the live event guide for this event yet.',
+      return const _CompanionMessage(
+        title: 'Companion not available',
+        message:
+            'The host has not enabled the live event guide for this event yet.',
       );
     }
 
@@ -247,14 +275,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Wave 2: arrival mission resolves before the attendee moment so First
     // Hello can preempt questionnaire/check-in when the module is enabled.
     if (arrivalMissionAsync.isLoading) {
-      return _companionLoading(context);
+      return const _CompanionLoading();
     }
     if (arrivalMissionAsync.hasError) {
-      return _companionError(
-        context,
-        arrivalMissionAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: arrivalMissionAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessArrivalMissionProvider(
             eventId: eventId,
             uid: uid,
@@ -282,14 +309,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 2: compatibility response, resolved before the attendee moment.
     if (compatibilityAsync.isLoading) {
-      return _companionLoading(context);
+      return const _CompanionLoading();
     }
     if (compatibilityAsync.hasError) {
-      return _companionError(
-        context,
-        compatibilityAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: compatibilityAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessCompatibilityResponseProvider(
             eventId: eventId,
             uid: uid,
@@ -377,34 +403,31 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         wingmanRequestAsync.isLoading ||
         assignmentAsync.isLoading ||
         rotationAsync.isLoading) {
-      return _companionLoading(context);
+      return const _CompanionLoading();
     }
     if (feedbackAsync.hasError) {
-      return _companionError(
-        context,
-        feedbackAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: feedbackAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (assignmentAsync.hasError) {
-      return _companionError(
-        context,
-        assignmentAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: assignmentAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (rotationAsync.hasError) {
-      return _companionError(
-        context,
-        rotationAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: rotationAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessRotationAssignmentProvider(
             eventId: eventId,
             uid: uid,
@@ -413,21 +436,19 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (preferenceAsync.hasError) {
-      return _companionError(
-        context,
-        preferenceAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: preferenceAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
         ),
       );
     }
     if (wingmanRequestAsync.hasError) {
-      return _companionError(
-        context,
-        wingmanRequestAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: wingmanRequestAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           watchUserEventSuccessWingmanRequestProvider(
             eventId: eventId,
             uid: uid,
@@ -436,11 +457,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
     if (candidatesAsync.hasError) {
-      return _companionError(
-        context,
-        candidatesAsync.error!,
-        AppErrorContext.event,
-        () => ref.invalidate(
+      return _CompanionError(
+        error: candidatesAsync.error!,
+        errorContext: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
           wingmanRequestCandidatesProvider(
             eventId: eventId,
             currentUser: profile,

@@ -66,7 +66,7 @@ void main() {
         final draft = EventDraft(
           id: 'draft-2',
           clubId: 'club-2',
-          savedAt: DateTime(2026, 5, 1),
+          savedAt: DateTime(2026, 5),
         );
 
         final json = draft.toJson();
@@ -294,7 +294,7 @@ void main() {
           EventDraft(
             id: 'draft-1',
             clubId: 'club-1',
-            savedAt: DateTime(2026, 5, 1),
+            savedAt: DateTime(2026, 5),
             distance: '5',
           ),
           EventDraft(

@@ -121,7 +121,6 @@ class MobileHealthActivityClient implements HealthActivityClient {
     return List<health.HealthDataAccess>.filled(
       _activityReadTypes.length,
       health.HealthDataAccess.READ,
-      growable: false,
     );
   }
 

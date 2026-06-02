@@ -98,7 +98,7 @@ void main() {
     );
 
     test('fetchEvent returns the decoded event when found', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
 
       expect(await repository.fetchEvent('event-1'), event);
@@ -111,7 +111,7 @@ void main() {
     test(
       'watchEvent emits the decoded event when the document exists',
       () async {
-        final event = buildEvent(id: 'event-1');
+        final event = buildEvent();
         await _seedEvent(firestore, event);
 
         await expectLater(repository.watchEvent('event-1'), emits(event));
@@ -235,7 +235,6 @@ void main() {
         startTime: DateTime.now().add(const Duration(hours: 12)),
       );
       final early = buildEvent(
-        id: 'event-1',
         startTime: DateTime.now().add(const Duration(hours: 1)),
       );
       await _seedEvent(firestore, late);
@@ -253,10 +252,7 @@ void main() {
     test(
       'fetchUpcomingEventsForClubs returns empty without querying for no clubs',
       () async {
-        await _seedEvent(
-          firestore,
-          buildEvent(id: 'event-1', clubId: 'club-1'),
-        );
+        await _seedEvent(firestore, buildEvent());
 
         expect(await repository.fetchUpcomingEventsForClubs(const []), isEmpty);
       },
@@ -265,7 +261,7 @@ void main() {
     test(
       'fetchUpcomingEventsForClubs filters upcoming events and limits results',
       () async {
-        final event = buildEvent(id: 'event-1', clubId: 'club-3');
+        final event = buildEvent(clubId: 'club-3');
         await _seedEvent(firestore, event);
         await _seedEvent(
           firestore,
@@ -295,7 +291,6 @@ void main() {
       () async {
         final early = buildEvent(
           id: 'early',
-          clubId: 'club-1',
           startTime: DateTime.now().add(const Duration(hours: 2)),
         );
         final late = buildEvent(
@@ -527,7 +522,7 @@ void main() {
     );
 
     test('watchEventProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
 
       final provider = watchEventProvider(event.id);
@@ -542,7 +537,7 @@ void main() {
     test(
       'watchEventProvider auto-disposes detail listeners when unwatched',
       () async {
-        final event = buildEvent(id: 'event-1');
+        final event = buildEvent();
         final cancelCompleter = Completer<void>();
         final eventController = StreamController<Event?>(
           onCancel: () {
@@ -579,7 +574,7 @@ void main() {
     );
 
     test('watchEventsForClubProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
 
       final provider = watchEventsForClubProvider('club-1');
@@ -592,7 +587,7 @@ void main() {
     });
 
     test('watchAttendedEventsProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
       await _seedParticipation(
         firestore,
@@ -611,7 +606,7 @@ void main() {
     });
 
     test('watchSignedUpEventsProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
       await _seedParticipation(
         firestore,
@@ -630,7 +625,7 @@ void main() {
     });
 
     test('watchEventsByIdsProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
 
       final provider = watchEventsByIdsProvider(
@@ -647,7 +642,7 @@ void main() {
     testWidgets(
       'watchSignedUpEventsProvider keeps realtime streams alive while idle',
       (tester) async {
-        final event = buildEvent(id: 'event-1', bookedCount: 1);
+        final event = buildEvent(bookedCount: 1);
         final signedUpEventsController = StreamController<List<Event>>();
         addTearDown(signedUpEventsController.close);
 
@@ -679,7 +674,7 @@ void main() {
     );
 
     test('recommendedEventsProvider delegates to the repository', () async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       await _seedEvent(firestore, event);
 
       final results = await container.read(
@@ -703,7 +698,7 @@ Future<void> _seedParticipation(
   required String uid,
   required EventParticipationStatus status,
 }) {
-  final now = DateTime(2026, 1, 1);
+  final now = DateTime(2026);
   final participation = EventParticipation(
     id: eventParticipationId(eventId: event.id, uid: uid),
     eventId: event.id,

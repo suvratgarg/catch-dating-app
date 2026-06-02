@@ -24,7 +24,7 @@ void main() {
                 picked = await showCatchDatePicker(
                   context: context,
                   initialDate: DateTime(2026, 5, 12),
-                  firstDate: DateTime(2026, 5, 1),
+                  firstDate: DateTime(2026, 5),
                   lastDate: DateTime(2026, 5, 31),
                   title: 'Event date',
                 );

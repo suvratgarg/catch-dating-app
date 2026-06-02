@@ -33,17 +33,8 @@ class ClubAvatarRail extends StatelessWidget {
       height: CatchLayout.clubAvatarRailHeight,
       spacing: CatchSpacing.micro14,
       showDivider: showDivider,
-      headerPadding:
-          headerPadding ??
-          const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.micro14,
-            CatchSpacing.s5,
-            CatchSpacing.s2,
-          ),
-      listPadding:
-          listPadding ??
-          const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+      headerPadding: headerPadding ?? CatchInsets.sectionHeader,
+      listPadding: listPadding ?? CatchInsets.pageHorizontal,
       itemCount: clubs.length,
       itemBuilder: (context, index) {
         final club = clubs[index];
@@ -83,7 +74,6 @@ class _CreateClubButton extends StatelessWidget {
             width: CatchLayout.clubAvatarRailColumnWidth,
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CatchSurface(
                   width: CatchLayout.clubCreateButtonExtent,

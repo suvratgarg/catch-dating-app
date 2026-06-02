@@ -195,12 +195,7 @@ class _ProfilePhotoEditorScreenState
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s3,
-            CatchSpacing.s5,
-            CatchSpacing.s6,
-          ),
+          padding: CatchInsets.pageBodyTight,
           children: [
             Center(
               child: ConstrainedBox(
@@ -225,7 +220,7 @@ class _ProfilePhotoEditorScreenState
                       ),
                     ),
                     gapH16,
-                    CatchFormFieldLabel(
+                    const CatchFormFieldLabel(
                       label: 'Photo prompt',
                       isOptional: true,
                     ),

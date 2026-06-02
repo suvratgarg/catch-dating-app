@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventParticipation {
 
-@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; EventParticipationStatus get status;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get signedUpAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get attendedAt;@NullableTimestampConverter() DateTime? get cancelledAt;@NullableTimestampConverter() DateTime? get deletedAt;@JsonKey(unknownEnumValue: null) Gender? get genderAtSignup; String? get cohortAtSignup; String? get paymentId;@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? get hostApprovalStatus;@NullableTimestampConverter() DateTime? get hostApprovalDecidedAt; String? get hostApprovalDecidedBy;
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; EventParticipationStatus get status;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get signedUpAt;@NullableTimestampConverter() DateTime? get waitlistedAt;@NullableTimestampConverter() DateTime? get attendedAt;@NullableTimestampConverter() DateTime? get cancelledAt;@NullableTimestampConverter() DateTime? get deletedAt;@JsonKey() Gender? get genderAtSignup; String? get cohortAtSignup; String? get paymentId;@JsonKey() EventJoinRequestStatus? get hostApprovalStatus;@NullableTimestampConverter() DateTime? get hostApprovalDecidedAt; String? get hostApprovalDecidedBy;
 /// Create a copy of EventParticipation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $EventParticipationCopyWith<$Res>  {
   factory $EventParticipationCopyWith(EventParticipation value, $Res Function(EventParticipation) _then) = _$EventParticipationCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey() Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey() EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
 });
 
 
@@ -170,7 +170,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey()  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey()  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EventParticipation() when $default != null:
 return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
@@ -191,7 +191,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey()  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey()  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)  $default,) {final _that = this;
 switch (_that) {
 case _EventParticipation():
 return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
@@ -211,7 +211,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey(unknownEnumValue: null)  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey(unknownEnumValue: null)  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  EventParticipationStatus status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? signedUpAt, @NullableTimestampConverter()  DateTime? waitlistedAt, @NullableTimestampConverter()  DateTime? attendedAt, @NullableTimestampConverter()  DateTime? cancelledAt, @NullableTimestampConverter()  DateTime? deletedAt, @JsonKey()  Gender? genderAtSignup,  String? cohortAtSignup,  String? paymentId, @JsonKey()  EventJoinRequestStatus? hostApprovalStatus, @NullableTimestampConverter()  DateTime? hostApprovalDecidedAt,  String? hostApprovalDecidedBy)?  $default,) {final _that = this;
 switch (_that) {
 case _EventParticipation() when $default != null:
 return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that.createdAt,_that.updatedAt,_that.signedUpAt,_that.waitlistedAt,_that.attendedAt,_that.cancelledAt,_that.deletedAt,_that.genderAtSignup,_that.cohortAtSignup,_that.paymentId,_that.hostApprovalStatus,_that.hostApprovalDecidedAt,_that.hostApprovalDecidedBy);case _:
@@ -226,7 +226,7 @@ return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.status,_that
 @JsonSerializable()
 
 class _EventParticipation extends EventParticipation {
-  const _EventParticipation({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.status, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.signedUpAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.attendedAt, @NullableTimestampConverter() this.cancelledAt, @NullableTimestampConverter() this.deletedAt, @JsonKey(unknownEnumValue: null) this.genderAtSignup, this.cohortAtSignup, this.paymentId, @JsonKey(unknownEnumValue: null) this.hostApprovalStatus, @NullableTimestampConverter() this.hostApprovalDecidedAt, this.hostApprovalDecidedBy}): super._();
+  const _EventParticipation({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.status, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.signedUpAt, @NullableTimestampConverter() this.waitlistedAt, @NullableTimestampConverter() this.attendedAt, @NullableTimestampConverter() this.cancelledAt, @NullableTimestampConverter() this.deletedAt, @JsonKey() this.genderAtSignup, this.cohortAtSignup, this.paymentId, @JsonKey() this.hostApprovalStatus, @NullableTimestampConverter() this.hostApprovalDecidedAt, this.hostApprovalDecidedBy}): super._();
   factory _EventParticipation.fromJson(Map<String, dynamic> json) => _$EventParticipationFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -241,10 +241,10 @@ class _EventParticipation extends EventParticipation {
 @override@NullableTimestampConverter() final  DateTime? attendedAt;
 @override@NullableTimestampConverter() final  DateTime? cancelledAt;
 @override@NullableTimestampConverter() final  DateTime? deletedAt;
-@override@JsonKey(unknownEnumValue: null) final  Gender? genderAtSignup;
+@override@JsonKey() final  Gender? genderAtSignup;
 @override final  String? cohortAtSignup;
 @override final  String? paymentId;
-@override@JsonKey(unknownEnumValue: null) final  EventJoinRequestStatus? hostApprovalStatus;
+@override@JsonKey() final  EventJoinRequestStatus? hostApprovalStatus;
 @override@NullableTimestampConverter() final  DateTime? hostApprovalDecidedAt;
 @override final  String? hostApprovalDecidedBy;
 
@@ -281,7 +281,7 @@ abstract mixin class _$EventParticipationCopyWith<$Res> implements $EventPartici
   factory _$EventParticipationCopyWith(_EventParticipation value, $Res Function(_EventParticipation) _then) = __$EventParticipationCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey(unknownEnumValue: null) Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey(unknownEnumValue: null) EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, EventParticipationStatus status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? signedUpAt,@NullableTimestampConverter() DateTime? waitlistedAt,@NullableTimestampConverter() DateTime? attendedAt,@NullableTimestampConverter() DateTime? cancelledAt,@NullableTimestampConverter() DateTime? deletedAt,@JsonKey() Gender? genderAtSignup, String? cohortAtSignup, String? paymentId,@JsonKey() EventJoinRequestStatus? hostApprovalStatus,@NullableTimestampConverter() DateTime? hostApprovalDecidedAt, String? hostApprovalDecidedBy
 });
 
 

@@ -210,7 +210,7 @@ Club buildClub({
     area: area,
     hostUserId: hostUserId,
     hostName: hostName,
-    createdAt: createdAt ?? DateTime(2025, 1, 1),
+    createdAt: createdAt ?? DateTime(2025),
     memberCount: 1,
   );
 }
@@ -252,7 +252,7 @@ List<ProfilePhoto> _profilePhotosFromUrls({
         position: indexed.$1,
         url: indexed.$2,
         storagePath: 'test-profiles/$uid/${indexed.$1}.jpg',
-        now: DateTime(2026, 1, 1),
+        now: DateTime(2026),
       ),
   ];
 }
@@ -653,7 +653,7 @@ class FakeSavedEventRepository extends Fake implements SavedEventRepository {
           id: saved_domain.savedEventId(uid: uid, eventId: event.id),
           uid: uid,
           eventId: event.id,
-          savedAt: DateTime(2026, 1, 1),
+          savedAt: DateTime(2026),
         ),
     ]);
   }

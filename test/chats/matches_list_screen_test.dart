@@ -270,7 +270,6 @@ void main() {
   ) async {
     final olderTaylorMatch = _buildMatch(
       id: 'old-taylor',
-      user2Id: 'runner-2',
       createdAt: DateTime(2026, 4, 21, 9),
       lastMessageAt: DateTime(2026, 4, 21, 10),
       lastMessagePreview: 'Older message',
@@ -279,7 +278,6 @@ void main() {
     );
     final latestTaylorMatch = _buildMatch(
       id: 'latest-taylor',
-      user2Id: 'runner-2',
       createdAt: DateTime(2026, 4, 22, 9),
       lastMessageAt: DateTime(2026, 4, 22, 12),
       lastMessagePreview: 'Latest message',
@@ -340,7 +338,6 @@ void main() {
   testWidgets('does not mark own latest message as unread', (tester) async {
     final selfSentMatch = _buildMatch(
       id: 'self-sent',
-      user2Id: 'runner-2',
       lastMessageAt: DateTime(2026, 4, 23, 12),
       lastMessagePreview: 'Definitely. I liked the last 2 km push.',
       lastMessageSenderId: 'runner-1',

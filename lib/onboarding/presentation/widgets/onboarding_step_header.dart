@@ -33,7 +33,7 @@ class OnboardingStepFrame extends StatelessWidget {
   const OnboardingStepFrame({
     super.key,
     required this.children,
-    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
+    this.padding = CatchInsets.pageHorizontalWide,
   });
 
   final List<Widget> children;

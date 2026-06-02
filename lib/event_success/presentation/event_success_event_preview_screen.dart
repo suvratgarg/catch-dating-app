@@ -122,12 +122,7 @@ class EventSuccessEventPreviewScreen extends StatelessWidget {
                     maxWidth: CatchLayout.maxContentWidth,
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.s5,
-                      CatchSpacing.s4,
-                      CatchSpacing.s5,
-                      CatchSpacing.s8,
-                    ),
+                    padding: CatchInsets.pageBodyRelaxed,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -177,7 +172,7 @@ class _EventPreviewHero extends StatelessWidget {
         colors: [t.accent, t.ink],
       ),
       borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -252,7 +247,7 @@ class _IntegrationNotesCard extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

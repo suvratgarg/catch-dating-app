@@ -21,7 +21,7 @@ class CatchPolaroid extends StatelessWidget {
     this.footer,
     this.mediaOverlay,
     this.onTap,
-    this.padding = const EdgeInsets.all(CatchSpacing.s3),
+    this.padding = CatchInsets.contentDense,
     this.paddingKey,
     this.radius = CatchRadius.lg,
     this.mediaRadius = CatchRadius.sm,
@@ -165,7 +165,6 @@ class ClubPolaroidArtwork extends StatelessWidget {
         children: [
           CustomPaint(painter: _ClubCoverPatternPainter(palette)),
           Align(
-            alignment: Alignment.center,
             child: CatchIconTile(
               icon: CatchIcons.locationOnRounded,
               iconColor: palette.icon,

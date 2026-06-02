@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Swipe {
 
- String get swiperId; String get targetId; String get eventId; SwipeDirection get direction; String? get reactionTargetId;@JsonKey(unknownEnumValue: null) SwipeReactionTargetType? get reactionTargetType; String? get reactionTargetLabel; String? get reactionTargetPreview; String? get comment;@TimestampConverter() DateTime get createdAt;
+ String get swiperId; String get targetId; String get eventId; SwipeDirection get direction; String? get reactionTargetId;@JsonKey() SwipeReactionTargetType? get reactionTargetType; String? get reactionTargetLabel; String? get reactionTargetPreview; String? get comment;@TimestampConverter() DateTime get createdAt;
 /// Create a copy of Swipe
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $SwipeCopyWith<$Res>  {
   factory $SwipeCopyWith(Swipe value, $Res Function(Swipe) _then) = _$SwipeCopyWithImpl;
 @useResult
 $Res call({
- String swiperId, String targetId, String eventId, SwipeDirection direction, String? reactionTargetId,@JsonKey(unknownEnumValue: null) SwipeReactionTargetType? reactionTargetType, String? reactionTargetLabel, String? reactionTargetPreview, String? comment,@TimestampConverter() DateTime createdAt
+ String swiperId, String targetId, String eventId, SwipeDirection direction, String? reactionTargetId,@JsonKey() SwipeReactionTargetType? reactionTargetType, String? reactionTargetLabel, String? reactionTargetPreview, String? comment,@TimestampConverter() DateTime createdAt
 });
 
 
@@ -162,7 +162,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey(unknownEnumValue: null)  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey()  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Swipe() when $default != null:
 return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_that.reactionTargetId,_that.reactionTargetType,_that.reactionTargetLabel,_that.reactionTargetPreview,_that.comment,_that.createdAt);case _:
@@ -183,7 +183,7 @@ return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey(unknownEnumValue: null)  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey()  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Swipe():
 return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_that.reactionTargetId,_that.reactionTargetType,_that.reactionTargetLabel,_that.reactionTargetPreview,_that.comment,_that.createdAt);case _:
@@ -203,7 +203,7 @@ return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey(unknownEnumValue: null)  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String swiperId,  String targetId,  String eventId,  SwipeDirection direction,  String? reactionTargetId, @JsonKey()  SwipeReactionTargetType? reactionTargetType,  String? reactionTargetLabel,  String? reactionTargetPreview,  String? comment, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Swipe() when $default != null:
 return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_that.reactionTargetId,_that.reactionTargetType,_that.reactionTargetLabel,_that.reactionTargetPreview,_that.comment,_that.createdAt);case _:
@@ -218,7 +218,7 @@ return $default(_that.swiperId,_that.targetId,_that.eventId,_that.direction,_tha
 @JsonSerializable()
 
 class _Swipe implements Swipe {
-  const _Swipe({required this.swiperId, required this.targetId, required this.eventId, required this.direction, this.reactionTargetId, @JsonKey(unknownEnumValue: null) this.reactionTargetType, this.reactionTargetLabel, this.reactionTargetPreview, this.comment, @TimestampConverter() required this.createdAt});
+  const _Swipe({required this.swiperId, required this.targetId, required this.eventId, required this.direction, this.reactionTargetId, @JsonKey() this.reactionTargetType, this.reactionTargetLabel, this.reactionTargetPreview, this.comment, @TimestampConverter() required this.createdAt});
   factory _Swipe.fromJson(Map<String, dynamic> json) => _$SwipeFromJson(json);
 
 @override final  String swiperId;
@@ -226,7 +226,7 @@ class _Swipe implements Swipe {
 @override final  String eventId;
 @override final  SwipeDirection direction;
 @override final  String? reactionTargetId;
-@override@JsonKey(unknownEnumValue: null) final  SwipeReactionTargetType? reactionTargetType;
+@override@JsonKey() final  SwipeReactionTargetType? reactionTargetType;
 @override final  String? reactionTargetLabel;
 @override final  String? reactionTargetPreview;
 @override final  String? comment;
@@ -265,7 +265,7 @@ abstract mixin class _$SwipeCopyWith<$Res> implements $SwipeCopyWith<$Res> {
   factory _$SwipeCopyWith(_Swipe value, $Res Function(_Swipe) _then) = __$SwipeCopyWithImpl;
 @override @useResult
 $Res call({
- String swiperId, String targetId, String eventId, SwipeDirection direction, String? reactionTargetId,@JsonKey(unknownEnumValue: null) SwipeReactionTargetType? reactionTargetType, String? reactionTargetLabel, String? reactionTargetPreview, String? comment,@TimestampConverter() DateTime createdAt
+ String swiperId, String targetId, String eventId, SwipeDirection direction, String? reactionTargetId,@JsonKey() SwipeReactionTargetType? reactionTargetType, String? reactionTargetLabel, String? reactionTargetPreview, String? comment,@TimestampConverter() DateTime createdAt
 });
 
 

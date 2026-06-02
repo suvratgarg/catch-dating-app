@@ -45,7 +45,6 @@ class HostClubManagementPanel extends StatelessWidget {
       padding: EdgeInsets.zero,
       backgroundColor: palette.background,
       borderColor: palette.border,
-      radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
@@ -61,7 +60,7 @@ class HostClubManagementPanel extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -74,11 +73,7 @@ class HostClubManagementPanel extends StatelessWidget {
                       tone: CatchBadgeTone.brand,
                       uppercase: true,
                     ),
-                    CatchBadge(
-                      label: 'Club',
-                      tone: CatchBadgeTone.neutral,
-                      uppercase: true,
-                    ),
+                    CatchBadge(label: 'Club', uppercase: true),
                   ],
                 ),
                 gapH8,
@@ -176,10 +171,7 @@ class HostStatChip extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        vertical: CatchSpacing.s3,
-        horizontal: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.statChipContent,
       backgroundColor: t.surface,
       borderWidth: 0,
       radius: CatchRadius.sm,

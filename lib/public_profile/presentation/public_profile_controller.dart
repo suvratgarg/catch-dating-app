@@ -19,7 +19,7 @@ class PublicProfileController extends _$PublicProfileController {
   Future<void> blockUser({required String targetUserId}) async {
     await ref
         .read(safetyRepositoryProvider)
-        .blockUser(targetUserId: targetUserId, source: 'profile');
+        .blockUser(targetUserId: targetUserId);
   }
 
   Future<void> reportUser({
@@ -30,7 +30,6 @@ class PublicProfileController extends _$PublicProfileController {
         .read(safetyRepositoryProvider)
         .reportUser(
           targetUserId: targetUserId,
-          source: 'profile',
           reasonCode: reasonCode,
         );
   }

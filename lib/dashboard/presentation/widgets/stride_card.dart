@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -107,7 +108,7 @@ class StrideCard extends StatelessWidget {
     final maxMinutes = summary.maxDailyActiveMinutes;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.micro18),
+      padding: CatchInsets.tileContent,
       borderColor: t.line,
       backgroundColor: t.surface,
       child: Column(
@@ -282,7 +283,8 @@ class _StrideActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
+    return CatchButton(
+      label: label,
       onPressed: onPressed,
       icon: isBusy
           ? const SizedBox.square(
@@ -290,7 +292,8 @@ class _StrideActionButton extends StatelessWidget {
               child: CatchLoadingIndicator(strokeWidth: 2),
             )
           : Icon(icon, size: CatchIcon.xs),
-      label: Text(label, style: CatchTextStyles.labelL(context)),
+      variant: CatchButtonVariant.ghost,
+      size: CatchButtonSize.sm,
     );
   }
 }
@@ -309,7 +312,7 @@ class _StrideSectionStateCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Row(
         children: [

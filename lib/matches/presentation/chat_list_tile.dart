@@ -30,7 +30,6 @@ class ChatListTile extends StatelessWidget {
 
     return CatchSurface(
       onTap: onTap,
-      tone: CatchSurfaceTone.surface,
       backgroundColor: hasUnread ? t.primarySoft : null,
       borderColor: hasUnread
           ? t.primary.withValues(alpha: CatchOpacity.chatUnreadBorder)
@@ -52,9 +51,8 @@ class ChatListTile extends StatelessWidget {
               ),
             ),
           Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s3),
+            padding: CatchInsets.contentDense,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 PersonAvatar(
                   size: 60,

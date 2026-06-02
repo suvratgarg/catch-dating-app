@@ -70,7 +70,7 @@ class EventActionCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.micro18),
+        padding: CatchInsets.tileContent,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -171,7 +171,7 @@ class _EventActionCardHeader extends StatelessWidget {
         ),
         if (effectiveIndex != null && effectiveIndex.isNotEmpty) ...[
           gapW8,
-          CatchBadge(label: effectiveIndex, tone: CatchBadgeTone.neutral),
+          CatchBadge(label: effectiveIndex),
         ],
       ],
     );

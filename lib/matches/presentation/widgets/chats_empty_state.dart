@@ -23,7 +23,7 @@ class ChatsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -24,12 +24,12 @@ ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
       uid: uid,
       role: ClubMembershipRole.member,
       status: ClubMembershipStatus.active,
-      joinedAt: DateTime(2026, 1, 1),
+      joinedAt: DateTime(2026),
     );
 
 void main() {
   group('buildEventMapViewModel', () {
-    final now = DateTime(2026, 1, 1);
+    final now = DateTime(2026);
 
     test(
       'deduplicates events, keeps signed-up data, and sorts chronologically',
@@ -42,12 +42,10 @@ void main() {
           startingPointLng: 72.9,
         );
         final recommendedDuplicate = buildEvent(
-          id: 'event-1',
           meetingPoint: 'Recommended copy',
           startTime: DateTime(2026, 1, 2, 7),
         );
         final signedUpDuplicate = buildEvent(
-          id: 'event-1',
           meetingPoint: 'Signed-up copy',
           startTime: DateTime(2026, 1, 2, 7),
           startingPointLat: 19.0,
@@ -56,7 +54,6 @@ void main() {
 
         final viewModel = buildEventMapViewModel(
           signedUpEvents: [signedUpDuplicate],
-          savedEvents: const [],
           recommendedEvents: [laterRecommended, recommendedDuplicate],
           now: now,
         );
@@ -87,7 +84,6 @@ void main() {
 
       final viewModel = buildEventMapViewModel(
         signedUpEvents: [unpinned],
-        savedEvents: const [],
         recommendedEvents: [pinned],
         now: now,
       );
@@ -113,7 +109,6 @@ void main() {
 
       final viewModel = buildEventMapViewModel(
         signedUpEvents: [past, upcoming],
-        savedEvents: const [],
         recommendedEvents: [cancelled],
         now: now,
       );
@@ -170,7 +165,7 @@ void main() {
       () async {
         final repository = FakeEventRepository();
         final savedEventRepository = FakeSavedEventRepository();
-        final user = buildUser(uid: 'runner-1');
+        final user = buildUser();
         final signedUpEvent = buildEvent(
           id: 'signed-up',
           startTime: DateTime.now().add(const Duration(days: 1)),
@@ -179,7 +174,6 @@ void main() {
         );
         final recommendedRun = buildEvent(
           id: 'recommended',
-          clubId: 'club-1',
           startTime: DateTime.now().add(const Duration(days: 2)),
           startingPointLat: 19.1,
           startingPointLng: 72.9,
@@ -204,7 +198,7 @@ void main() {
             clubsRepositoryProvider.overrideWith(
               (ref) =>
                   club_test.FakeClubsRepository()
-                    ..clubsById['club-1'] = buildClub(id: 'club-1'),
+                    ..clubsById['club-1'] = buildClub(),
             ),
             savedEventRepositoryProvider.overrideWithValue(
               savedEventRepository,

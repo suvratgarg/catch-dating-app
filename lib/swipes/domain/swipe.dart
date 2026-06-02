@@ -54,7 +54,7 @@ abstract class Swipe with _$Swipe {
     required String eventId,
     required SwipeDirection direction,
     String? reactionTargetId,
-    @JsonKey(unknownEnumValue: null)
+    @JsonKey()
     SwipeReactionTargetType? reactionTargetType,
     String? reactionTargetLabel,
     String? reactionTargetPreview,

@@ -42,7 +42,7 @@ void main() {
   group('Event.title', () {
     test('#1 Saturday 6 AM -> "Saturday Morning Run"', () {
       // Find the next Saturday 06:00
-      var dt = DateTime(2025, 1, 1, 6, 0); // 2025-01-01 is a Wednesday
+      var dt = DateTime(2025, 1, 1, 6); // 2025-01-01 is a Wednesday
       while (dt.weekday != DateTime.saturday) {
         dt = dt.add(const Duration(days: 1));
       }
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('#2 Wednesday 14:00 -> "Wednesday Afternoon Run"', () {
-      var dt = DateTime(2025, 1, 1, 14, 0);
+      var dt = DateTime(2025, 1, 1, 14);
       while (dt.weekday != DateTime.wednesday) {
         dt = dt.add(const Duration(days: 1));
       }
@@ -60,7 +60,7 @@ void main() {
     });
 
     test('Evening period for 18:00', () {
-      var dt = DateTime(2025, 1, 1, 18, 0);
+      var dt = DateTime(2025, 1, 1, 18);
       while (dt.weekday != DateTime.friday) {
         dt = dt.add(const Duration(days: 1));
       }
@@ -158,7 +158,7 @@ void main() {
 
   group('Event.isFree', () {
     test('#7 true when priceInPaise == 0', () {
-      expect(buildEvent(priceInPaise: 0).isFree, isTrue);
+      expect(buildEvent().isFree, isTrue);
     });
 
     test('false when priceInPaise > 0', () {

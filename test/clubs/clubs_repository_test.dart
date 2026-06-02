@@ -85,7 +85,7 @@ void main() {
     );
 
     test('watchClub emits the decoded club when the document exists', () async {
-      final club = buildClub(id: 'club-1');
+      final club = buildClub();
       await _seedClub(firestore, club);
 
       await expectLater(repository.watchClub('club-1'), emits(club));
@@ -96,7 +96,7 @@ void main() {
     });
 
     test('fetchClub returns the decoded club when found', () async {
-      final club = buildClub(id: 'club-1');
+      final club = buildClub();
       await _seedClub(firestore, club);
 
       expect(await repository.fetchClub('club-1'), club);
@@ -109,16 +109,8 @@ void main() {
     test(
       'watchClubsByLocation filters by city and orders by createdAt',
       () async {
-        final older = buildClub(
-          id: 'older',
-          location: 'mumbai',
-          createdAt: DateTime(2025, 1, 1),
-        );
-        final newer = buildClub(
-          id: 'newer',
-          location: 'mumbai',
-          createdAt: DateTime(2025, 1, 2),
-        );
+        final older = buildClub(id: 'older', createdAt: DateTime(2025));
+        final newer = buildClub(id: 'newer', createdAt: DateTime(2025, 1, 2));
         await _seedClub(firestore, older);
         await _seedClub(firestore, newer);
         await _seedClub(
@@ -139,8 +131,7 @@ void main() {
           firestore,
           buildClub(
             id: 'club-$i',
-            location: 'mumbai',
-            createdAt: DateTime(2025, 1, 1).add(Duration(days: i)),
+            createdAt: DateTime(2025).add(Duration(days: i)),
           ),
         );
       }
@@ -173,7 +164,7 @@ void main() {
     });
 
     test('watchClubsHostedBy filters by host user id', () async {
-      final hosted = buildClub(id: 'hosted', hostUserId: 'host-1');
+      final hosted = buildClub(id: 'hosted');
       final coHosted = buildClub(
         id: 'co-hosted',
         hostUserId: 'host-2',
@@ -193,7 +184,6 @@ void main() {
     test('watchClubsOwnedBy filters out co-hosted clubs', () async {
       final owned = buildClub(
         id: 'owned',
-        hostUserId: 'host-1',
         ownerUserId: 'host-1',
         hostUserIds: const ['host-1'],
       );
@@ -333,12 +323,8 @@ void main() {
 
     test('repository provider wrappers delegate to the repository', () async {
       final fakeRepository = FakeClubsRepository();
-      final club = buildClub(id: 'club-1', location: 'mumbai');
-      final topClub = buildClub(
-        id: 'club-top',
-        location: 'mumbai',
-        rating: 4.9,
-      );
+      final club = buildClub();
+      final topClub = buildClub(id: 'club-top', rating: 4.9);
       fakeRepository.clubsById[club.id] = club;
       fakeRepository.clubsById[topClub.id] = topClub;
       fakeRepository.clubsByLocation['mumbai'] = [club, topClub];
@@ -386,7 +372,7 @@ void main() {
     testWidgets(
       'watchClubsByLocationProvider keeps realtime streams alive while idle',
       (tester) async {
-        final club = buildClub(id: 'club-1', location: 'mumbai');
+        final club = buildClub();
         final clubsController = StreamController<List<Club>>();
         addTearDown(clubsController.close);
 

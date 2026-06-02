@@ -36,7 +36,7 @@ class ErrorBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
+    return ColoredBox(
       color: colorScheme.surface,
       child: Container(
         margin: const EdgeInsets.fromLTRB(

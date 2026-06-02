@@ -1015,13 +1015,7 @@ void main() {
         tester,
         Column(
           children: [
-            Expanded(
-              child: ClubListTile(
-                club: club,
-                variant: ClubListTileVariant.directory,
-                isJoined: true,
-              ),
-            ),
+            Expanded(child: ClubListTile(club: club, isJoined: true)),
             ClubListTile(
               club: club,
               variant: ClubListTileVariant.avatarChip,
@@ -1075,7 +1069,6 @@ void main() {
         tester,
         ClubListTile(
           club: buildClub(name: 'Host Club'),
-          variant: ClubListTileVariant.directory,
           isJoined: true,
           isHost: true,
         ),
@@ -1204,7 +1197,7 @@ void main() {
                   bookedCount: 2,
                   waitlistedCount: 1,
                 ),
-                buildEvent(priceInPaise: 0, bookedCount: 1),
+                buildEvent(bookedCount: 1),
               ],
               onEditClub: () {},
               onCreateEvent: () {},
@@ -1237,7 +1230,7 @@ void main() {
         CustomScrollView(
           slivers: [
             ClubHeroAppBar(
-              club: buildClub(name: 'Stride Social'),
+              club: buildClub(),
               isHost: true,
               onShareClub: (_, club) async {
                 sharedClubId = club.id;
@@ -1322,6 +1315,125 @@ void main() {
       },
     );
 
+    testWidgets(
+      'ClubHeroAppBar keeps long title location outside the clipped media frame',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(402, 874);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+
+        final club = buildClub(
+          name: 'Vijay Nagar Event Collective',
+          area: 'Vijay Nagar',
+          location: 'indore',
+          imageUrl: 'https://example.com/club.jpg',
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: MediaQuery(
+                data: const MediaQueryData(
+                  size: Size(402, 874),
+                  padding: EdgeInsets.only(top: 59, bottom: 34),
+                  viewPadding: EdgeInsets.only(top: 59, bottom: 34),
+                ),
+                child: Scaffold(
+                  body: CustomScrollView(
+                    slivers: [ClubHeroAppBar(club: club, isHost: false)],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await _pumpClubUi(tester);
+
+        final mediaFrame = find.byKey(
+          const ValueKey('club-detail-viewport-curve-frame'),
+        );
+        final caption = find.byKey(const ValueKey('club-detail-hero-caption'));
+        final expandedTitle = find.byKey(
+          const ValueKey('club-detail-expanded-title'),
+        );
+        final location = find.descendant(
+          of: caption,
+          matching: find.text('Vijay Nagar, Indore'),
+        );
+
+        expect(mediaFrame, findsOneWidget);
+        expect(caption, findsOneWidget);
+        expect(expandedTitle, findsOneWidget);
+        expect(location, findsOneWidget);
+        expect(
+          find.descendant(of: mediaFrame, matching: expandedTitle),
+          findsNothing,
+        );
+        expect(
+          tester.getBottomLeft(location).dy,
+          lessThan(tester.getBottomLeft(caption).dy),
+        );
+
+        final module = tester.widget<ColoredBox>(
+          find.byKey(const ValueKey('club-detail-hero-module')),
+        );
+        expect(module.color, CatchTokens.sunsetLight.surface);
+      },
+    );
+
+    testWidgets('ClubDetailBody keeps a one-line hero tight to stats', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(402, 874);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final club = buildClub(
+        name: 'Sea Face Social',
+        imageUrl: 'https://example.com/club.jpg',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: MediaQuery(
+              data: const MediaQueryData(
+                size: Size(402, 874),
+                padding: EdgeInsets.only(top: 59, bottom: 34),
+                viewPadding: EdgeInsets.only(top: 59, bottom: 34),
+              ),
+              child: Scaffold(
+                body: ClubDetailBody(
+                  club: club,
+                  upcoming: const [],
+                  reviews: const [],
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isHost: false,
+                  isMember: true,
+                  isMutating: false,
+                  clubPushNotificationsEnabled: false,
+                  isClubPushMutating: false,
+                  isAuthenticated: true,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await _pumpClubUi(tester);
+
+      final gap =
+          tester.getTopLeft(find.byType(StatsStrip)).dy -
+          tester.getBottomLeft(find.text('Bandra, Mumbai')).dy;
+      expect(gap, greaterThan(0));
+      expect(gap, lessThanOrEqualTo(CatchSpacing.s8));
+    });
+
     testWidgets('ClubHeroAppBar uses clean fallback without a cover image', (
       tester,
     ) async {
@@ -1330,7 +1442,7 @@ void main() {
         CustomScrollView(
           slivers: [
             ClubHeroAppBar(
-              club: buildClub(name: 'Morning Miles', imageUrl: null),
+              club: buildClub(name: 'Morning Miles'),
               isHost: false,
             ),
           ],
@@ -1455,12 +1567,7 @@ void main() {
       await pumpTestApp(
         tester,
         ClubListTile(
-          club: buildClub(
-            name: 'No Cover Club',
-            area: 'Signal Hill',
-            imageUrl: null,
-          ),
-          variant: ClubListTileVariant.directory,
+          club: buildClub(name: 'No Cover Club', area: 'Signal Hill'),
         ),
       );
 
@@ -1478,7 +1585,6 @@ void main() {
       final club = buildClub(
         id: 'club-host',
         area: 'Saket',
-        hostUserId: 'host-1',
         hostName: 'Asha Host',
       );
       final router = GoRouter(
@@ -1580,7 +1686,6 @@ void main() {
     ) async {
       final club = buildClub(
         id: 'club-host-profile',
-        area: 'Bandra',
         hostUserId: 'host-42',
         hostName: 'Asha Shah',
       );
@@ -1654,11 +1759,7 @@ void main() {
             displayName: 'Owner Host',
             role: ClubHostRole.owner,
           ),
-          ClubHostProfile(
-            uid: 'host-2',
-            displayName: 'Co Host',
-            role: ClubHostRole.host,
-          ),
+          ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
         ],
       );
       final router = GoRouter(
@@ -1754,11 +1855,7 @@ void main() {
             displayName: 'Owner Host',
             role: ClubHostRole.owner,
           ),
-          ClubHostProfile(
-            uid: 'host-2',
-            displayName: 'Co Host',
-            role: ClubHostRole.host,
-          ),
+          ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
         ],
       );
 
@@ -1811,7 +1908,7 @@ void main() {
       (tester) async {
         final club = buildClub(id: 'club-reviews');
         final reviews = [
-          buildReview(id: 'review-1', comment: 'Most recent.'),
+          buildReview(comment: 'Most recent.'),
           buildReview(id: 'review-2', comment: 'Second recent.'),
           buildReview(id: 'review-3', comment: 'Third recent.'),
           buildReview(id: 'review-4', comment: 'Fourth hidden.'),
@@ -2027,8 +2124,6 @@ void main() {
       final socialClub = buildClub(
         id: 'social-club',
         name: 'Bandra Pacers',
-        area: 'Bandra',
-        tags: const ['social'],
         rating: 4.2,
       );
       final tempoClub = buildClub(
@@ -2194,13 +2289,13 @@ void main() {
             ],
             child: MaterialApp(
               theme: AppTheme.light,
-              home: MediaQuery(
-                data: const MediaQueryData(
+              home: const MediaQuery(
+                data: MediaQueryData(
                   size: Size(390, 844),
                   padding: EdgeInsets.only(top: 54),
                   viewPadding: EdgeInsets.only(top: 54),
                 ),
-                child: const ClubsListScreen(enableEventMapNetworkTiles: false),
+                child: ClubsListScreen(enableEventMapNetworkTiles: false),
               ),
             ),
           ),
@@ -2272,7 +2367,7 @@ void main() {
 
       expect(find.widgetWithText(InkWell, 'Map'), findsOneWidget);
 
-      final timestamp = DateTime(2026, 1, 1);
+      final timestamp = DateTime(2026);
       motionSource
         ..add(
           DeviceMotionSample(
@@ -3096,7 +3191,6 @@ void main() {
         SharedPreferences.setMockInitialValues({});
         final fakeRepository = FakeClubsRepository();
         final club = buildClub(
-          hostUserId: 'host-1',
           ownerUserId: 'host-1',
           instagramHandle: '@morningmiles',
           phoneNumber: '9876543210',

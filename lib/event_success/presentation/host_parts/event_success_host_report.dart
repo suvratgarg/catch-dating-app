@@ -130,7 +130,7 @@ class _HostReportSignalGrid extends StatelessWidget {
     final scorecard = brief.scorecard;
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -188,22 +188,18 @@ class _HostReportSignalGrid extends StatelessWidget {
               CatchBadge(
                 label:
                     '${scorecard.feedbackResponseCount}/${scorecard.checkedInCount} feedback',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.rateReviewOutlined,
               ),
               CatchBadge(
                 label: '${scorecard.assignmentParticipantCount} assigned',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.groups2Outlined,
               ),
               CatchBadge(
                 label: '${scorecard.assignmentOptOutCount} opted out',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.visibilityOffOutlined,
               ),
               CatchBadge(
                 label: '${scorecard.wingmanRequestCount} host-help requests',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.volunteerActivismOutlined,
               ),
             ],

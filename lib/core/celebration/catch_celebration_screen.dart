@@ -121,7 +121,7 @@ class _CatchCelebrationScreenState
                   constraints: BoxConstraints(
                     minHeight:
                         constraints.maxHeight -
-                        (CatchSpacing.s4 + CatchSpacing.s5),
+                        CatchLayout.celebrationViewportVerticalPadding,
                   ),
                   child: IntrinsicHeight(
                     child: Column(

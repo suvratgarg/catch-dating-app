@@ -96,7 +96,7 @@ class _QuickActionTile extends StatelessWidget {
 
     return CatchSurface(
       onTap: onTap,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       radius: CatchRadius.md,
       borderColor: t.line,
       backgroundColor: t.surface,

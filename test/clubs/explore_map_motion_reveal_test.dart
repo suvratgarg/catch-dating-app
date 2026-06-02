@@ -124,7 +124,7 @@ DeviceMotionSample _sample(
   double rotationZ = 0,
 }) {
   return DeviceMotionSample(
-    timestamp: DateTime(2026, 1, 1).add(Duration(milliseconds: milliseconds)),
+    timestamp: DateTime(2026).add(Duration(milliseconds: milliseconds)),
     userAccelerationX: userAccelerationX,
     userAccelerationY: userAccelerationY,
     userAccelerationZ: userAccelerationZ,

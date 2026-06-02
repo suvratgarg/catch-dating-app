@@ -101,10 +101,7 @@ class CatchProfileView extends StatelessWidget {
     }
     return [
       for (final block in blocks)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
-          child: block,
-        ),
+        Padding(padding: CatchInsets.contentVertical, child: block),
     ];
   }
 }
@@ -544,10 +541,7 @@ class _PhotoCaption extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = CatchTokens.sunsetDark;
     return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
       borderWidth: 0,

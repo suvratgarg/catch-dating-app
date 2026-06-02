@@ -23,6 +23,9 @@ class CatchEventThumbnail extends StatelessWidget {
     this.fit = BoxFit.cover,
     this.iconAlignment = Alignment.bottomRight,
     this.preferActivityArtwork = false,
+    this.fallbackIconSize,
+    this.fallbackIconOpacity = CatchOpacity.fallbackArtworkIcon,
+    this.fallbackPatternOpacity = CatchOpacity.ticketPerforationLine,
   });
 
   final String? photoUrl;
@@ -32,6 +35,9 @@ class CatchEventThumbnail extends StatelessWidget {
   final BoxFit fit;
   final Alignment iconAlignment;
   final bool preferActivityArtwork;
+  final double? fallbackIconSize;
+  final double fallbackIconOpacity;
+  final double fallbackPatternOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +55,18 @@ class CatchEventThumbnail extends StatelessWidget {
               errorBuilder: (_, _, _) => _ActivityFallback(
                 activityKind: activityKind,
                 iconAlignment: iconAlignment,
+                iconSize: fallbackIconSize,
+                iconOpacity: fallbackIconOpacity,
+                patternOpacity: fallbackPatternOpacity,
               ),
               loadingBuilder: (context, child, progress) {
                 if (progress == null) return child;
                 return _ActivityFallback(
                   activityKind: activityKind,
                   iconAlignment: iconAlignment,
+                  iconSize: fallbackIconSize,
+                  iconOpacity: fallbackIconOpacity,
+                  patternOpacity: fallbackPatternOpacity,
                 );
               },
             ),
@@ -63,6 +75,9 @@ class CatchEventThumbnail extends StatelessWidget {
           _ActivityFallback(
             activityKind: activityKind,
             iconAlignment: iconAlignment,
+            iconSize: fallbackIconSize,
+            iconOpacity: fallbackIconOpacity,
+            patternOpacity: fallbackPatternOpacity,
           ),
         if (scrim != CatchEventThumbnailScrim.none) _Scrim(style: scrim),
       ],
@@ -74,10 +89,16 @@ class _ActivityFallback extends StatelessWidget {
   const _ActivityFallback({
     required this.activityKind,
     required this.iconAlignment,
+    required this.iconSize,
+    required this.iconOpacity,
+    required this.patternOpacity,
   });
 
   final ActivityKind activityKind;
   final Alignment iconAlignment;
+  final double? iconSize;
+  final double iconOpacity;
+  final double patternOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +106,9 @@ class _ActivityFallback extends StatelessWidget {
       visual: eventActivityVisual(activityKind, context: context),
       dense: true,
       iconAlignment: iconAlignment,
-      iconSize: CatchSpacing.s16 * 2 + CatchSpacing.s4,
-      iconOpacity: CatchOpacity.fallbackArtworkIcon,
-      patternOpacity: CatchOpacity.ticketPerforationLine,
+      iconSize: iconSize ?? CatchLayout.eventThumbnailBackdropIconSize,
+      iconOpacity: iconOpacity,
+      patternOpacity: patternOpacity,
     );
   }
 }

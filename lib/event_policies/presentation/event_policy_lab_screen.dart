@@ -49,12 +49,7 @@ class _EventPolicyLabScreenState extends State<EventPolicyLabScreen> {
       body: SafeArea(
         top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s8,
-          ),
+          padding: CatchInsets.pageBodyRelaxed,
           children: [
             _LabHeader(scenario: _scenario),
             gapH16,
@@ -199,7 +194,7 @@ class _MetricTile extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       borderColor: t.line,
       child: StatColumn(
         icon: icon,
@@ -281,7 +276,7 @@ class _ScenarioCard extends StatelessWidget {
       child: CatchSurface(
         key: EventPolicyLabKeys.scenarioCard(scenario.id),
         onTap: onTap,
-        padding: const EdgeInsets.all(CatchSpacing.s4),
+        padding: CatchInsets.content,
         backgroundColor: selected ? t.primarySoft : t.surface,
         borderColor: selected ? t.primary : t.line,
         child: Column(
@@ -332,7 +327,7 @@ class _PolicySummary extends StatelessWidget {
         _SectionTitle(icon: CatchIcons.ruleRounded, title: 'Policy shape'),
         gapH10,
         CatchSurface(
-          padding: const EdgeInsets.all(CatchSpacing.s4),
+          padding: CatchInsets.content,
           borderColor: t.line,
           child: Column(
             children: [
@@ -490,7 +485,7 @@ class _ResultRow extends StatelessWidget {
 
     return CatchSurface(
       key: EventPolicyLabKeys.resultRow(row.probeId),
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,17 +523,14 @@ class _ResultRow extends StatelessWidget {
             children: [
               CatchBadge(
                 label: _formatReason(row.decisionReason),
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.infoOutline,
               ),
               CatchBadge(
                 label: _formatWaitlist(row.waitlistMode),
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.queueOutlined,
               ),
               CatchBadge(
                 label: _formatPaise(row.finalPriceInPaise),
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.paymentsOutlined,
               ),
             ],
@@ -601,7 +593,7 @@ class _CancellationRow extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,17 +634,14 @@ class _CancellationRow extends StatelessWidget {
             children: [
               CatchBadge(
                 label: _formatCancellationRemedy(row.remedy),
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.ruleOutlined,
               ),
               CatchBadge(
                 label: 'Refund ${_formatPaise(row.refundAmountInPaise)}',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.paymentsOutlined,
               ),
               CatchBadge(
                 label: 'Credit ${_formatPaise(row.creditAmountInPaise)}',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.accountBalanceWalletOutlined,
               ),
               if (row.isWaitlisted)
@@ -690,7 +679,7 @@ class _DebugOutput extends StatelessWidget {
         _SectionTitle(icon: CatchIcons.dataObjectRounded, title: 'Debug map'),
         gapH10,
         CatchSurface(
-          padding: const EdgeInsets.all(CatchSpacing.s4),
+          padding: CatchInsets.content,
           backgroundColor: t.ink,
           borderColor: Colors.transparent,
           child: SingleChildScrollView(
@@ -782,7 +771,7 @@ class _DividerLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+      padding: CatchInsets.contentVertical,
       child: Divider(height: 1, color: color),
     );
   }

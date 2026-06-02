@@ -220,7 +220,7 @@ class _AfterglowBeatRowState extends State<_AfterglowBeatRow>
               backgroundColor: t.surface,
               borderColor: t.line,
               radius: CatchRadius.sm,
-              padding: const EdgeInsets.all(CatchSpacing.s3),
+              padding: CatchInsets.contentDense,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

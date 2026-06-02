@@ -25,10 +25,10 @@ class ClubScheduleSection extends StatelessWidget {
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
+            CatchLayout.detailScreenHorizontalPadding,
             0,
-            CatchSpacing.s5,
-            12,
+            CatchLayout.detailScreenHorizontalPadding,
+            CatchLayout.detailScreenSectionTitleBottomGap,
           ),
           sliver: SliverToBoxAdapter(
             child: Text('Schedule', style: CatchTextStyles.titleL(context)),
@@ -37,10 +37,10 @@ class ClubScheduleSection extends StatelessWidget {
         if (events.isEmpty)
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
+              CatchLayout.detailScreenHorizontalPadding,
               0,
-              CatchSpacing.s5,
-              20,
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.detailScreenBottomPadding,
             ),
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
@@ -52,7 +52,7 @@ class ClubScheduleSection extends StatelessWidget {
                 layout: CatchEmptyStateLayout.inline,
                 iconSize: CatchIcon.row,
                 iconContainerSize: 44,
-                padding: const EdgeInsets.all(CatchSpacing.s4),
+                padding: CatchInsets.content,
                 titleStyle: CatchTextStyles.sectionTitle(context),
                 messageStyle: CatchTextStyles.supporting(
                   context,
@@ -67,6 +67,12 @@ class ClubScheduleSection extends StatelessWidget {
             badgeLabel: isHost ? 'HOSTED' : 'VIEW',
             statusBuilder: isHost ? (_) => EventTileStatus.hosted : null,
             onEventSelected: onEventSelected,
+            padding: const EdgeInsets.fromLTRB(
+              CatchLayout.detailScreenHorizontalPadding,
+              0,
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.detailScreenBottomPadding,
+            ),
           ),
       ],
     );

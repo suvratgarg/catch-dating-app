@@ -31,7 +31,7 @@ class ActivitySignedOutState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       child: CatchEmptyState(
         icon: CatchIcons.notificationsNoneRounded,
         title: 'No activity yet',
@@ -85,19 +85,17 @@ class ActivitySection extends ConsumerWidget {
       children: [
         if (isLoading) ...[
           CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             borderColor: t.line,
-            child: Row(
+            child: const Row(
               children: [
-                const SizedBox(
+                SizedBox(
                   width: CatchLayout.activityLoadingIndicatorExtent,
                   height: CatchLayout.activityLoadingIndicatorExtent,
                   child: CatchLoadingIndicator(strokeWidth: 2),
                 ),
                 gapW10,
-                const Expanded(
-                  child: _ActivityStateLabel('Loading activity...'),
-                ),
+                Expanded(child: _ActivityStateLabel('Loading activity...')),
               ],
             ),
           ),
@@ -219,7 +217,7 @@ class _NotificationTile extends StatelessWidget {
         backgroundColor: item.isUnread
             ? visual.accent.withValues(alpha: CatchOpacity.activityUnreadFill)
             : t.surface,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

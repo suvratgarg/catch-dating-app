@@ -85,7 +85,7 @@ class _HostPaymentAccountCardState
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -117,14 +117,12 @@ class _HostPaymentAccountCardState
               children: [
                 CatchBadge(
                   label: account.defaultCurrency,
-                  tone: CatchBadgeTone.neutral,
                 ),
                 CatchBadge(
                   label: account.country,
-                  tone: CatchBadgeTone.neutral,
                 ),
                 if (account.disabledReason != null)
-                  CatchBadge(label: 'Restricted', tone: CatchBadgeTone.warning),
+                  const CatchBadge(label: 'Restricted', tone: CatchBadgeTone.warning),
               ],
             ),
           ],

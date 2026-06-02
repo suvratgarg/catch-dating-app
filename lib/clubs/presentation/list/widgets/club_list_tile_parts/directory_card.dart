@@ -330,7 +330,6 @@ class _ClubHostActionRow extends StatelessWidget {
     return ClubHostIdentityLine(
       hostName: club.hostName,
       hostAvatarUrl: club.hostAvatarUrl,
-      avatarSize: 28,
       trailing: _MembershipButton(
         clubId: club.id,
         isJoined: isJoined,
@@ -441,7 +440,6 @@ class _JoinClubButton extends ConsumerWidget {
               }
               _joinClub(ref);
             },
-      variant: CatchButtonVariant.primary,
       size: CatchButtonSize.sm,
       backgroundColor: t.ink,
       foregroundColor: t.primaryInk,

@@ -110,12 +110,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
     final clubNames = clubNamesAsync.asData?.value;
 
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s1,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
-      ),
+      padding: CatchInsets.pageBodyUnderHeader,
       sliver: SliverToBoxAdapter(
         child: Center(
           child: ConstrainedBox(
@@ -249,7 +244,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Row(
         children: [

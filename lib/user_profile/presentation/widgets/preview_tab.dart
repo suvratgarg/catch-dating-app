@@ -23,7 +23,6 @@ class PreviewTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProfileSurface(
       profile: profile,
-      mode: ProfileSurfaceMode.preview,
       scrollController: scrollController,
       scrollPhysics: scrollPhysics,
       bottomPadding: bottomPadding,

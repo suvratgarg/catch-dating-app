@@ -208,7 +208,7 @@ class _ChatLayout extends StatelessWidget {
               gapW8,
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.micro6 + CatchStroke.hairline,
+                  horizontal: CatchLayout.personUnreadBadgeHorizontalPadding,
                   vertical: CatchSpacing.micro2,
                 ),
                 decoration: BoxDecoration(

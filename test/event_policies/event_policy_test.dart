@@ -15,7 +15,6 @@ void main() {
     return EventPolicyBundle(
       admissionPolicy: admissionPolicy,
       pricingPolicy: pricingPolicy,
-      cohortResolver: cohortResolver,
     );
   }
 
@@ -154,7 +153,6 @@ void main() {
           balancedRatioPolicy: BalancedRatioPolicy(
             leftCohortId: EventCohortIds.menInterestedInWomen,
             rightCohortId: EventCohortIds.womenInterestedInMen,
-            maxSkew: 1,
           ),
           waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
         ),
@@ -192,7 +190,6 @@ void main() {
           balancedRatioPolicy: BalancedRatioPolicy(
             leftCohortId: EventCohortIds.menInterestedInWomen,
             rightCohortId: EventCohortIds.womenInterestedInMen,
-            outOfRatioCohortPolicy: EventOutOfRatioCohortPolicy.manualReview,
           ),
         ),
       );
@@ -245,7 +242,6 @@ void main() {
             EventDemandPricingRule(
               pricedCohortId: EventCohortIds.menInterestedInWomen,
               balancingCohortId: EventCohortIds.womenInterestedInMen,
-              freeSkew: 1,
               demandStep: 5,
               stepAdjustment: MoneyAmount.inPaise(20000),
               maxAdjustment: MoneyAmount.inPaise(60000),

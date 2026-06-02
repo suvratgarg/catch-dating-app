@@ -14,7 +14,7 @@ void main() {
     'eventHypeAvatars uses recent matching-gender profile thumbnails',
     () async {
       final firestore = FakeFirebaseFirestore();
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final now = DateTime(2026, 5, 8, 8);
 
       await firestore
@@ -105,7 +105,7 @@ void main() {
     'eventHypeAvatars falls back to full photo while thumbnails backfill',
     () async {
       final firestore = FakeFirebaseFirestore();
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final now = DateTime(2026, 5, 8, 8);
 
       await firestore

@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -64,6 +65,8 @@ class ClubDetailBody extends StatelessWidget {
     final t = CatchTokens.of(context);
     final showMembershipControls = isAuthenticated && !isHost;
     final isOwner = club.isOwnedBy(uid);
+    const contentGap = SizedBox(height: CatchLayout.detailScreenContentGap);
+    const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
 
     return ColoredBox(
       color: t.surface,
@@ -72,26 +75,26 @@ class ClubDetailBody extends StatelessWidget {
           ClubHeroAppBar(club: club, isHost: isHost),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              20,
-              CatchSpacing.s5,
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.detailScreenTopPadding,
+              CatchLayout.detailScreenHorizontalPadding,
               0,
             ),
             sliver: SliverList.list(
               children: [
                 StatsStrip(club: club, upcomingCount: upcoming.length),
-                gapH16,
+                contentGap,
                 _ClubHostSection(
                   club: club,
                   canViewProfile: isAuthenticated,
                   currentUid: uid,
                 ),
-                gapH16,
+                contentGap,
                 if (isOwner) ...[
                   HostPaymentAccountCard(club: club),
-                  gapH16,
+                  contentGap,
                   _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
-                  gapH16,
+                  contentGap,
                 ],
                 if (isHost) ...[
                   HostClubManagementPanel(
@@ -108,20 +111,20 @@ class ClubDetailBody extends StatelessWidget {
                       extra: club,
                     ),
                   ),
-                  gapH16,
+                  contentGap,
                 ],
                 Text(
                   club.description,
                   style: CatchTextStyles.bodyLead(context, color: t.ink2),
                 ),
-                gapH20,
                 if (club.instagramHandle != null ||
                     club.phoneNumber != null ||
                     club.email != null) ...[
+                  contentGap,
                   _ClubContactSection(club: club),
-                  gapH20,
                 ],
-                if (showMembershipControls)
+                if (showMembershipControls) ...[
+                  contentGap,
                   MembershipButton(
                     clubId: club.id,
                     isMember: isMember,
@@ -129,9 +132,9 @@ class ClubDetailBody extends StatelessWidget {
                     pushNotificationsEnabled: clubPushNotificationsEnabled,
                     isPushMutating: isClubPushMutating,
                   ),
-                if (showMembershipControls) gapH24,
-                if (!isAuthenticated) ...[_GuestPrompt(club: club), gapH24],
-                gapH24,
+                ],
+                if (!isAuthenticated) ...[contentGap, _GuestPrompt(club: club)],
+                sectionGap,
               ],
             ),
           ),
@@ -147,17 +150,13 @@ class ClubDetailBody extends StatelessWidget {
           if (isAuthenticated)
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
+                CatchLayout.detailScreenHorizontalPadding,
                 0,
-                CatchSpacing.s5,
-                CatchSpacing.s6,
+                CatchLayout.detailScreenHorizontalPadding,
+                CatchLayout.detailScreenBottomPadding,
               ),
               sliver: SliverToBoxAdapter(
-                child: ClubReviewsSection(
-                  reviews: reviews,
-                  currentUid: uid,
-                  maxVisibleReviews: 3,
-                ),
+                child: ClubReviewsSection(reviews: reviews, currentUid: uid),
               ),
             ),
         ],
@@ -212,7 +211,7 @@ class _ClubHostSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -351,7 +350,7 @@ class _ClubOwnerHostManagementSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -470,8 +469,6 @@ class _OwnerHostRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Row(
       children: [
         ClubHostAvatar(
@@ -495,17 +492,26 @@ class _OwnerHostRow extends StatelessWidget {
             ],
           ),
         ),
-        PopupMenuButton<String>(
+        CatchActionMenu<String>(
           tooltip: 'Host actions',
           enabled: canManage,
-          icon: Icon(CatchIcons.moreHorizRounded, color: t.ink2),
+          icon: CatchIcons.moreHorizRounded,
           onSelected: (value) {
             if (value == 'transfer') onTransfer();
             if (value == 'remove') onRemove();
           },
-          itemBuilder: (context) => const [
-            PopupMenuItem(value: 'transfer', child: Text('Transfer ownership')),
-            PopupMenuItem(value: 'remove', child: Text('Remove host')),
+          items: [
+            CatchActionMenuItem(
+              value: 'transfer',
+              label: 'Transfer ownership',
+              icon: CatchIcons.adminPanelSettingsOutlined,
+            ),
+            CatchActionMenuItem(
+              value: 'remove',
+              label: 'Remove host',
+              icon: CatchIcons.personOffOutlined,
+              isDestructive: true,
+            ),
           ],
         ),
       ],
@@ -592,11 +598,11 @@ class _ClubContactSection extends ConsumerWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(title: 'Contact', heavy: true),
+          const SectionHeader(title: 'Contact', heavy: true),
           gapH12,
           if (club.instagramHandle != null)
             _ContactRow(
@@ -656,7 +662,7 @@ class _ContactRow extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(CatchRadius.sm),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
+            padding: CatchInsets.controlVerticalTight,
             child: Row(
               children: [
                 Icon(icon, size: CatchIcon.md, color: t.primary),
@@ -692,7 +698,7 @@ class _GuestPrompt extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         children: [
           Text(

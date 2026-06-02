@@ -21,7 +21,7 @@ void main() {
     tester,
   ) async {
     final repository = _FakeReviewsRepository();
-    final user = buildUser(uid: 'runner-1', name: 'Asha');
+    final user = buildUser(name: 'Asha');
     final container = _reviewsContainer(repository);
     addTearDown(container.dispose);
 
@@ -54,7 +54,7 @@ void main() {
     tester,
   ) async {
     final repository = _FakeReviewsRepository();
-    final user = buildUser(uid: 'runner-1', name: 'Asha');
+    final user = buildUser(name: 'Asha');
     final container = _reviewsContainer(repository);
     addTearDown(container.dispose);
 
@@ -81,11 +81,8 @@ void main() {
     tester,
   ) async {
     final repository = _FakeReviewsRepository();
-    final user = buildUser(uid: 'runner-1', name: 'Asha');
+    final user = buildUser(name: 'Asha');
     final review = buildReview(
-      id: 'review-1',
-      clubId: 'club-1',
-      eventId: 'event-1',
       reviewerUserId: user.uid,
       reviewerName: user.name,
       comment: 'Good event.',
@@ -120,11 +117,10 @@ void main() {
   testWidgets('review history lists own reviews and opens edit sheet', (
     tester,
   ) async {
-    final user = buildUser(uid: 'runner-1', name: 'Asha');
-    final event = buildEvent(id: 'event-1', clubId: 'club-1');
+    final user = buildUser(name: 'Asha');
+    final event = buildEvent();
     final review = buildReview(
       id: 'event-1~runner-1',
-      clubId: 'club-1',
       eventId: event.id,
       reviewerUserId: user.uid,
       reviewerName: user.name,

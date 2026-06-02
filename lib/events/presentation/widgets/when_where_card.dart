@@ -30,7 +30,7 @@ class WhenWhereCard extends StatelessWidget {
     final style = surfaceStyle;
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       radius: CatchRadius.md,
       backgroundColor: style?.surfaceBackground,
       borderColor: style?.borderColor ?? t.line,
@@ -44,10 +44,7 @@ class WhenWhereCard extends StatelessWidget {
                   minHeight: CatchLayout.eventInfoTileExtent,
                 ),
                 child: CatchSurface(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.micro6,
-                    vertical: CatchSpacing.s1,
-                  ),
+                  padding: CatchInsets.infoTileContent,
                   radius: CatchRadius.infoTile,
                   backgroundColor: style?.primarySoftColor ?? t.primarySoft,
                   borderWidth: 0,
@@ -99,7 +96,7 @@ class WhenWhereCard extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+            padding: CatchInsets.contentVertical,
             child: Divider(color: style?.dividerColor ?? t.line, height: 1),
           ),
           Semantics(

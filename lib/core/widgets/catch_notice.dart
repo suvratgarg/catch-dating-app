@@ -225,7 +225,6 @@ class CatchNotice extends StatelessWidget {
       ].join('. '),
       child: CatchSurface(
         elevation: CatchSurfaceElevation.overlay,
-        radius: CatchRadius.lg,
         borderColor: palette.border,
         backgroundColor: palette.background,
         padding: const EdgeInsets.symmetric(
@@ -233,7 +232,6 @@ class CatchNotice extends StatelessWidget {
           vertical: CatchSpacing.s3,
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
@@ -265,7 +263,7 @@ class CatchNotice extends StatelessWidget {
                     ),
                   ),
                   if (notice.message != null) ...[
-                    const SizedBox(height: CatchSpacing.s1 / 2),
+                    const SizedBox(height: CatchLayout.noticeTitleMessageGap),
                     Text(
                       notice.message!,
                       maxLines: 2,

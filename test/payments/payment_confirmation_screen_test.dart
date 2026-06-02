@@ -15,7 +15,7 @@ import '../events/events_test_helpers.dart';
 
 void main() {
   group('PaymentConfirmationScreen', () {
-    final confirmationData = PaymentConfirmationData(
+    final confirmationData = const PaymentConfirmationData(
       paymentId: 'pay_ABC123',
       orderId: 'order_XYZ789',
       amountInPaise: 29900,
@@ -26,12 +26,8 @@ void main() {
     testWidgets('renders joined celebration with payment details', (
       tester,
     ) async {
-      final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
-        priceInPaise: 29900,
-      );
-      final club = buildClub(id: 'club-1', name: 'Bandra Breakers');
+      final event = buildEvent(priceInPaise: 29900);
+      final club = buildClub(name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
@@ -50,12 +46,10 @@ void main() {
 
     testWidgets('renders event details inside the celebration', (tester) async {
       final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
         priceInPaise: 29900,
         meetingPoint: 'Carter Road Promenade',
       );
-      final club = buildClub(id: 'club-1', name: 'Bandra Breakers');
+      final club = buildClub(name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
@@ -75,8 +69,8 @@ void main() {
     testWidgets('renders quick actions, heads up, and referral', (
       tester,
     ) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
-      final club = buildClub(id: 'club-1');
+      final event = buildEvent();
+      final club = buildClub();
 
       await _pumpPaymentConfirmation(
         tester,
@@ -105,8 +99,8 @@ void main() {
     testWidgets('invite and referral surfaces open rich event share cards', (
       tester,
     ) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
-      final club = buildClub(id: 'club-1');
+      final event = buildEvent();
+      final club = buildClub();
 
       await _pumpPaymentConfirmation(
         tester,
@@ -135,8 +129,8 @@ void main() {
     });
 
     testWidgets('Back to home button pops to root', (tester) async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
-      final club = buildClub(id: 'club-1');
+      final event = buildEvent();
+      final club = buildClub();
 
       await _pumpPaymentConfirmation(
         tester,

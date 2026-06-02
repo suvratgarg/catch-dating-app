@@ -131,7 +131,6 @@ class _TitleLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         if (leading != null) ...[leading!, gapW12],
         Expanded(

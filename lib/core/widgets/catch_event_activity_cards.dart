@@ -68,9 +68,6 @@ class CatchEventTicketCard extends StatelessWidget {
             child: CatchSurface(
               onTap: onTap,
               padding: EdgeInsets.zero,
-              radius: CatchRadius.lg,
-              elevation: CatchSurfaceElevation.none,
-              clipBehavior: Clip.none,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -220,14 +217,13 @@ class CatchEventSpotlightCard extends StatelessWidget {
     final backdrop = EventActivityBackdrop(
       visual: visual,
       dense: true,
-      iconSize: CatchSpacing.s16 * 2 + CatchSpacing.s12 + CatchSpacing.s1,
+      iconSize: CatchLayout.eventCardBackdropIconSize,
       iconOpacity: 0.16,
       patternOpacity: 0.26,
     );
     final card = CatchSurface(
       onTap: onTap,
       padding: EdgeInsets.zero,
-      radius: CatchRadius.lg,
       borderColor: t.line2,
       elevation: CatchSurfaceElevation.card,
       clipBehavior: Clip.antiAlias,
@@ -286,7 +282,6 @@ class CatchEventSpotlightCard extends StatelessWidget {
                     style: CatchTextStyles.eventDisplay(
                       context,
                       size: 30,
-                      height: 1.0,
                       color: t.primaryInk,
                     ),
                   ),
@@ -414,8 +409,8 @@ class _RoundGlyph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSurface(
-      width: CatchSpacing.s12 + CatchSpacing.s2,
-      height: CatchSpacing.s12 + CatchSpacing.s2,
+      width: CatchLayout.eventActivityGlyphExtent,
+      height: CatchLayout.eventActivityGlyphExtent,
       radius: CatchRadius.pill,
       backgroundColor: CatchTokens.editorialLight.withValues(
         alpha: CatchOpacity.lightOverlayFill,
@@ -426,7 +421,7 @@ class _RoundGlyph extends StatelessWidget {
       child: Icon(
         icon,
         color: CatchTokens.editorialLight,
-        size: CatchIcon.lg + CatchSpacing.micro2,
+        size: CatchLayout.eventActivityGlyphIconSize,
       ),
     );
   }

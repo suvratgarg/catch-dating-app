@@ -39,7 +39,7 @@ void main() {
   test(
     'builds directions URI from meeting point when coordinates are absent',
     () {
-      final event = buildEvent(meetingPoint: 'Carter Road');
+      final event = buildEvent();
 
       final uri = PaymentConfirmationController.directionsUri(event);
 

@@ -27,6 +27,12 @@ const double _ticketRailHeight = CatchLayout.exploreTicketRailHeight;
 const double _ticketRailCardSpacing = CatchSpacing.s3;
 const double _mapAreaScopeThresholdMeters = 25000;
 const String _seeAllNearbyEventsLabel = 'See all nearby events';
+const EdgeInsets _mapSheetLeadPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.micro2,
+  CatchSpacing.s5,
+  CatchSpacing.s4,
+);
 
 enum ExploreMapSheetLeadMode { collapsedSummary, selectedEvent, nearbyRail }
 
@@ -198,14 +204,8 @@ class _CollapsedMapSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-      ),
+      padding: _mapSheetLeadPadding,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
@@ -244,12 +244,7 @@ class _SelectedEventLead extends ConsumerWidget {
     final isSpotlight = event.id == spotlightEventId;
     final source = 'map_selected_card';
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-      ),
+      padding: _mapSheetLeadPadding,
       child: isSpotlight
           ? CatchEventSpotlightCard(
               key: ValueKey('explore-selected-${event.id}'),
@@ -377,12 +372,7 @@ class _PeekRailContentState extends ConsumerState<_PeekRailContent> {
     final t = CatchTokens.of(context);
     final items = widget.items;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-      ),
+      padding: _mapSheetLeadPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -539,12 +529,7 @@ class _PeekRailSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.micro2,
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-      ),
+      padding: _mapSheetLeadPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

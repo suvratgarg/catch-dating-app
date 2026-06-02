@@ -137,12 +137,12 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: MediaQuery(
-            data: const MediaQueryData(
+          home: const MediaQuery(
+            data: MediaQueryData(
               size: Size(393, 852),
               padding: EdgeInsets.only(top: 59),
             ),
-            child: const Scaffold(
+            child: Scaffold(
               body: CatchNoticeHost(
                 persistentNotices: [AppNotice.offline()],
                 child: SizedBox.expand(),

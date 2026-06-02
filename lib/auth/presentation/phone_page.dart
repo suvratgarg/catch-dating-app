@@ -69,7 +69,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
+      padding: CatchInsets.pageHorizontalWide,
       child: Column(
         children: [
           Expanded(
@@ -82,10 +82,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     gapH32,
                     Text(
                       "What's your number?",
-                      style: CatchTextStyles.headlineS(
-                        context,
-                        color: t.ink,
-                      ),
+                      style: CatchTextStyles.headlineS(context, color: t.ink),
                     ),
                     gapH8,
                     Text(
@@ -191,14 +188,9 @@ class _CountryCodeSelector extends StatelessWidget {
             if (dialCode == null || dialCode.isEmpty) return;
             onChanged(dialCode);
           },
-          showCountryOnly: false,
-          showOnlyCountryWhenClosed: false,
-          alignLeft: false,
-          showFlag: true,
           showFlagMain: true,
           showFlagDialog: true,
           showDropDownButton: true,
-          hideMainText: false,
           favorite: supportedCountryPickerFavorites,
           textStyle: CatchTextStyles.bodyLead(context, color: t.ink),
           dialogTextStyle: CatchTextStyles.bodyLead(context, color: t.ink),
@@ -233,7 +225,7 @@ class _CountryCodeSelector extends StatelessWidget {
             ),
           ),
           closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+          padding: CatchInsets.inlineHorizontal,
           margin: const EdgeInsets.only(right: CatchSpacing.micro6),
           flagWidth: CatchSpacing.s6,
           flagDecoration: BoxDecoration(

@@ -37,14 +37,9 @@ class ChatsList extends ConsumerWidget {
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
 
     return switch (viewModelAsync) {
-      AsyncLoading() => SliverToBoxAdapter(
+      AsyncLoading() => const SliverToBoxAdapter(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s6,
-          ),
+          padding: CatchInsets.pageBody,
           child: CatchSkeletonList(count: 4),
         ),
       ),

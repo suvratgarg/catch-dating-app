@@ -17,9 +17,9 @@ mixin _$PublicProfile {
 
 @JsonKey(includeToJson: false) String get uid; String get name; int get age; Gender get gender; List<ProfilePromptAnswer> get profilePrompts; List<ProfilePhoto> get profilePhotos;// Location
  String? get city;// Background
- int? get height; String? get occupation; String? get company;@JsonKey(unknownEnumValue: null) EducationLevel? get education;@JsonKey(unknownEnumValue: null) Religion? get religion; List<Language> get languages;// Intentions
-@JsonKey(unknownEnumValue: null) RelationshipGoal? get relationshipGoal;// Lifestyle
-@JsonKey(unknownEnumValue: null) DrinkingHabit? get drinking;@JsonKey(unknownEnumValue: null) SmokingHabit? get smoking;@JsonKey(unknownEnumValue: null) WorkoutFrequency? get workout;@JsonKey(unknownEnumValue: null) DietaryPreference? get diet;@JsonKey(unknownEnumValue: null) ChildrenStatus? get children;// Activity preferences
+ int? get height; String? get occupation; String? get company; EducationLevel? get education; Religion? get religion; List<Language> get languages;// Intentions
+ RelationshipGoal? get relationshipGoal;// Lifestyle
+ DrinkingHabit? get drinking; SmokingHabit? get smoking; WorkoutFrequency? get workout; DietaryPreference? get diet; ChildrenStatus? get children;// Activity preferences
  ActivityPreferences get activityPreferences;
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -53,7 +53,7 @@ abstract mixin class $PublicProfileCopyWith<$Res>  {
   factory $PublicProfileCopyWith(PublicProfile value, $Res Function(PublicProfile) _then) = _$PublicProfileCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<ProfilePhoto> profilePhotos, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, ActivityPreferences activityPreferences
+@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<ProfilePhoto> profilePhotos, String? city, int? height, String? occupation, String? company, EducationLevel? education, Religion? religion, List<Language> languages, RelationshipGoal? relationshipGoal, DrinkingHabit? drinking, SmokingHabit? smoking, WorkoutFrequency? workout, DietaryPreference? diet, ChildrenStatus? children, ActivityPreferences activityPreferences
 });
 
 
@@ -186,7 +186,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  ActivityPreferences activityPreferences)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company,  EducationLevel? education,  Religion? religion,  List<Language> languages,  RelationshipGoal? relationshipGoal,  DrinkingHabit? drinking,  SmokingHabit? smoking,  WorkoutFrequency? workout,  DietaryPreference? diet,  ChildrenStatus? children,  ActivityPreferences activityPreferences)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
 return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.profilePhotos,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.activityPreferences);case _:
@@ -207,7 +207,7 @@ return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  ActivityPreferences activityPreferences)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company,  EducationLevel? education,  Religion? religion,  List<Language> languages,  RelationshipGoal? relationshipGoal,  DrinkingHabit? drinking,  SmokingHabit? smoking,  WorkoutFrequency? workout,  DietaryPreference? diet,  ChildrenStatus? children,  ActivityPreferences activityPreferences)  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile():
 return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.profilePhotos,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.activityPreferences);case _:
@@ -227,7 +227,7 @@ return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  ActivityPreferences activityPreferences)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<ProfilePhoto> profilePhotos,  String? city,  int? height,  String? occupation,  String? company,  EducationLevel? education,  Religion? religion,  List<Language> languages,  RelationshipGoal? relationshipGoal,  DrinkingHabit? drinking,  SmokingHabit? smoking,  WorkoutFrequency? workout,  DietaryPreference? diet,  ChildrenStatus? children,  ActivityPreferences activityPreferences)?  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
 return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.profilePhotos,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.activityPreferences);case _:
@@ -242,7 +242,7 @@ return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts
 @JsonSerializable()
 
 class _PublicProfile implements PublicProfile {
-  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.gender, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<ProfilePhoto> profilePhotos = const [], this.city, this.height, this.occupation, this.company, @JsonKey(unknownEnumValue: null) this.education, @JsonKey(unknownEnumValue: null) this.religion, final  List<Language> languages = const [], @JsonKey(unknownEnumValue: null) this.relationshipGoal, @JsonKey(unknownEnumValue: null) this.drinking, @JsonKey(unknownEnumValue: null) this.smoking, @JsonKey(unknownEnumValue: null) this.workout, @JsonKey(unknownEnumValue: null) this.diet, @JsonKey(unknownEnumValue: null) this.children, this.activityPreferences = const ActivityPreferences()}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_languages = languages;
+  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.gender, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<ProfilePhoto> profilePhotos = const [], this.city, this.height, this.occupation, this.company, this.education, this.religion, final  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences()}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_languages = languages;
   factory _PublicProfile.fromJson(Map<String, dynamic> json) => _$PublicProfileFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
@@ -269,8 +269,8 @@ class _PublicProfile implements PublicProfile {
 @override final  int? height;
 @override final  String? occupation;
 @override final  String? company;
-@override@JsonKey(unknownEnumValue: null) final  EducationLevel? education;
-@override@JsonKey(unknownEnumValue: null) final  Religion? religion;
+@override final  EducationLevel? education;
+@override final  Religion? religion;
  final  List<Language> _languages;
 @override@JsonKey() List<Language> get languages {
   if (_languages is EqualUnmodifiableListView) return _languages;
@@ -279,13 +279,13 @@ class _PublicProfile implements PublicProfile {
 }
 
 // Intentions
-@override@JsonKey(unknownEnumValue: null) final  RelationshipGoal? relationshipGoal;
+@override final  RelationshipGoal? relationshipGoal;
 // Lifestyle
-@override@JsonKey(unknownEnumValue: null) final  DrinkingHabit? drinking;
-@override@JsonKey(unknownEnumValue: null) final  SmokingHabit? smoking;
-@override@JsonKey(unknownEnumValue: null) final  WorkoutFrequency? workout;
-@override@JsonKey(unknownEnumValue: null) final  DietaryPreference? diet;
-@override@JsonKey(unknownEnumValue: null) final  ChildrenStatus? children;
+@override final  DrinkingHabit? drinking;
+@override final  SmokingHabit? smoking;
+@override final  WorkoutFrequency? workout;
+@override final  DietaryPreference? diet;
+@override final  ChildrenStatus? children;
 // Activity preferences
 @override@JsonKey() final  ActivityPreferences activityPreferences;
 
@@ -322,7 +322,7 @@ abstract mixin class _$PublicProfileCopyWith<$Res> implements $PublicProfileCopy
   factory _$PublicProfileCopyWith(_PublicProfile value, $Res Function(_PublicProfile) _then) = __$PublicProfileCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<ProfilePhoto> profilePhotos, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, ActivityPreferences activityPreferences
+@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<ProfilePhoto> profilePhotos, String? city, int? height, String? occupation, String? company, EducationLevel? education, Religion? religion, List<Language> languages, RelationshipGoal? relationshipGoal, DrinkingHabit? drinking, SmokingHabit? smoking, WorkoutFrequency? workout, DietaryPreference? diet, ChildrenStatus? children, ActivityPreferences activityPreferences
 });
 
 

@@ -61,9 +61,15 @@ class SalesDemoSyntheticFixtures {
         'Expected sales demo persona profile projection in $path.',
       );
     }
+    final remotePhotosAvailable = _list(
+      root['assetStatuses'],
+    ).whereType<String>().contains('uploaded');
     final personas = <String, _SalesDemoPersona>{};
     for (final persona in _list(root['personas'])) {
-      final mapped = _SalesDemoPersona(_stringMap(persona, context: path));
+      final mapped = _SalesDemoPersona(
+        _stringMap(persona, context: path),
+        remotePhotosAvailable: remotePhotosAvailable,
+      );
       personas[mapped.id] = mapped;
     }
     return SalesDemoSyntheticFixtures._(personas);
@@ -304,9 +310,10 @@ EventParticipationStatus _participationStatusForIndex(
 String _firstName(String name) => name.trim().split(RegExp(r'\s+')).first;
 
 class _SalesDemoPersona {
-  const _SalesDemoPersona(this._json);
+  const _SalesDemoPersona(this._json, {required this.remotePhotosAvailable});
 
   final Map<String, Object?> _json;
+  final bool remotePhotosAvailable;
 
   String get id => _requiredString('id');
 
@@ -341,6 +348,7 @@ class _SalesDemoPersona {
   }
 
   List<ProfilePhoto> _profilePhotos() {
+    if (!remotePhotosAvailable) return const <ProfilePhoto>[];
     final photos = <ProfilePhoto>[];
     for (final item in _list(_json['profilePhotos'])) {
       final photo = _stringMap(item, context: id);

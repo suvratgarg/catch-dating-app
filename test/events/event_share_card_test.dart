@@ -14,13 +14,10 @@ void main() {
   ) async {
     ShareParams? sharedParams;
     final event = buildEvent(
-      id: 'event-1',
-      clubId: 'club-1',
       meetingPoint: 'Bandra',
       startTime: DateTime(2026, 6, 1, 18),
       endTime: DateTime(2026, 6, 1, 20),
       bookedCount: 12,
-      capacityLimit: 20,
     );
     final share = ExternalShareController((params) async {
       sharedParams = params;

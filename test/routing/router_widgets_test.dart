@@ -151,7 +151,7 @@ void main() {
   testWidgets(
     'create-event route fetches the club when no extra is available',
     (tester) async {
-      final club = club_helpers.buildClub(id: 'club-1', hostUserId: 'host-1');
+      final club = club_helpers.buildClub();
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),

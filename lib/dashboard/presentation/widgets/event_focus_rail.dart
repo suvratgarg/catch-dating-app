@@ -416,7 +416,7 @@ class _EventFocusCard extends StatelessWidget {
             icon: PhosphorIconsFill.heart,
           ),
         if (item.needsReview)
-          EventActionCardBadge(
+          const EventActionCardBadge(
             label: 'Review pending',
             tone: CatchBadgeTone.warning,
             icon: PhosphorIconsRegular.pencilLine,

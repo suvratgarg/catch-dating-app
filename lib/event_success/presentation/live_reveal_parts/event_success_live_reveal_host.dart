@@ -102,7 +102,7 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
         ],
       ),
       boxShadow: CatchElevation.raised,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -122,7 +122,6 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
               gapW8,
               CatchBadge(
                 label: revealSet.kind.label,
-                tone: CatchBadgeTone.neutral,
                 icon: revealSet.kind.icon,
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.subtleFill,
@@ -138,7 +137,6 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 label: roundCount == 0
                     ? 'No assignments'
                     : '${plan.revealedThroughRoundIndex(referenceNow) + 1}/$roundCount shown',
-                tone: CatchBadgeTone.neutral,
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.subtleFill,
                 ),
@@ -186,7 +184,6 @@ class EventSuccessLiveRevealHostCard extends ConsumerWidget {
                 );
               }
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   number,
                   gapW16,

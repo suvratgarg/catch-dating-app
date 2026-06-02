@@ -33,12 +33,9 @@ void main() {
     });
 
     test('returns data when all dependencies succeed', () {
-      final event = buildEvent(id: 'event-1');
-      final user = buildUser(uid: 'runner-1');
-      final review = buildReview(
-        eventId: 'event-1',
-        reviewerUserId: 'runner-2',
-      );
+      final event = buildEvent();
+      final user = buildUser();
+      final review = buildReview(reviewerUserId: 'runner-2');
 
       final result = buildEventDetailViewModel(
         eventAsync: AsyncData(event),
@@ -63,8 +60,8 @@ void main() {
 
     test('returns saved state from the saved event relationship doc', () {
       final result = buildEventDetailViewModel(
-        eventAsync: AsyncData(buildEvent(id: 'event-1')),
-        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
         clubAsync: AsyncData(buildClub()),
         savedEventAsync: AsyncData(
@@ -72,7 +69,7 @@ void main() {
             id: savedEventId(uid: 'runner-1', eventId: 'event-1'),
             uid: 'runner-1',
             eventId: 'event-1',
-            savedAt: DateTime(2026, 1, 1),
+            savedAt: DateTime(2026),
           ),
         ),
         currentUid: 'runner-1',
@@ -91,8 +88,8 @@ void main() {
       );
 
       final result = buildEventDetailViewModel(
-        eventAsync: AsyncData(buildEvent(id: 'event-1')),
-        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
         clubAsync: AsyncData(buildClub()),
         savedEventAsync: const AsyncData(null),
@@ -341,7 +338,7 @@ EventParticipation _participation({
   required String uid,
   required EventParticipationStatus status,
 }) {
-  final now = DateTime(2026, 1, 1);
+  final now = DateTime(2026);
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,

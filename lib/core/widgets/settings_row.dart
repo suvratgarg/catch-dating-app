@@ -49,7 +49,7 @@ class SettingsRow extends StatelessWidget {
     final child = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: CatchSpacing.micro14,
-        vertical: CatchSpacing.s3 + CatchStroke.hairline,
+        vertical: CatchLayout.settingsRowVerticalPadding,
       ),
       child: Row(
         children: [

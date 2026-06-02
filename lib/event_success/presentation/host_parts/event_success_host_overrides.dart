@@ -38,7 +38,7 @@ class _MicroPodsHostCard extends ConsumerWidget {
     );
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -65,17 +65,12 @@ class _MicroPodsHostCard extends ConsumerWidget {
                 gapW8,
                 CatchBadge(
                   label: '$optedOutCount opted out',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                CatchBadge(
-                  label: 'Host edited',
-                  tone: CatchBadgeTone.neutral,
-                  icon: CatchIcons.editOutlined,
-                ),
+                CatchBadge(label: 'Host edited', icon: CatchIcons.editOutlined),
               ],
             ],
           ),
@@ -397,7 +392,7 @@ class _GroupOverrideRoundEditor extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -468,7 +463,7 @@ class _GroupOverrideUnitEditor extends StatelessWidget {
     return CatchSurface(
       borderColor: t.line,
       radius: CatchRadius.sm,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -603,7 +598,7 @@ class _RotationsHostCard extends ConsumerWidget {
     );
     return CatchSurface(
       borderColor: CatchTokens.of(context).line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -630,17 +625,12 @@ class _RotationsHostCard extends ConsumerWidget {
                 gapW8,
                 CatchBadge(
                   label: '$optedOutCount opted out',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.visibilityOffOutlined,
                 ),
               ],
               if (hostEdited) ...[
                 gapW8,
-                CatchBadge(
-                  label: 'Host edited',
-                  tone: CatchBadgeTone.neutral,
-                  icon: CatchIcons.editOutlined,
-                ),
+                CatchBadge(label: 'Host edited', icon: CatchIcons.editOutlined),
               ],
             ],
           ),
@@ -659,13 +649,11 @@ class _RotationsHostCard extends ConsumerWidget {
               children: [
                 CatchBadge(
                   label: '${activeAssignments.length} assigned',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.peopleOutlineRounded,
                 ),
                 CatchBadge(
                   label:
                       '${_eventRotationCapacity(event, rotationIntervalMinutes)} possible',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.scheduleRounded,
                 ),
               ],
@@ -953,7 +941,7 @@ class _RotationOverrideRoundEditor extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1068,7 +1056,6 @@ class _PodGroupSummary extends StatelessWidget {
         for (final entry in groups.entries)
           CatchBadge(
             label: '${entry.key} · ${entry.value} assigned',
-            tone: CatchBadgeTone.neutral,
             icon: CatchIcons.groupOutlined,
           ),
       ],

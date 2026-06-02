@@ -75,12 +75,7 @@ class DashboardEmptySliverBody extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s1,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
-      ),
+      padding: CatchInsets.pageBodyUnderHeader,
       sliver: SliverToBoxAdapter(
         child: Center(
           child: ConstrainedBox(
@@ -109,9 +104,7 @@ class DashboardEmptySliverBody extends StatelessWidget {
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: CatchSpacing.micro14,
-                        ),
+                        padding: CatchInsets.contentVerticalMedium,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

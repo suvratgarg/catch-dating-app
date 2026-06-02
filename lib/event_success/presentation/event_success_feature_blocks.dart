@@ -11,6 +11,28 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:flutter/material.dart';
 
+const EdgeInsets _moduleToggleRowGap = EdgeInsets.only(bottom: CatchSpacing.s2);
+const EdgeInsets _moduleToggleContentPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s3,
+  CatchSpacing.s2,
+  CatchSpacing.s2,
+  CatchSpacing.s2,
+);
+const EdgeInsets _issueListItemGap = EdgeInsets.only(bottom: CatchSpacing.s1);
+const EdgeInsets _liveStepRowGap = EdgeInsets.only(bottom: CatchSpacing.s3);
+const EdgeInsets _conversationCueRowGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+const EdgeInsets _conversationCueIconInset = EdgeInsets.only(
+  top: CatchSpacing.micro3,
+);
+const EdgeInsets _recommendationTileGap = EdgeInsets.only(
+  bottom: CatchSpacing.s3,
+);
+const EdgeInsets _wingmanCandidateGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+
 class EventSuccessHostSetupFlow extends StatefulWidget {
   const EventSuccessHostSetupFlow({
     super.key,
@@ -45,7 +67,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -129,7 +151,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -138,7 +160,10 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             title: 'Live host mode',
             subtitle:
                 'A phone-friendly guide for check-in, welcome, the current instruction, and the next social cue.',
-            badge: CatchBadge(label: 'Host only', tone: CatchBadgeTone.brand),
+            badge: const CatchBadge(
+              label: 'Host only',
+              tone: CatchBadgeTone.brand,
+            ),
           ),
           const SizedBox(height: CatchSpacing.s4),
           _ProgressRow(
@@ -159,7 +184,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             tone: CatchSurfaceTone.raised,
             radius: CatchRadius.sm,
             borderColor: t.line,
-            padding: const EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -212,7 +237,7 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -221,13 +246,16 @@ class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
             title: 'Attendee companion',
             subtitle:
                 'The attendee sees only what helps them participate: check-in, assignment, prompt, and host help.',
-            badge: CatchBadge(label: 'Attendee', tone: CatchBadgeTone.success),
+            badge: const CatchBadge(
+              label: 'Attendee',
+              tone: CatchBadgeTone.success,
+            ),
           ),
           const SizedBox(height: CatchSpacing.s4),
           CatchSurface(
             tone: CatchSurfaceTone.primarySoft,
             borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-            padding: const EdgeInsets.all(CatchSpacing.s4),
+            padding: CatchInsets.content,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -279,7 +307,7 @@ class EventSuccessPostEventReport extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -395,7 +423,7 @@ class _PlaybookSummaryCard extends StatelessWidget {
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -415,7 +443,6 @@ class _PlaybookSummaryCard extends StatelessWidget {
             children: [
               CatchBadge(
                 label: '${draft.targetAttendeeCount} target attendees',
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.confirmationNumberOutlined,
               ),
               CatchBadge(
@@ -452,19 +479,14 @@ class _ModuleToggleRow extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _moduleToggleRowGap,
       child: CatchSurface(
         tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
         radius: CatchRadius.sm,
         borderColor: selected
             ? t.surface.withValues(alpha: CatchOpacity.none)
             : t.line,
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s3,
-          CatchSpacing.s2,
-          CatchSpacing.s2,
-          CatchSpacing.s2,
-        ),
+        padding: _moduleToggleContentPadding,
         child: Row(
           children: [
             Expanded(
@@ -512,7 +534,7 @@ class _IssueList extends StatelessWidget {
       borderColor: t.warning.withValues(
         alpha: CatchOpacity.eventSuccessWarningBorder,
       ),
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -524,7 +546,7 @@ class _IssueList extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s2),
           for (final issue in issues)
             Padding(
-              padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
+              padding: _issueListItemGap,
               child: Text(issue, style: CatchTextStyles.supporting(context)),
             ),
         ],
@@ -597,7 +619,7 @@ class _LiveStepRow extends StatelessWidget {
         : t.ink3;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      padding: _liveStepRowGap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -647,7 +669,7 @@ class EventSuccessPromptCard extends StatelessWidget {
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -696,7 +718,7 @@ class EventSuccessConversationCueCard extends StatelessWidget {
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.sm,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -758,12 +780,12 @@ class _ConversationCueRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _conversationCueRowGap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: CatchSpacing.micro3),
+            padding: _conversationCueIconInset,
             child: Icon(
               CatchIcons.arrowForwardRounded,
               size: CatchIcon.xs,
@@ -784,10 +806,7 @@ class _ConversationCueRow extends StatelessWidget {
                       cue.title,
                       style: CatchTextStyles.sectionTitle(context),
                     ),
-                    CatchBadge(
-                      label: cue.contextLabel,
-                      tone: CatchBadgeTone.neutral,
-                    ),
+                    CatchBadge(label: cue.contextLabel),
                   ],
                 ),
                 const SizedBox(height: CatchSpacing.s1),
@@ -810,7 +829,7 @@ class _WingmanCandidateRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _wingmanCandidateGap,
       child: Row(
         children: [
           Icon(
@@ -861,12 +880,12 @@ class EventSuccessRecommendationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      padding: _recommendationTileGap,
       child: CatchSurface(
         tone: CatchSurfaceTone.raised,
         radius: CatchRadius.sm,
         borderColor: t.line,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -912,10 +931,7 @@ class EventSuccessMetricPill extends StatelessWidget {
       tone: CatchSurfaceTone.raised,
       radius: CatchRadius.pill,
       borderColor: t.line,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Text(
         '$label ${(value * 100).round()}%',
         style: CatchTextStyles.labelL(context),
@@ -945,10 +961,7 @@ class EventSuccessDarkPill extends StatelessWidget {
       borderColor: CatchTokens.editorialLight.withValues(
         alpha: CatchOpacity.eventSuccessSubtleBorder,
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Text(label, style: CatchTextStyles.labelL(context, color: color)),
     );
   }

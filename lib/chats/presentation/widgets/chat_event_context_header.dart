@@ -10,6 +10,13 @@ import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+const EdgeInsets _contextHeaderOuterPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s3,
+  CatchSpacing.s2,
+  CatchSpacing.s3,
+  0,
+);
+
 class ChatEventContextHeader extends StatelessWidget {
   const ChatEventContextHeader({super.key, required this.event});
 
@@ -30,16 +37,11 @@ class ChatEventContextHeader extends StatelessWidget {
     final stamp = chatContextStampFor(event);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s3,
-        CatchSpacing.s2,
-        CatchSpacing.s3,
-        0,
-      ),
+      padding: _contextHeaderOuterPadding,
       child: CatchSurface(
         backgroundColor: visual?.soft ?? t.primarySoft,
         borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Row(
           children: [
             CatchIconTile(

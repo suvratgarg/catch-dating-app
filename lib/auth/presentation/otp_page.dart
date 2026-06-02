@@ -124,7 +124,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         !sendMutation.isPending;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
+      padding: CatchInsets.pageHorizontalWide,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -142,7 +142,6 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           CatchOtpCodeField(
             inputKey: AuthFormKeys.otpField,
             controller: _otpController,
-            length: AuthInput.otpCodeLength,
             autofocus: shouldAutofocus,
             onSubmitted: _submit,
             onChanged: _handleCodeChanged,

@@ -275,8 +275,6 @@ class PaymentRepository {
           amountInPaise: _pendingAmountInPaise ?? 0,
           currency: _pendingCurrency ?? defaultCurrencyCode,
           eventId: _pendingEventId ?? '',
-          provider: 'razorpay',
-          status: PaymentStatus.completed,
         ),
       );
     } catch (e, st) {

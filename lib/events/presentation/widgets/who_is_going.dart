@@ -140,7 +140,6 @@ class _WhoIsGoingContent extends ConsumerWidget {
             viewerInterestedInGenders: userProfile.interestedInGenders,
             size: 44,
             limit: 7,
-            obscured: true,
             showOverflowCount: true,
           ),
           gapH12,
@@ -185,7 +184,7 @@ class _EmptyRosterMessage extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       radius: CatchRadius.md,
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
@@ -241,7 +240,7 @@ class _SwipeWindowBanner extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       tone: surfaceStyle == null
           ? CatchSurfaceTone.primarySoft
           : CatchSurfaceTone.transparent,

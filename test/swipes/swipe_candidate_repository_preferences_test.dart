@@ -42,7 +42,6 @@ void main() {
           buildPublicProfile(
             uid: 'runner-2',
             name: 'Runner 2',
-            age: 30,
             gender: Gender.woman,
           ),
         ];
@@ -55,7 +54,7 @@ void main() {
 
       final results = await repository.fetchCandidates(
         eventId: 'event-open',
-        currentUser: buildUser(uid: 'runner-1').copyWith(
+        currentUser: buildUser().copyWith(
           minAgePreference: 40,
           maxAgePreference: 20,
           interestedInGenders: const [Gender.woman],

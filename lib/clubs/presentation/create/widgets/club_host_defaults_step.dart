@@ -32,12 +32,7 @@ class ClubHostDefaultsStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          CatchSpacing.s4,
-          CatchSpacing.s5,
-          CatchSpacing.s6,
-        ),
+        padding: CatchInsets.formStepBody,
         children: [
           _PolicyDefaultsCard(
             defaults: defaults.eventPolicy,
@@ -79,13 +74,15 @@ class _DefaultActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Default activity', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            'Default activity',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH4,
           Text(
             'New events start from this activity. Hosts can still change the activity and override the event-specific setup.',
@@ -232,13 +229,15 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
     final cohortCapsEnabled =
         defaults.admissionPreset == EventAdmissionDefaultPreset.fixedCohortCaps;
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Default event policy', style: CatchTextStyles.sectionTitle(context)),
+          Text(
+            'Default event policy',
+            style: CatchTextStyles.sectionTitle(context),
+          ),
           gapH4,
           Text(
             'These defaults prefill new events. Hosts can override them per event before anyone books or joins the waitlist.',

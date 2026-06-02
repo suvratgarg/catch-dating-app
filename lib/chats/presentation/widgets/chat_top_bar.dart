@@ -110,7 +110,7 @@ class _ChatTitle extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(CatchRadius.lg),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s1),
+          padding: CatchInsets.controlVerticalTight,
           child: Row(
             children: [
               PersonAvatar(size: 36, name: name, imageUrl: photoUrl),

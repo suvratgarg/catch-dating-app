@@ -33,7 +33,7 @@ void main() {
     final repository = _FakeReviewsRepository();
     final container = _reviewsContainer(repository);
     addTearDown(container.dispose);
-    final existing = buildReview(id: 'review-1', comment: 'Old');
+    final existing = buildReview(comment: 'Old');
 
     await container
         .read(writeReviewControllerProvider.notifier)

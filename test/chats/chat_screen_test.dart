@@ -219,9 +219,7 @@ void main() {
     testWidgets('hydrates the other profile without route extra', (
       tester,
     ) async {
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
@@ -260,9 +258,7 @@ void main() {
       final uidController = StreamController<String?>.broadcast();
       addTearDown(uidController.close);
 
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
@@ -295,9 +291,7 @@ void main() {
     });
 
     testWidgets('sends trimmed messages and clears the input', (tester) async {
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
@@ -339,9 +333,7 @@ void main() {
     });
 
     testWidgets('keeps composed text when send fails', (tester) async {
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository(
         failSends: true,
       );
@@ -386,9 +378,7 @@ void main() {
     ) async {
       final messageController = StreamController<List<ChatMessage>>.broadcast();
       addTearDown(messageController.close);
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository(
         messageStream: messageController.stream,
       );
@@ -419,7 +409,7 @@ void main() {
       expect(conversationRepository.markReadCalls, [('match-1', 'runner-1')]);
 
       messageController.add([
-        buildMessage(id: 'msg-1', senderId: 'runner-2', text: 'Incoming'),
+        buildMessage(senderId: 'runner-2', text: 'Incoming'),
       ]);
       await tester.pump();
       await tester.pump();
@@ -433,9 +423,7 @@ void main() {
     testWidgets('shows a friendly error when messages fail to load', (
       tester,
     ) async {
-      final matchRepository = FakeMatchRepository(
-        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
-      );
+      final matchRepository = FakeMatchRepository(match: buildMatch());
       final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(

@@ -75,11 +75,11 @@ class HostEventParticipantsPanel extends ConsumerWidget {
 
     return attendanceAsync.when(
       loading: () => const Padding(
-        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        padding: CatchInsets.contentVerticalSpacious,
         child: Center(child: CatchLoadingIndicator()),
       ),
       error: (e, _) => Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
+        padding: CatchInsets.content,
         child: CatchInlineErrorState.fromError(
           e,
           context: AppErrorContext.event,
@@ -93,7 +93,7 @@ class HostEventParticipantsPanel extends ConsumerWidget {
       data: (viewModel) {
         if (viewModel == null) {
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: CatchSpacing.s5),
+            padding: CatchInsets.contentVerticalRelaxed,
             child: CatchEmptyState(
               icon: CatchIcons.eventBusyOutlined,
               title: 'Event not found',
@@ -212,11 +212,11 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
         onFilterChanged: (value) => setState(() => _selectedFilter = value),
       ),
       AsyncValue(isLoading: true) => const Padding(
-        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        padding: CatchInsets.contentVerticalSpacious,
         child: Center(child: CatchLoadingIndicator()),
       ),
       AsyncValue(hasError: true) => Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
+        padding: CatchInsets.content,
         child: CatchInlineErrorState.fromError(
           profilesAsync.error!,
           context: AppErrorContext.event,
@@ -581,10 +581,7 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       ),
       gapH12,
       CatchSurface(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s2,
-        ),
+        padding: CatchInsets.compactControlContent,
         borderColor: t.line,
         radius: CatchRadius.md,
         backgroundColor: t.raised,
@@ -1051,7 +1048,7 @@ class _RosterTableShell extends StatelessWidget {
           const _RosterDivider(),
           if (rows.isEmpty)
             Padding(
-              padding: const EdgeInsets.all(CatchSpacing.s4),
+              padding: CatchInsets.content,
               child: _TableEmptyState(title: emptyTitle, message: emptyMessage),
             )
           else
@@ -1126,10 +1123,7 @@ class _SetupReviewRow extends StatelessWidget {
         participation?.status == EventParticipationStatus.waitlisted;
     final signal = _setupSignal(participation, usesRequestApproval);
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Row(
         children: [
           Expanded(
@@ -1316,10 +1310,7 @@ class _LiveRosterRow extends StatelessWidget {
       borderWidth: 0,
       radius: CatchRadius.sm,
       backgroundColor: Colors.transparent,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Row(
         children: [
           Expanded(
@@ -1392,10 +1383,7 @@ class _ReportRow extends StatelessWidget {
           );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       child: Row(
         children: [
           Expanded(

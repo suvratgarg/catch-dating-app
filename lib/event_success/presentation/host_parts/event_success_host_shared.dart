@@ -63,10 +63,7 @@ class _PlanSummary extends StatelessWidget {
       runSpacing: CatchSpacing.s2,
       children: [
         CatchBadge(label: draft.playbook.title, tone: CatchBadgeTone.brand),
-        CatchBadge(
-          label: '${draft.selectedModules.length} tools',
-          tone: CatchBadgeTone.neutral,
-        ),
+        CatchBadge(label: '${draft.selectedModules.length} tools'),
         CatchBadge(
           label: draft.status.label,
           tone: draft.status == EventSuccessSetupStatus.readyForLaunch
@@ -104,7 +101,7 @@ class _HostActivitySummary extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.primarySoft,
       borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -118,14 +115,8 @@ class _HostActivitySummary extends StatelessWidget {
                 tone: CatchBadgeTone.brand,
                 icon: CatchIcons.autoAwesomeOutlined,
               ),
-              CatchBadge(
-                label: profile.interactionModel.label,
-                tone: CatchBadgeTone.neutral,
-              ),
-              CatchBadge(
-                label: '${draft.selectedModules.length} selected',
-                tone: CatchBadgeTone.neutral,
-              ),
+              CatchBadge(label: profile.interactionModel.label),
+              CatchBadge(label: '${draft.selectedModules.length} selected'),
             ],
           ),
           gapH8,
@@ -154,7 +145,7 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
           ? t.surface.withValues(alpha: CatchOpacity.none)
           : t.line,
       tone: rankingOn ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -181,7 +172,6 @@ class _CompatibilitySignalHostCard extends StatelessWidget {
                     ),
                     CatchBadge(
                       label: pack.title,
-                      tone: CatchBadgeTone.neutral,
                       icon: pack.custom
                           ? CatchIcons.editNoteRounded
                           : CatchIcons.styleOutlined,
@@ -222,7 +212,7 @@ class _LiveAttendanceSummaryCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -296,17 +286,16 @@ class _HostCheckInQrPanel extends StatelessWidget {
       radius: CatchRadius.sm,
       backgroundColor: t.raised,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         children: [
           CatchSurface(
             radius: CatchRadius.sm,
             backgroundColor: CatchTokens.editorialLight,
             borderWidth: 0,
-            padding: const EdgeInsets.all(CatchSpacing.s2),
+            padding: CatchInsets.iconChipContent,
             child: QrImageView(
               data: payload,
-              version: QrVersions.auto,
               size: 116,
               padding: EdgeInsets.zero,
               backgroundColor: CatchTokens.editorialLight,
@@ -352,7 +341,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
     final profileByUid = {for (final profile in profiles) profile.uid: profile};
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -391,7 +380,7 @@ class _WingmanRequestsHostCard extends StatelessWidget {
           else
             for (final request in activeRequests)
               Padding(
-                padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+                padding: _hostWingmanRequestGap,
                 child: _WingmanRequestHostRow(
                   request: request,
                   requester: profileByUid[request.requesterUid],
@@ -437,11 +426,7 @@ class _WingmanRequestHostRow extends StatelessWidget {
         ),
         if (request.note != null && request.note!.trim().isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.only(
-              left: CatchSpacing.s5,
-              right: CatchSpacing.s5,
-              bottom: CatchSpacing.s2,
-            ),
+            padding: _hostWingmanRequestNotePadding,
             child: Text(
               request.note!,
               style: CatchTextStyles.supporting(

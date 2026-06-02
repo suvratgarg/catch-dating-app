@@ -38,10 +38,7 @@ void main() {
     });
 
     test('parses currency amounts using each currency exponent', () {
-      expect(
-        parseMajorCurrencyAmountToMinorUnits('249.50', currencyCode: 'INR'),
-        24950,
-      );
+      expect(parseMajorCurrencyAmountToMinorUnits('249.50'), 24950);
       expect(
         parseMajorCurrencyAmountToMinorUnits('19.99', currencyCode: 'USD'),
         1999,

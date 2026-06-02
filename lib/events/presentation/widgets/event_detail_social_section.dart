@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -56,9 +55,9 @@ class EventDetailSocialSection extends StatelessWidget {
         else
           _GuestWhoIsGoing(surfaceStyle: surfaceStyle),
         if (canShowMemberContext) ...[
-          gapH24,
+          const SizedBox(height: CatchLayout.detailScreenSectionGap),
           Divider(color: surfaceStyle?.dividerColor ?? t.line, height: 1),
-          gapH24,
+          const SizedBox(height: CatchLayout.detailScreenSectionGap),
           EventReviewsSection(
             clubId: clubId,
             eventId: event.id,
@@ -85,7 +84,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
     return CatchSurface(
       backgroundColor: surfaceStyle?.surfaceBackground,
       borderColor: surfaceStyle?.borderColor ?? t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,7 +95,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
                 size: 16,
                 color: surfaceStyle?.mutedColor ?? t.ink3,
               ),
-              gapW8,
+              const SizedBox(width: CatchSpacing.s2),
               Text(
                 "Who's going",
                 style: CatchTextStyles.titleL(
@@ -106,7 +105,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
               ),
             ],
           ),
-          gapH8,
+          const SizedBox(height: CatchLayout.detailScreenSupportingGap),
           Text(
             'Sign in to see who has booked this event.',
             style: CatchTextStyles.supporting(

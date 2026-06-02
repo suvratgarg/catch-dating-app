@@ -448,14 +448,13 @@ void main() {
 
         await pumpEventsTestApp(
           tester,
-          Scaffold(
-            body: const SizedBox.expand(),
+          const Scaffold(
+            body: SizedBox.expand(),
             bottomNavigationBar: StepperFooter(
               isLastStep: true,
               isLoading: false,
               onNext: _noop,
               onSaveDraft: _noop,
-              lastStepLabel: 'Schedule event',
             ),
           ),
         );

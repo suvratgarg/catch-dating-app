@@ -53,7 +53,9 @@ class CatchGrade {
     saturation: 0.84,
     contrast: 0.94,
     blackLift: 0.03,
+    // token:allow: fixed photo-grade warm shadow tint (theme-independent art)
     warmShadow: Color(0x14C9542F),
+    // token:allow: fixed photo-grade warm highlight tint (theme-independent art)
     warmHighlight: Color(0x0FF3C778),
   );
 
@@ -62,7 +64,9 @@ class CatchGrade {
     saturation: 0.80,
     contrast: 0.90,
     blackLift: 0.05,
+    // token:allow: fixed photo-grade dark warm shadow tint (theme-independent art)
     warmShadow: Color(0x1FC9542F),
+    // token:allow: fixed photo-grade dark warm highlight tint (theme-independent art)
     warmHighlight: Color(0x14F3C778),
   );
 
@@ -166,6 +170,7 @@ class _GrainPainter extends CustomPainter {
       final dx = rng.nextDouble() * size.width;
       final dy = rng.nextDouble() * size.height;
       final light = rng.nextBool();
+      // token:allow: deterministic film-grain speck color (theme-independent art)
       paint.color = (light ? Colors.white : Colors.black).withValues(
         alpha: opacity * (0.35 + rng.nextDouble() * 0.65),
       );

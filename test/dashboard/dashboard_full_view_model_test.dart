@@ -163,7 +163,6 @@ void main() {
       final attendedRun = buildEvent(
         id: 'catch-event',
         startTime: DateTime(2026, 5, 11, 6),
-        distanceKm: 5,
       );
 
       final viewModel = buildDashboardFullViewModel(
@@ -193,7 +192,6 @@ void main() {
         final catchEvent = buildEvent(
           id: 'catch-event',
           startTime: DateTime(2026, 5, 12, 7),
-          distanceKm: 5,
         );
         final platformActivity = _platformActivity(
           id: 'health-event',
@@ -232,7 +230,6 @@ void main() {
         id: 'catch-event',
         startTime: DateTime(2026, 5, 12, 7),
         endTime: DateTime(2026, 5, 12, 8),
-        distanceKm: 5,
       );
       final platformActivity = _platformActivity(
         id: 'health-event',
@@ -355,7 +352,6 @@ void main() {
       );
       final weakMatch = buildEvent(
         id: 'weak-match',
-        distanceKm: 5,
         pace: PaceLevel.competitive,
         startTime: DateTime(2026, 4, 24, 19),
         startingPointLat: 19.30,

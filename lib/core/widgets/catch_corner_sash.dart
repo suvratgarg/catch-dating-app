@@ -60,18 +60,13 @@ class CatchCornerSash extends StatelessWidget {
 
   BorderRadius _borderRadius() {
     const corner = Radius.circular(CatchRadius.pill);
-    const sharp = Radius.zero;
     return switch (alignment) {
       CatchSashAlignment.topStart => const BorderRadius.only(
-        topLeft: sharp,
         bottomRight: corner,
-        bottomLeft: sharp,
         topRight: corner,
       ),
       CatchSashAlignment.topEnd => const BorderRadius.only(
-        topRight: sharp,
         bottomLeft: corner,
-        bottomRight: sharp,
         topLeft: corner,
       ),
     };
