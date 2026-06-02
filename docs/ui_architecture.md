@@ -1,7 +1,7 @@
 ---
 doc_id: ui_architecture
-version: 1.0.0
-updated: 2026-05-22
+version: 1.2.1
+updated: 2026-06-01
 owner: recursive_audit_loop
 status: active
 ---
@@ -20,7 +20,9 @@ or scroll-heavy widget tests. For widget inventory and reusable primitives, use
 ## Spacing Rules
 
 Use `CatchSpacing` from `lib/core/theme/catch_tokens.dart` for reusable layout
-contracts.
+contracts. Feature screens should usually consume the semantic layer
+(`CatchGaps`, `CatchInsets`, or layout primitives) rather than composing
+`EdgeInsets` directly from primitive spacing tokens.
 
 | Token | Value | Typical use |
 |---|---:|---|
@@ -39,13 +41,90 @@ contracts.
 6, 10, 14, or 18. Do not add new `Sizes` constants when `CatchSpacing` already
 fits.
 
+Use the semantic spacing layer for common relationships:
+
+- `CatchGaps.inline` for tight icon/label or metadata pairs.
+- `CatchGaps.related` for closely related rows inside one content cluster.
+- `CatchGaps.formField` for standard control gaps inside a form group.
+- `CatchGaps.section` for peer page sections.
+- `CatchGaps.majorSection` for major page-region separation.
+
+Use semantic inset contracts for repeated shells:
+
+- `CatchInsets.pageBody` for default page or scroll-body padding.
+- `CatchInsets.pageBodyRelaxed` when the scroll end needs extra breathing room.
+- `CatchInsets.pageBodyTight`, `CatchInsets.pageBodyRelaxedTight`, and
+  `CatchInsets.pageBodyUnderHeader` when local chrome or dense headers already
+  provide some top separation.
+- `CatchInsets.pageHeaderBody`, `CatchInsets.pageHeaderCompact`, and
+  `CatchInsets.sectionHeader` for page intro rows and compact rail/list headers.
+- `CatchInsets.pageHorizontal` and `CatchInsets.pageHorizontalWide` when a
+  page/list owns only horizontal gutters.
+- `CatchInsets.formStepBody` and `CatchInsets.formStepBodyRelaxed` for
+  create/edit form steps.
+- `CatchInsets.content*`, `CatchInsets.tile*`, `CatchInsets.listBody*`, and
+  `CatchInsets.compactControlContent` for card, tile, list, pill, chip, and
+  compact-control internals.
+- `CatchInsets.chatBubble*` for message bubble content and sender-group
+  spacing shared between live chat bubbles and generated share cards.
+
 When sibling surfaces must align, define one named inset near the owning widget
 or primitive and reuse it. Do not scatter equivalent anonymous `EdgeInsets`
-across sibling tabs.
+across sibling tabs. If a new repeated role appears, add a semantic
+`CatchInsets` member or a layout primitive before migrating call sites.
 
-Current named contract: `profileTabBodyPadding` in
-`lib/user_profile/presentation/widgets/profile_tab.dart` uses 20 px horizontal,
-8 px top, and 32 px bottom for Profile Edit and Preview tabs.
+Current named contract outside the global semantic layer:
+`profileTabBodyPadding` in `lib/user_profile/presentation/widgets/profile_tab.dart`
+uses 20 px horizontal, 8 px top, and 32 px bottom for Profile Edit and Preview
+tabs.
+
+## Semantic UI Lints
+
+Catch-owned UI rules use a local analyzer plugin package:
+`packages/catch_ui_lints`. Do not add new `custom_lint` rules; that package is
+archived and no longer the supported direction for Catch. New deterministic UI
+invariants should be implemented as `analysis_server_plugin` rules so the IDE,
+`dart analyze`, and `flutter analyze` all see the same diagnostics.
+
+Rules should start from the broadest useful app surface, then earn exemptions
+through semantic ownership. The current Catch UI lint scope is all handwritten
+`lib/**` Dart except `lib/core/theme/**`, generated code, and schema-generated
+contracts. Theme files are the source of raw token definitions; feature and
+shared widget code should consume named `CatchSpacing`, `CatchLayout`,
+`CatchGaps`, `CatchInsets`, `CatchRadius`, `CatchStroke`, and Catch control
+primitives instead of local raw layout numbers or Material/Cupertino controls.
+
+The first wide-pass rules block raw spacing numbers above a hairline, token
+arithmetic outside theme constants, raw Material/Cupertino controls outside the
+core widget primitives that wrap them, direct event-detail activity backdrops,
+and adjacent semantic sections separated by manual `SizedBox` gaps.
+
+For vertical composition of audited detail screens, prefer:
+
+- `CatchPageBody`, `CatchFormStepBody`, or `CatchSliverPageBody` for semantic
+  page/form insets when a screen has one body child or sliver.
+- `CatchDetailSliverSectionList` for sliver-native page body insets and section
+  gaps.
+- `CatchSectionList` for adjacent semantic sections inside a single box widget.
+
+Feature code that still writes `EdgeInsets.*(CatchSpacing...)` is surfaced by
+`catch_prefer_semantic_insets` at info severity. Treat it as a migration queue:
+use an existing `CatchInsets` role, a named local inset contract owned by the
+component, or a layout primitive. Add a new semantic role when the existing
+contracts would be semantically wrong.
+
+The CI smoke checks are:
+
+- `bash tool/check_riverpod_lint.sh`
+- `bash tool/check_catch_ui_lints.sh`
+
+Standard Flutter/Dart lints can support this layer, but they should not replace
+Catch-owned analyzer plugin diagnostics for design-system invariants. The
+current advisory lint set intentionally runs at info severity so cleanup volume
+can be measured before any rule is escalated: `use_named_constants`,
+`sized_box_shrink_expand`, `use_colored_box`, `use_decorated_box`,
+`prefer_const_constructors`, `prefer_const_literals_to_create_immutables`, and
+`avoid_redundant_argument_values`.
 
 ## Sizing & Constraints
 

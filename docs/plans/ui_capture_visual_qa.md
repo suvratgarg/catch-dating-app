@@ -1,10 +1,15 @@
-# UI Capture Visual QA
+---
+doc_id: ui_capture_visual_qa
+version: 0.3.0
+updated: 2026-06-01
+owner: ui_capture_pipeline
+status: remaining_work
+---
 
-Snapshot date: 2026-05-31
+# UI Capture Visual QA - Remaining Queue
 
-This file tracks the visual quality layer after route coverage is complete. The
-coverage gate answers "does every planned route render"; this QA list answers
-"is the rendered state useful for review, demos, or marketing."
+Coverage answers "does a routed surface render." This file tracks only captures
+whose visual usefulness still needs work or reclassification.
 
 ## Status Labels
 
@@ -13,46 +18,67 @@ coverage gate answers "does every planned route render"; this QA list answers
 - `fixture-needs-data`: route renders, but the fixture is too empty or generic.
 - `screen-needs-fix`: capture exposed a UI/state issue in the real screen.
 - `review-only`: keep for coverage and regression review, not marketing.
+- `needs-classification`: capture exists but has not been visually reviewed yet.
+
+## Implemented / No Longer Listed
+
+The following were previously marked ready or marketing-candidate and have no open
+action here: `profile_self`, `start_welcome`, `onboarding_welcome`,
+`event_detail_member`, `dashboard_home`, `club_detail_member`,
+`calendar_planned_events`, `saved_events_list`, `event_location_map`,
+`member_event_discovery`, `host_event_setup`, `edit_hosted_event`,
+`host_live_console`, `post_run_catch_window`, `swipe_hub_active`,
+`notifications_activity`, `event_success_companion`, `match_chat_context`,
+`matches_list_context`, `reviews_history_list`, `event_detail_member_ticket`,
+`event_detail_member_spotlight`.
+
+Notes:
+
+- `event_detail_member_ticket` is classified as `ready`; it is the ticket-mode
+  event-detail variant and supplements the baseline member detail capture.
+- `event_detail_member_spotlight` is classified as `ready`; it is the dark/wow
+  event-detail reference variant.
+- A full local refresh of all 31 captures passed on 2026-06-01:
+  `node tool/ui_capture/run_captures.mjs --all --output-dir /private/tmp/catch-ui-capture-refresh --device iphone-17-pro --pixel-ratio 2.0 --output-layout theme-first`.
+- Text-scale `2.0` proof passed on 2026-06-01 for `profile_self`,
+  `onboarding_welcome`, `event_detail_member`, `host_live_console`,
+  `settings_account`, `payment_history_empty`, and `event_success_companion`.
+- The checked sales-demo projection is still `planned`, not `uploaded`; capture fixtures
+  therefore do not load planned remote photo URLs into `NetworkImage` until uploaded
+  assets are available.
 
 ## Current Queue
 
-| Capture | Status | Consumer | Notes | Next action |
-|---|---|---|---|---|
-| `profile_self` | ready | Review | Strong profile fixture with real portrait asset. | Keep as baseline profile review capture. |
-| `start_welcome` | ready | Review | Clear first-run welcome state. | Review-only unless onboarding marketing needs it. |
-| `auth_phone_entry` | review-only | Review | Phone-entry state renders correctly but is intentionally sparse. | Add OTP-state variant only if auth flow review needs it. |
-| `onboarding_welcome` | ready | Review | Brand-forward onboarding screen. | Review-only for now. |
-| `event_detail_member` | ready | Review | Rich event detail, attendees, policy, and reviews. | Keep as canonical event detail surface. |
-| `dashboard_home` | ready | Review | Dense signed-in dashboard with member and host content. | Candidate for future app-store style review, not marketing now. |
-| `club_detail_member` | ready | Review | Good member-state club detail and schedule. | Add real club image later if this becomes marketing. |
-| `calendar_planned_events` | ready | Review | Booked plus multiple saved synthetic events render well. | Keep as coverage/review capture. |
-| `saved_events_list` | ready | Review | Shared synthetic event fixtures now render a dense three-event saved list. | Keep as coverage/review capture. |
-| `filters_preferences` | review-only | Review | Correct but very sparse. | Add only if filters get a broader preference surface. |
-| `event_location_map` | ready | Review | Network tiles stay disabled, with a deterministic local map placeholder behind the pin. | Keep offline rendering as the default capture path. |
-| `member_event_discovery` | marketing-candidate | Review + marketing | Strong event discovery feed and framed marketing source. | Keep active; improve bottom browse content later. |
-| `create_club_basics` | fixture-needs-data | Review | First step is valid but too empty for demo review. | Seed draft or initial form data once form fixture hooks exist. |
-| `edit_club_basics` | fixture-needs-data | Review | Existing club name/city appear, but visual state is still image-empty. | Add deterministic club image/photo state. |
-| `host_event_setup` | marketing-candidate | Review + marketing | Active marketing source now opens on a seeded event policy step with capacity, pricing, admission, and age-range data. | Keep as marketing source; revisit if the setup narrative needs an earlier step. |
-| `edit_hosted_event` | ready | Review | Shows locked schedule plus editable location. | Keep as review capture. |
-| `host_live_console` | marketing-candidate | Review + marketing | Persisted live plan now shows run-of-show, roster filters, host controls, readable dark-mode stage contrast, and canonical synthetic roster names. | Keep active in marketing exports. |
-| `host_post_event_report` | marketing-candidate | Review + marketing | Added missing host report variant with roster and scorecard fixture. | Light mode is ready; dark mode needs a later host-report contrast pass. |
-| `post_run_catch_window` | marketing-candidate | Review + marketing | Strong post-event catch surface. | Keep active. |
-| `swipe_hub_active` | ready | Review | Good open-catch-window hub. | Review-only unless product story needs it. |
-| `notifications_activity` | ready | Review | Useful event and update notifications. | Add unread/empty variants later if needed. |
-| `event_recap_attendees` | fixture-needs-data | Review | Good structure and canonical synthetic attendees, but attendee cards still lack photo-backed assets. | Use synthetic persona photos when image fixture pipeline supports them. |
-| `event_success_companion` | ready | Review | Stage foreground now resolves to readable ink on the animated companion background. | Keep in review catalog; dark preview card contrast can be tuned later. |
-| `match_chat_context` | marketing-candidate | Review + marketing | Strong context chat story. | Keep active. |
-| `matches_list_context` | ready | Review | Useful match list with unread state. | Add more avatar/photo fidelity later. |
-| `public_profile_member` | ready | Review | Good public profile copy; synthetic avatar placeholder is acceptable for review. | Add photo-backed synthetic profile later. |
-| `reviews_history_list` | ready | Review | Shared synthetic review fixtures now render multiple review history cards. | Keep as review capture. |
-| `settings_account` | review-only | Review | Good settings coverage; dev section makes it unsuitable for marketing. | Consider production-mode settings fixture later. |
-| `payment_history_empty` | review-only | Review | Valid empty state. | Add populated receipt variant only if payment QA needs it. |
+| Capture | Status | Consumer | Remaining action |
+|---|---|---|---|
+| `auth_phone_entry` | review-only | Review | Add an OTP-state variant only if auth-flow review needs it. |
+| `filters_preferences` | review-only | Review | Keep sparse unless filters get a broader preference surface. |
+| `create_club_basics` | fixture-needs-data | Review | Seed draft/initial form data once form fixture hooks exist. |
+| `edit_club_basics` | fixture-needs-data | Review | Add deterministic club image/photo state. |
+| `host_post_event_report` | marketing-candidate | Review + marketing | Light mode is useful; tune/check dark-mode contrast before using dark output externally. |
+| `event_recap_attendees` | fixture-needs-data | Review | Use synthetic persona photos when image fixture support lands. |
+| `public_profile_member` | ready | Review | Add photo-backed synthetic profile later; current placeholder is acceptable for review. |
+| `settings_account` | review-only | Review | Consider a production-mode settings fixture if this ever becomes marketing. |
+| `payment_history_empty` | review-only | Review | Add populated receipt variant only if payment QA needs it. |
 
-## Next Fidelity Passes
+## Cross-Cutting Remaining Work
 
-1. Re-render and inspect the full catalog after the synthetic fixture
-   centralization pass.
-2. Add image-backed synthetic personas for recap, matches, and public-profile
-   surfaces.
-3. Tune `host_post_event_report` dark-mode contrast if that dark variant becomes
-   a marketing source.
+1. **Add image-backed synthetic personas where they matter.**
+   - Highest-value surfaces: recap, matches, public profile, and edited club detail.
+   - Requires uploaded persona assets; planned remote URLs are intentionally not loaded by
+     local capture fixtures.
+
+2. **Keep marketing-candidate status tied to active marketing slots.**
+   - The active manifest currently has six marketing slots. Do not promote additional
+   captures to marketing without updating `tool/marketing/capture_manifest.json` and
+   verifying export/sync.
+
+## Verification Commands
+
+```bash
+node tool/ui_capture/check_route_inventory.mjs --check
+node tool/ui_capture/check_capture_coverage.mjs --check
+node tool/ui_capture/run_captures.mjs --ids event_detail_member_ticket,event_detail_member_spotlight --output-dir /private/tmp/catch-ui-capture-qa
+node tool/ui_capture/run_captures.mjs --ids profile_self,onboarding_welcome,event_detail_member,host_live_console,settings_account,payment_history_empty,event_success_companion --text-scale 2.0 --output-dir /private/tmp/catch-ui-capture-text-scale
+node tool/marketing/export_app_screenshots.mjs --check
+```

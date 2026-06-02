@@ -18,8 +18,8 @@ is **superseded**).
 
 > **Status (2026-05-31):** The "Sunset" cream+orange palette is **retired**; the direction
 > below is **locked** (see §9). Phases 0–1 are implemented (fonts bundled + optically sized,
-> B&W tokens, ActivityPalette routing, matte-duotone grade, `check_design_tokens.sh`/`check_sizing.sh`
-> gates) and the **Phase 2 flagship Profile** is built — see
+> B&W tokens, ActivityPalette routing, matte-duotone grade, Catch UI analyzer lints,
+> and `check_sizing.sh`) and the **Phase 2 flagship Profile** is built — see
 > [`ui_elevation_implementation.md`](ui_elevation_implementation.md) for the per-phase status.
 > Some choices stay **tunable** (activity pigments, photo grade, the display face). Visual
 > studies live in [`docs/visual_references/`](visual_references/) as runnable HTML.
