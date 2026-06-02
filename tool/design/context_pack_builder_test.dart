@@ -100,10 +100,24 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
   Map<String, Object?> _tokensJson() {
     final light = _themeExtension<CatchTokens>(AppTheme.light);
     final dark = _themeExtension<CatchTokens>(AppTheme.dark);
-    final spacing = _doubleConstants('CatchSpacing');
+    final generatedSpacing = _doubleConstants(
+      'GeneratedCatchSpacingTokens',
+      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+    );
+    final generatedRadius = _doubleConstants(
+      'GeneratedCatchRadiusTokens',
+      sourcePath: 'lib/core/theme/generated/catch_design_tokens.g.dart',
+    );
+    final spacing = _doubleConstants(
+      'CatchSpacing',
+      refs: {'GeneratedCatchSpacingTokens': generatedSpacing},
+    );
     final radius = _doubleConstants(
       'CatchRadius',
-      refs: {'CatchSpacing': spacing},
+      refs: {
+        'CatchSpacing': spacing,
+        'GeneratedCatchRadiusTokens': generatedRadius,
+      },
     );
     final opacity = _doubleConstants('CatchOpacity');
     final stroke = _doubleConstants('CatchStroke');
@@ -619,17 +633,19 @@ $activityCards
 
   Map<String, double> _doubleConstants(
     String className, {
+    String sourcePath = 'lib/core/theme/catch_tokens.dart',
     Map<String, Map<String, double>> refs = const {},
   }) {
-    final source = File('lib/core/theme/catch_tokens.dart').readAsStringSync();
+    final source = File(sourcePath).readAsStringSync();
     final body = _classBody(source, className);
     final constants = <String, double>{};
+    final scopedRefs = {...refs, className: constants};
     for (final match in RegExp(
       r'static\s+const\s+double\s+(\w+)\s*=\s*([^;]+);',
     ).allMatches(body)) {
       final name = match.group(1)!;
       final expression = match.group(2)!.trim();
-      constants[name] = _resolveDoubleExpression(expression, refs);
+      constants[name] = _resolveDoubleExpression(expression, scopedRefs);
     }
     return constants;
   }
