@@ -17,5 +17,8 @@
     "web:typecheck": "npm run web:marketing:typecheck && npm run web:admin:typecheck",
     "web:tokens": "dart run tool/design_tokens.dart",
     "web:tokens:check": "dart run tool/design_tokens.dart --check"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.61.0"
   }
 }
