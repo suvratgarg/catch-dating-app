@@ -117,7 +117,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                           ),
                         ],
                       )
-                    : Container(
+                    : ColoredBox(
                         color: t.raised,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -129,9 +129,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                             ),
                             gapH8,
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
+                              padding: CatchInsets.inlineHorizontal,
                               child: Text(
                                 'Add image',
                                 style: CatchTextStyles.supporting(

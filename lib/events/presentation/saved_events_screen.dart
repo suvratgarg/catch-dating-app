@@ -55,12 +55,7 @@ class SavedEventsScreen extends ConsumerWidget {
             return CustomScrollView(
               slivers: [
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s2,
-                    CatchSpacing.s5,
-                    CatchSpacing.s3,
-                  ),
+                  padding: CatchInsets.pageHeaderCompact,
                   sliver: SliverToBoxAdapter(
                     child: Text(
                       'Events you saved',
@@ -123,7 +118,7 @@ class _SavedEventsMessage extends StatelessWidget {
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
         iconSize: CatchLayout.eventInfoTileExtent,
-        padding: const EdgeInsets.all(CatchSpacing.s6),
+        padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),
       ),
     );

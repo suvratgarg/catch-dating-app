@@ -95,7 +95,6 @@ class PhotoSlot extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: borderRadius,
-                clipBehavior: Clip.antiAlias,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -105,7 +104,7 @@ class PhotoSlot extends StatelessWidget {
                         color: CatchTokens.editorialDark.withValues(
                           alpha: CatchOpacity.photoUploadLoadingScrim,
                         ),
-                        child: Center(
+                        child: const Center(
                           child: CatchLoadingIndicator(
                             color: CatchTokens.editorialLight,
                           ),
@@ -143,10 +142,7 @@ class PhotoSlot extends StatelessWidget {
                             alpha: CatchOpacity.photoPromptScrim,
                           ),
                           borderWidth: 0,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: CatchSpacing.micro6,
-                            vertical: CatchSpacing.s1,
-                          ),
+                          padding: CatchInsets.infoTileContent,
                           child: Text(
                             prompt!.displayPrompt,
                             style: CatchTextStyles.labelS(

@@ -5,7 +5,15 @@
     "staging": "catchdates-staging",
     "prod": "catch-dating-app-64e51"
   },
-  "targets": {},
+  "targets": {
+    "catch-dating-app-64e51": {
+      "hosting": {
+        "marketing": [
+          "catch-dating-app-64e51"
+        ]
+      }
+    }
+  },
   "etags": {
     "catchdates-dev": {
       "extensionInstances": {

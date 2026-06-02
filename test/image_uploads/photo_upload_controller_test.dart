@@ -130,10 +130,7 @@ void main() {
     'serializes overlapping photo writes so newer state is preserved',
     () async {
       final userProfileRepository = FakePhotoUserProfileRepository(
-        buildUser(
-          uid: 'runner-1',
-          photoUrls: const ['https://img.example/old-0.jpg'],
-        ),
+        buildUser(photoUrls: const ['https://img.example/old-0.jpg']),
       );
       final imageUploadRepository = ControlledImageUploadRepository();
       final container = ProviderContainer(
@@ -209,9 +206,7 @@ void main() {
   );
 
   test('ignores a second picker request while the first is open', () async {
-    final userProfileRepository = FakePhotoUserProfileRepository(
-      buildUser(uid: 'runner-1'),
-    );
+    final userProfileRepository = FakePhotoUserProfileRepository(buildUser());
     final imageUploadRepository = SlowPickingImageUploadRepository();
     final container = ProviderContainer(
       overrides: [
@@ -260,9 +255,7 @@ void main() {
   });
 
   test('completes safely if the provider is disposed mid-upload', () async {
-    final userProfileRepository = FakePhotoUserProfileRepository(
-      buildUser(uid: 'runner-1'),
-    );
+    final userProfileRepository = FakePhotoUserProfileRepository(buildUser());
     final imageUploadRepository = ControlledImageUploadRepository();
     final container = ProviderContainer(
       overrides: [
@@ -309,7 +302,7 @@ void main() {
     'deletePhoto compacts grouped photos and compatibility arrays',
     () async {
       final userProfileRepository = FakePhotoUserProfileRepository(
-        buildUser(uid: 'runner-1').copyWith(
+        buildUser().copyWith(
           profileComplete: true,
           profilePhotos: [
             profilePhoto(0),
@@ -351,7 +344,7 @@ void main() {
 
   test('deletePhoto keeps completed profiles above the photo floor', () async {
     final userProfileRepository = FakePhotoUserProfileRepository(
-      buildUser(uid: 'runner-1').copyWith(
+      buildUser().copyWith(
         profileComplete: true,
         profilePhotos: [profilePhoto(0), profilePhoto(1)],
       ),
@@ -383,7 +376,7 @@ void main() {
 
   test('reorderPhoto moves photos and keeps prompts aligned', () async {
     final userProfileRepository = FakePhotoUserProfileRepository(
-      buildUser(uid: 'runner-1').copyWith(
+      buildUser().copyWith(
         profilePhotos: [
           profilePhoto(0, prompt: prompt(0, 'Coffee')),
           profilePhoto(1),
@@ -426,7 +419,7 @@ void main() {
     'savePhoto updates an existing photo caption without uploading',
     () async {
       final userProfileRepository = FakePhotoUserProfileRepository(
-        buildUser(uid: 'runner-1').copyWith(profilePhotos: [profilePhoto(0)]),
+        buildUser().copyWith(profilePhotos: [profilePhoto(0)]),
       );
       final imageUploadRepository = ControlledImageUploadRepository();
       final container = ProviderContainer(

@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_landing_page_research
 version: 0.3.0
-updated: 2026-05-25
+updated: 2026-06-02
 owner: marketing_website
 status: active
 ---
@@ -630,27 +630,30 @@ Photography/media direction:
 
 ## Production Implementation: 2026-05-25
 
-The approved next pass now rewrites the live static site instead of keeping the
-work isolated in `website/research-preview/`.
+The approved next pass rewrote the live site instead of keeping the work
+isolated in `website/research-preview/`. On 2026-06-02, the implementation was
+migrated from standalone static HTML/CSS/JS to Vite + React + TypeScript while
+preserving the approved content, section order, capture manifest contract, and
+visual direction.
 
 Implemented surfaces:
 
-- `website/index.html`: member-facing homepage with a premium editorial hero,
-  format breadth, member loop, host proof, app-sourced screenshot slots, trust
-  copy, and the existing waitlist endpoint.
-- `website/host/index.html`: host-specific conversion page with event operating
-  system positioning, workflow, live facilitation modules, app-sourced host
-  screenshot slots, and founding-host intake.
-- `website/styles.css`: responsive shared stylesheet using one HTML structure,
-  mobile-first constraints, breakpoints at `720px`, `980px`, and `1180px`,
-  controlled text measures, 8px surfaces, and a dark premium palette led by
-  ink, bone, lime, oxblood/plum, teal, and cobalt accents.
-- `website/assets/marketing/catch-hero-event-temporary.png`: temporary generated
-  event media used as the homepage hero until owned event photography replaces
-  it.
+- `website/src/App.tsx`: member-facing homepage and host-specific conversion
+  page with shared React components, waitlist handling, capture manifest loading,
+  and route-specific metadata updates.
+- `website/src/styles.css`: responsive shared stylesheet using one React
+  structure, mobile-first constraints, breakpoints at `720px`, `980px`, and
+  `1180px`, controlled text measures, 8px surfaces, and a dark premium palette
+  led by ink, bone, lime, oxblood/plum, teal, and cobalt accents.
+- `website/scripts/postbuild.mjs`: creates route-specific static metadata for
+  `/` and `/host/` in the deployable Vite output.
+- `website/public/assets/marketing/catch-hero-event-temporary.png`: temporary
+  generated event media used as the homepage hero until owned event photography
+  replaces it.
 - `tool/marketing/capture_manifest.json` and
-  `website/assets/app-screenshots/manifest.json`: copy updated away from the
-  old run-only story while keeping the app screenshot capture pipeline intact.
+  `website/public/assets/app-screenshots/manifest.json`: copy updated away from
+  the old run-only story while keeping the app screenshot capture pipeline
+  intact.
 
 Implemented content rationale:
 

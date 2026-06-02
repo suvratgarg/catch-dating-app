@@ -745,7 +745,6 @@ class _ProfilePhotosSection extends StatelessWidget {
     return CatchSectionCard(
       title: 'Photos',
       subtitle: '$completedCount of $maximumProfilePhotoCount added',
-      headerBodyGap: CatchSpacing.s3,
       child: PhotoGrid(
         profilePhotos: profilePhotos,
         loadingIndices: uploadState.loadingIndices,
@@ -775,7 +774,6 @@ class _ProfileQualityGuidanceCard extends StatelessWidget {
         summary.isStrong ? 'Strong' : '${summary.score}%',
         style: CatchTextStyles.statCompact(context, color: t.ink),
       ),
-      headerBodyGap: CatchSpacing.s3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

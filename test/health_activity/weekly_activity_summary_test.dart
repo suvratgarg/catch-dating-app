@@ -12,7 +12,7 @@ void main() {
           startTime: DateTime(2026, 5, 10, 23, 59),
           distanceMeters: 9000,
         ),
-        _activity(startTime: DateTime(2026, 5, 11), distanceMeters: 5000),
+        _activity(startTime: DateTime(2026, 5, 11)),
         _activity(startTime: DateTime(2026, 5, 17, 10), distanceMeters: 3000),
         _activity(startTime: DateTime(2026, 5, 18), distanceMeters: 7000),
       ], referenceDate: referenceDate);

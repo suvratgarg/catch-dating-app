@@ -147,8 +147,12 @@
       "routeId": "eventDetailScreen",
       "status": "captured",
       "priority": "P1",
-      "captureIds": ["event_detail_member"],
-      "reason": "Canonical event detail capture reused by calendar, saved, and dashboard aliases."
+      "captureIds": [
+        "event_detail_member",
+        "event_detail_member_ticket",
+        "event_detail_member_spotlight"
+      ],
+      "reason": "Canonical event detail captured across standard, ticket, and spotlight presentations; reused by calendar, saved, and dashboard aliases."
     },
     {
       "routeId": "attendanceSheet",

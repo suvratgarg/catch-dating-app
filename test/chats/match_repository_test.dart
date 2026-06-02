@@ -59,7 +59,7 @@ void main() {
     test(
       'watchMatchesForUser merges active matches from both user fields',
       () async {
-        final olderMatch = _buildMatch(id: 'older', user1Id: 'runner-1');
+        final olderMatch = _buildMatch(id: 'older');
         final newerMatch = _buildMatch(
           id: 'newer',
           user1Id: 'runner-2',
@@ -68,7 +68,6 @@ void main() {
         );
         final blockedMatch = _buildMatch(
           id: 'blocked',
-          user1Id: 'runner-1',
           status: MatchStatus.blocked,
           createdAt: DateTime(2025, 1, 3, 7),
         );
@@ -153,7 +152,6 @@ void main() {
       final fakeRepository = _FakeMatchRepository();
       fakeRepository.matchesByUser['runner-1'] = [
         _buildMatch(
-          id: 'match-1',
           lastMessagePreview: 'Incoming one',
           lastMessageSenderId: 'runner-2',
           unreadCounts: const {'runner-1': 2},
@@ -205,7 +203,6 @@ void main() {
     final collapsed = collapseMatchesByOtherUser([
       _buildMatch(
         id: 'older',
-        eventIds: const ['event-1'],
         createdAt: DateTime(2025, 1, 1, 7),
         lastMessageAt: DateTime(2025, 1, 1, 8),
         lastMessagePreview: 'Older message',

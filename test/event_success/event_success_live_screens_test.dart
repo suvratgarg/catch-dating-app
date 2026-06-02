@@ -76,7 +76,6 @@ void main() {
                     safetyIncidentCount: 0,
                     feedbackResponseCount: 4,
                   ),
-                  embedded: true,
                 ),
               ),
             ),
@@ -172,7 +171,6 @@ void main() {
                       plan: plan,
                       planIsPersisted: true,
                       roster: EventParticipationRoster.empty(),
-                      embedded: true,
                     ),
                   ),
                 ),
@@ -239,7 +237,6 @@ void main() {
                   roster: EventParticipationRoster.empty(),
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -346,7 +343,6 @@ void main() {
                   roster: EventParticipationRoster.empty(),
                   initialTab: EventSuccessHostTab.report,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -435,7 +431,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.report,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -523,7 +518,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -608,7 +602,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -672,7 +665,7 @@ void main() {
                     ),
                   ],
                   wingmanProfiles: [
-                    buildPublicProfile(uid: 'runner-1', name: 'Arjun'),
+                    buildPublicProfile(name: 'Arjun'),
                     buildPublicProfile(
                       uid: 'runner-2',
                       name: 'Rhea',
@@ -681,7 +674,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -750,7 +742,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -837,13 +828,12 @@ void main() {
                   ),
                   assignments: assignments,
                   assignmentParticipantProfiles: [
-                    buildPublicProfile(uid: 'runner-1', name: 'Arjun'),
+                    buildPublicProfile(name: 'Arjun'),
                     buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
                     buildPublicProfile(uid: 'runner-3', name: 'Naina'),
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -916,7 +906,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -978,7 +967,6 @@ void main() {
                   ),
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -1034,10 +1022,8 @@ void main() {
                     checkedInIds: ['runner-1', 'runner-2'],
                     waitlistedIds: [],
                   ),
-                  rotationAssignments: const [],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -1102,7 +1088,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -1161,7 +1146,7 @@ void main() {
                     ),
                   ],
                   rotationParticipantProfiles: [
-                    buildPublicProfile(uid: 'runner-1', name: 'Arjun'),
+                    buildPublicProfile(name: 'Arjun'),
                     buildPublicProfile(
                       uid: 'runner-2',
                       name: 'Rhea',
@@ -1170,7 +1155,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -1254,7 +1238,6 @@ void main() {
                   ],
                   initialTab: EventSuccessHostTab.live,
                   showTabs: false,
-                  embedded: true,
                 ),
               ),
             ),
@@ -1314,7 +1297,7 @@ void main() {
                 home: EventSuccessCompanionScreen(
                   event: event,
                   plan: plan,
-                  userProfile: buildUser(uid: 'runner-1'),
+                  userProfile: buildUser(),
                   participation: buildEventParticipation(
                     event: event,
                     uid: 'runner-1',
@@ -1387,7 +1370,6 @@ void main() {
               event: event,
               plan: plan,
               userProfile: buildUser(
-                uid: 'runner-1',
                 gender: Gender.woman,
                 interestedInGenders: const [Gender.man],
               ),
@@ -1397,11 +1379,7 @@ void main() {
                 status: EventParticipationStatus.attended,
               ),
               wingmanRequestCandidates: [
-                buildPublicProfile(
-                  uid: 'runner-2',
-                  name: 'Arjun',
-                  gender: Gender.man,
-                ),
+                buildPublicProfile(uid: 'runner-2', name: 'Arjun'),
                 buildPublicProfile(
                   uid: 'runner-3',
                   name: 'Rhea',
@@ -1457,11 +1435,10 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
-              status: EventParticipationStatus.signedUp,
             ),
             wingmanRequestCandidates: const [],
             rotationAssignment: assignment,
@@ -1543,11 +1520,10 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
-              status: EventParticipationStatus.signedUp,
             ),
             wingmanRequestCandidates: const [],
             arrivalMission: mission,
@@ -1607,11 +1583,10 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
-              status: EventParticipationStatus.signedUp,
             ),
             wingmanRequestCandidates: const [],
             now: start.subtract(const Duration(minutes: 5)),
@@ -1671,11 +1646,10 @@ void main() {
               home: EventSuccessCompanionScreen(
                 event: event,
                 plan: plan,
-                userProfile: buildUser(uid: 'runner-1'),
+                userProfile: buildUser(),
                 participation: buildEventParticipation(
                   event: event,
                   uid: 'runner-1',
-                  status: EventParticipationStatus.signedUp,
                 ),
                 wingmanRequestCandidates: const [],
                 now: start.add(const Duration(minutes: 30)),
@@ -1735,7 +1709,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           watchEventParticipationProvider(event.id, 'runner-1').overrideWith(
             (ref) => Stream.value(
@@ -1796,7 +1770,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           watchEventParticipationProvider(event.id, 'runner-1').overrideWith(
             (ref) => Stream.value(
@@ -1867,7 +1841,7 @@ void main() {
                 home: EventSuccessCompanionScreen(
                   event: event,
                   plan: plan,
-                  userProfile: buildUser(uid: 'runner-1'),
+                  userProfile: buildUser(),
                   participation: buildEventParticipation(
                     event: event,
                     uid: 'runner-1',
@@ -1963,7 +1937,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2052,7 +2026,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2115,7 +2089,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2176,7 +2150,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2238,7 +2212,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2302,7 +2276,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2362,7 +2336,7 @@ void main() {
             home: EventSuccessCompanionScreen(
               event: event,
               plan: plan,
-              userProfile: buildUser(uid: 'runner-1'),
+              userProfile: buildUser(),
               participation: buildEventParticipation(
                 event: event,
                 uid: 'runner-1',
@@ -2415,7 +2389,7 @@ void main() {
           home: EventSuccessCompanionScreen(
             event: event,
             plan: plan,
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: buildEventParticipation(
               event: event,
               uid: 'runner-1',
@@ -2483,7 +2457,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           watchEventParticipationProvider(event.id, 'runner-1').overrideWith(
             (ref) => Stream.value(
@@ -2569,7 +2543,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           watchEventParticipationProvider(event.id, 'runner-1').overrideWith(
             (ref) => Stream.value(
@@ -2631,7 +2605,7 @@ void main() {
             home: EventSuccessCompanionScreen(
               event: event,
               plan: plan,
-              userProfile: buildUser(uid: 'runner-1'),
+              userProfile: buildUser(),
               participation: buildEventParticipation(
                 event: event,
                 uid: 'runner-1',
@@ -2673,7 +2647,7 @@ void main() {
             event.id,
           ).overrideWith((ref) => Stream.value(event)),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           watchEventParticipationProvider(
             event.id,

@@ -256,19 +256,19 @@ abstract class UserProfile with _$UserProfile {
     int? height,
     String? occupation,
     String? company,
-    @JsonKey(unknownEnumValue: null) EducationLevel? education,
-    @JsonKey(unknownEnumValue: null) Religion? religion,
+    EducationLevel? education,
+    Religion? religion,
     @Default([]) List<Language> languages,
 
     // Intentions (optional)
-    @JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,
+    RelationshipGoal? relationshipGoal,
 
     // Lifestyle (optional)
-    @JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,
-    @JsonKey(unknownEnumValue: null) SmokingHabit? smoking,
-    @JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,
-    @JsonKey(unknownEnumValue: null) DietaryPreference? diet,
-    @JsonKey(unknownEnumValue: null) ChildrenStatus? children,
+    DrinkingHabit? drinking,
+    SmokingHabit? smoking,
+    WorkoutFrequency? workout,
+    DietaryPreference? diet,
+    ChildrenStatus? children,
 
     // Activity preferences
     @Default(ActivityPreferences()) ActivityPreferences activityPreferences,

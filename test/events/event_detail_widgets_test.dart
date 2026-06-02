@@ -5,7 +5,9 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -14,6 +16,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
@@ -36,7 +39,7 @@ import 'events_test_helpers.dart';
 void main() {
   group('EventDetailScreen', () {
     test('stores the route arguments', () {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final screen = EventDetailScreen(
         clubId: 'club-1',
         eventId: 'event-1',
@@ -66,11 +69,7 @@ void main() {
     testWidgets('uses initialEvent while live data is still loading', (
       tester,
     ) async {
-      final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
-        meetingPoint: 'Marine Drive',
-      );
+      final event = buildEvent(meetingPoint: 'Marine Drive');
 
       await pumpEventsTestApp(
         tester,
@@ -133,7 +132,6 @@ void main() {
             (ref) => AsyncData(
               EventDetailViewModel(
                 event: buildEvent(
-                  id: 'event-1',
                   startTime: DateTime(2025, 4, 23, 18),
                   endTime: DateTime(2025, 4, 23, 19),
                 ),
@@ -356,9 +354,7 @@ void main() {
             event: buildEvent(bookedCount: 1),
             clubId: 'club1',
             userProfile: buildUser(),
-            participation: _participation(
-              status: EventParticipationStatus.signedUp,
-            ),
+            participation: _participation(),
           ),
         ),
         overrides: [
@@ -383,7 +379,7 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(bookedCount: 1),
             clubId: 'club1',
-            userProfile: buildUser(uid: 'runner-1'),
+            userProfile: buildUser(),
             participation: null,
           ),
         ),
@@ -409,10 +405,8 @@ void main() {
               event: buildEvent(startTime: startTime, bookedCount: 1),
               clubId: 'club1',
               now: startTime.subtract(const Duration(minutes: 5)),
-              userProfile: buildUser(uid: 'runner-1'),
-              participation: _participation(
-                status: EventParticipationStatus.signedUp,
-              ),
+              userProfile: buildUser(),
+              participation: _participation(),
             ),
           ),
           overrides: [
@@ -807,6 +801,114 @@ void main() {
       expect(find.byTooltip('Add to calendar'), findsOneWidget);
       expect(find.byTooltip('Unsave event'), findsOneWidget);
     });
+
+    testWidgets('prefers event photos across detail hero presentations', (
+      tester,
+    ) async {
+      final event = buildEvent(
+        photoUrl: 'https://example.com/event-detail-photo.jpg',
+      );
+
+      Future<void> pumpHero(EventDetailPresentationMode mode) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  EventDetailHeroAppBar(
+                    event: event,
+                    isSaved: false,
+                    savePending: false,
+                    onBack: () {},
+                    onShare: (_) {},
+                    showAddToCalendar: false,
+                    onAddToCalendar: (_) {},
+                    onToggleSaved: () {},
+                    presentationMode: mode,
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 900)),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      for (final mode in EventDetailPresentationMode.values) {
+        await pumpHero(mode);
+        final thumbnail = tester.widget<CatchEventThumbnail>(
+          find.byType(CatchEventThumbnail),
+        );
+        expect(
+          thumbnail.photoUrl,
+          'https://example.com/event-detail-photo.jpg',
+        );
+        expect(thumbnail.preferActivityArtwork, isFalse);
+      }
+    });
+
+    testWidgets('uses semantic expanded heights for detail presentations', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 800);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final event = buildEvent();
+
+      Future<void> pumpHero(EventDetailPresentationMode mode) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: CustomScrollView(
+                slivers: [
+                  EventDetailHeroAppBar(
+                    event: event,
+                    isSaved: false,
+                    savePending: false,
+                    onBack: () {},
+                    onShare: (_) {},
+                    showAddToCalendar: false,
+                    onAddToCalendar: (_) {},
+                    onToggleSaved: () {},
+                    presentationMode: mode,
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 900)),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+      await pumpHero(EventDetailPresentationMode.standard);
+      final standardHeight =
+          (430 * CatchLayout.eventDetailHeroStandardHeightRatio)
+              .clamp(
+                CatchLayout.eventDetailHeroStandardMinHeight,
+                CatchLayout.eventDetailHeroStandardMaxHeight,
+              )
+              .toDouble();
+      expect(
+        tester.widget<SliverAppBar>(find.byType(SliverAppBar)).expandedHeight,
+        standardHeight,
+      );
+
+      await pumpHero(EventDetailPresentationMode.ticket);
+      expect(
+        tester.widget<SliverAppBar>(find.byType(SliverAppBar)).expandedHeight,
+        CatchLayout.eventDetailHeroTicketPhoneHeight,
+      );
+
+      await pumpHero(EventDetailPresentationMode.spotlightDark);
+      expect(
+        tester.widget<SliverAppBar>(find.byType(SliverAppBar)).expandedHeight,
+        CatchLayout.eventDetailHeroTicketPhoneHeight,
+      );
+    });
   });
 
   group('EventDetailBody', () {
@@ -817,7 +919,7 @@ void main() {
       tester.view.physicalSize = const Size(430, 3000);
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser();
       final event = buildEvent(
         constraints: const EventConstraints(minAge: 21, maxAge: 35),
       );
@@ -869,9 +971,7 @@ void main() {
           reviews: const [],
           isAuthenticated: true,
           isSaved: false,
-          participation: _participation(
-            status: EventParticipationStatus.signedUp,
-          ),
+          participation: _participation(),
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
@@ -1030,9 +1130,7 @@ void main() {
           reviews: const [],
           isAuthenticated: true,
           isSaved: false,
-          participation: _participation(
-            status: EventParticipationStatus.signedUp,
-          ),
+          participation: _participation(),
         ),
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
@@ -1090,9 +1188,7 @@ void main() {
                 reviews: const [],
                 isAuthenticated: true,
                 isSaved: false,
-                participation: _participation(
-                  status: EventParticipationStatus.signedUp,
-                ),
+                participation: _participation(),
                 onShareEvent: (_, event) async {
                   sharedEventId = event.id;
                 },
@@ -1144,8 +1240,6 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       ShareParams? sharedParams;
       final event = buildEvent(
-        id: 'event-1',
-        clubId: 'club-1',
         meetingPoint: 'Bandra',
         startTime: DateTime(2026, 6, 1, 18),
         endTime: DateTime(2026, 6, 1, 20),
@@ -1161,9 +1255,7 @@ void main() {
           reviews: const [],
           isAuthenticated: true,
           isSaved: false,
-          participation: _participation(
-            status: EventParticipationStatus.signedUp,
-          ),
+          participation: _participation(),
           inviteCode: 'VIP42',
           now: DateTime(2026, 5, 25),
         ),
@@ -1245,7 +1337,6 @@ void main() {
 
     testWidgets('location tap opens the in-app event map', (tester) async {
       final event = buildEvent(
-        id: 'event-1',
         meetingPoint: 'Race Course Road main gate',
         startingPointLat: 22.7196,
         startingPointLng: 75.8577,
@@ -1344,7 +1435,7 @@ EventParticipation _participation({
   EventParticipationStatus status = EventParticipationStatus.signedUp,
   EventJoinRequestStatus? hostApprovalStatus,
 }) {
-  final now = DateTime(2026, 1, 1);
+  final now = DateTime(2026);
   return EventParticipation(
     id: eventParticipationId(eventId: eventId, uid: uid),
     eventId: eventId,

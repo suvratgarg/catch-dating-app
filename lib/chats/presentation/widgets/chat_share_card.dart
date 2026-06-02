@@ -110,16 +110,13 @@ class _ChatShareCardSheetState extends State<ChatShareCardSheet> {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: CatchSpacing.s4,
-        right: CatchSpacing.s4,
-        top: CatchSpacing.s4,
+      padding: CatchInsets.content.copyWith(
         bottom: MediaQuery.viewInsetsOf(context).bottom + CatchSpacing.s4,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const BottomSheetGrabber(width: CatchSpacing.s10),
+          const BottomSheetGrabber(),
           gapH16,
           RepaintBoundary(
             key: _captureKey,
@@ -184,7 +181,7 @@ class ChatShareCard extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: t.bg,
         borderColor: t.line2,
-        padding: const EdgeInsets.all(CatchSpacing.s5),
+        padding: CatchInsets.contentRelaxed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -304,9 +301,9 @@ class _ShareCardBubble extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: isLastInGroup ? CatchSpacing.s3 : CatchSpacing.micro3,
-      ),
+      padding: isLastInGroup
+          ? CatchInsets.chatBubbleGroupEnd
+          : CatchInsets.chatBubbleGroupContinue,
       child: Align(
         alignment: isMe
             ? AlignmentDirectional.centerEnd
@@ -337,10 +334,7 @@ class _ShareCardBubble extends StatelessWidget {
                     isMe && isLastInGroup ? CatchRadius.sm : CatchRadius.lg,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.micro14,
-                  vertical: CatchSpacing.micro10,
-                ),
+                padding: CatchInsets.chatBubbleContent,
                 child: Text(
                   text,
                   maxLines: 3,

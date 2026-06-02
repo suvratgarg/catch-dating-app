@@ -38,10 +38,15 @@ class ClubHeroAppBar extends StatelessWidget {
     final topInset = MediaQuery.paddingOf(context).top;
     final hasCover = CatchDetailHeroBackdrop.hasImage(club.imageUrl);
     final mediaHeight = _heroMediaHeightFor(width, hasCover: hasCover);
+    final locationLabel = '${club.area}, ${cityLabel(club.location)}';
+    final captionExtent = _heroCaptionExtentFor(
+      context,
+      width,
+      title: club.name,
+      locationLabel: locationLabel,
+    );
     final moduleHeight =
-        mediaHeight +
-        (clubInteractionMediaInset * 2) +
-        _heroCaptionExtentFor(width);
+        mediaHeight + (clubInteractionMediaInset * 2) + captionExtent;
     final expandedHeight = (moduleHeight - topInset)
         .clamp(kToolbarHeight, moduleHeight)
         .toDouble();
@@ -58,13 +63,13 @@ class ClubHeroAppBar extends StatelessWidget {
         textKey: const ValueKey('club-detail-collapsed-title'),
         style: CatchTextStyles.clubDisplay(
           context,
-          size: 28,
-          height: 0.96,
+          size: CatchLayout.clubDetailHeroCollapsedTitleSize,
+          height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
           color: t.ink,
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s2),
+        padding: CatchInsets.iconChipContent,
         child: CatchTopBarIconAction(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: 'Back',
@@ -122,7 +127,11 @@ class ClubHeroAppBar extends StatelessWidget {
                 transitionOnUserGestures: true,
                 child: Material(
                   color: Colors.transparent,
-                  child: _ClubHeroModule(club: club, mediaHeight: mediaHeight),
+                  child: _ClubHeroModule(
+                    club: club,
+                    mediaHeight: mediaHeight,
+                    locationLabel: locationLabel,
+                  ),
                 ),
               ),
             ),
@@ -135,100 +144,162 @@ class ClubHeroAppBar extends StatelessWidget {
 
 double _heroMediaHeightFor(double width, {required bool hasCover}) {
   final mediaWidth = width - (clubInteractionMediaInset * 2);
-  final aspectHeight = mediaWidth * 3 / 4;
-  if (!hasCover) return width > CatchLayout.maxContentWidth ? 164 : 220;
+  final aspectHeight = mediaWidth * CatchLayout.clubDetailHeroCoverHeightRatio;
+  if (!hasCover) {
+    return width > CatchLayout.maxContentWidth
+        ? CatchLayout.clubDetailHeroNoCoverWideHeight
+        : CatchLayout.clubDetailHeroNoCoverPhoneHeight;
+  }
   return width > CatchLayout.maxContentWidth
-      ? aspectHeight.clamp(164, 260)
+      ? aspectHeight.clamp(
+          CatchLayout.clubDetailHeroCoverWideMinHeight,
+          CatchLayout.clubDetailHeroCoverWideMaxHeight,
+        )
       : aspectHeight;
 }
 
-double _heroCaptionExtentFor(double width) {
-  return width > CatchLayout.maxContentWidth ? 112 : 152;
+double _heroCaptionExtentFor(
+  BuildContext context,
+  double width, {
+  required String title,
+  required String locationLabel,
+}) {
+  final t = CatchTokens.of(context);
+  final textDirection = Directionality.of(context);
+  final textScaler = MediaQuery.textScalerOf(context);
+  final captionWidth = CatchLayout.detailScreenContentWidthFor(width);
+  final locationTextWidth = CatchLayout.clubDetailHeroLocationTextWidthFor(
+    captionWidth,
+  );
+
+  final titlePainter = TextPainter(
+    text: TextSpan(
+      text: title,
+      style: CatchTextStyles.clubDisplay(
+        context,
+        size: CatchLayout.clubDetailHeroExpandedTitleSize,
+        height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+        color: t.ink,
+      ),
+    ),
+    maxLines: 2,
+    ellipsis: '...',
+    textDirection: textDirection,
+    textScaler: textScaler,
+  )..layout(maxWidth: captionWidth);
+  final locationPainter = TextPainter(
+    text: TextSpan(
+      text: locationLabel,
+      style: CatchTextStyles.bodyLead(context, color: t.ink2),
+    ),
+    maxLines: 1,
+    ellipsis: '...',
+    textDirection: textDirection,
+    textScaler: textScaler,
+  )..layout(maxWidth: locationTextWidth);
+  final locationRowHeight = locationPainter.height > CatchIcon.md
+      ? locationPainter.height
+      : CatchIcon.md;
+
+  return CatchLayout.clubDetailHeroTitleTopPadding +
+      titlePainter.height +
+      CatchLayout.clubDetailHeroTitleLocationGap +
+      locationRowHeight +
+      CatchLayout.clubDetailHeroTitleBottomPadding +
+      CatchLayout.clubDetailHeroCaptionSlack;
 }
 
 class _ClubHeroModule extends StatelessWidget {
-  const _ClubHeroModule({required this.club, required this.mediaHeight});
+  const _ClubHeroModule({
+    required this.club,
+    required this.mediaHeight,
+    required this.locationLabel,
+  });
 
   final Club club;
   final double mediaHeight;
+  final String locationLabel;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchViewportCurveFrame(
-      key: const ValueKey('club-detail-viewport-curve-frame'),
-      backgroundColor: t.surface,
-      padding: clubInteractionMediaPadding,
-      paddingKey: const ValueKey('club-detail-hero-padding'),
-      child: CatchSurface(
-        key: const ValueKey('club-detail-hero-frame'),
-        backgroundColor: t.surface,
-        radius: CatchRadius.lg,
-        borderColor: t.surface,
-        borderWidth: 2,
-        clipBehavior: Clip.none,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: mediaHeight,
-              child: CatchDetailHeroBackdrop(
-                imageUrl: club.imageUrl,
-                semanticLabel: '${club.name} cover photo',
-                showScrim: false,
+    return ColoredBox(
+      key: const ValueKey('club-detail-hero-module'),
+      color: t.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CatchViewportCurveFrame(
+            key: const ValueKey('club-detail-viewport-curve-frame'),
+            backgroundColor: t.surface,
+            padding: clubInteractionMediaPadding,
+            paddingKey: const ValueKey('club-detail-hero-padding'),
+            child: CatchSurface(
+              key: const ValueKey('club-detail-hero-frame'),
+              backgroundColor: t.surface,
+              borderColor: t.surface,
+              borderWidth: 2,
+              clipBehavior: Clip.hardEdge,
+              child: SizedBox(
+                height: mediaHeight,
+                child: CatchDetailHeroBackdrop(
+                  imageUrl: club.imageUrl,
+                  semanticLabel: '${club.name} cover photo',
+                  showScrim: false,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                0,
-                CatchSpacing.s5,
-                0,
-                CatchSpacing.s4,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    club.name,
-                    key: const ValueKey('club-detail-expanded-title'),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.clubDisplay(
-                      context,
-                      size: 46,
-                      height: 0.90,
-                      color: t.ink,
+          ),
+          Padding(
+            key: const ValueKey('club-detail-hero-caption'),
+            padding: const EdgeInsets.fromLTRB(
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.clubDetailHeroTitleTopPadding,
+              CatchLayout.detailScreenHorizontalPadding,
+              CatchLayout.clubDetailHeroTitleBottomPadding,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  club.name,
+                  key: const ValueKey('club-detail-expanded-title'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.clubDisplay(
+                    context,
+                    size: CatchLayout.clubDetailHeroExpandedTitleSize,
+                    height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
+                    color: t.ink,
+                  ),
+                ),
+                const SizedBox(
+                  height: CatchLayout.clubDetailHeroTitleLocationGap,
+                ),
+                Row(
+                  children: [
+                    Icon(
+                      CatchIcons.locationOnOutlined,
+                      size: CatchIcon.md,
+                      color: t.ink2,
                     ),
-                  ),
-                  gapH10,
-                  Row(
-                    children: [
-                      Icon(
-                        CatchIcons.locationOnOutlined,
-                        size: CatchIcon.md,
-                        color: t.ink2,
+                    gapW6,
+                    Expanded(
+                      child: Text(
+                        locationLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
                       ),
-                      gapW6,
-                      Expanded(
-                        child: Text(
-                          '${club.area}, ${cityLabel(club.location)}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.bodyLead(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

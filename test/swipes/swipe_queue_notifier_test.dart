@@ -118,7 +118,7 @@ void main() {
             isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(buildUser(uid: 'runner-1')),
+              (ref) => Stream.value(buildUser()),
             ),
             authRepositoryProvider.overrideWithValue(authRepository),
             swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
@@ -166,7 +166,7 @@ void main() {
           isObviouslyOfflineProvider.overrideWithValue(false),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
           authRepositoryProvider.overrideWithValue(authRepository),
           swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
@@ -224,7 +224,7 @@ void main() {
             isObviouslyOfflineProvider.overrideWithValue(false),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(buildUser(uid: 'runner-1')),
+              (ref) => Stream.value(buildUser()),
             ),
             authRepositoryProvider.overrideWithValue(authRepository),
             swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
@@ -353,7 +353,7 @@ void main() {
           appConnectivityProvider.overrideWith((ref) => connectivity.stream),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           userProfileRepositoryProvider.overrideWithValue(
-            LoadedUserProfileRepository(buildUser(uid: 'runner-1')),
+            LoadedUserProfileRepository(buildUser()),
           ),
           swipeCandidateRepositoryProvider.overrideWith(
             (ref) => FakeSwipeCandidateRepository([

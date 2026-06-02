@@ -96,7 +96,7 @@ GoRouter _buildRouter() {
   );
 }
 
-final _profile = PublicProfile(
+final _profile = const PublicProfile(
   uid: 'runner-2',
   name: 'Taylor',
   age: 29,

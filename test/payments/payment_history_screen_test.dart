@@ -41,7 +41,7 @@ void main() {
             createdAt: DateTime(2025, 1, 2),
           ),
         ],
-        events: {'event-1': buildEvent(id: 'event-1')},
+        events: {'event-1': buildEvent()},
       );
 
       expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
@@ -118,7 +118,7 @@ void main() {
             eventId: 'event-4',
             status: PaymentStatus.completed,
             signUpFailed: true,
-            createdAt: DateTime(2025, 3, 1),
+            createdAt: DateTime(2025, 3),
           ),
         ],
         events: {'event-4': buildEvent(id: 'event-4')},

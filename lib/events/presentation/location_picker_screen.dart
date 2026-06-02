@@ -477,7 +477,7 @@ class _SelectedPointPanel extends StatelessWidget {
         : 'Search for a place or tap the map to set the meeting point.';
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       elevation: CatchSurfaceElevation.overlay,
       borderColor: t.line,
       radius: CatchRadius.md,

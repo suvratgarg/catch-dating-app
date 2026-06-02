@@ -1,7 +1,7 @@
 ---
 doc_id: design_token_migration_prompt
 version: 1.0.0
-updated: 2026-05-30
+updated: 2026-06-01
 owner: ui_elevation_initiative
 status: reference — reusable agent prompt + DoD gate
 ---
@@ -10,11 +10,11 @@ status: reference — reusable agent prompt + DoD gate
 
 Reusable prompt for handing the **raw color / font / text-style → token** sweep to
 a capable model (Sonnet recommended — routing a raw color to the *right* semantic
-role is judgment). The deterministic definition of done is the scanner
-`tool/check_design_tokens.sh`. Pairs with
+role is judgment). The deterministic definition of done is the Catch UI analyzer
+lint set, summarized by `tool/check_catch_ui_lint_drift.sh`. Pairs with
 [`design_language.md` → "Color"](design_language.md).
 
-> **Check first:** `bash tool/check_design_tokens.sh --count`. If it prints `0`,
+> **Check first:** `bash tool/check_catch_ui_lint_drift.sh --count`. If it prints `0`,
 > there is nothing to do (the token system already owns every color/font on this
 > branch). Point the agent at a branch/PR where the count is non-zero.
 
@@ -29,7 +29,7 @@ Copy everything below into the agent task:
 ````markdown
 # Task: route raw colors / fonts / text styles through the token system (Catch Flutter app)
 
-Drive `tool/check_design_tokens.sh` to a clean exit (0). Catch re-skins from ONE
+Drive `tool/check_catch_ui_lint_drift.sh` to a clean exit (0). Catch re-skins from ONE
 source — flipping a token must re-skin the whole app, in light AND dark. Raw
 `Color(...)`, `Colors.<named>`, raw `TextStyle(...)`, and `GoogleFonts.*` outside
 the token layer break that. Source-of-truth: `docs/design_language.md → Color`.
@@ -37,12 +37,15 @@ Work in small batches; verify constantly.
 
 ## Step 1 — see the work
 ```bash
-bash tool/check_design_tokens.sh --count   # how many candidates (if 0, STOP)
-bash tool/check_design_tokens.sh           # lists every finding as file:line:code, exits 1
+bash tool/check_catch_ui_lint_drift.sh --count   # how many candidates (if 0, STOP)
+bash tool/check_catch_ui_lint_drift.sh           # lists matching analyzer diagnostics, exits 1
 ```
 Scanned: all of `lib/` except generated code, the token DEFINITIONS
-(`lib/core/theme/**`, `graded_image.dart`), and retired sandboxes (`lib/labs/**`,
-`*explore_concept*`). `Colors.transparent` is allowed; comment lines are ignored.
+(`lib/core/theme/**`), retired sandboxes (`lib/labs/**`, `*explore_concept*`),
+and color-only art exemptions (`graded_image.dart`,
+`event_activity_visuals.dart`). `Colors.transparent` and transparent
+`Color(0x00...)` literals are allowed; `// token:allow:` works on the same line
+or directly above the raw color expression.
 
 ## Step 2 — for EACH finding, route it (PREFER a token; annotate only sanctioned art)
 
@@ -121,7 +124,7 @@ Scanned: all of `lib/` except generated code, the token DEFINITIONS
 
 ## Step 4 — verify (after every 5–10 files, and at the end)
 ```bash
-bash tool/check_design_tokens.sh --count            # trend to 0
+bash tool/check_catch_ui_lint_drift.sh --count      # trend to 0
 bash tool/check_ui_local_constant_wrappers.sh       # must report no targets
 flutter analyze                                     # must stay clean
 flutter test --concurrency=1                        # at the end — no new failures vs. baseline
@@ -129,7 +132,7 @@ flutter test --concurrency=1                        # at the end — no new fail
 Spot-check any touched screen in light + dark.
 
 ## Definition of done
-- `bash tool/check_design_tokens.sh` exits 0.
+- `bash tool/check_catch_ui_lint_drift.sh` exits 0.
 - `tool/check_ui_local_constant_wrappers.sh` reports no targets.
 - `flutter analyze` clean; no NEW test failures vs. the pre-change baseline.
 - `// token:allow:` used only for theme-independent art, each with a specific reason.

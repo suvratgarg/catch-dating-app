@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -150,7 +150,7 @@ class _DashboardHeaderModel {
   final String title;
 
   factory _DashboardHeaderModel.empty() {
-    return _DashboardHeaderModel(
+    return const _DashboardHeaderModel(
       eyebrow: 'WELCOME TO CATCH',
       title: "Let's find your first event",
     );
@@ -199,22 +199,14 @@ class _NotificationBellButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
 
     return SizedBox.square(
       dimension: CatchLayout.eventInfoTileExtent,
-      child: Badge(
+      child: CatchIconBadge(
         isLabelVisible: unreadCount > 0,
-        label: Text(
-          badgeLabel,
-          style: CatchTextStyles.statusLabel(context, color: t.primaryInk),
-        ),
-        backgroundColor: t.primary,
-        alignment: Alignment.topRight,
-        offset: const Offset(-2, 2),
+        label: badgeLabel,
         child: Align(
-          alignment: Alignment.center,
           child: CatchTopBarIconAction(
             icon: unreadCount > 0
                 ? CatchIcons.notificationsRounded

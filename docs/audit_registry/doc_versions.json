@@ -15,22 +15,22 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.6",
-    "updated": "2026-05-25",
+    "version": "4.1.7",
+    "updated": "2026-06-02",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.13",
-    "updated": "2026-05-27",
+    "version": "4.1.14",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.6",
-    "updated": "2026-05-22",
+    "version": "2.5.7",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
@@ -92,8 +92,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "4.1.5",
-    "updated": "2026-05-25",
+    "version": "4.1.9",
+    "updated": "2026-06-02",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -141,15 +141,15 @@
   },
   "ui_architecture": {
     "path": "docs/ui_architecture.md",
-    "version": "1.0.0",
-    "updated": "2026-05-22",
+    "version": "1.2.1",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, or scroll-heavy widget tests."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.159",
-    "updated": "2026-05-28",
+    "version": "2.5.164",
+    "updated": "2026-06-01",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -181,24 +181,31 @@
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, store readiness, or release evidence."
   },
+  "web_surface_architecture": {
+    "path": "docs/web_surface_architecture.md",
+    "version": "0.3.0",
+    "updated": "2026-06-02",
+    "status": "active",
+    "read_policy": "Read before changing website stacks, Firebase Hosting targets, domain/subdomain routing, public marketing pages, Flutter web deployment, admin web deployment, or host portal placement."
+  },
   "marketing_app_media_pipeline": {
     "path": "docs/marketing_app_media_pipeline.md",
-    "version": "1.0.0",
-    "updated": "2026-05-25",
+    "version": "1.2.0",
+    "updated": "2026-06-02",
     "status": "active",
     "read_policy": "Read before changing website screenshot slots, marketing capture manifests, host vertical media, or app-derived marketing asset sync checks."
   },
   "marketing_landing_page_research": {
     "path": "docs/marketing_landing_page_research.md",
-    "version": "0.2.0",
-    "updated": "2026-05-25",
+    "version": "0.3.0",
+    "updated": "2026-06-02",
     "status": "active",
     "read_policy": "Read before redesigning the Catch marketing site, changing launch landing-page content, selecting website imagery, or applying website-derived brand direction to the app theme; this doc supersedes the rejected run-only preview."
   },
   "marketing_landing_page_tracker": {
     "path": "docs/marketing_landing_page_tracker.md",
-    "version": "0.2.0",
-    "updated": "2026-05-25",
+    "version": "0.4.0",
+    "updated": "2026-06-02",
     "status": "temporary_active",
     "read_policy": "Use while the marketing landing-page research, rejected isolated preview, corrected preview, production rewrite, and app visual-direction follow-up remain open."
   },

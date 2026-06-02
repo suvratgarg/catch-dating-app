@@ -20,7 +20,7 @@ void main() {
     tester,
   ) async {
     final repository = _FakeFiltersUserProfileRepository();
-    final user = buildUser(uid: 'runner-1').copyWith(
+    final user = buildUser().copyWith(
       interestedInGenders: const [Gender.woman],
       minAgePreference: 18,
       maxAgePreference: 99,

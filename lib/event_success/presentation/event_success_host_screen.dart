@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -49,6 +50,22 @@ part 'host_parts/event_success_host_live.dart';
 part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_overrides.dart';
 
+const EdgeInsets _hostTabPickerPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.s4,
+  CatchSpacing.s5,
+  CatchSpacing.s2,
+);
+const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
+const EdgeInsets _hostWingmanRequestGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+const EdgeInsets _hostWingmanRequestNotePadding = EdgeInsets.only(
+  left: CatchSpacing.s5,
+  right: CatchSpacing.s5,
+  bottom: CatchSpacing.s2,
+);
+
 enum EventSuccessHostTab { setup, live, report }
 
 class EventSuccessHostSection extends ConsumerWidget {
@@ -72,7 +89,7 @@ class EventSuccessHostSection extends ConsumerWidget {
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     if (planAsync.isLoading) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        padding: CatchInsets.contentVerticalSpacious,
         child: Center(child: CatchLoadingIndicator()),
       );
     }
@@ -168,7 +185,7 @@ class EventSuccessHostSection extends ConsumerWidget {
         wingmanRequestsAsync.isLoading ||
         wingmanProfilesAsync.isLoading) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        padding: CatchInsets.contentVerticalSpacious,
         child: Center(child: CatchLoadingIndicator()),
       );
     }
@@ -290,7 +307,6 @@ class EventSuccessHostSection extends ConsumerWidget {
       wingmanProfiles: wingmanProfiles,
       initialTab: initialTab,
       showTabs: showTabs,
-      embedded: true,
       liveRoster: liveRoster,
       fixtureActions: fixtureActions,
     );
@@ -372,15 +388,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            CatchSpacing.s4,
-            CatchSpacing.s5,
-            CatchSpacing.s2,
-          ),
-          child: tabs,
-        ),
+        Padding(padding: _hostTabPickerPadding, child: tabs),
         Expanded(child: body),
       ],
     );
@@ -393,7 +401,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         : const AlwaysScrollableScrollPhysics();
     final padding = widget.embedded
         ? EdgeInsets.zero
-        : const EdgeInsets.all(CatchSpacing.s5);
+        : CatchInsets.contentRelaxed;
 
     return switch (_selectedTab) {
       EventSuccessHostTab.setup => _SetupTab(

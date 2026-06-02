@@ -24,7 +24,7 @@ void main() {
     });
 
     test('creates a default host plan for an event once', () async {
-      final event = buildEvent(id: 'event-1', capacityLimit: 28);
+      final event = buildEvent(capacityLimit: 28);
 
       final plan = await repository.ensurePlanForEvent(event);
       final samePlan = await repository.ensurePlanForEvent(event);
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('fetches a saved plan by event id', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
 
       expect(await repository.fetchPlan(event.id), isNull);
 
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('saves host setup and live step updates', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final plan = await repository.ensurePlanForEvent(event);
       final draft = plan.hostDraft.toggleModule('wingman_requests');
 
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('persists host-controlled live reveal state', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       await repository.ensurePlanForEvent(event);
 
       await repository.startLiveRevealCountdown(
@@ -102,7 +102,7 @@ void main() {
     });
 
     test('writes attendee feedback under stable event-user id', () async {
-      final event = buildEvent(id: 'event-1');
+      final event = buildEvent();
       final now = DateTime(2026, 5, 18, 12);
       final feedback = EventSuccessFeedback(
         id: eventSuccessFeedbackId(eventId: event.id, uid: 'runner-1'),
@@ -112,7 +112,6 @@ void main() {
         welcomeRating: 5,
         structureRating: 4,
         metNewPeopleCount: 3,
-        safetyConcern: false,
         createdAt: now,
         updatedAt: now,
       );
@@ -127,7 +126,7 @@ void main() {
     });
 
     test('saves attendee micro-pod opt-out preference', () async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
 
       await repository.setMicroPodsOptOut(
         event: event,
@@ -157,7 +156,7 @@ void main() {
     test(
       'saves guided-rotation opt-out without clearing micro-pod preference',
       () async {
-        final event = buildEvent(id: 'event-1', clubId: 'club-1');
+        final event = buildEvent();
 
         await repository.setMicroPodsOptOut(
           event: event,
@@ -191,7 +190,7 @@ void main() {
     );
 
     test('saves attendee compatibility questionnaire answers', () async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
 
       await repository.saveCompatibilityResponse(
         event: event,
@@ -230,7 +229,7 @@ void main() {
     });
 
     test('calls server-owned wingman request callables', () async {
-      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final event = buildEvent();
       final target = buildPublicProfile(uid: 'runner-2', name: 'Riya');
 
       await repository.saveWingmanRequest(
@@ -445,11 +444,7 @@ void main() {
 
       final candidates = await repository.fetchWingmanRequestCandidates(
         eventId: 'event-1',
-        currentUser: buildUser(
-          uid: 'runner-1',
-          gender: Gender.man,
-          interestedInGenders: const [Gender.woman],
-        ),
+        currentUser: buildUser(),
       );
 
       final callable =

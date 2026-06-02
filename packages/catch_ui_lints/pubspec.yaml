@@ -1,0 +1,14 @@
+name: catch_ui_lints
+description: Catch-specific analyzer plugin for semantic Flutter UI rules.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  analysis_server_plugin: ^0.3.4
+  analyzer: ^9.0.0
+
+dev_dependencies:
+  lints: ^6.0.0

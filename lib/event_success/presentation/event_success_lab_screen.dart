@@ -13,6 +13,19 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:flutter/material.dart';
 
+const EdgeInsets _labRunStepContentGap = EdgeInsets.only(
+  bottom: CatchSpacing.s3,
+);
+const EdgeInsets _labLayerHeaderPadding = EdgeInsets.only(top: CatchSpacing.s2);
+const EdgeInsets _labBulletItemGap = EdgeInsets.only(bottom: CatchSpacing.s1);
+const EdgeInsets _labBulletDotInset = EdgeInsets.only(top: CatchSpacing.s2);
+const EdgeInsets _labSectionPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  CatchSpacing.s4,
+  CatchSpacing.s5,
+  0,
+);
+
 /// Work-in-progress preview for the event success layer.
 ///
 /// This screen is registered only behind dev/staging preview gates and should
@@ -115,12 +128,7 @@ class _LabHero extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-      ),
+      padding: CatchInsets.pageHeaderBody,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(
@@ -133,7 +141,7 @@ class _LabHero extends StatelessWidget {
               colors: [t.accent, t.ink],
             ),
             borderColor: t.surface.withValues(alpha: CatchOpacity.none),
-            padding: const EdgeInsets.all(CatchSpacing.s5),
+            padding: CatchInsets.contentRelaxed,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -256,7 +264,7 @@ class _PromiseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +289,7 @@ class _PlaybookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,10 +304,7 @@ class _PlaybookCard extends StatelessWidget {
                 tone: CatchBadgeTone.brand,
                 icon: _activityIcon(playbook.activityType),
               ),
-              CatchBadge(
-                label: playbook.socialIntensity.label,
-                tone: CatchBadgeTone.neutral,
-              ),
+              CatchBadge(label: playbook.socialIntensity.label),
               if (playbook.hasLivePhoneUse)
                 const CatchBadge(
                   label: 'some live phone use',
@@ -349,7 +354,7 @@ class _CapacityRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       borderColor: t.line,
       child: Row(
@@ -425,7 +430,7 @@ class _RunOfShow extends StatelessWidget {
               const SizedBox(width: CatchSpacing.s3),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+                  padding: _labRunStepContentGap,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -498,7 +503,7 @@ class _LayerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Padding(
-      padding: const EdgeInsets.only(top: CatchSpacing.s2),
+      padding: _labLayerHeaderPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -523,7 +528,7 @@ class _ModuleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,10 +564,7 @@ class _ModuleCard extends StatelessWidget {
                   tone: CatchBadgeTone.warning,
                 ),
               if (!module.enabledByDefault)
-                const CatchBadge(
-                  label: 'later experiment',
-                  tone: CatchBadgeTone.neutral,
-                ),
+                const CatchBadge(label: 'later experiment'),
             ],
           ),
         ],
@@ -580,7 +582,7 @@ class _CoachPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -659,12 +661,12 @@ class _NotesList extends StatelessWidget {
         const SizedBox(height: CatchSpacing.s2),
         for (final item in items)
           Padding(
-            padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
+            padding: _labBulletItemGap,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: CatchSpacing.s2),
+                  padding: _labBulletDotInset,
                   child: CatchStatusDot(color: t.primary, size: 5),
                 ),
                 const SizedBox(width: CatchSpacing.s2),
@@ -688,12 +690,7 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s4,
-        CatchSpacing.s5,
-        0,
-      ),
+      padding: _labSectionPadding,
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(

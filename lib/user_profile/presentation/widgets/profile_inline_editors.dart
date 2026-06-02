@@ -339,7 +339,6 @@ class ProfileInlineTextValue extends StatelessWidget {
                             selectionColor: t.primary.withValues(
                               alpha: CatchOpacity.subtleBorder,
                             ),
-                            cursorWidth: 2,
                             cursorRadius: const Radius.circular(
                               CatchRadius.pill,
                             ),
@@ -634,7 +633,6 @@ class _StackedBlankLinesFormatter extends TextInputFormatter {
     return TextEditingValue(
       text: collapsed,
       selection: TextSelection.collapsed(offset: offset),
-      composing: TextRange.empty,
     );
   }
 }

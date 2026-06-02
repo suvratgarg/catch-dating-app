@@ -156,7 +156,7 @@ class _ProfileReactionCommentSheetState
             radius: CatchRadius.md,
             backgroundColor: t.raised,
             borderColor: t.line,
-            padding: const EdgeInsets.all(CatchSpacing.s3),
+            padding: CatchInsets.contentDense,
             child: Text(
               widget.target.preview,
               style: CatchTextStyles.bodyLead(context, color: t.ink2),

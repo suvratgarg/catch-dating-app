@@ -288,7 +288,7 @@ Club _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {
     area: 'Bandra',
     hostUserId: hostUserId,
     hostName: 'Host',
-    createdAt: DateTime(2025, 1, 1),
+    createdAt: DateTime(2025),
   );
 }
 

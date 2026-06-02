@@ -5,6 +5,8 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const args = process.argv.slice(2);
 const catalogPath = fromRepo("test/ui_captures/catalog/screen_capture_catalog.dart");
+const profile = valueAfter("--profile");
+const profileConfig = captureProfile(profile);
 
 if (args.includes("--help") || args.includes("-h")) {
   printHelp();
@@ -13,10 +15,14 @@ if (args.includes("--help") || args.includes("-h")) {
 
 const idsArg = valueAfter("--ids");
 const ids =
-  args.includes("--all") || idsArg === "all" ? readCatalogIds().join(",") : idsArg ?? "profile_self";
-const outputDir = valueAfter("--output-dir") ?? "artifacts/ui-captures/review";
+  args.includes("--all") || idsArg === "all" || (!idsArg && profileConfig.allIds)
+    ? readCatalogIds().join(",")
+    : idsArg ?? "profile_self";
+const outputDir = valueAfter("--output-dir") ?? profileConfig.outputDir ?? "artifacts/ui-captures/review";
 const deviceId = valueAfter("--device");
 const textScale = valueAfter("--text-scale");
+const pixelRatio = valueAfter("--pixel-ratio") ?? profileConfig.pixelRatio;
+const outputLayout = valueAfter("--output-layout") ?? profileConfig.outputLayout;
 const testPath = "test/ui_captures/capture_runner_test.dart";
 
 const flutterArgs = [
@@ -27,11 +33,16 @@ const flutterArgs = [
 ];
 if (deviceId) flutterArgs.push(`--dart-define=CAPTURE_DEVICE_ID=${deviceId}`);
 if (textScale) flutterArgs.push(`--dart-define=CAPTURE_TEXT_SCALE=${textScale}`);
+if (pixelRatio) flutterArgs.push(`--dart-define=CAPTURE_DPR=${pixelRatio}`);
+if (outputLayout) flutterArgs.push(`--dart-define=CAPTURE_OUTPUT_LAYOUT=${outputLayout}`);
 
 console.log(`Rendering UI captures: ${ids}`);
 console.log(`Output directory: ${outputDir}`);
+if (profile) console.log(`Profile: ${profile}`);
 if (deviceId) console.log(`Device override: ${deviceId}`);
 if (textScale) console.log(`Text scale: ${textScale}`);
+if (pixelRatio) console.log(`Pixel ratio: ${pixelRatio}`);
+if (outputLayout) console.log(`Output layout: ${outputLayout}`);
 
 const result = spawnSync("flutter", flutterArgs, {
   cwd: repoRoot,
@@ -49,6 +60,20 @@ function valueAfter(flag) {
     process.exit(64);
   }
   return value;
+}
+
+function captureProfile(name) {
+  if (!name) return {};
+  if (name === "design-gallery") {
+    return {
+      allIds: true,
+      outputDir: "design_context_pack/gallery",
+      outputLayout: "theme-first",
+      pixelRatio: "3.0",
+    };
+  }
+  console.error(`Unknown capture profile: ${name}`);
+  process.exit(64);
 }
 
 function readCatalogIds() {
@@ -72,11 +97,15 @@ Options:
   --output-dir <path>      Artifact output directory. Default: artifacts/ui-captures/review.
   --device <id>            Override catalog devices, e.g. iphone-17-pro.
   --text-scale <scale>     MediaQuery text scale, e.g. 1.5 or 2.0.
+  --pixel-ratio <scale>    PNG raster scale passed to RenderRepaintBoundary.toImage.
+  --output-layout <layout> capture-first (id/theme.png) or theme-first (theme/id.png).
+  --profile <name>         Named profile. Use design-gallery for 3x theme-first pack PNGs.
 
 Examples:
   node tool/ui_capture/run_captures.mjs --ids profile_self
   node tool/ui_capture/run_captures.mjs --all
   node tool/ui_capture/run_captures.mjs --ids match_chat_context --device iphone-17-pro
   node tool/ui_capture/run_captures.mjs --ids member_event_discovery --text-scale 2.0
+  node tool/ui_capture/run_captures.mjs --profile design-gallery
 `);
 }

@@ -279,7 +279,7 @@ class _EventTypeBrowseSkeleton extends StatelessWidget {
         children: [
           CatchSkeleton.text(width: CatchLayout.eventTypeSkeletonTextWidth),
           gapH12,
-          CatchSkeleton.card(height: CatchLayout.eventTypeSkeletonCardHeight),
+          CatchSkeleton.card(),
         ],
       ),
     );

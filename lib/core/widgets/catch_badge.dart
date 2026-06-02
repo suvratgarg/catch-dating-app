@@ -82,6 +82,46 @@ class CatchBadge extends StatelessWidget {
   }
 }
 
+/// Overlay badge for icon actions that need an unread/count marker.
+class CatchIconBadge extends StatelessWidget {
+  const CatchIconBadge({
+    super.key,
+    required this.label,
+    required this.child,
+    this.isLabelVisible = true,
+    this.alignment = Alignment.topRight,
+    this.offset = const Offset(-2, 2),
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  final String label;
+  final Widget child;
+  final bool isLabelVisible;
+  final AlignmentGeometry alignment;
+  final Offset offset;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final effectiveForeground = foregroundColor ?? t.primaryInk;
+
+    return Badge(
+      isLabelVisible: isLabelVisible,
+      label: Text(
+        label,
+        style: CatchTextStyles.statusLabel(context, color: effectiveForeground),
+      ),
+      backgroundColor: backgroundColor ?? t.primary,
+      alignment: alignment,
+      offset: offset,
+      child: child,
+    );
+  }
+}
+
 class _BadgeMetrics {
   const _BadgeMetrics({
     required this.padding,
@@ -113,11 +153,11 @@ class _BadgeMetrics {
       CatchBadgeSize.md => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.micro6 + CatchStroke.hairline,
+          vertical: CatchLayout.badgeMdVerticalPadding,
         ),
         gap: CatchSpacing.s1,
         iconSize: CatchIcon.sm,
-        dotSize: CatchSpacing.micro6 + CatchStroke.hairline,
+        dotSize: CatchLayout.badgeMdDotExtent,
         textStyle: (context, color) =>
             CatchTextStyles.labelL(context, color: color),
       ),

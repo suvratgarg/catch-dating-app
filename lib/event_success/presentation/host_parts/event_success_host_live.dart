@@ -280,7 +280,7 @@ class _LiveTab extends ConsumerWidget {
                 'Controls that stay available without competing with the current live step.',
           ),
           gapH10,
-          ..._spacedCards(supportingCards),
+          CatchSectionList(gap: CatchSpacing.s4, children: supportingCards),
         ],
         gapH20,
         CatchButton(
@@ -387,7 +387,7 @@ class _LiveNowConsole extends StatelessWidget {
               Color.lerp(stage.raised, stage.gold, 0.18)!,
             ],
           ),
-          padding: const EdgeInsets.all(CatchSpacing.s4),
+          padding: CatchInsets.content,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -410,7 +410,6 @@ class _LiveNowConsole extends StatelessWidget {
                   CatchBadge(
                     label:
                         'Step ${plan.activeStepIndex + 1}/${plan.steps.length}',
-                    tone: CatchBadgeTone.neutral,
                     backgroundColor: stageForeground.withValues(
                       alpha: CatchOpacity.subtleFill,
                     ),
@@ -423,7 +422,6 @@ class _LiveNowConsole extends StatelessWidget {
                   ),
                   CatchBadge(
                     label: plan.activeStep.stage.label,
-                    tone: CatchBadgeTone.neutral,
                     backgroundColor: stageForeground.withValues(
                       alpha: CatchOpacity.subtleFill,
                     ),
@@ -459,7 +457,7 @@ class _LiveNowConsole extends StatelessWidget {
               ),
               gapH12,
               CatchSurface(
-                padding: const EdgeInsets.all(CatchSpacing.s3),
+                padding: CatchInsets.contentDense,
                 backgroundColor: stageForeground.withValues(
                   alpha: CatchOpacity.photoScrimLight,
                 ),
@@ -511,7 +509,7 @@ class _LiveNowConsole extends StatelessWidget {
             subtitle: 'Handle these before moving the room forward.',
           ),
           gapH10,
-          ..._spacedCards(currentStepControls),
+          CatchSectionList(gap: CatchSpacing.s4, children: currentStepControls),
         ],
         gapH14,
         _LiveStepNavigation(plan: plan, onPrevious: onPrevious, onNext: onNext),
@@ -530,7 +528,7 @@ class _LiveCheckInQrCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -673,13 +671,4 @@ class _LiveSectionHeader extends StatelessWidget {
       ],
     );
   }
-}
-
-List<Widget> _spacedCards(List<Widget> cards) {
-  final children = <Widget>[];
-  for (var i = 0; i < cards.length; i += 1) {
-    if (i > 0) children.add(gapH16);
-    children.add(cards[i]);
-  }
-  return children;
 }

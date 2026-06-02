@@ -41,7 +41,7 @@ void main() {
   ) async {
     final userRepository = _FakeSettingsUserProfileRepository();
     final container = _settingsContainer(
-      user: buildUser(uid: 'runner-1').copyWith(prefsWeeklyDigest: false),
+      user: buildUser().copyWith(prefsWeeklyDigest: false),
       userRepository: userRepository,
       blockedUsers: const [],
     );
@@ -62,7 +62,7 @@ void main() {
       throwOnUpdate: true,
     );
     final container = _settingsContainer(
-      user: buildUser(uid: 'runner-1').copyWith(prefsWeeklyDigest: false),
+      user: buildUser().copyWith(prefsWeeklyDigest: false),
       userRepository: userRepository,
       blockedUsers: const [],
     );
@@ -84,13 +84,13 @@ void main() {
   ) async {
     final safetyRepository = _FakeSettingsSafetyRepository();
     final container = _settingsContainer(
-      user: buildUser(uid: 'runner-1'),
+      user: buildUser(),
       safetyRepository: safetyRepository,
       blockedUsers: [
         BlockedUser(
           uid: 'blocked-1',
           source: 'chat',
-          createdAt: DateTime(2026, 5, 1),
+          createdAt: DateTime(2026, 5),
         ),
       ],
       publicProfiles: {
@@ -120,7 +120,7 @@ void main() {
   ) async {
     final authRepository = _FakeSettingsAuthRepository();
     final container = _settingsContainer(
-      user: buildUser(uid: 'runner-1'),
+      user: buildUser(),
       blockedUsers: const [],
       authRepository: authRepository,
     );
@@ -146,7 +146,7 @@ void main() {
   ) async {
     final safetyRepository = _FakeSettingsSafetyRepository();
     final container = _settingsContainer(
-      user: buildUser(uid: 'runner-1'),
+      user: buildUser(),
       safetyRepository: safetyRepository,
       blockedUsers: const [],
     );

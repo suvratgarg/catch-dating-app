@@ -64,9 +64,7 @@ class StarRatingPicker extends StatelessWidget {
               key: keyBuilder?.call(value),
               onTap: () => onChanged(value),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CatchSpacing.s1,
-                ),
+                padding: CatchInsets.inlineHorizontalTight,
                 child: Icon(
                   i < clampedRating
                       ? CatchIcons.starRounded

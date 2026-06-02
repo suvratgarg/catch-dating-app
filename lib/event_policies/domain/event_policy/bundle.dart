@@ -45,7 +45,6 @@ class EventPolicyBundle {
     return EventPolicyBundle(
       admissionPolicy: EventAdmissionPolicy.inviteOnly(
         capacityLimit: capacityLimit,
-        waitlistPolicy: const EventWaitlistPolicy.disabled(),
         privateAccessPolicy: EventPrivateAccessPolicy.inviteCode(
           inviteCodeHint: inviteCodeHint,
         ),

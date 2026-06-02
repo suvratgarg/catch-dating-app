@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -24,6 +23,15 @@ class EventAgendaList extends StatelessWidget {
     this.today,
     this.preserveInputOrder = false,
     this.dayKeyBuilder,
+    this.padding = const EdgeInsets.fromLTRB(
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListTopPadding,
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListBottomPadding,
+    ),
+    this.dayLabelBottomGap = CatchLayout.agendaDayLabelBottomGap,
+    this.itemGap = CatchLayout.agendaItemGap,
+    this.groupGap = CatchLayout.agendaGroupGap,
   });
 
   final List<Event> events;
@@ -36,6 +44,10 @@ class EventAgendaList extends StatelessWidget {
   final DateTime? today;
   final bool preserveInputOrder;
   final EventAgendaDayKeyBuilder? dayKeyBuilder;
+  final EdgeInsetsGeometry padding;
+  final double dayLabelBottomGap;
+  final double itemGap;
+  final double groupGap;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +64,10 @@ class EventAgendaList extends StatelessWidget {
           today: today,
           preserveInputOrder: preserveInputOrder,
           dayKeyBuilder: dayKeyBuilder,
+          padding: padding,
+          dayLabelBottomGap: dayLabelBottomGap,
+          itemGap: itemGap,
+          groupGap: groupGap,
         ),
       ],
     );
@@ -71,6 +87,15 @@ class EventAgendaSliverList extends StatelessWidget {
     this.today,
     this.preserveInputOrder = false,
     this.dayKeyBuilder,
+    this.padding = const EdgeInsets.fromLTRB(
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListTopPadding,
+      CatchLayout.detailScreenHorizontalPadding,
+      CatchLayout.agendaListBottomPadding,
+    ),
+    this.dayLabelBottomGap = CatchLayout.agendaDayLabelBottomGap,
+    this.itemGap = CatchLayout.agendaItemGap,
+    this.groupGap = CatchLayout.agendaGroupGap,
   });
 
   final List<Event> events;
@@ -83,71 +108,43 @@ class EventAgendaSliverList extends StatelessWidget {
   final DateTime? today;
   final bool preserveInputOrder;
   final EventAgendaDayKeyBuilder? dayKeyBuilder;
+  final EdgeInsetsGeometry padding;
+  final double dayLabelBottomGap;
+  final double itemGap;
+  final double groupGap;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final grouped = _groupEvents(
       events,
       preserveInputOrder: preserveInputOrder,
     );
     final effectiveToday = today ?? DateTime.now();
+    final entries = grouped.entries.toList(growable: false);
     final children = [
-      for (final entry in grouped.entries) ...[
+      for (var groupIndex = 0; groupIndex < entries.length; groupIndex++) ...[
         KeyedSubtree(
-          key: dayKeyBuilder?.call(entry.key),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                _dayLabel(entry.key, effectiveToday).toUpperCase(),
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: DateUtils.isSameDay(entry.key, effectiveToday)
-                      ? t.primary
-                      : t.ink3,
-                ),
-              ),
-              gapH8,
-              for (final event in entry.value) ...[
-                Builder(
-                  builder: (context) {
-                    final effectiveBadge =
-                        badgeLabelBuilder?.call(event) ?? badgeLabel;
-                    final clubName = clubNameBuilder?.call(event);
-                    final status =
-                        statusBuilder?.call(event) ??
-                        _statusForBadge(effectiveBadge);
-                    return EventAgendaTile(
-                      data: EventTileData.fromEvent(
-                        event: event,
-                        status: status,
-                        clubName: clubName,
-                      ),
-                      showClubName: showClubName,
-                      badgeLabel: effectiveBadge,
-                      onTap: onEventSelected == null
-                          ? null
-                          : () => onEventSelected!.call(event),
-                    );
-                  },
-                ),
-                gapH10,
-              ],
-            ],
+          key: dayKeyBuilder?.call(entries[groupIndex].key),
+          child: _AgendaDayGroup(
+            date: entries[groupIndex].key,
+            events: entries[groupIndex].value,
+            today: effectiveToday,
+            onEventSelected: onEventSelected,
+            badgeLabel: badgeLabel,
+            badgeLabelBuilder: badgeLabelBuilder,
+            clubNameBuilder: clubNameBuilder,
+            statusBuilder: statusBuilder,
+            showClubName: showClubName,
+            dayLabelBottomGap: dayLabelBottomGap,
+            itemGap: itemGap,
           ),
         ),
-        gapH10,
+        if (groupIndex < entries.length - 1) SizedBox(height: groupGap),
       ],
     ];
 
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s1,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
-      ),
+      padding: padding,
       sliver: dayKeyBuilder == null
           ? SliverList.list(children: children)
           : SliverToBoxAdapter(
@@ -156,6 +153,78 @@ class EventAgendaSliverList extends StatelessWidget {
                 children: children,
               ),
             ),
+    );
+  }
+}
+
+class _AgendaDayGroup extends StatelessWidget {
+  const _AgendaDayGroup({
+    required this.date,
+    required this.events,
+    required this.today,
+    required this.onEventSelected,
+    required this.badgeLabel,
+    required this.badgeLabelBuilder,
+    required this.clubNameBuilder,
+    required this.statusBuilder,
+    required this.showClubName,
+    required this.dayLabelBottomGap,
+    required this.itemGap,
+  });
+
+  final DateTime date;
+  final List<Event> events;
+  final DateTime today;
+  final ValueChanged<Event>? onEventSelected;
+  final String? badgeLabel;
+  final EventBadgeLabelBuilder? badgeLabelBuilder;
+  final ClubNameBuilder? clubNameBuilder;
+  final EventTileStatusBuilder? statusBuilder;
+  final bool showClubName;
+  final double dayLabelBottomGap;
+  final double itemGap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          _dayLabel(date, today).toUpperCase(),
+          style: CatchTextStyles.labelM(
+            context,
+            color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
+          ),
+        ),
+        SizedBox(height: dayLabelBottomGap),
+        for (var eventIndex = 0; eventIndex < events.length; eventIndex++) ...[
+          Builder(
+            builder: (context) {
+              final event = events[eventIndex];
+              final effectiveBadge =
+                  badgeLabelBuilder?.call(event) ?? badgeLabel;
+              final clubName = clubNameBuilder?.call(event);
+              final status =
+                  statusBuilder?.call(event) ?? _statusForBadge(effectiveBadge);
+              return EventAgendaTile(
+                data: EventTileData.fromEvent(
+                  event: event,
+                  status: status,
+                  clubName: clubName,
+                ),
+                showClubName: showClubName,
+                badgeLabel: effectiveBadge,
+                onTap: onEventSelected == null
+                    ? null
+                    : () => onEventSelected!.call(event),
+              );
+            },
+          ),
+          if (eventIndex < events.length - 1) SizedBox(height: itemGap),
+        ],
+      ],
     );
   }
 }

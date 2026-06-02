@@ -12,7 +12,7 @@ void main() {
     firestore = FakeFirebaseFirestore();
     repository = CityRepository(
       firestore,
-      ErrorLogger(crashReporter: null, shouldReportErrors: false),
+      ErrorLogger(shouldReportErrors: false),
     );
   });
 

@@ -61,7 +61,7 @@ class PublicProfileScreen extends ConsumerWidget {
             CatchSpacing.s4,
             CatchSpacing.s4,
           ),
-          child: Column(
+          child: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               _ReportReasonTile(
@@ -182,7 +182,7 @@ class PublicProfileScreen extends ConsumerWidget {
                   ),
             error: (_, _) => Center(
               child: Padding(
-                padding: const EdgeInsets.all(CatchSpacing.s6),
+                padding: CatchInsets.contentSpacious,
                 child: Text(
                   'Unable to load this profile.',
                   style: CatchTextStyles.bodyLead(context, color: t.ink2),
@@ -194,7 +194,7 @@ class PublicProfileScreen extends ConsumerWidget {
               if (loadedProfile == null) {
                 return Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(CatchSpacing.s6),
+                    padding: CatchInsets.contentSpacious,
                     child: Text(
                       'This profile is unavailable.',
                       style: CatchTextStyles.bodyLead(context, color: t.ink2),

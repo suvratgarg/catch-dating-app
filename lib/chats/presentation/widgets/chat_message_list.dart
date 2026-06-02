@@ -48,10 +48,7 @@ class ChatMessageList extends StatelessWidget {
 
         return ListView.builder(
           controller: scrollController,
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s3,
-            vertical: CatchSpacing.s4,
-          ),
+          padding: CatchInsets.listBodyDense,
           itemCount: messages.length,
           itemBuilder: (context, i) {
             final msg = messages[i];

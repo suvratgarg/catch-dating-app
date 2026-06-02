@@ -71,7 +71,7 @@ void main() {
     });
 
     test('watchMessages orders by sentAt and maps snapshot data', () async {
-      final firstMessage = _buildMessage(id: 'message-1', text: 'First');
+      final firstMessage = _buildMessage(text: 'First');
       final secondMessage = _buildMessage(
         id: 'message-2',
         text: 'Second',

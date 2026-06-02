@@ -131,7 +131,14 @@ test("profile photo mapper can filter by asset status", () => {
 test("persona profile projection exposes reusable app-ready profile data", () => {
   const catalog = validCatalog();
 
+  assert.throws(
+    () => personaProfileProjection(catalog, {
+      photoCompositionIndex: testCompositionIndex(),
+    }),
+    /requires explicit assetStatuses/
+  );
   const uploadedProjection = personaProfileProjection(catalog, {
+    assetStatuses: ["uploaded"],
     photoCompositionIndex: testCompositionIndex(),
   });
   const plannedProjection = personaProfileProjection(catalog, {

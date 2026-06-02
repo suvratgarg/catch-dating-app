@@ -55,7 +55,6 @@ void main() {
               buildEventParticipation(
                 event: event,
                 uid: 'runner-4',
-                status: EventParticipationStatus.signedUp,
                 createdAt: DateTime(2026, 5, 6, 7, 4),
               ),
             ]),

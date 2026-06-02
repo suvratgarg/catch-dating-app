@@ -227,7 +227,6 @@ class WeeklyActivitySnapshot {
       source: summary.hasEvents
           ? WeeklyActivitySource.healthPlatform
           : WeeklyActivitySource.none,
-      message: null,
     );
   }
 

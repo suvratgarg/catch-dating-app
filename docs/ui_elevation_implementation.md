@@ -19,10 +19,10 @@ the *how*.
 |---|---|
 | **Phase 0** — encode identity (tokens, fonts, B&W palette) | ✅ **DONE** |
 | **Typography fidelity** (2026-05-30) — bundled variable fonts + optical-sizing engine (`CatchFonts` drives `FontVariation('opsz'/'wght')` from point size); type scale consolidated 59→~30 to the locked specimen (w600 display, negative tracking, tracked mono); matte-duotone grade | ✅ **DONE** |
-| **Phase 1a** — `ActivityPalette` + palette-owner routing + photo grade | ✅ **DONE** — palette-owners re-derived from tokens, `context:` dark-threading complete, raw-color sweep done (`check_design_tokens.sh` exits 0) |
+| **Phase 1a** — `ActivityPalette` + palette-owner routing + photo grade | ✅ **DONE** — palette-owners re-derived from tokens, `context:` dark-threading complete, raw-color sweep now covered by Catch UI analyzer lints |
 | **Phase 1b** — sizing/constraint doctrine + Dynamic Type | ✅ **DONE** — scanners green; capture walk completed at text scale 1.0/1.5/2.0; ticket/notch visual spot-check passed |
 | **Phase 1c** — motion spec | ✅ **DONE** — shared CatchMotion transition/haptic helpers extracted and routed through live surfaces |
-| **Phase 1d** — anti-drift token gate | ✅ **DONE** — `tool/check_design_tokens.sh` (raw `Color`/`Colors.*`/`TextStyle(`/`GoogleFonts` gate, comment-aware, `// token:allow:` hatch) built + wired in CI |
+| **Phase 1d** — anti-drift token gate | ✅ **DONE** — Catch UI analyzer lints cover raw `Color`/`Colors.*`/`TextStyle(`/`GoogleFonts` drift with `// token:allow:` continuity |
 | **Phase 2** — flagship Profile | ✅ **DONE** — `ProfileSurface` is shared by Catches, profile preview, and public profile; `CatchProfileView` has golden coverage; legacy tests reconciled; `relationshipGoal` restored as "Looking for"; preview-tab nested scroll targets the flagship `CustomScrollView`. |
 | **Phase 3** — rollout to par | ✅ **DONE** — onboarding, dashboard/profile, clubs, chat/matches, settings/payments/calendar, image uploads, and event-success surfaces were rolled forward; `explore_concept` retired |
 
@@ -31,9 +31,9 @@ Phase-0 deferral resolved: optical sizing **is** wired — the three identity fo
 point size). `eventDisplay` still keeps `FontStyle.italic` by default (the ticket-metaphor look).
 
 **Reusable agent prompts** for the mechanical sweeps (hand to a cheaper model; the matching
-scanner is the deterministic definition of done): [`sizing_migration_prompt.md`](sizing_migration_prompt.md)
+gate is the deterministic definition of done): [`sizing_migration_prompt.md`](sizing_migration_prompt.md)
 (→ `check_sizing.sh`) and [`design_token_migration_prompt.md`](design_token_migration_prompt.md)
-(→ `check_design_tokens.sh`).
+(→ Catch UI analyzer lints / `check_catch_ui_lint_drift.sh`).
 
 **Visual QA + regression:** the [UI capture pipeline](plans/ui_capture_pipeline_plan.md) — one
 deterministic harness, two consumers (raw review PNGs + curated marketing media) — reuses the
@@ -52,8 +52,8 @@ per-screen visual review. It pairs with [`marketing_app_media_pipeline.md`](mark
 
 - **Do NOT rename `CatchTokens` / `ActivityPalette` roles.** ~483 call sites read
   `CatchTokens.of(context).<role>`. Change **values**, never field names.
-- **Do NOT add `custom_lint`** (incompatible with `riverpod_generator 4.x`). The anti-drift gate
-  is a shell/grep check (Task 1d).
+- **Do NOT add `custom_lint`**; the package is archived and Catch UI rules belong in the
+  local `analysis_server_plugin` package at `packages/catch_ui_lints`.
 - **`flutter analyze` is authoritative.** Don't hand-edit generated `*.g.dart`/`*.freezed.dart`.
 - **`build_runner` only after annotation/model changes.** Token/font/color/widget edits don't need it.
 - **Preserve the sophisticated atoms — re-grade, don't replace:** ticket perforation + notch
@@ -279,20 +279,18 @@ Document `CatchMotion` usage rules in `design_language.md` §7. Create
 (`eventHeroSurface`) into a reusable page-transition + tap-feedback helper. **DoD:** the helper is
 used by ≥2 surfaces (e.g. club detail + event detail).
 
-## Task 1d — Anti-drift CI gate  ⬜
-Create `tool/check_design_tokens.sh` (mirror `tool/check_data_contract.sh`):
+## Task 1d — Anti-drift CI gate  ✅
+Historical shell-scanner sketch superseded by the Catch UI analyzer plugin
+(`packages/catch_ui_lints`) plus `tool/check_catch_ui_lint_drift.sh`:
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-# Allowlist: theme defs + sanctioned palette owners + scrim/shadow files.
-ALLOW='lib/core/theme/|lib/core/widgets/graded_image.dart|activity_palette.dart|pace_level_theme.dart|event_activity_visuals.dart'
-HITS=$(rg -n "Color\(0x|\bColors\.(white|black|red|blue|green|amber|orange|grey|gray|teal|purple|pink)\b" lib \
-  --glob '!**/*.g.dart' --glob '!**/*.freezed.dart' | rg -v "$ALLOW" || true)
-if [ -n "$HITS" ]; then echo "Raw colors outside the token system:"; echo "$HITS"; exit 1; fi
+bash tool/check_catch_ui_lints.sh
+bash tool/check_catch_ui_lint_drift.sh --count
+flutter analyze --no-fatal-infos
 ```
-Also flag raw `TextStyle(` outside `catch_text_styles.dart`. Wire into CI alongside existing gates
-(see `docs/release_operations.md`); document in `docs/widget_catalog.md`. **DoD:** gate fails on a
-planted raw `Color(0x…)`, passes once tokenized.
+The analyzer rules flag raw `Color`/`Colors.*`/`CupertinoColors.*`,
+`TextStyle(`, `GoogleFonts.*`/`getFont`, and font-family strings in
+`fontFamily:` slots. **DoD:** the seeded smoke probe fails if a planted raw value
+stops producing its Catch UI lint code.
 
 ---
 

@@ -79,9 +79,7 @@ void main() {
   test('#15 eligibilityFor returns AgeTooYoung when user age < minAge', () {
     // User born 5 years ago → age ~5; minAge = 18
     final user = buildUser(birthYear: DateTime.now().year - 5);
-    final event = buildEvent(
-      constraints: const EventConstraints(minAge: 18, maxAge: 99),
-    );
+    final event = buildEvent(constraints: const EventConstraints(minAge: 18));
     final result = event.eligibilityFor(user);
     expect(result, isA<AgeTooYoung>());
     expect((result as AgeTooYoung).minAge, 18);
@@ -92,9 +90,7 @@ void main() {
   test('#16 eligibilityFor returns AgeTooOld when user age > maxAge', () {
     // User born 60 years ago → age ~60; maxAge = 40
     final user = buildUser(birthYear: DateTime.now().year - 60);
-    final event = buildEvent(
-      constraints: const EventConstraints(minAge: 0, maxAge: 40),
-    );
+    final event = buildEvent(constraints: const EventConstraints(maxAge: 40));
     final result = event.eligibilityFor(user);
     expect(result, isA<AgeTooOld>());
     expect((result as AgeTooOld).maxAge, 40);
@@ -105,7 +101,7 @@ void main() {
   test(
     '#17 eligibilityFor returns EventFull when a waitlistable cohort slot is full',
     () {
-      final user = buildUser(gender: Gender.man);
+      final user = buildUser();
       final event = buildEvent(
         constraints: const EventConstraints(maxMen: 2),
         genderCounts: {'man': 2}, // at cap
@@ -115,7 +111,7 @@ void main() {
   );
 
   test('eligible when gender count is below cap', () {
-    final user = buildUser(gender: Gender.man);
+    final user = buildUser();
     final event = buildEvent(
       constraints: const EventConstraints(maxMen: 5),
       genderCounts: {'man': 4},
@@ -170,7 +166,7 @@ void main() {
     });
 
     test('Waitlistable cohort cap → EventSignUpStatus.full', () {
-      final user = buildUser(gender: Gender.man);
+      final user = buildUser();
       final event = buildEvent(
         constraints: const EventConstraints(maxMen: 1),
         genderCounts: {'man': 1},

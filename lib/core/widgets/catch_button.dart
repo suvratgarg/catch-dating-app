@@ -251,20 +251,20 @@ class _ButtonSizeSpec {
 
   static _ButtonSizeSpec from(CatchButtonSize size) {
     return switch (size) {
-      CatchButtonSize.sm => _ButtonSizeSpec(
+      CatchButtonSize.sm => const _ButtonSizeSpec(
         height: CatchSpacing.s9,
         padding: CatchSpacing.micro14,
         gap: CatchSpacing.micro6,
         textStyle: CatchTextStyles.buttonSm,
       ),
-      CatchButtonSize.md => _ButtonSizeSpec(
+      CatchButtonSize.md => const _ButtonSizeSpec(
         height: CatchSpacing.s12,
         padding: CatchSpacing.s5,
         gap: CatchSpacing.micro6,
         textStyle: CatchTextStyles.buttonMd,
       ),
-      CatchButtonSize.lg => _ButtonSizeSpec(
-        height: CatchSpacing.s12 + CatchSpacing.s2,
+      CatchButtonSize.lg => const _ButtonSizeSpec(
+        height: CatchLayout.buttonLgHeight,
         padding: CatchSpacing.s6,
         gap: CatchSpacing.micro6,
         textStyle: CatchTextStyles.buttonLg,

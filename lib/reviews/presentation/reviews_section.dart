@@ -37,7 +37,6 @@ class ClubReviewsSection extends StatelessWidget {
       reviews: reviews,
       currentUid: currentUid,
       maxVisibleReviews: maxVisibleReviews,
-      showAllAction: false,
       compactEmptyState: true,
       emptyMessage: 'Reviews appear after members attend an event.',
     );
@@ -82,7 +81,6 @@ class EventReviewsSection extends StatelessWidget {
         ReviewsPreviewSection(
           reviews: reviews,
           currentUid: currentUid,
-          maxVisibleReviews: 3,
           showAllAction: reviews.length > 3,
           compactEmptyState: true,
           emptyMessage: 'Reviews appear after attendees complete the event.',
@@ -218,8 +216,8 @@ class ReviewsPreviewSection extends StatelessWidget {
             iconSize: compactEmptyState ? CatchIcon.row : CatchIcon.tile,
             iconContainerSize: compactEmptyState ? 44 : null,
             padding: compactEmptyState
-                ? const EdgeInsets.all(CatchSpacing.s4)
-                : const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                ? CatchInsets.content
+                : CatchInsets.contentVertical,
             titleStyle: compactEmptyState
                 ? CatchTextStyles.sectionTitle(context)
                 : CatchTextStyles.sectionTitle(context),
@@ -270,7 +268,7 @@ class ReviewCard extends StatelessWidget {
 
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

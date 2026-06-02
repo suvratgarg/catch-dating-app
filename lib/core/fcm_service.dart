@@ -111,11 +111,7 @@ class FcmService {
     _initializedUid = uid;
 
     // Request permission (no-op on Android < 13, required on iOS).
-    await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    await FirebaseMessaging.instance.requestPermission();
 
     _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
         .listen((token) => unawaited(_saveToken(uid, token)));

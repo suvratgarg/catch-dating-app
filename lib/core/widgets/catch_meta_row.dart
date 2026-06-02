@@ -32,7 +32,6 @@ class CatchMetaDotRow extends StatelessWidget {
     final inkColor = color ?? t.ink2;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: ClipRect(

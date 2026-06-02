@@ -150,11 +150,11 @@ class _SetupTabState extends State<_SetupTab> {
             ],
             CatchSurface(
               borderColor: t.line,
-              padding: const EdgeInsets.all(CatchSpacing.s4),
+              padding: CatchInsets.content,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SetupSectionTitle(
+                  const _SetupSectionTitle(
                     title: 'Recommended setup',
                     subtitle:
                         'Review the essentials first. Format controls and advanced timing stay available below.',
@@ -198,7 +198,10 @@ class _SetupTabState extends State<_SetupTab> {
               ),
             ),
             gapH16,
-            if (_isDirty && !setupFrozen) ...[_UnsavedChangesPill(), gapH8],
+            if (_isDirty && !setupFrozen) ...[
+              const _UnsavedChangesPill(),
+              gapH8,
+            ],
             CatchButton(
               label: !widget.planIsPersisted && setupFrozen
                   ? 'Save unavailable'
@@ -263,7 +266,7 @@ class _TargetAttendeeControl extends StatelessWidget {
     return CatchSurface(
       tone: CatchSurfaceTone.raised,
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         children: [
           Expanded(
@@ -314,7 +317,7 @@ class _ReadinessIssues extends StatelessWidget {
       borderColor: t.warning.withValues(
         alpha: CatchOpacity.readinessWarningBorder,
       ),
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -322,7 +325,7 @@ class _ReadinessIssues extends StatelessWidget {
           gapH6,
           for (final issue in issues)
             Padding(
-              padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
+              padding: _hostLaunchIssueGap,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -419,7 +422,7 @@ class _NoticeCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

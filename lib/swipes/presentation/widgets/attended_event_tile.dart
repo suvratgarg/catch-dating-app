@@ -25,7 +25,7 @@ class AttendedEventTile extends StatelessWidget {
     final countdown = _formatCountdown(remaining);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
       onTap: () => context.pushNamed(
         Routes.swipeEventScreen.name,
@@ -87,7 +87,7 @@ class AttendedEventTile extends StatelessWidget {
                 foregroundColor: t.primary,
               ),
               gapH4,
-              CatchBadge(
+              const CatchBadge(
                 label: 'Swipe',
                 tone: CatchBadgeTone.solid,
                 size: CatchBadgeSize.md,

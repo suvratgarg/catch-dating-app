@@ -48,7 +48,7 @@ void main() {
 
       final results = await repository.fetchCandidates(
         eventId: 'event-closed',
-        currentUser: buildUser(uid: 'runner-1'),
+        currentUser: buildUser(),
       );
 
       expect(results, isEmpty);
@@ -84,7 +84,7 @@ void main() {
 
         final results = await repository.fetchCandidates(
           eventId: 'event-not-attended',
-          currentUser: buildUser(uid: 'runner-1'),
+          currentUser: buildUser(),
         );
 
         expect(results, isEmpty);
@@ -156,7 +156,7 @@ void main() {
           ),
         ];
 
-        final currentUser = buildUser(uid: 'runner-1').copyWith(
+        final currentUser = buildUser().copyWith(
           interestedInGenders: const [Gender.woman],
           minAgePreference: 24,
           maxAgePreference: 32,

@@ -28,15 +28,10 @@ class EventSuccessStep extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        16,
-        CatchSpacing.s5,
-        CatchSpacing.s8,
-      ),
+      padding: CatchInsets.formStepBodyRelaxed,
       children: [
         CatchSurface(
-          padding: const EdgeInsets.all(CatchSpacing.s3),
+          padding: CatchInsets.contentDense,
           tone: CatchSurfaceTone.primarySoft,
           radius: CatchRadius.md,
           borderWidth: 0,
@@ -52,7 +47,6 @@ class EventSuccessStep extends StatelessWidget {
           eventFormat: eventFormat,
           targetAttendeeCount: targetAttendeeCount,
           onChanged: onEventSuccessDefaultsChanged,
-          title: 'Live event guide',
           subtitle:
               'Save a simple plan with this event so Live mode is ready when it starts.',
         ),

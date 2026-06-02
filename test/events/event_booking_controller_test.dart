@@ -47,7 +47,7 @@ void main() {
     });
 
     test('books a paid event with the full payment payload', () async {
-      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
+      final fakePaymentRepository = FakePaymentRepository();
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
@@ -100,7 +100,7 @@ void main() {
     });
 
     test('passes invite codes through paid bookings', () async {
-      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
+      final fakePaymentRepository = FakePaymentRepository();
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
@@ -150,7 +150,7 @@ void main() {
     });
 
     test('routes non-INR paid bookings to the payment repository', () async {
-      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
+      final fakePaymentRepository = FakePaymentRepository();
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),

@@ -31,12 +31,7 @@ class WhereStep extends StatelessWidget {
     return Form(
       key: formKey,
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.s5,
-          16,
-          CatchSpacing.s5,
-          24,
-        ),
+        padding: CatchInsets.formStepBody,
         children: [
           const FieldLabel('Meeting location'),
           gapH8,

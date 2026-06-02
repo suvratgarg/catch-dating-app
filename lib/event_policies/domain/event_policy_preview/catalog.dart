@@ -187,7 +187,6 @@ class EventPolicyPreviewCatalog {
         waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
       ),
       pricingPolicy: EventPricingPolicy.fixed(MoneyAmount.inPaise(40000)),
-      cancellationPolicy: EventCancellationPolicy.standard(),
     ),
     roster: EventRosterSnapshot(
       bookedCountsByCohort: {
@@ -226,13 +225,10 @@ class EventPolicyPreviewCatalog {
         balancedRatioPolicy: BalancedRatioPolicy(
           leftCohortId: EventCohortIds.menInterestedInWomen,
           rightCohortId: EventCohortIds.womenInterestedInMen,
-          maxSkew: 1,
-          outOfRatioCohortPolicy: EventOutOfRatioCohortPolicy.manualReview,
         ),
         waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
       ),
       pricingPolicy: EventPricingPolicy.fixed(MoneyAmount.inPaise(40000)),
-      cancellationPolicy: EventCancellationPolicy.standard(),
     ),
     roster: EventRosterSnapshot(
       bookedCountsByCohort: {
@@ -271,8 +267,6 @@ class EventPolicyPreviewCatalog {
         balancedRatioPolicy: BalancedRatioPolicy(
           leftCohortId: EventCohortIds.menInterestedInWomen,
           rightCohortId: EventCohortIds.womenInterestedInMen,
-          maxSkew: 1,
-          outOfRatioCohortPolicy: EventOutOfRatioCohortPolicy.manualReview,
         ),
         waitlistPolicy: EventWaitlistPolicy.rankedOffer(),
       ),
@@ -285,7 +279,6 @@ class EventPolicyPreviewCatalog {
           EventDemandPricingRule(
             pricedCohortId: EventCohortIds.menInterestedInWomen,
             balancingCohortId: EventCohortIds.womenInterestedInMen,
-            freeSkew: 1,
             demandStep: 5,
             stepAdjustment: MoneyAmount.inPaise(20000),
             maxAdjustment: MoneyAmount.inPaise(60000),
@@ -324,7 +317,6 @@ class EventPolicyPreviewCatalog {
     policy: EventPolicyBundle(
       admissionPolicy: EventAdmissionPolicy.manualApproval(capacityLimit: 16),
       pricingPolicy: EventPricingPolicy.fixed(MoneyAmount.inPaise(60000)),
-      cancellationPolicy: EventCancellationPolicy.standard(),
     ),
     roster: EventRosterSnapshot(
       bookedCountsByCohort: {

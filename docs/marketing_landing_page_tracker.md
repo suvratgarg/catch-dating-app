@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_landing_page_tracker
-version: 0.3.0
-updated: 2026-05-25
+version: 0.4.0
+updated: 2026-06-02
 owner: marketing_website
 status: active
 ---
@@ -70,7 +70,8 @@ establishing durable visual guidance for the app.
 | 2026-05-25 | Re-ground the next pass in the current event-platform feature set. | Repo docs show broader activity formats, event policies, live event success, host reporting, and post-event dating. |
 | 2026-05-25 | Use the production desktop concept as the visual north star. | It matches the research better than the rejected preview: dark editorial media, high-contrast lime action, multi-format story, host controls, and app/product proof. |
 | 2026-05-25 | Rewrite the live static site now. | User approved production-ready implementation with temporary event media and asked not to wait for a later quality pass. |
-| 2026-05-25 | Implement one responsive architecture. | `website/index.html` and `website/host/index.html` share semantic markup and `website/styles.css` handles layout through constraints and breakpoints rather than separate mobile/desktop branches. |
+| 2026-05-25 | Implement one responsive architecture. | The original static `website/index.html`, `website/host/index.html`, and `website/styles.css` shared semantic structure and responsive constraints before the later Vite migration. |
+| 2026-06-02 | Migrate marketing to Vite + React + TypeScript. | The user approved converging admin and marketing web stacks while keeping Flutter web as the consumer app. `website/` now builds to `website/dist` and keeps app-sourced media under `website/public/assets`. |
 
 ## Work Plan
 
@@ -89,7 +90,7 @@ establishing durable visual guidance for the app.
 | Update research with product-truth correction | Done | `docs/marketing_landing_page_research.md` now marks the run-only preview rejected and documents the current singles event-platform scope. |
 | Create corrected preview UI | Done | Generated concept boards: `catch-production-concept-desktop.png`, `catch-production-concept-mobile.png`. |
 | User approval before production rewrite | Done | User approved moving forward with production-ready implementation and temporary event media. |
-| Production implementation | Done | Rewrote `website/index.html`, `website/host/index.html`, `website/styles.css`; added temporary hero asset; updated marketing capture manifest copy. |
+| Production implementation | Done | Rewrote the production site, then migrated it to `website/src/App.tsx`, `website/src/styles.css`, and Vite build output. Added temporary hero asset and kept marketing capture manifest copy current. |
 | Verification | Done | `node tool/marketing/sync_website_media.mjs --check`, targeted `git diff --check`, desktop/mobile screenshots, `dart tool/audit_registry.dart refresh`, `mark-pass`, and `report`. |
 
 ## Production Rewrite Guardrails

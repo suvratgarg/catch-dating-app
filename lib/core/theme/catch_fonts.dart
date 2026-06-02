@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
 import 'package:flutter/material.dart';
 
 /// Central font registry — the single swap point for the three-role type system.
@@ -18,9 +19,9 @@ import 'package:flutter/material.dart';
 abstract final class CatchFonts {
   // -- Families (tunable — change here to re-skin the entire app) -------------
 
-  static const String serifFamily = 'Newsreader';
-  static const String sansFamily = 'Inter';
-  static const String monoFamily = 'IBM Plex Mono';
+  static const String serifFamily = GeneratedCatchFontFamilyTokens.serif;
+  static const String sansFamily = GeneratedCatchFontFamilyTokens.sans;
+  static const String monoFamily = GeneratedCatchFontFamilyTokens.mono;
 
   // -- Variable optical-size axis ranges (per the bundled TTFs) ---------------
   // Newsreader carries a wide opsz axis (the whole point of the choice);

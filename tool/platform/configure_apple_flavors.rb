@@ -4,23 +4,32 @@
 require 'fileutils'
 require 'xcodeproj'
 
-REPO_ROOT = File.expand_path('..', __dir__)
+REPO_ROOT = File.expand_path('../..', __dir__)
 
 FLAVORS = {
   'dev' => {
     bundle_id: 'com.catchdates.app.dev',
     app_name: 'Catch Dev',
-    firebase_env: 'dev'
+    firebase_env: 'dev',
+    app_icon: 'AppIcon-dev',
+    ios_url_scheme: 'app-1-619661127800-ios-e9456edea3f2427f077d8d',
+    maps_key_suffix: 'DEV'
   },
   'staging' => {
     bundle_id: 'com.catchdates.app.staging',
     app_name: 'Catch Staging',
-    firebase_env: 'staging'
+    firebase_env: 'staging',
+    app_icon: 'AppIcon-staging',
+    ios_url_scheme: 'app-1-822303414140-ios-6bae8cc0e1781e890c76f9',
+    maps_key_suffix: 'STAGING'
   },
   'prod' => {
     bundle_id: 'com.catchdates.app',
     app_name: 'Catch',
-    firebase_env: 'prod'
+    firebase_env: 'prod',
+    app_icon: 'AppIcon',
+    ios_url_scheme: 'app-1-574779808785-ios-49b1ce51418604b78ea5b0',
+    maps_key_suffix: 'PROD'
   }
 }.freeze
 
@@ -45,12 +54,14 @@ end
 
 def ensure_target_config(target, name, type, base_ref, build_settings, template_name: nil)
   config = target.build_configurations.find { |item| item.name == name }
-  config ||= target.add_build_configuration(name, type)
-  config.base_configuration_reference = base_ref if base_ref
-  if template_name
-    template = target.build_configurations.find { |item| item.name == template_name }
-    config.build_settings.merge!(template.build_settings) if template
+  if config.nil?
+    config = target.add_build_configuration(name, type)
+    if template_name
+      template = target.build_configurations.find { |item| item.name == template_name }
+      config.build_settings.merge!(template.build_settings) if template
+    end
   end
+  config.base_configuration_reference = base_ref if base_ref
   config.build_settings.merge!(build_settings)
   config
 end
@@ -86,6 +97,14 @@ def ensure_firebase_copy_phase(target, platform)
   SH
 end
 
+def aps_environment(mode, flavor)
+  mode == 'Release' && flavor == 'prod' ? 'production' : 'development'
+end
+
+def app_attest_environment(mode)
+  mode == 'Debug' ? 'development' : 'production'
+end
+
 def remove_static_firebase_resource(target)
   target.resources_build_phase.files.each do |build_file|
     next unless build_file.file_ref&.display_name == 'GoogleService-Info.plist'
@@ -111,6 +130,12 @@ def configure_ios
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{config_name.downcase}.xcconfig"
           #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.#{pod_config}.xcconfig"
           #include "Generated.xcconfig"
+          #include? "GoogleMapsKeys.xcconfig"
+          APS_ENVIRONMENT=#{aps_environment(mode, flavor)}
+          APP_ATTEST_ENVIRONMENT=#{app_attest_environment(mode)}
+          FIREBASE_IOS_URL_SCHEME=#{settings[:ios_url_scheme]}
+
+          GOOGLE_MAPS_IOS_API_KEY=$(GOOGLE_MAPS_IOS_API_KEY_#{settings[:maps_key_suffix]})
         CONFIG
       )
       base_ref = ensure_file_ref(project, 'Flutter', xcconfig)
@@ -123,6 +148,7 @@ def configure_ios
         {
           'PRODUCT_BUNDLE_IDENTIFIER' => settings[:bundle_id],
           'APP_DISPLAY_NAME' => settings[:app_name],
+          'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
           'FIREBASE_ENV' => settings[:firebase_env]
         },
         template_name: mode
@@ -187,6 +213,7 @@ def configure_macos
         {
           'PRODUCT_BUNDLE_IDENTIFIER' => settings[:bundle_id],
           'PRODUCT_NAME' => settings[:app_name],
+          'ASSETCATALOG_COMPILER_APPICON_NAME' => settings[:app_icon],
           'FIREBASE_ENV' => settings[:firebase_env]
         },
         template_name: mode

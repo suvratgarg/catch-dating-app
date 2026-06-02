@@ -293,9 +293,21 @@ export function profilePhotosForPersona(
 
 export function personaProfileProjection(catalog, options = {}) {
   assertValidPersonaCatalog(catalog, options);
-  const statusFilter = normalizeAssetStatusFilter(
-    options.assetStatuses ?? ["uploaded"]
-  );
+  if (!Object.prototype.hasOwnProperty.call(options, "assetStatuses") ||
+      options.assetStatuses === null) {
+    throw new Error(
+      "personaProfileProjection requires explicit assetStatuses; pass planned, generated, uploaded, or all."
+    );
+  }
+  if (
+    (Array.isArray(options.assetStatuses) && options.assetStatuses.length === 0) ||
+    (options.assetStatuses instanceof Set && options.assetStatuses.size === 0)
+  ) {
+    throw new Error(
+      "personaProfileProjection requires at least one asset status; pass planned, generated, uploaded, or all."
+    );
+  }
+  const statusFilter = normalizeAssetStatusFilter(options.assetStatuses);
   const personas = catalog.personas.map((persona) => {
     const profilePhotos = profilePhotosForPersona(persona, {
       assetStatuses: statusFilter,

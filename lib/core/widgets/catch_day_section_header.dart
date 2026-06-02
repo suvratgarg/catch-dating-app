@@ -37,7 +37,6 @@ class CatchDaySectionHeader extends StatelessWidget {
     final content = Padding(
       padding: padding,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Text(

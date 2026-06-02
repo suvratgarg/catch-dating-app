@@ -39,6 +39,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
@@ -109,7 +110,6 @@ final _profileHeroImage = FileImage(File('test/goldens/fixtures/portrait.jpg'));
 final _captureFixtures = salesDemoSyntheticFixtures;
 final _eventDetailEvent = buildEvent(
   id: 'event-detail-member',
-  clubId: 'club-1',
   startTime: DateTime(2026, 6, 12, 7),
   endTime: DateTime(2026, 6, 12, 8, 15),
   meetingPoint: 'Carter Road Amphitheatre',
@@ -124,7 +124,6 @@ final _eventDetailEvent = buildEvent(
       'A conversational coastal loop with regroup points, coffee after, and a host who keeps the pace social.',
 );
 final _eventDetailUser = buildUser(
-  uid: 'runner-1',
   name: 'Aanya Shah',
   email: 'aanya@example.com',
   phoneNumber: '+919870000001',
@@ -150,6 +149,41 @@ final _eventDetailPublicProfileRepository = FakePublicProfileRepository()
       ),
   ];
 
+EventDetailViewModel _eventDetailCaptureViewModel() {
+  return EventDetailViewModel(
+    event: _eventDetailEvent,
+    userProfile: _eventDetailUser,
+    reviews: [
+      buildReview(
+        eventId: _eventDetailEvent.id,
+        reviewerUserId: 'runner-2',
+        reviewerName: 'Neha',
+        comment: 'Warm hosting, clear route, and easy conversation.',
+        createdAt: DateTime(2026, 5, 20),
+      ),
+    ],
+    isAuthenticated: true,
+    isHost: false,
+    isSaved: true,
+    participation: null,
+  );
+}
+
+Iterable _eventDetailCaptureProviderOverrides() {
+  return [
+    eventDetailViewModelProvider(
+      _eventDetailEvent.id,
+    ).overrideWith((ref) => AsyncData(_eventDetailCaptureViewModel())),
+    paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+    eventParticipationRepositoryProvider.overrideWithValue(
+      _eventDetailParticipationRepository,
+    ),
+    publicProfileRepositoryProvider.overrideWithValue(
+      _eventDetailPublicProfileRepository,
+    ),
+  ];
+}
+
 const _memberDiscoveryCities = [
   CityData(
     name: 'mumbai',
@@ -173,7 +207,6 @@ final _memberDiscoveryClubs = [
     hostName: 'Mira',
     tags: const ['social run', 'coffee', 'beginner'],
     memberCount: 128,
-    rating: 4.8,
     reviewCount: 42,
     nextEventAt: DateTime(2026, 6, 1, 6, 30),
     nextEventLabel: 'Mon 6:30 AM',
@@ -213,7 +246,6 @@ final _memberDiscoveryEvents = [
     meetingPoint: 'Carter Road Amphitheatre',
     startingPointLat: 19.0706,
     startingPointLng: 72.8223,
-    distanceKm: 5,
     bookedCount: 18,
     capacityLimit: 24,
     description: 'A relaxed social loop with regroup points and coffee after.',
@@ -226,7 +258,6 @@ final _memberDiscoveryEvents = [
     startingPointLat: 19.0469,
     startingPointLng: 72.8194,
     distanceKm: 6,
-    bookedCount: 14,
     capacityLimit: 22,
     description: 'Morning miles for people who want conversation pace.',
   ),
@@ -388,7 +419,6 @@ final _postRunEvent = buildEvent(
   meetingPoint: 'Carter Road Amphitheatre',
   startingPointLat: 19.0706,
   startingPointLng: 72.8223,
-  distanceKm: 5,
   bookedCount: 22,
   checkedInCount: 19,
   capacityLimit: 24,
@@ -475,7 +505,6 @@ final _matchChatEvent = buildEvent(
   startingPointLat: 40.7421,
   startingPointLng: -74.0089,
   locationDetails: 'Meet by the south entrance benches',
-  distanceKm: 5,
   bookedCount: 18,
   checkedInCount: 16,
   capacityLimit: 22,
@@ -590,7 +619,6 @@ final _dashboardJoinedClub = _captureFixtures.captureClub(
   hostName: 'Mira',
   tags: const ['social run', 'coffee', 'beginner'],
   memberCount: 142,
-  rating: 4.8,
   reviewCount: 48,
   nextEventAt: DateTime(2026, 6, 4, 6, 30),
   nextEventLabel: 'Thu 6:30 AM',
@@ -615,10 +643,7 @@ final _dashboardSignedUpEvent = _captureFixtures.captureEvent(
   startTime: DateTime(2026, 6, 4, 6, 30),
   endTime: DateTime(2026, 6, 4, 7, 40),
   meetingPoint: 'Bandra Fort gate',
-  activityKind: ActivityKind.socialRun,
-  distanceKm: 5,
   bookedCount: 18,
-  checkedInCount: 0,
   capacityLimit: 24,
   description: 'A conversational dawn loop with coffee after.',
 );
@@ -630,7 +655,6 @@ final _dashboardHostEvent = _captureFixtures.captureEvent(
   meetingPoint: 'Pali Village Cafe',
   activityKind: ActivityKind.dinner,
   distanceKm: 0,
-  bookedCount: 14,
   checkedInCount: 3,
   capacityLimit: 16,
   priceInPaise: 120000,
@@ -661,7 +685,6 @@ final _dashboardAttendedEvents = [
     startTime: DateTime(2026, 5, 30, 7),
     endTime: DateTime(2026, 5, 30, 8, 5),
     meetingPoint: 'Carter Road Amphitheatre',
-    distanceKm: 5,
     bookedCount: 20,
     checkedInCount: 18,
     capacityLimit: 24,
@@ -745,7 +768,6 @@ final _hostEvent = _captureFixtures.captureEvent(
   meetingPoint: 'Pali Village Cafe',
   activityKind: ActivityKind.dinner,
   distanceKm: 0,
-  bookedCount: 14,
   checkedInCount: 7,
   waitlistedCount: 3,
   capacityLimit: 16,
@@ -853,7 +875,6 @@ final _swipeHubEvent = buildEvent(
   startTime: DateTime.now().subtract(const Duration(hours: 10)),
   endTime: DateTime.now().subtract(const Duration(hours: 9)),
   meetingPoint: 'Carter Road Amphitheatre',
-  distanceKm: 5,
   bookedCount: 22,
   checkedInCount: 19,
   capacityLimit: 24,
@@ -897,7 +918,6 @@ final _eventSuccessCompanionEvent = buildEvent(
   startTime: DateTime(2026, 5, 31, 9, 20),
   endTime: DateTime(2026, 5, 31, 10, 30),
   meetingPoint: 'Bandra Fort gate',
-  distanceKm: 5,
   bookedCount: 18,
   checkedInCount: 0,
   capacityLimit: 22,
@@ -911,7 +931,6 @@ final _eventSuccessCompanionPlan = EventSuccessPlan.defaultForEvent(
 final _eventSuccessCompanionParticipation = buildEventParticipation(
   event: _eventSuccessCompanionEvent,
   uid: _captureViewerUid,
-  status: EventParticipationStatus.signedUp,
   createdAt: DateTime(2026, 5, 29, 9),
 );
 
@@ -922,7 +941,6 @@ final _reviewHistoryEvents = [
     startTime: DateTime(2026, 5, 24, 7),
     endTime: DateTime(2026, 5, 24, 8, 10),
     meetingPoint: 'Carter Road Amphitheatre',
-    distanceKm: 5,
     bookedCount: 18,
     checkedInCount: 16,
     capacityLimit: 22,
@@ -936,7 +954,6 @@ final _reviewHistoryEvents = [
     meetingPoint: 'Pali Village Cafe',
     activityKind: ActivityKind.dinner,
     distanceKm: 0,
-    bookedCount: 14,
     checkedInCount: 12,
     capacityLimit: 16,
     priceInPaise: 120000,
@@ -969,7 +986,6 @@ final _eventRecapEvent = _captureFixtures.captureEvent(
   startTime: DateTime.now().subtract(const Duration(hours: 11)),
   endTime: DateTime.now().subtract(const Duration(hours: 10)),
   meetingPoint: 'Carter Road Amphitheatre',
-  distanceKm: 5,
   bookedCount: 12,
   checkedInCount: 10,
   capacityLimit: 18,
@@ -1064,40 +1080,32 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       'dashboardEventDetailScreen',
     ],
     device: CaptureDevice.reviewTall,
-    providerOverrides: [
-      eventDetailViewModelProvider(_eventDetailEvent.id).overrideWith(
-        (ref) => AsyncData(
-          EventDetailViewModel(
-            event: _eventDetailEvent,
-            userProfile: _eventDetailUser,
-            reviews: [
-              buildReview(
-                id: 'review-1',
-                eventId: _eventDetailEvent.id,
-                reviewerUserId: 'runner-2',
-                reviewerName: 'Neha',
-                comment: 'Warm hosting, clear route, and easy conversation.',
-                createdAt: DateTime(2026, 5, 20),
-              ),
-            ],
-            isAuthenticated: true,
-            isHost: false,
-            isSaved: true,
-            participation: null,
-          ),
-        ),
-      ),
-      paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
-      eventParticipationRepositoryProvider.overrideWithValue(
-        _eventDetailParticipationRepository,
-      ),
-      publicProfileRepositoryProvider.overrideWithValue(
-        _eventDetailPublicProfileRepository,
-      ),
-    ],
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
     builder: (context) => EventDetailScreen(
       clubId: _eventDetailEvent.clubId,
       eventId: _eventDetailEvent.id,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_member_ticket',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => EventDetailScreen(
+      clubId: _eventDetailEvent.clubId,
+      eventId: _eventDetailEvent.id,
+      presentationMode: EventDetailPresentationMode.ticket,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'event_detail_member_spotlight',
+    routeIds: const <String>['eventDetailScreen'],
+    device: CaptureDevice.reviewTall,
+    providerOverrides: _eventDetailCaptureProviderOverrides(),
+    builder: (context) => EventDetailScreen(
+      clubId: _eventDetailEvent.clubId,
+      eventId: _eventDetailEvent.id,
+      presentationMode: EventDetailPresentationMode.spotlightDark,
     ),
   ),
   ScreenCaptureEntry(

@@ -82,14 +82,12 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           children: [
             CatchBadge(
               label: pack.title,
-              tone: CatchBadgeTone.neutral,
               icon: pack.custom
                   ? CatchIcons.editNoteRounded
                   : CatchIcons.styleOutlined,
             ),
             CatchBadge(
               label: '${pack.questions.length} questions',
-              tone: CatchBadgeTone.neutral,
               icon: CatchIcons.quizOutlined,
             ),
           ],
@@ -175,7 +173,7 @@ class _CustomQuestionnaireSheetState extends State<_CustomQuestionnaireSheet> {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: maxHeight),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
+          padding: CatchInsets.contentHorizontal,
           child: _CustomQuestionnaireFields(
             value: _value,
             enabled: true,
@@ -206,7 +204,7 @@ class _QuestionnairePreview extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final option in question.options)
-                CatchBadge(label: option.label, tone: CatchBadgeTone.neutral),
+                CatchBadge(label: option.label),
             ],
           ),
           if (question != questions.take(3).last) gapH12,

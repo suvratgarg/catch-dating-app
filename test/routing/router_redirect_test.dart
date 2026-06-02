@@ -18,13 +18,13 @@ UserProfile _completeUser() => UserProfile(
       position: 0,
       url: 'https://example.test/one.jpg',
       storagePath: 'test-profiles/user-1/0.jpg',
-      now: DateTime(2026, 1, 1),
+      now: DateTime(2026),
     ),
     ProfilePhoto.uploaded(
       position: 1,
       url: 'https://example.test/two.jpg',
       storagePath: 'test-profiles/user-1/1.jpg',
-      now: DateTime(2026, 1, 1),
+      now: DateTime(2026),
     ),
   ],
   profilePrompts: [
@@ -47,7 +47,6 @@ UserProfile _identityIncompleteUser() => UserProfile(
   gender: Gender.man,
   phoneNumber: '+910000000000',
   profileComplete: false,
-  interestedInGenders: const [],
 );
 
 UserProfile _bookingReadyUser() =>

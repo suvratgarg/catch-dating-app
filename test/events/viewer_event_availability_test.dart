@@ -117,7 +117,7 @@ void main() {
     });
 
     test('cohort waitlistable events surface waitlist availability', () {
-      final user = buildUser(gender: Gender.man);
+      final user = buildUser();
       final event = buildEvent(
         startTime: now.add(const Duration(days: 1)),
         eventPolicy: EventPolicyBundle.fixedCohortCapsEvent(

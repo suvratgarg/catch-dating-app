@@ -84,7 +84,7 @@ class _WeekMarker extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(_dateMarkerRadius),
           child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+            padding: CatchInsets.contentVerticalCompact,
             decoration: BoxDecoration(
               color: active ? t.ink : Colors.transparent,
               borderRadius: BorderRadius.circular(_dateMarkerRadius),

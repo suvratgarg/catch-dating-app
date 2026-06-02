@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-const _tilePadding = EdgeInsets.symmetric(vertical: CatchSpacing.s3);
+const _tilePadding = CatchInsets.contentVertical;
 const _profileInfoTrailingWidth = 40.0;
 
 class ProfileInfoTile extends StatelessWidget {

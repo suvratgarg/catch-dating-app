@@ -14,7 +14,7 @@ class EmptyHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      padding: CatchInsets.contentRelaxed,
       radius: CatchRadius.heroCard,
       gradient: t.heroGrad,
       clipBehavior: Clip.antiAlias,

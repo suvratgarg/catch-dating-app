@@ -123,6 +123,28 @@
         "Legacy spacing compatibility usage is either migrated or intentionally documented"
       ]
     },
+    "UI-LINT-001": {
+      "title": "Codify audited UI invariants as analyzer plugin rules",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "ui_architecture",
+        "version": "1.2.0"
+      },
+      "applies_to": [
+        "analysis_options.yaml",
+        "packages/catch_ui_lints/**",
+        "tool/check_catch_ui_lints.sh",
+        "tool/check_riverpod_lint.sh",
+        ".github/workflows/**",
+        "lib/**",
+        "lib/core/widgets/**"
+      ],
+      "instruction": "When a UI surface invariant is deterministic, move it into packages/catch_ui_lints as an analysis_server_plugin diagnostic that runs across handwritten lib/** by default. Exempt only semantic source-of-truth folders such as lib/core/theme/** and generated code. Do not add new custom_lint rules. Keep broad scanners only for triage and migration discovery.",
+      "sunset_when": [
+        "All high-value UI scanner findings either migrate into analyzer plugin diagnostics or are documented as intentionally broad triage queues",
+        "New audited screens stay covered by strict UI diagnostics without custom one-off scripts"
+      ]
+    },
     "RESPONSIVE-LAYOUT-001": {
       "title": "Avoid hardcoded widget dimensions for content-sized UI",
       "status": "active",

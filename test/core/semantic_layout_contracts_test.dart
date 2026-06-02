@@ -1,0 +1,142 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  test('semantic layout tokens map to the intended primitive values', () {
+    expect(CatchGaps.inline, CatchSpacing.s2);
+    expect(CatchGaps.related, CatchSpacing.s3);
+    expect(CatchGaps.formField, CatchSpacing.s4);
+    expect(CatchGaps.section, CatchSpacing.s6);
+    expect(CatchGaps.majorSection, CatchSpacing.s8);
+
+    expect(
+      CatchInsets.formStepBody,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s4,
+        CatchSpacing.s5,
+        CatchSpacing.s6,
+      ),
+    );
+    expect(
+      CatchInsets.formStepBodyRelaxed,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s4,
+        CatchSpacing.s5,
+        CatchSpacing.s8,
+      ),
+    );
+    expect(CatchInsets.cardContent, const EdgeInsets.all(CatchSpacing.s4));
+    expect(CatchInsets.cardContentDense, const EdgeInsets.all(CatchSpacing.s3));
+    expect(CatchInsets.content, const EdgeInsets.all(CatchSpacing.s4));
+    expect(CatchInsets.contentDense, const EdgeInsets.all(CatchSpacing.s3));
+    expect(
+      CatchInsets.pageHorizontal,
+      const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+    );
+    expect(
+      CatchInsets.pageBodyTight,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+        CatchSpacing.s5,
+        CatchSpacing.s6,
+      ),
+    );
+    expect(
+      CatchInsets.pageHeaderBody,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s4,
+        CatchSpacing.s5,
+        CatchSpacing.s3,
+      ),
+    );
+    expect(
+      CatchInsets.sectionHeader,
+      const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.micro14,
+        CatchSpacing.s5,
+        CatchSpacing.s2,
+      ),
+    );
+    expect(
+      CatchInsets.compactControlContent,
+      const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s2,
+      ),
+    );
+    expect(
+      CatchInsets.chatBubbleContent,
+      const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.micro14,
+        vertical: CatchSpacing.micro10,
+      ),
+    );
+    expect(
+      CatchInsets.chatBubbleGroupEnd,
+      const EdgeInsets.only(bottom: CatchSpacing.s3),
+    );
+  });
+
+  testWidgets('semantic body wrappers apply their default inset roles', (
+    tester,
+  ) async {
+    const pageChildKey = Key('page-body-child');
+    const formChildKey = Key('form-body-child');
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Column(
+          children: [
+            CatchPageBody(child: SizedBox(key: pageChildKey)),
+            CatchFormStepBody(child: SizedBox(key: formChildKey)),
+          ],
+        ),
+      ),
+    );
+
+    final pagePadding = tester.widget<Padding>(
+      find.ancestor(
+        of: find.byKey(pageChildKey),
+        matching: find.byType(Padding),
+      ),
+    );
+    final formPadding = tester.widget<Padding>(
+      find.ancestor(
+        of: find.byKey(formChildKey),
+        matching: find.byType(Padding),
+      ),
+    );
+
+    expect(pagePadding.padding, CatchInsets.pageBody);
+    expect(formPadding.padding, CatchInsets.formStepBody);
+  });
+
+  testWidgets('CatchSectionList uses the semantic section gap by default', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: CatchSectionList(
+          children: [Text('First section'), Text('Second section')],
+        ),
+      ),
+    );
+
+    final gap = tester.widget<SizedBox>(
+      find.byWidgetPredicate(
+        (widget) => widget is SizedBox && widget.height == CatchGaps.section,
+      ),
+    );
+
+    expect(gap.height, CatchGaps.section);
+  });
+}

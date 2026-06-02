@@ -221,7 +221,6 @@ class ImageUploadRepository {
     storagePath:
         'users/$uid/photos/${index}_${DateTime.now().millisecondsSinceEpoch}',
     image: image,
-    purpose: ImageUploadPurpose.profilePhoto,
   );
 
   Future<UploadedImage> uploadUserProfilePhoto({
@@ -233,7 +232,6 @@ class ImageUploadRepository {
     return uploadWithMetadata(
       storagePath: 'users/$uid/photos/${index}_$millis',
       image: image,
-      purpose: ImageUploadPurpose.profilePhoto,
     );
   }
 

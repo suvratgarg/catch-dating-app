@@ -78,7 +78,6 @@ void main() {
     test('reportUser omits null optional payload fields', () async {
       await repository.reportUser(
         targetUserId: 'reported-1',
-        source: 'profile',
         reasonCode: 'harassment',
       );
 

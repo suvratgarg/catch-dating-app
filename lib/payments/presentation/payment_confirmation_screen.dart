@@ -84,7 +84,6 @@ class _PendingCheckoutBody extends ConsumerWidget {
           currency: payment.currency,
           eventId: payment.eventId,
           provider: data.provider,
-          status: PaymentStatus.completed,
           checkoutUrl: data.checkoutUrl,
         ),
         event: event,
@@ -100,7 +99,7 @@ class _PendingCheckoutBody extends ConsumerWidget {
       backgroundColor: t.bg,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(CatchSpacing.s5),
+          padding: CatchInsets.contentRelaxed,
           children: [
             Center(
               child: ConstrainedBox(
@@ -132,7 +131,7 @@ class _PendingCheckoutBody extends ConsumerWidget {
                     ),
                     gapH20,
                     CatchSurface(
-                      padding: const EdgeInsets.all(CatchSpacing.s4),
+                      padding: CatchInsets.content,
                       borderColor: t.line,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,11 +301,8 @@ class _ActionTile extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(
-        vertical: CatchSpacing.s3,
-        horizontal: CatchSpacing.s2,
-      ),
-      radius: CatchRadius.sm + 4,
+      padding: CatchInsets.statChipContent,
+      radius: CatchRadius.interactiveTile,
       borderColor: t.line,
       child: Column(
         children: [
@@ -331,7 +327,7 @@ class _HeadsUp extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       tone: CatchSurfaceTone.primarySoft,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       borderWidth: 0,
       child: Column(
@@ -369,7 +365,7 @@ class _ReferralBanner extends ConsumerWidget {
       onTap: () => unawaited(
         showEventShareCardSheet(context, event: event, share: share),
       ),
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       radius: CatchRadius.md,
       borderColor: t.primary.withValues(
         alpha: CatchOpacity.paymentReferralBorder,

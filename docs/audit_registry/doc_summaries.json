@@ -1,6 +1,6 @@
 {
-  "version": "4.1.6",
-  "updated": "2026-05-25",
+  "version": "4.1.7",
+  "updated": "2026-06-02",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -310,6 +310,20 @@
       ],
       "skip_when": [
         "No CI, deploy, release, or environment behavior is touched"
+      ]
+    },
+    "docs/web_surface_architecture.md": {
+      "purpose": "Domain/subdomain ownership, Firebase Hosting targets, stack boundaries for marketing/app/admin, marketing CI/CD, and future host-portal placement.",
+      "read_when": [
+        "Changing website stacks",
+        "Changing Firebase Hosting targets or custom domains",
+        "Changing marketing website CI/CD",
+        "Planning app, marketing, admin, or host dashboard subdomains",
+        "Deciding whether host tools belong under admin, app, or a host portal"
+      ],
+      "skip_when": [
+        "Only changing Flutter mobile UI behavior",
+        "Only changing backend data contracts with no web routing impact"
       ]
     },
     "docs/location_stack_plan.md": {

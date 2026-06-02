@@ -16,6 +16,13 @@ typedef SuvbotActionCallback = Future<void> Function(SuvbotActionItem action);
 typedef SuvbotTextActionCallback =
     Future<void> Function(SuvbotActionItem action, String text);
 
+const EdgeInsets _demoActionSheetPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s3,
+  0,
+  CatchSpacing.s3,
+  CatchSpacing.s4,
+);
+
 class SuvbotActionBar extends StatelessWidget {
   const SuvbotActionBar({
     super.key,
@@ -370,20 +377,12 @@ Future<void> _showResetSheet(
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s3,
-            0,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-          ),
+          padding: _demoActionSheetPadding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Reset demo state',
-                style: CatchTextStyles.titleL(context),
-              ),
+              Text('Reset demo state', style: CatchTextStyles.titleL(context)),
               const SizedBox(height: CatchSpacing.s1),
               Text(
                 'These actions only touch demo-owned data.',
@@ -471,11 +470,8 @@ class _MatchTesterSheetState extends State<_MatchTesterSheet> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
-        CatchSpacing.s3,
-        0,
-        CatchSpacing.s3,
-        MediaQuery.viewInsetsOf(context).bottom + CatchSpacing.s4,
+      padding: _demoActionSheetPadding.copyWith(
+        bottom: MediaQuery.viewInsetsOf(context).bottom + CatchSpacing.s4,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

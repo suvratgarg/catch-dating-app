@@ -13,8 +13,6 @@ import 'clubs_test_helpers.dart';
 void main() {
   testWidgets('renders an editorial club share card', (tester) async {
     final club = buildClub(
-      name: 'Stride Social',
-      area: 'Bandra',
       memberCount: 24,
       tags: const ['run club', 'singles', 'coffee'],
     );
@@ -37,12 +35,7 @@ void main() {
     tester,
   ) async {
     ShareParams? sharedParams;
-    final club = buildClub(
-      id: 'club-1',
-      name: 'Stride Social',
-      area: 'Bandra',
-      memberCount: 24,
-    );
+    final club = buildClub(memberCount: 24);
 
     await tester.pumpWidget(
       ProviderScope(

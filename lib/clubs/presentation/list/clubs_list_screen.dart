@@ -152,8 +152,6 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
             controller: _sheetController,
             initialChildSize: _exploreSheetFullSize,
             minChildSize: _exploreSheetPeekSize,
-            maxChildSize: _exploreSheetFullSize,
-            snap: false,
             // Use a single, stable scrollable across all snap states. The
             // lead sliver changes from summary -> selected card -> nearby
             // rail, but the sheet controller remains bound to the same
@@ -244,7 +242,6 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
       await _snapTo(
         _exploreSheetMapSize,
         duration: _exploreMotionRevealSettleDuration,
-        curve: CatchMotion.springCurve,
       );
     } finally {
       _settlingSheet = false;
@@ -476,12 +473,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
       AsyncLoading() => const <Widget>[
         SliverToBoxAdapter(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              CatchSpacing.s4,
-              CatchSpacing.s5,
-              CatchSpacing.s6,
-            ),
+            padding: CatchInsets.pageBody,
             child: _SheetSkeletonList(),
           ),
         ),
@@ -652,10 +644,7 @@ class _FloatingActionPill extends StatelessWidget {
       padding: EdgeInsets.zero,
       onTap: onPressed,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s4,
-          vertical: CatchSpacing.s3,
-        ),
+        padding: CatchInsets.listBody,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -47,7 +47,7 @@ void main(List<String> args) {
 
   final framed = _renderDeviceFrame(screenshot, spec);
   final outputFile = File(outputPath)..parent.createSync(recursive: true);
-  outputFile.writeAsBytesSync(img.encodePng(framed, level: 6), flush: true);
+  outputFile.writeAsBytesSync(img.encodePng(framed), flush: true);
   stdout.writeln('Wrote ${outputFile.path}');
 }
 

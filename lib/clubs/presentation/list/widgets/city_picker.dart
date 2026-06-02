@@ -251,10 +251,7 @@ class _CityOptionTile extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s4,
-              vertical: CatchSpacing.s3,
-            ),
+            padding: CatchInsets.listBody,
             child: Row(
               children: [
                 Expanded(
@@ -267,7 +264,11 @@ class _CityOptionTile extends StatelessWidget {
                   ),
                 ),
                 if (selected)
-                  Icon(CatchIcons.checkRounded, size: CatchIcon.md, color: t.primary),
+                  Icon(
+                    CatchIcons.checkRounded,
+                    size: CatchIcon.md,
+                    color: t.primary,
+                  ),
               ],
             ),
           ),

@@ -273,8 +273,6 @@ void main() {
       final defaults = EventSuccessDefaults(
         enabled: true,
         selectedModuleIds: [EventSuccessModuleCatalog.checkIn.id],
-        wingmanRequestsEnabled: true,
-        contextualOpenersEnabled: true,
       ).normalizedForActivity(ActivityKind.socialRun);
 
       expect(

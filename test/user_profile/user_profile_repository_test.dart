@@ -79,7 +79,7 @@ void main() {
     test(
       'updateProfilePhotos delegates to the profile update callable',
       () async {
-        final createdAt = DateTime.utc(2026, 1, 1);
+        final createdAt = DateTime.utc(2026);
         final photos = [
           ProfilePhoto.uploaded(
             position: 0,

@@ -21,7 +21,7 @@ void main() {
       () async {
         await _seedPayment(
           firestore,
-          buildPayment(id: 'payment-old', createdAt: DateTime(2025, 1, 1)),
+          buildPayment(id: 'payment-old', createdAt: DateTime(2025)),
         );
         await _seedPayment(
           firestore,
@@ -87,7 +87,7 @@ void main() {
       () async {
         await _seedPayment(
           firestore,
-          buildPayment(id: 'old', createdAt: DateTime(2025, 1, 1)),
+          buildPayment(id: 'old', createdAt: DateTime(2025)),
         );
         await _seedPayment(
           firestore,
@@ -154,7 +154,7 @@ void main() {
       'selectLatestSuccessfulPayment filters failed sign-ups and sorts newest first',
       () {
         final payment = selectLatestSuccessfulPayment([
-          buildPayment(id: 'old', createdAt: DateTime(2025, 1, 1)),
+          buildPayment(id: 'old', createdAt: DateTime(2025)),
           buildPayment(
             id: 'ignored',
             createdAt: DateTime(2025, 1, 5),

@@ -37,13 +37,11 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           children: [
             CatchBadge(
               label: '${value.unitSize} per ${value.unitKind.singularLabel}',
-              tone: CatchBadgeTone.neutral,
               icon: CatchIcons.groups2Outlined,
             ),
             CatchBadge(
               label:
                   '$estimatedUnitCount ${value.unitKind.label.toLowerCase()}',
-              tone: CatchBadgeTone.neutral,
               icon: CatchIcons.gridViewRounded,
             ),
           ],

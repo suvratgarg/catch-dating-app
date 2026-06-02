@@ -4,7 +4,6 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -51,7 +50,7 @@ Club buildClub({
     ownerUserId: ownerUserId,
     hostUserIds: hostUserIds ?? const [],
     hostProfiles: hostProfiles ?? const [],
-    createdAt: createdAt ?? DateTime(2025, 1, 1),
+    createdAt: createdAt ?? DateTime(2025),
     imageUrl: imageUrl,
     profileImageUrl: profileImageUrl,
     tags: tags,
@@ -87,7 +86,7 @@ UserProfile buildUser({
           position: indexed.$1,
           url: indexed.$2,
           storagePath: 'test-profiles/$uid/${indexed.$1}.jpg',
-          now: DateTime(2026, 1, 1),
+          now: DateTime(2026),
         ),
     ],
     activityPreferences: const ActivityPreferences(
@@ -121,7 +120,6 @@ Event buildEvent({
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
-    constraints: const EventConstraints(),
   );
 }
 

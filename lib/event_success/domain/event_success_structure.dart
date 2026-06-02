@@ -104,31 +104,25 @@ class EventSuccessStructureConfig {
         unitKind: EventSuccessUnitKind.wholeGroup,
         unitSize: safeTarget,
         unitCount: 1,
-        rotationIntervalMinutes: null,
       ),
       EventInteractionModel.pairedRotations =>
         const EventSuccessStructureConfig(
           unitKind: EventSuccessUnitKind.pairs,
           unitSize: 2,
-          unitCount: null,
           rotationIntervalMinutes: 15,
         ),
       EventInteractionModel.teamRotations => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.teams,
         unitSize: 5,
-        unitCount: null,
-        rotationIntervalMinutes: null,
       ),
       EventInteractionModel.seatedTable => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.tables,
         unitSize: 4,
-        unitCount: null,
         rotationIntervalMinutes: 30,
       ),
       EventInteractionModel.freeFormMixer => const EventSuccessStructureConfig(
         unitKind: EventSuccessUnitKind.pairs,
         unitSize: 2,
-        unitCount: null,
         rotationIntervalMinutes: 15,
       ),
       EventInteractionModel.hostLedProgram ||
@@ -136,7 +130,6 @@ class EventSuccessStructureConfig {
         unitKind: EventSuccessUnitKind.wholeGroup,
         unitSize: safeTarget,
         unitCount: 1,
-        rotationIntervalMinutes: null,
       ),
     };
   }

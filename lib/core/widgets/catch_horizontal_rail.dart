@@ -48,7 +48,6 @@ class CatchHorizontalRail extends StatelessWidget {
       children: [
         SectionHeader(
           title: title,
-          uppercase: false,
           titleStyle: CatchTextStyles.titleL(context),
           padding: headerPadding,
         ),

@@ -1,5 +1,13 @@
 part of '../event_success_live_reveal_card.dart';
 
+const EdgeInsets _revealBeatPadding = EdgeInsets.symmetric(
+  horizontal: CatchSpacing.s2,
+  vertical: CatchSpacing.s2,
+);
+const EdgeInsets _revealAssignmentRowGap = EdgeInsets.only(
+  bottom: CatchSpacing.s2,
+);
+
 class _CountdownNumber extends StatelessWidget {
   const _CountdownNumber({required this.value, required this.caption});
 
@@ -18,10 +26,7 @@ class _CountdownNumber extends StatelessWidget {
         borderColor: t.surface.withValues(
           alpha: CatchOpacity.revealSurfaceBorder,
         ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s4,
-          vertical: CatchSpacing.s3,
-        ),
+        padding: CatchInsets.listBody,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -173,7 +178,7 @@ class _AttendeeCountdown extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(CatchSpacing.s4),
+              padding: CatchInsets.content,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -196,7 +201,6 @@ class _AttendeeCountdown extends StatelessWidget {
                       ),
                       CatchBadge(
                         label: kind.label,
-                        tone: CatchBadgeTone.neutral,
                         icon: kind.icon,
                         backgroundColor: t.gold.withValues(
                           alpha: CatchOpacity.revealSurfaceBorder,
@@ -414,7 +418,6 @@ class _CountdownBeatPill extends StatelessWidget {
     final t = CatchTokens.of(context);
     final color = active || complete ? t.gold : t.ink;
     return CatchSurface(
-      duration: CatchMotion.fast,
       radius: CatchRadius.pill,
       backgroundColor: color.withValues(
         alpha: active
@@ -426,10 +429,7 @@ class _CountdownBeatPill extends StatelessWidget {
             ? CatchOpacity.revealBeatBorderActive
             : CatchOpacity.revealBeatBorderInactive,
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s2,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: _revealBeatPadding,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -493,7 +493,7 @@ class _CountdownCuePill extends StatelessWidget {
       radius: CatchRadius.sm,
       backgroundColor: t.ink.withValues(alpha: CatchOpacity.revealCueFill),
       borderColor: t.ink.withValues(alpha: CatchOpacity.revealCueBorder),
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -689,7 +689,7 @@ class _CountdownDialPainter extends CustomPainter {
               CatchOpacity.revealDialInnerGlowBase +
               intensity * CatchOpacity.revealDialInnerGlowUrgency,
         )
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 20),
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20),
     );
   }
 
@@ -721,7 +721,7 @@ class _WaitingRevealCue extends StatelessWidget {
       borderColor: t.primary.withValues(
         alpha: CatchOpacity.revealSurfaceBorder,
       ),
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       child: Row(
         children: [
           Icon(CatchIcons.lockClockRounded, color: t.primary),
@@ -769,20 +769,17 @@ class _VisiblePodAssignment extends StatelessWidget {
         children: [
           CatchBadge(
             label: '${assignment.peerUids.length + 1} people',
-            tone: CatchBadgeTone.neutral,
             icon: CatchIcons.groupOutlined,
           ),
           if (peersLoading)
             CatchBadge(
               label: 'Loading podmates',
-              tone: CatchBadgeTone.neutral,
               icon: CatchIcons.hourglassEmptyRounded,
             )
           else
             for (final profile in peerProfiles)
               CatchBadge(
                 label: profile.name,
-                tone: CatchBadgeTone.neutral,
                 icon: CatchIcons.personOutlineRounded,
               ),
         ],
@@ -807,7 +804,6 @@ class _VisibleRotationSlots extends StatelessWidget {
     if (peersLoading) {
       return CatchBadge(
         label: 'Loading partners',
-        tone: CatchBadgeTone.neutral,
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
@@ -842,7 +838,6 @@ class _VisibleGroupRotationSlots extends StatelessWidget {
     if (peersLoading) {
       return CatchBadge(
         label: 'Loading group members',
-        tone: CatchBadgeTone.neutral,
         icon: CatchIcons.hourglassEmptyRounded,
       );
     }
@@ -868,7 +863,7 @@ class _AssignmentUnlockedShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s3),
+      padding: CatchInsets.contentDense,
       radius: CatchRadius.sm,
       backgroundColor: t.success.withValues(
         alpha: CatchOpacity.revealGradientStart,
@@ -907,11 +902,11 @@ class _RevealGroupSlotRow extends StatelessWidget {
         .whereType<String>()
         .toList(growable: false);
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _revealAssignmentRowGap,
       child: CatchSurface(
         tone: CatchSurfaceTone.raised,
         borderColor: t.line,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -928,7 +923,6 @@ class _RevealGroupSlotRow extends StatelessWidget {
                 ),
                 CatchBadge(
                   label: slot.unitLabel,
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.tableRestaurantOutlined,
                 ),
               ],
@@ -947,19 +941,16 @@ class _RevealGroupSlotRow extends StatelessWidget {
               children: [
                 CatchBadge(
                   label: '${slot.peerUids.length + 1} people',
-                  tone: CatchBadgeTone.neutral,
                   icon: CatchIcons.groupOutlined,
                 ),
                 for (final name in peerNames)
                   CatchBadge(
                     label: name,
-                    tone: CatchBadgeTone.neutral,
                     icon: CatchIcons.personOutlineRounded,
                   ),
                 if (peerNames.isEmpty)
                   CatchBadge(
                     label: 'Names loading',
-                    tone: CatchBadgeTone.neutral,
                     icon: CatchIcons.hourglassEmptyRounded,
                   ),
               ],
@@ -984,11 +975,11 @@ class _RevealSlotRow extends StatelessWidget {
         '${TimeOfDay.fromDateTime(slot.startsAt).format(context)}-'
         '${TimeOfDay.fromDateTime(slot.endsAt).format(context)}';
     return Padding(
-      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      padding: _revealAssignmentRowGap,
       child: CatchSurface(
         tone: CatchSurfaceTone.raised,
         borderColor: t.line,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
+        padding: CatchInsets.contentDense,
         child: Row(
           children: [
             CatchBadge(

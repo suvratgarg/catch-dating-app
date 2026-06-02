@@ -204,8 +204,8 @@ void main() {
         const LocationPickerScreen(loadMapTiles: false),
         overrides: [
           placesRepositoryProvider.overrideWithValue(
-            _FakePlacesRepository(
-              suggestions: const [
+            const _FakePlacesRepository(
+              suggestions: [
                 PlaceAutocompleteSuggestion(
                   placeId: 'cubbon-park',
                   description: 'Cubbon Park, Bengaluru, Karnataka',
@@ -213,7 +213,7 @@ void main() {
                   secondaryText: 'Bengaluru, Karnataka',
                 ),
               ],
-              placeDetails: const PlaceDetails(
+              placeDetails: PlaceDetails(
                 placeId: 'cubbon-park',
                 displayName: 'Cubbon Park',
                 formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',

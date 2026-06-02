@@ -118,10 +118,7 @@ void main() {
           id: 'event-early',
           startTime: firstEventStart,
           meetingPoint: 'Carter Road Promenade',
-          distanceKm: 5,
-          pace: PaceLevel.easy,
           bookedCount: 1,
-          capacityLimit: 20,
         ),
       ];
 
@@ -172,7 +169,6 @@ void main() {
         id: 'signed-up-event',
         startTime: now.add(const Duration(days: 2)),
         meetingPoint: 'Booked Promenade',
-        distanceKm: 5,
         bookedCount: 1,
       );
       final savedFutureEvent = buildEvent(
@@ -232,8 +228,6 @@ void main() {
         startTime: now.subtract(const Duration(days: 4, hours: -6)),
         meetingPoint: 'Old Beach',
         eventFormat: _eventFormat('Old Beach'),
-        distanceKm: 5,
-        pace: PaceLevel.easy,
       );
       final futureEvent = buildEvent(
         id: 'future-event',
@@ -273,11 +267,8 @@ void main() {
           startTime: DateTime(
             now.year,
             now.month,
-            1,
           ).subtract(const Duration(days: 4)).add(const Duration(hours: 7)),
           meetingPoint: 'Past Month Park',
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         );
 
         await _pumpCalendar(
@@ -312,8 +303,6 @@ void main() {
           startTime: now.add(Duration(days: index + 1)),
           meetingPoint: 'Future Event $index',
           eventFormat: _eventFormat('Future Event $index'),
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         ),
       );
       final targetEventLabel = events.last.title;
@@ -359,8 +348,6 @@ void main() {
           startTime: monday.add(Duration(days: index, hours: 7)),
           meetingPoint: 'Week Event $index',
           eventFormat: _eventFormat('Week Event $index'),
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
@@ -399,8 +386,6 @@ void main() {
           id: 'expand-event',
           startTime: selectedDate.add(const Duration(hours: 7)),
           meetingPoint: 'Expandable Start',
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         );
         final firstOfMonth = DateTime(selectedDate.year, selectedDate.month);
 
@@ -451,8 +436,6 @@ void main() {
           id: 'anchor-event',
           startTime: anchor.add(const Duration(hours: 7)),
           meetingPoint: 'Anchor Start',
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         );
 
         await _pumpCalendar(
@@ -496,8 +479,6 @@ void main() {
         id: 'future-event',
         startTime: futureAnchor.add(const Duration(hours: 7)),
         meetingPoint: 'Future Start',
-        distanceKm: 5,
-        pace: PaceLevel.easy,
       );
 
       await _pumpCalendar(
@@ -543,8 +524,6 @@ void main() {
           startTime: monday.add(Duration(days: index, hours: 7)),
           meetingPoint: 'Sticky Week Event $index',
           eventFormat: _eventFormat('Sticky Week Event $index'),
-          distanceKm: 5,
-          pace: PaceLevel.easy,
         ),
       );
       final targetDate = DateUtils.dateOnly(events.last.startTime);
@@ -583,16 +562,12 @@ void main() {
       'opens a booked event from the agenda and back returns to calendar',
       (tester) async {
         final event = buildEvent(
-          id: 'event-1',
-          clubId: 'club-1',
           startTime: DateTime(2026, 5, 7, 7, 15),
           meetingPoint: 'Carter Road Promenade',
-          distanceKm: 5,
-          pace: PaceLevel.easy,
           bookedCount: 1,
         );
-        final user = buildUser(uid: 'runner-1');
-        final club = buildClub(id: 'club-1');
+        final user = buildUser();
+        final club = buildClub();
         final router = GoRouter(
           initialLocation: app_router.Routes.calendarScreen.path,
           routes: [
@@ -698,7 +673,7 @@ Future<void> _pumpCalendar(
         clubsRepositoryProvider.overrideWith(
           (ref) =>
               club_test.FakeClubsRepository()
-                ..clubsById['club-1'] = buildClub(id: 'club-1'),
+                ..clubsById['club-1'] = buildClub(),
         ),
         watchSavedEventDetailsForUserProvider(
           'runner-1',
@@ -729,7 +704,7 @@ EventParticipation _participation({
   required String uid,
   required EventParticipationStatus status,
 }) {
-  final now = DateTime(2026, 1, 1);
+  final now = DateTime(2026);
   return EventParticipation(
     id: eventParticipationId(eventId: event.id, uid: uid),
     eventId: event.id,

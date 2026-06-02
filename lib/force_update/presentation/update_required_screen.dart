@@ -23,7 +23,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s8),
+          padding: CatchInsets.emptyStateContent,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,

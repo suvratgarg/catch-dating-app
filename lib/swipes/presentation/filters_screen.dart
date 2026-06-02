@@ -228,7 +228,7 @@ class _FilterSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro18),
+      padding: CatchInsets.tileVerticalCompact,
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: t.line)),
       ),

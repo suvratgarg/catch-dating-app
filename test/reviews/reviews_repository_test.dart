@@ -76,7 +76,7 @@ void main() {
     test(
       'addReview delegates deterministic event reviews to callable',
       () async {
-        final review = _review(eventId: 'event-1', reviewerUserId: 'runner-1');
+        final review = _review();
 
         await repository.addReview(review);
 
@@ -95,7 +95,7 @@ void main() {
 
     test('updateReview and deleteReview delegate to callables', () async {
       await repository.updateReview(
-        _review(eventId: 'event-1').copyWith(id: 'event-1~runner-1', rating: 4),
+        _review().copyWith(id: 'event-1~runner-1', rating: 4),
       );
       await repository.deleteReview('event-1~runner-1');
 

@@ -13,10 +13,10 @@ class ChatConversationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+      padding: CatchInsets.pageHorizontal,
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
-          if (index.isOdd) return SizedBox(height: CatchSpacing.s3);
+          if (index.isOdd) return const SizedBox(height: CatchSpacing.s3);
 
           final preview = matches[index ~/ 2];
           return ChatListTile(

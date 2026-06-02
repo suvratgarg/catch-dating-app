@@ -54,7 +54,7 @@ final class PublicProfileControllerProvider
 }
 
 String _$publicProfileControllerHash() =>
-    r'd386670142b872140a99a398cc19bd13858d6f20';
+    r'4f1e3e62c883f9414a13a6347296d8ea125a4c0f';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

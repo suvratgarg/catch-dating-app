@@ -42,9 +42,8 @@ class EventSuccessDefaultsPanel extends StatelessWidget {
     final draft = normalized.toDraft(targetAttendeeCount: targetAttendeeCount);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
+      padding: CatchInsets.content,
       borderColor: t.line,
-      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

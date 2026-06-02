@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
 import 'package:flutter/material.dart';
 
 /// The expressive "activity color" layer — the *only* chroma in Catch's
@@ -6,8 +7,8 @@ import 'package:flutter/material.dart';
 /// confident mid-tone **pigment** per [ActivityKind]; light/dark swatches are
 /// derived so the system is dark-aware and editable in exactly one place.
 ///
-/// To re-tune the palette, edit [pigments] only. Everything else (deep shade,
-/// soft tint, dark-mode pop) is derived.
+/// To re-tune the palette, edit `design/tokens/catch.tokens.json`. Everything
+/// else (deep shade, soft tint, dark-mode pop) is derived.
 @immutable
 class ActivitySwatch {
   const ActivitySwatch({
@@ -63,25 +64,27 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
 
   final Map<ActivityKind, ActivitySwatch> swatches;
 
-  /// THE single editable source of activity pigments (design_language §3).
+  /// Activity pigments generated from the canonical design-token JSON
+  /// (design_language §3).
   /// Confident mid-tones — bold, not candy, never beige.
   static const Map<ActivityKind, Color> pigments = <ActivityKind, Color>{
-    ActivityKind.socialRun: Color(0xFFD85A3C),
-    ActivityKind.running: Color(0xFFC9482E),
-    ActivityKind.walking: Color(0xFF6E9A5A),
-    ActivityKind.pickleball: Color(0xFF2F9E7A),
-    ActivityKind.padel: Color(0xFF2E9AA0),
-    ActivityKind.tennis: Color(0xFF4E9A4E),
-    ActivityKind.badminton: Color(0xFF4F70C8),
-    ActivityKind.cycling: Color(0xFF3A6FD0),
-    ActivityKind.spinClass: Color(0xFF3E55C0),
-    ActivityKind.yoga: Color(0xFF8A5FB0),
-    ActivityKind.strengthTraining: Color(0xFFB0573C),
-    ActivityKind.dinner: Color(0xFFC44D6A),
-    ActivityKind.pubQuiz: Color(0xFF4356A8),
-    ActivityKind.barCrawl: Color(0xFFB14488),
-    ActivityKind.singlesMixer: Color(0xFFD85A6E),
-    ActivityKind.openActivity: Color(0xFF7A7166),
+    ActivityKind.socialRun: GeneratedCatchActivityPigmentTokens.socialRun,
+    ActivityKind.running: GeneratedCatchActivityPigmentTokens.running,
+    ActivityKind.walking: GeneratedCatchActivityPigmentTokens.walking,
+    ActivityKind.pickleball: GeneratedCatchActivityPigmentTokens.pickleball,
+    ActivityKind.padel: GeneratedCatchActivityPigmentTokens.padel,
+    ActivityKind.tennis: GeneratedCatchActivityPigmentTokens.tennis,
+    ActivityKind.badminton: GeneratedCatchActivityPigmentTokens.badminton,
+    ActivityKind.cycling: GeneratedCatchActivityPigmentTokens.cycling,
+    ActivityKind.spinClass: GeneratedCatchActivityPigmentTokens.spinClass,
+    ActivityKind.yoga: GeneratedCatchActivityPigmentTokens.yoga,
+    ActivityKind.strengthTraining:
+        GeneratedCatchActivityPigmentTokens.strengthTraining,
+    ActivityKind.dinner: GeneratedCatchActivityPigmentTokens.dinner,
+    ActivityKind.pubQuiz: GeneratedCatchActivityPigmentTokens.pubQuiz,
+    ActivityKind.barCrawl: GeneratedCatchActivityPigmentTokens.barCrawl,
+    ActivityKind.singlesMixer: GeneratedCatchActivityPigmentTokens.singlesMixer,
+    ActivityKind.openActivity: GeneratedCatchActivityPigmentTokens.openActivity,
   };
 
   factory ActivityPalette.forBrightness(Brightness brightness) =>
@@ -90,18 +93,19 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
           entry.key: ActivitySwatch._derive(entry.value, brightness),
       });
 
-  static final ActivityPalette light =
-      ActivityPalette.forBrightness(Brightness.light);
-  static final ActivityPalette dark =
-      ActivityPalette.forBrightness(Brightness.dark);
+  static final ActivityPalette light = ActivityPalette.forBrightness(
+    Brightness.light,
+  );
+  static final ActivityPalette dark = ActivityPalette.forBrightness(
+    Brightness.dark,
+  );
 
   ActivitySwatch forKind(ActivityKind kind) =>
       swatches[kind] ?? swatches[ActivityKind.openActivity] ?? _fallback;
 
-  static const _fallback = ActivitySwatch(
-    accent: Color(0xFF7A7166),
-    deep: Color(0xFF5A534B),
-    soft: Color(0xFFE9E6E0),
+  static final _fallback = ActivitySwatch._derive(
+    GeneratedCatchActivityPigmentTokens.openActivity,
+    Brightness.light,
   );
 
   /// Tolerant of a missing extension (e.g. bare test harnesses) — falls back to

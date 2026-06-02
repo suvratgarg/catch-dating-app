@@ -232,9 +232,8 @@ void main() {
         final container = createOnboardingTestContainer(
           overrides: [
             watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(
-                buildUser(uid: 'runner-1').copyWith(profilePhotos: const []),
-              ),
+              (ref) =>
+                  Stream.value(buildUser().copyWith(profilePhotos: const [])),
             ),
           ],
         );
@@ -266,9 +265,8 @@ void main() {
       final container = createOnboardingTestContainer(
         overrides: [
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(
-              buildUser(uid: 'runner-1').copyWith(profilePhotos: const []),
-            ),
+            (ref) =>
+                Stream.value(buildUser().copyWith(profilePhotos: const [])),
           ),
         ],
       );
@@ -316,7 +314,7 @@ void main() {
       final container = createOnboardingTestContainer(
         overrides: [
           watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            (ref) => Stream.value(buildUser()),
           ),
         ],
       );
@@ -338,7 +336,7 @@ void main() {
         overrides: [
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
-              buildUser(uid: 'runner-1').copyWith(
+              buildUser().copyWith(
                 activityPreferences: const ActivityPreferences(
                   running: RunningPreferences(
                     preferredRunTimes: [PreferredRunTime.morning],

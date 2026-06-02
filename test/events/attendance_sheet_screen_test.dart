@@ -136,7 +136,7 @@ void main() {
     final participationRepository = FakeEventParticipationRepository();
     final publicProfileRepository = FakePublicProfileRepository()
       ..profiles = [
-        buildPublicProfile(uid: 'runner-1', name: 'Asha'),
+        buildPublicProfile(name: 'Asha'),
         buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
         buildPublicProfile(uid: 'runner-3', name: 'Meera'),
       ];
@@ -252,7 +252,7 @@ void main() {
     final fakeEventRepository = FakeEventRepository();
     final fakePublicProfileRepository = FakePublicProfileRepository()
       ..profiles = [
-        buildPublicProfile(uid: 'runner-1', name: 'Asha'),
+        buildPublicProfile(name: 'Asha'),
         buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
         buildPublicProfile(uid: 'runner-3', name: 'Meera'),
       ];
@@ -324,7 +324,7 @@ void main() {
     final fakeEventRepository = FakeEventRepository();
     final fakePublicProfileRepository = FakePublicProfileRepository()
       ..profiles = [
-        buildPublicProfile(uid: 'runner-1', name: 'Asha'),
+        buildPublicProfile(name: 'Asha'),
         buildPublicProfile(uid: 'runner-2', name: 'Meera'),
       ];
 

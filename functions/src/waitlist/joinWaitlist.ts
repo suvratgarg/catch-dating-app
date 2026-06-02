@@ -10,15 +10,44 @@ interface JoinWaitlistBody {
   role?: unknown;
   instagram?: unknown;
   website?: unknown;
+  attribution?: unknown;
+  analytics?: unknown;
 }
 
-const allowedRoles = new Set(["runner", "host", "both"]);
+interface NormalizedMarketingAnalytics {
+  consent: Record<string, unknown> | null;
+  eventId: string | null;
+  formVariant: string | null;
+  pagePath: string | null;
+  pageTitle: string | null;
+  submittedAt: string | null;
+}
+
+const allowedRoles = new Set(["member", "runner", "host", "both"]);
 const localOrigins = [
   "http://localhost:5000",
+  "http://localhost:5175",
   "http://localhost:8123",
   "http://127.0.0.1:5000",
+  "http://127.0.0.1:5175",
   "http://127.0.0.1:8123",
 ];
+
+const attributionValueKeys = new Set([
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+  "gclid",
+  "gbraid",
+  "wbraid",
+  "fbclid",
+  "ttclid",
+  "msclkid",
+  "li_fat_id",
+  "rdt_cid",
+]);
 
 /**
  * Returns the browser origins allowed to submit launch waitlist requests.
@@ -140,6 +169,144 @@ function normalizeInstagram(value: unknown): string | null {
 }
 
 /**
+ * Normalizes launch waitlist roles from current and legacy marketing forms.
+ * @param {string} role The submitted role.
+ * @return {string} Canonical role stored in Firestore.
+ */
+export function normalizeWaitlistRole(role: string): string {
+  return role === "runner" ? "member" : role;
+}
+
+/**
+ * Normalizes a bounded optional marketing text field.
+ * @param {unknown} value The raw field value.
+ * @param {number} maxLength Maximum accepted length.
+ * @return {string|null} The normalized text, or null.
+ */
+function normalizeOptionalMarketingText(
+  value: unknown,
+  maxLength = 512
+): string | null {
+  const text = normalizeText(value);
+  if (!text) {
+    return null;
+  }
+  return text.slice(0, maxLength);
+}
+
+/**
+ * Normalizes a bounded string map while allowing only known attribution keys.
+ * @param {unknown} value Raw attribution values object.
+ * @return {Record<string, string>} Sanitized attribution values.
+ */
+function normalizeAttributionValues(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+
+  const result: Record<string, string> = {};
+  for (const [key, raw] of Object.entries(value)) {
+    if (!attributionValueKeys.has(key)) continue;
+    const normalized = normalizeOptionalMarketingText(raw, 240);
+    if (normalized) {
+      result[key] = normalized;
+    }
+  }
+  return result;
+}
+
+/**
+ * Normalizes a first-touch or last-touch attribution block.
+ * @param {unknown} value Raw touch payload.
+ * @return {Record<string, unknown>|null} Sanitized touch payload.
+ */
+function normalizeAttributionTouch(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const raw = value as Record<string, unknown>;
+  return {
+    capturedAt: normalizeOptionalMarketingText(raw.capturedAt, 80),
+    landingPath: normalizeOptionalMarketingText(raw.landingPath, 512),
+    landingUrl: normalizeOptionalMarketingText(raw.landingUrl, 1024),
+    referrer: normalizeOptionalMarketingText(raw.referrer, 1024),
+    values: normalizeAttributionValues(raw.values),
+  };
+}
+
+/**
+ * Normalizes attribution from the marketing website.
+ * @param {unknown} value Raw attribution payload.
+ * @return {Record<string, unknown>|null} Sanitized attribution payload.
+ */
+export function normalizeMarketingAttribution(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const raw = value as Record<string, unknown>;
+  const firstTouch = normalizeAttributionTouch(raw.firstTouch);
+  const lastTouch = normalizeAttributionTouch(raw.lastTouch);
+  if (!firstTouch && !lastTouch) {
+    return null;
+  }
+
+  return {
+    firstTouch,
+    lastTouch,
+  };
+}
+
+/**
+ * Normalizes consent details sent by the marketing website.
+ * @param {unknown} value Raw consent payload.
+ * @return {Record<string, unknown>|null} Sanitized consent payload.
+ */
+function normalizeMarketingConsent(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const raw = value as Record<string, unknown>;
+  return {
+    analytics: raw.analytics === true,
+    choice: normalizeOptionalMarketingText(raw.choice, 40),
+    marketing: raw.marketing === true,
+    updatedAt: normalizeOptionalMarketingText(raw.updatedAt, 80),
+  };
+}
+
+/**
+ * Normalizes analytics metadata from the marketing website.
+ * @param {unknown} value Raw analytics payload.
+ * @return {NormalizedMarketingAnalytics|null} Sanitized analytics payload.
+ */
+export function normalizeMarketingAnalytics(
+  value: unknown
+): NormalizedMarketingAnalytics | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const raw = value as Record<string, unknown>;
+  return {
+    consent: normalizeMarketingConsent(raw.consent),
+    eventId: normalizeOptionalMarketingText(raw.eventId, 160),
+    formVariant: normalizeOptionalMarketingText(raw.formVariant, 40),
+    pagePath: normalizeOptionalMarketingText(raw.pagePath, 512),
+    pageTitle: normalizeOptionalMarketingText(raw.pageTitle, 240),
+    submittedAt: normalizeOptionalMarketingText(raw.submittedAt, 80),
+  };
+}
+
+/**
  * Sets CORS headers for the waitlist endpoint.
  * @param {Object} request The request-like object.
  * @param {Object} response The response-like object.
@@ -190,9 +357,14 @@ export const joinWaitlist = onRequest(
     const fullName = normalizeText(body.fullName);
     const email = normalizeEmail(body.email);
     const city = normalizeText(body.city);
-    const role = normalizeText(body.role).toLowerCase();
+    const submittedRole = normalizeText(body.role).toLowerCase();
+    const role = normalizeWaitlistRole(submittedRole);
     const instagram = normalizeInstagram(body.instagram);
     const honeypot = normalizeText(body.website);
+    const marketingAttribution = normalizeMarketingAttribution(
+      body.attribution
+    );
+    const marketingAnalytics = normalizeMarketingAnalytics(body.analytics);
 
     const clientIp = request.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       request.ip ??
@@ -228,7 +400,7 @@ export const joinWaitlist = onRequest(
       return;
     }
 
-    if (!allowedRoles.has(role)) {
+    if (!allowedRoles.has(submittedRole)) {
       response.status(400).json({error: "Please choose how you're joining."});
       return;
     }
@@ -240,6 +412,16 @@ export const joinWaitlist = onRequest(
 
     const referrer = normalizeText(request.get("referer"));
     const userAgent = normalizeText(request.get("user-agent"));
+    const conversionEventId = marketingAnalytics?.eventId ??
+      `waitlist_${Date.now()}_${waitlistRef.id}`;
+    const conversionName =
+      marketingAnalytics?.formVariant === "host" || role === "host" ?
+        "host_lead_submitted" :
+        "waitlist_submitted";
+    const conversionRef = admin
+      .firestore()
+      .collection("marketingConversionEvents")
+      .doc(conversionEventId);
     let alreadyJoined = false;
 
     await admin.firestore().runTransaction(async (transaction) => {
@@ -253,6 +435,8 @@ export const joinWaitlist = onRequest(
         source: "catchdates.com",
         referrer: referrer || null,
         userAgent: userAgent || null,
+        marketingAnalytics,
+        marketingAttribution,
       };
 
       if (existing.exists) {
@@ -271,6 +455,22 @@ export const joinWaitlist = onRequest(
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
         submissionCount: 1,
+      });
+
+      transaction.set(conversionRef, {
+        analytics: marketingAnalytics,
+        attribution: marketingAttribution,
+        city,
+        consent: marketingAnalytics?.consent ?? null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        eventId: conversionEventId,
+        eventName: conversionName,
+        leadId: waitlistRef.id,
+        leadPath: waitlistRef.path,
+        role,
+        source: "catchdates.com",
+        status: "readyForReview",
+        standardEvent: "Lead",
       });
     });
 

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -50,9 +51,10 @@ class EventDetailHeroAppBar extends StatelessWidget {
     final overlayScrim = CatchTokens.editorialDark.withValues(
       alpha: CatchOpacity.eventHeroOverlayScrim,
     );
-    final expandedHeight = isTicketPresentation
-        ? (width > CatchLayout.maxContentWidth ? 360.0 : 430.0)
-        : (width > CatchLayout.maxContentWidth ? 220.0 : 260.0);
+    final expandedHeight = _expandedHeightFor(
+      width: width,
+      isTicketPresentation: isTicketPresentation,
+    );
     final collapsedBackground = isSpotlight ? t.ink : t.surface;
     final collapsedForeground = isSpotlight ? t.primaryInk : t.ink;
 
@@ -74,7 +76,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s2),
+        padding: CatchInsets.iconChipContent,
         child: CatchTopBarIconAction(
           icon: CatchIcons.backArrow,
           tooltip: 'Back',
@@ -85,7 +87,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s2),
+          padding: CatchInsets.iconChipContent,
           child: Builder(
             builder: (buttonContext) => CatchTopBarIconAction(
               icon: CatchIcons.platformShare(
@@ -144,6 +146,28 @@ class EventDetailHeroAppBar extends StatelessWidget {
   }
 }
 
+double _expandedHeightFor({
+  required double width,
+  required bool isTicketPresentation,
+}) {
+  if (isTicketPresentation) {
+    return width > CatchLayout.maxContentWidth
+        ? CatchLayout.eventDetailHeroTicketWideHeight
+        : CatchLayout.eventDetailHeroTicketPhoneHeight;
+  }
+
+  if (width > CatchLayout.maxContentWidth) {
+    return CatchLayout.eventDetailHeroStandardWideHeight;
+  }
+
+  return (width * CatchLayout.eventDetailHeroStandardHeightRatio)
+      .clamp(
+        CatchLayout.eventDetailHeroStandardMinHeight,
+        CatchLayout.eventDetailHeroStandardMaxHeight,
+      )
+      .toDouble();
+}
+
 class _LegacyEventHeroSurface extends StatelessWidget {
   const _LegacyEventHeroSurface({required this.event});
 
@@ -159,7 +183,7 @@ class _LegacyEventHeroSurface extends StatelessWidget {
         Positioned(
           left: CatchSpacing.s5,
           right: CatchSpacing.s5,
-          bottom: CatchSpacing.s5,
+          bottom: CatchLayout.eventDetailHeroTitleBottomInset,
           child: Text(
             event.title,
             maxLines: 2,
@@ -221,10 +245,18 @@ class _EventDetailTicketSurface extends StatelessWidget {
       color: bodyColor,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompactFlight = constraints.maxHeight < 360;
+          final isCompactFlight =
+              constraints.maxHeight <
+              CatchLayout.eventDetailTicketCompactHeightThreshold;
           final visualHeight =
-              (constraints.maxHeight * (isCompactFlight ? 0.48 : 0.62))
-                  .clamp(96.0, 290.0)
+              (constraints.maxHeight *
+                      (isCompactFlight
+                          ? CatchLayout.eventDetailTicketVisualCompactRatio
+                          : CatchLayout.eventDetailTicketVisualExpandedRatio))
+                  .clamp(
+                    CatchLayout.eventDetailTicketVisualMinHeight,
+                    CatchLayout.eventDetailTicketVisualMaxHeight,
+                  )
                   .toDouble();
           final bodyPadding = isCompactFlight
               ? const EdgeInsets.fromLTRB(
@@ -250,13 +282,15 @@ class _EventDetailTicketSurface extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    EventActivityBackdrop(
-                      visual: visual,
-                      dense: true,
+                    CatchEventThumbnail(
+                      photoUrl: event.photoUrl,
+                      pace: event.pace,
+                      activityKind: event.activityKind,
+                      scrim: CatchEventThumbnailScrim.none,
                       iconAlignment: Alignment.centerRight,
-                      iconSize: CatchLayout.eventHeroBackdropIconSize,
-                      iconOpacity: 0.15,
-                      patternOpacity: 0.24,
+                      fallbackIconSize: CatchLayout.eventHeroBackdropIconSize,
+                      fallbackIconOpacity: 0.15,
+                      fallbackPatternOpacity: 0.24,
                     ),
                     DecoratedBox(
                       decoration: BoxDecoration(
@@ -314,13 +348,20 @@ class _EventDetailTicketSurface extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: CatchTextStyles.eventDisplay(
                               context,
-                              size: isCompactFlight ? 30 : 42,
-                              height: 0.92,
+                              size: isCompactFlight
+                                  ? CatchLayout
+                                        .eventDetailTicketTitleCompactSize
+                                  : CatchLayout
+                                        .eventDetailTicketTitleExpandedSize,
+                              height:
+                                  CatchLayout.eventDetailTicketTitleLineHeight,
                               color: titleColor,
                             ),
                           ),
                           if (!isCompactFlight) ...[
-                            gapH10,
+                            const SizedBox(
+                              height: CatchLayout.detailScreenInlineRowGap,
+                            ),
                             Text(
                               _heroSubtitle(event),
                               maxLines: 2,
@@ -356,7 +397,7 @@ class _HeroActivityBadge extends StatelessWidget {
     return CatchSurface(
       width: CatchLayout.eventHeroBadgeExtent,
       height: CatchLayout.eventHeroBadgeExtent,
-      borderRadius: BorderRadius.circular(CatchLayout.eventHeroBadgeExtent / 2),
+      borderRadius: BorderRadius.circular(CatchLayout.eventHeroBadgeRadius),
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayFill),
       borderColor: d.ink.withValues(alpha: CatchOpacity.lightOverlayBorder),
       child: Icon(
@@ -377,10 +418,7 @@ class _HeroTimeChip extends StatelessWidget {
   Widget build(BuildContext context) {
     const d = CatchTokens.sunsetDark;
     return CatchSurface(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
+      padding: CatchInsets.compactControlContent,
       radius: CatchRadius.md,
       backgroundColor: d.ink.withValues(alpha: CatchOpacity.subtleFill),
       borderWidth: 0,

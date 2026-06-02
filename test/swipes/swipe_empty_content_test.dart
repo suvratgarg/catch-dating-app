@@ -9,7 +9,7 @@ void main() {
     test('explains why an event is unavailable when missing', () {
       final content = buildSwipeEmptyContent(
         event: null,
-        currentUser: buildUser(uid: 'runner-1'),
+        currentUser: buildUser(),
         currentUserParticipation: null,
       );
 
@@ -20,7 +20,7 @@ void main() {
       final event = buildEvent();
       final content = buildSwipeEmptyContent(
         event: event,
-        currentUser: buildUser(uid: 'runner-1'),
+        currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
           event: event,
           uid: 'runner-1',
@@ -44,11 +44,10 @@ void main() {
       );
       final content = buildSwipeEmptyContent(
         event: event,
-        currentUser: buildUser(uid: 'runner-1'),
+        currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
           event: event,
           uid: 'runner-1',
-          status: EventParticipationStatus.signedUp,
         ),
       );
 
@@ -67,7 +66,7 @@ void main() {
       );
       final content = buildSwipeEmptyContent(
         event: event,
-        currentUser: buildUser(uid: 'runner-1'),
+        currentUser: buildUser(),
         currentUserParticipation: buildEventParticipation(
           event: event,
           uid: 'runner-1',
@@ -88,7 +87,7 @@ void main() {
         );
         final content = buildSwipeEmptyContent(
           event: event,
-          currentUser: buildUser(uid: 'runner-1'),
+          currentUser: buildUser(),
           currentUserParticipation: buildEventParticipation(
             event: event,
             uid: 'runner-1',

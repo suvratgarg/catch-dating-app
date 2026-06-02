@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -160,65 +161,50 @@ class EventDetailBody extends ConsumerWidget {
               isSaved: isSaved,
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              20,
-              CatchSpacing.s5,
-              32,
-            ),
-            sliver: SliverList.list(
-              children: [
-                EventDetailOverviewSection(
-                  event: event,
-                  surfaceStyle: style,
-                  onLocationTap: event.hasExactStartingPoint
-                      ? () => context.pushNamed(
-                          Routes.eventLocationMapScreen.name,
-                          pathParameters: {'eventId': event.id},
-                        )
-                      : null,
-                ),
-                if (_canOpenCompanion(
-                  participation: participation,
-                  isHost: isHost,
-                )) ...[
-                  gapH20,
-                  _EventCompanionEntry(
-                    event: event,
-                    clubId: clubId,
-                    surfaceStyle: style,
-                  ),
-                ],
-                if (_canShowInviteLoop(
-                  event: event,
-                  participation: participation,
-                  isHost: isHost,
-                  now: now,
-                )) ...[
-                  gapH20,
-                  _EventInviteLoopCard(
-                    event: event,
-                    onShare: shareEvent,
-                    surfaceStyle: style,
-                  ),
-                ],
-                gapH24,
-                Divider(color: style.dividerColor, height: 1),
-                gapH24,
-                EventDetailSocialSection(
+          CatchDetailSliverSectionList(
+            sections: [
+              EventDetailOverviewSection(
+                event: event,
+                surfaceStyle: style,
+                onLocationTap: event.hasExactStartingPoint
+                    ? () => context.pushNamed(
+                        Routes.eventLocationMapScreen.name,
+                        pathParameters: {'eventId': event.id},
+                      )
+                    : null,
+              ),
+              if (_canOpenCompanion(
+                participation: participation,
+                isHost: isHost,
+              ))
+                _EventCompanionEntry(
                   event: event,
                   clubId: clubId,
-                  reviews: reviews,
-                  userProfile: userProfile,
-                  isAuthenticated: isAuthenticated,
-                  participation: participation,
-                  now: now,
                   surfaceStyle: style,
                 ),
-                gapH16,
-              ],
-            ),
+              if (_canShowInviteLoop(
+                event: event,
+                participation: participation,
+                isHost: isHost,
+                now: now,
+              ))
+                _EventInviteLoopCard(
+                  event: event,
+                  onShare: shareEvent,
+                  surfaceStyle: style,
+                ),
+              Divider(color: style.dividerColor, height: 1),
+              EventDetailSocialSection(
+                event: event,
+                clubId: clubId,
+                reviews: reviews,
+                userProfile: userProfile,
+                isAuthenticated: isAuthenticated,
+                participation: participation,
+                now: now,
+                surfaceStyle: style,
+              ),
+            ],
           ),
         ],
       ),
@@ -258,7 +244,7 @@ class _EventInviteLoopCard extends StatelessWidget {
       borderColor: surfaceStyle.isDark
           ? surfaceStyle.borderColor
           : t.primary.withValues(alpha: CatchOpacity.eventDetailLightBorder),
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -364,7 +350,7 @@ class _EventCompanionCard extends StatelessWidget {
     return CatchSurface(
       backgroundColor: surfaceStyle.surfaceBackground,
       borderColor: surfaceStyle.borderColor,
-      padding: const EdgeInsets.all(CatchSpacing.micro14),
+      padding: CatchInsets.tileContentCompact,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

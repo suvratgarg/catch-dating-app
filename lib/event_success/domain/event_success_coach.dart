@@ -238,7 +238,6 @@ abstract final class EventSuccessSampleScorecards {
     feedbackResponseCount: 10,
     assignmentParticipantCount: 24,
     assignmentOptOutCount: 1,
-    wingmanRequestCount: 0,
   );
 }
 

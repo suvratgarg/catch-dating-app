@@ -448,14 +448,13 @@ void main() {
 
         await pumpEventsTestApp(
           tester,
-          Scaffold(
-            body: const SizedBox.expand(),
+          const Scaffold(
+            body: SizedBox.expand(),
             bottomNavigationBar: StepperFooter(
               isLastStep: true,
               isLoading: false,
               onNext: _noop,
               onSaveDraft: _noop,
-              lastStepLabel: 'Schedule event',
             ),
           ),
         );
@@ -698,7 +697,7 @@ void main() {
       expect(find.text('0/20 spots'), findsNothing);
     });
 
-    testWidgets('event photo header prefers activity artwork over photo', (
+    testWidgets('event photo header prefers event photos when available', (
       tester,
     ) async {
       final event = buildEvent(
@@ -715,7 +714,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(Image), findsNothing);
+      expect(find.byType(Image), findsOneWidget);
       expect(find.text(event.title), findsNothing);
     });
 

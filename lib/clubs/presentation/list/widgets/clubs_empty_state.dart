@@ -45,7 +45,7 @@ class ClubsEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.s5),
+        padding: CatchInsets.contentRelaxed,
         child: CatchEmptyState(
           icon: CatchIcons.groupsOutlined,
           title: title,
