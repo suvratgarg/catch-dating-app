@@ -12,9 +12,9 @@ class DesignPersonalityPreviewApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final selected = Uri.base.queryParameters['theme'];
     final directions = switch (selected) {
-      'electric' => [PreviewTheme.electricSunset],
-      'nitron' => [PreviewTheme.nitron],
-      'editorial' => [PreviewTheme.editorialSport],
+      'light' => [PreviewTheme.lockedLight],
+      'dark' => [PreviewTheme.lockedDarkEvent],
+      'activity' => [PreviewTheme.activityEditorial],
       _ => PreviewTheme.all,
     };
 
@@ -114,7 +114,7 @@ class CatchMomentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ColoredBox(
       color: theme.bg,
       child: Stack(
         children: [
@@ -1285,10 +1285,10 @@ class PreviewTheme {
   final Color metricBorder;
   final Color metricInk;
 
-  static final all = [electricSunset, nitron, editorialSport];
+  static final all = [lockedLight, lockedDarkEvent, activityEditorial];
 
-  static final electricSunset = PreviewTheme(
-    name: 'ELECTRIC SUNSET',
+  static final lockedLight = PreviewTheme(
+    name: 'LOCKED LIGHT',
     headline: 'Show up. Then swipe.',
     stage: const Color(0xFFFFF2E7),
     bezel: const Color(0xFF15100D),
@@ -1368,8 +1368,8 @@ class PreviewTheme {
     metricInk: const Color(0xFF17110E),
   );
 
-  static final nitron = PreviewTheme(
-    name: 'NITRON',
+  static final lockedDarkEvent = PreviewTheme(
+    name: 'LOCKED DARK EVENT',
     headline: 'The after-event window.',
     stage: const Color(0xFF060A12),
     bezel: const Color(0xFF000000),
@@ -1454,8 +1454,8 @@ class PreviewTheme {
     metricInk: const Color(0xFFFFFFFF),
   );
 
-  static final editorialSport = PreviewTheme(
-    name: 'EDITORIAL SPORT',
+  static final activityEditorial = PreviewTheme(
+    name: 'ACTIVITY EDITORIAL',
     headline: 'A better way to meet.',
     stage: const Color(0xFFEDE6DA),
     bezel: const Color(0xFF17130E),

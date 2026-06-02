@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "generatedBy": "tool/design/build_context_pack.mjs",
+  "includesGalleryPngs": false,
+  "files": [
+    {
+      "path": "README.txt",
+      "sha256": "30a0636a15f8fd9a88d27e87d6fb8024b16924234936bd9ebed26b42dd4edb0f",
+      "bytes": 815
+    },
+    {
+      "path": "design_system/activity_palette.json",
+      "sha256": "128bcd762c701dbeb24862b3360d54c6f6f5a8c892f38bdd0f969bd909729653",
+      "bytes": 4368
+    },
+    {
+      "path": "design_system/design_language.txt",
+      "sha256": "9e72b9ad05c3d8a0eea5815fd70a232fd014bd553100fee8de51af0f15ac4725",
+      "bytes": 13456
+    },
+    {
+      "path": "design_system/specimens/catch_design_system.html",
+      "sha256": "116a04d916137d31f95d75caca8e2fc3d69d2e170b0156bc3edf18daf8e2a6e6",
+      "bytes": 5565
+    },
+    {
+      "path": "design_system/tokens.json",
+      "sha256": "421b213552bea47a9f767ba8cc0043fd047a4b8ef8f19ac9f92bc51c43636ba7",
+      "bytes": 23166
+    },
+    {
+      "path": "design_system/typography.json",
+      "sha256": "1f95b732efba239c5b826b45ef215252bc078ba2c868966d30571e73144ae2de",
+      "bytes": 21955
+    },
+    {
+      "path": "gallery/manifest.json",
+      "sha256": "97cbe8c13a4a6208b527ef761e549ffafb6c74723b4ac7cdeac44f38930022a9",
+      "bytes": 12960
+    }
+  ]
+}

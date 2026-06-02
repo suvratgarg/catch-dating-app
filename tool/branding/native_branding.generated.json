@@ -1,0 +1,21 @@
+{
+  "source": "design_context_pack/design_system/tokens.json",
+  "colors": {
+    "splash_light_bg": "#F4F4F1",
+    "splash_dark_bg": "#0F0E10",
+    "web_theme": "#16140F",
+    "dev_badge": "#16140F",
+    "staging_badge": "#B9770F",
+    "badge_ink": "#F4F4F1"
+  },
+  "generated": [
+    "assets/branding/generated/catch_icon_dev.png",
+    "assets/branding/generated/catch_icon_staging.png",
+    "android/app/src/dev/res/**/ic_launcher.png",
+    "android/app/src/staging/res/**/ic_launcher.png",
+    "ios/Runner/Assets.xcassets/AppIcon-dev.appiconset",
+    "ios/Runner/Assets.xcassets/AppIcon-staging.appiconset",
+    "macos/Runner/Assets.xcassets/AppIcon-dev.appiconset",
+    "macos/Runner/Assets.xcassets/AppIcon-staging.appiconset"
+  ]
+}
