@@ -1,0 +1,109 @@
+name: Marketing Website
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/marketing-website.yml"
+      - ".firebaserc"
+      - "firebase.json"
+      - "package.json"
+      - "package-lock.json"
+      - "website/**"
+      - "packages/web-config/**"
+      - "design/tokens/**"
+      - "tool/design_tokens.dart"
+      - "tool/marketing/**"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/marketing-website.yml"
+      - ".firebaserc"
+      - "firebase.json"
+      - "package.json"
+      - "package-lock.json"
+      - "website/**"
+      - "packages/web-config/**"
+      - "design/tokens/**"
+      - "tool/design_tokens.dart"
+      - "tool/marketing/**"
+  workflow_dispatch:
+
+concurrency:
+  group: marketing-website-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FIREBASE_TOOLS_VERSION: 15.1.0
+
+jobs:
+  validate:
+    name: Validate marketing website
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.9"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: npm ci
+
+      - name: Check design tokens
+        run: npm run web:tokens:check
+
+      - name: Check marketing media
+        run: node tool/marketing/sync_website_media.mjs --check
+
+      - name: Check marketing screenshot design context
+        run: node tool/marketing/export_app_screenshots.mjs --check-design-json
+
+      - name: Build marketing website
+        run: npm run web:marketing:build
+
+  deploy:
+    name: Deploy marketing Hosting
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: prod
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - run: npm install -g firebase-tools@${{ env.FIREBASE_TOOLS_VERSION }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Deploy production marketing site
+        run: ./tool/firebase_with_env.sh prod deploy --only hosting:marketing --non-interactive
