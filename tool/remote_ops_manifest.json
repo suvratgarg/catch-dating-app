@@ -106,8 +106,20 @@
         {"kind": "doc", "ref": "firebase/README.md"},
         {"kind": "doc", "ref": "docs/config_cicd_platform_audit_2026-05-21.md"},
         {"kind": "doc", "ref": "docs/release_operations.md"},
-        {"kind": "manual", "ref": "Firebase Console App Check provider registration and enforcement"},
-        {"kind": "manual", "ref": "Firebase Console debug token registration for trusted devices"}
+        {
+          "kind": "manual",
+          "ref": "Firebase Console App Check provider registration and enforcement",
+          "owner": "firebase/README.md",
+          "ticket": "release-ops-console-evidence-required",
+          "guardrail": "Record provider registration and enforcement evidence before release; no local script is allowed to claim console enforcement by itself."
+        },
+        {
+          "kind": "manual",
+          "ref": "Firebase Console debug token registration for trusted devices",
+          "owner": "docs/release_operations.md",
+          "ticket": "trusted-device-debug-token-review",
+          "guardrail": "Register debug tokens only for trusted test devices and remove stale tokens during release readiness review."
+        }
       ],
       "requiredChecks": [
         "functions/test/callable-app-check.test.cjs",
@@ -159,7 +171,13 @@
         {"kind": "tool-id", "ref": "firebase:maps-config"},
         {"kind": "workflow", "ref": ".github/workflows/ios-testflight-release.yml"},
         {"kind": "doc", "ref": "docs/release_operations.md"},
-        {"kind": "manual", "ref": "App Store Connect Xcode Cloud workflow and TestFlight group configuration"}
+        {
+          "kind": "manual",
+          "ref": "App Store Connect Xcode Cloud workflow and TestFlight group configuration",
+          "owner": "docs/release_operations.md",
+          "ticket": "testflight-console-evidence-required",
+          "guardrail": "Confirm Xcode Cloud workflow, TestFlight groups, and break-glass upload reason before any external TestFlight release."
+        }
       ],
       "requiredChecks": [
         "GitHub workflow upload_to_testflight=false for routine archives.",

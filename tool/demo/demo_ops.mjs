@@ -770,6 +770,9 @@ function runSeedCommand(command, args) {
   if (args.seedPrefix) seedArgs.push("--seed-prefix", args.seedPrefix);
   if (args.anchorFile) seedArgs.push("--anchor-file", args.anchorFile);
   if (args.anchorUsers.length > 0) seedArgs.push("--anchor-users", args.anchorUsers.join(","));
+  if (args.personaProfileProjection) {
+    seedArgs.push("--persona-profile-projection", args.personaProfileProjection);
+  }
   const seedAnchorPhones = [...args.anchorPhones];
   if (command === "append-user" && args.phone) seedAnchorPhones.push(args.phone);
   if (command === "append-user") seedAnchorPhones.push(...args.phones);
@@ -819,11 +822,12 @@ function parseArgs(argv) {
     cleanupPast: true,
     cleanupCancelled: true,
     goldenFile: null,
+    personaProfileProjection: null,
     personaCatalog: null,
     photoTaxonomy: null,
     photoComposition: null,
     photoPlanFormat: "text",
-    assetStatuses: ["uploaded"],
+    assetStatuses: null,
     output: null,
     imagePilotConfig: null,
     imageProvider: null,
@@ -835,6 +839,7 @@ function parseArgs(argv) {
     imageOutputDir: null,
     personas: [],
     requirePublishedAssets: false,
+    allowEmpty: false,
     demoScenario: null,
     apply: false,
     update: false,
@@ -865,6 +870,7 @@ function parseArgs(argv) {
     else if (arg === "--skip-functions-build") args.skipFunctionsBuild = true;
     else if (arg === "--bypass-suvbot-access") args.bypassSuvbotAccess = true;
     else if (arg === "--require-published-assets") args.requirePublishedAssets = true;
+    else if (arg === "--allow-empty") args.allowEmpty = true;
     else if (arg === "--via-swipes-only") {
       args.viaSwipes = true;
       args.viaSwipesOnly = true;
@@ -898,6 +904,7 @@ function parseArgs(argv) {
     else if (arg === "--text") args.text = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefixes") args.seedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--golden-file") args.goldenFile = requireValue(argv, ++i, arg);
+    else if (arg === "--persona-profile-projection") args.personaProfileProjection = requireValue(argv, ++i, arg);
     else if (arg === "--persona-catalog") args.personaCatalog = requireValue(argv, ++i, arg);
     else if (arg === "--photo-taxonomy") args.photoTaxonomy = requireValue(argv, ++i, arg);
     else if (arg === "--photo-composition") args.photoComposition = requireValue(argv, ++i, arg);
@@ -1048,12 +1055,29 @@ function printPersonaProfileProjection(args) {
     process.exitCode = 1;
     return;
   }
+  if (!args.assetStatuses || args.assetStatuses.length === 0) {
+    console.error(
+      "persona-profile-projection requires --asset-statuses planned, generated, uploaded, or all."
+    );
+    process.exitCode = 64;
+    return;
+  }
 
   const projection = personaProfileProjection(catalog, {
     assetStatuses: args.assetStatuses,
     photoTaxonomy,
     photoCompositionIndex,
   });
+  if (projection.projectedPhotoCount === 0 && !args.allowEmpty) {
+    console.error(
+      "Sales demo persona profile seed projection has zero profile photos for the selected asset statuses."
+    );
+    console.error(
+      "Use --asset-statuses planned/generated/all, or pass --allow-empty when auditing an intentionally empty status slice."
+    );
+    process.exitCode = 1;
+    return;
+  }
   const outputPath = args.output ?
     path.resolve(path.resolve(toolDir, "../.."), args.output) :
     DEFAULT_PERSONA_PROFILE_PROJECTION_PATH;
@@ -1064,11 +1088,11 @@ function printPersonaProfileProjection(args) {
       fs.readFileSync(outputPath, "utf8") :
       null;
     if (actual !== expected) {
-      console.error("Persona profile projection artifact is stale.");
+      console.error("Sales demo persona profile seed projection artifact is stale.");
       console.error(`Run: node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses ${projection.assetStatuses.join(",")} --output ${path.relative(path.resolve(toolDir, "../.."), outputPath)} --update`);
       process.exitCode = 1;
     } else if (!args.json) {
-      console.log(`Persona profile projection artifact is current: ${path.relative(path.resolve(toolDir, "../.."), outputPath)}`);
+      console.log(`Sales demo persona profile seed projection artifact is current: ${path.relative(path.resolve(toolDir, "../.."), outputPath)}`);
     }
     return;
   }
@@ -1087,7 +1111,7 @@ function printPersonaProfileProjection(args) {
     return;
   }
 
-  console.log("Persona profile projection");
+  console.log("Sales demo persona profile seed projection");
   console.log(`Catalog: ${projection.catalogId}`);
   console.log(`Asset statuses: ${projection.assetStatuses.join(", ")}`);
   console.log(`Personas: ${projection.personaCount}`);
@@ -1373,7 +1397,7 @@ Usage:
   node tool/demo/demo_ops.mjs scenario-info --demo-scenario investor-demo
   node tool/demo/demo_ops.mjs validate-persona-catalog --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
   node tool/demo/demo_ops.mjs persona-photo-plan --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
-  node tool/demo/demo_ops.mjs persona-profile-projection --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json --json
+  node tool/demo/demo_ops.mjs persona-profile-projection --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json --asset-statuses planned --json
   node tool/demo/demo_ops.mjs persona-profile-projection --asset-statuses planned --output tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json --check
   node tool/demo/demo_ops.mjs persona-image-generate --persona-catalog tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json
 
@@ -1414,8 +1438,9 @@ Command options:
   --photo-taxonomy <path>        Photo activity taxonomy for persona validation.
   --photo-composition <path>     Photo composition index for persona validation.
   --format <text|markdown|jsonl> persona-photo-plan/persona-image-generate output format.
-  --asset-statuses <statuses>    persona-profile-projection statuses: uploaded, generated, planned, or all.
-  --output <path>                persona-profile-projection artifact path.
+  --asset-statuses <statuses>    sales demo persona profile seed projection statuses: uploaded, generated, planned, or all.
+  --allow-empty                  Allow the sales demo profile seed projection to emit zero profile photos.
+  --output <path>                sales demo profile seed projection artifact path.
   --require-published-assets     Require uploaded persona assets.
   --image-pilot-config <path>    Image generation pilot JSON.
   --personas <id,...>            Persona IDs for persona-image-generate.
@@ -1429,6 +1454,8 @@ Command options:
   --anchor-file <path>           seed-world/append-user anchor file.
   --anchor-phones <phone,...>    seed-world/append-user real users.
   --anchor-users <uid,...>       seed-world/append-user real users.
+  --persona-profile-projection <path>
+                                seed-world/append-user synthetic identity projection.
   --scenario <name>              seed-world/append-user scenario. Default beta-full.
   --seed-prefix <prefix>         Demo operation or world seed prefix.
 `);

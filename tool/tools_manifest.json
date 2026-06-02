@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-31",
+  "updated": "2026-06-01",
   "tools": [
     {
       "id": "tool:runner",
@@ -66,29 +66,46 @@
       ]
     },
     {
-      "id": "scanner:design-tokens",
-      "category": "scanners",
-      "path": "tool/check_design_tokens.sh",
-      "command": "bash tool/check_design_tokens.sh",
-      "safety": "local",
+      "id": "branding:native-assets",
+      "category": "branding",
+      "path": "tool/branding/generate_native_brand_assets.dart",
+      "command": "dart run tool/branding/generate_native_brand_assets.dart",
+      "safety": "local-writes-generated",
       "status": "active",
-      "description": "Scans Dart UI code for design token migration candidates.",
-      "checks": [
-        "bash -n tool/check_design_tokens.sh",
-        "bash tool/check_design_tokens.sh --count"
-      ]
+      "description": "Generates flavor-specific native launcher and splash brand assets from the design context token cache.",
+      "checks": ["dart analyze tool/branding/generate_native_brand_assets.dart"]
     },
     {
-      "id": "scanner:raw-colors",
-      "category": "scanners",
-      "path": "tool/check_raw_color_sweep.sh",
-      "command": "bash tool/check_raw_color_sweep.sh",
+      "id": "lint:riverpod-plugin-smoke",
+      "category": "lint",
+      "path": "tool/check_riverpod_lint.sh",
+      "command": "bash tool/check_riverpod_lint.sh",
       "safety": "local",
       "status": "active",
-      "description": "Scans UI code for raw color and opacity values that should use theme tokens.",
+      "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in flutter analyze.",
+      "checks": ["bash -n tool/check_riverpod_lint.sh"]
+    },
+    {
+      "id": "lint:catch-ui-plugin-smoke",
+      "category": "lint",
+      "path": "tool/check_catch_ui_lints.sh",
+      "command": "bash tool/check_catch_ui_lints.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Verifies Catch UI analysis_server_plugin diagnostics across seeded violation and clean allowance probes.",
+      "checks": ["bash -n tool/check_catch_ui_lints.sh"]
+    },
+    {
+      "id": "lint:catch-ui-drift",
+      "category": "lint",
+      "path": "tool/check_catch_ui_lint_drift.sh",
+      "command": "bash tool/check_catch_ui_lint_drift.sh",
+      "safety": "local",
+      "status": "active",
+      "description": "Reports migrated Catch UI color/text/font lint drift counts from flutter analyze output.",
       "checks": [
-        "bash -n tool/check_raw_color_sweep.sh",
-        "bash tool/check_raw_color_sweep.sh --count"
+        "bash -n tool/check_catch_ui_lint_drift.sh",
+        "bash tool/check_catch_ui_lint_drift.sh --count"
       ]
     },
     {
@@ -597,7 +614,7 @@
       "command": "node tool/migrations/firestore_relationship_migration.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "watch",
-      "description": "Historical relationship-doc migration for legacy chat messages.",
+      "description": "Historical relationship-doc migration for legacy chat messages; dry-run only unless an explicit owner ticket authorizes --apply.",
       "checks": ["node --check tool/migrations/firestore_relationship_migration.mjs"]
     },
     {
@@ -607,7 +624,7 @@
       "command": "node tool/migrations/migrate_run_data_to_events.mjs",
       "safety": "remote-write-apply-guarded",
       "status": "watch",
-      "description": "Historical run-data to event-data migration.",
+      "description": "Historical run-data to event-data migration; dry-run only unless an explicit owner ticket authorizes --apply.",
       "checks": ["node --check tool/migrations/migrate_run_data_to_events.mjs"]
     },
     {
@@ -631,7 +648,20 @@
       "checks": [
         "node --check tool/marketing/export_app_screenshots.mjs",
         "dart analyze tool/marketing/frame_device_capture.dart",
-        "node tool/marketing/export_app_screenshots.mjs --check"
+        "node tool/marketing/export_app_screenshots.mjs --check",
+        "node tool/marketing/export_app_screenshots.mjs --check-design-json"
+      ]
+    },
+    {
+      "id": "marketing:website-build",
+      "category": "marketing",
+      "path": "website/package.json",
+      "command": "npm --prefix website run build",
+      "safety": "local-build",
+      "status": "active",
+      "description": "Builds the Vite React marketing website and route-specific static metadata.",
+      "checks": [
+        "npm --prefix website run build"
       ]
     },
     {
@@ -684,13 +714,49 @@
       "checks": ["node --check tool/ui_capture/run_captures.mjs"]
     },
     {
+      "id": "design:tokens",
+      "category": "design",
+      "path": "tool/design_tokens.dart",
+      "command": "dart run tool/design_tokens.dart",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Generates shared web CSS, synced web fonts, and Flutter Dart constants from canonical design-token JSON.",
+      "checks": [
+        "dart analyze tool/design_tokens.dart lib/core/theme/generated/catch_design_tokens.g.dart",
+        "dart run tool/design_tokens.dart --check"
+      ]
+    },
+    {
+      "id": "design:context-pack",
+      "category": "design",
+      "path": "tool/design/build_context_pack.mjs",
+      "command": "node tool/design/build_context_pack.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds and checks the portable Catch design context pack.",
+      "checks": [
+        "node --check tool/design/build_context_pack.mjs",
+        "node tool/design/build_context_pack.mjs --check"
+      ]
+    },
+    {
+      "id": "design:context-pack-builder",
+      "category": "design",
+      "path": "tool/design/context_pack_builder_test.dart",
+      "command": "flutter test tool/design/context_pack_builder_test.dart",
+      "safety": "local-writes-generated",
+      "status": "support",
+      "description": "Flutter-test-bound generator used by design:context-pack.",
+      "checks": ["flutter analyze tool/design/context_pack_builder_test.dart"]
+    },
+    {
       "id": "design:preview-app",
       "category": "design",
       "path": "tool/design/design_personality_preview_app.dart",
       "command": "flutter run -t tool/design/design_personality_preview_app.dart",
       "safety": "local-ui",
       "status": "active",
-      "description": "Design personality preview app entrypoint."
+      "description": "Legacy preview app for locked light, dark event, and activity editorial identity checks."
     },
     {
       "id": "design:render-personality",
@@ -699,7 +765,7 @@
       "command": "dart tool/design/render_design_personality_previews.dart",
       "safety": "local-writes-assets",
       "status": "active",
-      "description": "Renders design personality previews."
+      "description": "Renders legacy locked identity preview strips."
     },
     {
       "id": "design:visual-review",
