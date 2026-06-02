@@ -47,5 +47,50 @@ jobs:
       - name: Validate tool manifest
         run: node tool/run.mjs check --manifest-only
 
-      - name: Run fast tool checks
-        run: node tool/run.mjs check
+      - name: Check meta tools
+        run: node tool/run.mjs check --category meta
+
+      - name: Check audit tools
+        run: node tool/run.mjs check --category audit
+
+      - name: Check remote ops tools
+        run: node tool/run.mjs check --category remote-ops
+
+      - name: Check branding tools
+        run: node tool/run.mjs check --category branding
+
+      - name: Check lint tools
+        run: node tool/run.mjs check --category lint
+
+      - name: Check scanner tools
+        run: node tool/run.mjs check --category scanners
+
+      - name: Check contract tools
+        run: node tool/run.mjs check --category contracts
+
+      - name: Check data tools
+        run: node tool/run.mjs check --category data
+
+      - name: Check demo tools
+        run: node tool/run.mjs check --category demo
+
+      - name: Check Firebase tools
+        run: node tool/run.mjs check --category firebase
+
+      - name: Check environment tools
+        run: node tool/run.mjs check --category env
+
+      - name: Check platform tools
+        run: node tool/run.mjs check --category platform
+
+      - name: Check migration tools
+        run: node tool/run.mjs check --category migrations
+
+      - name: Check marketing tools
+        run: node tool/run.mjs check --category marketing
+
+      - name: Check UI capture tools
+        run: node tool/run.mjs check --category ui-capture
+
+      - name: Check design tools
+        run: node tool/run.mjs check --category design
