@@ -364,7 +364,6 @@ abstract final class CatchTextStyles {
   static TextStyle mono(BuildContext context, {Color? color}) =>
       CatchFonts.mono(
         fontSize: 13,
-        fontWeight: FontWeight.w500,
         height: 1.40,
         color: color ?? CatchTokens.of(context).ink,
       );
@@ -403,7 +402,6 @@ abstract final class CatchTextStyles {
   static TextStyle debugDetails(BuildContext context, {Color? color}) =>
       CatchFonts.mono(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
         height: 1.35,
         color: color ?? CatchTokens.of(context).ink2,
       );

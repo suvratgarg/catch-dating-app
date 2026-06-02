@@ -51,7 +51,7 @@ scan_tappables() {
   local output=""
   while IFS=: read -r file line _; do
     [[ -z "$file" || -z "$line" ]] && continue
-    local start=$((line > 20 ? line - 20 : 1))
+    local start=$((line > 28 ? line - 28 : 1))
     local end=$((line + 20))
     local context
     context="$(sed -n "${start},${end}p" "$file")"
@@ -416,7 +416,7 @@ scan_raw_surface_containers() {
     if grep -Eq 'Container\(color:' <<<"$line_text"; then
       continue
     fi
-    if grep -Eq 'LinearGradient|CustomPaint|Image\.|Image\(|BoxFit\.|StackFit\.expand|FractionallySizedBox|photoPlaceholder|t\.heroGrad|profile-inline-underline' <<<"$context"; then
+    if grep -Eq 'LinearGradient|RadialGradient|CustomPaint|Image\.|Image\(|BoxFit\.|StackFit\.expand|FractionallySizedBox|photoPlaceholder|t\.heroGrad|profile-inline-underline' <<<"$context"; then
       continue
     fi
     if grep -Eq 'Positioned\(' <<<"$context" &&

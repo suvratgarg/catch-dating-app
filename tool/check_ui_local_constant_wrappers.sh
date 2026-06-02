@@ -50,7 +50,13 @@ find lib -type f -name '*.dart' \
       my $statement = $1;
       my $match_start = $-[1];
       next if $statement =~ /=\s*(?:CatchSpacing|CatchRadius|CatchIcon|CatchOpacity|CatchElevation|CatchMotion|CatchLayout|CatchStroke|Sizes)\b/s;
-      next unless $statement =~ /=\s*(?:-?\d|Color\(|Colors\.|Duration\(|Size\(|Offset\(|EdgeInsets\.|BorderRadius\.|Radius\.)/s;
+      my $raw_expression = $statement;
+      $raw_expression =~ s/\b(?:CatchSpacing|CatchRadius|CatchIcon|CatchOpacity|CatchElevation|CatchMotion|CatchLayout|CatchStroke|Sizes)\.[A-Za-z0-9_]+//g;
+      my $has_raw_literal = $raw_expression =~ /(?:Color\(|Colors\.|Duration\(|Size\(|Offset\()/s;
+      while ($raw_expression =~ /(?<![A-Za-z0-9_])(-?\d+(?:\.\d+)?)(?![A-Za-z0-9_])/g) {
+        $has_raw_literal = 1 if abs($1) > 1;
+      }
+      next unless $has_raw_literal;
       my $prefix = substr($text, 0, $match_start);
       my $line_number = ($prefix =~ tr/\n//) + 1;
       $statement =~ s/\s+/ /g;

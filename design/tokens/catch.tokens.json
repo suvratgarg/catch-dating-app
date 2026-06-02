@@ -1,0 +1,810 @@
+{
+  "$description": "Canonical Catch design tokens. DTCG-shaped source for website CSS and Flutter primitive generators.",
+  "$extensions": {
+    "org.catch": {
+      "version": 1,
+      "dtcg": "Design Tokens Format Module 2025.10",
+      "sources": [
+        "docs/design_language.md",
+        "lib/core/theme/catch_tokens.dart",
+        "lib/core/theme/activity_palette.dart",
+        "lib/core/theme/catch_fonts.dart",
+        "lib/core/theme/catch_text_styles.dart"
+      ],
+      "dart": {
+        "output": "lib/core/theme/generated/catch_design_tokens.g.dart"
+      },
+      "website": {
+        "output": "packages/web-config/generated/catch-tokens.css",
+        "fontFaces": [
+          {
+            "family": "Newsreader",
+            "style": "normal",
+            "weight": "300 800",
+            "source": "assets/fonts/Newsreader-Roman-VF.ttf",
+            "target": "packages/web-config/generated/assets/fonts/Newsreader-Roman-VF.ttf",
+            "url": "./assets/fonts/Newsreader-Roman-VF.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "Newsreader",
+            "style": "italic",
+            "weight": "300 800",
+            "source": "assets/fonts/Newsreader-Italic-VF.ttf",
+            "target": "packages/web-config/generated/assets/fonts/Newsreader-Italic-VF.ttf",
+            "url": "./assets/fonts/Newsreader-Italic-VF.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "Inter",
+            "style": "normal",
+            "weight": "100 900",
+            "source": "assets/fonts/Inter-Roman-VF.ttf",
+            "target": "packages/web-config/generated/assets/fonts/Inter-Roman-VF.ttf",
+            "url": "./assets/fonts/Inter-Roman-VF.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "IBM Plex Mono",
+            "style": "normal",
+            "weight": "400",
+            "source": "assets/fonts/IBMPlexMono-Regular.ttf",
+            "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Regular.ttf",
+            "url": "./assets/fonts/IBMPlexMono-Regular.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "IBM Plex Mono",
+            "style": "normal",
+            "weight": "500",
+            "source": "assets/fonts/IBMPlexMono-Medium.ttf",
+            "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Medium.ttf",
+            "url": "./assets/fonts/IBMPlexMono-Medium.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "IBM Plex Mono",
+            "style": "normal",
+            "weight": "600",
+            "source": "assets/fonts/IBMPlexMono-SemiBold.ttf",
+            "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-SemiBold.ttf",
+            "url": "./assets/fonts/IBMPlexMono-SemiBold.ttf",
+            "format": "truetype"
+          },
+          {
+            "family": "IBM Plex Mono",
+            "style": "normal",
+            "weight": "700",
+            "source": "assets/fonts/IBMPlexMono-Bold.ttf",
+            "target": "packages/web-config/generated/assets/fonts/IBMPlexMono-Bold.ttf",
+            "url": "./assets/fonts/IBMPlexMono-Bold.ttf",
+            "format": "truetype"
+          }
+        ],
+        "legacyAliases": {
+          "ink": "{theme.dark.color.bg}",
+          "ink-2": "{theme.dark.color.surface}",
+          "bone": "{theme.dark.color.ink}",
+          "bone-2": "{theme.light.color.raised}",
+          "mist": "{theme.dark.color.line2}",
+          "muted": "{theme.dark.color.ink2}",
+          "line": "{theme.dark.color.line}",
+          "line-dark": "{theme.light.color.line2}",
+          "lime": "{theme.dark.color.primary}",
+          "lime-2": "{theme.dark.color.ink2}",
+          "plum": "{theme.dark.color.surface}",
+          "oxblood": "{activity.dinner.accent}",
+          "teal": "{activity.padel.accent}",
+          "cobalt": "{activity.pubQuiz.accent}",
+          "shadow": "0 28px 80px rgba(0, 0, 0, 0.28)",
+          "shadow-soft": "0 18px 44px rgba(0, 0, 0, 0.16)",
+          "content": "{website.content.max}",
+          "gutter": "{space.s5}",
+          "radius": "{radius.sm}",
+          "header-height": "{website.header.height}"
+        }
+      }
+    }
+  },
+  "theme": {
+    "light": {
+      "color": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9568627451, 0.9450980392],
+            "hex": "#F4F4F1"
+          }
+        },
+        "surface": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [1, 1, 1],
+            "hex": "#FFFFFF"
+          }
+        },
+        "raised": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9803921569, 0.9803921569, 0.9725490196],
+            "hex": "#FAFAF8"
+          }
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "alpha": 0.55,
+            "hex": "#16140F"
+          }
+        },
+        "ink": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "hex": "#16140F"
+          }
+        },
+        "ink2": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.3294117647, 0.3098039216, 0.2784313725],
+            "hex": "#544F47"
+          }
+        },
+        "ink3": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.6117647059, 0.5843137255, 0.5411764706],
+            "hex": "#9C958A"
+          }
+        },
+        "line": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "alpha": 0.08,
+            "hex": "#16140F"
+          }
+        },
+        "line2": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "alpha": 0.14,
+            "hex": "#16140F"
+          }
+        },
+        "primary": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "hex": "#16140F"
+          }
+        },
+        "primaryInk": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9568627451, 0.9450980392],
+            "hex": "#F4F4F1"
+          }
+        },
+        "primarySoft": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9254901961, 0.9176470588, 0.8941176471],
+            "hex": "#ECEAE4"
+          }
+        },
+        "accent": {
+          "$type": "color",
+          "$value": "{theme.light.color.primary}"
+        },
+        "accentInk": {
+          "$type": "color",
+          "$value": "{theme.light.color.primaryInk}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.1843137255, 0.4901960784, 0.3333333333],
+            "hex": "#2F7D55"
+          }
+        },
+        "warning": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.7254901961, 0.4666666667, 0.0588235294],
+            "hex": "#B9770F"
+          }
+        },
+        "danger": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.7607843137, 0.1490196078, 0.1019607843],
+            "hex": "#C2261A"
+          }
+        },
+        "like": {
+          "$type": "color",
+          "$value": "{theme.light.color.primary}"
+        },
+        "pass": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.6117647059, 0.5843137255, 0.5411764706],
+            "hex": "#9C958A"
+          }
+        },
+        "gold": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.7882352941, 0.6352941176, 0.2901960784],
+            "hex": "#C9A24A"
+          }
+        }
+      },
+      "gradient": {
+        "heroGrad": {
+          "$type": "gradient",
+          "$value": {
+            "type": "linear",
+            "begin": {
+              "x": -1,
+              "y": -1
+            },
+            "end": {
+              "x": 1,
+              "y": 1
+            },
+            "colors": ["#2A2620", "#16140F"]
+          },
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true,
+              "note": "Hero/wow gradients should derive from ActivityPalette or ink."
+            }
+          }
+        }
+      }
+    },
+    "dark": {
+      "color": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0588235294, 0.0549019608, 0.062745098],
+            "hex": "#0F0E10"
+          }
+        },
+        "surface": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0941176471, 0.0901960784, 0.1019607843],
+            "hex": "#18171A"
+          }
+        },
+        "raised": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.1294117647, 0.1215686275, 0.137254902],
+            "hex": "#211F23"
+          }
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.72,
+            "hex": "#000000"
+          }
+        },
+        "ink": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9411764706, 0.9098039216],
+            "hex": "#F4F0E8"
+          }
+        },
+        "ink2": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.7294117647, 0.6980392157, 0.6549019608],
+            "hex": "#BAB2A7"
+          }
+        },
+        "ink3": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.4941176471, 0.4666666667, 0.4274509804],
+            "hex": "#7E776D"
+          }
+        },
+        "line": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9411764706, 0.9098039216],
+            "alpha": 0.13,
+            "hex": "#F4F0E8"
+          }
+        },
+        "line2": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9411764706, 0.9098039216],
+            "alpha": 0.22,
+            "hex": "#F4F0E8"
+          }
+        },
+        "primary": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.9568627451, 0.9411764706, 0.9098039216],
+            "hex": "#F4F0E8"
+          }
+        },
+        "primaryInk": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.0862745098, 0.0784313725, 0.0588235294],
+            "hex": "#16140F"
+          }
+        },
+        "primarySoft": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.1647058824, 0.1568627451, 0.1411764706],
+            "hex": "#2A2824"
+          }
+        },
+        "accent": {
+          "$type": "color",
+          "$value": "{theme.dark.color.primary}"
+        },
+        "accentInk": {
+          "$type": "color",
+          "$value": "{theme.dark.color.primaryInk}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.3568627451, 0.7529411765, 0.4862745098],
+            "hex": "#5BC07C"
+          }
+        },
+        "warning": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.8980392157, 0.6509803922, 0.3333333333],
+            "hex": "#E5A655"
+          }
+        },
+        "danger": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.8980392157, 0.337254902, 0.2941176471],
+            "hex": "#E5564B"
+          }
+        },
+        "like": {
+          "$type": "color",
+          "$value": "{theme.dark.color.primary}"
+        },
+        "pass": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.4941176471, 0.4666666667, 0.4274509804],
+            "hex": "#7E776D"
+          }
+        },
+        "gold": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [0.8784313725, 0.7058823529, 0.368627451],
+            "hex": "#E0B45E"
+          }
+        }
+      },
+      "gradient": {
+        "heroGrad": {
+          "$type": "gradient",
+          "$value": {
+            "type": "linear",
+            "begin": {
+              "x": -1,
+              "y": -1
+            },
+            "end": {
+              "x": 1,
+              "y": 1
+            },
+            "colors": ["#211F23", "#0F0E10"]
+          },
+          "$extensions": {
+            "org.catch": {
+              "deprecated": true,
+              "note": "Hero/wow gradients should derive from ActivityPalette or ink."
+            }
+          }
+        }
+      }
+    }
+  },
+  "activity": {
+    "$type": "color",
+    "socialRun": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.8470588235, 0.3529411765, 0.2352941176],
+          "hex": "#D85A3C"
+        }
+      }
+    },
+    "running": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.7882352941, 0.2823529412, 0.1803921569],
+          "hex": "#C9482E"
+        }
+      }
+    },
+    "walking": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.431372549, 0.6039215686, 0.3529411765],
+          "hex": "#6E9A5A"
+        }
+      }
+    },
+    "pickleball": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.1843137255, 0.6196078431, 0.4784313725],
+          "hex": "#2F9E7A"
+        }
+      }
+    },
+    "padel": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.1803921569, 0.6039215686, 0.6274509804],
+          "hex": "#2E9AA0"
+        }
+      }
+    },
+    "tennis": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.3058823529, 0.6039215686, 0.3058823529],
+          "hex": "#4E9A4E"
+        }
+      }
+    },
+    "badminton": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.3098039216, 0.4392156863, 0.7843137255],
+          "hex": "#4F70C8"
+        }
+      }
+    },
+    "cycling": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.2274509804, 0.4352941176, 0.8156862745],
+          "hex": "#3A6FD0"
+        }
+      }
+    },
+    "spinClass": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.2431372549, 0.3333333333, 0.7529411765],
+          "hex": "#3E55C0"
+        }
+      }
+    },
+    "yoga": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.5411764706, 0.3725490196, 0.6901960784],
+          "hex": "#8A5FB0"
+        }
+      }
+    },
+    "strengthTraining": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.6901960784, 0.3411764706, 0.2352941176],
+          "hex": "#B0573C"
+        }
+      }
+    },
+    "dinner": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.768627451, 0.3019607843, 0.4156862745],
+          "hex": "#C44D6A"
+        }
+      }
+    },
+    "pubQuiz": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.262745098, 0.337254902, 0.6588235294],
+          "hex": "#4356A8"
+        }
+      }
+    },
+    "barCrawl": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.6941176471, 0.2666666667, 0.5333333333],
+          "hex": "#B14488"
+        }
+      }
+    },
+    "singlesMixer": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.8470588235, 0.3529411765, 0.431372549],
+          "hex": "#D85A6E"
+        }
+      }
+    },
+    "openActivity": {
+      "accent": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.4784313725, 0.4431372549, 0.4],
+          "hex": "#7A7166"
+        }
+      }
+    }
+  },
+  "space": {
+    "$type": "dimension",
+    "s0": {
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "s1": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "s2": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "s3": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "s4": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "s5": {
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      }
+    },
+    "s6": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "s7": {
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      }
+    },
+    "s8": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "s9": {
+      "$value": {
+        "value": 36,
+        "unit": "px"
+      }
+    },
+    "s10": {
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "s11": {
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    },
+    "s12": {
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      }
+    },
+    "s16": {
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      }
+    },
+    "micro2": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "micro3": {
+      "$value": {
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "micro6": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "micro10": {
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      }
+    },
+    "micro14": {
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      }
+    },
+    "micro18": {
+      "$value": {
+        "value": 18,
+        "unit": "px"
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "none": {
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "xs": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "sm": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "md": {
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      }
+    },
+    "lg": {
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      }
+    },
+    "pill": {
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "serif": {
+        "$value": "Newsreader"
+      },
+      "sans": {
+        "$value": "Inter"
+      },
+      "mono": {
+        "$value": "IBM Plex Mono"
+      }
+    }
+  },
+  "website": {
+    "content": {
+      "$type": "dimension",
+      "max": {
+        "$value": {
+          "value": 1180,
+          "unit": "px"
+        }
+      }
+    },
+    "header": {
+      "$type": "dimension",
+      "height": {
+        "$value": {
+          "value": 76,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
