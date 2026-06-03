@@ -323,7 +323,7 @@ function warnRetiredProfileFields(data, doc, currentReport) {
   for (const field of retiredProfileFields) {
     if (Object.hasOwn(data, field)) {
       issue(currentReport, "warning", doc.path, "retired-profile-field",
-        `${field} is retired; run tool/data/retire_legacy_profile_fields.mjs after verifying the app-version floor.`);
+        `${field} is retired; this legacy field should not reappear after the completed remote cleanup.`);
     }
   }
 }

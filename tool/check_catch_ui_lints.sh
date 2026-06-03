@@ -62,6 +62,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// sizing:allow: seeded allow debt
+
+const double _probeCardHeight = 120;
+
 class CatchUiLintProbe extends StatelessWidget {
   const CatchUiLintProbe({super.key});
 
@@ -73,6 +77,8 @@ class CatchUiLintProbe extends StatelessWidget {
         const _ProbeSection(),
         const SizedBox(height: 12),
         const _ProbeSection(),
+        const SizedBox(height: _probeCardHeight),
+        const Icon(Icons.add, size: 24),
         const SizedBox(height: CatchSpacing.s3 + 2),
         const Padding(
           padding: EdgeInsets.fromLTRB(
@@ -84,6 +90,7 @@ class CatchUiLintProbe extends StatelessWidget {
           child: SizedBox.shrink(),
         ),
         const Chip(label: Text('raw')),
+        TextButton(onPressed: null, child: const Text('raw')),
         EventActivityBackdrop(
           visual: eventActivityVisual(ActivityKind.running),
         ),
@@ -107,8 +114,27 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         Text('raw', style: GoogleFonts.inter(fontSize: 18)),
         Text('raw', style: style),
+        Opacity(opacity: 0.5, child: const SizedBox.shrink()),
+        AnimatedOpacity(
+          opacity: 0.5,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeIn,
+          child: const SizedBox.shrink(),
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return constraints.maxWidth > 640
+                ? const SizedBox.shrink()
+                : const SizedBox.shrink();
+          },
+        ),
         Container(
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(color: Colors.black, blurRadius: 12),
+            ],
+          ),
           child: const SizedBox.shrink(),
         ),
         _buildHeader(),
@@ -142,13 +168,24 @@ expect_code_count \
   "catch_event_detail_prefers_photo_thumbnail" \
   1
 expect_code_count "seeded violation corpus" "catch_no_raw_material_control" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_button_control" 1
 expect_code_count "seeded violation corpus" "catch_no_widget_returning_method" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_color" 5
 expect_code_count "seeded violation corpus" "catch_no_raw_text_style" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_font_drift" 3
 expect_code_count "seeded violation corpus" "catch_no_raw_radius" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_content_dimension" 1
+expect_code_count "seeded violation corpus" "catch_no_local_design_constant" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_icon_source" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_icon_size" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_alpha" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_shadow" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_motion" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_breakpoint" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_surface_shell" 1
+expect_code_count "seeded violation corpus" "catch_no_allow_debt" 1
 
-run_analyze_probe "transparent and token-allow clean cases" <<'DART'
+run_analyze_probe "transparent and token-backed clean cases" <<'DART'
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -168,9 +205,6 @@ class CatchUiLintProbe extends StatelessWidget {
       children: [
         ColoredBox(color: Colors.transparent, child: SizedBox.shrink()),
         ColoredBox(color: Color(0x00000000), child: SizedBox.shrink()),
-        ColoredBox(color: Color(0xFFFF0000), child: SizedBox.shrink()), // token:allow: fixture color art
-        // token:allow: fixture color art
-        ColoredBox(color: Color(0xFFFF0000), child: SizedBox.shrink()),
         Padding(
           padding: CatchInsets.pageBody,
           child: SizedBox.shrink(),

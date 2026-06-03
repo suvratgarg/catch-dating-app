@@ -174,7 +174,7 @@
       "area": "user_profile,public_profile,migrations",
       "priority": "medium",
       "rules": ["FIRESTORE-RULES-TEST-001"],
-      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs; verification dry-runs reported changed: 0 afterward. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
+      "summary": "Implemented locally 2026-05-25 after the app-version floor was set to Remote Config min_version 1.0.1. Remote cleanup completed 2026-05-26 across dev, staging, and prod; verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Keep on watch only to avoid reintroducing photoUrls/photoThumbnailUrls/photoPrompts as canonical fields.",
       "paths": [
         "contracts/migrations/profile_photos_storage.json",
         "contracts/firestore/users.schema.json",
@@ -194,11 +194,9 @@
       "area": "swipes,firestore,migrations",
       "priority": "medium",
       "rules": ["FIRESTORE-RULES-TEST-001", "CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then tool/data/retire_legacy_profile_decisions.mjs deleted 11 dev, 0 staging, and 138 prod legacy swipes. Post-cleanup verification reports zero legacy swipes in all environments.",
+      "summary": "Implemented locally 2026-05-25 and remotely cleaned 2026-05-26. A collection-group legacy-source validation found 11 dev and 138 prod legacy swipes; missing current docs were backfilled into profileDecisions, then 11 dev, 0 staging, and 138 prod legacy swipes were deleted. Post-cleanup verification reports zero legacy swipes in all environments. The one-time parity, backfill, and cleanup tools were retired on 2026-06-02.",
       "paths": [
         "contracts/migrations/swipes_to_profile_decisions.json",
-        "tool/data/validate_profile_decision_migration.mjs",
-        "tool/data/backfill_profile_decisions.mjs",
         "firestore.rules",
         "lib/swipes/data/swipe_repository.dart",
         "functions/src/matching/onSwipeCreated.ts"
@@ -211,7 +209,7 @@
       "area": "user_profile,onboarding,swipes",
       "priority": "low",
       "rules": ["CONTROLLER-BOUNDARY-001"],
-      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod through tool/data/retire_legacy_profile_fields.mjs; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
+      "summary": "Implemented locally 2026-05-25 with activityPreferences.running as the product shape. Remote cleanup completed 2026-05-26 across dev, staging, and prod; it backfilled nested running preferences and deleted root pace/preferred/runPreferencesVersion fields. Verification dry-runs reported changed: 0 afterward. The one-time cleanup tool was retired on 2026-06-02. Dart fromJson retains legacy root-field tolerance as a watch guard only.",
       "paths": [
         "contracts/firestore/users.schema.json",
         "lib/user_profile/domain/user_profile.dart",
@@ -520,9 +518,8 @@
       "rules": [
         "FIRESTORE-RULES-TEST-001"
       ],
-      "summary": "`tool/migrations/firestore_relationship_migration.mjs` supports dry-run and apply modes for creating relationship docs and copying legacy chat messages. Before running apply on shared beta data, add seeded fixture tests for duplicates, missing docs, deleted users, legacy chats, and count mismatches, and make apply output validate aggregate counts instead of only reporting planned writes.",
+      "summary": "Relationship-document migration apply was completed before this cleanup pass, and the one-time relationship migration tool was retired on 2026-06-02. Keep this item on watch only for regressions that reintroduce relationship-array storage or require a new migration-specific validation gate.",
       "paths": [
-        "tool/migrations/firestore_relationship_migration.mjs",
         "tool/data/validate_firestore_data.mjs",
         "docs/data_contracts.md"
       ]

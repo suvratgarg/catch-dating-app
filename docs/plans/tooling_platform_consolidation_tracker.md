@@ -1,7 +1,7 @@
 ---
 doc_id: tooling-platform-consolidation-tracker
-version: 1.2
-updated: 2026-06-01
+version: 1.3
+updated: 2026-06-02
 owner: engineering
 dri: TBD
 status: remaining_work
@@ -17,9 +17,10 @@ only the work that is not implemented, not landed, or not verified.
 
 - `tool/run.mjs` manifest validation exists and `node tool/run.mjs check --manifest-only`
   passes.
-- Live manifest size is **70 tools across 15 categories**.
+- Live manifest size is **64 tools across 13 categories** after retiring completed
+  one-time migration and cleanup tools.
 - Scanner/lint/root-wrapper tooling is registered in `tool/tools_manifest.json`.
-- `tool/README.md` documents the tool layout, scanner family, analyzer plugin lints,
+- `tool/README.md` documents the tool layout, analyzer-backed UI reports,
   remote ops manifest, and synthetic persona projection.
 - `tool/check_remote_ops_manifest.mjs --check` validates the remote-ops index.
 - UI capture route inventory, capture coverage, and capture runner exist.
@@ -43,8 +44,12 @@ only the work that is not implemented, not landed, or not verified.
   projection and updates deterministically.
 - Manual remote-op entries now require `owner`, `ticket`, and `guardrail` metadata, and
   `tool/check_remote_ops_manifest.mjs --check` enforces that contract.
-- Historical one-time migrations under `tool/migrations/` are explicitly labeled as
-  audit-only and require `--owner-ticket` before `--apply`.
+- Historical one-time migrations for relationship documents and run-era data were
+  applied where needed, verified in prod, and retired.
+- Prod run-era data retirement is complete: canonical writes added the missing
+  event/club relationship targets, 1,389 legacy source documents were deleted, and
+  `runClubs`, `runs`, `runClubMemberships`, `runParticipations`, and `savedRuns`
+  all verify at zero.
 - Stale UI modernization backlog references were reconciled against the current club
   artwork and UI elevation state.
 
@@ -74,10 +79,8 @@ Acceptance:
 
 ### C. Cleanup / Retirement Candidates
 
-These require owner confirmation before deletion.
-
-- Legacy data retirement tools should be removed only after prod confirmation and remote
-  manifest cleanup.
+Closed on 2026-06-02. Completed one-time profile, relationship, and run-era
+migration tools are deleted from the worktree and removed from the manifest.
 
 ## Definition Of Done
 
