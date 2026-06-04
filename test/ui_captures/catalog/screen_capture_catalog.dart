@@ -623,20 +623,7 @@ final _dashboardJoinedClub = _captureFixtures.captureClub(
   nextEventAt: DateTime(2026, 6, 4, 6, 30),
   nextEventLabel: 'Thu 6:30 AM',
 );
-final _dashboardHostClub = _captureFixtures.captureClub(
-  id: 'club-dashboard-host',
-  name: 'Sunday Table Club',
-  description: 'Small hosted dinners with prompts that keep the room moving.',
-  area: 'Pali Hill',
-  hostUserId: _captureViewerUid,
-  hostName: 'Rohan',
-  tags: const ['dinner', 'conversation'],
-  memberCount: 76,
-  rating: 4.7,
-  reviewCount: 29,
-  nextEventAt: DateTime(2026, 6, 1, 20),
-  nextEventLabel: 'Mon 8:00 PM',
-);
+final _dashboardHostClub = _captureFixtures.hostDemoClub();
 final _dashboardSignedUpEvent = _captureFixtures.captureEvent(
   id: 'event-dashboard-next',
   club: _dashboardJoinedClub,
@@ -647,18 +634,9 @@ final _dashboardSignedUpEvent = _captureFixtures.captureEvent(
   capacityLimit: 24,
   description: 'A conversational dawn loop with coffee after.',
 );
-final _dashboardHostEvent = _captureFixtures.captureEvent(
-  id: 'event-dashboard-host-live',
+final _dashboardHostEvent = _captureFixtures.hostDemoEvent(
+  role: 'hostEventSetup',
   club: _dashboardHostClub,
-  startTime: DateTime(2026, 6, 1, 20),
-  endTime: DateTime(2026, 6, 1, 22),
-  meetingPoint: 'Pali Village Cafe',
-  activityKind: ActivityKind.dinner,
-  distanceKm: 0,
-  checkedInCount: 3,
-  capacityLimit: 16,
-  priceInPaise: 120000,
-  description: 'A long table dinner with hosted rotations and prompts.',
 );
 final _dashboardRecommendedEvent = _captureFixtures.captureEvent(
   id: 'event-dashboard-recommended',
@@ -760,31 +738,26 @@ final _clubDetailReviews = [
   ),
 ];
 
-final _hostEvent = _captureFixtures.captureEvent(
-  id: 'event-host-live-console',
+final _hostEvent = _captureFixtures.hostDemoEvent(
+  role: 'hostLiveConsole',
   club: _dashboardHostClub,
-  startTime: DateTime(2026, 5, 31, 8, 30),
-  endTime: DateTime(2026, 5, 31, 10),
-  meetingPoint: 'Pali Village Cafe',
-  activityKind: ActivityKind.dinner,
-  distanceKm: 0,
-  checkedInCount: 7,
-  waitlistedCount: 3,
-  capacityLimit: 16,
-  priceInPaise: 120000,
-  description: 'A hosted long table dinner with live rotations and prompts.',
 );
 final _hostEventSetupDraft = _captureFixtures.hostSetupDraft(
   id: 'host-event-setup-capture-draft',
   club: _dashboardHostClub,
   savedAt: _captureNow,
 );
-final _hostGuestProfiles = _captureFixtures.rosterProfiles(count: 17);
+final _hostGuestProfiles = _captureFixtures.rosterProfiles(
+  count: (_hostEvent.bookedCount ?? 0) + (_hostEvent.waitlistedCount ?? 0),
+);
 final _hostParticipations = _captureFixtures.participationsForProfiles(
   event: _hostEvent,
   profiles: _hostGuestProfiles,
-  attendedCount: 7,
-  waitlistedCount: 3,
+  attendedCount:
+      _hostEvent.checkedInCount ?? salesDemoHostScenario.defaultCheckedInCount,
+  waitlistedCount:
+      _hostEvent.waitlistedCount ??
+      salesDemoHostScenario.defaultWaitlistedCount,
   createdAt: DateTime(2026, 5, 28, 10),
 );
 final _hostParticipationRepository = FakeEventParticipationRepository()
@@ -834,20 +807,74 @@ final _hostReportPlan = _hostLivePlan.copyWith(
   activeStepIndex: 3,
   completedAt: _captureNow.add(const Duration(hours: 2)),
 );
-const _hostReportScorecard = EventSuccessScorecard(
-  bookedCount: 14,
-  checkedInCount: 7,
-  attendeesWhoMetTwoPlusPeople: 6,
-  mutualMatchCount: 4,
-  chatStartedCount: 3,
-  averageWelcomeRating: 4.7,
-  averageStructureRating: 4.5,
-  safetyIncidentCount: 0,
-  feedbackResponseCount: 6,
-  assignmentParticipantCount: 7,
-  assignmentOptOutCount: 1,
-  wingmanRequestCount: 2,
+final _hostReportScorecard = _hostDemoScorecard(
+  salesDemoHostScenario.eventByRole('hostPostEventReport').scorecard!,
 );
+
+EventSuccessScorecard _hostDemoScorecard(
+  SalesDemoHostScorecardFixture fixture,
+) {
+  return EventSuccessScorecard(
+    bookedCount: fixture.intValue('bookedCount'),
+    checkedInCount: fixture.intValue('checkedInCount'),
+    attendeesWhoMetTwoPlusPeople: fixture.intValue(
+      'attendeesWhoMetTwoPlusPeople',
+    ),
+    mutualMatchCount: fixture.intValue('mutualMatchCount'),
+    chatStartedCount: fixture.intValue('chatStartedCount'),
+    averageWelcomeRating: fixture.doubleValue('averageWelcomeRating'),
+    averageStructureRating: fixture.doubleValue('averageStructureRating'),
+    safetyIncidentCount: fixture.intValue('safetyIncidentCount'),
+    catchSentCount: fixture.intValue('catchSentCount'),
+    attendeesWhoCaughtSomeone: fixture.intValue('attendeesWhoCaughtSomeone'),
+    catchRecipientCount: fixture.intValue('catchRecipientCount'),
+    catchRate: fixture.doubleValue('catchRate'),
+    feedbackResponseCount: fixture.intValue('feedbackResponseCount'),
+    assignmentParticipantCount: fixture.intValue('assignmentParticipantCount'),
+    assignmentOptOutCount: fixture.intValue('assignmentOptOutCount'),
+    wingmanRequestCount: fixture.intValue('wingmanRequestCount'),
+    funnel: _hostDemoFunnel(fixture.mapValue('funnel')),
+  );
+}
+
+EventSuccessHostFunnel _hostDemoFunnel(Map<String, Object?>? json) {
+  if (json == null) return EventSuccessHostFunnel.empty;
+  return EventSuccessHostFunnel(
+    inviteLinkCount: _fixtureInt(json, 'inviteLinkCount'),
+    inviteOpenCount: _fixtureInt(json, 'inviteOpenCount'),
+    totalDemandCount: _fixtureInt(json, 'totalDemandCount'),
+    requestCount: _fixtureInt(json, 'requestCount'),
+    pendingRequestCount: _fixtureInt(json, 'pendingRequestCount'),
+    approvedRequestCount: _fixtureInt(json, 'approvedRequestCount'),
+    declinedRequestCount: _fixtureInt(json, 'declinedRequestCount'),
+    directSignupCount: _fixtureInt(json, 'directSignupCount'),
+    waitlistJoinCount: _fixtureInt(json, 'waitlistJoinCount'),
+    waitlistOfferCount: _fixtureInt(json, 'waitlistOfferCount'),
+    waitlistOfferActiveCount: _fixtureInt(json, 'waitlistOfferActiveCount'),
+    waitlistOfferAcceptedCount: _fixtureInt(json, 'waitlistOfferAcceptedCount'),
+    waitlistOfferDeclinedCount: _fixtureInt(json, 'waitlistOfferDeclinedCount'),
+    waitlistOfferExpiredCount: _fixtureInt(json, 'waitlistOfferExpiredCount'),
+    checkoutStartedCount: _fixtureInt(json, 'checkoutStartedCount'),
+    paymentPendingCount: _fixtureInt(json, 'paymentPendingCount'),
+    paymentCompletedCount: _fixtureInt(json, 'paymentCompletedCount'),
+    paymentFailedCount: _fixtureInt(json, 'paymentFailedCount'),
+    paymentRefundedCount: _fixtureInt(json, 'paymentRefundedCount'),
+    bookedCount: _fixtureInt(json, 'bookedCount'),
+    checkedInCount: _fixtureInt(json, 'checkedInCount'),
+    noShowCount: _fixtureInt(json, 'noShowCount'),
+    catchSentCount: _fixtureInt(json, 'catchSentCount'),
+    attendeesWhoCaughtSomeone: _fixtureInt(json, 'attendeesWhoCaughtSomeone'),
+    mutualMatchCount: _fixtureInt(json, 'mutualMatchCount'),
+    chatStartedCount: _fixtureInt(json, 'chatStartedCount'),
+    repeatAttendeeCount: _fixtureInt(json, 'repeatAttendeeCount'),
+  );
+}
+
+int _fixtureInt(Map<String, Object?> json, String key) {
+  final value = json[key];
+  return value is num ? value.round() : 0;
+}
+
 final _hostEventSuccessProviderOverrides = [
   watchEventSuccessAssignmentsProvider(
     _hostEvent.id,

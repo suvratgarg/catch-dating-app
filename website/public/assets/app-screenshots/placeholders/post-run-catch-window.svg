@@ -13,5 +13,5 @@
   <rect x="48" y="432" width="194" height="18" rx="9" fill="#1a1410"/>
   <rect x="48" y="462" width="252" height="12" rx="6" fill="#5c4a3a" opacity=".38"/>
   <rect x="24" y="522" width="342" height="64" rx="32" fill="#ffffff"/>
-  <text x="24" y="760" fill="#fff4eb" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Capture pending: salesDemo.member.postRunCatchWindow</text>
+  <text x="24" y="760" fill="#fff4eb" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Catch after-event roster</text>
 </svg>

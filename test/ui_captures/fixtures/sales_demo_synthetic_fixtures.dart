@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -16,35 +17,244 @@ import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart' as event_test;
 
 final salesDemoSyntheticFixtures = SalesDemoSyntheticFixtures.load();
+final salesDemoHostScenario = SalesDemoHostScenarioFixture.load();
 
 final _ageReferenceDate = DateTime(2026, 5, 31);
 
-const salesDemoNycRosterPersonaIds = <String>[
-  'nyc_maya_shah_001',
-  'nyc_jordan_ellis_002',
-  'nyc_sofia_martinez_003',
-  'nyc_ethan_brooks_004',
-  'nyc_aisha_williams_005',
-  'nyc_daniel_kim_006',
-  'nyc_priya_desai_007',
-  'nyc_marcus_chen_008',
-  'nyc_chloe_bennett_009',
-  'nyc_noah_patel_010',
-  'nyc_olivia_nguyen_011',
-  'nyc_caleb_johnson_012',
-  'nyc_emma_rodriguez_013',
-  'nyc_liam_oconnor_014',
-  'nyc_nia_okafor_015',
-  'nyc_arjun_mehta_016',
-  'nyc_grace_liu_017',
-  'nyc_miles_anderson_018',
-  'nyc_hannah_cohen_019',
-  'nyc_andre_baptiste_020',
-  'nyc_isabella_romano_021',
-  'nyc_samir_khan_022',
-  'nyc_taylor_reed_023',
-  'nyc_victor_alvarez_024',
-];
+class SalesDemoHostScenarioFixture {
+  const SalesDemoHostScenarioFixture._({
+    required this.id,
+    required this.referenceNow,
+    required this.host,
+    required this.club,
+    required this.eventsByRole,
+    required this.rosterPersonaIds,
+    required this.defaultCheckedInCount,
+    required this.defaultWaitlistedCount,
+    required this.viewerPersonaId,
+    required this.wingmanTargetPersonaId,
+  });
+
+  factory SalesDemoHostScenarioFixture.load({
+    String path = 'tool/demo/demo_seed/scenarios/host-demo.json',
+  }) {
+    final root = _stringMap(
+      jsonDecode(File(path).readAsStringSync()),
+      context: path,
+    );
+    final salesDemo = _stringMap(root['salesDemo'], context: '$path.salesDemo');
+    final eventSuccess = _stringMap(
+      salesDemo['eventSuccess'],
+      context: '$path.salesDemo.eventSuccess',
+    );
+    final events = <String, SalesDemoHostEventFixture>{};
+    for (final item in _list(salesDemo['events'])) {
+      final event = SalesDemoHostEventFixture._fromJson(
+        _stringMap(item, context: '$path.salesDemo.events'),
+      );
+      events[event.role] = event;
+    }
+    return SalesDemoHostScenarioFixture._(
+      id: _requiredStringFrom(root, 'id'),
+      referenceNow: DateTime.parse(
+        _requiredStringFrom(salesDemo, 'referenceNow'),
+      ),
+      host: SalesDemoHostUserFixture._fromJson(
+        _stringMap(salesDemo['host'], context: '$path.salesDemo.host'),
+      ),
+      club: SalesDemoHostClubFixture._fromJson(
+        _stringMap(salesDemo['club'], context: '$path.salesDemo.club'),
+      ),
+      eventsByRole: Map.unmodifiable(events),
+      rosterPersonaIds: List.unmodifiable(
+        _list(salesDemo['rosterPersonaIds']).whereType<String>(),
+      ),
+      defaultCheckedInCount: _requiredIntFrom(
+        eventSuccess,
+        'defaultCheckedInCount',
+      ),
+      defaultWaitlistedCount: _requiredIntFrom(
+        eventSuccess,
+        'defaultWaitlistedCount',
+      ),
+      viewerPersonaId: _requiredStringFrom(eventSuccess, 'viewerPersonaId'),
+      wingmanTargetPersonaId: _requiredStringFrom(
+        eventSuccess,
+        'wingmanTargetPersonaId',
+      ),
+    );
+  }
+
+  final String id;
+  final DateTime referenceNow;
+  final SalesDemoHostUserFixture host;
+  final SalesDemoHostClubFixture club;
+  final Map<String, SalesDemoHostEventFixture> eventsByRole;
+  final List<String> rosterPersonaIds;
+  final int defaultCheckedInCount;
+  final int defaultWaitlistedCount;
+  final String viewerPersonaId;
+  final String wingmanTargetPersonaId;
+
+  SalesDemoHostEventFixture eventByRole(String role) {
+    final event = eventsByRole[role];
+    if (event == null) {
+      throw ArgumentError.value(role, 'role', 'Unknown host demo event role.');
+    }
+    return event;
+  }
+}
+
+class SalesDemoHostUserFixture {
+  const SalesDemoHostUserFixture._({
+    required this.uid,
+    required this.displayName,
+    required this.firstName,
+    required this.phoneNumber,
+    required this.email,
+    required this.personaId,
+  });
+
+  factory SalesDemoHostUserFixture._fromJson(Map<String, Object?> json) {
+    return SalesDemoHostUserFixture._(
+      uid: _requiredStringFrom(json, 'uid'),
+      displayName: _requiredStringFrom(json, 'displayName'),
+      firstName: _requiredStringFrom(json, 'firstName'),
+      phoneNumber: _requiredStringFrom(json, 'phoneNumber'),
+      email: _requiredStringFrom(json, 'email'),
+      personaId: _requiredStringFrom(json, 'personaId'),
+    );
+  }
+
+  final String uid;
+  final String displayName;
+  final String firstName;
+  final String phoneNumber;
+  final String email;
+  final String personaId;
+}
+
+class SalesDemoHostClubFixture {
+  const SalesDemoHostClubFixture._({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.location,
+    required this.area,
+    required this.tags,
+    required this.memberCount,
+    required this.rating,
+    required this.reviewCount,
+  });
+
+  factory SalesDemoHostClubFixture._fromJson(Map<String, Object?> json) {
+    return SalesDemoHostClubFixture._(
+      id: _requiredStringFrom(json, 'id'),
+      name: _requiredStringFrom(json, 'name'),
+      description: _requiredStringFrom(json, 'description'),
+      location: _requiredStringFrom(json, 'location'),
+      area: _requiredStringFrom(json, 'area'),
+      tags: List.unmodifiable(_list(json['tags']).whereType<String>()),
+      memberCount: _requiredIntFrom(json, 'memberCount'),
+      rating: _requiredDoubleFrom(json, 'rating'),
+      reviewCount: _requiredIntFrom(json, 'reviewCount'),
+    );
+  }
+
+  final String id;
+  final String name;
+  final String description;
+  final String location;
+  final String area;
+  final List<String> tags;
+  final int memberCount;
+  final double rating;
+  final int reviewCount;
+}
+
+class SalesDemoHostEventFixture {
+  const SalesDemoHostEventFixture._({
+    required this.role,
+    required this.id,
+    required this.activityKind,
+    required this.startTime,
+    required this.endTime,
+    required this.meetingPoint,
+    required this.locationDetails,
+    required this.startingPointLat,
+    required this.startingPointLng,
+    required this.capacityLimit,
+    required this.bookedCount,
+    required this.checkedInCount,
+    required this.waitlistedCount,
+    required this.priceInPaise,
+    required this.description,
+    required this.scorecard,
+  });
+
+  factory SalesDemoHostEventFixture._fromJson(Map<String, Object?> json) {
+    return SalesDemoHostEventFixture._(
+      role: _requiredStringFrom(json, 'role'),
+      id: _requiredStringFrom(json, 'id'),
+      activityKind: _activityKindFromName(
+        _requiredStringFrom(json, 'activityKind'),
+      ),
+      startTime: DateTime.parse(_requiredStringFrom(json, 'startTime')),
+      endTime: DateTime.parse(_requiredStringFrom(json, 'endTime')),
+      meetingPoint: _requiredStringFrom(json, 'meetingPoint'),
+      locationDetails: _requiredStringFrom(json, 'locationDetails'),
+      startingPointLat: _requiredDoubleFrom(json, 'startingPointLat'),
+      startingPointLng: _requiredDoubleFrom(json, 'startingPointLng'),
+      capacityLimit: _requiredIntFrom(json, 'capacityLimit'),
+      bookedCount: _requiredIntFrom(json, 'bookedCount'),
+      checkedInCount: _requiredIntFrom(json, 'checkedInCount'),
+      waitlistedCount: _requiredIntFrom(json, 'waitlistedCount'),
+      priceInPaise: _requiredIntFrom(json, 'priceInPaise'),
+      description: _requiredStringFrom(json, 'description'),
+      scorecard: json['scorecard'] == null
+          ? null
+          : SalesDemoHostScorecardFixture._fromJson(
+              _stringMap(json['scorecard'], context: 'scorecard'),
+            ),
+    );
+  }
+
+  final String role;
+  final String id;
+  final ActivityKind activityKind;
+  final DateTime startTime;
+  final DateTime endTime;
+  final String meetingPoint;
+  final String locationDetails;
+  final double startingPointLat;
+  final double startingPointLng;
+  final int capacityLimit;
+  final int bookedCount;
+  final int checkedInCount;
+  final int waitlistedCount;
+  final int priceInPaise;
+  final String description;
+  final SalesDemoHostScorecardFixture? scorecard;
+}
+
+class SalesDemoHostScorecardFixture {
+  const SalesDemoHostScorecardFixture._(this._json);
+
+  factory SalesDemoHostScorecardFixture._fromJson(Map<String, Object?> json) =>
+      SalesDemoHostScorecardFixture._(Map.unmodifiable(json));
+
+  final Map<String, Object?> _json;
+
+  int intValue(String key) => _requiredIntFrom(_json, key);
+
+  double doubleValue(String key) => _requiredDoubleFrom(_json, key);
+
+  Map<String, Object?>? mapValue(String key) {
+    final value = _json[key];
+    if (value == null) return null;
+    return _stringMap(value, context: key);
+  }
+}
 
 class SalesDemoSyntheticFixtures {
   const SalesDemoSyntheticFixtures._(this._personas);
@@ -98,13 +308,58 @@ class SalesDemoSyntheticFixtures {
   List<PublicProfile> rosterProfiles({
     int? count,
     Iterable<String> skipPersonaIds = const <String>[],
+    SalesDemoHostScenarioFixture? scenario,
   }) {
-    final limit = count ?? salesDemoNycRosterPersonaIds.length;
+    final resolvedScenario = scenario ?? salesDemoHostScenario;
+    final limit = count ?? resolvedScenario.rosterPersonaIds.length;
     final skip = skipPersonaIds.toSet();
     return [
-      for (final personaId in salesDemoNycRosterPersonaIds)
+      for (final personaId in resolvedScenario.rosterPersonaIds)
         if (!skip.contains(personaId)) publicProfile(personaId),
     ].take(limit).toList(growable: false);
+  }
+
+  Club hostDemoClub({SalesDemoHostScenarioFixture? scenario}) {
+    final resolvedScenario = scenario ?? salesDemoHostScenario;
+    return captureClub(
+      id: resolvedScenario.club.id,
+      name: resolvedScenario.club.name,
+      description: resolvedScenario.club.description,
+      area: resolvedScenario.club.area,
+      location: resolvedScenario.club.location,
+      hostUserId: resolvedScenario.host.uid,
+      hostName: resolvedScenario.host.displayName,
+      tags: resolvedScenario.club.tags,
+      memberCount: resolvedScenario.club.memberCount,
+      rating: resolvedScenario.club.rating,
+      reviewCount: resolvedScenario.club.reviewCount,
+    );
+  }
+
+  Event hostDemoEvent({
+    required String role,
+    required Club club,
+    SalesDemoHostScenarioFixture? scenario,
+  }) {
+    final event = (scenario ?? salesDemoHostScenario).eventByRole(role);
+    return captureEvent(
+      id: event.id,
+      club: club,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      meetingPoint: event.meetingPoint,
+      locationDetails: event.locationDetails,
+      startingPointLat: event.startingPointLat,
+      startingPointLng: event.startingPointLng,
+      activityKind: event.activityKind,
+      distanceKm: event.activityKind.isDistanceBased ? 5 : 0,
+      bookedCount: event.bookedCount,
+      checkedInCount: event.checkedInCount,
+      waitlistedCount: event.waitlistedCount,
+      capacityLimit: event.capacityLimit,
+      priceInPaise: event.priceInPaise,
+      description: event.description,
+    );
   }
 
   Club captureClub({
@@ -174,6 +429,11 @@ class SalesDemoSyntheticFixtures {
       capacityLimit: capacityLimit,
       priceInPaise: priceInPaise,
       description: description,
+      eventPolicy: EventPolicyBundle.balancedSinglesEvent(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: priceInPaise,
+        maxSkew: 2,
+      ),
     );
   }
 
@@ -182,27 +442,32 @@ class SalesDemoSyntheticFixtures {
     required Club club,
     required DateTime savedAt,
     DateTime? eventDate,
+    SalesDemoHostScenarioFixture? scenario,
   }) {
-    final scheduledDate = eventDate ?? DateTime(2026, 6, 7);
+    final resolvedScenario = scenario ?? salesDemoHostScenario;
+    final setupEvent = resolvedScenario.eventByRole('hostEventSetup');
+    final scheduledDate = eventDate ?? setupEvent.startTime;
     return EventDraft(
       id: id,
       clubId: club.id,
       savedAt: savedAt,
-      activityKind: ActivityKind.dinner.name,
-      capacity: '16',
-      price: '1200',
-      description:
-          'A hosted long-table dinner with arrivals, prompts, and a warm close.',
-      meetingPoint: 'Pali Village Cafe',
-      locationDetails: 'Ask for the Catch table near the courtyard.',
-      meetingLocationAddress: 'Pali Village, Bandra West',
-      meetingLocationPlaceId: 'capture-pali-village-cafe',
-      startingPointLat: 19.0648,
-      startingPointLng: 72.8292,
+      activityKind: setupEvent.activityKind.name,
+      capacity: setupEvent.capacityLimit.toString(),
+      price: (setupEvent.priceInPaise ~/ 100).toString(),
+      description: setupEvent.description,
+      meetingPoint: setupEvent.meetingPoint,
+      locationDetails: setupEvent.locationDetails,
+      meetingLocationAddress:
+          '${resolvedScenario.club.area}, ${resolvedScenario.club.location}',
+      meetingLocationPlaceId: 'capture-${setupEvent.id}',
+      startingPointLat: setupEvent.startingPointLat,
+      startingPointLng: setupEvent.startingPointLng,
       selectedDateMillis: scheduledDate.millisecondsSinceEpoch,
-      selectedStartHour: 20,
-      selectedStartMinute: 0,
-      durationMinutes: 120,
+      selectedStartHour: scheduledDate.hour,
+      selectedStartMinute: scheduledDate.minute,
+      durationMinutes: setupEvent.endTime
+          .difference(setupEvent.startTime)
+          .inMinutes,
       minAge: '24',
       maxAge: '34',
       admissionPreset: 'balancedSingles',
@@ -428,6 +693,27 @@ int? _optionalIntFrom(Map<String, Object?> json, String key) {
   final value = json[key];
   if (value is num) return value.round();
   return null;
+}
+
+int _requiredIntFrom(Map<String, Object?> json, String key) {
+  final value = _optionalIntFrom(json, key);
+  if (value == null) {
+    throw StateError('Missing required int "$key".');
+  }
+  return value;
+}
+
+double _requiredDoubleFrom(Map<String, Object?> json, String key) {
+  final value = json[key];
+  if (value is num) return value.toDouble();
+  throw StateError('Missing required number "$key".');
+}
+
+ActivityKind _activityKindFromName(String value) {
+  return ActivityKind.values.firstWhere(
+    (kind) => kind.name == value,
+    orElse: () => throw StateError('Unknown activity kind "$value".'),
+  );
 }
 
 Map<String, Object?> _stringMap(Object? value, {required String context}) {

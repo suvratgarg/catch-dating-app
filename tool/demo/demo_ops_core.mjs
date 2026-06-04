@@ -8,6 +8,10 @@ import {
   buildClubScheduleLockDocs,
   buildUserEventScheduleLockDocs,
 } from "../demo/demo_schedule_policy.mjs";
+export {
+  listScenarioConfigs,
+  loadScenarioConfig,
+} from "./demo_seed_scenario_catalog.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -230,37 +234,10 @@ export async function findSyntheticTargets(db, {excludeUid, limit = 3}) {
   return targets;
 }
 
-export function loadScenarioConfig(nameOrPath) {
-  const filePath = scenarioPath(nameOrPath);
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
-
-export function listScenarioConfigs() {
-  const scenariosDir = path.join(toolDir, "demo_seed", "scenarios");
-  return fs.readdirSync(scenariosDir)
-    .filter((file) => file.endsWith(".json"))
-    .map((file) => loadScenarioConfig(path.join(scenariosDir, file)))
-    .sort((a, b) => a.id.localeCompare(b.id));
-}
-
 export function loadGoldenAccounts(filePath = DEFAULT_GOLDEN_ACCOUNTS_FILE) {
   const resolvedPath = path.resolve(repoRoot, filePath);
   const json = JSON.parse(fs.readFileSync(resolvedPath, "utf8"));
   return json.accounts ?? [];
-}
-
-function scenarioPath(nameOrPath) {
-  if (!nameOrPath) throw new Error("Scenario name or path is required.");
-  const directPath = path.resolve(repoRoot, nameOrPath);
-  if (fs.existsSync(directPath)) return directPath;
-  const fromScenarioDir = path.join(
-    toolDir,
-    "demo_seed",
-    "scenarios",
-    `${nameOrPath}.json`
-  );
-  if (fs.existsSync(fromScenarioDir)) return fromScenarioDir;
-  throw new Error(`Unknown demo scenario: ${nameOrPath}`);
 }
 
 export function buildSwipeDocs({admin, marker, uidA, uidB, eventId, now}) {

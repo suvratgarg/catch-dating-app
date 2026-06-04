@@ -10,5 +10,5 @@
   <rect x="24" y="526" width="342" height="138" rx="28" fill="#0b3b3c"/>
   <rect x="48" y="554" width="178" height="16" rx="8" fill="#ffffff" opacity=".9"/>
   <rect x="48" y="586" width="246" height="12" rx="6" fill="#ffffff" opacity=".42"/>
-  <text x="24" y="760" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Capture pending: salesDemo.host.eventSetup</text>
+  <text x="24" y="760" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Catch host setup</text>
 </svg>

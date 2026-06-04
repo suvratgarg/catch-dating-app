@@ -1,7 +1,7 @@
 {
   "version": 1,
   "updated": "2026-05-31",
-  "description": "Marketing website image slots that must be sourced from deterministic app UI captures. Entries stay pending until the synthetic demo fixture and screenshot harness are ready.",
+  "description": "Marketing website image slots sourced from deterministic app UI captures. Active entries are regenerated from synthetic demo fixtures and synced into website assets; placeholders remain only for future pending slots.",
   "captures": [
     {
       "id": "member-event-discovery",
@@ -42,7 +42,7 @@
       "websitePath": "website/public/assets/app-screenshots/match-chat-context.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/match-chat-context.svg",
       "alt": "Catch match chat screen with shared event context",
-      "caption": "Matches start with the room they already shared.",
+      "caption": "Matches start with the event they already shared.",
       "walkthroughStep": "Match"
     },
     {
@@ -56,7 +56,7 @@
       "websitePath": "website/public/assets/app-screenshots/host-event-setup.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-setup.svg",
       "alt": "Catch host event setup screen",
-      "caption": "Create the event, set the access model, and preview the guest experience.",
+      "caption": "Set admission rules, invite links, waitlist, payments, and Event Success before publishing.",
       "walkthroughStep": "Setup"
     },
     {
@@ -70,7 +70,7 @@
       "websitePath": "website/public/assets/app-screenshots/host-live-console.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.svg",
       "alt": "Catch host live console with roster and check-in controls",
-      "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
+      "caption": "Check in guests, manage waitlist movement, and run Event Success modules from one screen.",
       "walkthroughStep": "Live"
     },
     {
@@ -84,7 +84,7 @@
       "websitePath": "website/public/assets/app-screenshots/host-post-event-report.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.svg",
       "alt": "Catch host post-event report screen",
-      "caption": "Review attendance and event momentum after the room closes.",
+      "caption": "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.",
       "walkthroughStep": "Report"
     }
   ]

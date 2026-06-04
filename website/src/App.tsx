@@ -22,12 +22,10 @@ interface PageMeta {
 
 interface CaptureRecord {
   id: string;
-  status: string;
   webPath: string;
   alt: string;
   caption: string;
   walkthroughStep: string;
-  statusLabel: string;
 }
 
 interface CaptureManifest {
@@ -36,7 +34,7 @@ interface CaptureManifest {
 
 const pageMeta: Record<PageKey, PageMeta> = {
   home: {
-    title: "Catch | The room before the match",
+    title: "Catch | The event before the match",
     description:
       "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
     canonicalPath: "/",
@@ -45,7 +43,7 @@ const pageMeta: Record<PageKey, PageMeta> = {
   host: {
     title: "Catch for Hosts | Host better singles events",
     description:
-      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real rooms into better post-event connections.",
+      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real attendance into post-event connections.",
     canonicalPath: "/host/",
     twitterDescription:
       "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts.",
@@ -81,20 +79,20 @@ const formatCards = [
   {
     mark: "CU",
     title: "Custom hosts",
-    body: "Bring the room. Catch gives you the event and dating layer.",
+    body: "Bring the format. Catch gives you the event and dating layer.",
   },
 ];
 
 const memberLoop = [
   {
     step: "01",
-    title: "Choose the room",
+    title: "Choose the event",
     body: "Browse events by format, city, host, timing, and social structure.",
   },
   {
     step: "02",
     title: "Be present",
-    body: "Check in, meet the room, and let the host guide the live moment.",
+    body: "Check in, meet people, and let the host guide the live moment.",
   },
   {
     step: "03",
@@ -112,22 +110,22 @@ const hostLoop = [
   {
     step: "01",
     title: "Design the format",
-    body: "Select the activity, interaction model, live modules, and room style.",
+    body: "Select the activity, interaction model, capacity, and live modules.",
   },
   {
     step: "02",
     title: "Shape demand",
-    body: "Use admission, invite access, waitlists, cohorts, and pricing controls.",
+    body: "Use invite links, requests, waitlists, offers, cohorts, and pricing controls.",
   },
   {
     step: "03",
-    title: "Run the room",
-    body: "Check people in, guide live moments, and keep safety controls close.",
+    title: "Run the event",
+    body: "Check people in, guide live moments, and adjust assignments when needed.",
   },
   {
     step: "04",
-    title: "Close the loop",
-    body: "Unlock private catches and review aggregate post-event signal.",
+    title: "Learn what worked",
+    body: "Unlock private catches, then review aggregate attendance and connection signal.",
   },
 ];
 
@@ -154,17 +152,68 @@ const hostModules = [
   {
     label: "Arrival",
     title: "First Hello",
-    body: "A lightweight check-in ritual that helps people start before the room gets loud.",
+    body: "A lightweight check-in ritual that helps guests start with a real person, not a blank prompt.",
   },
   {
     label: "Movement",
-    title: "Rotations and pods",
-    body: "Pair, team, table, and group structures that match the event format.",
+    title: "Assignments",
+    body: "Balanced pairs, tables, pods, teams, and rotations with host-visible reasons and overrides.",
+  },
+  {
+    label: "Control",
+    title: "Host console",
+    body: "Check-in, live steps, reveal moments, planned breaks, and safety actions stay in one place.",
   },
   {
     label: "After",
-    title: "Private catch window",
-    body: "Interest stays private unless mutual, then chat opens with shared context.",
+    title: "Catch window",
+    body: "Private interest opens after attendance. Mutual catches become chats with shared context.",
+  },
+];
+
+const hostEvidenceMetrics = [
+  {value: "64", label: "invite activity"},
+  {value: "24", label: "demand signals"},
+  {value: "17", label: "booked guests"},
+  {value: "13", label: "checked in"},
+  {value: "11", label: "caught someone"},
+  {value: "18", label: "mutual matches"},
+];
+
+const hostSurfaceCards = [
+  {
+    label: "Bookings",
+    title: "Control who gets in before the event fills.",
+    body: "Open sales, invite-only drops, request-to-join, balanced ratios, paid checkout, waitlists, and host-issued offers all feed the same roster.",
+  },
+  {
+    label: "Live",
+    title: "Give the event structure while it is happening.",
+    body: "First Hello, prompts, check-in, assignments, rotations, planned breaks, reveal moments, overrides, and safety controls are built for the host screen.",
+  },
+  {
+    label: "After",
+    title: "Turn attendance into a private matching window.",
+    body: "Guests can catch privately after they show up. Hosts see aggregate demand, matches, chats, and repeat attendance, never private target identities.",
+  },
+];
+
+const hostProofRows = [
+  {
+    label: "Invite links",
+    proof: "See which invites create interest, bookings, paid guests, check-ins, catches, matches, and chats.",
+  },
+  {
+    label: "Waitlist movement",
+    proof: "Offer expiring spots without overselling, and keep the list clear as guests accept, decline, or miss the window.",
+  },
+  {
+    label: "Event Success",
+    proof: "Create pairs, tables, pods, teams, and rotations around the guest mix, event size, host constraints, and last-minute changes.",
+  },
+  {
+    label: "Host reports",
+    proof: "Reports stay current as bookings, attendance, waitlist offers, catches, matches, and chats move.",
   },
 ];
 
@@ -206,7 +255,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
         <section className="hero hero--home">
           <div className="hero__media" aria-hidden="true">
             <img
-              src="/assets/marketing/catch-hero-event-temporary.png"
+              src="/assets/marketing/catch-hero-event.png"
               alt=""
             />
           </div>
@@ -215,11 +264,11 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
             <div className="hero__copy">
               <h1 data-reveal>Catch</h1>
               <p className="hero__headline" data-reveal>
-                The room before the match.
+                The event before the match.
               </p>
               <p className="hero__body" data-reveal>
                 Curated singles events become real dating context. Pick a hosted
-                room, show up, catch privately, and start the conversation with
+                event, show up, catch privately, and start the conversation with
                 something you already shared.
               </p>
               <div className="hero__actions" data-reveal>
@@ -240,7 +289,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
               </div>
             </div>
 
-            <aside className="hero-panel" aria-label="Catch event preview" data-reveal>
+            <aside className="hero-panel" aria-label="Catch event panel" data-reveal>
               <div className="event-ticket">
                 <div>
                   <span className="ui-label">Tonight</span>
@@ -261,7 +310,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
         <section className="format-band" id="formats" aria-labelledby="formats-title">
           <div className="section-heading" data-reveal>
-            <h2 id="formats-title">Not another swipe feed. A better room.</h2>
+            <h2 id="formats-title">Not another swipe feed. A better way to meet.</h2>
             <p>
               Catch is format-aware: every event can carry the right amount of
               structure, from light social flow to guided rotations and reveal
@@ -289,7 +338,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
         <section className="proof-section" id="hosts">
           <div className="proof-section__copy" data-reveal>
-            <h2>For hosts who care about the room, not just the RSVP list.</h2>
+            <h2>For hosts who care about the experience, not just the RSVP list.</h2>
             <p>
               Catch gives hosts the controls that make singles events safer, more
               balanced, and more memorable: admission rules, waitlists, cohort
@@ -309,11 +358,10 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
         <section className="captures-section" aria-labelledby="app-proof-title">
           <div className="section-heading" data-reveal>
-            <h2 id="app-proof-title">Product proof, sourced from the app.</h2>
+            <h2 id="app-proof-title">See the Catch loop in motion.</h2>
             <p>
-              Temporary placeholders stay wired to the marketing capture manifest.
-              As demo fixtures mature, these slots become current app screenshots
-              without hand-authoring marketing mockups.
+              Browse the event, show up, catch privately, and let the shared
+              experience carry the first conversation.
             </p>
           </div>
 
@@ -341,7 +389,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
         <section className="waitlist-section" id="waitlist" aria-labelledby="waitlist-title">
           <div className="waitlist__intro" data-reveal>
-            <h2 id="waitlist-title">Be first in the room.</h2>
+            <h2 id="waitlist-title">Be first in your city.</h2>
             <p>
               Join the member waitlist or apply as a founding host. We will reach
               out as city access opens.
@@ -353,7 +401,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
       <SiteFooter
         brandHref="#top"
-        body="Curated singles events. Real rooms. Better conversations."
+        body="Curated singles events. Real context. Better conversations."
         links={[
           {href: "/host/", label: "For hosts"},
           {href: "#formats", label: "Formats"},
@@ -384,11 +432,12 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
         <section className="host-hero">
           <div className="host-hero__inner">
             <div className="host-hero__copy">
-              <h1 data-reveal>Host the room people want to join.</h1>
+              <h1 data-reveal>Run singles events people actually follow through on.</h1>
               <p data-reveal>
-                Catch is the event operating system for curated singles rooms:
-                format setup, admission, waitlist, live facilitation, check-in,
-                private catches, and aggregate post-event signal.
+                Catch handles the loop around your event: booking logic,
+                admission, waitlists, live facilitation, check-in, private
+                catches, and the post-event report that shows what actually
+                happened.
               </p>
               <div className="hero__actions" data-reveal>
                 <a
@@ -408,54 +457,102 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
               </div>
             </div>
 
-            <div className="host-console" aria-label="Host console preview" data-reveal>
+            <div className="host-console" aria-label="Host console" data-reveal>
               <div className="host-console__top">
-                <span>Live room</span>
-                <strong>Singles mixer</strong>
+                <span>Host console</span>
+                <strong>West Village mixer</strong>
               </div>
               <div className="host-console__grid">
                 <div>
                   <span className="ui-label">Admission</span>
-                  <strong>Balanced + invite code</strong>
+                  <strong>Requests + invite links</strong>
                 </div>
                 <div>
-                  <span className="ui-label">Current moment</span>
-                  <strong>Pair rotation</strong>
+                  <span className="ui-label">Live moment</span>
+                  <strong>Balanced rotations</strong>
                 </div>
                 <div>
                   <span className="ui-label">After event</span>
-                  <strong>Private catch window</strong>
+                  <strong>18 mutual matches</strong>
                 </div>
               </div>
               <div className="host-console__timeline">
-                <span>Arrival</span>
-                <span>Prompt</span>
-                <span>Rotate</span>
-                <span>Catch</span>
-                <span>Report</span>
+                {hostEvidenceMetrics.map((metric) => (
+                  <span key={metric.label}>
+                    <strong>{metric.value}</strong>
+                    {metric.label}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
+        <section
+          className="host-evidence"
+          aria-labelledby="host-evidence-title"
+        >
+          <div className="section-heading" data-reveal>
+            <span className="ui-label">What a host can see</span>
+            <h2 id="host-evidence-title">
+              Catch shows the path from interest to attendance to follow-up.
+            </h2>
+            <p>
+              Catch answers more than "who RSVP'd?" It shows where demand came
+              from, where people dropped off, and whether the event created real
+              connection afterward.
+            </p>
+          </div>
+          <div className="evidence-strip" data-reveal>
+            {hostEvidenceMetrics.map((metric) => (
+              <div key={metric.label}>
+                <strong>{metric.value}</strong>
+                <span>{metric.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="story-section" id="workflow" aria-labelledby="workflow-title">
           <div className="section-heading" data-reveal>
-            <h2 id="workflow-title">Everything around the event has one owner.</h2>
+            <h2 id="workflow-title">One loop, from booking to connection.</h2>
             <p>
-              Hosts should not have to stitch together forms, payment links,
-              spreadsheets, group chats, manual intros, and safety notes.
+              Replace forms, payment links, spreadsheets, group chats, manual
+              intros, and safety notes with one flow built around the event.
             </p>
           </div>
           <LoopList items={hostLoop} modifier="loop-list--host" />
         </section>
 
+        <section
+          className="surface-section"
+          aria-labelledby="surface-title"
+        >
+          <div className="section-heading section-heading--wide" data-reveal>
+            <span className="ui-label">What Catch handles</span>
+            <h2 id="surface-title">
+              The platform is not just ticketing, and it is not just matching.
+            </h2>
+          </div>
+          <div className="surface-grid">
+            {hostSurfaceCards.map((item) => (
+              <article data-reveal key={item.label}>
+                <span>{item.label}</span>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="proof-section proof-section--host" id="live">
           <div className="proof-section__copy" data-reveal>
-            <h2>Live facilitation should feel built in, not bolted on.</h2>
+            <span className="ui-label">Event Success</span>
+            <h2>Live facilitation is built into the event flow.</h2>
             <p>
-              Every supported format can use the modules that logically fit it:
-              prompts, rotations, micro-pods, arrival moments, reveals, host help,
-              private crushes, feedback, and reports.
+              Every supported format can use the modules that fit its shape:
+              arrival moments, prompts, balanced assignments, rotations,
+              host overrides, reveals, private catches, feedback, and reports.
             </p>
           </div>
 
@@ -470,13 +567,35 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
           </div>
         </section>
 
+        <section
+          className="proof-ledger"
+          aria-labelledby="proof-ledger-title"
+        >
+          <div className="section-heading" data-reveal>
+            <span className="ui-label">Host confidence</span>
+            <h2 id="proof-ledger-title">Run the whole event loop from one place.</h2>
+            <p>
+              Catch gives hosts the controls to shape demand, guide the live
+              experience, and understand what happened after people met.
+            </p>
+          </div>
+          <div className="proof-ledger__rows">
+            {hostProofRows.map((item) => (
+              <article data-reveal key={item.label}>
+                <strong>{item.label}</strong>
+                <p>{item.proof}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="captures-section" id="screens" aria-labelledby="screens-title">
           <div className="section-heading" data-reveal>
-            <h2 id="screens-title">Host screens stay app-sourced.</h2>
+            <span className="ui-label">Host tools</span>
+            <h2 id="screens-title">See the host workflow end to end.</h2>
             <p>
-              These website slots follow the same capture manifest as the member
-              site. Temporary placeholders are replaced by deterministic app
-              captures when the demo fixture is ready.
+              Set up the event, manage the live moment, and review the signals
+              that help the next event get better.
             </p>
           </div>
 
@@ -494,11 +613,11 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
         >
           <div className="waitlist__intro" data-reveal>
             <h2 id="host-apply-title">
-              Bring the room. Catch handles the layer around it.
+              Bring the format. Catch handles the loop around it.
             </h2>
             <p>
               Apply as a founding host if you run events, communities, venues, or
-              formats where the right singles should meet with more context.
+              formats where the right singles can meet with more context.
             </p>
           </div>
           <WaitlistForm variant="host" />
@@ -507,7 +626,7 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
 
       <SiteFooter
         brandHref="/"
-        body="Host-led singles events with real context."
+        body="Host-led singles events with booking, facilitation, matching, and insight."
         links={[
           {href: "/", label: "Member site"},
           {href: "#workflow", label: "Workflow"},
@@ -593,7 +712,7 @@ function LoopList({
 
 function HostProductBoard() {
   return (
-    <div className="product-board" aria-label="Catch host product preview" data-reveal>
+    <div className="product-board" aria-label="Catch host product board" data-reveal>
       <div className="product-board__nav">
         <span>Format</span>
         <span>Admission</span>
@@ -619,7 +738,7 @@ function HostProductBoard() {
           </div>
         </article>
         <article className="product-board__dark">
-          <span className="ui-label">Live room</span>
+          <span className="ui-label">Live event</span>
           <h3>Host mode</h3>
           <p>Check-in, prompts, rotations, and safety controls stay in one surface.</p>
           <div className="live-meter">
@@ -655,9 +774,6 @@ function CaptureCard({
       <figcaption>
         <span>{capture?.walkthroughStep ?? fallbackStep}</span>
         <strong>{capture?.caption ?? fallbackCaptionForCapture(id)}</strong>
-        <em data-capture-status={capture?.status}>
-          {capture?.statusLabel ?? "Pending synthetic fixture capture"}
-        </em>
       </figcaption>
     </figure>
   );
@@ -1002,7 +1118,7 @@ function useMarketingCaptures() {
         setCaptures(byId);
       })
       .catch(() => {
-        // Local static previews can run without a fetchable manifest.
+        // Local static pages can run without a fetchable manifest.
       });
 
     return () => {
@@ -1085,15 +1201,15 @@ function fallbackCaptionForCapture(id: string) {
     case "post-run-catch-window":
       return "The roster opens after attendance creates shared context.";
     case "match-chat-context":
-      return "Matches start with the room they already shared.";
+      return "Matches start with the event they already shared.";
     case "host-event-setup":
-      return "Create the event, set the access model, and preview the guest experience.";
+      return "Set admission rules, invite links, waitlist, payments, and Event Success before publishing.";
     case "host-live-console":
-      return "Track bookings, waitlist, attendance, and live host tools from one screen.";
+      return "Check in guests, manage waitlist movement, and run Event Success modules from one screen.";
     case "host-post-event-report":
-      return "Review attendance and event momentum after the room closes.";
+      return "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.";
     default:
-      return "Catch app screen sourced from the marketing capture manifest.";
+      return "Catch app screen for members and hosts.";
   }
 }
 
