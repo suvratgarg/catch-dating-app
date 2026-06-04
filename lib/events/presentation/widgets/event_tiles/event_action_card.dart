@@ -127,11 +127,13 @@ class EventActionCardAction {
     required this.label,
     required this.icon,
     required this.onPressed,
+    this.key,
     this.variant = CatchButtonVariant.secondary,
     this.isLoading = false,
     this.semanticsLabel,
   });
 
+  final Key? key;
   final String label;
   final IconData icon;
   final VoidCallback? onPressed;
@@ -191,6 +193,7 @@ class _EventActionCardActions extends StatelessWidget {
         for (var index = 0; index < actions.length; index += 1) ...[
           if (index > 0) gapH10,
           CatchButton(
+            key: actions[index].key,
             label: actions[index].label,
             icon: Icon(actions[index].icon, size: CatchIcon.md),
             variant: actions[index].variant,

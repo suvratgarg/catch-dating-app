@@ -32,6 +32,9 @@ class EventBookingController extends _$EventBookingController {
   static final cancelMutation = Mutation<void>();
   static final joinWaitlistMutation = Mutation<void>();
   static final leaveWaitlistMutation = Mutation<void>();
+  static final createWaitlistOfferMutation = Mutation<void>();
+  static final acceptWaitlistOfferMutation = Mutation<void>();
+  static final declineWaitlistOfferMutation = Mutation<void>();
   static final approveJoinRequestMutation = Mutation<void>();
   static final declineJoinRequestMutation = Mutation<void>();
   static final markAttendanceMutation = Mutation<void>();
@@ -55,6 +58,7 @@ class EventBookingController extends _$EventBookingController {
     required Event event,
     required UserProfile user,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     _requireSignedIn(action: 'book an event');
     final paymentRepo = ref.read(paymentRepositoryProvider);
@@ -64,6 +68,7 @@ class EventBookingController extends _$EventBookingController {
       await paymentRepo.bookFreeEvent(
         eventId: event.id,
         inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
       );
       return null;
     } else {
@@ -80,6 +85,7 @@ class EventBookingController extends _$EventBookingController {
         userEmail: user.email,
         userContact: user.phoneNumber,
         inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
       );
     }
   }
@@ -134,17 +140,74 @@ class EventBookingController extends _$EventBookingController {
   }
 
   /// Adds the user to the waitlist for a full event.
-  Future<void> joinWaitlist({required Event event, String? inviteCode}) async {
+  Future<void> joinWaitlist({
+    required Event event,
+    String? inviteCode,
+    String? inviteLinkId,
+  }) async {
     _requireSignedIn(action: 'join a waitlist');
     await ref
         .read(eventRepositoryProvider)
-        .joinWaitlistViaFunction(eventId: event.id, inviteCode: inviteCode);
+        .joinWaitlistViaFunction(
+          eventId: event.id,
+          inviteCode: inviteCode,
+          inviteLinkId: inviteLinkId,
+        );
   }
 
   /// Removes the user from the waitlist.
   Future<void> leaveWaitlist({required Event event}) async {
     _requireSignedIn(action: 'leave a waitlist');
     await ref.read(eventRepositoryProvider).leaveWaitlist(eventId: event.id);
+  }
+
+  /// Offers one waitlisted person an expiring spot.
+  Future<void> createWaitlistOffer({
+    required String eventId,
+    required String userId,
+  }) => createWaitlistOffers(eventId: eventId, userIds: [userId]);
+
+  /// Offers multiple waitlisted people expiring spots in roster order.
+  Future<void> createWaitlistOffers({
+    required String eventId,
+    required List<String> userIds,
+  }) async {
+    _requireSignedIn(action: 'offer a waitlist spot');
+    if (userIds.isEmpty) return;
+    await ref
+        .read(eventRepositoryProvider)
+        .createWaitlistOffers(eventId: eventId, userIds: userIds);
+  }
+
+  /// Accepts an expiring waitlist offer. Free offers book immediately; paid
+  /// offers unlock and start the existing checkout flow.
+  Future<PaymentConfirmationData?> acceptWaitlistOffer({
+    required Event event,
+    required UserProfile user,
+    String? inviteCode,
+    String? inviteLinkId,
+  }) async {
+    _requireSignedIn(action: 'accept a waitlist offer');
+    final response = await ref
+        .read(eventRepositoryProvider)
+        .acceptWaitlistOffer(eventId: event.id);
+    if (response.requiresPayment) {
+      return book(
+        event: event,
+        user: user,
+        inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
+      );
+    }
+    return null;
+  }
+
+  /// Declines an expiring waitlist offer without leaving the waitlist.
+  Future<void> declineWaitlistOffer({required Event event}) async {
+    _requireSignedIn(action: 'decline a waitlist offer');
+    await ref
+        .read(eventRepositoryProvider)
+        .declineWaitlistOffer(eventId: event.id);
   }
 
   /// Approves a request-to-join participation. Free approved requests are

@@ -25,6 +25,7 @@ import {
 import {
   participantUids,
   eventParticipationId,
+  eventWaitlistOfferId,
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
   waitlistedEventParticipationsInTransaction,
@@ -232,6 +233,9 @@ export async function cancelEventSignUpHandler(
     let promotedParticipationRef:
         FirebaseFirestore.DocumentReference | null = null;
     let promotedParticipationPatch: Record<string, unknown> | null = null;
+    let promotedOfferRef:
+        FirebaseFirestore.DocumentReference | null = null;
+    let promotedOfferPatch: Record<string, unknown> | null = null;
     let promotedNotification:
         {uid: string; token?: string; title: string; body: string} | null =
         null;
@@ -294,6 +298,9 @@ export async function cancelEventSignUpHandler(
       }
 
       // Promote this user.
+      const promotedOfferId = eventWaitlistOfferId(eventId, waitlistUserId);
+      const promotionTimestamp =
+          admin.firestore.Timestamp.fromMillis(deps.nowMillis());
       nextBookedCount += 1;
       nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
       newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
@@ -312,6 +319,35 @@ export async function cancelEventSignUpHandler(
         genderAtSignup: wGender,
         cohortAtSignup: wCohort,
       });
+      promotedParticipationPatch.waitlistOfferStatus = "accepted";
+      promotedParticipationPatch.waitlistOfferedAt = promotionTimestamp;
+      promotedParticipationPatch.waitlistOfferExpiresAt = promotionTimestamp;
+      promotedParticipationPatch.waitlistOfferAcceptedAt = promotionTimestamp;
+      promotedParticipationPatch.waitlistOfferId = promotedOfferId;
+      promotedOfferRef = db
+        .collection("eventWaitlistOffers")
+        .doc(promotedOfferId);
+      promotedOfferPatch = {
+        eventId,
+        clubId: event.clubId,
+        uid: waitlistUserId,
+        cohortAtOffer: wCohort,
+        status: "accepted",
+        source: "cancellation",
+        offeredBy: null,
+        offeredAt: promotionTimestamp,
+        expiresAt: promotionTimestamp,
+        decidedAt: promotionTimestamp,
+        expiringNotifiedAt: null,
+        inviteLinkId: typeof (
+          waitlistedParticipation.data as Record<string, unknown>
+        ).inviteLinkId === "string" ?
+          (waitlistedParticipation.data as Record<string, unknown>)
+            .inviteLinkId :
+          null,
+        createdAt: promotionTimestamp,
+        updatedAt: promotionTimestamp,
+      };
       const notificationCopy = eventActivityNotificationCopy(
         "waitlistPromotion",
         event
@@ -358,6 +394,9 @@ export async function cancelEventSignUpHandler(
       tx.set(promotedParticipationRef, promotedParticipationPatch, {
         merge: true,
       });
+    }
+    if (promotedOfferRef && promotedOfferPatch) {
+      tx.set(promotedOfferRef, promotedOfferPatch, {merge: true});
     }
     if (promotedNotification) {
       setActivityNotificationInTransaction(tx, db, {

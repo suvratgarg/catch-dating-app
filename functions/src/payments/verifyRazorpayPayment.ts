@@ -9,6 +9,10 @@ import Razorpay from "razorpay";
 import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
+import {
+  incrementInviteLinkCounterBestEffort,
+  InviteAttribution,
+} from "../events/inviteLinks";
 import {buildPaymentRecord, verifyPaidEventBooking} from "./paymentValidation";
 import {
   createRazorpayClient,
@@ -87,6 +91,12 @@ export async function verifyRazorpayPaymentHandler(
     payment,
     expectedUserId: userId,
   });
+  const inviteAttribution = inviteAttributionFromBooking(booking);
+  const paymentRef = db.collection("payments").doc(paymentId);
+  const existingPaymentSnap = await paymentRef.get();
+  const shouldIncrementPaidCount =
+    inviteAttribution !== null &&
+    existingPaymentSnap.data()?.status !== "completed";
 
   // Sign the user up for the event. If this fails (e.g. event filled up in a
   // race condition between order creation and payment), issue an immediate
@@ -101,6 +111,7 @@ export async function verifyRazorpayPaymentHandler(
     await deps.signUpForEvent(db, booking.eventId, userId, paymentId, {
       hasValidInvite: booking.inviteVerified,
       ...(hasHostApproval ? {hasHostApproval} : {}),
+      ...(inviteAttribution ? {inviteAttribution} : {}),
     });
   } catch (signUpError) {
     let refundSucceeded = false;
@@ -113,7 +124,7 @@ export async function verifyRazorpayPaymentHandler(
       logger.error("Refund failed for payment", paymentId, refundError);
     }
 
-    await db.collection("payments").doc(paymentId).set({
+    await paymentRef.set({
       ...buildPaymentRecord({
         userId,
         orderId,
@@ -123,6 +134,8 @@ export async function verifyRazorpayPaymentHandler(
         currency: booking.currency,
         status: refundSucceeded ? "refunded" : "completed",
         signUpFailed: true,
+        inviteLinkId: booking.inviteLinkId,
+        inviteSource: booking.inviteSource,
       }),
       createdAt: deps.serverTimestamp(),
     });
@@ -131,7 +144,15 @@ export async function verifyRazorpayPaymentHandler(
   }
 
   // Record the completed payment.
-  await db.collection("payments").doc(paymentId).set({
+  if (shouldIncrementPaidCount && inviteAttribution) {
+    await incrementInviteLinkCounterBestEffort({
+      db,
+      inviteLinkId: inviteAttribution.inviteLinkId,
+      field: "paidCount",
+    });
+  }
+
+  await paymentRef.set({
     ...buildPaymentRecord({
       userId,
       orderId,
@@ -140,11 +161,28 @@ export async function verifyRazorpayPaymentHandler(
       amountInPaise: booking.amountInPaise,
       currency: booking.currency,
       status: "completed",
+      inviteLinkId: booking.inviteLinkId,
+      inviteSource: booking.inviteSource,
     }),
     createdAt: deps.serverTimestamp(),
   });
 
   return {verified: true, eventId: booking.eventId};
+}
+
+/**
+ * Converts verified booking metadata into invite attribution.
+ * @param {object} booking Verified booking metadata.
+ * @return {InviteAttribution|null} Invite attribution when available.
+ */
+function inviteAttributionFromBooking(booking: {
+  inviteLinkId?: string | null;
+  inviteSource?: string | null;
+}): InviteAttribution | null {
+  return booking.inviteLinkId ? {
+    inviteLinkId: booking.inviteLinkId,
+    inviteSource: booking.inviteSource ?? null,
+  } : null;
 }
 
 /**

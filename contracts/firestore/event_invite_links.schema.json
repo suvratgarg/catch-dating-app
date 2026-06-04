@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_invite_links.schema.json",
+  "title": "EventInviteLinkDocument",
+  "description": "Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventInviteLinks",
+  "x-firestore-path": "eventInviteLinks/{inviteLinkId}",
+  "x-document-id-field": "id",
+  "x-owner": "event invite link callables and event-success scorecard recomputation",
+  "required": [
+    "eventId",
+    "clubId",
+    "hostUid",
+    "label",
+    "source",
+    "tokenHash",
+    "openCount",
+    "requestCount",
+    "confirmedCount",
+    "paidCount",
+    "checkedInCount",
+    "catcherCount",
+    "matchCount",
+    "chatStartedCount",
+    "disabledAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostUid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "tokenHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "confirmedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "paidCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "checkedInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "catcherCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "matchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "chatStartedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "disabledAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+}

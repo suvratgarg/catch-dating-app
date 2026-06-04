@@ -237,6 +237,16 @@ test("generates default-cadence mutual-interest schedules", async () => {
   assert.equal(slots.length, 2);
   assert.equal(slots[0].compatibility, "mutual_interest");
   assert.equal(slots[0].label, "Round 1");
+  assert.equal(slots[0].slotId, "round-0-pair-0");
+  assert.equal(slots[0].unitKind, "pairs");
+  assert.equal(slots[0].peerCount, 1);
+  assert.ok((slots[0].whyCodes as string[]).includes("fresh_peer"));
+  assert.deepEqual(manOne?.rotationFairness, {
+    assignedRoundCount: 2,
+    sitOutRoundCount: 0,
+    uniquePeerCount: 2,
+    repeatPeerCount: 0,
+  });
 });
 
 test("uses the saved event-structure rotation cadence", async () => {
@@ -287,6 +297,48 @@ test("uses the saved event-structure rotation cadence", async () => {
     "eventSuccessAssignments/event-1_guided_rotations_man-1"
   );
   assert.match(String(assignment?.displaySubtitle), /20 min each/);
+});
+
+test("honors saved allow-exhausted rotation repeat policy", async () => {
+  const {firestore, deps} = harness({
+    "eventSuccessPlans/event-1": {
+      eventId: "event-1",
+      clubId: "club-1",
+      selectedModuleIds: ["guided_rotations"],
+      structureConfig: {
+        unitKind: "pairs",
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        revealCountdownSeconds: 10,
+        rotationRepeatStrategy: "allowWhenExhausted",
+        maxPairMeetings: 2,
+      },
+    },
+    ...participation("man-1"),
+    ...participation("woman-1"),
+    "users/man-1": user("man", ["woman"]),
+    "users/woman-1": user("woman", ["man"]),
+  });
+
+  const result = await generateEventSuccessRotationsHandler(
+    callableRequest("host-1"),
+    deps
+  );
+
+  assert.deepEqual(result, {assignmentCount: 2, roundCount: 2});
+  const assignment = firestore.get(
+    "eventSuccessAssignments/event-1_guided_rotations_man-1"
+  );
+  assert.equal(assignment?.displayTitle, "2 guided rotations");
+  assert.deepEqual(assignment?.rotationFairness, {
+    assignedRoundCount: 2,
+    sitOutRoundCount: 0,
+    uniquePeerCount: 1,
+    repeatPeerCount: 1,
+  });
+  const slots = assignment?.rotationSlots as Array<Record<string, unknown>>;
+  assert.equal(slots[1].peerUid, "woman-1");
+  assert.ok((slots[1].whyCodes as string[]).includes("repeat_peer"));
 });
 
 test(
@@ -562,8 +614,18 @@ test(
     );
     const slots = nonbinaryAttendee?.rotationSlots as
       Array<Record<string, unknown>>;
+    const sitOutSlots = nonbinaryAttendee?.sitOutSlots as
+      Array<Record<string, unknown>>;
     assert.equal(slots.length, 1);
     assert.equal(slots[0].compatibility, "one_way_interest");
+    assert.equal(sitOutSlots.length, 2);
+    assert.equal((sitOutSlots[0].whyCodes as string[])[0], "sit_out");
+    assert.deepEqual(nonbinaryAttendee?.rotationFairness, {
+      assignedRoundCount: 1,
+      sitOutRoundCount: 2,
+      uniquePeerCount: 1,
+      repeatPeerCount: 0,
+    });
   }
 );
 

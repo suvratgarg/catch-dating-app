@@ -42,6 +42,7 @@ class BottomCTA extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.leadingContent,
+    this.buttonKey,
     this.isLoading = false,
     this.backgroundColor,
     this.dividerColor,
@@ -52,6 +53,7 @@ class BottomCTA extends StatelessWidget {
 
   /// Optional widget placed to the left of the primary button.
   final Widget? leadingContent;
+  final Key? buttonKey;
 
   /// Shows the design-system loading state inside the button when true.
   final bool isLoading;
@@ -81,6 +83,7 @@ class BottomCTA extends StatelessWidget {
                 if (leadingContent != null) ...[leadingContent!, gapW14],
                 Expanded(
                   child: CatchButton(
+                    key: buttonKey,
                     label: label,
                     onPressed: onPressed,
                     size: CatchButtonSize.lg,

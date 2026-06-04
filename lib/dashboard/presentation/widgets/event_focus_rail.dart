@@ -44,6 +44,8 @@ class EventFocusRail extends ConsumerStatefulWidget {
 
   static const railKey = Key('dashboard-event-focus-rail');
   static const pageIndicatorKey = Key('dashboard-event-focus-page-indicator');
+  static Key actionKey(String actionName) =>
+      ValueKey('dashboard-event-focus-action-$actionName');
 
   final List<Event> upcomingEvents;
   final UserProfile reviewer;
@@ -453,6 +455,7 @@ class _EventFocusCard extends StatelessWidget {
       actions: [
         for (var index = 0; index < actions.length; index += 1)
           EventActionCardAction(
+            key: actions[index].key,
             label: actions[index].label,
             icon: actions[index].icon,
             variant: index == 0
@@ -507,6 +510,8 @@ extension on _EventFocusAction {
       _EventFocusAction.review => PhosphorIconsRegular.pencilLine,
     };
   }
+
+  Key get key => EventFocusRail.actionKey(name);
 }
 
 class _EventFocusItem {

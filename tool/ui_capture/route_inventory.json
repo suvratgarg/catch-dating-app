@@ -3,8 +3,8 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "3cc532a0efa234d292e7eea8d359d4049d9262d6455f696873673af8b693ccfd",
-    "routeContractSha256": "da732908078d4c3dc2c62c47b8bb14bb8c5289c413642e8359b9c152338690f4",
+    "normalizedFileSha256": "6c11c44aed0ed8c33cf40fcad662d28eebb3dd35cb99b366c0ca7aa77429a343",
+    "routeContractSha256": "57eaf56cc8aed62031e52c4b9c0845ab7f8980d0a36b53e00773a8930be47bbf",
     "goRouteCount": 40,
     "shellBranchCount": 5,
     "enumRouteCount": 40,

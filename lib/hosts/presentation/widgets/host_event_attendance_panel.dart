@@ -22,6 +22,7 @@ import 'package:catch_dating_app/events/presentation/event_booking_controller.da
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -180,8 +181,16 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
     final declineMutation = ref.watch(
       EventBookingController.declineJoinRequestMutation,
     );
+    final offerMutation = ref.watch(
+      EventBookingController.createWaitlistOfferMutation,
+    );
     final errorMutation =
-        [markAttendanceMutation, approveMutation, declineMutation].firstWhere(
+        [
+          markAttendanceMutation,
+          approveMutation,
+          declineMutation,
+          offerMutation,
+        ].firstWhere(
           (mutation) => mutation.hasError,
           orElse: () => markAttendanceMutation,
         );
@@ -298,6 +307,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
             .watch(EventBookingController.approveJoinRequestMutation)
             .isPending ||
         ref.watch(EventBookingController.declineJoinRequestMutation).isPending;
+    final offerActionPending = ref
+        .watch(EventBookingController.createWaitlistOfferMutation)
+        .isPending;
     final requestIds = usesRequestApproval
         ? viewModel.waitlistedIds
         : const <String>[];
@@ -310,6 +322,11 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         (viewModel.event.capacityLimit - viewModel.totalCount)
             .clamp(0, viewModel.event.capacityLimit)
             .toInt();
+    final offerableWaitlistIds = _offerableWaitlistIds(waitlistedIds);
+    final bulkOfferCount = _bulkOfferCount(
+      offerableWaitlistIds,
+      remainingSlots,
+    );
     final filters = [
       _RosterFilterSpec(
         filter: _RosterFilter.all,
@@ -364,6 +381,18 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         ),
         gapH12,
       ],
+      if (bulkOfferCount > 0) ...[
+        _WaitlistBulkOfferAction(
+          count: bulkOfferCount,
+          candidateCount: offerableWaitlistIds.length,
+          isPending: offerActionPending,
+          onOffer: () => _createWaitlistOffers(
+            ref,
+            offerableWaitlistIds.take(bulkOfferCount).toList(growable: false),
+          ),
+        ),
+        gapH12,
+      ],
       _RosterSearchBar(
         value: searchQuery,
         label: 'Search people',
@@ -391,8 +420,10 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
               participation: viewModel.participationFor(uid),
               usesRequestApproval: usesRequestApproval,
               requestActionPending: requestActionPending,
+              offerActionPending: offerActionPending,
               onApprove: () => _approveJoinRequest(ref, uid),
               onDecline: () => _declineJoinRequest(ref, uid),
+              onOffer: () => _createWaitlistOffer(ref, uid),
             ),
         ],
       ),
@@ -400,6 +431,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
   }
 
   List<Widget> _liveChildren(BuildContext context, WidgetRef ref) {
+    final offerActionPending = ref
+        .watch(EventBookingController.createWaitlistOfferMutation)
+        .isPending;
     final checkedInBaseIds = viewModel.attendeeIds
         .where(viewModel.attendedIds.contains)
         .toList(growable: false);
@@ -407,6 +441,15 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         .where((uid) => !viewModel.attendedIds.contains(uid))
         .toList(growable: false);
     final waitlistedBaseIds = viewModel.waitlistedIds;
+    final remainingSlots =
+        (viewModel.event.capacityLimit - viewModel.totalCount)
+            .clamp(0, viewModel.event.capacityLimit)
+            .toInt();
+    final offerableWaitlistIds = _offerableWaitlistIds(waitlistedBaseIds);
+    final bulkOfferCount = _bulkOfferCount(
+      offerableWaitlistIds,
+      remainingSlots,
+    );
     final allBaseIds = [
       ...needsCheckInBaseIds,
       ...checkedInBaseIds,
@@ -462,6 +505,18 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
         onFilterChanged: onFilterChanged,
       ),
       gapH12,
+      if (bulkOfferCount > 0) ...[
+        _WaitlistBulkOfferAction(
+          count: bulkOfferCount,
+          candidateCount: offerableWaitlistIds.length,
+          isPending: offerActionPending,
+          onOffer: () => _createWaitlistOffers(
+            ref,
+            offerableWaitlistIds.take(bulkOfferCount).toList(growable: false),
+          ),
+        ),
+        gapH12,
+      ],
       _RosterSearchBar(
         value: searchQuery,
         label: 'Search roster',
@@ -485,7 +540,9 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
               participation: viewModel.participationFor(uid),
               attended: viewModel.attendedIds.contains(uid),
               usesRequestApproval: usesRequestApproval,
+              offerActionPending: offerActionPending,
               onToggle: () => _toggleAttendance(ref, uid),
+              onOffer: () => _createWaitlistOffer(ref, uid),
             ),
         ],
       ),
@@ -616,6 +673,13 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
 
   String? _photoFor(String uid) => profiles[uid]?.$2;
 
+  List<String> _offerableWaitlistIds(List<String> ids) {
+    return [
+      for (final uid in ids)
+        if (_canCreateWaitlistOffer(viewModel.participationFor(uid))) uid,
+    ];
+  }
+
   List<String> _matchingIds(List<String> ids) {
     final query = searchQuery.trim().toLowerCase();
     if (query.isEmpty) return ids;
@@ -661,6 +725,24 @@ class _ParticipationLifecycleBoard extends ConsumerWidget {
       (tx) async => tx
           .get(eventBookingControllerProvider.notifier)
           .declineJoinRequest(eventId: viewModel.event.id, userId: uid),
+    );
+  }
+
+  void _createWaitlistOffer(WidgetRef ref, String uid) {
+    _createWaitlistOffers(ref, [uid]);
+  }
+
+  void _createWaitlistOffers(WidgetRef ref, List<String> userIds) {
+    if (userIds.isEmpty) return;
+    final mutation = ref.read(
+      EventBookingController.createWaitlistOfferMutation,
+    );
+    if (mutation.isPending) return;
+    EventBookingController.createWaitlistOfferMutation.run(
+      ref,
+      (tx) async => tx
+          .get(eventBookingControllerProvider.notifier)
+          .createWaitlistOffers(eventId: viewModel.event.id, userIds: userIds),
     );
   }
 
@@ -955,6 +1037,74 @@ class _RosterFilterTile extends StatelessWidget {
   }
 }
 
+class _WaitlistBulkOfferAction extends StatelessWidget {
+  const _WaitlistBulkOfferAction({
+    required this.count,
+    required this.candidateCount,
+    required this.isPending,
+    required this.onOffer,
+  });
+
+  final int count;
+  final int candidateCount;
+  final bool isPending;
+  final VoidCallback onOffer;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final remainingAfterSend = candidateCount - count;
+    final detail = remainingAfterSend > 0
+        ? '$remainingAfterSend still waiting after this offer'
+        : 'Next $count ${_personNoun(count)} on the waitlist';
+    return CatchSurface(
+      padding: CatchInsets.compactControlContent,
+      borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
+      radius: CatchRadius.md,
+      backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
+      child: Row(
+        children: [
+          Icon(
+            CatchIcons.groupAddOutlined,
+            color: t.warning,
+            size: CatchIcon.md,
+          ),
+          gapW10,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Waitlist movement',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.labelL(context, color: t.ink),
+                ),
+                Text(
+                  detail,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ),
+          gapW10,
+          CatchButton(
+            label: 'Offer next $count',
+            size: CatchButtonSize.sm,
+            variant: CatchButtonVariant.secondary,
+            icon: Icon(CatchIcons.sendRounded),
+            isLoading: isPending,
+            onPressed: isPending ? null : onOffer,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 Color _filterBackground(CatchBadgeTone tone, CatchTokens t) {
   return switch (tone) {
     CatchBadgeTone.success => t.success.withValues(
@@ -987,6 +1137,24 @@ Color _filterForeground(CatchBadgeTone tone, CatchTokens t) {
     CatchBadgeTone.neutral => t.ink2,
   };
 }
+
+int _bulkOfferCount(List<String> offerableIds, int remainingSlots) {
+  if (offerableIds.isEmpty || remainingSlots <= 0) return 0;
+  return offerableIds.length < remainingSlots
+      ? offerableIds.length
+      : remainingSlots;
+}
+
+bool _canCreateWaitlistOffer(EventParticipation? participation) {
+  if (participation?.status != EventParticipationStatus.waitlisted) {
+    return false;
+  }
+  final offerStatus = participation?.waitlistOfferStatus;
+  return offerStatus != EventWaitlistOfferStatus.active &&
+      offerStatus != EventWaitlistOfferStatus.accepted;
+}
+
+String _personNoun(int count) => count == 1 ? 'person' : 'people';
 
 class _RosterTableShell extends StatelessWidget {
   const _RosterTableShell({
@@ -1103,8 +1271,10 @@ class _SetupReviewRow extends StatelessWidget {
     required this.participation,
     required this.usesRequestApproval,
     required this.requestActionPending,
+    required this.offerActionPending,
     required this.onApprove,
     required this.onDecline,
+    required this.onOffer,
   });
 
   final String uid;
@@ -1113,8 +1283,10 @@ class _SetupReviewRow extends StatelessWidget {
   final EventParticipation? participation;
   final bool usesRequestApproval;
   final bool requestActionPending;
+  final bool offerActionPending;
   final VoidCallback onApprove;
   final VoidCallback onDecline;
+  final VoidCallback onOffer;
 
   @override
   Widget build(BuildContext context) {
@@ -1152,6 +1324,12 @@ class _SetupReviewRow extends StatelessWidget {
                       onApprove: onApprove,
                       onDecline: onDecline,
                     )
+                  : participation?.status == EventParticipationStatus.waitlisted
+                  ? _WaitlistOfferButton(
+                      participation: participation,
+                      isPending: offerActionPending,
+                      onOffer: onOffer,
+                    )
                   : _ProfileButton(uid: uid),
             ),
           ),
@@ -1165,6 +1343,15 @@ class _SetupReviewRow extends StatelessWidget {
   EventParticipation? participation,
   bool usesRequestApproval,
 ) {
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return (label: 'Offered', tone: CatchBadgeTone.brand);
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return (label: 'Accepted', tone: CatchBadgeTone.success);
+  }
   return switch (participation?.status) {
     EventParticipationStatus.attended || EventParticipationStatus.signedUp => (
       label: 'Booked',
@@ -1183,6 +1370,19 @@ class _SetupReviewRow extends StatelessWidget {
 }
 
 String _setupMeta(EventParticipation? participation, bool usesRequestApproval) {
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return 'Offer sent';
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return 'Accepted offer';
+  }
+  if (participation?.status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.expired) {
+    return 'Offer expired';
+  }
   return switch (participation?.status) {
     EventParticipationStatus.attended ||
     EventParticipationStatus.signedUp => 'Approved',
@@ -1263,6 +1463,40 @@ class _ProfileButton extends StatelessWidget {
   }
 }
 
+class _WaitlistOfferButton extends StatelessWidget {
+  const _WaitlistOfferButton({
+    required this.participation,
+    required this.isPending,
+    required this.onOffer,
+  });
+
+  final EventParticipation? participation;
+  final bool isPending;
+  final VoidCallback onOffer;
+
+  @override
+  Widget build(BuildContext context) {
+    final offerStatus = participation?.waitlistOfferStatus;
+    if (offerStatus == EventWaitlistOfferStatus.active ||
+        offerStatus == EventWaitlistOfferStatus.accepted) {
+      return CatchBadge(
+        label: offerStatus == EventWaitlistOfferStatus.accepted
+            ? 'Accepted'
+            : 'Offered',
+        tone: offerStatus == EventWaitlistOfferStatus.accepted
+            ? CatchBadgeTone.success
+            : CatchBadgeTone.brand,
+      );
+    }
+    return CatchButton(
+      label: 'Offer',
+      size: CatchButtonSize.sm,
+      variant: CatchButtonVariant.secondary,
+      onPressed: isPending ? null : onOffer,
+    );
+  }
+}
+
 class _LiveRosterRow extends StatelessWidget {
   const _LiveRosterRow({
     required this.uid,
@@ -1271,7 +1505,9 @@ class _LiveRosterRow extends StatelessWidget {
     required this.participation,
     required this.attended,
     required this.usesRequestApproval,
+    required this.offerActionPending,
     required this.onToggle,
+    required this.onOffer,
   });
 
   final String uid;
@@ -1280,12 +1516,22 @@ class _LiveRosterRow extends StatelessWidget {
   final EventParticipation? participation;
   final bool attended;
   final bool usesRequestApproval;
+  final bool offerActionPending;
   final VoidCallback onToggle;
+  final VoidCallback onOffer;
 
   @override
   Widget build(BuildContext context) {
     final status = participation?.status;
     final signal = switch (status) {
+      EventParticipationStatus.waitlisted
+          when participation?.waitlistOfferStatus ==
+              EventWaitlistOfferStatus.active =>
+        (label: 'Offered', tone: CatchBadgeTone.brand),
+      EventParticipationStatus.waitlisted
+          when participation?.waitlistOfferStatus ==
+              EventWaitlistOfferStatus.accepted =>
+        (label: 'Accepted', tone: CatchBadgeTone.success),
       EventParticipationStatus.waitlisted when usesRequestApproval => (
         label: 'Request',
         tone: CatchBadgeTone.brand,
@@ -1301,7 +1547,7 @@ class _LiveRosterRow extends StatelessWidget {
         ? participation?.attendedAt == null
               ? 'Checked in'
               : EventFormatters.time(participation!.attendedAt!)
-        : _reportMeta(status);
+        : _reportMeta(participation);
     final canToggle =
         status == EventParticipationStatus.signedUp ||
         status == EventParticipationStatus.attended;
@@ -1331,12 +1577,20 @@ class _LiveRosterRow extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: canToggle
                   ? CatchButton(
+                      key: HostEventActionKeys.attendeeCheckInButton(uid),
                       label: attended ? 'Undo' : 'Check in',
                       size: CatchButtonSize.sm,
                       variant: attended
                           ? CatchButtonVariant.secondary
                           : CatchButtonVariant.primary,
                       onPressed: onToggle,
+                    )
+                  : status == EventParticipationStatus.waitlisted &&
+                        !usesRequestApproval
+                  ? _WaitlistOfferButton(
+                      participation: participation,
+                      isPending: offerActionPending,
+                      onOffer: onOffer,
                     )
                   : _ProfileButton(uid: uid),
             ),
@@ -1365,7 +1619,17 @@ class _ReportRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = participation?.status;
+    final offerStatus = participation?.waitlistOfferStatus;
     final attendance = switch (status) {
+      EventParticipationStatus.waitlisted
+          when offerStatus == EventWaitlistOfferStatus.active =>
+        (label: 'Offered', tone: CatchBadgeTone.brand),
+      EventParticipationStatus.waitlisted
+          when offerStatus == EventWaitlistOfferStatus.accepted =>
+        (label: 'Accepted', tone: CatchBadgeTone.success),
+      EventParticipationStatus.waitlisted
+          when offerStatus == EventWaitlistOfferStatus.expired =>
+        (label: 'Expired', tone: CatchBadgeTone.neutral),
       EventParticipationStatus.waitlisted => (
         label: 'Wait',
         tone: CatchBadgeTone.warning,
@@ -1388,7 +1652,7 @@ class _ReportRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 5,
-            child: _NameMeta(name: name, meta: _reportMeta(status)),
+            child: _NameMeta(name: name, meta: _reportMeta(participation)),
           ),
           Expanded(
             flex: 3,
@@ -1407,7 +1671,21 @@ class _ReportRow extends StatelessWidget {
   }
 }
 
-String _reportMeta(EventParticipationStatus? status) {
+String _reportMeta(EventParticipation? participation) {
+  final status = participation?.status;
+  final offerStatus = participation?.waitlistOfferStatus;
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.active) {
+    return 'Offer sent';
+  }
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.accepted) {
+    return 'Accepted offer';
+  }
+  if (status == EventParticipationStatus.waitlisted &&
+      offerStatus == EventWaitlistOfferStatus.expired) {
+    return 'Offer expired';
+  }
   return switch (status) {
     EventParticipationStatus.waitlisted => 'Waitlisted',
     EventParticipationStatus.attended ||

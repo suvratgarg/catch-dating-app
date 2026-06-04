@@ -237,12 +237,25 @@ function deps({
     action: string
   ) => Promise<void>;
 }) {
+  const allowedCollections = [
+    "events",
+    "users",
+    "eventPrivateAccess",
+    "eventParticipations",
+    "eventWaitlistOffers",
+  ];
   const firestore = {
     collection: (path: string) => {
-      assert.match(
-        path,
-        /^(events|users|eventPrivateAccess|eventParticipations)$/
-      );
+      assert.ok(allowedCollections.includes(path), path);
+      if (path === "eventWaitlistOffers") {
+        return {
+          where: () => ({
+            where: () => ({
+              get: async () => ({docs: [], empty: true}),
+            }),
+          }),
+        };
+      }
       return {
         doc: (id: string) => ({
           get: async () => {

@@ -200,6 +200,16 @@ export interface EventSuccessStructureConfig {
   unitCount?: number | null;
   rotationIntervalMinutes?: number | null;
   revealCountdownSeconds: number;
+  rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
+  maxPairMeetings?: number;
+  /**
+   * @maxItems 8
+   */
+  balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+  /**
+   * @maxItems 8
+   */
+  clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
 }
 
 export interface EventSuccessQuestionnaireConfig {
@@ -784,6 +794,29 @@ export interface EventPrivateAccessDocument {
 }
 
 /**
+ * Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.
+ */
+export interface EventInviteLinkDocument {
+  eventId: string;
+  clubId: string;
+  hostUid: string;
+  label: string;
+  source: string | null;
+  tokenHash: string;
+  openCount: number;
+  requestCount: number;
+  confirmedCount: number;
+  paidCount: number;
+  checkedInCount: number;
+  catcherCount: number;
+  matchCount: number;
+  chatStartedCount: number;
+  disabledAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Canonical event roster edge stored at eventParticipations/{participationId}.
  */
 export interface EventParticipationDocument {
@@ -807,6 +840,48 @@ export interface EventParticipationDocument {
   hostApprovalStatus?: "pending" | "approved" | "declined" | null;
   hostApprovalDecidedAt?: FirebaseFirestore.Timestamp | null;
   hostApprovalDecidedBy?: string | null;
+  /**
+   * Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.
+   */
+  waitlistOfferStatus?:
+    | ("active" | "accepted" | "declined" | "expired" | "cancelled")
+    | null;
+  waitlistOfferedAt?: FirebaseFirestore.Timestamp | null;
+  waitlistOfferExpiresAt?: FirebaseFirestore.Timestamp | null;
+  waitlistOfferAcceptedAt?: FirebaseFirestore.Timestamp | null;
+  waitlistOfferId?: string | null;
+  /**
+   * Named host invite link that first attributed this participation, when present.
+   */
+  inviteLinkId?: string | null;
+  /**
+   * Host-facing source label copied from the invite link for durable reporting.
+   */
+  inviteSource?: string | null;
+  /**
+   * Server time when invite attribution was first attached to the roster edge.
+   */
+  inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-owned waitlist offer stored at eventWaitlistOffers/{eventId_uid}. Offers reserve a waitlist slot until accepted, declined, expired, or cancelled.
+ */
+export interface EventWaitlistOfferDocument {
+  eventId: string;
+  clubId: string;
+  uid: string;
+  cohortAtOffer: string;
+  status: "active" | "accepted" | "declined" | "expired" | "cancelled";
+  source: "host" | "autoPromotion" | "ratioBalancing" | "cancellation";
+  offeredBy: string | null;
+  offeredAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  decidedAt: FirebaseFirestore.Timestamp | null;
+  expiringNotifiedAt?: FirebaseFirestore.Timestamp | null;
+  inviteLinkId?: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -827,6 +902,16 @@ export interface EventSuccessPlanDocument {
     unitCount?: number | null;
     rotationIntervalMinutes?: number | null;
     revealCountdownSeconds: number;
+    rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
+    maxPairMeetings?: number;
+    /**
+     * @maxItems 8
+     */
+    balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+    /**
+     * @maxItems 8
+     */
+    clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
   };
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
@@ -964,35 +1049,100 @@ export interface EventSuccessAssignmentDocument {
    * @maxItems 20
    */
   peerUids: string[];
+  unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+  unitIndex?: number;
+  unitLabel?: string;
+  whySummary?: string;
+  /**
+   * @maxItems 12
+   */
+  whyCodes?: (
+    | "host_override"
+    | "mutual_interest"
+    | "one_way_interest"
+    | "questionnaire_match"
+    | "social_fallback"
+    | "balanced_group"
+    | "fresh_peer"
+    | "repeat_peer"
+    | "sit_out"
+    | "pair_slot"
+    | "pod_slot"
+    | "table_slot"
+    | "team_slot"
+    | "whole_group_slot"
+  )[];
+  rotationFairness?: {
+    assignedRoundCount: number;
+    sitOutRoundCount: number;
+    uniquePeerCount: number;
+    repeatPeerCount: number;
+  };
+  /**
+   * @maxItems 24
+   */
+  sitOutSlots?: {
+    roundIndex: number;
+    label: string;
+    startsAt: FirebaseFirestore.Timestamp;
+    endsAt: FirebaseFirestore.Timestamp;
+    whySummary: string;
+    /**
+     * @maxItems 12
+     */
+    whyCodes: "sit_out"[];
+  }[];
   /**
    * @maxItems 24
    */
   rotationSlots?: {
+    slotId?: string;
     roundIndex: number;
     label: string;
     startsAt: FirebaseFirestore.Timestamp;
     endsAt: FirebaseFirestore.Timestamp;
     peerUid: string;
+    unitKind?: "pairs";
+    unitIndex?: number;
+    peerCount?: number;
     compatibility:
       | "mutual_interest"
       | "one_way_interest"
       | "questionnaire_match"
       | "social"
       | "host_override";
+    whySummary?: string;
+    /**
+     * @maxItems 12
+     */
+    whyCodes?: (
+      | "host_override"
+      | "mutual_interest"
+      | "one_way_interest"
+      | "questionnaire_match"
+      | "social_fallback"
+      | "fresh_peer"
+      | "repeat_peer"
+      | "pair_slot"
+    )[];
   }[];
   /**
    * @maxItems 24
    */
   groupRotationSlots?: {
+    slotId?: string;
     roundIndex: number;
     label: string;
     unitLabel: string;
+    unitKind?: "wholeGroup" | "pods" | "pairs" | "teams" | "tables";
+    unitIndex?: number;
     startsAt: FirebaseFirestore.Timestamp;
     endsAt: FirebaseFirestore.Timestamp;
     /**
      * @maxItems 20
      */
     peerUids: string[];
+    peerCount?: number;
     compatibility:
       | "mutual_interest"
       | "one_way_interest"
@@ -1000,6 +1150,24 @@ export interface EventSuccessAssignmentDocument {
       | "social"
       | "mixed"
       | "host_override";
+    whySummary?: string;
+    /**
+     * @maxItems 12
+     */
+    whyCodes?: (
+      | "host_override"
+      | "mutual_interest"
+      | "questionnaire_match"
+      | "social_fallback"
+      | "balanced_group"
+      | "fresh_peer"
+      | "repeat_peer"
+      | "pair_slot"
+      | "pod_slot"
+      | "table_slot"
+      | "team_slot"
+      | "whole_group_slot"
+    )[];
   }[];
   source: "server_v1" | "host_override_v1" | "server";
   createdAt: FirebaseFirestore.Timestamp;
@@ -1016,11 +1184,47 @@ export interface EventSuccessScorecardDocument {
   checkedInCount: number;
   feedbackCount: number;
   attendeesWhoMetTwoPlusPeople: number;
+  catchSentCount: number;
+  attendeesWhoCaughtSomeone: number;
+  catchRecipientCount: number;
+  catchRate: number;
   mutualMatchCount: number;
   chatStartedCount: number;
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
+  /**
+   * Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.
+   */
+  funnel: {
+    inviteLinkCount: number;
+    inviteOpenCount: number;
+    totalDemandCount: number;
+    requestCount: number;
+    pendingRequestCount: number;
+    approvedRequestCount: number;
+    declinedRequestCount: number;
+    directSignupCount: number;
+    waitlistJoinCount: number;
+    waitlistOfferCount: number;
+    waitlistOfferActiveCount: number;
+    waitlistOfferAcceptedCount: number;
+    waitlistOfferDeclinedCount: number;
+    waitlistOfferExpiredCount: number;
+    checkoutStartedCount: number;
+    paymentPendingCount: number;
+    paymentCompletedCount: number;
+    paymentFailedCount: number;
+    paymentRefundedCount: number;
+    bookedCount: number;
+    checkedInCount: number;
+    noShowCount: number;
+    catchSentCount: number;
+    attendeesWhoCaughtSomeone: number;
+    mutualMatchCount: number;
+    chatStartedCount: number;
+    repeatAttendeeCount: number;
+  };
   updatedAt: FirebaseFirestore.Timestamp;
 }
 
@@ -1093,6 +1297,14 @@ export interface PaymentDocument {
   hostUserId?: string;
   stripeAccountId?: string | null;
   applicationFeeAmount?: number;
+  /**
+   * Named host invite link attributed to this payment, when present.
+   */
+  inviteLinkId?: string | null;
+  /**
+   * Host-facing invite source copied from eventInviteLinks.
+   */
+  inviteSource?: string | null;
   signUpFailed: boolean;
   createdAt: FirebaseFirestore.Timestamp;
 }
@@ -1202,6 +1414,9 @@ export interface ActivityNotificationDocument {
     | "eventReminder"
     | "eventSignup"
     | "waitlistPromotion"
+    | "waitlistOffer"
+    | "waitlistOfferExpiring"
+    | "waitlistOfferExpired"
     | "eventCancelled"
     | "eventUpdated"
     | "clubUpdate";

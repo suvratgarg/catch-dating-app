@@ -92,6 +92,176 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'unitKind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'wholeGroup',
+        'pods',
+        'pairs',
+        'teams',
+        'tables',
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'unitIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'unitLabel': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 80,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'whySummary': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'whyCodes': <String, Object?>{
+      'type': 'array',
+      'maxItems': 12,
+      'items': <String, Object?>{
+        'type': 'string',
+        'enum': <Object?>[
+          'host_override',
+          'mutual_interest',
+          'one_way_interest',
+          'questionnaire_match',
+          'social_fallback',
+          'balanced_group',
+          'fresh_peer',
+          'repeat_peer',
+          'sit_out',
+          'pair_slot',
+          'pod_slot',
+          'table_slot',
+          'team_slot',
+          'whole_group_slot',
+        ],
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'rotationFairness': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'assignedRoundCount',
+        'sitOutRoundCount',
+        'uniquePeerCount',
+        'repeatPeerCount',
+      ],
+      'properties': <String, Object?>{
+        'assignedRoundCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'sitOutRoundCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'uniquePeerCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'repeatPeerCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 100,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'sitOutSlots': <String, Object?>{
+      'type': 'array',
+      'maxItems': 24,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'roundIndex',
+          'label',
+          'startsAt',
+          'endsAt',
+          'whySummary',
+          'whyCodes',
+        ],
+        'properties': <String, Object?>{
+          'roundIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'startsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'endsAt': <String, Object?>{
+            'type': 'object',
+            'description': 'Serialized Firestore Timestamp fixture shape.',
+            'x-firestore-type': 'timestamp',
+            'additionalProperties': false,
+            'required': <Object?>[
+              '_seconds',
+              '_nanoseconds',
+            ],
+            'properties': <String, Object?>{
+              '_seconds': <String, Object?>{
+                'type': 'integer',
+              },
+              '_nanoseconds': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 999999999,
+              },
+            },
+          },
+          'whySummary': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 240,
+          },
+          'whyCodes': <String, Object?>{
+            'type': 'array',
+            'maxItems': 12,
+            'items': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'sit_out',
+              ],
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'rotationSlots': <String, Object?>{
       'type': 'array',
       'maxItems': 24,
@@ -107,6 +277,11 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
           'compatibility',
         ],
         'properties': <String, Object?>{
+          'slotId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
           'roundIndex': <String, Object?>{
             'type': 'integer',
             'minimum': 0,
@@ -162,6 +337,22 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
             'minLength': 1,
             'maxLength': 180,
           },
+          'unitKind': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'pairs',
+            ],
+          },
+          'unitIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100,
+          },
+          'peerCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 1,
+            'maximum': 20,
+          },
           'compatibility': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -171,6 +362,28 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
               'social',
               'host_override',
             ],
+          },
+          'whySummary': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 240,
+          },
+          'whyCodes': <String, Object?>{
+            'type': 'array',
+            'maxItems': 12,
+            'items': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'host_override',
+                'mutual_interest',
+                'one_way_interest',
+                'questionnaire_match',
+                'social_fallback',
+                'fresh_peer',
+                'repeat_peer',
+                'pair_slot',
+              ],
+            },
           },
         },
       },
@@ -192,6 +405,11 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
           'compatibility',
         ],
         'properties': <String, Object?>{
+          'slotId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
           'roundIndex': <String, Object?>{
             'type': 'integer',
             'minimum': 0,
@@ -206,6 +424,21 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
             'type': 'string',
             'minLength': 1,
             'maxLength': 80,
+          },
+          'unitKind': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'wholeGroup',
+              'pods',
+              'pairs',
+              'teams',
+              'tables',
+            ],
+          },
+          'unitIndex': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 100,
           },
           'startsAt': <String, Object?>{
             'type': 'object',
@@ -256,6 +489,11 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
               'maxLength': 180,
             },
           },
+          'peerCount': <String, Object?>{
+            'type': 'integer',
+            'minimum': 0,
+            'maximum': 20,
+          },
           'compatibility': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -266,6 +504,32 @@ const schemaEventSuccessAssignmentDocumentSchema = <String, Object?>{
               'mixed',
               'host_override',
             ],
+          },
+          'whySummary': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 240,
+          },
+          'whyCodes': <String, Object?>{
+            'type': 'array',
+            'maxItems': 12,
+            'items': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'host_override',
+                'mutual_interest',
+                'questionnaire_match',
+                'social_fallback',
+                'balanced_group',
+                'fresh_peer',
+                'repeat_peer',
+                'pair_slot',
+                'pod_slot',
+                'table_slot',
+                'team_slot',
+                'whole_group_slot',
+              ],
+            },
           },
         },
       },

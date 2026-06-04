@@ -239,6 +239,149 @@ class EventSuccessPlaybook {
   }
 }
 
+class EventSuccessHostFunnel {
+  const EventSuccessHostFunnel({
+    required this.inviteLinkCount,
+    required this.inviteOpenCount,
+    required this.totalDemandCount,
+    required this.requestCount,
+    required this.pendingRequestCount,
+    required this.approvedRequestCount,
+    required this.declinedRequestCount,
+    required this.directSignupCount,
+    required this.waitlistJoinCount,
+    required this.waitlistOfferCount,
+    required this.waitlistOfferActiveCount,
+    required this.waitlistOfferAcceptedCount,
+    required this.waitlistOfferDeclinedCount,
+    required this.waitlistOfferExpiredCount,
+    required this.checkoutStartedCount,
+    required this.paymentPendingCount,
+    required this.paymentCompletedCount,
+    required this.paymentFailedCount,
+    required this.paymentRefundedCount,
+    required this.bookedCount,
+    required this.checkedInCount,
+    required this.noShowCount,
+    required this.catchSentCount,
+    required this.attendeesWhoCaughtSomeone,
+    required this.mutualMatchCount,
+    required this.chatStartedCount,
+    required this.repeatAttendeeCount,
+  }) : assert(inviteLinkCount >= 0),
+       assert(inviteOpenCount >= 0),
+       assert(totalDemandCount >= 0),
+       assert(requestCount >= 0),
+       assert(pendingRequestCount >= 0),
+       assert(approvedRequestCount >= 0),
+       assert(declinedRequestCount >= 0),
+       assert(directSignupCount >= 0),
+       assert(waitlistJoinCount >= 0),
+       assert(waitlistOfferCount >= 0),
+       assert(waitlistOfferActiveCount >= 0),
+       assert(waitlistOfferAcceptedCount >= 0),
+       assert(waitlistOfferDeclinedCount >= 0),
+       assert(waitlistOfferExpiredCount >= 0),
+       assert(checkoutStartedCount >= 0),
+       assert(paymentPendingCount >= 0),
+       assert(paymentCompletedCount >= 0),
+       assert(paymentFailedCount >= 0),
+       assert(paymentRefundedCount >= 0),
+       assert(bookedCount >= 0),
+       assert(checkedInCount >= 0),
+       assert(noShowCount >= 0),
+       assert(catchSentCount >= 0),
+       assert(attendeesWhoCaughtSomeone >= 0),
+       assert(mutualMatchCount >= 0),
+       assert(chatStartedCount >= 0),
+       assert(repeatAttendeeCount >= 0);
+
+  static const empty = EventSuccessHostFunnel(
+    inviteLinkCount: 0,
+    inviteOpenCount: 0,
+    totalDemandCount: 0,
+    requestCount: 0,
+    pendingRequestCount: 0,
+    approvedRequestCount: 0,
+    declinedRequestCount: 0,
+    directSignupCount: 0,
+    waitlistJoinCount: 0,
+    waitlistOfferCount: 0,
+    waitlistOfferActiveCount: 0,
+    waitlistOfferAcceptedCount: 0,
+    waitlistOfferDeclinedCount: 0,
+    waitlistOfferExpiredCount: 0,
+    checkoutStartedCount: 0,
+    paymentPendingCount: 0,
+    paymentCompletedCount: 0,
+    paymentFailedCount: 0,
+    paymentRefundedCount: 0,
+    bookedCount: 0,
+    checkedInCount: 0,
+    noShowCount: 0,
+    catchSentCount: 0,
+    attendeesWhoCaughtSomeone: 0,
+    mutualMatchCount: 0,
+    chatStartedCount: 0,
+    repeatAttendeeCount: 0,
+  );
+
+  final int inviteLinkCount;
+  final int inviteOpenCount;
+  final int totalDemandCount;
+  final int requestCount;
+  final int pendingRequestCount;
+  final int approvedRequestCount;
+  final int declinedRequestCount;
+  final int directSignupCount;
+  final int waitlistJoinCount;
+  final int waitlistOfferCount;
+  final int waitlistOfferActiveCount;
+  final int waitlistOfferAcceptedCount;
+  final int waitlistOfferDeclinedCount;
+  final int waitlistOfferExpiredCount;
+  final int checkoutStartedCount;
+  final int paymentPendingCount;
+  final int paymentCompletedCount;
+  final int paymentFailedCount;
+  final int paymentRefundedCount;
+  final int bookedCount;
+  final int checkedInCount;
+  final int noShowCount;
+  final int catchSentCount;
+  final int attendeesWhoCaughtSomeone;
+  final int mutualMatchCount;
+  final int chatStartedCount;
+  final int repeatAttendeeCount;
+
+  int get activeWaitlistDropCount =>
+      waitlistOfferActiveCount + waitlistOfferExpiredCount;
+
+  double get demandConversionRate =>
+      _rate(bookedCount, totalDemandCount > 0 ? totalDemandCount : bookedCount);
+
+  double get requestApprovalRate => _rate(approvedRequestCount, requestCount);
+
+  double get waitlistOfferAcceptanceRate =>
+      _rate(waitlistOfferAcceptedCount, waitlistOfferCount);
+
+  double get paymentCompletionRate =>
+      _rate(paymentCompletedCount, checkoutStartedCount);
+
+  double get attendanceRate => _rate(checkedInCount, bookedCount);
+
+  double get connectionRate => _rate(attendeesWhoCaughtSomeone, checkedInCount);
+
+  double get repeatAttendeeRate => _rate(repeatAttendeeCount, bookedCount);
+
+  double get noShowRate => _rate(noShowCount, bookedCount);
+}
+
+double _rate(int numerator, int denominator) {
+  if (denominator <= 0) return 0;
+  return (numerator / denominator).clamp(0, 1);
+}
+
 class EventSuccessScorecard {
   const EventSuccessScorecard({
     required this.bookedCount,
@@ -249,10 +392,15 @@ class EventSuccessScorecard {
     required this.averageWelcomeRating,
     required this.averageStructureRating,
     required this.safetyIncidentCount,
+    this.catchSentCount = 0,
+    this.attendeesWhoCaughtSomeone = 0,
+    this.catchRecipientCount = 0,
+    this.catchRate = 0,
     this.feedbackResponseCount = 0,
     this.assignmentParticipantCount = 0,
     this.assignmentOptOutCount = 0,
     this.wingmanRequestCount = 0,
+    this.funnel = EventSuccessHostFunnel.empty,
   }) : assert(bookedCount >= 0),
        assert(checkedInCount >= 0),
        assert(attendeesWhoMetTwoPlusPeople >= 0),
@@ -261,6 +409,10 @@ class EventSuccessScorecard {
        assert(averageWelcomeRating >= 0 && averageWelcomeRating <= 5),
        assert(averageStructureRating >= 0 && averageStructureRating <= 5),
        assert(safetyIncidentCount >= 0),
+       assert(catchSentCount >= 0),
+       assert(attendeesWhoCaughtSomeone >= 0),
+       assert(catchRecipientCount >= 0),
+       assert(catchRate >= 0 && catchRate <= 1),
        assert(feedbackResponseCount >= 0),
        assert(assignmentParticipantCount >= 0),
        assert(assignmentOptOutCount >= 0),
@@ -274,10 +426,15 @@ class EventSuccessScorecard {
   final double averageWelcomeRating;
   final double averageStructureRating;
   final int safetyIncidentCount;
+  final int catchSentCount;
+  final int attendeesWhoCaughtSomeone;
+  final int catchRecipientCount;
+  final double catchRate;
   final int feedbackResponseCount;
   final int assignmentParticipantCount;
   final int assignmentOptOutCount;
   final int wingmanRequestCount;
+  final EventSuccessHostFunnel funnel;
 
   EventSuccessScorecard copyWith({
     int? bookedCount,
@@ -288,10 +445,15 @@ class EventSuccessScorecard {
     double? averageWelcomeRating,
     double? averageStructureRating,
     int? safetyIncidentCount,
+    int? catchSentCount,
+    int? attendeesWhoCaughtSomeone,
+    int? catchRecipientCount,
+    double? catchRate,
     int? feedbackResponseCount,
     int? assignmentParticipantCount,
     int? assignmentOptOutCount,
     int? wingmanRequestCount,
+    EventSuccessHostFunnel? funnel,
   }) {
     return EventSuccessScorecard(
       bookedCount: bookedCount ?? this.bookedCount,
@@ -304,6 +466,11 @@ class EventSuccessScorecard {
       averageStructureRating:
           averageStructureRating ?? this.averageStructureRating,
       safetyIncidentCount: safetyIncidentCount ?? this.safetyIncidentCount,
+      catchSentCount: catchSentCount ?? this.catchSentCount,
+      attendeesWhoCaughtSomeone:
+          attendeesWhoCaughtSomeone ?? this.attendeesWhoCaughtSomeone,
+      catchRecipientCount: catchRecipientCount ?? this.catchRecipientCount,
+      catchRate: catchRate ?? this.catchRate,
       feedbackResponseCount:
           feedbackResponseCount ?? this.feedbackResponseCount,
       assignmentParticipantCount:
@@ -311,6 +478,7 @@ class EventSuccessScorecard {
       assignmentOptOutCount:
           assignmentOptOutCount ?? this.assignmentOptOutCount,
       wingmanRequestCount: wingmanRequestCount ?? this.wingmanRequestCount,
+      funnel: funnel ?? this.funnel,
     );
   }
 
@@ -322,6 +490,10 @@ class EventSuccessScorecard {
   double get mutualMatchRate => _rate(mutualMatchCount, checkedInCount);
 
   double get chatStartRate => _rate(chatStartedCount, mutualMatchCount);
+
+  double get caughtSomeoneRate => catchRate > 0
+      ? catchRate
+      : _rate(attendeesWhoCaughtSomeone, checkedInCount);
 
   double get feedbackResponseRate =>
       _rate(feedbackResponseCount, checkedInCount);

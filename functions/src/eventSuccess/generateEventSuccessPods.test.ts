@@ -372,6 +372,11 @@ test("uses unit kind labels for table assignments", async () => {
   );
   assert.equal(runnerOne?.displayTitle, "Table A");
   assert.match(String(runnerOne?.displaySubtitle), /at this table/);
+  assert.equal(runnerOne?.unitKind, "tables");
+  assert.equal(runnerOne?.unitIndex, 0);
+  assert.equal(runnerOne?.unitLabel, "Table A");
+  assert.match(String(runnerOne?.whySummary), /Table A/);
+  assert.ok((runnerOne?.whyCodes as string[]).includes("table_slot"));
 });
 
 test("uses saved fixed unit count when present", async () => {
@@ -651,6 +656,16 @@ test("writes group rotation slots for rotating table formats", async () => {
   assert.equal(slots.length, 2);
   assert.equal((slots[0].peerUids as string[]).length, 2);
   assert.match(String(slots[0].unitLabel), /^Table /);
+  assert.match(String(slots[0].slotId), /^round-0-unit-/);
+  assert.equal(slots[0].unitKind, "tables");
+  assert.equal(slots[0].peerCount, 2);
+  assert.ok((slots[0].whyCodes as string[]).includes("table_slot"));
+  assert.deepEqual(assignment?.rotationFairness, {
+    assignedRoundCount: 2,
+    sitOutRoundCount: 0,
+    uniquePeerCount: 3,
+    repeatPeerCount: 1,
+  });
 });
 
 test("lets hosts override rotating table groups", async () => {

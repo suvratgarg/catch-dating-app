@@ -199,6 +199,84 @@ final class WatchEventPrivateAccessFamily extends $Family
   String toString() => r'watchEventPrivateAccessProvider';
 }
 
+@ProviderFor(watchEventInviteLinks)
+final watchEventInviteLinksProvider = WatchEventInviteLinksFamily._();
+
+final class WatchEventInviteLinksProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<EventInviteLink>>,
+          List<EventInviteLink>,
+          Stream<List<EventInviteLink>>
+        >
+    with
+        $FutureModifier<List<EventInviteLink>>,
+        $StreamProvider<List<EventInviteLink>> {
+  WatchEventInviteLinksProvider._({
+    required WatchEventInviteLinksFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventInviteLinksProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventInviteLinksHash();
+
+  @override
+  String toString() {
+    return r'watchEventInviteLinksProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<EventInviteLink>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<EventInviteLink>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventInviteLinks(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventInviteLinksProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventInviteLinksHash() =>
+    r'bb0939e232e8345aed1237e62eec04959f6b20b1';
+
+final class WatchEventInviteLinksFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<EventInviteLink>>, String> {
+  WatchEventInviteLinksFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventInviteLinksProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventInviteLinksProvider call(String eventId) =>
+      WatchEventInviteLinksProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventInviteLinksProvider';
+}
+
 @ProviderFor(watchEventsForClub)
 final watchEventsForClubProvider = WatchEventsForClubFamily._();
 

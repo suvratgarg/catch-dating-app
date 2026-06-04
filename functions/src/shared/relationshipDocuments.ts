@@ -38,6 +38,16 @@ export function eventParticipationId(eventId: string, uid: string): string {
 }
 
 /**
+ * Builds the deterministic event waitlist offer document id.
+ * @param {string} eventId Event id.
+ * @param {string} uid Offered user id.
+ * @return {string} Waitlist offer document id.
+ */
+export function eventWaitlistOfferId(eventId: string, uid: string): string {
+  return `${eventId}_${uid}`;
+}
+
+/**
  * Builds the deterministic saved-event document id.
  * @param {string} uid User id.
  * @param {string} eventId Event id.

@@ -1,0 +1,25 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "hostUid": "host-1",
+  "label": "Instagram bio",
+  "source": "instagram",
+  "tokenHash": "8b99a6db5d2a13e5fda71d325bcd49fbc04d99e12a54ab4f2f9f7f3fdb995f3f",
+  "openCount": 42,
+  "requestCount": 18,
+  "confirmedCount": 12,
+  "paidCount": 9,
+  "checkedInCount": 10,
+  "catcherCount": 7,
+  "matchCount": 4,
+  "chatStartedCount": 3,
+  "disabledAt": null,
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  }
+}

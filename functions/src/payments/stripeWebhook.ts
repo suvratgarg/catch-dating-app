@@ -6,6 +6,10 @@ import {signUpUserForEvent} from "../events/signUpUserForEvent";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {hasHostApprovedJoinRequest} from "../events/eventPolicy";
 import {
+  incrementInviteLinkCounterBestEffort,
+  InviteAttribution,
+} from "../events/inviteLinks";
+import {
   createStripeClient,
   normalizeStripeAccount,
   StripeCheckoutSessionSnapshot,
@@ -100,6 +104,7 @@ async function fulfillStripeCheckoutSession({
   const userId = requiredMetadata(metadata, "userId");
   const amountMinor = Number(requiredMetadata(metadata, "amountMinor"));
   const currency = requiredMetadata(metadata, "currency").toUpperCase();
+  const inviteAttribution = inviteAttributionFromMetadata(metadata);
   const paymentIntentId = session.paymentIntentId;
   if (!Number.isInteger(amountMinor) || amountMinor <= 0) {
     throw new Error("Stripe Checkout Session amount metadata is invalid.");
@@ -128,6 +133,7 @@ async function fulfillStripeCheckoutSession({
     await deps.signUpForEvent(db, eventId, userId, paymentId, {
       hasValidInvite: metadata.inviteVerified === "true",
       ...(hasHostApproval ? {hasHostApproval} : {}),
+      ...(inviteAttribution ? {inviteAttribution} : {}),
     });
   } catch (signUpError) {
     let refundSucceeded = false;
@@ -156,10 +162,24 @@ async function fulfillStripeCheckoutSession({
       checkoutSessionId: session.id,
       status: refundSucceeded ? "refunded" : "completed",
       signUpFailed: true,
+      ...(inviteAttribution?.inviteLinkId ?
+        {inviteLinkId: inviteAttribution.inviteLinkId} :
+        {}),
+      ...(inviteAttribution?.inviteSource ?
+        {inviteSource: inviteAttribution.inviteSource} :
+        {}),
       updatedAt: deps.serverTimestamp(),
       createdAt,
     }, {merge: true});
     throw signUpError;
+  }
+
+  if (inviteAttribution) {
+    await incrementInviteLinkCounterBestEffort({
+      db,
+      inviteLinkId: inviteAttribution.inviteLinkId,
+      field: "paidCount",
+    });
   }
 
   await paymentRef.set({
@@ -175,9 +195,26 @@ async function fulfillStripeCheckoutSession({
     checkoutSessionId: session.id,
     status: "completed",
     signUpFailed: false,
+    ...(inviteAttribution?.inviteLinkId ?
+      {inviteLinkId: inviteAttribution.inviteLinkId} :
+      {}),
+    ...(inviteAttribution?.inviteSource ?
+      {inviteSource: inviteAttribution.inviteSource} :
+      {}),
     updatedAt: deps.serverTimestamp(),
     createdAt,
   }, {merge: true});
+}
+
+function inviteAttributionFromMetadata(
+  metadata: Record<string, string>
+): InviteAttribution | null {
+  const inviteLinkId = optionalMetadata(metadata, "inviteLinkId");
+  if (!inviteLinkId) return null;
+  return {
+    inviteLinkId,
+    inviteSource: optionalMetadata(metadata, "inviteSource"),
+  };
 }
 
 async function markStripeCheckoutFailed({
@@ -247,6 +284,15 @@ function requiredMetadata(
   if (typeof value !== "string" || value.length === 0) {
     throw new Error(`Stripe Checkout Session missing ${key} metadata.`);
   }
+  return value;
+}
+
+function optionalMetadata(
+  metadata: Record<string, string>,
+  key: string
+): string | null {
+  const value = metadata[key];
+  if (typeof value !== "string" || value.length === 0) return null;
   return value;
 }
 

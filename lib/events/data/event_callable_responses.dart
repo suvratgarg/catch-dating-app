@@ -13,3 +13,193 @@ final class MarkEventAttendanceCallableResponse {
 
   final bool attended;
 }
+
+final class CreateEventInviteLinkCallableResponse {
+  const CreateEventInviteLinkCallableResponse({
+    required this.inviteLinkId,
+    required this.eventId,
+    required this.label,
+    this.source,
+  });
+
+  factory CreateEventInviteLinkCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final inviteLinkId = map['inviteLinkId'];
+      final eventId = map['eventId'];
+      final label = map['label'];
+      final source = map['source'];
+      if (inviteLinkId is String && eventId is String && label is String) {
+        return CreateEventInviteLinkCallableResponse(
+          inviteLinkId: inviteLinkId,
+          eventId: eventId,
+          label: label,
+          source: source is String ? source : null,
+        );
+      }
+    }
+    throw StateError(
+      'createEventInviteLink response was missing link details.',
+    );
+  }
+
+  final String inviteLinkId;
+  final String eventId;
+  final String label;
+  final String? source;
+}
+
+final class RecordEventInviteLinkOpenCallableResponse {
+  const RecordEventInviteLinkOpenCallableResponse({
+    required this.accepted,
+    required this.disabled,
+    required this.eventId,
+    required this.inviteLinkId,
+    this.label,
+    this.source,
+  });
+
+  factory RecordEventInviteLinkOpenCallableResponse.fromCallableData(
+    Object? data,
+  ) {
+    if (data case final Map<Object?, Object?> map) {
+      final accepted = map['accepted'];
+      final disabled = map['disabled'];
+      final eventId = map['eventId'];
+      final inviteLinkId = map['inviteLinkId'];
+      final label = map['label'];
+      final source = map['source'];
+      if (accepted is bool &&
+          disabled is bool &&
+          eventId is String &&
+          inviteLinkId is String) {
+        return RecordEventInviteLinkOpenCallableResponse(
+          accepted: accepted,
+          disabled: disabled,
+          eventId: eventId,
+          inviteLinkId: inviteLinkId,
+          label: label is String ? label : null,
+          source: source is String ? source : null,
+        );
+      }
+    }
+    throw StateError(
+      'recordEventInviteLinkOpen response was missing link details.',
+    );
+  }
+
+  final bool accepted;
+  final bool disabled;
+  final String eventId;
+  final String inviteLinkId;
+  final String? label;
+  final String? source;
+}
+
+final class CreateWaitlistOffersCallableResponse {
+  const CreateWaitlistOffersCallableResponse({
+    required this.createdCount,
+    required this.skippedCount,
+    this.offers = const [],
+  });
+
+  factory CreateWaitlistOffersCallableResponse.fromCallableData(Object? data) {
+    if (data case final Map<Object?, Object?> map) {
+      final createdCount = map['createdCount'];
+      final skippedCount = map['skippedCount'];
+      if (createdCount is num && skippedCount is num) {
+        return CreateWaitlistOffersCallableResponse(
+          createdCount: createdCount.toInt(),
+          skippedCount: skippedCount.toInt(),
+          offers: _parseOfferRows(map['offers']),
+        );
+      }
+    }
+    throw StateError(
+      'createEventWaitlistOffers response was missing counters.',
+    );
+  }
+
+  final int createdCount;
+  final int skippedCount;
+  final List<WaitlistOfferActionRow> offers;
+}
+
+final class WaitlistOfferActionRow {
+  const WaitlistOfferActionRow({
+    required this.uid,
+    required this.status,
+    this.reason,
+    this.expiresAtMillis,
+  });
+
+  factory WaitlistOfferActionRow.fromMap(Map<Object?, Object?> map) {
+    final uid = map['uid'];
+    final status = map['status'];
+    final reason = map['reason'];
+    final expiresAtMillis = map['expiresAtMillis'];
+    if (uid is String && status is String) {
+      return WaitlistOfferActionRow(
+        uid: uid,
+        status: status,
+        reason: reason is String ? reason : null,
+        expiresAtMillis: expiresAtMillis is num
+            ? expiresAtMillis.toInt()
+            : null,
+      );
+    }
+    throw StateError('createEventWaitlistOffers response had an invalid row.');
+  }
+
+  final String uid;
+  final String status;
+  final String? reason;
+  final int? expiresAtMillis;
+}
+
+List<WaitlistOfferActionRow> _parseOfferRows(Object? value) {
+  if (value == null) return const [];
+  if (value case final List<Object?> rows) {
+    return [
+      for (final row in rows)
+        if (row case final Map<Object?, Object?> map)
+          WaitlistOfferActionRow.fromMap(map)
+        else
+          throw StateError(
+            'createEventWaitlistOffers response had an invalid row.',
+          ),
+    ];
+  }
+  throw StateError('createEventWaitlistOffers response had invalid offers.');
+}
+
+final class WaitlistOfferAcceptanceCallableResponse {
+  const WaitlistOfferAcceptanceCallableResponse({
+    required this.accepted,
+    required this.requiresPayment,
+    required this.booked,
+  });
+
+  factory WaitlistOfferAcceptanceCallableResponse.fromCallableData(
+    Object? data,
+  ) {
+    if (data case final Map<Object?, Object?> map) {
+      final accepted = map['accepted'];
+      final requiresPayment = map['requiresPayment'];
+      final booked = map['booked'];
+      if (accepted is bool && requiresPayment is bool && booked is bool) {
+        return WaitlistOfferAcceptanceCallableResponse(
+          accepted: accepted,
+          requiresPayment: requiresPayment,
+          booked: booked,
+        );
+      }
+    }
+    throw StateError(
+      'acceptEventWaitlistOffer response was missing offer state.',
+    );
+  }
+
+  final bool accepted;
+  final bool requiresPayment;
+  final bool booked;
+}

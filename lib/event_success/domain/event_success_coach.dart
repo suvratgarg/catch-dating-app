@@ -43,6 +43,39 @@ class EventSuccessCoach {
       );
     }
 
+    if (scorecard.funnel.pendingRequestCount > 0) {
+      recommendations.add(
+        const EventSuccessRecommendation(
+          id: 'clear_request_backlog',
+          title: 'Decide pending requests before demand goes cold',
+          rationale:
+              'Request-to-join works only if people hear back while the event still feels timely.',
+          priority: EventRecommendationPriority.high,
+          stage: EventSuccessStage.before,
+          moduleIds: ['host_analytics'],
+        ),
+      );
+    }
+
+    if (scorecard.funnel.waitlistOfferCount > 0 &&
+        scorecard.funnel.waitlistOfferAcceptanceRate < 0.5) {
+      recommendations.add(
+        const EventSuccessRecommendation(
+          id: 'tighten_waitlist_offer_timing',
+          title: 'Make waitlist offers easier to accept',
+          rationale:
+              'Offers are being sent, but not enough people are converting. Shorter expiry windows and clearer arrival expectations usually help.',
+          priority: EventRecommendationPriority.medium,
+          stage: EventSuccessStage.before,
+          moduleIds: ['host_analytics'],
+        ),
+      );
+    }
+
+    if (scorecard.funnel.repeatAttendeeRate >= 0.25) {
+      strengths.add('A meaningful share of attendees came back.');
+    }
+
     if (scorecard.introCoverageRate < 0.7) {
       recommendations.add(
         EventSuccessRecommendation(
@@ -205,6 +238,10 @@ abstract final class EventSuccessSampleScorecards {
     averageWelcomeRating: 4.4,
     averageStructureRating: 4.1,
     safetyIncidentCount: 0,
+    catchSentCount: 14,
+    attendeesWhoCaughtSomeone: 11,
+    catchRecipientCount: 12,
+    catchRate: 0.44,
     feedbackResponseCount: 12,
     assignmentParticipantCount: 23,
     assignmentOptOutCount: 2,
@@ -220,6 +257,10 @@ abstract final class EventSuccessSampleScorecards {
     averageWelcomeRating: 3.6,
     averageStructureRating: 3.1,
     safetyIncidentCount: 0,
+    catchSentCount: 5,
+    attendeesWhoCaughtSomeone: 4,
+    catchRecipientCount: 5,
+    catchRate: 0.174,
     feedbackResponseCount: 4,
     assignmentParticipantCount: 10,
     assignmentOptOutCount: 8,
@@ -235,6 +276,10 @@ abstract final class EventSuccessSampleScorecards {
     averageWelcomeRating: 4.0,
     averageStructureRating: 4.0,
     safetyIncidentCount: 1,
+    catchSentCount: 10,
+    attendeesWhoCaughtSomeone: 9,
+    catchRecipientCount: 10,
+    catchRate: 0.333,
     feedbackResponseCount: 10,
     assignmentParticipantCount: 24,
     assignmentOptOutCount: 1,

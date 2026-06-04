@@ -152,6 +152,14 @@
       "type": "string",
       "enum": ["wholeGroup", "pods", "pairs", "teams", "tables"]
     },
+    "eventSuccessRotationRepeatStrategy": {
+      "type": "string",
+      "enum": ["avoid", "allowWhenExhausted"]
+    },
+    "eventSuccessActivityAssignmentAttribute": {
+      "type": "string",
+      "enum": ["paceBand", "skillBand", "roleBand"]
+    },
     "eventSuccessPhoneAvailability": {
       "type": "string",
       "enum": [
@@ -232,6 +240,30 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 60
+        },
+        "rotationRepeatStrategy": {
+          "$ref": "#/definitions/eventSuccessRotationRepeatStrategy"
+        },
+        "maxPairMeetings": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "balanceActivityAttributes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
+          }
+        },
+        "clusterActivityAttributes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/eventSuccessActivityAssignmentAttribute"
+          }
         }
       }
     },
@@ -375,6 +407,14 @@
     "eventParticipationStatus": {
       "type": "string",
       "enum": ["signedUp", "waitlisted", "attended", "cancelled", "deleted"]
+    },
+    "eventWaitlistOfferStatus": {
+      "type": "string",
+      "enum": ["active", "accepted", "declined", "expired", "cancelled"]
+    },
+    "eventWaitlistOfferSource": {
+      "type": "string",
+      "enum": ["host", "autoPromotion", "ratioBalancing", "cancellation"]
     },
     "genderAtSignup": {
       "anyOf": [

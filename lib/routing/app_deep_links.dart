@@ -14,21 +14,29 @@ class AppDeepLinks {
     required String clubId,
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) => _httpsRoute(
     Routes.eventDetailScreen.path,
     pathParameters: {'clubId': clubId, 'eventId': eventId},
-    queryParameters: _inviteQuery(inviteCode),
+    queryParameters: _eventQuery(
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+    ),
   );
 
   static String inAppEventPath({
     required String clubId,
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) {
     return _inAppRoute(
       Routes.eventDetailScreen.path,
       pathParameters: {'clubId': clubId, 'eventId': eventId},
-      queryParameters: _inviteQuery(inviteCode),
+      queryParameters: _eventQuery(
+        inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
+      ),
     ).toString();
   }
 }
@@ -80,8 +88,14 @@ List<String> _pathSegments(
   return pathSegments;
 }
 
-Map<String, String>? _inviteQuery(String? inviteCode) {
-  final normalized = inviteCode?.trim();
-  if (normalized == null || normalized.isEmpty) return null;
-  return {'invite': normalized};
+Map<String, String>? _eventQuery({String? inviteCode, String? inviteLinkId}) {
+  final normalizedInviteCode = inviteCode?.trim();
+  final normalizedInviteLinkId = inviteLinkId?.trim();
+  final query = <String, String>{
+    if (normalizedInviteCode != null && normalizedInviteCode.isNotEmpty)
+      'invite': normalizedInviteCode,
+    if (normalizedInviteLinkId != null && normalizedInviteLinkId.isNotEmpty)
+      'il': normalizedInviteLinkId,
+  };
+  return query.isEmpty ? null : query;
 }

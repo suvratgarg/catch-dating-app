@@ -18,7 +18,9 @@ import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
 import {EventDocument} from "./eventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
+import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
+import {EventWaitlistOfferDocument} from "./eventWaitlistOfferDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
 import {EventSuccessPreferenceDocument} from "./eventSuccessPreferenceDocument";
@@ -62,6 +64,10 @@ import {UpdateEventCallablePayload} from "./updateEventCallablePayload";
 import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
 import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
+import {CreateEventWaitlistOffersCallablePayload} from "./createEventWaitlistOffersCallablePayload";
+import {CreateEventInviteLinkCallablePayload} from "./createEventInviteLinkCallablePayload";
+import {DisableEventInviteLinkCallablePayload} from "./disableEventInviteLinkCallablePayload";
+import {RecordEventInviteLinkOpenCallablePayload} from "./recordEventInviteLinkOpenCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {EventJoinRequestDecisionCallablePayload} from "./eventJoinRequestDecisionCallablePayload";
 import {OverrideEventSuccessRotationsCallablePayload} from "./overrideEventSuccessRotationsCallablePayload";
@@ -116,7 +122,9 @@ import {
   clubHostClaimDocumentSchema,
   eventDocumentSchema,
   eventPrivateAccessDocumentSchema,
+  eventInviteLinkDocumentSchema,
   eventParticipationDocumentSchema,
+  eventWaitlistOfferDocumentSchema,
   eventSuccessPlanDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
   eventSuccessPreferenceDocumentSchema,
@@ -160,6 +168,10 @@ import {
   cancelEventCallablePayloadSchema,
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
+  createEventWaitlistOffersCallablePayloadSchema,
+  createEventInviteLinkCallablePayloadSchema,
+  disableEventInviteLinkCallablePayloadSchema,
+  recordEventInviteLinkOpenCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
   eventJoinRequestDecisionCallablePayloadSchema,
   overrideEventSuccessRotationsCallablePayloadSchema,
@@ -260,10 +272,18 @@ export const validateEventPrivateAccessDocument:
   ValidateFunction<EventPrivateAccessDocument> =
     ajv.compile(eventPrivateAccessDocumentSchema) as
       ValidateFunction<EventPrivateAccessDocument>;
+export const validateEventInviteLinkDocument:
+  ValidateFunction<EventInviteLinkDocument> =
+    ajv.compile(eventInviteLinkDocumentSchema) as
+      ValidateFunction<EventInviteLinkDocument>;
 export const validateEventParticipationDocument:
   ValidateFunction<EventParticipationDocument> =
     ajv.compile(eventParticipationDocumentSchema) as
       ValidateFunction<EventParticipationDocument>;
+export const validateEventWaitlistOfferDocument:
+  ValidateFunction<EventWaitlistOfferDocument> =
+    ajv.compile(eventWaitlistOfferDocumentSchema) as
+      ValidateFunction<EventWaitlistOfferDocument>;
 export const validateEventSuccessPlanDocument:
   ValidateFunction<EventSuccessPlanDocument> =
     ajv.compile(eventSuccessPlanDocumentSchema) as
@@ -436,6 +456,22 @@ export const validateEventIdCallablePayload:
   ValidateFunction<EventIdCallablePayload> =
     ajv.compile(eventIdCallablePayloadSchema) as
       ValidateFunction<EventIdCallablePayload>;
+export const validateCreateEventWaitlistOffersCallablePayload:
+  ValidateFunction<CreateEventWaitlistOffersCallablePayload> =
+    ajv.compile(createEventWaitlistOffersCallablePayloadSchema) as
+      ValidateFunction<CreateEventWaitlistOffersCallablePayload>;
+export const validateCreateEventInviteLinkCallablePayload:
+  ValidateFunction<CreateEventInviteLinkCallablePayload> =
+    ajv.compile(createEventInviteLinkCallablePayloadSchema) as
+      ValidateFunction<CreateEventInviteLinkCallablePayload>;
+export const validateDisableEventInviteLinkCallablePayload:
+  ValidateFunction<DisableEventInviteLinkCallablePayload> =
+    ajv.compile(disableEventInviteLinkCallablePayloadSchema) as
+      ValidateFunction<DisableEventInviteLinkCallablePayload>;
+export const validateRecordEventInviteLinkOpenCallablePayload:
+  ValidateFunction<RecordEventInviteLinkOpenCallablePayload> =
+    ajv.compile(recordEventInviteLinkOpenCallablePayloadSchema) as
+      ValidateFunction<RecordEventInviteLinkOpenCallablePayload>;
 export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as

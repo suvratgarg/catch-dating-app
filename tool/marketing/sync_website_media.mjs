@@ -163,28 +163,16 @@ function buildWebsiteManifest(manifest) {
         audience: capture.audience,
         surface: capture.surface,
         device: capture.device,
-        status: capture.status,
         webPath,
         alt: capture.alt,
         caption: capture.caption,
         walkthroughStep: capture.walkthroughStep,
-        statusLabel: isActive
-          ? "Captured from current app UI"
-          : "Pending synthetic fixture capture",
-        source: {
-          fixtureKey: capture.fixtureKey,
-          sourcePath: capture.sourcePath,
-          sourceSha256: isActive ? hash : null,
-          placeholderPath: capture.placeholderPath,
-          placeholderSha256: isActive ? null : hash,
-        },
       };
     });
 
   return {
     version: manifest.version,
     updated: manifest.updated,
-    generatedBy: "tool/marketing/sync_website_media.mjs",
     captures,
   };
 }

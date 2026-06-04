@@ -178,6 +178,85 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             );
           },
         ),
+        if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
+          gapH12,
+          Text('Assignment goals', style: CatchTextStyles.labelL(context)),
+          gapH8,
+          _ActivityAttributeGoalChips(
+            title: 'Balance across units',
+            attributes: value.balanceActivityAttributes,
+            labelFor: (attribute) => attribute.balanceLabel,
+            enabled: enabled,
+            onToggle: (attribute) => onChanged(
+              value.copyWith(
+                balanceActivityAttributes: _toggleAttribute(
+                  value.balanceActivityAttributes,
+                  attribute,
+                ),
+                clusterActivityAttributes: _removeAttribute(
+                  value.clusterActivityAttributes,
+                  attribute,
+                ),
+              ),
+            ),
+          ),
+          gapH8,
+          _ActivityAttributeGoalChips(
+            title: 'Cluster similar people',
+            attributes: value.clusterActivityAttributes,
+            labelFor: (attribute) => attribute.clusterLabel,
+            enabled: enabled,
+            onToggle: (attribute) => onChanged(
+              value.copyWith(
+                clusterActivityAttributes: _toggleAttribute(
+                  value.clusterActivityAttributes,
+                  attribute,
+                ),
+                balanceActivityAttributes: _removeAttribute(
+                  value.balanceActivityAttributes,
+                  attribute,
+                ),
+              ),
+            ),
+          ),
+        ],
+        if (value.rotates) ...[
+          gapH12,
+          Text('Repeat policy', style: CatchTextStyles.labelL(context)),
+          gapH8,
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final strategy in EventSuccessRotationRepeatStrategy.values)
+                CatchChip(
+                  label: strategy.label,
+                  active: value.rotationRepeatStrategy == strategy,
+                  enabled: enabled,
+                  onTap: enabled
+                      ? () => onChanged(
+                          value.copyWith(rotationRepeatStrategy: strategy),
+                        )
+                      : null,
+                ),
+            ],
+          ),
+          gapH8,
+          _StructureNumberField(
+            label: 'Max meetings per pair',
+            detail: 'Caps repeat pairings when the event has extra rounds.',
+            child: CatchNumberStepper(
+              value: value.maxPairMeetings,
+              min: 1,
+              max: 10,
+              formatValue: (number) =>
+                  '${number.toInt()} ${number.toInt() == 1 ? 'time' : 'times'}',
+              enabled: enabled,
+              onChanged: (number) =>
+                  onChanged(value.copyWith(maxPairMeetings: number.toInt())),
+            ),
+          ),
+        ],
         if (!enabled) ...[
           gapH8,
           Text(
@@ -196,6 +275,8 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
         unitSize: targetAttendeeCount,
         unitCount: 1,
         rotationIntervalMinutes: null,
+        balanceActivityAttributes: const [],
+        clusterActivityAttributes: const [],
       ),
       EventSuccessUnitKind.pods => value.copyWith(
         unitKind: kind,
@@ -225,6 +306,48 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
   }
 }
 
+class _ActivityAttributeGoalChips extends StatelessWidget {
+  const _ActivityAttributeGoalChips({
+    required this.title,
+    required this.attributes,
+    required this.labelFor,
+    required this.enabled,
+    required this.onToggle,
+  });
+
+  final String title;
+  final List<EventSuccessActivityAssignmentAttribute> attributes;
+  final String Function(EventSuccessActivityAssignmentAttribute attribute)
+  labelFor;
+  final bool enabled;
+  final ValueChanged<EventSuccessActivityAssignmentAttribute> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: CatchTextStyles.supporting(context)),
+        gapH4,
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            for (final attribute
+                in EventSuccessActivityAssignmentAttribute.values)
+              CatchChip(
+                label: labelFor(attribute),
+                active: attributes.contains(attribute),
+                enabled: enabled,
+                onTap: enabled ? () => onToggle(attribute) : null,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _StructureNumberField extends StatelessWidget {
   const _StructureNumberField({
     required this.label,
@@ -251,3 +374,18 @@ class _StructureNumberField extends StatelessWidget {
     );
   }
 }
+
+List<EventSuccessActivityAssignmentAttribute> _toggleAttribute(
+  List<EventSuccessActivityAssignmentAttribute> attributes,
+  EventSuccessActivityAssignmentAttribute attribute,
+) {
+  if (attributes.contains(attribute)) {
+    return _removeAttribute(attributes, attribute);
+  }
+  return List.unmodifiable([...attributes, attribute]);
+}
+
+List<EventSuccessActivityAssignmentAttribute> _removeAttribute(
+  List<EventSuccessActivityAssignmentAttribute> attributes,
+  EventSuccessActivityAssignmentAttribute attribute,
+) => List.unmodifiable(attributes.where((item) => item != attribute));

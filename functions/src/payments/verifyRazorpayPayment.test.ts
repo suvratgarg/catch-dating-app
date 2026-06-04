@@ -9,7 +9,11 @@ test(
   "verifyRazorpayPaymentHandler books trusted event from Razorpay metadata",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
-    const signUpCalls: Array<{eventId: string; userId: string}> = [];
+    const signUpCalls: Array<{
+      eventId: string;
+      userId: string;
+      options: Record<string, unknown> | undefined;
+    }> = [];
     const result = await verifyRazorpayPaymentHandler(
       buildRequest({
         auth: {uid: "runner-1"},
@@ -33,6 +37,8 @@ test(
               notes: {
                 eventId: "trusted-event",
                 userId: "runner-1",
+                inviteLinkId: "link-1",
+                inviteSource: "instagram-bio",
               },
             }),
           },
@@ -51,8 +57,8 @@ test(
           },
         }) as unknown as Razorpay,
         serverTimestamp: () => "server-now",
-        signUpForEvent: async (_db, eventId, userId) => {
-          signUpCalls.push({eventId, userId});
+        signUpForEvent: async (_db, eventId, userId, _paymentId, options) => {
+          signUpCalls.push({eventId, userId, options});
         },
         verifySignature: () => true,
       }
@@ -61,6 +67,13 @@ test(
     assert.deepEqual(signUpCalls, [{
       eventId: "trusted-event",
       userId: "runner-1",
+      options: {
+        hasValidInvite: false,
+        inviteAttribution: {
+          inviteLinkId: "link-1",
+          inviteSource: "instagram-bio",
+        },
+      },
     }]);
     assert.deepEqual(paymentDoc.setCalls, [
       {
@@ -74,9 +87,14 @@ test(
         provider: "razorpay",
         status: "completed",
         signUpFailed: false,
+        inviteLinkId: "link-1",
+        inviteSource: "instagram-bio",
         createdAt: "server-now",
       },
     ]);
+    assert.equal(paymentDoc.inviteLinkSetCalls.length, 1);
+    assert.equal(paymentDoc.inviteLinkSetCalls[0].docId, "link-1");
+    assert.ok("paidCount" in paymentDoc.inviteLinkSetCalls[0].data);
     assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
   }
 );
@@ -255,9 +273,18 @@ function buildRequest({
 
 function createPaymentDocRecorder() {
   const setCalls: Array<Record<string, unknown>> = [];
+  const inviteLinkSetCalls: Array<{
+    docId: string;
+    data: Record<string, unknown>;
+  }> = [];
   return {
     setCalls,
+    inviteLinkSetCalls,
     ref: {
+      get: async () => ({
+        exists: false,
+        data: () => undefined,
+      }),
       set: async (data: Record<string, unknown>) => {
         setCalls.push(data);
       },
@@ -266,18 +293,33 @@ function createPaymentDocRecorder() {
 }
 
 function createPaymentsFirestore(paymentDoc: {
-  ref: {set: (data: Record<string, unknown>) => Promise<void>};
+  inviteLinkSetCalls: Array<{docId: string; data: Record<string, unknown>}>;
+  ref: {
+    get: () => Promise<{
+      exists: boolean;
+      data: () => Record<string, unknown> | undefined;
+    }>;
+    set: (data: Record<string, unknown>) => Promise<void>;
+  };
 }): FirebaseFirestore.Firestore {
   return {
     collection: (path: string) => ({
-      doc: () => path === "payments" ?
-        paymentDoc.ref :
-        ({
+      doc: (docId: string) => {
+        if (path === "payments") return paymentDoc.ref;
+        if (path === "eventInviteLinks") {
+          return {
+            set: async (data: Record<string, unknown>) => {
+              paymentDoc.inviteLinkSetCalls.push({docId, data});
+            },
+          };
+        }
+        return {
           get: async () => ({
             exists: false,
             data: () => undefined,
           }),
-        }),
+        };
+      },
     }),
   } as unknown as FirebaseFirestore.Firestore;
 }

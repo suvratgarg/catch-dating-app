@@ -20,12 +20,18 @@ import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasAcceptedWaitlistOfferAccess,
   hasHostApprovedJoinRequest,
   hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
+  rosterWithReservedWaitlistOffers,
 } from "./eventPolicy";
 import {eventParticipationId} from "../shared/relationshipDocuments";
+import {
+  InviteAttribution,
+  resolveInviteAttribution,
+} from "./inviteLinks";
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -39,7 +45,11 @@ interface SignUpForFreeEventDeps {
     eventId: string,
     userId: string,
     paymentId?: string,
-    options?: {hasValidInvite?: boolean; hasHostApproval?: boolean}
+    options?: {
+      hasValidInvite?: boolean;
+      hasHostApproval?: boolean;
+      inviteAttribution?: InviteAttribution | null;
+    }
   ) => Promise<void>;
 }
 
@@ -65,7 +75,7 @@ export async function signUpForFreeEventHandler(
     validateEventBookingCallablePayload,
     normalizeEventIdPayload
   );
-  const {eventId, inviteCode} = payload;
+  const {eventId, inviteCode, inviteLinkId} = payload;
   const db = deps.firestore();
 
   await deps.checkRateLimit(db, uid, "signUpForFreeEvent");
@@ -90,8 +100,16 @@ export async function signUpForFreeEventHandler(
   const user = userSnap.data() as UserProfileDocument;
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
-  const roster = rosterFromEvent(event);
-  const hasHostApproval = hasHostApprovedJoinRequest(participationSnap.data());
+  const roster = await rosterWithReservedWaitlistOffers(
+    db,
+    eventId,
+    rosterFromEvent(event),
+    {excludeUid: uid}
+  );
+  const participation = participationSnap.data();
+  const hasWaitlistOfferAccess =
+    hasAcceptedWaitlistOfferAccess(participation);
+  const hasHostApproval = hasHostApprovedJoinRequest(participation);
   const hasValidInvite = await hasValidInviteForEvent({
     db,
     eventId,
@@ -114,13 +132,19 @@ export async function signUpForFreeEventHandler(
     policy,
     cohortId,
     roster,
-    hasValidInvite,
+    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
     hasHostApproval,
   });
 
+  const inviteAttribution = await resolveInviteAttribution({
+    db,
+    eventId,
+    inviteLinkId,
+  });
   await deps.signUpForEvent(db, eventId, uid, undefined, {
-    hasValidInvite,
+    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
     ...(hasHostApproval ? {hasHostApproval} : {}),
+    ...(inviteAttribution ? {inviteAttribution} : {}),
   });
 
   return {success: true};

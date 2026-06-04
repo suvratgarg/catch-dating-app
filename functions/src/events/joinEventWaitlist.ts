@@ -16,6 +16,7 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {
   participantUids,
   eventParticipationId,
+  eventWaitlistOfferId,
   eventParticipationPatch,
   eventParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
@@ -35,6 +36,11 @@ import {
 import {assertBookingReadyUserProfile} from "../shared/profileReadiness";
 import {assertRunPreferencesReadyForEvent} from
   "../shared/runPreferencesReadiness";
+import {
+  incrementInviteLinkCounterInTransaction,
+  inviteAttributionWriteFields,
+  resolveInviteAttributionInTransaction,
+} from "./inviteLinks";
 
 /**
  * Adds a user to an event waitlist after applying the same block boundary as
@@ -44,11 +50,12 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
-    request,
-    validateEventIdCallablePayload,
-    normalizeEventIdPayload
-  );
+  const {eventId, inviteCode, inviteLinkId} =
+    validateCallableWithAjv<EventIdCallablePayload>(
+      request,
+      validateEventIdCallablePayload,
+      normalizeEventIdPayload
+    );
 
   const db = admin.firestore();
   await checkRateLimit(db, userId, "joinEventWaitlist");
@@ -135,6 +142,12 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
     }
 
     const cohortAtSignup = cohortIdForUser(user);
+    const inviteAttribution = await resolveInviteAttributionInTransaction({
+      tx,
+      db,
+      eventId,
+      inviteLinkId,
+    });
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
@@ -150,23 +163,39 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
         cohortAtSignup
       ),
     });
-    tx.set(participationRef, eventParticipationPatch({
-      exists: participationSnap.exists,
-      eventId,
-      clubId: event.clubId,
-      uid: userId,
-      status: "waitlisted",
-      genderAtSignup: user.gender,
-      cohortAtSignup,
-    }), {merge: true});
-    tx.set(participationRef, policy.admission.manualApprovalRequired ? {
-      hostApprovalStatus: "pending",
-      hostApprovalDecidedAt: null,
-      hostApprovalDecidedBy: null,
-    } : {
-      hostApprovalStatus: admin.firestore.FieldValue.delete(),
-      hostApprovalDecidedAt: admin.firestore.FieldValue.delete(),
-      hostApprovalDecidedBy: admin.firestore.FieldValue.delete(),
+    tx.set(participationRef, {
+      ...eventParticipationPatch({
+        exists: participationSnap.exists,
+        eventId,
+        clubId: event.clubId,
+        uid: userId,
+        status: "waitlisted",
+        genderAtSignup: user.gender,
+        cohortAtSignup,
+      }),
+      ...inviteAttributionWriteFields(inviteAttribution),
+    }, {merge: true});
+    incrementInviteLinkCounterInTransaction({
+      tx,
+      db,
+      attribution: inviteAttribution,
+      field: "requestCount",
+    });
+    tx.set(participationRef, {
+      waitlistOfferStatus: admin.firestore.FieldValue.delete(),
+      waitlistOfferedAt: admin.firestore.FieldValue.delete(),
+      waitlistOfferExpiresAt: admin.firestore.FieldValue.delete(),
+      waitlistOfferAcceptedAt: admin.firestore.FieldValue.delete(),
+      waitlistOfferId: admin.firestore.FieldValue.delete(),
+      ...(policy.admission.manualApprovalRequired ? {
+        hostApprovalStatus: "pending",
+        hostApprovalDecidedAt: null,
+        hostApprovalDecidedBy: null,
+      } : {
+        hostApprovalStatus: admin.firestore.FieldValue.delete(),
+        hostApprovalDecidedAt: admin.firestore.FieldValue.delete(),
+        hostApprovalDecidedBy: admin.firestore.FieldValue.delete(),
+      }),
     }, {merge: true});
   });
 
@@ -194,11 +223,15 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
   const participationRef = db
     .collection("eventParticipations")
     .doc(eventParticipationId(eventId, userId));
+  const offerRef = db
+    .collection("eventWaitlistOffers")
+    .doc(eventWaitlistOfferId(eventId, userId));
 
   await db.runTransaction(async (tx) => {
-    const [eventSnap, participationSnap] = await Promise.all([
+    const [eventSnap, participationSnap, offerSnap] = await Promise.all([
       tx.get(eventRef),
       tx.get(participationRef),
+      tx.get(offerRef),
     ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
@@ -243,6 +276,14 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
       uid: userId,
       status: "cancelled",
     }), {merge: true});
+    const offerStatus = offerSnap.data()?.status;
+    if (offerStatus === "active" || offerStatus === "accepted") {
+      tx.set(offerRef, {
+        status: "cancelled",
+        decidedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, {merge: true});
+    }
   });
 
   return {waitlisted: false};

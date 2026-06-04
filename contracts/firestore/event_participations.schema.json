@@ -126,6 +126,64 @@
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "waitlistOfferStatus": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/eventWaitlistOfferStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferExpiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferAcceptedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Named host invite link that first attributed this participation, when present.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Host-facing source label copied from the invite link for durable reporting.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteCapturedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Server time when invite attribution was first attached to the roster edge.",
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

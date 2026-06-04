@@ -61,6 +61,8 @@ export interface StripeCheckoutSessionCreateInput {
   amountMinor: number;
   currency: string;
   inviteVerified: boolean;
+  inviteLinkId?: string | null;
+  inviteSource?: string | null;
   applicationFeeAmount: number;
   successUrl: string;
   cancelUrl: string;
@@ -484,6 +486,8 @@ function stripeMetadata(
     amountMinor: String(input.amountMinor),
     currency: input.currency.toUpperCase(),
     inviteVerified: input.inviteVerified ? "true" : "false",
+    ...(input.inviteLinkId ? {inviteLinkId: input.inviteLinkId} : {}),
+    ...(input.inviteSource ? {inviteSource: input.inviteSource} : {}),
   };
 }
 

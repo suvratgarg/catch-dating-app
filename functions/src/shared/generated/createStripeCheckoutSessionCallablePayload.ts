@@ -8,4 +8,5 @@
 export interface CreateStripeCheckoutSessionCallablePayload {
   eventId: string;
   inviteCode?: string | null;
+  inviteLinkId?: string;
 }

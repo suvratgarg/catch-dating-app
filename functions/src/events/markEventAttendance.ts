@@ -22,6 +22,9 @@ import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {
+  incrementInviteLinkCounterBestEffort,
+} from "./inviteLinks";
 import {isClubHost} from "../shared/clubHosts";
 import {
   allowsPushPreference,
@@ -127,7 +130,10 @@ export async function markEventAttendanceHandler(
     .doc(eventParticipationId(eventId, userId));
   const participationSnap = await participationRef.get();
   const existingParticipation = participationSnap.exists ?
-    participationSnap.data() as {status?: string} :
+    participationSnap.data() as {
+      status?: string;
+      inviteLinkId?: string | null;
+    } :
     null;
   if (
     existingParticipation?.status !== "signedUp" &&
@@ -154,6 +160,12 @@ export async function markEventAttendanceHandler(
   await batch.commit();
 
   const attended = !alreadyAttended;
+  await incrementInviteLinkCounterBestEffort({
+    db,
+    inviteLinkId: existingParticipation?.inviteLinkId,
+    field: "checkedInCount",
+    delta: attended ? 1 : -1,
+  });
   await deps.recordSignalFacts(db, [
     buildAttendanceSignalFact({
       eventId,

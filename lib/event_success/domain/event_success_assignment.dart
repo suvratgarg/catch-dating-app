@@ -14,8 +14,15 @@ final class EventSuccessAssignment {
     required this.createdAt,
     required this.updatedAt,
     this.displaySubtitle,
+    this.unitKind,
+    this.unitIndex,
+    this.unitLabel,
+    this.whySummary,
+    this.whyCodes = const [],
+    this.rotationFairness,
     this.rotationSlots = const [],
     this.groupRotationSlots = const [],
+    this.sitOutSlots = const [],
   });
 
   factory EventSuccessAssignment.fromJson(Map<String, dynamic> json) {
@@ -31,6 +38,18 @@ final class EventSuccessAssignment {
       peerUids: (json['peerUids'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
+      unitKind: json['unitKind'] as String?,
+      unitIndex: json['unitIndex'] as int?,
+      unitLabel: json['unitLabel'] as String?,
+      whySummary: json['whySummary'] as String?,
+      whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
+      rotationFairness: json['rotationFairness'] is Map
+          ? EventSuccessRotationFairness.fromJson(
+              Map<String, dynamic>.from(json['rotationFairness'] as Map),
+            )
+          : null,
       rotationSlots: (json['rotationSlots'] as List<dynamic>? ?? const [])
           .whereType<Map>()
           .map(
@@ -48,6 +67,14 @@ final class EventSuccessAssignment {
                 ),
               )
               .toList(growable: false),
+      sitOutSlots: (json['sitOutSlots'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map(
+            (slot) => EventSuccessSitOutSlot.fromJson(
+              Map<String, dynamic>.from(slot),
+            ),
+          )
+          .toList(growable: false),
       source: json['source'] as String? ?? 'server',
       createdAt: _requiredTimestamp(json['createdAt'], 'createdAt'),
       updatedAt: _requiredTimestamp(json['updatedAt'], 'updatedAt'),
@@ -63,8 +90,15 @@ final class EventSuccessAssignment {
   final String displayTitle;
   final String? displaySubtitle;
   final List<String> peerUids;
+  final String? unitKind;
+  final int? unitIndex;
+  final String? unitLabel;
+  final String? whySummary;
+  final List<String> whyCodes;
+  final EventSuccessRotationFairness? rotationFairness;
   final List<EventSuccessRotationSlot> rotationSlots;
   final List<EventSuccessGroupRotationSlot> groupRotationSlots;
+  final List<EventSuccessSitOutSlot> sitOutSlots;
   final String source;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -87,13 +121,50 @@ final class EventSuccessAssignment {
     'displayTitle': displayTitle,
     'displaySubtitle': displaySubtitle,
     'peerUids': peerUids,
+    'unitKind': unitKind,
+    'unitIndex': unitIndex,
+    'unitLabel': unitLabel,
+    'whySummary': whySummary,
+    'whyCodes': whyCodes,
+    'rotationFairness': rotationFairness?.toJson(),
     'rotationSlots': rotationSlots.map((slot) => slot.toJson()).toList(),
     'groupRotationSlots': groupRotationSlots
         .map((slot) => slot.toJson())
         .toList(),
+    'sitOutSlots': sitOutSlots.map((slot) => slot.toJson()).toList(),
     'source': source,
     'createdAt': Timestamp.fromDate(createdAt),
     'updatedAt': Timestamp.fromDate(updatedAt),
+  };
+}
+
+final class EventSuccessRotationFairness {
+  const EventSuccessRotationFairness({
+    required this.assignedRoundCount,
+    required this.sitOutRoundCount,
+    required this.uniquePeerCount,
+    required this.repeatPeerCount,
+  });
+
+  factory EventSuccessRotationFairness.fromJson(Map<String, dynamic> json) {
+    return EventSuccessRotationFairness(
+      assignedRoundCount: json['assignedRoundCount'] as int? ?? 0,
+      sitOutRoundCount: json['sitOutRoundCount'] as int? ?? 0,
+      uniquePeerCount: json['uniquePeerCount'] as int? ?? 0,
+      repeatPeerCount: json['repeatPeerCount'] as int? ?? 0,
+    );
+  }
+
+  final int assignedRoundCount;
+  final int sitOutRoundCount;
+  final int uniquePeerCount;
+  final int repeatPeerCount;
+
+  Map<String, Object?> toJson() => {
+    'assignedRoundCount': assignedRoundCount,
+    'sitOutRoundCount': sitOutRoundCount,
+    'uniquePeerCount': uniquePeerCount,
+    'repeatPeerCount': repeatPeerCount,
   };
 }
 
@@ -105,33 +176,59 @@ final class EventSuccessRotationSlot {
     required this.endsAt,
     required this.peerUid,
     required this.compatibility,
+    this.slotId,
+    this.unitKind,
+    this.unitIndex,
+    this.peerCount,
+    this.whySummary,
+    this.whyCodes = const [],
   });
 
   factory EventSuccessRotationSlot.fromJson(Map<String, dynamic> json) {
     return EventSuccessRotationSlot(
+      slotId: json['slotId'] as String?,
       roundIndex: json['roundIndex'] as int? ?? 0,
       label: json['label'] as String? ?? 'Round',
       startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
       endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
       peerUid: json['peerUid'] as String,
+      unitKind: json['unitKind'] as String?,
+      unitIndex: json['unitIndex'] as int?,
+      peerCount: json['peerCount'] as int?,
       compatibility: json['compatibility'] as String? ?? 'social',
+      whySummary: json['whySummary'] as String?,
+      whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
     );
   }
 
+  final String? slotId;
   final int roundIndex;
   final String label;
   final DateTime startsAt;
   final DateTime endsAt;
   final String peerUid;
+  final String? unitKind;
+  final int? unitIndex;
+  final int? peerCount;
   final String compatibility;
+  final String? whySummary;
+  final List<String> whyCodes;
 
   Map<String, Object?> toJson() => {
+    'slotId': slotId,
     'roundIndex': roundIndex,
     'label': label,
     'startsAt': Timestamp.fromDate(startsAt),
     'endsAt': Timestamp.fromDate(endsAt),
     'peerUid': peerUid,
+    'unitKind': unitKind,
+    'unitIndex': unitIndex,
+    'peerCount': peerCount,
     'compatibility': compatibility,
+    'whySummary': whySummary,
+    'whyCodes': whyCodes,
   };
 }
 
@@ -144,38 +241,104 @@ final class EventSuccessGroupRotationSlot {
     required this.endsAt,
     required this.peerUids,
     required this.compatibility,
+    this.slotId,
+    this.unitKind,
+    this.unitIndex,
+    this.peerCount,
+    this.whySummary,
+    this.whyCodes = const [],
   });
 
   factory EventSuccessGroupRotationSlot.fromJson(Map<String, dynamic> json) {
     return EventSuccessGroupRotationSlot(
+      slotId: json['slotId'] as String?,
       roundIndex: json['roundIndex'] as int? ?? 0,
       label: json['label'] as String? ?? 'Round',
       unitLabel: json['unitLabel'] as String? ?? 'Group',
+      unitKind: json['unitKind'] as String?,
+      unitIndex: json['unitIndex'] as int?,
       startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
       endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
       peerUids: (json['peerUids'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
+      peerCount: json['peerCount'] as int?,
       compatibility: json['compatibility'] as String? ?? 'mixed',
+      whySummary: json['whySummary'] as String?,
+      whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
+    );
+  }
+
+  final String? slotId;
+  final int roundIndex;
+  final String label;
+  final String unitLabel;
+  final String? unitKind;
+  final int? unitIndex;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final List<String> peerUids;
+  final int? peerCount;
+  final String compatibility;
+  final String? whySummary;
+  final List<String> whyCodes;
+
+  Map<String, Object?> toJson() => {
+    'slotId': slotId,
+    'roundIndex': roundIndex,
+    'label': label,
+    'unitLabel': unitLabel,
+    'unitKind': unitKind,
+    'unitIndex': unitIndex,
+    'startsAt': Timestamp.fromDate(startsAt),
+    'endsAt': Timestamp.fromDate(endsAt),
+    'peerUids': peerUids,
+    'peerCount': peerCount,
+    'compatibility': compatibility,
+    'whySummary': whySummary,
+    'whyCodes': whyCodes,
+  };
+}
+
+final class EventSuccessSitOutSlot {
+  const EventSuccessSitOutSlot({
+    required this.roundIndex,
+    required this.label,
+    required this.startsAt,
+    required this.endsAt,
+    required this.whySummary,
+    required this.whyCodes,
+  });
+
+  factory EventSuccessSitOutSlot.fromJson(Map<String, dynamic> json) {
+    return EventSuccessSitOutSlot(
+      roundIndex: json['roundIndex'] as int? ?? 0,
+      label: json['label'] as String? ?? 'Round',
+      startsAt: _requiredTimestamp(json['startsAt'], 'startsAt'),
+      endsAt: _requiredTimestamp(json['endsAt'], 'endsAt'),
+      whySummary: json['whySummary'] as String? ?? 'Planned break.',
+      whyCodes: (json['whyCodes'] as List<dynamic>? ?? const [])
+          .whereType<String>()
+          .toList(growable: false),
     );
   }
 
   final int roundIndex;
   final String label;
-  final String unitLabel;
   final DateTime startsAt;
   final DateTime endsAt;
-  final List<String> peerUids;
-  final String compatibility;
+  final String whySummary;
+  final List<String> whyCodes;
 
   Map<String, Object?> toJson() => {
     'roundIndex': roundIndex,
     'label': label,
-    'unitLabel': unitLabel,
     'startsAt': Timestamp.fromDate(startsAt),
     'endsAt': Timestamp.fromDate(endsAt),
-    'peerUids': peerUids,
-    'compatibility': compatibility,
+    'whySummary': whySummary,
+    'whyCodes': whyCodes,
   };
 }
 

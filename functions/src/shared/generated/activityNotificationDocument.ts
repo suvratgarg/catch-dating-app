@@ -13,6 +13,9 @@ export interface ActivityNotificationDocument {
     | "eventReminder"
     | "eventSignup"
     | "waitlistPromotion"
+    | "waitlistOffer"
+    | "waitlistOfferExpiring"
+    | "waitlistOfferExpired"
     | "eventCancelled"
     | "eventUpdated"
     | "clubUpdate";

@@ -29,8 +29,14 @@ import {
   eventPolicyFromEvent,
   incrementCount,
   rosterFromEvent,
+  rosterWithReservedWaitlistOffersInTransaction,
 } from "./eventPolicy";
 import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
+import {
+  incrementInviteLinkCounterInTransaction,
+  inviteAttributionWriteFields,
+  InviteAttribution,
+} from "./inviteLinks";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid events)
@@ -61,7 +67,11 @@ export async function signUpUserForEvent(
   eventId: string,
   userId: string,
   paymentId?: string,
-  options: {hasValidInvite?: boolean; hasHostApproval?: boolean} = {}
+  options: {
+    hasValidInvite?: boolean;
+    hasHostApproval?: boolean;
+    inviteAttribution?: InviteAttribution | null;
+  } = {}
 ): Promise<void> {
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
@@ -112,7 +122,11 @@ export async function signUpUserForEvent(
     assertBookingReadyUserProfile(user);
     assertRunPreferencesReadyForEvent(user, event);
     const existingParticipation = participationSnap.exists ?
-      participationSnap.data() as {status?: string} :
+      participationSnap.data() as {
+        status?: string;
+        inviteLinkId?: string | null;
+        inviteSource?: string | null;
+      } :
       null;
 
     // Idempotent — user already signed up.
@@ -161,10 +175,21 @@ export async function signUpUserForEvent(
       .filter((participation) => participation.data.status === "signedUp")
       .length;
     const currentBookedCount = event.bookedCount ?? signedUpCount;
+    const baseRoster = {
+      ...rosterFromEvent(event),
+      totalBooked: currentBookedCount,
+    };
+    const reservedRoster = await rosterWithReservedWaitlistOffersInTransaction(
+      tx,
+      db,
+      eventId,
+      baseRoster,
+      {excludeUid: userId}
+    );
     assertPolicyAllowsSignup({
       policy,
       cohortId,
-      roster: {...rosterFromEvent(event), totalBooked: currentBookedCount},
+      roster: reservedRoster,
       hasValidInvite: options.hasValidInvite,
       hasHostApproval: options.hasHostApproval,
     });
@@ -203,16 +228,29 @@ export async function signUpUserForEvent(
     }
 
     tx.update(eventRef, eventUpdate);
-    tx.set(participationRef, eventParticipationPatch({
-      exists: participationSnap.exists,
-      eventId,
-      clubId: event.clubId,
-      uid: userId,
-      status: "signedUp",
-      genderAtSignup: gender,
-      cohortAtSignup: cohortId,
-      paymentId,
-    }), {merge: true});
+    const attribution = attributionForSignup({
+      existingParticipation,
+      candidate: options.inviteAttribution,
+    });
+    tx.set(participationRef, {
+      ...eventParticipationPatch({
+        exists: participationSnap.exists,
+        eventId,
+        clubId: event.clubId,
+        uid: userId,
+        status: "signedUp",
+        genderAtSignup: gender,
+        cohortAtSignup: cohortId,
+        paymentId,
+      }),
+      ...inviteAttributionWriteFields(attribution.write),
+    }, {merge: true});
+    incrementInviteLinkCounterInTransaction({
+      tx,
+      db,
+      attribution: attribution.counter,
+      field: "confirmedCount",
+    });
     setActivityNotificationInTransaction(tx, db, {
       id: activityNotificationId(notificationType, eventId),
       uid: userId,
@@ -224,4 +262,46 @@ export async function signUpUserForEvent(
       clubId: event.clubId,
     });
   });
+}
+
+/**
+ * Chooses whether a signup should write or count invite attribution.
+ * @param {object} params Existing participation and candidate attribution.
+ * @return {object} Attribution write fields and counter attribution.
+ */
+function attributionForSignup(params: {
+  existingParticipation: {
+    status?: string;
+    inviteLinkId?: string | null;
+    inviteSource?: string | null;
+  } | null;
+  candidate: InviteAttribution | null | undefined;
+}): {
+  write: InviteAttribution | null;
+  counter: InviteAttribution | null;
+} {
+  const existingLinkId = params.existingParticipation?.inviteLinkId;
+  const existingSource = params.existingParticipation?.inviteSource;
+  if (typeof existingLinkId === "string" && existingLinkId.length > 0) {
+    const existing = {
+      inviteLinkId: existingLinkId,
+      inviteSource: typeof existingSource === "string" &&
+        existingSource.length > 0 ? existingSource : null,
+    };
+    const status = params.existingParticipation?.status;
+    if (status !== "cancelled" && status !== "deleted") {
+      return {write: null, counter: existing};
+    }
+  }
+  if (!params.candidate) return {write: null, counter: null};
+  const status = params.existingParticipation?.status;
+  if (
+    typeof existingLinkId === "string" &&
+    existingLinkId.length > 0 &&
+    status !== "cancelled" &&
+    status !== "deleted"
+  ) {
+    return {write: null, counter: null};
+  }
+  return {write: params.candidate, counter: params.candidate};
 }

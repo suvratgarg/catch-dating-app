@@ -429,12 +429,60 @@
         "cancelEventSignUp",
         "joinEventWaitlist",
         "leaveEventWaitlist",
+        "createEventWaitlistOffers",
+        "acceptEventWaitlistOffer",
+        "declineEventWaitlistOffer",
         "markEventAttendance",
         "selfCheckInAttendance",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
         "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts."
+      ]
+    },
+    {
+      "id": "eventWaitlistOffers",
+      "path": "eventWaitlistOffers/{offerId}",
+      "rulesMatch": "/eventWaitlistOffers/{offerId}",
+      "typescriptInterface": "EventWaitlistOfferDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "waitlist offer callables and expiry scheduler",
+      "read": "offered attendee or club host",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventWaitlistOffers",
+        "acceptEventWaitlistOffer",
+        "declineEventWaitlistOffer",
+        "expireEventWaitlistOffers"
+      ],
+      "migrationNotes": [
+        "The offer document is the durable audit object; eventParticipations mirrors the current offer state for cheap roster and attendee CTA reads."
+      ]
+    },
+    {
+      "id": "eventInviteLinks",
+      "path": "eventInviteLinks/{inviteLinkId}",
+      "rulesMatch": "/eventInviteLinks/{inviteLinkId}",
+      "typescriptInterface": "EventInviteLinkDocument",
+      "dartModel": "lib/events/domain/event_invite_link.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event invite link callables and event-success scorecard recomputation",
+      "read": "club host only",
+      "write": "server only",
+      "exportedFunctions": [
+        "createEventInviteLink",
+        "disableEventInviteLink",
+        "recordEventInviteLinkOpen",
+        "onEventInviteLinkWritten",
+        "onEventParticipationWritten",
+        "onPaymentWritten",
+        "onEventWaitlistOfferWritten",
+        "onSwipeCreated",
+        "onMessageCreated"
+      ],
+      "migrationNotes": [
+        "Named host links track opens, requests, confirmations, payments, check-ins, matches, and chat starts without erasing disabled-link history."
       ]
     },
     {

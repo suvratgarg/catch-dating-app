@@ -139,6 +139,7 @@ void main() {
         buildPublicProfile(name: 'Asha'),
         buildPublicProfile(uid: 'runner-2', name: 'Kabir'),
         buildPublicProfile(uid: 'runner-3', name: 'Meera'),
+        buildPublicProfile(uid: 'runner-4', name: 'Zara'),
       ];
     participationRepository.eventParticipations[event.id] = [
       buildEventParticipation(
@@ -157,6 +158,14 @@ void main() {
         uid: 'runner-3',
         status: EventParticipationStatus.cancelled,
         paymentId: 'pay_3',
+      ),
+      buildEventParticipation(
+        event: event,
+        uid: 'runner-4',
+        status: EventParticipationStatus.waitlisted,
+        waitlistOfferStatus: EventWaitlistOfferStatus.active,
+        waitlistOfferedAt: DateTime(2026, 5, 6, 8),
+        waitlistOfferExpiresAt: DateTime(2026, 5, 6, 9),
       ),
     ];
     final shares = <ShareParams>[];
@@ -204,6 +213,8 @@ void main() {
     final opsCsv = await shares.last.files!.single.readAsString();
     expect(opsCsv, contains('arrival_order'));
     expect(opsCsv, contains('Kabir,runner-2,signedUp,not_checked_in'));
+    expect(opsCsv, contains('waitlist_offer_status'));
+    expect(opsCsv, contains('Zara,runner-4,waitlisted,waitlisted,,active'));
   });
 
   testWidgets('shows branded loading while attendance data loads', (
@@ -317,7 +328,7 @@ void main() {
     expect(fakeEventRepository.markedAttendanceUserId, 'runner-1');
   });
 
-  testWidgets('participants setup mode shows booked and waitlisted read-only', (
+  testWidgets('participants setup mode shows booked and waitlisted actions', (
     tester,
   ) async {
     final event = buildEvent(id: 'participants-event');
@@ -362,13 +373,87 @@ void main() {
     expect(find.text('Meera'), findsOneWidget);
     expect(find.text('Booked'), findsWidgets);
     expect(find.text('Wait'), findsOneWidget);
+    expect(find.text('Offer'), findsOneWidget);
     expect(find.text('Profile'), findsWidgets);
+
+    await tester.tap(find.text('Offer'));
+    await tester.pump();
+
+    expect(
+      fakeEventRepository.createdWaitlistOfferEventId,
+      'participants-event',
+    );
+    expect(fakeEventRepository.createdWaitlistOfferUserIds, ['runner-2']);
 
     await tester.tap(find.text('Asha'));
     await tester.pump();
 
     expect(fakeEventRepository.markedAttendanceEventId, isNull);
     expect(fakeEventRepository.markedAttendanceUserId, isNull);
+  });
+
+  testWidgets('participants setup mode offers the next open waitlist spots', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'bulk-offer-event', capacityLimit: 3);
+    final fakeEventRepository = FakeEventRepository();
+    final fakePublicProfileRepository = FakePublicProfileRepository()
+      ..profiles = [
+        buildPublicProfile(name: 'Asha'),
+        buildPublicProfile(uid: 'runner-2', name: 'Meera'),
+        buildPublicProfile(uid: 'runner-3', name: 'Kabir'),
+        buildPublicProfile(uid: 'runner-4', name: 'Zara'),
+      ];
+
+    await pumpEventsTestApp(
+      tester,
+      Scaffold(
+        body: HostEventParticipantsPanel(
+          eventId: event.id,
+          mode: HostEventParticipantsMode.setup,
+        ),
+      ),
+      overrides: [
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+        watchEventParticipationsForEventProvider(event.id).overrideWith(
+          (ref) => Stream.value([
+            buildEventParticipation(event: event, uid: 'runner-1'),
+            buildEventParticipation(
+              event: event,
+              uid: 'runner-2',
+              status: EventParticipationStatus.waitlisted,
+            ),
+            buildEventParticipation(
+              event: event,
+              uid: 'runner-3',
+              status: EventParticipationStatus.waitlisted,
+            ),
+            buildEventParticipation(
+              event: event,
+              uid: 'runner-4',
+              status: EventParticipationStatus.waitlisted,
+            ),
+          ]),
+        ),
+        eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        publicProfileRepositoryProvider.overrideWith(
+          (ref) => fakePublicProfileRepository,
+        ),
+      ],
+      signedInUid: 'host-1',
+    );
+    await _settleAttendanceSheet(tester);
+
+    expect(find.text('Offer next 2'), findsOneWidget);
+
+    await tester.tap(find.text('Offer next 2'));
+    await tester.pump();
+
+    expect(fakeEventRepository.createdWaitlistOfferEventId, 'bulk-offer-event');
+    expect(fakeEventRepository.createdWaitlistOfferUserIds, [
+      'runner-2',
+      'runner-3',
+    ]);
   });
 
   testWidgets('participants setup mode labels manual approvals as requests', (

@@ -34,6 +34,8 @@ export interface VerifiedPaymentBooking {
   amountInPaise: number;
   currency: string;
   inviteVerified?: boolean;
+  inviteLinkId?: string | null;
+  inviteSource?: string | null;
 }
 
 export interface PaymentRecordInput extends VerifiedPaymentBooking {
@@ -62,6 +64,8 @@ export function buildOrderCreatePayload({
   receiptToken,
   amountInPaise,
   inviteVerified = false,
+  inviteLinkId,
+  inviteSource,
 }: {
   eventId: string;
   event: EventDocument;
@@ -69,6 +73,8 @@ export function buildOrderCreatePayload({
   receiptToken: string | number;
   amountInPaise?: number;
   inviteVerified?: boolean;
+  inviteLinkId?: string | null;
+  inviteSource?: string | null;
 }) {
   if (event.status === "cancelled") {
     throw new HttpsError(
@@ -98,6 +104,8 @@ export function buildOrderCreatePayload({
       userId,
       quotedAmountInPaise: trustedAmountInPaise,
       inviteVerified: inviteVerified ? "true" : "false",
+      ...(inviteLinkId ? {inviteLinkId} : {}),
+      ...(inviteSource ? {inviteSource} : {}),
     },
   };
 }
@@ -182,6 +190,8 @@ export function verifyPaidEventBooking({
   const eventId = getRequiredNote(order.notes, "eventId");
   const userId = getRequiredNote(order.notes, "userId");
   const inviteVerified = order.notes?.inviteVerified === "true";
+  const inviteLinkId = getOptionalNote(order.notes, "inviteLinkId");
+  const inviteSource = getOptionalNote(order.notes, "inviteSource");
 
   if (userId !== expectedUserId) {
     throw new HttpsError(
@@ -196,6 +206,8 @@ export function verifyPaidEventBooking({
     amountInPaise: orderAmount,
     currency: order.currency,
     inviteVerified,
+    inviteLinkId,
+    inviteSource,
   };
 }
 
@@ -213,6 +225,8 @@ export function buildPaymentRecord({
   currency,
   status,
   signUpFailed = false,
+  inviteLinkId,
+  inviteSource,
 }: PaymentRecordInput) {
   return {
     userId,
@@ -225,6 +239,8 @@ export function buildPaymentRecord({
     provider: "razorpay" as const,
     status,
     signUpFailed,
+    ...(inviteLinkId ? {inviteLinkId} : {}),
+    ...(inviteSource ? {inviteSource} : {}),
   };
 }
 
@@ -247,6 +263,22 @@ function getRequiredNote(
   }
 
   return rawValue;
+}
+
+/**
+ * Reads an optional non-empty Razorpay order note value.
+ * @param {RazorpayOrderNotes|null|undefined} notes Order notes map.
+ * @param {string} key Note key to read.
+ * @return {string|null} Trimmed note value when present.
+ */
+function getOptionalNote(
+  notes: RazorpayOrderNotes | null | undefined,
+  key: string
+): string | null {
+  const rawValue = notes?.[key];
+  if (typeof rawValue !== "string") return null;
+  const trimmed = rawValue.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 /**

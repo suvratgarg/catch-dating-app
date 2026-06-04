@@ -10,13 +10,16 @@ final class EventIdCallableRequest {
   const EventIdCallableRequest({
     required this.eventId,
     this.inviteCode,
+    this.inviteLinkId,
   });
 
   final String eventId;
   final String? inviteCode;
+  final String? inviteLinkId;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'inviteCode': ?inviteCode,
+    'inviteLinkId': ?inviteLinkId,
   };
 }

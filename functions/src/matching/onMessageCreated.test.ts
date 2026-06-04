@@ -144,13 +144,13 @@ function event(eventId: string) {
   };
 }
 
-function harness() {
+function harness({eventIds = ["event-1"]}: {eventIds?: string[]} = {}) {
   const firestore = new FakeFirestore({
     "matches/match-1": {
       user1Id: "runner-1",
       user2Id: "runner-2",
       participantIds: ["runner-1", "runner-2"],
-      eventIds: ["event-1"],
+      eventIds,
       createdAt: {seconds: 0, nanoseconds: 0},
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -162,10 +162,12 @@ function harness() {
     "users/runner-2": {fcmToken: "token-2"},
   });
   const notifications: Notification[] = [];
+  const scorecardRefreshes: string[] = [];
 
   return {
     firestore,
     notifications,
+    scorecardRefreshes,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -173,6 +175,9 @@ function harness() {
         ({kind: "serverTimestamp"}) as unknown as FirebaseFirestore.FieldValue,
       sendNotification: async (notification: Notification) => {
         notifications.push(notification);
+      },
+      refreshScorecard: async (eventId: string) => {
+        scorecardRefreshes.push(eventId);
       },
     },
   };
@@ -211,6 +216,7 @@ test("onMessageCreatedHandler updates match metadata and notifies recipient",
       undefined
     );
     assert.equal(h.notifications.length, 1);
+    assert.deepEqual(h.scorecardRefreshes, ["event-1"]);
   }
 );
 
@@ -225,4 +231,15 @@ test("onMessageCreatedHandler applies a retried event once", async () => {
     {"runner-1": 0, "runner-2": 1}
   );
   assert.equal(h.notifications.length, 1);
+  assert.deepEqual(h.scorecardRefreshes, ["event-1"]);
 });
+
+test("onMessageCreatedHandler refreshes every event attached to the match",
+  async () => {
+    const h = harness({eventIds: ["event-1", "event-2"]});
+
+    await onMessageCreatedHandler(event("event-1"), h.deps);
+
+    assert.deepEqual(h.scorecardRefreshes, ["event-1", "event-2"]);
+  }
+);

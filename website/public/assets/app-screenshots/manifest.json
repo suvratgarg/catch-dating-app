@@ -1,121 +1,66 @@
 {
   "version": 1,
   "updated": "2026-05-31",
-  "generatedBy": "tool/marketing/sync_website_media.mjs",
   "captures": [
     {
       "id": "member-event-discovery",
       "audience": "member",
       "surface": "Event discovery",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/member-event-discovery.png",
       "alt": "Catch event discovery screen showing hosted singles events",
       "caption": "Members browse real hosted events before any dating surface opens.",
-      "walkthroughStep": "Discover",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.member.eventDiscovery",
-        "sourcePath": "artifacts/marketing/app-screenshots/member-event-discovery.png",
-        "sourceSha256": "34d45c28a19c5e5333b903a4072617965513bcc922e13189a3ea2577b4dbbe04",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/member-event-discovery.svg",
-        "placeholderSha256": null
-      }
+      "walkthroughStep": "Discover"
     },
     {
       "id": "post-run-catch-window",
       "audience": "member",
       "surface": "Post-event catch window",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/post-run-catch-window.png",
       "alt": "Catch post-event roster screen for the 24 hour catch window",
       "caption": "The roster opens after attendance creates shared context.",
-      "walkthroughStep": "Unlock",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.member.postRunCatchWindow",
-        "sourcePath": "artifacts/marketing/app-screenshots/post-run-catch-window.png",
-        "sourceSha256": "4936f9d8fcfc138998f4c1139c52f1edd4ff338ef35cbfd196883f8d45b24f40",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/post-run-catch-window.svg",
-        "placeholderSha256": null
-      }
+      "walkthroughStep": "Unlock"
     },
     {
       "id": "match-chat-context",
       "audience": "member",
       "surface": "Contextual match chat",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/match-chat-context.png",
       "alt": "Catch match chat screen with shared event context",
-      "caption": "Matches start with the room they already shared.",
-      "walkthroughStep": "Match",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.member.matchChatContext",
-        "sourcePath": "artifacts/marketing/app-screenshots/match-chat-context.png",
-        "sourceSha256": "b27db6f44b5b298cb0a5ebaf12d0d6fc4004c66a8868cd4050280d6b1b4eecb5",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/match-chat-context.svg",
-        "placeholderSha256": null
-      }
+      "caption": "Matches start with the event they already shared.",
+      "walkthroughStep": "Match"
     },
     {
       "id": "host-event-setup",
       "audience": "host",
       "surface": "Host event setup",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/host-event-setup.png",
       "alt": "Catch host event setup screen",
-      "caption": "Create the event, set the access model, and preview the guest experience.",
-      "walkthroughStep": "Setup",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.host.eventSetup",
-        "sourcePath": "artifacts/marketing/app-screenshots/host-event-setup.png",
-        "sourceSha256": "6aa5c707fd42776abd240110f2a7d97599db47317903988faf1a7991c7642435",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-setup.svg",
-        "placeholderSha256": null
-      }
+      "caption": "Set admission rules, invite links, waitlist, payments, and Event Success before publishing.",
+      "walkthroughStep": "Setup"
     },
     {
       "id": "host-live-console",
       "audience": "host",
       "surface": "Host live console",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/host-live-console.png",
       "alt": "Catch host live console with roster and check-in controls",
-      "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
-      "walkthroughStep": "Live",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.host.liveConsole",
-        "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
-        "sourceSha256": "38fa7940df2bc4a7e83afc629fe23017e977e127e0f6140f8682a88d77b2c12b",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.svg",
-        "placeholderSha256": null
-      }
+      "caption": "Check in guests, manage waitlist movement, and run Event Success modules from one screen.",
+      "walkthroughStep": "Live"
     },
     {
       "id": "host-post-event-report",
       "audience": "host",
       "surface": "Host post-event report",
       "device": "iphone-17-pro",
-      "status": "active",
       "webPath": "/assets/app-screenshots/host-post-event-report.png",
       "alt": "Catch host post-event report screen",
-      "caption": "Review attendance and event momentum after the room closes.",
-      "walkthroughStep": "Report",
-      "statusLabel": "Captured from current app UI",
-      "source": {
-        "fixtureKey": "salesDemo.host.postEventReport",
-        "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
-        "sourceSha256": "494e2d0b67e032d1c67832360db8b1ce68f22a55569277d8d09bf065b2233447",
-        "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.svg",
-        "placeholderSha256": null
-      }
+      "caption": "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.",
+      "walkthroughStep": "Report"
     }
   ]
 }

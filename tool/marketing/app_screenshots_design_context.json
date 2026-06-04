@@ -153,7 +153,7 @@
       },
       "copy": {
         "alt": "Catch match chat screen with shared event context",
-        "caption": "Matches start with the room they already shared.",
+        "caption": "Matches start with the event they already shared.",
         "walkthroughStep": "Match"
       }
     },
@@ -204,7 +204,7 @@
       },
       "copy": {
         "alt": "Catch host event setup screen",
-        "caption": "Create the event, set the access model, and preview the guest experience.",
+        "caption": "Set admission rules, invite links, waitlist, payments, and Event Success before publishing.",
         "walkthroughStep": "Setup"
       }
     },
@@ -255,7 +255,7 @@
       },
       "copy": {
         "alt": "Catch host live console with roster and check-in controls",
-        "caption": "Track bookings, waitlist, attendance, and live host tools from one screen.",
+        "caption": "Check in guests, manage waitlist movement, and run Event Success modules from one screen.",
         "walkthroughStep": "Live"
       }
     },
@@ -306,7 +306,7 @@
       },
       "copy": {
         "alt": "Catch host post-event report screen",
-        "caption": "Review attendance and event momentum after the room closes.",
+        "caption": "Review invite conversion, waitlist movement, attendance, catches, matches, and chats after the event closes.",
         "walkthroughStep": "Report"
       }
     }

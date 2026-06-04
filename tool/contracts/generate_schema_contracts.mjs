@@ -87,9 +87,21 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventPrivateAccessDocument.ts",
   },
   {
+    name: "EventInviteLinkDocument",
+    source: "firestore/event_invite_links.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventInviteLinkDocument.ts",
+  },
+  {
     name: "EventParticipationDocument",
     source: "firestore/event_participations.schema.json",
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
+  },
+  {
+    name: "EventWaitlistOfferDocument",
+    source: "firestore/event_waitlist_offers.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventWaitlistOfferDocument.ts",
   },
   {
     name: "EventSuccessPlanDocument",
@@ -331,6 +343,34 @@ const schemaSpecs = [
     name: "EventIdCallablePayload",
     source: "callables/event_id_payload.schema.json",
     typeOutput: "functions/src/shared/generated/eventIdCallablePayload.ts",
+  },
+  {
+    name: "CreateEventWaitlistOffersCallablePayload",
+    source: "callables/create_event_waitlist_offers_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createEventWaitlistOffersCallablePayload.ts",
+  },
+  {
+    name: "CreateEventInviteLinkCallablePayload",
+    source: "callables/create_event_invite_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createEventInviteLinkCallablePayload.ts",
+  },
+  {
+    name: "DisableEventInviteLinkCallablePayload",
+    source: "callables/disable_event_invite_link_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "disableEventInviteLinkCallablePayload.ts",
+  },
+  {
+    name: "RecordEventInviteLinkOpenCallablePayload",
+    source: "callables/record_event_invite_link_open_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "recordEventInviteLinkOpenCallablePayload.ts",
   },
   {
     name: "MarkEventAttendanceCallablePayload",

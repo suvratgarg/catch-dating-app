@@ -12,11 +12,47 @@ export interface EventSuccessScorecardDocument {
   checkedInCount: number;
   feedbackCount: number;
   attendeesWhoMetTwoPlusPeople: number;
+  catchSentCount: number;
+  attendeesWhoCaughtSomeone: number;
+  catchRecipientCount: number;
+  catchRate: number;
   mutualMatchCount: number;
   chatStartedCount: number;
   averageWelcomeRating: number;
   averageStructureRating: number;
   safetyIncidentCount: number;
+  /**
+   * Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.
+   */
+  funnel: {
+    inviteLinkCount: number;
+    inviteOpenCount: number;
+    totalDemandCount: number;
+    requestCount: number;
+    pendingRequestCount: number;
+    approvedRequestCount: number;
+    declinedRequestCount: number;
+    directSignupCount: number;
+    waitlistJoinCount: number;
+    waitlistOfferCount: number;
+    waitlistOfferActiveCount: number;
+    waitlistOfferAcceptedCount: number;
+    waitlistOfferDeclinedCount: number;
+    waitlistOfferExpiredCount: number;
+    checkoutStartedCount: number;
+    paymentPendingCount: number;
+    paymentCompletedCount: number;
+    paymentFailedCount: number;
+    paymentRefundedCount: number;
+    bookedCount: number;
+    checkedInCount: number;
+    noShowCount: number;
+    catchSentCount: number;
+    attendeesWhoCaughtSomeone: number;
+    mutualMatchCount: number;
+    chatStartedCount: number;
+    repeatAttendeeCount: number;
+  };
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

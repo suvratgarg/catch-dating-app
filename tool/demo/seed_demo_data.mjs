@@ -13,6 +13,10 @@ import {
   profilePromptCatalog,
 } from "../contracts/generated/schema_contract_registry.mjs";
 import {
+  listScenarioConfigs,
+  loadScenarioConfig,
+} from "./demo_seed_scenario_catalog.mjs";
+import {
   assertValidSchemaPayload,
   validateActivityNotificationDocument,
   validateChatMessageDocument,
@@ -63,6 +67,7 @@ const cityData = {
   mumbai: {label: "Mumbai", lat: 19.076, lng: 72.8777, areas: ["Bandra", "Marine Drive", "Powai"]},
   delhi: {label: "Delhi", lat: 28.7041, lng: 77.1025, areas: ["Lodhi Garden", "Hauz Khas", "India Gate"]},
   bangalore: {label: "Bangalore", lat: 12.9716, lng: 77.5946, areas: ["Cubbon Park", "Indiranagar", "Jayanagar"]},
+  "new-york": {label: "New York", lat: 40.7128, lng: -74.0060, areas: ["West Village", "Hudson River Park", "Williamsburg"]},
   hyderabad: {label: "Hyderabad", lat: 17.385, lng: 78.4867, areas: ["Necklace Road", "Gachibowli", "Jubilee Hills"]},
   chennai: {label: "Chennai", lat: 13.0827, lng: 80.2707, areas: ["Besant Nagar", "Marina", "Adyar"]},
   kolkata: {label: "Kolkata", lat: 22.5726, lng: 88.3639, areas: ["Maidan", "Salt Lake", "New Town"]},
@@ -71,7 +76,17 @@ const cityData = {
   indore: {label: "Indore", lat: 22.7196, lng: 75.8577, areas: ["Race Course Road", "Vijay Nagar", "Rajwada"]},
 };
 
-const allCities = Object.keys(cityData);
+const allCities = [
+  "mumbai",
+  "delhi",
+  "bangalore",
+  "hyderabad",
+  "chennai",
+  "kolkata",
+  "pune",
+  "ahmedabad",
+  "indore",
+];
 
 const scenarios = {
   smoke: {
@@ -322,6 +337,11 @@ const clubImages = [
 ];
 
 const meetingPointData = {
+  "new-york": [
+    {key: "west_village_table", label: "Cervo's private table", lat: 40.7143, lng: -73.9912, detail: "Ask for the Catch host table near the back banquette."},
+    {key: "hudson_river_pier_57", label: "Pier 57 south entrance", lat: 40.7421, lng: -74.0089, detail: "Meet by the south entrance benches facing the Hudson."},
+    {key: "williamsburg_court_2", label: "McCarren Park court 2", lat: 40.7215, lng: -73.9515, detail: "Meet beside court 2 near the clubhouse gate."},
+  ],
   mumbai: [
     {label: "Bandra Carter Road amphitheatre", lat: 19.0704, lng: 72.8220, detail: "Meet beside the amphitheatre steps facing the promenade."},
     {label: "Marine Drive police gymkhana gate", lat: 18.9432, lng: 72.8234, detail: "Meet near the sea-facing gate before the promenade warm-up."},
@@ -385,10 +405,7 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  const scenario = scenarios[args.scenario];
-  if (!scenario) {
-    throw new Error(`Unknown scenario "${args.scenario}". Use --list-scenarios.`);
-  }
+  const scenario = resolveSeedScenario(args.scenario);
 
   const projectId = resolveProjectId(args);
   const isProdTarget = isProductionTarget(args, projectId);
@@ -535,6 +552,37 @@ function parseArgs(argv) {
   }
 
   return parsed;
+}
+
+function resolveSeedScenario(name) {
+  if (scenarios[name]) return scenarios[name];
+  let config;
+  try {
+    config = loadScenarioConfig(name);
+  } catch {
+    throw new Error(`Unknown scenario "${name}". Use --list-scenarios.`);
+  }
+  if (!config.seedWorld) {
+    throw new Error(
+      `Demo scenario "${name}" does not define seedWorld. Use demo_ops scenario-info for non-seed readiness scenarios.`
+    );
+  }
+  return normalizeSeedWorldScenario(config);
+}
+
+function normalizeSeedWorldScenario(config) {
+  return {
+    description: config.seedWorld.description ?? config.description,
+    sourceScenarioId: config.id,
+    cities: config.seedWorld.cities,
+    usersPerCity: config.seedWorld.usersPerCity,
+    clubsPerCity: config.seedWorld.clubsPerCity,
+    eventsPerClub: config.seedWorld.eventsPerClub,
+    anchorsPerRun: config.seedWorld.anchorsPerRun,
+    preferPaidEvents: config.seedWorld.preferPaidEvents === true,
+    eventPatterns: config.seedWorld.eventPatterns ?? null,
+    salesDemo: config.salesDemo ?? null,
+  };
 }
 
 function requireValue(argv, index, flag) {
@@ -707,6 +755,7 @@ function buildSeed({
         const event = buildEvent({
           seedPrefix,
           seedMarker,
+          scenario,
           city,
           club,
           runIndex,
@@ -1191,25 +1240,31 @@ function buildMembership({seedMarker, clubId, uid, role, now}) {
   };
 }
 
-function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now, preferPaid}) {
+function buildEvent({
+  seedPrefix,
+  seedMarker,
+  scenario,
+  city,
+  club,
+  runIndex,
+  clubIndex,
+  now,
+  preferPaid,
+}) {
   const cityMeta = cityData[city];
-  const patterns = [
-    {kind: "upcomingFree", offsetHours: 30, price: 0, capacity: 12, durationMinutes: 70},
-    {kind: "upcomingPaid", offsetHours: 84, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
-    {kind: "upcomingFull", offsetHours: 168, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
-    {kind: "upcomingWaitlist", offsetHours: 336, price: 0, capacity: 5, durationMinutes: 65},
-    {kind: "pastOpen", offsetHours: -8, price: 0, capacity: 14, durationMinutes: 60},
-    {kind: "pastOld", offsetHours: -120, price: preferPaid ? 39900 : 0, capacity: 14, durationMinutes: 75},
-    {kind: "cancelled", offsetHours: 220, price: 0, capacity: 10, durationMinutes: 70},
-    {kind: "upcomingFree", offsetHours: 504, price: 0, capacity: 16, durationMinutes: 90},
-  ];
+  const patterns = scenario.eventPatterns ?? defaultEventPatterns(preferPaid);
   const pattern = patterns[runIndex % patterns.length];
   const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 8 + runIndex * 2});
   const end = offsetDate(start, {minutes: pattern.durationMinutes});
   const id = `${seedPrefix}_run_${city}_${String(clubIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
-  const meetingPoint = meetingPointForRun({city, clubIndex, runIndex});
-  const eventFormat = seedEventFormatForRun(runIndex);
+  const meetingPoint = meetingPointForRun({
+    city,
+    clubIndex,
+    runIndex,
+    key: pattern.meetingPointKey,
+  });
+  const eventFormat = seedEventFormatForRun(runIndex, pattern.activityKind);
   const isSinglesMixer = eventFormat.activityKind === "singlesMixer";
   const locationDetails = isSinglesMixer ?
     "Check in with the host near the Catch table." :
@@ -1259,6 +1314,11 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
         maxMen: runIndex % 3 === 0 ? 8 : null,
         maxWomen: runIndex % 4 === 0 ? 8 : null,
       },
+      eventPolicy: eventPolicyForSeedEvent({
+        capacityLimit: pattern.capacity,
+        priceInPaise: pattern.price,
+        kind: pattern.kind,
+      }),
       genderCounts: {},
       cohortCounts: {},
       waitlistedCohortCounts: {},
@@ -1266,8 +1326,43 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
   };
 }
 
-function seedEventFormatForRun(runIndex) {
+function defaultEventPatterns(preferPaid) {
+  return [
+    {kind: "upcomingFree", offsetHours: 30, price: 0, capacity: 12, durationMinutes: 70, activityKind: "singlesMixer"},
+    {kind: "upcomingPaid", offsetHours: 84, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80, activityKind: "socialRun"},
+    {kind: "upcomingFull", offsetHours: 168, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60, activityKind: "socialRun"},
+    {kind: "upcomingWaitlist", offsetHours: 336, price: 0, capacity: 5, durationMinutes: 65, activityKind: "socialRun"},
+    {kind: "pastOpen", offsetHours: -8, price: 0, capacity: 14, durationMinutes: 60, activityKind: "singlesMixer"},
+    {kind: "pastOld", offsetHours: -120, price: preferPaid ? 39900 : 0, capacity: 14, durationMinutes: 75, activityKind: "socialRun"},
+    {kind: "cancelled", offsetHours: 220, price: 0, capacity: 10, durationMinutes: 70, activityKind: "socialRun"},
+    {kind: "upcomingFree", offsetHours: 504, price: 0, capacity: 16, durationMinutes: 90, activityKind: "socialRun"},
+  ];
+}
+
+function seedEventFormatForRun(runIndex, activityKind = null) {
+  if (activityKind) return eventFormatForActivityKind(activityKind);
   if (runIndex % 4 === 0) return singlesMixerEventFormat();
+  return socialRunEventFormat();
+}
+
+function eventFormatForActivityKind(activityKind) {
+  if (activityKind === "singlesMixer") return singlesMixerEventFormat();
+  if (activityKind === "dinner") {
+    return {
+      version: 1,
+      activityKind: "dinner",
+      interactionModel: "seatedTable",
+      defaultPlaybookId: "dinner_table_mixer",
+    };
+  }
+  if (activityKind === "pickleball") {
+    return {
+      version: 1,
+      activityKind: "pickleball",
+      interactionModel: "pairedRotations",
+      defaultPlaybookId: "pickleball_rotations",
+    };
+  }
   return socialRunEventFormat();
 }
 
@@ -1303,8 +1398,12 @@ function singlesMixerEventFormat() {
   };
 }
 
-function meetingPointForRun({city, clubIndex, runIndex}) {
+function meetingPointForRun({city, clubIndex, runIndex, key = null}) {
   const points = meetingPointData[city] ?? [];
+  if (key) {
+    const point = points.find((item) => item.key === key);
+    if (point) return point;
+  }
   if (points.length === 0) {
     const cityMeta = cityData[city];
     return {
@@ -1315,6 +1414,43 @@ function meetingPointForRun({city, clubIndex, runIndex}) {
     };
   }
   return points[(clubIndex + runIndex) % points.length];
+}
+
+function eventPolicyForSeedEvent({capacityLimit, priceInPaise, kind}) {
+  const waitlistMode = kind === "upcomingWaitlist" ?
+    "rankedOffer" :
+    "disabled";
+  return {
+    version: 1,
+    admission: {
+      format: "balancedRatio",
+      capacityLimit,
+      waitlistPolicy: {mode: waitlistMode, offerWindowMinutes: waitlistMode === "disabled" ? 0 : 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: {
+        leftCohortId: "menInterestedInWomen",
+        rightCohortId: "womenInterestedInMen",
+        maxSkew: 2,
+        openingBufferPerCohort: 2,
+        outOfRatioCohortPolicy: "waitlist",
+      },
+    },
+    pricing: {
+      basePriceInPaise: priceInPaise,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
 }
 
 function assertRunCoordinateQuality({events}) {
@@ -1611,6 +1747,19 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
     },
   }] : [];
 
+  const catchSentCount = Math.min(
+    completedParticipants.length,
+    Math.max(0, Math.round(completedParticipants.length * 0.7))
+  );
+  const attendeesWhoCaughtSomeone = Math.min(
+    completedParticipants.length,
+    Math.max(0, Math.round(completedParticipants.length * 0.55))
+  );
+  const catchRecipientCount = Math.min(
+    completedParticipants.length,
+    Math.max(0, Math.round(completedParticipants.length * 0.6))
+  );
+
   const scorecards = feedback.length > 0 ? [{
     id: event.id,
     doc: {
@@ -1621,11 +1770,50 @@ function buildEventSuccessDocs({seedMarker, event, roster, now}) {
       checkedInCount: event.doc.checkedInCount,
       feedbackCount: feedback.length,
       attendeesWhoMetTwoPlusPeople: feedback.filter((doc) => doc.doc.metNewPeopleCount >= 2).length,
+      catchSentCount,
+      attendeesWhoCaughtSomeone,
+      catchRecipientCount,
+      catchRate: event.doc.checkedInCount > 0 ?
+        attendeesWhoCaughtSomeone / event.doc.checkedInCount :
+        0,
       mutualMatchCount: Math.min(3, Math.floor(completedParticipants.length / 2)),
       chatStartedCount: Math.min(2, Math.floor(completedParticipants.length / 3)),
       averageWelcomeRating: averageRating(feedback, "welcomeRating"),
       averageStructureRating: averageRating(feedback, "structureRating"),
       safetyIncidentCount: feedback.filter((doc) => doc.doc.safetyConcern).length,
+      funnel: {
+        inviteLinkCount: 0,
+        inviteOpenCount: 0,
+        totalDemandCount: participants.length,
+        requestCount: 0,
+        pendingRequestCount: 0,
+        approvedRequestCount: 0,
+        declinedRequestCount: 0,
+        directSignupCount: completedParticipants.length,
+        waitlistJoinCount: event.doc.waitlistedCount,
+        waitlistOfferCount: 0,
+        waitlistOfferActiveCount: 0,
+        waitlistOfferAcceptedCount: 0,
+        waitlistOfferDeclinedCount: 0,
+        waitlistOfferExpiredCount: 0,
+        checkoutStartedCount: event.doc.priceInPaise > 0 ?
+          event.doc.bookedCount :
+          0,
+        paymentPendingCount: 0,
+        paymentCompletedCount: event.doc.priceInPaise > 0 ?
+          event.doc.bookedCount :
+          0,
+        paymentFailedCount: 0,
+        paymentRefundedCount: 0,
+        bookedCount: event.doc.bookedCount,
+        checkedInCount: event.doc.checkedInCount,
+        noShowCount: Math.max(0, event.doc.bookedCount - event.doc.checkedInCount),
+        catchSentCount,
+        attendeesWhoCaughtSomeone,
+        mutualMatchCount: Math.min(3, Math.floor(completedParticipants.length / 2)),
+        chatStartedCount: Math.min(2, Math.floor(completedParticipants.length / 3)),
+        repeatAttendeeCount: Math.floor(completedParticipants.length * 0.25),
+      },
       updatedAt: admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 35})),
     },
   }] : [];
@@ -3105,6 +3293,10 @@ function printScenarios() {
   console.log("Available demo seed scenarios:");
   for (const [name, scenario] of Object.entries(scenarios)) {
     console.log(`- ${name}: ${scenario.description}`);
+  }
+  for (const scenario of listScenarioConfigs()) {
+    if (!scenario.seedWorld) continue;
+    console.log(`- ${scenario.id}: ${scenario.seedWorld.description ?? scenario.description}`);
   }
 }
 

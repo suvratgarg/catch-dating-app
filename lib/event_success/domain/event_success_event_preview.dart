@@ -174,6 +174,12 @@ EventSuccessScorecard _scorecardFromEvent({
   final mutualMatches = checkedInCount <= 0
       ? 0
       : math.max(1, (checkedInCount * 0.06).round());
+  final catchSenders = checkedInCount <= 0
+      ? 0
+      : math.max(1, (checkedInCount * 0.35).round());
+  final catchSentCount = checkedInCount <= 0
+      ? 0
+      : math.max(catchSenders, (checkedInCount * 0.45).round());
   final wingmanRequests = checkedInCount <= 0
       ? 0
       : math.max(1, (checkedInCount * 0.12).round());
@@ -187,6 +193,10 @@ EventSuccessScorecard _scorecardFromEvent({
     averageWelcomeRating: 3.8,
     averageStructureRating: 3.4,
     safetyIncidentCount: 0,
+    catchSentCount: catchSentCount,
+    attendeesWhoCaughtSomeone: catchSenders,
+    catchRecipientCount: math.min(checkedInCount, catchSentCount),
+    catchRate: checkedInCount > 0 ? catchSenders / checkedInCount : 0,
     wingmanRequestCount: wingmanRequests,
   );
 }

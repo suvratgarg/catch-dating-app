@@ -236,6 +236,7 @@ void main() {
             userProfile: buildUser(),
             participation: null,
             inviteCode: 'CATCH-DELHI',
+            inviteLinkId: 'invite-link-1',
           ),
         ),
         overrides: [
@@ -248,6 +249,10 @@ void main() {
       await tester.pump();
 
       expect(fakePaymentRepository.bookedFreeEventInviteCode, 'CATCH-DELHI');
+      expect(
+        fakePaymentRepository.bookedFreeEventInviteLinkId,
+        'invite-link-1',
+      );
     });
 
     testWidgets('keeps invite-only events blocked without an invite code', (
@@ -478,6 +483,67 @@ void main() {
 
       expect(fakeEventRepository.joinedWaitlistEventId, 'event-1');
       expect(fakeEventRepository.leftWaitlistEventId, 'event-1');
+    });
+
+    testWidgets('accepts and declines active waitlist offers', (tester) async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          uidProvider.overrideWith((ref) => Stream.value('runner-9')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      Future<void> pumpOfferCta() async {
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                bottomNavigationBar: EventDetailCta(
+                  event: buildEvent(),
+                  clubId: 'club1',
+                  now: DateTime(2026, 1, 1, 12),
+                  userProfile: buildUser(uid: 'runner-9'),
+                  participation: _participation(
+                    uid: 'runner-9',
+                    status: EventParticipationStatus.waitlisted,
+                    waitlistOfferStatus: EventWaitlistOfferStatus.active,
+                    waitlistOfferExpiresAt: DateTime(2026, 1, 1, 13),
+                    waitlistOfferId: 'event-1_runner-9',
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+      }
+
+      await pumpOfferCta();
+      expect(find.text('Accept spot'), findsOneWidget);
+      expect(find.text('Decline'), findsOneWidget);
+      expect(find.text('Until 1:00 PM'), findsOneWidget);
+
+      await tester.tap(find.text('Decline'));
+      await tester.pump();
+      expect(fakeEventRepository.declinedWaitlistOfferEventId, 'event-1');
+
+      await pumpOfferCta();
+      await tester.tap(find.text('Accept spot'));
+      await tester.pump();
+      expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-1');
     });
 
     testWidgets('request-only events use request and withdraw copy', (
@@ -1257,6 +1323,7 @@ void main() {
           isSaved: false,
           participation: _participation(),
           inviteCode: 'VIP42',
+          inviteLinkId: 'invite-link-1',
           now: DateTime(2026, 5, 25),
         ),
         overrides: [
@@ -1295,6 +1362,7 @@ void main() {
       expect(sharedParams?.text, contains(event.title));
       expect(sharedParams?.text, contains('Bandra'));
       expect(sharedParams?.text, contains('invite=VIP42'));
+      expect(sharedParams?.text, contains('il=invite-link-1'));
       expect(sharedParams?.files, hasLength(1));
       expect(sharedParams?.fileNameOverrides, ['catch-event-invite.png']);
     });
@@ -1434,6 +1502,9 @@ EventParticipation _participation({
   String uid = 'runner-1',
   EventParticipationStatus status = EventParticipationStatus.signedUp,
   EventJoinRequestStatus? hostApprovalStatus,
+  EventWaitlistOfferStatus? waitlistOfferStatus,
+  DateTime? waitlistOfferExpiresAt,
+  String? waitlistOfferId,
 }) {
   final now = DateTime(2026);
   return EventParticipation(
@@ -1445,5 +1516,8 @@ EventParticipation _participation({
     createdAt: now,
     updatedAt: now,
     hostApprovalStatus: hostApprovalStatus,
+    waitlistOfferStatus: waitlistOfferStatus,
+    waitlistOfferExpiresAt: waitlistOfferExpiresAt,
+    waitlistOfferId: waitlistOfferId,
   );
 }

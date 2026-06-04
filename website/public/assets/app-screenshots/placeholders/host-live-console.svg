@@ -16,5 +16,5 @@
   <rect x="24" y="538" width="342" height="72" rx="24" fill="#ffffff"/>
   <circle cx="62" cy="574" r="20" fill="#ffd5bd"/>
   <rect x="96" y="562" width="128" height="14" rx="7" fill="#1a1410"/>
-  <text x="24" y="760" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Capture pending: salesDemo.host.liveConsole</text>
+  <text x="24" y="760" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Catch live console</text>
 </svg>

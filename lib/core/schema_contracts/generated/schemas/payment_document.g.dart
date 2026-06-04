@@ -131,6 +131,26 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       'maximum': 100000000,
       'x-catch-ownership': 'callable-owned',
     },
+    'inviteLinkId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Named host invite link attributed to this payment, when present.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'inviteSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Host-facing invite source copied from eventInviteLinks.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'signUpFailed': <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'callable-owned',

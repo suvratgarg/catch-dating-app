@@ -24,11 +24,14 @@ import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasAcceptedWaitlistOfferAccess,
   hasHostApprovedJoinRequest,
   hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
+  rosterWithReservedWaitlistOffers,
 } from "../events/eventPolicy";
+import {resolveInviteAttribution} from "../events/inviteLinks";
 import {
   CreateStripeCheckoutSessionCallablePayload,
 } from "../shared/generated/createStripeCheckoutSessionCallablePayload";
@@ -74,7 +77,7 @@ export async function createStripeCheckoutSessionHandler(
     validateCreateStripeCheckoutSessionCallablePayload,
     normalizeStripeCheckoutPayload
   );
-  const {eventId, inviteCode} = payload;
+  const {eventId, inviteCode, inviteLinkId} = payload;
   const db = deps.firestore();
 
   const [
@@ -160,6 +163,8 @@ export async function createStripeCheckoutSessionHandler(
 
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
+  const hasWaitlistOfferAccess =
+    hasAcceptedWaitlistOfferAccess(participation);
   const hasValidInvite = await hasValidInviteForEvent({
     db,
     eventId,
@@ -169,11 +174,16 @@ export async function createStripeCheckoutSessionHandler(
   assertPolicyAllowsSignup({
     policy,
     cohortId,
-    roster: {
-      ...rosterFromEvent(event),
-      totalBooked: event.bookedCount ?? signedUpCount,
-    },
-    hasValidInvite,
+    roster: await rosterWithReservedWaitlistOffers(
+      db,
+      eventId,
+      {
+        ...rosterFromEvent(event),
+        totalBooked: event.bookedCount ?? signedUpCount,
+      },
+      {excludeUid: uid}
+    ),
+    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
     hasHostApproval: hasHostApprovedJoinRequest(participation),
   });
 
@@ -226,6 +236,11 @@ export async function createStripeCheckoutSessionHandler(
 
   const paymentRef = db.collection("payments").doc();
   const applicationFeeAmount = stripeFeeAmountMinor(amountMinor);
+  const inviteAttribution = await resolveInviteAttribution({
+    db,
+    eventId,
+    inviteLinkId,
+  });
   const session = await deps.stripe().createCheckoutSession({
     paymentId: paymentRef.id,
     eventId,
@@ -237,7 +252,9 @@ export async function createStripeCheckoutSessionHandler(
     amountMinor,
     currency,
     inviteVerified: policy.admission.inviteRequired === true &&
-      hasValidInvite === true,
+      (hasValidInvite === true || hasWaitlistOfferAccess === true),
+    inviteLinkId: inviteAttribution?.inviteLinkId,
+    inviteSource: inviteAttribution?.inviteSource,
     applicationFeeAmount,
     successUrl: successUrlForSession(eventId),
     cancelUrl: stripeCheckoutCancelUrlValue(),
@@ -265,6 +282,12 @@ export async function createStripeCheckoutSessionHandler(
     applicationFeeAmount,
     status: "pending",
     signUpFailed: false,
+    ...(inviteAttribution?.inviteLinkId ?
+      {inviteLinkId: inviteAttribution.inviteLinkId} :
+      {}),
+    ...(inviteAttribution?.inviteSource ?
+      {inviteSource: inviteAttribution.inviteSource} :
+      {}),
     createdAt: deps.serverTimestamp(),
   });
 
@@ -294,7 +317,7 @@ function successUrlForSession(eventId: string): string {
 
 function normalizeStripeCheckoutPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
-    stringFields: ["eventId", "inviteCode"],
+    stringFields: ["eventId", "inviteCode", "inviteLinkId"],
   });
 }
 

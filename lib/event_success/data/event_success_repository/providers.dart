@@ -154,12 +154,60 @@ EventSuccessScorecard _eventSuccessScorecardFromJson(
     attendeesWhoMetTwoPlusPeople: _nonNegativeInt(
       json['attendeesWhoMetTwoPlusPeople'],
     ),
+    catchSentCount: _nonNegativeInt(json['catchSentCount']),
+    attendeesWhoCaughtSomeone: _nonNegativeInt(
+      json['attendeesWhoCaughtSomeone'],
+    ),
+    catchRecipientCount: _nonNegativeInt(json['catchRecipientCount']),
+    catchRate: _unitRate(json['catchRate']),
     mutualMatchCount: _nonNegativeInt(json['mutualMatchCount']),
     chatStartedCount: _nonNegativeInt(json['chatStartedCount']),
     averageWelcomeRating: _rating(json['averageWelcomeRating']),
     averageStructureRating: _rating(json['averageStructureRating']),
     safetyIncidentCount: _nonNegativeInt(json['safetyIncidentCount']),
     feedbackResponseCount: _nonNegativeInt(json['feedbackCount']),
+    funnel: _eventSuccessHostFunnelFromJson(json['funnel']),
+  );
+}
+
+EventSuccessHostFunnel _eventSuccessHostFunnelFromJson(Object? value) {
+  final json = value is Map ? Map<String, dynamic>.from(value) : const {};
+  return EventSuccessHostFunnel(
+    inviteLinkCount: _nonNegativeInt(json['inviteLinkCount']),
+    inviteOpenCount: _nonNegativeInt(json['inviteOpenCount']),
+    totalDemandCount: _nonNegativeInt(json['totalDemandCount']),
+    requestCount: _nonNegativeInt(json['requestCount']),
+    pendingRequestCount: _nonNegativeInt(json['pendingRequestCount']),
+    approvedRequestCount: _nonNegativeInt(json['approvedRequestCount']),
+    declinedRequestCount: _nonNegativeInt(json['declinedRequestCount']),
+    directSignupCount: _nonNegativeInt(json['directSignupCount']),
+    waitlistJoinCount: _nonNegativeInt(json['waitlistJoinCount']),
+    waitlistOfferCount: _nonNegativeInt(json['waitlistOfferCount']),
+    waitlistOfferActiveCount: _nonNegativeInt(json['waitlistOfferActiveCount']),
+    waitlistOfferAcceptedCount: _nonNegativeInt(
+      json['waitlistOfferAcceptedCount'],
+    ),
+    waitlistOfferDeclinedCount: _nonNegativeInt(
+      json['waitlistOfferDeclinedCount'],
+    ),
+    waitlistOfferExpiredCount: _nonNegativeInt(
+      json['waitlistOfferExpiredCount'],
+    ),
+    checkoutStartedCount: _nonNegativeInt(json['checkoutStartedCount']),
+    paymentPendingCount: _nonNegativeInt(json['paymentPendingCount']),
+    paymentCompletedCount: _nonNegativeInt(json['paymentCompletedCount']),
+    paymentFailedCount: _nonNegativeInt(json['paymentFailedCount']),
+    paymentRefundedCount: _nonNegativeInt(json['paymentRefundedCount']),
+    bookedCount: _nonNegativeInt(json['bookedCount']),
+    checkedInCount: _nonNegativeInt(json['checkedInCount']),
+    noShowCount: _nonNegativeInt(json['noShowCount']),
+    catchSentCount: _nonNegativeInt(json['catchSentCount']),
+    attendeesWhoCaughtSomeone: _nonNegativeInt(
+      json['attendeesWhoCaughtSomeone'],
+    ),
+    mutualMatchCount: _nonNegativeInt(json['mutualMatchCount']),
+    chatStartedCount: _nonNegativeInt(json['chatStartedCount']),
+    repeatAttendeeCount: _nonNegativeInt(json['repeatAttendeeCount']),
   );
 }
 
@@ -172,6 +220,11 @@ int _nonNegativeInt(Object? value) {
 double _rating(Object? value) {
   if (value is! num || !value.isFinite) return 0;
   return value.clamp(0, 5).toDouble();
+}
+
+double _unitRate(Object? value) {
+  if (value is! num || !value.isFinite) return 0;
+  return value.clamp(0, 1).toDouble();
 }
 
 String? _trimToNull(String? value) {

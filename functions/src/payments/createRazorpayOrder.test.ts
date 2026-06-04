@@ -468,6 +468,15 @@ function createEventFirestore(
           }),
         };
       }
+      if (collectionName === "eventWaitlistOffers") {
+        return {
+          where: () => ({
+            where: () => ({
+              get: async () => ({docs: [], empty: true}),
+            }),
+          }),
+        };
+      }
       throw new Error(`Unexpected collection ${collectionName}`);
     },
   } as unknown as FirebaseFirestore.Firestore;

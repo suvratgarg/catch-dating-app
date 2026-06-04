@@ -86,6 +86,8 @@ class _MicroPodsHostCard extends ConsumerWidget {
           if (activeAssignments.isNotEmpty) ...[
             gapH12,
             _PodGroupSummary(assignments: activeAssignments),
+            gapH10,
+            _AssignmentReasonSummary(assignments: activeAssignments),
           ],
           if (mutation.hasError) ...[
             gapH8,
@@ -591,6 +593,7 @@ class _RotationsHostCard extends ConsumerWidget {
         .where((assignment) => !optedOutUids.contains(assignment.uid))
         .toList(growable: false);
     final roundCount = _maxRotationRoundCount(activeAssignments);
+    final fairness = _rotationFairnessTotals(activeAssignments);
     final optedOutCount = optedOutUids.length;
     final staleAssignmentCount = assignments.length - activeAssignments.length;
     final hostEdited = activeAssignments.any(
@@ -656,8 +659,21 @@ class _RotationsHostCard extends ConsumerWidget {
                       '${_eventRotationCapacity(event, rotationIntervalMinutes)} possible',
                   icon: CatchIcons.scheduleRounded,
                 ),
+                if (fairness.sitOutRoundCount > 0)
+                  CatchBadge(
+                    label: '${fairness.sitOutRoundCount} planned breaks',
+                    icon: CatchIcons.eventRepeatOutlined,
+                  ),
+                if (fairness.repeatPeerCount > 0)
+                  CatchBadge(
+                    label: '${fairness.repeatPeerCount} repeated peers',
+                    tone: CatchBadgeTone.warning,
+                    icon: CatchIcons.infoOutlineRounded,
+                  ),
               ],
             ),
+            gapH10,
+            _AssignmentReasonSummary(assignments: activeAssignments),
           ],
           if (mutation.hasError) ...[
             gapH8,
@@ -1063,6 +1079,73 @@ class _PodGroupSummary extends StatelessWidget {
   }
 }
 
+class _AssignmentReasonSummary extends StatelessWidget {
+  const _AssignmentReasonSummary({required this.assignments});
+
+  final List<EventSuccessAssignment> assignments;
+
+  @override
+  Widget build(BuildContext context) {
+    final reasons = _assignmentReasonSummaries(assignments);
+    if (reasons.isEmpty) return const SizedBox.shrink();
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              CatchIcons.infoOutlineRounded,
+              size: CatchIcon.xs,
+              color: t.ink2,
+            ),
+            gapW6,
+            Text(
+              'Assignment notes',
+              style: CatchTextStyles.labelM(context, color: t.ink2),
+            ),
+          ],
+        ),
+        gapH6,
+        for (final reason in reasons)
+          Padding(
+            padding: _hostLaunchIssueGap,
+            child: Text(
+              reason,
+              style: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+List<String> _assignmentReasonSummaries(
+  List<EventSuccessAssignment> assignments,
+) {
+  final summaries = <String>[];
+  for (final assignment in assignments) {
+    final summary = assignment.whySummary?.trim();
+    if (summary != null && summary.isNotEmpty) summaries.add(summary);
+    for (final slot in assignment.rotationSlots) {
+      final slotSummary = slot.whySummary?.trim();
+      if (slotSummary != null && slotSummary.isNotEmpty) {
+        summaries.add(slotSummary);
+      }
+    }
+    for (final slot in assignment.groupRotationSlots) {
+      final slotSummary = slot.whySummary?.trim();
+      if (slotSummary != null && slotSummary.isNotEmpty) {
+        summaries.add(slotSummary);
+      }
+    }
+    for (final slot in assignment.sitOutSlots) {
+      summaries.add(slot.whySummary);
+    }
+  }
+  return [...summaries.toSet()].take(3).toList(growable: false);
+}
+
 Map<String, int> _assignmentCountsByLabel(
   List<EventSuccessAssignment> assignments,
 ) {
@@ -1226,6 +1309,33 @@ final class _RotationOverridePairDraft {
 
   String? uidA;
   String? uidB;
+}
+
+final class _RotationFairnessTotals {
+  const _RotationFairnessTotals({
+    required this.sitOutRoundCount,
+    required this.repeatPeerCount,
+  });
+
+  final int sitOutRoundCount;
+  final int repeatPeerCount;
+}
+
+_RotationFairnessTotals _rotationFairnessTotals(
+  List<EventSuccessAssignment> assignments,
+) {
+  var sitOutRoundCount = 0;
+  var repeatPeerCount = 0;
+  for (final assignment in assignments) {
+    final fairness = assignment.rotationFairness;
+    if (fairness == null) continue;
+    sitOutRoundCount += fairness.sitOutRoundCount;
+    repeatPeerCount += fairness.repeatPeerCount;
+  }
+  return _RotationFairnessTotals(
+    sitOutRoundCount: sitOutRoundCount,
+    repeatPeerCount: repeatPeerCount,
+  );
 }
 
 int _maxRotationRoundCount(List<EventSuccessAssignment> assignments) {

@@ -8,4 +8,5 @@
 export interface EventBookingCallablePayload {
   eventId: string;
   inviteCode?: string | null;
+  inviteLinkId?: string;
 }

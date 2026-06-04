@@ -15,6 +15,9 @@ import {buildSwipeSignalFacts} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {
+  refreshEventSuccessScorecard,
+} from "../marketplace/eventSuccessScorecards";
 
 interface SwipeCreatedParams {
   swiperId: string;
@@ -32,6 +35,7 @@ interface SwipeCreatedDeps {
   arrayUnion: (...elements: string[]) => FirebaseFirestore.FieldValue;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
+  refreshScorecard?: typeof refreshEventSuccessScorecard;
 }
 
 const defaultDeps: SwipeCreatedDeps = {
@@ -41,6 +45,7 @@ const defaultDeps: SwipeCreatedDeps = {
     admin.firestore.FieldValue.arrayUnion(...elements),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   recordSignalFacts: recordParticipantSignalFactsBestEffort,
+  refreshScorecard: refreshEventSuccessScorecard,
 };
 
 /**
@@ -74,6 +79,17 @@ export async function onSwipeCreatedHandler(
       buildSwipeSignalFacts(swiperId, targetId, swipeData)
     );
   }
+  const refreshedEventIds = new Set<string>();
+  const refreshEvents = (eventIds: string[]) =>
+    refreshScorecardsForEvents(
+      eventIds.filter((eventId) => {
+        if (refreshedEventIds.has(eventId)) return false;
+        refreshedEventIds.add(eventId);
+        return true;
+      }),
+      deps
+    );
+  await refreshEvents([swipeData.eventId]);
 
   // Check if the target has already liked the swiper.
   const reverseSwipeDoc = await db
@@ -127,6 +143,7 @@ export async function onSwipeCreatedHandler(
       user1Id: id1,
       user2Id: id2,
     });
+    await refreshEvents(sharedEventIds);
   } catch (e: unknown) {
     const code = (e as {code?: unknown}).code;
     if (code === 6 || code === "already-exists") {
@@ -144,10 +161,25 @@ export async function onSwipeCreatedHandler(
         [reverseSwipe, swipeData],
         deps
       );
+      await refreshEvents(sharedEventIds);
       return;
     }
     throw e;
   }
+}
+
+/**
+ * Refreshes host scorecards touched by a reciprocal catch.
+ * @param {string[]} eventIds Event ids attached to the match.
+ * @param {SwipeCreatedDeps} deps Injectable dependencies.
+ */
+async function refreshScorecardsForEvents(
+  eventIds: string[],
+  deps: SwipeCreatedDeps
+): Promise<void> {
+  const refreshScorecard = deps.refreshScorecard;
+  if (!refreshScorecard || eventIds.length === 0) return;
+  await Promise.all(eventIds.map((eventId) => refreshScorecard(eventId)));
 }
 
 /**

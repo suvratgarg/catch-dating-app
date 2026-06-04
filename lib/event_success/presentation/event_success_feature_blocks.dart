@@ -336,6 +336,10 @@ class EventSuccessPostEventReport extends StatelessWidget {
                 value: resolvedBrief.scorecard.introCoverageRate,
               ),
               EventSuccessMetricPill(
+                label: 'Caught someone',
+                value: resolvedBrief.scorecard.caughtSomeoneRate,
+              ),
+              EventSuccessMetricPill(
                 label: 'Host help',
                 value: resolvedBrief.scorecard.wingmanRequestRate,
               ),

@@ -78,13 +78,23 @@ void main() {
           uid: 'runner-1',
           status: EventParticipationStatus.attended,
           createdAt: DateTime.utc(2026, 5, 25, 13, 45),
+          inviteLinkId: 'link-run-club',
+          inviteSource: 'instagram-bio',
+          inviteCapturedAt: DateTime.utc(2026, 5, 24, 12),
         ),
       ],
     );
 
     expect(export.fileName, 'monday-afternoon-run-2026-05-25-ops.csv');
-    expect(export.csv, contains('arrival_order'));
-    expect(export.csv, contains('Asha,runner-1,attended,checked_in,,1'));
-    expect(export.csv, contains('Kabir,runner-2,attended,checked_in,,2'));
+    expect(
+      export.csv,
+      contains('invite_link_id,invite_source,invite_captured_at,arrival_order'),
+    );
+    expect(
+      export.csv,
+      contains('link-run-club,instagram-bio,2026-05-24T12:00:00.000Z,1'),
+    );
+    expect(export.csv, contains('Kabir,runner-2,attended,checked_in,'));
+    expect(export.csv, contains(',2,2026-05-25T13:50:00.000Z'));
   });
 }

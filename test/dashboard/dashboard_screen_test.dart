@@ -194,6 +194,59 @@ void main() {
       expect(find.byType(DashboardFull), findsNothing);
     });
 
+    testWidgets(
+      'shows hosted event tools even when there are no booked events',
+      (tester) async {
+        final now = DateTime.now();
+        final user = buildUser(uid: 'host-1');
+        final hostedRun = buildEvent(
+          id: 'hosted-event',
+          clubId: 'club-host',
+          startTime: now.subtract(const Duration(minutes: 5)),
+          endTime: now.add(const Duration(minutes: 55)),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              watchUserProfileProvider.overrideWith(
+                (ref) => Stream.value(user),
+              ),
+              _membershipsOverride(user, const []),
+              _activityNotificationsOverride(user),
+              watchSignedUpEventsProvider(
+                user.uid,
+              ).overrideWithValue(const AsyncData<List<Event>>([])),
+              watchAttendedEventsProvider(
+                user.uid,
+              ).overrideWithValue(const AsyncData<List<Event>>([])),
+              dashboardRecommendedEventsProvider(
+                _recommendationsQueryFor(user.uid, const []),
+              ).overrideWithValue(_noRecommendationCandidates),
+              eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+              uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+              eventCheckInLocationServiceProvider.overrideWithValue(
+                const _FakeEventCheckInLocationService(),
+              ),
+              ..._dashboardHostOverrides(user, hostedEvents: [hostedRun]),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const DashboardScreen(),
+            ),
+          ),
+        );
+
+        await _pumpDashboardUi(tester);
+
+        expect(find.text("Let's find your first event"), findsNothing);
+        expect(find.byType(DashboardFullSliverBody), findsOneWidget);
+        expect(find.text('Host event'), findsOneWidget);
+        expect(find.text('Attendance open'), findsOneWidget);
+        expect(find.text('Take attendance'), findsOneWidget);
+      },
+    );
+
     testWidgets('shows the full dashboard when booked events exist', (
       tester,
     ) async {
@@ -972,17 +1025,34 @@ void main() {
     testWidgets(
       'event focus uses full-width snapping cards with stacked actions',
       (tester) async {
+        final now = DateTime.now();
         final user = buildUser();
+        final firstRunStart = now.add(const Duration(days: 1));
+        final secondRunStart = now.add(const Duration(days: 2));
         final firstRun = buildEvent(
           id: 'event-focus-first',
           bookedCount: 1,
-          startTime: DateTime(2026, 6, 4, 9, 10),
+          startTime: DateTime(
+            firstRunStart.year,
+            firstRunStart.month,
+            firstRunStart.day,
+            9,
+            10,
+          ),
         );
         final secondRun = buildEvent(
           id: 'event-focus-second',
           bookedCount: 1,
-          startTime: DateTime(2026, 6, 5, 9, 10),
+          startTime: DateTime(
+            secondRunStart.year,
+            secondRunStart.month,
+            secondRunStart.day,
+            9,
+            10,
+          ),
         );
+        final firstRunTitle = firstRun.title;
+        final secondRunTitle = secondRun.title;
 
         await tester.pumpWidget(
           ProviderScope(
@@ -1008,15 +1078,15 @@ void main() {
 
         await _pumpDashboardUi(tester);
 
-        expect(find.text('Thursday Morning Run'), findsOneWidget);
-        expect(find.text('Friday Morning Run'), findsNothing);
+        expect(find.text(firstRunTitle), findsOneWidget);
+        expect(find.text(secondRunTitle), findsNothing);
         expect(find.byKey(EventFocusRail.pageIndicatorKey), findsOneWidget);
 
         final railWidth = tester
             .getSize(find.byKey(EventFocusRail.railKey))
             .width;
         final cardWidth = tester
-            .getSize(_runFocusCardSurface('Thursday Morning Run'))
+            .getSize(_runFocusCardSurface(firstRunTitle))
             .width;
         expect(cardWidth, railWidth);
         expect(
@@ -1028,15 +1098,12 @@ void main() {
           greaterThan(tester.getTopLeft(find.text('Directions')).dy),
         );
 
-        await tester.drag(
-          find.text('Thursday Morning Run'),
-          const Offset(-420, 0),
-        );
+        await tester.drag(find.text(firstRunTitle), const Offset(-420, 0));
         await tester.pump();
         await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
 
-        expect(find.text('Thursday Morning Run'), findsNothing);
-        expect(find.text('Friday Morning Run'), findsOneWidget);
+        expect(find.text(firstRunTitle), findsNothing);
+        expect(find.text(secondRunTitle), findsOneWidget);
       },
     );
 

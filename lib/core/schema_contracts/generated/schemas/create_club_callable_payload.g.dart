@@ -610,6 +610,44 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                   'minimum': 0,
                   'maximum': 60,
                 },
+                'rotationRepeatStrategy': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'avoid',
+                    'allowWhenExhausted',
+                  ],
+                },
+                'maxPairMeetings': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 10,
+                },
+                'balanceActivityAttributes': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
+                  },
+                },
+                'clusterActivityAttributes': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 8,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'paceBand',
+                      'skillBand',
+                      'roleBand',
+                    ],
+                  },
+                },
               },
             },
             'hostGoal': <String, Object?>{
@@ -773,6 +811,44 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
                     'type': 'integer',
                     'minimum': 0,
                     'maximum': 60,
+                  },
+                  'rotationRepeatStrategy': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'avoid',
+                      'allowWhenExhausted',
+                    ],
+                  },
+                  'maxPairMeetings': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 10,
+                  },
+                  'balanceActivityAttributes': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 8,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
+                    },
+                  },
+                  'clusterActivityAttributes': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 8,
+                    'uniqueItems': true,
+                    'items': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'paceBand',
+                        'skillBand',
+                        'roleBand',
+                      ],
+                    },
                   },
                 },
               },

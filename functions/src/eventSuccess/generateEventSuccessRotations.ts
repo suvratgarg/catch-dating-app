@@ -21,10 +21,13 @@ import {isClubHost} from "../shared/clubHosts";
 import {
   AssignmentParticipant,
   assignmentPairKey,
+  AssignmentRotationPolicy,
   OptimizedPair,
-  optimizeEventSuccessAssignments,
+  runAssignmentEngine,
 } from "./assignmentOptimizer";
+import {AssignmentConstraintConfig} from "./assignmentConstraints";
 import {
+  EventSuccessUnitKind,
   assertPairRotationTopology,
   resolveRotationIntervalMinutes,
   rotationRoundCountForDuration,
@@ -38,6 +41,12 @@ import {
   EventSuccessCompatibilityPolicy,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
+import {
+  activityAttributesForProfile,
+  assignmentConstraintsForStructureConfig,
+  AssignmentPrimitiveStructureConfig,
+  rotationPolicyForStructureConfig,
+} from "./assignmentPrimitiveControls";
 
 const GUIDED_ROTATIONS_MODULE_ID = "guided_rotations";
 const COMPATIBILITY_QUESTIONNAIRE_MODULE_ID = "compatibility_questionnaire";
@@ -65,7 +74,7 @@ interface EventSuccessPlanDocument {
     unitSize?: unknown;
     unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
-  };
+  } & AssignmentPrimitiveStructureConfig;
 }
 
 interface EventParticipationDocument {
@@ -104,13 +113,46 @@ interface RotationRound {
   pairs: RotationPair[];
 }
 
+type AssignmentWhyCode =
+  "host_override" |
+  "mutual_interest" |
+  "one_way_interest" |
+  "questionnaire_match" |
+  "social_fallback" |
+  "fresh_peer" |
+  "repeat_peer" |
+  "sit_out" |
+  "pair_slot";
+
+interface RotationFairnessSummary {
+  assignedRoundCount: number;
+  sitOutRoundCount: number;
+  uniquePeerCount: number;
+  repeatPeerCount: number;
+}
+
 interface GeneratedRotationSlot {
+  slotId?: string;
   roundIndex: number;
   label: string;
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
   peerUid: string;
+  unitKind?: EventSuccessUnitKind;
+  unitIndex?: number;
+  peerCount?: number;
   compatibility: RotationPair["compatibility"];
+  whySummary?: string;
+  whyCodes?: AssignmentWhyCode[];
+}
+
+interface GeneratedSitOutSlot {
+  roundIndex: number;
+  label: string;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  whySummary: string;
+  whyCodes: AssignmentWhyCode[];
 }
 
 interface GeneratedAssignment {
@@ -122,7 +164,13 @@ interface GeneratedAssignment {
   displayTitle: string;
   displaySubtitle: string;
   peerUids: string[];
+  unitKind?: EventSuccessUnitKind;
+  unitLabel?: string;
+  whySummary?: string;
+  whyCodes?: AssignmentWhyCode[];
+  rotationFairness?: RotationFairnessSummary;
   rotationSlots: GeneratedRotationSlot[];
+  sitOutSlots?: GeneratedSitOutSlot[];
   source: string;
   createdAt: FirebaseFirestore.FieldValue;
   updatedAt: FirebaseFirestore.FieldValue;
@@ -154,7 +202,13 @@ export async function generateEventSuccessRotationsHandler(
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations");
 
-  const {event, rotationIntervalMinutes, questionnaireMode} =
+  const {
+    event,
+    rotationIntervalMinutes,
+    questionnaireMode,
+    constraints,
+    rotationPolicy,
+  } =
     await loadRotationEventContext(db, eventId, uid);
   const {participants, blockedPairs} =
     await loadEligibleRotationParticipants(
@@ -172,6 +226,8 @@ export async function generateEventSuccessRotationsHandler(
     questionnaireMode,
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
+    constraints,
+    rotationPolicy,
   });
   const assignments = buildAssignments({
     eventId,
@@ -266,6 +322,8 @@ async function loadRotationEventContext(
   event: EventDocument;
   rotationIntervalMinutes: number;
   questionnaireMode: QuestionnaireScoringMode;
+  constraints: AssignmentConstraintConfig;
+  rotationPolicy: AssignmentRotationPolicy;
 }> {
   const eventRef = db.collection("events").doc(eventId);
   const planRef = db.collection("eventSuccessPlans").doc(eventId);
@@ -336,6 +394,10 @@ async function loadRotationEventContext(
       ) && plan.compatibilityAffectsRanking === true ?
         "light" :
         "icebreaker",
+    constraints: assignmentConstraintsForStructureConfig(
+      plan.structureConfig
+    ),
+    rotationPolicy: rotationPolicyForStructureConfig(plan.structureConfig),
   };
 }
 
@@ -479,6 +541,7 @@ async function hydrateParticipants(
         (gender) => typeof gender === "string"
       ),
       compatibilityAnswerIds: [],
+      activityAttributes: activityAttributesForProfile(profile),
     });
   });
   return participants;
@@ -582,6 +645,8 @@ function buildRotationRounds(params: {
   questionnaireMode: QuestionnaireScoringMode;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  constraints?: AssignmentConstraintConfig;
+  rotationPolicy?: AssignmentRotationPolicy;
 }): RotationRound[] {
   if (params.participants.length < 2) return [];
   const requestedRounds = rotationRoundCountForDuration({
@@ -592,8 +657,11 @@ function buildRotationRounds(params: {
   const maxRounds = params.participants.length % 2 === 0 ?
     params.participants.length - 1 :
     params.participants.length;
-  const roundCount = Math.min(requestedRounds, maxRounds);
-  return optimizeEventSuccessAssignments({
+  const roundCount = params.rotationPolicy?.repeatStrategy ===
+    "allowWhenExhausted" ?
+    requestedRounds :
+    Math.min(requestedRounds, maxRounds);
+  return runAssignmentEngine({
     participants: params.participants,
     blockedPairs: params.blockedPairs,
     topology: {
@@ -609,6 +677,8 @@ function buildRotationRounds(params: {
     questionnaireMode: params.questionnaireMode,
     rotationRoundCount: roundCount,
     allowOrientationFallback: true,
+    constraints: params.constraints,
+    rotationPolicy: params.rotationPolicy,
   }).rotationRounds.map((round) => ({
     roundIndex: round.roundIndex,
     pairs: round.pairs.map(toRotationPair),
@@ -741,6 +811,12 @@ function buildAssignments(params: {
   const slotsByUid = new Map<string, GeneratedRotationSlot[]>(
     params.participants.map((participant) => [participant.uid, []])
   );
+  const sitOutSlotsByUid = new Map<string, GeneratedSitOutSlot[]>(
+    params.participants.map((participant) => [participant.uid, []])
+  );
+  const seenPeersByUid = new Map<string, Set<string>>(
+    params.participants.map((participant) => [participant.uid, new Set()])
+  );
   params.rounds.forEach((round) => {
     const startsAt = admin.firestore.Timestamp.fromMillis(
       params.eventStartMillis +
@@ -749,33 +825,89 @@ function buildAssignments(params: {
     const endsAt = admin.firestore.Timestamp.fromMillis(
       startsAt.toMillis() + params.rotationIntervalMinutes * 60000
     );
-    for (const pair of round.pairs) {
+    const usedUids = new Set<string>();
+    for (const [unitIndex, pair] of round.pairs.entries()) {
       const label = `Round ${round.roundIndex + 1}`;
+      const repeatedForA =
+        seenPeersByUid.get(pair.a.uid)?.has(pair.b.uid) === true;
+      const repeatedForB =
+        seenPeersByUid.get(pair.b.uid)?.has(pair.a.uid) === true;
       const slotA = {
+        slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
         startsAt,
         endsAt,
         peerUid: pair.b.uid,
+        unitKind: "pairs" as const,
+        unitIndex,
+        peerCount: 1,
         compatibility: pair.compatibility,
+        whySummary: rotationWhySummary({
+          compatibility: pair.compatibility,
+          peerLabel: "partner",
+          source: params.source,
+          repeatedPeer: repeatedForA,
+        }),
+        whyCodes: rotationWhyCodes({
+          compatibility: pair.compatibility,
+          source: params.source,
+          repeatedPeer: repeatedForA,
+        }),
       };
       const slotB = {
+        slotId: `round-${round.roundIndex}-pair-${unitIndex}`,
         roundIndex: round.roundIndex,
         label,
         startsAt,
         endsAt,
         peerUid: pair.a.uid,
+        unitKind: "pairs" as const,
+        unitIndex,
+        peerCount: 1,
         compatibility: pair.compatibility,
+        whySummary: rotationWhySummary({
+          compatibility: pair.compatibility,
+          peerLabel: "partner",
+          source: params.source,
+          repeatedPeer: repeatedForB,
+        }),
+        whyCodes: rotationWhyCodes({
+          compatibility: pair.compatibility,
+          source: params.source,
+          repeatedPeer: repeatedForB,
+        }),
       };
       slotsByUid.get(pair.a.uid)?.push(slotA);
       slotsByUid.get(pair.b.uid)?.push(slotB);
+      seenPeersByUid.get(pair.a.uid)?.add(pair.b.uid);
+      seenPeersByUid.get(pair.b.uid)?.add(pair.a.uid);
+      usedUids.add(pair.a.uid);
+      usedUids.add(pair.b.uid);
+    }
+    for (const participant of params.participants) {
+      if (usedUids.has(participant.uid)) continue;
+      sitOutSlotsByUid.get(participant.uid)?.push({
+        roundIndex: round.roundIndex,
+        label: `Round ${round.roundIndex + 1}`,
+        startsAt,
+        endsAt,
+        whySummary: "Planned break to keep rotation counts fair.",
+        whyCodes: ["sit_out"],
+      });
     }
   });
 
   const assignments = new Map<string, GeneratedAssignment>();
   for (const [uid, slots] of slotsByUid.entries()) {
-    if (slots.length === 0) continue;
+    const sitOutSlots = sitOutSlotsByUid.get(uid) ?? [];
+    if (slots.length === 0 && sitOutSlots.length === 0) continue;
     const peerUids = [...new Set(slots.map((slot) => slot.peerUid))].sort();
+    const fairness = rotationFairnessSummary(slots, sitOutSlots);
+    const breakLabel = sitOutSlots.length === 0 ?
+      "" :
+      ` · ${sitOutSlots.length} ` +
+        `break${sitOutSlots.length === 1 ? "" : "s"}`;
     const docId = assignmentId(params.eventId, uid);
     assignments.set(docId, {
       eventId: params.eventId,
@@ -785,15 +917,126 @@ function buildAssignments(params: {
       label: "Guided rotations",
       displayTitle: `${slots.length} guided rotations`,
       displaySubtitle: `${params.rotationIntervalMinutes} min each · ` +
-        `${peerUids.length} ${peerUids.length === 1 ? "person" : "people"}`,
+        `${peerUids.length} ${peerUids.length === 1 ? "person" : "people"}` +
+        breakLabel,
       peerUids,
+      unitKind: "pairs",
+      unitLabel: "Guided rotations",
+      whySummary: `${slots.length} partner rounds with ` +
+        `${peerUids.length} unique ${peerUids.length === 1 ?
+          "person" :
+          "people"}.`,
+      whyCodes: uniqueWhyCodes([
+        ...slots.flatMap((slot) => slot.whyCodes ?? []),
+        ...sitOutSlots.flatMap((slot) => slot.whyCodes),
+      ]),
+      rotationFairness: fairness,
       rotationSlots: slots,
+      ...(sitOutSlots.length > 0 ? {sitOutSlots} : {}),
       source: params.source,
       createdAt: params.now,
       updatedAt: params.now,
     });
   }
   return assignments;
+}
+
+/**
+ * Builds a short reason summary for a rotation slot.
+ * @param {object} params Slot metadata inputs.
+ * @return {string} Human-readable slot reason.
+ */
+function rotationWhySummary(params: {
+  compatibility: RotationPair["compatibility"];
+  peerLabel: string;
+  source: string;
+  repeatedPeer: boolean;
+}): string {
+  if (params.source === "host_override_v1") {
+    return `Host override selected this ${params.peerLabel}.`;
+  }
+  const freshness = params.repeatedPeer ? "repeat" : "new";
+  switch (params.compatibility) {
+  case "mutual_interest":
+    return `Matched with a ${freshness} ${params.peerLabel}.`;
+  case "questionnaire_match":
+    return `Matched with a ${freshness} ${params.peerLabel} by answers.`;
+  case "one_way_interest":
+    return `Fallback ${params.peerLabel} with one-way interest.`;
+  case "social":
+  default:
+    return `Social fallback with a ${freshness} ${params.peerLabel}.`;
+  }
+}
+
+/**
+ * Builds machine-safe reason codes for a rotation slot.
+ * @param {object} params Slot metadata inputs.
+ * @return {AssignmentWhyCode[]} Stable reason codes.
+ */
+function rotationWhyCodes(params: {
+  compatibility: RotationPair["compatibility"];
+  source: string;
+  repeatedPeer: boolean;
+}): AssignmentWhyCode[] {
+  const codes: AssignmentWhyCode[] = [
+    "pair_slot",
+    params.repeatedPeer ? "repeat_peer" : "fresh_peer",
+  ];
+  if (params.source === "host_override_v1") {
+    codes.push("host_override");
+  } else {
+    switch (params.compatibility) {
+    case "mutual_interest":
+      codes.push("mutual_interest");
+      break;
+    case "questionnaire_match":
+      codes.push("questionnaire_match");
+      break;
+    case "one_way_interest":
+      codes.push("one_way_interest");
+      break;
+    case "social":
+    default:
+      codes.push("social_fallback");
+      break;
+    }
+  }
+  return uniqueWhyCodes(codes);
+}
+
+/**
+ * Builds fairness metadata from rotation slots and sit-outs.
+ * @param {GeneratedRotationSlot[]} slots Assigned rotation slots.
+ * @param {GeneratedSitOutSlot[]} sitOutSlots Sit-out slots.
+ * @return {RotationFairnessSummary} Fairness counts.
+ */
+function rotationFairnessSummary(
+  slots: GeneratedRotationSlot[],
+  sitOutSlots: GeneratedSitOutSlot[]
+): RotationFairnessSummary {
+  const peerCounts = new Map<string, number>();
+  for (const slot of slots) {
+    peerCounts.set(slot.peerUid, (peerCounts.get(slot.peerUid) ?? 0) + 1);
+  }
+  return {
+    assignedRoundCount: slots.length,
+    sitOutRoundCount: sitOutSlots.length,
+    uniquePeerCount: peerCounts.size,
+    repeatPeerCount: [...peerCounts.values()].reduce(
+      (sum, count) => sum + Math.max(0, count - 1),
+      0
+    ),
+  };
+}
+
+/**
+ * Deduplicates reason codes while preserving first-seen order.
+ * @param {AssignmentWhyCode[]} codes Raw reason codes.
+ * @return {AssignmentWhyCode[]} Unique codes.
+ */
+function uniqueWhyCodes(codes: AssignmentWhyCode[]): AssignmentWhyCode[] {
+  return [...new Set(codes)];
 }
 
 /**

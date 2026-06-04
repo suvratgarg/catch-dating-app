@@ -269,6 +269,32 @@ void main() {
       expect(fixedAttendance.maxPeoplePerUnit, 3);
     });
 
+    test('round trips primitive assignment controls in structure config', () {
+      const config = EventSuccessStructureConfig(
+        unitKind: EventSuccessUnitKind.pairs,
+        unitSize: 2,
+        rotationIntervalMinutes: 15,
+        rotationRepeatStrategy:
+            EventSuccessRotationRepeatStrategy.allowWhenExhausted,
+        maxPairMeetings: 3,
+        balanceActivityAttributes: [
+          EventSuccessActivityAssignmentAttribute.skillBand,
+        ],
+        clusterActivityAttributes: [
+          EventSuccessActivityAssignmentAttribute.paceBand,
+        ],
+      );
+
+      final json = config.toJson();
+      final roundTrip = EventSuccessStructureConfig.fromJson(json);
+
+      expect(json['rotationRepeatStrategy'], 'allowWhenExhausted');
+      expect(json['maxPairMeetings'], 3);
+      expect(json['balanceActivityAttributes'], ['skillBand']);
+      expect(json['clusterActivityAttributes'], ['paceBand']);
+      expect(roundTrip, config);
+    });
+
     test('module selection owns derived wingman and opener booleans', () {
       final defaults = EventSuccessDefaults(
         enabled: true,

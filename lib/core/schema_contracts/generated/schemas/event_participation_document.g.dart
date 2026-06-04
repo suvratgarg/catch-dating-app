@@ -336,6 +336,167 @@ const schemaEventParticipationDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'x-catch-ownership': 'callable-owned',
     },
+    'waitlistOfferStatus': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'active',
+            'accepted',
+            'declined',
+            'expired',
+            'cancelled',
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'waitlistOfferedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'waitlistOfferExpiresAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'waitlistOfferAcceptedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'x-catch-ownership': 'callable-owned',
+    },
+    'waitlistOfferId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 240,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'inviteLinkId': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
+      'description': 'Named host invite link that first attributed this participation, when present.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'inviteSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 80,
+      'description': 'Host-facing source label copied from the invite link for durable reporting.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'inviteCapturedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Server time when invite attribution was first attached to the roster edge.',
+      'x-catch-ownership': 'callable-owned',
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',

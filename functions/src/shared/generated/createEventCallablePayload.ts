@@ -181,6 +181,16 @@ export interface CreateEventCallablePayload {
       unitCount?: number | null;
       rotationIntervalMinutes?: number | null;
       revealCountdownSeconds: number;
+      rotationRepeatStrategy?: "avoid" | "allowWhenExhausted";
+      maxPairMeetings?: number;
+      /**
+       * @maxItems 8
+       */
+      balanceActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
+      /**
+       * @maxItems 8
+       */
+      clusterActivityAttributes?: ("paceBand" | "skillBand" | "roleBand")[];
     };
     hostGoal?: string;
     wingmanRequestsEnabled?: boolean;

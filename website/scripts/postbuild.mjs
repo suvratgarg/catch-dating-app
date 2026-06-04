@@ -8,7 +8,7 @@ const distRoot = path.join(websiteRoot, "dist");
 
 const routeMetas = {
   "/": {
-    title: "Catch | The room before the match",
+    title: "Catch | The event before the match",
     description:
       "Catch turns curated singles events into real dating context. Choose a hosted event, show up, catch privately, and match with people you actually met.",
     canonical: "https://catchdates.com/",
@@ -17,7 +17,7 @@ const routeMetas = {
   "/host/": {
     title: "Catch for Hosts | Host better singles events",
     description:
-      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real rooms into better post-event connections.",
+      "Catch helps hosts publish curated singles events, manage admission and waitlists, run live facilitation, and turn real attendance into post-event connections.",
     canonical: "https://catchdates.com/host/",
     twitterDescription:
       "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts.",

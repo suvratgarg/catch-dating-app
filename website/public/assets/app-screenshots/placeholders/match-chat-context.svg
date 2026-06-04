@@ -9,5 +9,5 @@
   <rect x="24" y="482" width="282" height="70" rx="24" fill="#ffffff"/>
   <rect x="24" y="712" width="342" height="62" rx="31" fill="#ffffff"/>
   <text x="48" y="750" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="15">Message...</text>
-  <text x="24" y="806" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Capture pending: salesDemo.member.matchChatContext</text>
+  <text x="24" y="806" fill="#9c8775" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700">Catch match chat</text>
 </svg>

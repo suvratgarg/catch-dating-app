@@ -15,6 +15,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -181,6 +182,7 @@ class _CatchesIntroCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
+      key: SwipeKeys.activeCatchWindowCard,
       onTap: onTap,
       padding: CatchInsets.contentRelaxed,
       gradient: t.heroGrad,

@@ -50,7 +50,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncValue, ConsumerWidget, WidgetRef;
+    show AsyncValue, ConsumerWidget, Provider, WidgetRef;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -151,6 +151,9 @@ EventDetailScreen _eventDetailScreen(GoRouterState state) {
     clubId: state.pathParameters['clubId']!,
     eventId: state.pathParameters['eventId']!,
     inviteCode: state.uri.queryParameters['invite'],
+    inviteLinkId:
+        state.uri.queryParameters['il'] ??
+        state.uri.queryParameters['inviteLinkId'],
     initialEvent: _eventDetailInitialEvent(state),
     presentationMode: _eventDetailPresentationMode(state),
     heroTag: _eventDetailHeroTag(state),
@@ -174,6 +177,7 @@ ClubDetailScreen _clubDetailScreen(GoRouterState state) {
 Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
+    name: state.name,
     child: _clubDetailScreen(state),
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
@@ -184,11 +188,16 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
 Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
   final child = _eventDetailScreen(state);
   if (_eventDetailTransition(state) == EventDetailRouteTransition.platform) {
-    return MaterialPage<void>(key: state.pageKey, child: child);
+    return MaterialPage<void>(
+      key: state.pageKey,
+      name: state.name,
+      child: child,
+    );
   }
 
   return CustomTransitionPage<void>(
     key: state.pageKey,
+    name: state.name,
     child: child,
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
@@ -210,6 +219,11 @@ const _completeProfileIntent = 'complete-profile';
 const _completeRunPreferencesIntent = 'complete-run-preferences';
 const _initialRouteOverride = String.fromEnvironment('CATCH_INITIAL_ROUTE');
 
+@visibleForTesting
+final initialAppLocationProvider = Provider<String>(
+  (ref) => _initialLocationFromPlatform(),
+);
+
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
   final notifier = _RouterRefreshNotifier();
@@ -222,7 +236,7 @@ GoRouter goRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: _initialLocationFromPlatform(),
+    initialLocation: ref.watch(initialAppLocationProvider),
     refreshListenable: notifier,
     observers: [AnalyticsRouteObserver(analytics)],
     redirect: (context, state) {
@@ -544,6 +558,7 @@ GoRouter goRouter(Ref ref) {
                   GoRoute(
                     path: ':eventId',
                     name: Routes.swipeEventScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => SwipeScreen(
                       eventId: state.pathParameters['eventId']!,
                       vibeIds: switch (state.extra) {
