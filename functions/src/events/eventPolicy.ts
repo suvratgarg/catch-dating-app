@@ -4,6 +4,7 @@ import {
   EventDocument,
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
+import {eventParticipationId} from "../shared/relationshipDocuments";
 
 export const cohortIds = {
   menInterestedInWomen: "menInterestedInWomen",
@@ -379,6 +380,64 @@ export function assertPolicyAllowsSignup(params: {
   );
 }
 
+export async function rosterWithReservedWaitlistOffers(
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  baseRoster: EventRosterSnapshot,
+  options: {excludeUid?: string; nowMillis?: number} = {}
+): Promise<EventRosterSnapshot> {
+  const offerSnap = await db
+    .collection("eventWaitlistOffers")
+    .where("eventId", "==", eventId)
+    .where("status", "in", ["active", "accepted"])
+    .get();
+  const offers = offerSnap.docs.map((doc) => doc.data());
+  if (offers.length === 0) return baseRoster;
+
+  const participationSnaps = await Promise.all(
+    offers.map((offer) => db
+      .collection("eventParticipations")
+      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))
+      .get())
+  );
+  return rosterWithReservableOfferData({
+    baseRoster,
+    offers,
+    participationData: participationSnaps.map((snap) => snap.data()),
+    excludeUid: options.excludeUid,
+    nowMillis: options.nowMillis ?? Date.now(),
+  });
+}
+
+export async function rosterWithReservedWaitlistOffersInTransaction(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  eventId: string,
+  baseRoster: EventRosterSnapshot,
+  options: {excludeUid?: string; nowMillis?: number} = {}
+): Promise<EventRosterSnapshot> {
+  const offerQuery = db
+    .collection("eventWaitlistOffers")
+    .where("eventId", "==", eventId)
+    .where("status", "in", ["active", "accepted"]);
+  const offerSnap = await tx.get(offerQuery);
+  if (offerSnap.empty) return baseRoster;
+
+  const offers = offerSnap.docs.map((doc) => doc.data());
+  const participationSnaps = await Promise.all(
+    offers.map((offer) => tx.get(db
+      .collection("eventParticipations")
+      .doc(eventParticipationId(eventId, String(offer.uid ?? "")))))
+  );
+  return rosterWithReservableOfferData({
+    baseRoster,
+    offers,
+    participationData: participationSnaps.map((snap) => snap.data()),
+    excludeUid: options.excludeUid,
+    nowMillis: options.nowMillis ?? Date.now(),
+  });
+}
+
 export async function hasValidInviteForEvent(params: {
   db: FirebaseFirestore.Firestore;
   eventId: string;
@@ -518,8 +577,83 @@ function cancellationWindow(policyId: EventCancellationPolicyId): {
 export function hasHostApprovedJoinRequest(
   participation: unknown
 ): boolean {
+  if (hasAcceptedWaitlistOfferAccess(participation)) return true;
   return typeof participation === "object" &&
     participation !== null &&
     (participation as {hostApprovalStatus?: unknown})
       .hostApprovalStatus === "approved";
+}
+
+export function hasAcceptedWaitlistOfferAccess(
+  participation: unknown,
+  nowMillis = Date.now()
+): boolean {
+  if (typeof participation !== "object" || participation === null) {
+    return false;
+  }
+  const data = participation as {
+    waitlistOfferStatus?: unknown;
+    waitlistOfferExpiresAt?: unknown;
+  };
+  if (data.waitlistOfferStatus !== "accepted") return false;
+  const expiresAtMillis = timestampLikeMillis(data.waitlistOfferExpiresAt);
+  return expiresAtMillis !== null && expiresAtMillis > nowMillis;
+}
+
+function rosterWithReservableOfferData(params: {
+  baseRoster: EventRosterSnapshot;
+  offers: Array<FirebaseFirestore.DocumentData | undefined>;
+  participationData: Array<FirebaseFirestore.DocumentData | undefined>;
+  excludeUid?: string;
+  nowMillis: number;
+}): EventRosterSnapshot {
+  let totalBooked = params.baseRoster.totalBooked;
+  let bookedCountsByCohort = {
+    ...params.baseRoster.bookedCountsByCohort,
+  };
+
+  params.offers.forEach((offer, index) => {
+    const uid = typeof offer?.uid === "string" ? offer.uid : null;
+    const status = offer?.status;
+    const cohortAtOffer =
+      typeof offer?.cohortAtOffer === "string" ? offer.cohortAtOffer : null;
+    const expiresAtMillis = timestampLikeMillis(offer?.expiresAt);
+    const participation = params.participationData[index];
+    if (
+      uid === null ||
+      uid === params.excludeUid ||
+      cohortAtOffer === null ||
+      (status !== "active" && status !== "accepted") ||
+      expiresAtMillis === null ||
+      expiresAtMillis <= params.nowMillis ||
+      participation?.status !== "waitlisted"
+    ) {
+      return;
+    }
+    totalBooked += 1;
+    bookedCountsByCohort = incrementCount(bookedCountsByCohort, cohortAtOffer);
+  });
+
+  return {
+    ...params.baseRoster,
+    bookedCountsByCohort,
+    totalBooked,
+  };
+}
+
+function timestampLikeMillis(value: unknown): number | null {
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as {toMillis?: unknown}).toMillis === "function"
+  ) {
+    return (value as {toMillis: () => number}).toMillis();
+  }
+  if (
+    value instanceof Date &&
+    Number.isFinite(value.getTime())
+  ) {
+    return value.getTime();
+  }
+  return null;
 }

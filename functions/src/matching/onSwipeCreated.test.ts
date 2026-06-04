@@ -10,6 +10,7 @@ test(
   "onSwipeCreatedHandler creates a deterministic reciprocal match",
   async () => {
     const created: Record<string, unknown> = {};
+    const refreshed: string[] = [];
 
     await onSwipeCreatedHandler(
       {
@@ -27,6 +28,7 @@ test(
           ),
         },
         created,
+        refreshed,
       })
     );
 
@@ -45,6 +47,7 @@ test(
       blockedAt: null,
       conversationType: "match",
     });
+    assert.deepEqual(refreshed, ["event-2", "event-1"]);
   }
 );
 
@@ -100,6 +103,7 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
 ) => {
   const created: Record<string, unknown> = {};
   const updated: Record<string, unknown> = {};
+  const refreshed: string[] = [];
 
   await onSwipeCreatedHandler(
     {
@@ -119,6 +123,7 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
       },
       created,
       updated,
+      refreshed,
     })
   );
 
@@ -132,23 +137,27 @@ test("onSwipeCreatedHandler appends event ids to an existing match", async (
     conversationType: "match",
     clubId: matchPatch.clubId,
   });
+  assert.deepEqual(refreshed, ["event-3", "event-2"]);
 });
 
 test(
   "onSwipeCreatedHandler ignores non-reciprocal and blocked likes",
   async () => {
     const nonReciprocal: Record<string, unknown> = {};
+    const refreshed: string[] = [];
     await onSwipeCreatedHandler(
       {
         swiperId: "user-a",
         targetId: "user-b",
         swipeData: swipe("user-a", "user-b", "event-1", "like"),
       },
-      deps({created: nonReciprocal})
+      deps({created: nonReciprocal, refreshed})
     );
     assert.deepEqual(nonReciprocal, {});
+    assert.deepEqual(refreshed, ["event-1"]);
 
     const blocked: Record<string, unknown> = {};
+    const blockedRefreshed: string[] = [];
     await onSwipeCreatedHandler(
       {
         swiperId: "user-a",
@@ -165,10 +174,12 @@ test(
           ),
         },
         created: blocked,
+        refreshed: blockedRefreshed,
         blocked: true,
       })
     );
     assert.deepEqual(blocked, {});
+    assert.deepEqual(blockedRefreshed, []);
   }
 );
 
@@ -193,11 +204,13 @@ function deps({
   docs = {},
   created = {},
   updated = {},
+  refreshed = [],
   blocked = false,
 }: {
   docs?: Record<string, unknown>;
   created?: Record<string, unknown>;
   updated?: Record<string, unknown>;
+  refreshed?: string[];
   blocked?: boolean;
 }) {
   return {
@@ -205,6 +218,9 @@ function deps({
     hasBlockingRelationship: async () => blocked,
     arrayUnion: (...elements: string[]) => ({arrayUnion: elements}),
     serverTimestamp: () => "SERVER_TIMESTAMP",
+    refreshScorecard: async (eventId: string) => {
+      refreshed.push(eventId);
+    },
   } as never;
 }
 

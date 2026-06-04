@@ -1,0 +1,28 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "uid": "runner-2",
+  "cohortAtOffer": "womenInterestedInMen",
+  "status": "active",
+  "source": "host",
+  "offeredBy": "host-1",
+  "offeredAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "expiresAt": {
+    "_seconds": 1778803200,
+    "_nanoseconds": 0
+  },
+  "decidedAt": null,
+  "expiringNotifiedAt": null,
+  "inviteLinkId": null,
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  }
+}

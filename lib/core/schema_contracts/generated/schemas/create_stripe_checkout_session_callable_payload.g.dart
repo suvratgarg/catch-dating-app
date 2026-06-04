@@ -27,5 +27,10 @@ const schemaCreateStripeCheckoutSessionCallablePayloadSchema = <String, Object?>
       ],
       'maxLength': 80,
     },
+    'inviteLinkId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
   },
 };

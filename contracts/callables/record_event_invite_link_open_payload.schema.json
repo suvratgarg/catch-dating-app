@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_event_invite_link_open_payload.schema.json",
+  "title": "RecordEventInviteLinkOpenCallablePayload",
+  "description": "Callable payload accepted by recordEventInviteLinkOpen. It increments a live open counter and returns whether attribution can be attached to downstream booking actions.",
+  "x-callable-aliases": ["recordEventInviteLinkOpen"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "inviteLinkId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "inviteLinkId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

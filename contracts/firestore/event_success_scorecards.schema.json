@@ -8,7 +8,7 @@
   "x-firestore-collection": "eventSuccessScorecards",
   "x-firestore-path": "eventSuccessScorecards/{eventId}",
   "x-document-id-field": "id",
-  "x-owner": "onEventSuccessFeedbackWritten trigger",
+  "x-owner": "event success feedback and matching triggers",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -24,11 +24,16 @@
     "checkedInCount",
     "feedbackCount",
     "attendeesWhoMetTwoPlusPeople",
+    "catchSentCount",
+    "attendeesWhoCaughtSomeone",
+    "catchRecipientCount",
+    "catchRate",
     "mutualMatchCount",
     "chatStartedCount",
     "averageWelcomeRating",
     "averageStructureRating",
     "safetyIncidentCount",
+    "funnel",
     "updatedAt"
   ],
   "properties": {
@@ -60,6 +65,27 @@
       "minimum": 0,
       "x-catch-ownership": "trigger-owned"
     },
+    "catchSentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "attendeesWhoCaughtSomeone": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "catchRecipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "catchRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "trigger-owned"
+    },
     "mutualMatchCount": {
       "type": "integer",
       "minimum": 0,
@@ -85,6 +111,178 @@
     "safetyIncidentCount": {
       "type": "integer",
       "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "funnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.",
+      "required": [
+        "inviteLinkCount",
+        "inviteOpenCount",
+        "totalDemandCount",
+        "requestCount",
+        "pendingRequestCount",
+        "approvedRequestCount",
+        "declinedRequestCount",
+        "directSignupCount",
+        "waitlistJoinCount",
+        "waitlistOfferCount",
+        "waitlistOfferActiveCount",
+        "waitlistOfferAcceptedCount",
+        "waitlistOfferDeclinedCount",
+        "waitlistOfferExpiredCount",
+        "checkoutStartedCount",
+        "paymentPendingCount",
+        "paymentCompletedCount",
+        "paymentFailedCount",
+        "paymentRefundedCount",
+        "bookedCount",
+        "checkedInCount",
+        "noShowCount",
+        "catchSentCount",
+        "attendeesWhoCaughtSomeone",
+        "mutualMatchCount",
+        "chatStartedCount",
+        "repeatAttendeeCount"
+      ],
+      "properties": {
+        "inviteLinkCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "inviteOpenCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "totalDemandCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "requestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "pendingRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "approvedRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "declinedRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "directSignupCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistJoinCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferActiveCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferAcceptedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferDeclinedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferExpiredCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "checkoutStartedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentPendingCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentCompletedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentFailedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentRefundedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "bookedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "noShowCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "catchSentCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "attendeesWhoCaughtSomeone": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "mutualMatchCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "chatStartedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "repeatAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        }
+      },
       "x-catch-ownership": "trigger-owned"
     },
     "updatedAt": {

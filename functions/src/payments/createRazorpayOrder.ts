@@ -32,11 +32,14 @@ import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasAcceptedWaitlistOfferAccess,
   hasHostApprovedJoinRequest,
   hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
+  rosterWithReservedWaitlistOffers,
 } from "../events/eventPolicy";
+import {resolveInviteAttribution} from "../events/inviteLinks";
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -66,7 +69,7 @@ export async function createRazorpayOrderHandler(
     validateCreateRazorpayOrderCallablePayload,
     normalizeEventIdPayload
   );
-  const {eventId, inviteCode} = payload;
+  const {eventId, inviteCode, inviteLinkId} = payload;
 
   const db = deps.firestore();
   const [eventSnap, userSnap, participationSnap, activeParticipationsSnap] =
@@ -146,6 +149,8 @@ export async function createRazorpayOrderHandler(
 
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
+  const hasWaitlistOfferAccess =
+    hasAcceptedWaitlistOfferAccess(participation);
   const hasValidInvite = await hasValidInviteForEvent({
     db,
     eventId,
@@ -155,11 +160,16 @@ export async function createRazorpayOrderHandler(
   assertPolicyAllowsSignup({
     policy,
     cohortId,
-    roster: {
-      ...rosterFromEvent(event),
-      totalBooked: event.bookedCount ?? signedUpCount,
-    },
-    hasValidInvite,
+    roster: await rosterWithReservedWaitlistOffers(
+      db,
+      eventId,
+      {
+        ...rosterFromEvent(event),
+        totalBooked: event.bookedCount ?? signedUpCount,
+      },
+      {excludeUid: uid}
+    ),
+    hasValidInvite: hasValidInvite || hasWaitlistOfferAccess,
     hasHostApproval: hasHostApprovedJoinRequest(participation),
   });
 
@@ -169,6 +179,11 @@ export async function createRazorpayOrderHandler(
     cohortId,
     roster: rosterFromEvent(event),
   });
+  const inviteAttribution = await resolveInviteAttribution({
+    db,
+    eventId,
+    inviteLinkId,
+  });
   const order = await razorpay.orders.create(
     buildOrderCreatePayload({
       eventId,
@@ -176,7 +191,10 @@ export async function createRazorpayOrderHandler(
       userId: uid,
       receiptToken: deps.now(),
       amountInPaise,
-      inviteVerified: policy.admission.inviteRequired && hasValidInvite,
+      inviteVerified: policy.admission.inviteRequired &&
+        (hasValidInvite || hasWaitlistOfferAccess),
+      inviteLinkId: inviteAttribution?.inviteLinkId,
+      inviteSource: inviteAttribution?.inviteSource,
     })
   );
 

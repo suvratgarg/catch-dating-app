@@ -26,7 +26,9 @@ Do not edit it by hand.
 | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `functions/src/shared/generated/clubHostClaimDocument.ts` |
 | EventDocument | `firestore/events.schema.json` | `functions/src/shared/generated/eventDocument.ts` |
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
+| EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
+| EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `functions/src/shared/generated/eventWaitlistOfferDocument.ts` |
 | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `functions/src/shared/generated/eventSuccessPlanDocument.ts` |
 | EventSuccessFeedbackDocument | `firestore/event_success_feedback.schema.json` | `functions/src/shared/generated/eventSuccessFeedbackDocument.ts` |
 | EventSuccessPreferenceDocument | `firestore/event_success_preferences.schema.json` | `functions/src/shared/generated/eventSuccessPreferenceDocument.ts` |
@@ -70,6 +72,10 @@ Do not edit it by hand.
 | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `functions/src/shared/generated/cancelEventCallablePayload.ts` |
 | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `functions/src/shared/generated/deleteEventCallablePayload.ts` |
 | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `functions/src/shared/generated/eventIdCallablePayload.ts` |
+| CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `functions/src/shared/generated/createEventWaitlistOffersCallablePayload.ts` |
+| CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `functions/src/shared/generated/createEventInviteLinkCallablePayload.ts` |
+| DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `functions/src/shared/generated/disableEventInviteLinkCallablePayload.ts` |
+| RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `functions/src/shared/generated/recordEventInviteLinkOpenCallablePayload.ts` |
 | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `functions/src/shared/generated/markEventAttendanceCallablePayload.ts` |
 | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `functions/src/shared/generated/eventJoinRequestDecisionCallablePayload.ts` |
 | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `functions/src/shared/generated/overrideEventSuccessRotationsCallablePayload.ts` |
@@ -128,7 +134,9 @@ Do not edit it by hand.
 | `schemaClubHostClaimDocumentSchema` | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/club_host_claim_document.g.dart` |
 | `schemaEventDocumentSchema` | EventDocument | `firestore/events.schema.json` | `lib/core/schema_contracts/generated/schemas/event_document.g.dart` |
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
+| `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
+| `schemaEventWaitlistOfferDocumentSchema` | EventWaitlistOfferDocument | `firestore/event_waitlist_offers.schema.json` | `lib/core/schema_contracts/generated/schemas/event_waitlist_offer_document.g.dart` |
 | `schemaEventSuccessPlanDocumentSchema` | EventSuccessPlanDocument | `firestore/event_success_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_plan_document.g.dart` |
 | `schemaEventSuccessFeedbackDocumentSchema` | EventSuccessFeedbackDocument | `firestore/event_success_feedback.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_feedback_document.g.dart` |
 | `schemaEventSuccessPreferenceDocumentSchema` | EventSuccessPreferenceDocument | `firestore/event_success_preferences.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_preference_document.g.dart` |
@@ -172,6 +180,10 @@ Do not edit it by hand.
 | `schemaCancelEventCallablePayloadSchema` | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/cancel_event_callable_payload.g.dart` |
 | `schemaDeleteEventCallablePayloadSchema` | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_event_callable_payload.g.dart` |
 | `schemaEventIdCallablePayloadSchema` | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_id_callable_payload.g.dart` |
+| `schemaCreateEventWaitlistOffersCallablePayloadSchema` | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_waitlist_offers_callable_payload.g.dart` |
+| `schemaCreateEventInviteLinkCallablePayloadSchema` | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_invite_link_callable_payload.g.dart` |
+| `schemaDisableEventInviteLinkCallablePayloadSchema` | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/disable_event_invite_link_callable_payload.g.dart` |
+| `schemaRecordEventInviteLinkOpenCallablePayloadSchema` | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/record_event_invite_link_open_callable_payload.g.dart` |
 | `schemaMarkEventAttendanceCallablePayloadSchema` | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_payload.g.dart` |
 | `schemaEventJoinRequestDecisionCallablePayloadSchema` | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/event_join_request_decision_callable_payload.g.dart` |
 | `schemaOverrideEventSuccessRotationsCallablePayloadSchema` | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/override_event_success_rotations_callable_payload.g.dart` |
@@ -232,6 +244,10 @@ Do not edit it by hand.
 | CancelEventCallableRequest | CancelEventCallablePayload | `callables/cancel_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/cancel_event_callable_request.g.dart` |
 | DeleteEventCallableRequest | DeleteEventCallablePayload | `callables/delete_event_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_event_callable_request.g.dart` |
 | EventIdCallableRequest | EventIdCallablePayload | `callables/event_id_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_id_callable_request.g.dart` |
+| CreateEventWaitlistOffersCallableRequest | CreateEventWaitlistOffersCallablePayload | `callables/create_event_waitlist_offers_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_waitlist_offers_callable_request.g.dart` |
+| CreateEventInviteLinkCallableRequest | CreateEventInviteLinkCallablePayload | `callables/create_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_invite_link_callable_request.g.dart` |
+| DisableEventInviteLinkCallableRequest | DisableEventInviteLinkCallablePayload | `callables/disable_event_invite_link_payload.schema.json` | `lib/core/schema_contracts/generated/callables/disable_event_invite_link_callable_request.g.dart` |
+| RecordEventInviteLinkOpenCallableRequest | RecordEventInviteLinkOpenCallablePayload | `callables/record_event_invite_link_open_payload.schema.json` | `lib/core/schema_contracts/generated/callables/record_event_invite_link_open_callable_request.g.dart` |
 | MarkEventAttendanceCallableRequest | MarkEventAttendanceCallablePayload | `callables/mark_event_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/mark_event_attendance_callable_request.g.dart` |
 | EventJoinRequestDecisionCallableRequest | EventJoinRequestDecisionCallablePayload | `callables/event_join_request_decision_payload.schema.json` | `lib/core/schema_contracts/generated/callables/event_join_request_decision_callable_request.g.dart` |
 | OverrideEventSuccessRotationsCallableRequest | OverrideEventSuccessRotationsCallablePayload | `callables/override_event_success_rotations_payload.schema.json` | `lib/core/schema_contracts/generated/callables/override_event_success_rotations_callable_request.g.dart` |

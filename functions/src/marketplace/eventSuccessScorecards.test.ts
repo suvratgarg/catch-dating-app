@@ -6,7 +6,10 @@ import {
   MatchDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
+  buildEventHostFunnelMetrics,
   buildEventSuccessScorecard,
+  onEventInviteLinkWrittenHandler,
+  refreshEventSuccessScorecard,
   writeEventSafetyReportIfNeeded,
 } from "./eventSuccessScorecards";
 
@@ -41,7 +44,13 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     matches: [
       match("match-1", "LAST_MESSAGE_AT" as never),
       match("match-2", null),
+      match("match-3", "LAST_MESSAGE_AT" as never, {status: "blocked"}),
     ],
+    catchAggregates: {
+      catchSentCount: 3,
+      attendeesWhoCaughtSomeone: 2,
+      catchRecipientCount: 3,
+    },
     updatedAt: "SERVER_TIMESTAMP" as never,
   });
 
@@ -52,11 +61,44 @@ test("buildEventSuccessScorecard computes event aggregates", () => {
     checkedInCount: 8,
     feedbackCount: 2,
     attendeesWhoMetTwoPlusPeople: 1,
+    catchSentCount: 3,
+    attendeesWhoCaughtSomeone: 2,
+    catchRecipientCount: 3,
+    catchRate: 0.25,
     mutualMatchCount: 2,
     chatStartedCount: 1,
     averageWelcomeRating: 4,
     averageStructureRating: 3,
     safetyIncidentCount: 0,
+    funnel: {
+      inviteLinkCount: 0,
+      inviteOpenCount: 0,
+      totalDemandCount: 0,
+      requestCount: 0,
+      pendingRequestCount: 0,
+      approvedRequestCount: 0,
+      declinedRequestCount: 0,
+      directSignupCount: 0,
+      waitlistJoinCount: 0,
+      waitlistOfferCount: 0,
+      waitlistOfferActiveCount: 0,
+      waitlistOfferAcceptedCount: 0,
+      waitlistOfferDeclinedCount: 0,
+      waitlistOfferExpiredCount: 0,
+      checkoutStartedCount: 0,
+      paymentPendingCount: 0,
+      paymentCompletedCount: 0,
+      paymentFailedCount: 0,
+      paymentRefundedCount: 0,
+      bookedCount: 10,
+      checkedInCount: 8,
+      noShowCount: 0,
+      catchSentCount: 3,
+      attendeesWhoCaughtSomeone: 2,
+      mutualMatchCount: 2,
+      chatStartedCount: 1,
+      repeatAttendeeCount: 0,
+    },
     updatedAt: "SERVER_TIMESTAMP",
   });
 });
@@ -84,6 +126,246 @@ test("buildEventSuccessScorecard exposes safety count after sample", () => {
 
   assert.equal(scorecard.safetyIncidentCount, 1);
 });
+
+test("buildEventHostFunnelMetrics computes the operating funnel", () => {
+  const funnel = buildEventHostFunnelMetrics({
+    event: {
+      clubId: "club-1",
+      bookedCount: 6,
+      checkedInCount: 4,
+    } as EventDocument,
+    participations: [
+      participation("runner-1", "attended", {signedUpAt: "SIGNED_AT"}),
+      participation("runner-2", "signedUp", {
+        hostApprovalStatus: "approved",
+        signedUpAt: "SIGNED_AT",
+        waitlistedAt: "WAITLISTED_AT",
+      }),
+      participation("runner-3", "waitlisted", {
+        hostApprovalStatus: "pending",
+        waitlistedAt: "WAITLISTED_AT",
+      }),
+      participation("runner-4", "cancelled", {
+        hostApprovalStatus: "declined",
+      }),
+    ] as never,
+    waitlistOffers: [
+      {eventId: "event-1", clubId: "club-1", uid: "runner-2", status: "active"},
+      {
+        eventId: "event-1",
+        clubId: "club-1",
+        uid: "runner-3",
+        status: "accepted",
+      },
+      {
+        eventId: "event-1",
+        clubId: "club-1",
+        uid: "runner-4",
+        status: "declined",
+      },
+      {
+        eventId: "event-1",
+        clubId: "club-1",
+        uid: "runner-5",
+        status: "expired",
+      },
+    ] as never,
+    payments: [
+      {eventId: "event-1", status: "pending"},
+      {eventId: "event-1", status: "completed"},
+      {eventId: "event-1", status: "failed"},
+      {eventId: "event-1", status: "refunded"},
+    ] as never,
+    inviteLinks: [
+      {eventId: "event-1", openCount: 10},
+      {eventId: "event-1", openCount: 4},
+    ] as never,
+    matches: [
+      match("match-1", "LAST_MESSAGE_AT" as never),
+      match("match-2", null),
+      match("match-3", null, {status: "blocked"}),
+    ],
+    catchAggregates: {
+      catchSentCount: 5,
+      attendeesWhoCaughtSomeone: 3,
+      catchRecipientCount: 4,
+    },
+    repeatAttendeeCount: 2,
+  });
+
+  assert.deepEqual(funnel, {
+    inviteLinkCount: 2,
+    inviteOpenCount: 14,
+    totalDemandCount: 4,
+    requestCount: 3,
+    pendingRequestCount: 1,
+    approvedRequestCount: 1,
+    declinedRequestCount: 1,
+    directSignupCount: 1,
+    waitlistJoinCount: 2,
+    waitlistOfferCount: 4,
+    waitlistOfferActiveCount: 1,
+    waitlistOfferAcceptedCount: 1,
+    waitlistOfferDeclinedCount: 1,
+    waitlistOfferExpiredCount: 1,
+    checkoutStartedCount: 4,
+    paymentPendingCount: 1,
+    paymentCompletedCount: 1,
+    paymentFailedCount: 1,
+    paymentRefundedCount: 1,
+    bookedCount: 6,
+    checkedInCount: 4,
+    noShowCount: 1,
+    catchSentCount: 5,
+    attendeesWhoCaughtSomeone: 3,
+    mutualMatchCount: 2,
+    chatStartedCount: 1,
+    repeatAttendeeCount: 2,
+  });
+});
+
+test(
+  "invite link scorecard trigger ignores connection-counter writes",
+  async () => {
+    await onEventInviteLinkWrittenHandler(
+      {
+        eventId: "event-1",
+        openCount: 2,
+        requestCount: 1,
+        confirmedCount: 1,
+        paidCount: 1,
+        checkedInCount: 1,
+        catcherCount: 0,
+        matchCount: 0,
+        chatStartedCount: 0,
+      } as never,
+      {
+        eventId: "event-1",
+        openCount: 2,
+        requestCount: 1,
+        confirmedCount: 1,
+        paidCount: 1,
+        checkedInCount: 1,
+        catcherCount: 1,
+        matchCount: 1,
+        chatStartedCount: 1,
+      } as never,
+      {
+        firestore: () => {
+          throw new Error("Scorecard refresh should not run.");
+        },
+        serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+      }
+    );
+  }
+);
+
+test(
+  "refreshEventSuccessScorecard rebuilds privacy-safe catch aggregates",
+  async () => {
+    const writes: Record<string, unknown> = {};
+    await refreshEventSuccessScorecard("event-1", {
+      firestore: () => fakeFirestore({
+        "events/event-1": {
+          clubId: "club-1",
+          bookedCount: 4,
+          checkedInCount: 3,
+        },
+        "eventParticipations/event-1_user-1": participation(
+          "user-1",
+          "attended"
+        ),
+        "eventParticipations/event-1_user-2": participation(
+          "user-2",
+          "attended"
+        ),
+        "eventParticipations/event-1_user-3": participation(
+          "user-3",
+          "attended"
+        ),
+        "eventParticipations/event-1_user-4": participation(
+          "user-4",
+          "signedUp"
+        ),
+        "profileDecisions/user-1/outgoing/user-2": swipe(
+          "user-1",
+          "user-2",
+          "like"
+        ),
+        "profileDecisions/user-1/outgoing/user-3": swipe(
+          "user-1",
+          "user-3",
+          "like"
+        ),
+        "profileDecisions/user-2/outgoing/user-4": swipe(
+          "user-2",
+          "user-4",
+          "like"
+        ),
+        "profileDecisions/user-3/outgoing/user-1": swipe(
+          "user-3",
+          "user-1",
+          "pass"
+        ),
+        "blocks/block-1": {
+          blockerUserId: "user-3",
+          blockedUserId: "user-1",
+          createdAt: "CREATED_AT",
+          source: "profile",
+        },
+      }, writes),
+      serverTimestamp: () => "SERVER_TIMESTAMP" as never,
+    });
+
+    assert.deepEqual(writes["eventSuccessScorecards/event-1"], {
+      eventId: "event-1",
+      clubId: "club-1",
+      bookedCount: 4,
+      checkedInCount: 3,
+      feedbackCount: 0,
+      attendeesWhoMetTwoPlusPeople: 0,
+      catchSentCount: 1,
+      attendeesWhoCaughtSomeone: 1,
+      catchRecipientCount: 1,
+      catchRate: 1 / 3,
+      mutualMatchCount: 0,
+      chatStartedCount: 0,
+      averageWelcomeRating: 0,
+      averageStructureRating: 0,
+      safetyIncidentCount: 0,
+      funnel: {
+        inviteLinkCount: 0,
+        inviteOpenCount: 0,
+        totalDemandCount: 4,
+        requestCount: 0,
+        pendingRequestCount: 0,
+        approvedRequestCount: 0,
+        declinedRequestCount: 0,
+        directSignupCount: 0,
+        waitlistJoinCount: 0,
+        waitlistOfferCount: 0,
+        waitlistOfferActiveCount: 0,
+        waitlistOfferAcceptedCount: 0,
+        waitlistOfferDeclinedCount: 0,
+        waitlistOfferExpiredCount: 0,
+        checkoutStartedCount: 0,
+        paymentPendingCount: 0,
+        paymentCompletedCount: 0,
+        paymentFailedCount: 0,
+        paymentRefundedCount: 0,
+        bookedCount: 4,
+        checkedInCount: 3,
+        noShowCount: 1,
+        catchSentCount: 1,
+        attendeesWhoCaughtSomeone: 1,
+        mutualMatchCount: 0,
+        chatStartedCount: 0,
+        repeatAttendeeCount: 0,
+      },
+      updatedAt: "SERVER_TIMESTAMP",
+    });
+  }
+);
 
 test("writeEventSafetyReportIfNeeded stores safety review", async () => {
   const writes: Record<string, unknown> = {};
@@ -128,7 +410,8 @@ test("writeEventSafetyReportIfNeeded stores safety review", async () => {
 
 function match(
   id: string,
-  lastMessageAt: FirebaseFirestore.Timestamp | null
+  lastMessageAt: FirebaseFirestore.Timestamp | null,
+  overrides: Partial<MatchDocument> = {}
 ): MatchDocument {
   return {
     user1Id: `${id}-a`,
@@ -140,5 +423,127 @@ function match(
     unreadCounts: {},
     status: "active",
     conversationType: "match",
+    ...overrides,
   };
+}
+
+function participation(
+  uid: string,
+  status: string,
+  overrides: Record<string, unknown> = {}
+): Record<string, unknown> {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    uid,
+    status,
+    ...overrides,
+  };
+}
+
+function swipe(
+  swiperId: string,
+  targetId: string,
+  direction: "like" | "pass"
+): Record<string, unknown> {
+  return {
+    swiperId,
+    targetId,
+    eventId: "event-1",
+    direction,
+    createdAt: "CREATED_AT",
+  };
+}
+
+function fakeFirestore(
+  docs: Record<string, unknown>,
+  writes: Record<string, unknown>
+): FirebaseFirestore.Firestore {
+  return {
+    collection: (collectionPath: string) =>
+      collectionRef(collectionPath, docs, writes),
+    batch: () => ({
+      set: async (
+        ref: {path: string; set: (data: unknown) => Promise<void>},
+        data: unknown
+      ) => {
+        writes[ref.path] = data;
+      },
+      commit: async () => undefined,
+    }),
+  } as unknown as FirebaseFirestore.Firestore;
+}
+
+function collectionRef(
+  collectionPath: string,
+  docs: Record<string, unknown>,
+  writes: Record<string, unknown>,
+  filters: Array<{field: string; operator: string; value: unknown}> = []
+) {
+  return {
+    doc: (docId: string) => docRef(`${collectionPath}/${docId}`, docs, writes),
+    where: (field: string, operator: string, value: unknown) =>
+      collectionRef(collectionPath, docs, writes, [
+        ...filters,
+        {field, operator, value},
+      ]),
+    get: async () => {
+      const resultDocs = queryDocs(collectionPath, docs, filters, writes);
+      return {
+        docs: resultDocs,
+        empty: resultDocs.length === 0,
+      };
+    },
+  };
+}
+
+function docRef(
+  path: string,
+  docs: Record<string, unknown>,
+  writes: Record<string, unknown>
+) {
+  return {
+    path,
+    collection: (collectionPath: string) =>
+      collectionRef(`${path}/${collectionPath}`, docs, writes),
+    get: async () => ({
+      exists: docs[path] !== undefined,
+      data: () => docs[path],
+    }),
+    set: async (data: unknown) => {
+      writes[path] = data;
+    },
+  };
+}
+
+function queryDocs(
+  collectionPath: string,
+  docs: Record<string, unknown>,
+  filters: Array<{field: string; operator: string; value: unknown}>,
+  writes: Record<string, unknown>
+) {
+  const prefix = `${collectionPath}/`;
+  return Object.entries(docs)
+    .filter(([path]) =>
+      path.startsWith(prefix) &&
+      !path.slice(prefix.length).includes("/")
+    )
+    .map(([path, data]) => ({path, data}))
+    .filter(({data}) => {
+      const row = data as Record<string, unknown>;
+      return filters.every((filter) => {
+        if (filter.operator === "==") {
+          return row[filter.field] === filter.value;
+        }
+        if (filter.operator === "in" && Array.isArray(filter.value)) {
+          return filter.value.includes(row[filter.field]);
+        }
+        throw new Error(`Unsupported operator ${filter.operator}`);
+      });
+    })
+    .map(({path, data}) => ({
+      id: path.split("/").at(-1) ?? "",
+      ref: docRef(path, docs, writes),
+      data: () => data,
+    }));
 }

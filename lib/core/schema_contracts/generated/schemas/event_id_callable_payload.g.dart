@@ -15,6 +15,8 @@ const schemaEventIdCallablePayloadSchema = <String, Object?>{
     'fetchEventSuccessWingmanCandidates',
     'generateEventSuccessPods',
     'generateEventSuccessRotations',
+    'acceptEventWaitlistOffer',
+    'declineEventWaitlistOffer',
     'joinEventWaitlist',
     'leaveEventWaitlist',
     'withdrawEventSuccessWingmanRequest',
@@ -38,6 +40,11 @@ const schemaEventIdCallablePayloadSchema = <String, Object?>{
       'minLength': 4,
       'maxLength': 64,
       'pattern': '^[A-Za-z0-9_-]+\$',
+    },
+    'inviteLinkId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

@@ -135,6 +135,8 @@ test(
           eventId: "event-1",
           userId: "runner-1",
           inviteVerified: "true",
+          inviteLinkId: "link-1",
+          inviteSource: "instagram-bio",
         },
       },
       payment: {
@@ -154,6 +156,8 @@ test(
       amountInPaise: 25000,
       currency: "INR",
       inviteVerified: true,
+      inviteLinkId: "link-1",
+      inviteSource: "instagram-bio",
     });
   }
 );

@@ -57,6 +57,40 @@ export interface EventParticipationDocument {
   } | null;
   hostApprovalDecidedBy?: string | null;
   /**
+   * Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.
+   */
+  waitlistOfferStatus?:
+    | ("active" | "accepted" | "declined" | "expired" | "cancelled")
+    | null;
+  waitlistOfferedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  waitlistOfferExpiresAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  waitlistOfferAcceptedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  waitlistOfferId?: string | null;
+  /**
+   * Named host invite link that first attributed this participation, when present.
+   */
+  inviteLinkId?: string | null;
+  /**
+   * Host-facing source label copied from the invite link for durable reporting.
+   */
+  inviteSource?: string | null;
+  /**
+   * Server time when invite attribution was first attached to the roster edge.
+   */
+  inviteCapturedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */
   synthetic?: boolean;

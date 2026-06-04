@@ -15,6 +15,9 @@ import {buildChatSignalFacts} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {
+  refreshEventSuccessScorecard,
+} from "../marketplace/eventSuccessScorecards";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -32,6 +35,7 @@ interface MessageCreatedDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
   recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
+  refreshScorecard?: typeof refreshEventSuccessScorecard;
 }
 
 const defaultDeps: MessageCreatedDeps = {
@@ -39,6 +43,7 @@ const defaultDeps: MessageCreatedDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   recordSignalFacts: recordParticipantSignalFactsBestEffort,
+  refreshScorecard: refreshEventSuccessScorecard,
 };
 
 /**
@@ -66,6 +71,7 @@ export async function onMessageCreatedHandler(
   let isFirstMessage = false;
   let notificationTitle = "New message";
   let notificationBody = buildMessageBody(message);
+  let scorecardEventIds: string[] = [];
 
   await db.runTransaction(async (tx) => {
     const senderProfileRef = db.collection("publicProfiles").doc(
@@ -86,6 +92,7 @@ export async function onMessageCreatedHandler(
       logger.info("Skipping notification for blocked match", {matchId});
       return;
     }
+    scorecardEventIds = Array.isArray(match.eventIds) ? match.eventIds : [];
     recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
     isFirstMessage = match.lastMessageAt == null;
@@ -116,6 +123,8 @@ export async function onMessageCreatedHandler(
 
     shouldNotify = true;
   });
+
+  await refreshScorecardsForEvents(scorecardEventIds, deps);
 
   if (!shouldNotify || !recipientId) {
     return;
@@ -151,6 +160,20 @@ export async function onMessageCreatedHandler(
     type: "message",
     matchId,
   });
+}
+
+/**
+ * Refreshes host scorecards touched by a chat message.
+ * @param {string[]} eventIds Event ids attached to the match.
+ * @param {MessageCreatedDeps} deps Injectable dependencies.
+ */
+async function refreshScorecardsForEvents(
+  eventIds: string[],
+  deps: MessageCreatedDeps
+): Promise<void> {
+  const refreshScorecard = deps.refreshScorecard;
+  if (!refreshScorecard || eventIds.length === 0) return;
+  await Promise.all(eventIds.map((eventId) => refreshScorecard(eventId)));
 }
 
 export const onMessageCreated = onDocumentCreated(

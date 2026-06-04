@@ -78,6 +78,142 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "unitKind": {
+      "type": "string",
+      "enum": [
+        "wholeGroup",
+        "pods",
+        "pairs",
+        "teams",
+        "tables"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "whySummary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "whyCodes": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "string",
+        "enum": [
+          "host_override",
+          "mutual_interest",
+          "one_way_interest",
+          "questionnaire_match",
+          "social_fallback",
+          "balanced_group",
+          "fresh_peer",
+          "repeat_peer",
+          "sit_out",
+          "pair_slot",
+          "pod_slot",
+          "table_slot",
+          "team_slot",
+          "whole_group_slot"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "rotationFairness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assignedRoundCount",
+        "sitOutRoundCount",
+        "uniquePeerCount",
+        "repeatPeerCount"
+      ],
+      "properties": {
+        "assignedRoundCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sitOutRoundCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "uniquePeerCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "repeatPeerCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "sitOutSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "startsAt",
+          "endsAt",
+          "whySummary",
+          "whyCodes"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "endsAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "sit_out"
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "rotationSlots": {
       "type": "array",
       "maxItems": 24,
@@ -93,6 +229,11 @@
           "compatibility"
         ],
         "properties": {
+          "slotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
           "roundIndex": {
             "type": "integer",
             "minimum": 0,
@@ -112,6 +253,22 @@
           "peerUid": {
             "$ref": "../shared/event_common.schema.json#/definitions/documentId"
           },
+          "unitKind": {
+            "type": "string",
+            "enum": [
+              "pairs"
+            ]
+          },
+          "unitIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "peerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
           "compatibility": {
             "type": "string",
             "enum": [
@@ -121,6 +278,28 @@
               "social",
               "host_override"
             ]
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "host_override",
+                "mutual_interest",
+                "one_way_interest",
+                "questionnaire_match",
+                "social_fallback",
+                "fresh_peer",
+                "repeat_peer",
+                "pair_slot"
+              ]
+            }
           }
         }
       },
@@ -142,6 +321,11 @@
           "compatibility"
         ],
         "properties": {
+          "slotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
           "roundIndex": {
             "type": "integer",
             "minimum": 0,
@@ -157,6 +341,21 @@
             "minLength": 1,
             "maxLength": 80
           },
+          "unitKind": {
+            "type": "string",
+            "enum": [
+              "wholeGroup",
+              "pods",
+              "pairs",
+              "teams",
+              "tables"
+            ]
+          },
+          "unitIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
           "startsAt": {
             "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
           },
@@ -170,6 +369,11 @@
               "$ref": "../shared/event_common.schema.json#/definitions/documentId"
             }
           },
+          "peerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          },
           "compatibility": {
             "type": "string",
             "enum": [
@@ -180,6 +384,32 @@
               "mixed",
               "host_override"
             ]
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "host_override",
+                "mutual_interest",
+                "questionnaire_match",
+                "social_fallback",
+                "balanced_group",
+                "fresh_peer",
+                "repeat_peer",
+                "pair_slot",
+                "pod_slot",
+                "table_slot",
+                "team_slot",
+                "whole_group_slot"
+              ]
+            }
           }
         }
       },

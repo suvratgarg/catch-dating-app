@@ -25,10 +25,12 @@ import {isClubHost} from "../shared/clubHosts";
 import {
   AssignmentParticipant,
   assignmentPairKey,
-  optimizeEventSuccessAssignments,
+  AssignmentRotationPolicy,
   OptimizedGroup,
   OptimizedRotationRound,
+  runAssignmentEngine,
 } from "./assignmentOptimizer";
+import {AssignmentConstraintConfig} from "./assignmentConstraints";
 import {
   AssignmentTopology,
   EventSuccessUnitKind,
@@ -43,6 +45,12 @@ import {
   EventSuccessCompatibilityPolicy,
   eventSuccessPrimitivesFor,
 } from "./formatPrimitives";
+import {
+  activityAttributesForProfile,
+  assignmentConstraintsForStructureConfig,
+  AssignmentPrimitiveStructureConfig,
+  rotationPolicyForStructureConfig,
+} from "./assignmentPrimitiveControls";
 
 const MICRO_PODS_MODULE_ID = "micro_pods";
 const DEFAULT_TARGET_UNIT_SIZE = 5;
@@ -68,7 +76,7 @@ interface EventSuccessPlanDocument {
     unitSize?: unknown;
     unitCount?: unknown;
     rotationIntervalMinutes?: unknown;
-  };
+  } & AssignmentPrimitiveStructureConfig;
 }
 
 interface EventParticipationDocument {
@@ -96,14 +104,41 @@ type GroupCompatibilitySignal =
   "mixed" |
   "host_override";
 
+type AssignmentWhyCode =
+  "host_override" |
+  "mutual_interest" |
+  "questionnaire_match" |
+  "social_fallback" |
+  "balanced_group" |
+  "fresh_peer" |
+  "repeat_peer" |
+  "pair_slot" |
+  "pod_slot" |
+  "table_slot" |
+  "team_slot" |
+  "whole_group_slot";
+
+interface RotationFairnessSummary {
+  assignedRoundCount: number;
+  sitOutRoundCount: number;
+  uniquePeerCount: number;
+  repeatPeerCount: number;
+}
+
 interface GeneratedGroupRotationSlot {
+  slotId?: string;
   roundIndex: number;
   label: string;
   unitLabel: string;
+  unitKind?: EventSuccessUnitKind;
+  unitIndex?: number;
   startsAt: FirebaseFirestore.Timestamp;
   endsAt: FirebaseFirestore.Timestamp;
   peerUids: string[];
+  peerCount?: number;
   compatibility: GroupCompatibilitySignal;
+  whySummary?: string;
+  whyCodes?: AssignmentWhyCode[];
 }
 
 interface GeneratedAssignment {
@@ -115,6 +150,12 @@ interface GeneratedAssignment {
   displayTitle: string;
   displaySubtitle: string;
   peerUids: string[];
+  unitKind?: EventSuccessUnitKind;
+  unitIndex?: number;
+  unitLabel?: string;
+  whySummary?: string;
+  whyCodes?: AssignmentWhyCode[];
+  rotationFairness?: RotationFairnessSummary;
   groupRotationSlots?: GeneratedGroupRotationSlot[];
   source: string;
   createdAt: FirebaseFirestore.FieldValue;
@@ -245,6 +286,12 @@ export async function generateEventSuccessPodsHandler(
 
   const blockedPairs = await fetchBlockedPairs(db, eligibleParticipants);
   const primitives = eventSuccessPrimitivesFor(event.eventFormat);
+  const constraints = assignmentConstraintsForStructureConfig(
+    plan.structureConfig
+  );
+  const rotationPolicy = rotationPolicyForStructureConfig(
+    plan.structureConfig
+  );
   const topology = resolveAssignmentTopology(
     plan,
     eligibleParticipants.length,
@@ -260,6 +307,8 @@ export async function generateEventSuccessPodsHandler(
     topology,
     assignmentAlgorithm: primitives.assignmentAlgorithm,
     compatibilityPolicy: primitives.compatibilityPolicy,
+    constraints,
+    rotationPolicy,
     timing,
   });
   const assignments = buildAssignments({
@@ -564,6 +613,7 @@ async function hydrateParticipants(
           typeof gender === "string"
         ) :
         [],
+      activityAttributes: activityAttributesForProfile(profile),
     };
   });
 }
@@ -614,6 +664,8 @@ function buildPods(params: {
   topology: AssignmentTopology;
   assignmentAlgorithm: EventSuccessAssignmentAlgorithm;
   compatibilityPolicy: EventSuccessCompatibilityPolicy;
+  constraints?: AssignmentConstraintConfig;
+  rotationPolicy?: AssignmentRotationPolicy;
   timing?: EventTiming;
 }): BuiltPods {
   if (params.participants.length === 0) {
@@ -627,7 +679,7 @@ function buildPods(params: {
       eventEndMillis: params.timing?.endMillis ?? 0,
       rotationIntervalMinutes,
     });
-  const plan = optimizeEventSuccessAssignments({
+  const plan = runAssignmentEngine({
     participants: params.participants,
     blockedPairs: params.blockedPairs,
     topology: params.topology,
@@ -635,6 +687,8 @@ function buildPods(params: {
     compatibilityPolicy: params.compatibilityPolicy,
     questionnaireMode: "icebreaker",
     rotationRoundCount,
+    constraints: params.constraints,
+    rotationPolicy: params.rotationPolicy,
   });
   const groupRounds = [
     ...plan.groupRounds,
@@ -898,6 +952,11 @@ function buildAssignments(params: {
   params.groups.forEach((group, index) => {
     const label = group.label ?? unitLabel(params.unitKind, index);
     const groupUids = group.participants.map((participant) => participant.uid);
+    const whyCodes = groupWhyCodes({
+      group,
+      unitKind: params.unitKind,
+      source: params.source,
+    });
     for (const participant of group.participants) {
       const docId = assignmentId(params.eventId, participant.uid);
       assignments.set(docId, {
@@ -912,6 +971,16 @@ function buildAssignments(params: {
           group.participants.length
         ),
         peerUids: groupUids.filter((peerUid) => peerUid !== participant.uid),
+        unitKind: params.unitKind,
+        unitIndex: group.groupIndex,
+        unitLabel: label,
+        whySummary: groupWhySummary({
+          group,
+          unitKind: params.unitKind,
+          unitLabel: label,
+          source: params.source,
+        }),
+        whyCodes,
         source: params.source,
         createdAt: params.now,
         updatedAt: params.now,
@@ -948,18 +1017,36 @@ function buildGroupRotationAssignments(params: {
         round.roundIndex * params.rotationIntervalMinutes * 60000;
       const slotEndsAtMillis = slotStartsAtMillis +
         params.rotationIntervalMinutes * 60000;
+      const compatibility = params.source === "host_override_v1" ?
+        "host_override" :
+        groupCompatibilitySignal(group);
+      const whyCodes = groupWhyCodes({
+        group,
+        unitKind: params.unitKind,
+        source: params.source,
+      });
+      const unitDisplayLabel = group.label ??
+        unitLabel(params.unitKind, group.groupIndex);
       for (const participant of group.participants) {
         const slot: GeneratedGroupRotationSlot = {
+          slotId: `round-${round.roundIndex}-unit-${group.groupIndex}`,
           roundIndex: round.roundIndex,
           label: `Round ${round.roundIndex + 1}`,
-          unitLabel: group.label ??
-            unitLabel(params.unitKind, group.groupIndex),
+          unitLabel: unitDisplayLabel,
+          unitKind: params.unitKind,
+          unitIndex: group.groupIndex,
           startsAt: admin.firestore.Timestamp.fromMillis(slotStartsAtMillis),
           endsAt: admin.firestore.Timestamp.fromMillis(slotEndsAtMillis),
           peerUids: groupUids.filter((uid) => uid !== participant.uid),
-          compatibility: params.source === "host_override_v1" ?
-            "host_override" :
-            groupCompatibilitySignal(group),
+          peerCount: Math.max(0, group.participants.length - 1),
+          compatibility,
+          whySummary: groupWhySummary({
+            group,
+            unitKind: params.unitKind,
+            unitLabel: unitDisplayLabel,
+            source: params.source,
+          }),
+          whyCodes,
         };
         const slotsForUid = slotsByUid.get(participant.uid);
         if (slotsForUid === undefined) {
@@ -997,6 +1084,13 @@ function buildGroupRotationAssignments(params: {
       displaySubtitle:
         `${intervalLabel} with ${peerCountLabel} across the event.`,
       peerUids,
+      unitKind: params.unitKind,
+      unitLabel: `${unitSingularLabel(params.unitKind)} rotations`,
+      whySummary: `${title} with ${peerCountLabel}.`,
+      whyCodes: uniqueWhyCodes(slots.flatMap((slot) =>
+        slot.whyCodes ?? []
+      )),
+      rotationFairness: rotationFairnessSummary(slots, []),
       groupRotationSlots: slots,
       source: params.source,
       createdAt: params.now,
@@ -1004,6 +1098,113 @@ function buildGroupRotationAssignments(params: {
     });
   }
   return assignments;
+}
+
+/**
+ * Builds a short reason summary for a generated group.
+ * @param {object} params Group metadata inputs.
+ * @return {string} Human-readable assignment reason.
+ */
+function groupWhySummary(params: {
+  group: OptimizedGroup<ActiveParticipant>;
+  unitKind: EventSuccessUnitKind;
+  unitLabel: string;
+  source: string;
+}): string {
+  const peerCount = Math.max(0, params.group.participants.length - 1);
+  const peerLabel = `${peerCount} ${peerCount === 1 ? "peer" : "peers"}`;
+  if (params.source === "host_override_v1") {
+    return `Host override for ${params.unitLabel} with ${peerLabel}.`;
+  }
+  if (params.group.mutualDyadCount > 0) {
+    return `${params.unitLabel} balances ${peerLabel} with compatible dyads.`;
+  }
+  if (params.group.plausibleDyadCount > 0) {
+    return `${params.unitLabel} creates a social fallback with ${peerLabel}.`;
+  }
+  const unitName = unitSingularLabel(params.unitKind).toLowerCase();
+  return `${params.unitLabel} keeps this ${unitName} assignment available.`;
+}
+
+/**
+ * Builds machine-safe reason codes for a generated group.
+ * @param {object} params Group metadata inputs.
+ * @return {AssignmentWhyCode[]} Stable reason codes.
+ */
+function groupWhyCodes(params: {
+  group: OptimizedGroup<ActiveParticipant>;
+  unitKind: EventSuccessUnitKind;
+  source: string;
+}): AssignmentWhyCode[] {
+  const codes: AssignmentWhyCode[] = [unitWhyCode(params.unitKind)];
+  if (params.source === "host_override_v1") {
+    codes.push("host_override");
+  } else if (params.group.mutualDyadCount > 0) {
+    codes.push("mutual_interest");
+  } else if (params.group.plausibleDyadCount > 0) {
+    codes.push("social_fallback");
+  }
+  if (params.group.participants.length > 1) {
+    codes.push("balanced_group");
+  }
+  return uniqueWhyCodes(codes);
+}
+
+/**
+ * Maps unit kinds to stable reason codes.
+ * @param {EventSuccessUnitKind} unitKind Assignment unit kind.
+ * @return {AssignmentWhyCode} Unit reason code.
+ */
+function unitWhyCode(unitKind: EventSuccessUnitKind): AssignmentWhyCode {
+  switch (unitKind) {
+  case "pairs":
+    return "pair_slot";
+  case "teams":
+    return "team_slot";
+  case "tables":
+    return "table_slot";
+  case "wholeGroup":
+    return "whole_group_slot";
+  case "pods":
+  default:
+    return "pod_slot";
+  }
+}
+
+/**
+ * Builds fairness metadata from rotation slots and sit-outs.
+ * @param {GeneratedGroupRotationSlot[]} slots Assigned rotation slots.
+ * @param {unknown[]} sitOutSlots Sit-out slots.
+ * @return {RotationFairnessSummary} Fairness counts.
+ */
+function rotationFairnessSummary(
+  slots: GeneratedGroupRotationSlot[],
+  sitOutSlots: unknown[]
+): RotationFairnessSummary {
+  const peerCounts = new Map<string, number>();
+  for (const slot of slots) {
+    for (const peerUid of slot.peerUids) {
+      peerCounts.set(peerUid, (peerCounts.get(peerUid) ?? 0) + 1);
+    }
+  }
+  return {
+    assignedRoundCount: slots.length,
+    sitOutRoundCount: sitOutSlots.length,
+    uniquePeerCount: peerCounts.size,
+    repeatPeerCount: [...peerCounts.values()].reduce(
+      (sum, count) => sum + Math.max(0, count - 1),
+      0
+    ),
+  };
+}
+
+/**
+ * Deduplicates reason codes while preserving first-seen order.
+ * @param {AssignmentWhyCode[]} codes Raw reason codes.
+ * @return {AssignmentWhyCode[]} Unique codes.
+ */
+function uniqueWhyCodes(codes: AssignmentWhyCode[]): AssignmentWhyCode[] {
+  return [...new Set(codes)];
 }
 
 /**

@@ -20,6 +20,14 @@ export interface PaymentDocument {
   hostUserId?: string;
   stripeAccountId?: string | null;
   applicationFeeAmount?: number;
+  /**
+   * Named host invite link attributed to this payment, when present.
+   */
+  inviteLinkId?: string | null;
+  /**
+   * Host-facing invite source copied from eventInviteLinks.
+   */
+  inviteSource?: string | null;
   signUpFailed: boolean;
   /**
    * Serialized Firestore Timestamp fixture shape.

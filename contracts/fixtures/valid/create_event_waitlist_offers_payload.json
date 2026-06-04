@@ -1,0 +1,5 @@
+{
+  "eventId": "event-1",
+  "userIds": ["runner-2", "runner-3"],
+  "expiresInMinutes": 720
+}

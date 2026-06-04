@@ -3035,6 +3035,44 @@ export const clubDocumentSchema = {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 60
+                },
+                "rotationRepeatStrategy": {
+                  "type": "string",
+                  "enum": [
+                    "avoid",
+                    "allowWhenExhausted"
+                  ]
+                },
+                "maxPairMeetings": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "balanceActivityAttributes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "paceBand",
+                      "skillBand",
+                      "roleBand"
+                    ]
+                  }
+                },
+                "clusterActivityAttributes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "paceBand",
+                      "skillBand",
+                      "roleBand"
+                    ]
+                  }
                 }
               }
             },
@@ -3199,6 +3237,44 @@ export const clubDocumentSchema = {
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 60
+                  },
+                  "rotationRepeatStrategy": {
+                    "type": "string",
+                    "enum": [
+                      "avoid",
+                      "allowWhenExhausted"
+                    ]
+                  },
+                  "maxPairMeetings": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  },
+                  "balanceActivityAttributes": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "paceBand",
+                        "skillBand",
+                        "roleBand"
+                      ]
+                    }
+                  },
+                  "clusterActivityAttributes": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "paceBand",
+                        "skillBand",
+                        "roleBand"
+                      ]
+                    }
                   }
                 }
               },
@@ -4678,6 +4754,190 @@ export const eventPrivateAccessDocumentSchema = {
   }
 };
 
+export const eventInviteLinkDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_invite_links.schema.json",
+  "title": "EventInviteLinkDocument",
+  "description": "Host-created named invite link stored at eventInviteLinks/{inviteLinkId}. The document tracks live attribution counters while preserving disabled links for historical reporting.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventInviteLinks",
+  "x-firestore-path": "eventInviteLinks/{inviteLinkId}",
+  "x-document-id-field": "id",
+  "x-owner": "event invite link callables and event-success scorecard recomputation",
+  "required": [
+    "eventId",
+    "clubId",
+    "hostUid",
+    "label",
+    "source",
+    "tokenHash",
+    "openCount",
+    "requestCount",
+    "confirmedCount",
+    "paidCount",
+    "checkedInCount",
+    "catcherCount",
+    "matchCount",
+    "chatStartedCount",
+    "disabledAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "hostUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "tokenHash": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "openCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "confirmedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "paidCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "checkedInCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "callable-owned"
+    },
+    "catcherCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "matchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "chatStartedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "disabledAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
 export const eventParticipationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/event_participations.schema.json",
@@ -5010,6 +5270,439 @@ export const eventParticipationDocumentSchema = {
       "maxLength": 180,
       "x-catch-ownership": "callable-owned"
     },
+    "waitlistOfferStatus": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "active",
+            "accepted",
+            "declined",
+            "expired",
+            "cancelled"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mirror of the current waitlist offer state for cheap roster and attendee CTA reads.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferExpiresAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferAcceptedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "waitlistOfferId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Named host invite link that first attributed this participation, when present.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Host-facing source label copied from the invite link for durable reporting.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteCapturedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server time when invite attribution was first attached to the roster edge.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventWaitlistOfferDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_waitlist_offers.schema.json",
+  "title": "EventWaitlistOfferDocument",
+  "description": "Server-owned waitlist offer stored at eventWaitlistOffers/{eventId_uid}. Offers reserve a waitlist slot until accepted, declined, expired, or cancelled.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventWaitlistOffers",
+  "x-firestore-path": "eventWaitlistOffers/{offerId}",
+  "x-document-id-field": "id",
+  "x-owner": "waitlist offer callables and expiry scheduler",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "cohortAtOffer",
+    "status",
+    "source",
+    "offeredBy",
+    "offeredAt",
+    "expiresAt",
+    "decidedAt",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "cohortAtOffer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "accepted",
+        "declined",
+        "expired",
+        "cancelled"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "host",
+        "autoPromotion",
+        "ratioBalancing",
+        "cancellation"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "offeredBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "offeredAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "decidedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiringNotifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -5157,6 +5850,44 @@ export const eventSuccessPlanDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 60
+        },
+        "rotationRepeatStrategy": {
+          "type": "string",
+          "enum": [
+            "avoid",
+            "allowWhenExhausted"
+          ]
+        },
+        "maxPairMeetings": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "balanceActivityAttributes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "paceBand",
+              "skillBand",
+              "roleBand"
+            ]
+          }
+        },
+        "clusterActivityAttributes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "paceBand",
+              "skillBand",
+              "roleBand"
+            ]
+          }
         }
       },
       "x-catch-ownership": "callable-owned"
@@ -6325,6 +7056,176 @@ export const eventSuccessAssignmentDocumentSchema = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "unitKind": {
+      "type": "string",
+      "enum": [
+        "wholeGroup",
+        "pods",
+        "pairs",
+        "teams",
+        "tables"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-catch-ownership": "callable-owned"
+    },
+    "whySummary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "whyCodes": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "string",
+        "enum": [
+          "host_override",
+          "mutual_interest",
+          "one_way_interest",
+          "questionnaire_match",
+          "social_fallback",
+          "balanced_group",
+          "fresh_peer",
+          "repeat_peer",
+          "sit_out",
+          "pair_slot",
+          "pod_slot",
+          "table_slot",
+          "team_slot",
+          "whole_group_slot"
+        ]
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "rotationFairness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assignedRoundCount",
+        "sitOutRoundCount",
+        "uniquePeerCount",
+        "repeatPeerCount"
+      ],
+      "properties": {
+        "assignedRoundCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "sitOutRoundCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "uniquePeerCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "repeatPeerCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "sitOutSlots": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roundIndex",
+          "label",
+          "startsAt",
+          "endsAt",
+          "whySummary",
+          "whyCodes"
+        ],
+        "properties": {
+          "roundIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "startsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "endsAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "sit_out"
+              ]
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "rotationSlots": {
       "type": "array",
       "maxItems": 24,
@@ -6340,6 +7241,11 @@ export const eventSuccessAssignmentDocumentSchema = {
           "compatibility"
         ],
         "properties": {
+          "slotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
           "roundIndex": {
             "type": "integer",
             "minimum": 0,
@@ -6395,6 +7301,22 @@ export const eventSuccessAssignmentDocumentSchema = {
             "minLength": 1,
             "maxLength": 180
           },
+          "unitKind": {
+            "type": "string",
+            "enum": [
+              "pairs"
+            ]
+          },
+          "unitIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "peerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+          },
           "compatibility": {
             "type": "string",
             "enum": [
@@ -6404,6 +7326,28 @@ export const eventSuccessAssignmentDocumentSchema = {
               "social",
               "host_override"
             ]
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "host_override",
+                "mutual_interest",
+                "one_way_interest",
+                "questionnaire_match",
+                "social_fallback",
+                "fresh_peer",
+                "repeat_peer",
+                "pair_slot"
+              ]
+            }
           }
         }
       },
@@ -6425,6 +7369,11 @@ export const eventSuccessAssignmentDocumentSchema = {
           "compatibility"
         ],
         "properties": {
+          "slotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
           "roundIndex": {
             "type": "integer",
             "minimum": 0,
@@ -6439,6 +7388,21 @@ export const eventSuccessAssignmentDocumentSchema = {
             "type": "string",
             "minLength": 1,
             "maxLength": 80
+          },
+          "unitKind": {
+            "type": "string",
+            "enum": [
+              "wholeGroup",
+              "pods",
+              "pairs",
+              "teams",
+              "tables"
+            ]
+          },
+          "unitIndex": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
           },
           "startsAt": {
             "type": "object",
@@ -6489,6 +7453,11 @@ export const eventSuccessAssignmentDocumentSchema = {
               "maxLength": 180
             }
           },
+          "peerCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+          },
           "compatibility": {
             "type": "string",
             "enum": [
@@ -6499,6 +7468,32 @@ export const eventSuccessAssignmentDocumentSchema = {
               "mixed",
               "host_override"
             ]
+          },
+          "whySummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "whyCodes": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "enum": [
+                "host_override",
+                "mutual_interest",
+                "questionnaire_match",
+                "social_fallback",
+                "balanced_group",
+                "fresh_peer",
+                "repeat_peer",
+                "pair_slot",
+                "pod_slot",
+                "table_slot",
+                "team_slot",
+                "whole_group_slot"
+              ]
+            }
           }
         }
       },
@@ -6600,7 +7595,7 @@ export const eventSuccessScorecardDocumentSchema = {
   "x-firestore-collection": "eventSuccessScorecards",
   "x-firestore-path": "eventSuccessScorecards/{eventId}",
   "x-document-id-field": "id",
-  "x-owner": "onEventSuccessFeedbackWritten trigger",
+  "x-owner": "event success feedback and matching triggers",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -6616,11 +7611,16 @@ export const eventSuccessScorecardDocumentSchema = {
     "checkedInCount",
     "feedbackCount",
     "attendeesWhoMetTwoPlusPeople",
+    "catchSentCount",
+    "attendeesWhoCaughtSomeone",
+    "catchRecipientCount",
+    "catchRate",
     "mutualMatchCount",
     "chatStartedCount",
     "averageWelcomeRating",
     "averageStructureRating",
     "safetyIncidentCount",
+    "funnel",
     "updatedAt"
   ],
   "properties": {
@@ -6656,6 +7656,27 @@ export const eventSuccessScorecardDocumentSchema = {
       "minimum": 0,
       "x-catch-ownership": "trigger-owned"
     },
+    "catchSentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "attendeesWhoCaughtSomeone": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "catchRecipientCount": {
+      "type": "integer",
+      "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "catchRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "x-catch-ownership": "trigger-owned"
+    },
     "mutualMatchCount": {
       "type": "integer",
       "minimum": 0,
@@ -6681,6 +7702,178 @@ export const eventSuccessScorecardDocumentSchema = {
     "safetyIncidentCount": {
       "type": "integer",
       "minimum": 0,
+      "x-catch-ownership": "trigger-owned"
+    },
+    "funnel": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Host-visible operating funnel from acquisition through connection. Counts are aggregate-only and rebuilt from canonical documents.",
+      "required": [
+        "inviteLinkCount",
+        "inviteOpenCount",
+        "totalDemandCount",
+        "requestCount",
+        "pendingRequestCount",
+        "approvedRequestCount",
+        "declinedRequestCount",
+        "directSignupCount",
+        "waitlistJoinCount",
+        "waitlistOfferCount",
+        "waitlistOfferActiveCount",
+        "waitlistOfferAcceptedCount",
+        "waitlistOfferDeclinedCount",
+        "waitlistOfferExpiredCount",
+        "checkoutStartedCount",
+        "paymentPendingCount",
+        "paymentCompletedCount",
+        "paymentFailedCount",
+        "paymentRefundedCount",
+        "bookedCount",
+        "checkedInCount",
+        "noShowCount",
+        "catchSentCount",
+        "attendeesWhoCaughtSomeone",
+        "mutualMatchCount",
+        "chatStartedCount",
+        "repeatAttendeeCount"
+      ],
+      "properties": {
+        "inviteLinkCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "inviteOpenCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "totalDemandCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "requestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "pendingRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "approvedRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "declinedRequestCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "directSignupCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistJoinCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferActiveCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferAcceptedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferDeclinedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "waitlistOfferExpiredCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "checkoutStartedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentPendingCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentCompletedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentFailedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "paymentRefundedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "bookedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "checkedInCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "noShowCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "catchSentCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "attendeesWhoCaughtSomeone": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "mutualMatchCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "chatStartedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        },
+        "repeatAttendeeCount": {
+          "type": "integer",
+          "minimum": 0,
+          "x-catch-ownership": "trigger-owned"
+        }
+      },
       "x-catch-ownership": "trigger-owned"
     },
     "updatedAt": {
@@ -7280,6 +8473,26 @@ export const paymentDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteLinkId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Named host invite link attributed to this payment, when present.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "inviteSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Host-facing invite source copied from eventInviteLinks.",
       "x-catch-ownership": "callable-owned"
     },
     "signUpFailed": {
@@ -8087,6 +9300,9 @@ export const activityNotificationDocumentSchema = {
         "eventReminder",
         "eventSignup",
         "waitlistPromotion",
+        "waitlistOffer",
+        "waitlistOfferExpiring",
+        "waitlistOfferExpired",
         "eventCancelled",
         "eventUpdated",
         "clubUpdate"
@@ -10166,6 +11382,44 @@ export const createClubCallablePayloadSchema = {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 60
+                },
+                "rotationRepeatStrategy": {
+                  "type": "string",
+                  "enum": [
+                    "avoid",
+                    "allowWhenExhausted"
+                  ]
+                },
+                "maxPairMeetings": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "balanceActivityAttributes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "paceBand",
+                      "skillBand",
+                      "roleBand"
+                    ]
+                  }
+                },
+                "clusterActivityAttributes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "paceBand",
+                      "skillBand",
+                      "roleBand"
+                    ]
+                  }
                 }
               }
             },
@@ -10330,6 +11584,44 @@ export const createClubCallablePayloadSchema = {
                     "type": "integer",
                     "minimum": 0,
                     "maximum": 60
+                  },
+                  "rotationRepeatStrategy": {
+                    "type": "string",
+                    "enum": [
+                      "avoid",
+                      "allowWhenExhausted"
+                    ]
+                  },
+                  "maxPairMeetings": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  },
+                  "balanceActivityAttributes": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "paceBand",
+                        "skillBand",
+                        "roleBand"
+                      ]
+                    }
+                  },
+                  "clusterActivityAttributes": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "paceBand",
+                        "skillBand",
+                        "roleBand"
+                      ]
+                    }
                   }
                 }
               },
@@ -11082,6 +12374,44 @@ export const updateClubCallablePayloadSchema = {
                       "type": "integer",
                       "minimum": 0,
                       "maximum": 60
+                    },
+                    "rotationRepeatStrategy": {
+                      "type": "string",
+                      "enum": [
+                        "avoid",
+                        "allowWhenExhausted"
+                      ]
+                    },
+                    "maxPairMeetings": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "balanceActivityAttributes": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "paceBand",
+                          "skillBand",
+                          "roleBand"
+                        ]
+                      }
+                    },
+                    "clusterActivityAttributes": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "paceBand",
+                          "skillBand",
+                          "roleBand"
+                        ]
+                      }
                     }
                   }
                 },
@@ -11246,6 +12576,44 @@ export const updateClubCallablePayloadSchema = {
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 60
+                      },
+                      "rotationRepeatStrategy": {
+                        "type": "string",
+                        "enum": [
+                          "avoid",
+                          "allowWhenExhausted"
+                        ]
+                      },
+                      "maxPairMeetings": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 10
+                      },
+                      "balanceActivityAttributes": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "paceBand",
+                            "skillBand",
+                            "roleBand"
+                          ]
+                        }
+                      },
+                      "clusterActivityAttributes": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "paceBand",
+                            "skillBand",
+                            "roleBand"
+                          ]
+                        }
                       }
                     }
                   },
@@ -12347,6 +13715,44 @@ export const createEventCallablePayloadSchema = {
               "type": "integer",
               "minimum": 0,
               "maximum": 60
+            },
+            "rotationRepeatStrategy": {
+              "type": "string",
+              "enum": [
+                "avoid",
+                "allowWhenExhausted"
+              ]
+            },
+            "maxPairMeetings": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            "balanceActivityAttributes": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "paceBand",
+                  "skillBand",
+                  "roleBand"
+                ]
+              }
+            },
+            "clusterActivityAttributes": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "paceBand",
+                  "skillBand",
+                  "roleBand"
+                ]
+              }
             }
           }
         },
@@ -13185,6 +14591,8 @@ export const eventIdCallablePayloadSchema = {
     "fetchEventSuccessWingmanCandidates",
     "generateEventSuccessPods",
     "generateEventSuccessRotations",
+    "acceptEventWaitlistOffer",
+    "declineEventWaitlistOffer",
     "joinEventWaitlist",
     "leaveEventWaitlist",
     "withdrawEventSuccessWingmanRequest"
@@ -13208,6 +14616,145 @@ export const eventIdCallablePayloadSchema = {
       "minLength": 4,
       "maxLength": 64,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const createEventWaitlistOffersCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_waitlist_offers_payload.schema.json",
+  "title": "CreateEventWaitlistOffersCallablePayload",
+  "description": "Callable payload accepted by createEventWaitlistOffers.",
+  "x-callable-aliases": [
+    "createEventWaitlistOffers"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "userIds"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "userIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 25,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "expiresInMinutes": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 5,
+      "maximum": 1440
+    }
+  }
+};
+
+export const createEventInviteLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_invite_link_payload.schema.json",
+  "title": "CreateEventInviteLinkCallablePayload",
+  "description": "Callable payload accepted by createEventInviteLink. Hosts use this to create named share links such as Instagram bio, WhatsApp alumni, or venue partner.",
+  "x-callable-aliases": [
+    "createEventInviteLink"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "label"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  }
+};
+
+export const disableEventInviteLinkCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/disable_event_invite_link_payload.schema.json",
+  "title": "DisableEventInviteLinkCallablePayload",
+  "description": "Callable payload accepted by disableEventInviteLink. Disabled links stop accepting new attribution but remain in host reporting.",
+  "x-callable-aliases": [
+    "disableEventInviteLink"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "inviteLinkId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const recordEventInviteLinkOpenCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/record_event_invite_link_open_payload.schema.json",
+  "title": "RecordEventInviteLinkOpenCallablePayload",
+  "description": "Callable payload accepted by recordEventInviteLinkOpen. It increments a live open counter and returns whether attribution can be attached to downstream booking actions.",
+  "x-callable-aliases": [
+    "recordEventInviteLinkOpen"
+  ],
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "inviteLinkId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -13870,6 +15417,11 @@ export const eventBookingCallablePayloadSchema = {
       "minLength": 4,
       "maxLength": 64,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -13898,6 +15450,11 @@ export const createRazorpayOrderCallablePayloadSchema = {
       "minLength": 4,
       "maxLength": 64,
       "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };
@@ -13954,6 +15511,11 @@ export const createStripeCheckoutSessionCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 80
+    },
+    "inviteLinkId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };

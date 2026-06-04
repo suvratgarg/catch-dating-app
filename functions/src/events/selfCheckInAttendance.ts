@@ -50,6 +50,9 @@ import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
 import {
   recordParticipantSignalFactsBestEffort,
 } from "../marketplace/participantSignals";
+import {
+  incrementInviteLinkCounterBestEffort,
+} from "./inviteLinks";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -128,7 +131,10 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     .doc(eventParticipationId(eventId, userId));
   const participationSnap = await participationRef.get();
   const existingParticipation = participationSnap.exists ?
-    participationSnap.data() as {status?: string} :
+    participationSnap.data() as {
+      status?: string;
+      inviteLinkId?: string | null;
+    } :
     null;
 
   // ── 1. Must be signed up ────────────────────────────────────────────────
@@ -222,6 +228,11 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     status: "attended",
   }), {merge: true});
   await batch.commit();
+  await incrementInviteLinkCounterBestEffort({
+    db,
+    inviteLinkId: existingParticipation?.inviteLinkId,
+    field: "checkedInCount",
+  });
 
   await recordParticipantSignalFactsBestEffort(db, [
     buildAttendanceSignalFact({

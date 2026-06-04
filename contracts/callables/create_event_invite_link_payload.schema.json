@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_invite_link_payload.schema.json",
+  "title": "CreateEventInviteLinkCallablePayload",
+  "description": "Callable payload accepted by createEventInviteLink. Hosts use this to create named share links such as Instagram bio, WhatsApp alumni, or venue partner.",
+  "x-callable-aliases": ["createEventInviteLink"],
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "label"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "source": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 80
+    }
+  }
+}

@@ -13,6 +13,9 @@
     "inviteCode": {
       "type": ["string", "null"],
       "maxLength": 80
+    },
+    "inviteLinkId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
     }
   }
 }

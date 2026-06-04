@@ -19,6 +19,9 @@ export type ActivityNotificationType =
   | "eventReminder"
   | "eventSignup"
   | "waitlistPromotion"
+  | "waitlistOffer"
+  | "waitlistOfferExpiring"
+  | "waitlistOfferExpired"
   | "eventCancelled"
   | "eventUpdated"
   | "clubUpdate";
@@ -204,6 +207,24 @@ export function eventActivityNotificationCopy(
     return {
       title: "You're in",
       body: `A spot opened for your ${eventLabel} from ${locationName}.`,
+    };
+  case "waitlistOffer":
+    return {
+      title: "A spot is available",
+      body: `You have a limited-time spot for your ${eventLabel} from ` +
+        `${locationName}.`,
+    };
+  case "waitlistOfferExpiring":
+    return {
+      title: "Your spot is expiring",
+      body: `Confirm your ${eventLabel} from ${locationName} soon to keep ` +
+        "the spot.",
+    };
+  case "waitlistOfferExpired":
+    return {
+      title: "Spot offer expired",
+      body: `Your spot offer for the ${eventLabel} from ${locationName} ` +
+        "has expired.",
     };
   case "eventUpdated":
     return {
