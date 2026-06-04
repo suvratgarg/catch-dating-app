@@ -6,14 +6,19 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CancelEventCallableRequest,
+        CreateEventInviteLinkCallableRequest,
+        CreateEventWaitlistOffersCallableRequest,
+        DisableEventInviteLinkCallableRequest,
         EventIdCallableRequest,
         EventJoinRequestDecisionCallableRequest,
         MarkEventAttendanceCallableRequest,
+        RecordEventInviteLinkOpenCallableRequest,
         SelfCheckInAttendanceCallableRequest;
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -55,6 +60,14 @@ class EventRepository {
         toJson: (access) => access.toJson(),
       );
 
+  CollectionReference<EventInviteLink> get _inviteLinksRef => _db
+      .collection('eventInviteLinks')
+      .withDocumentIdConverter<EventInviteLink>(
+        idField: 'id',
+        fromJson: EventInviteLink.fromJson,
+        toJson: (link) => link.toJson(),
+      );
+
   DocumentReference<Event> _eventRef(String id) => _eventsRef.doc(id);
 
   // ── Read ──────────────────────────────────────────────────────────────────
@@ -91,6 +104,20 @@ class EventRepository {
           service: BackendService.firestore,
           action: 'watch event private access',
           resource: 'eventPrivateAccess',
+        ),
+      );
+
+  Stream<List<EventInviteLink>> watchInviteLinks(String eventId) =>
+      withBackendErrorStream(
+        () => _inviteLinksRef
+            .where('eventId', isEqualTo: eventId)
+            .orderBy('createdAt')
+            .snapshots()
+            .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch event invite links',
+          resource: 'eventInviteLinks',
         ),
       );
 
@@ -443,6 +470,7 @@ class EventRepository {
   Future<void> joinWaitlistViaFunction({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('joinEventWaitlist')
@@ -450,12 +478,82 @@ class EventRepository {
           EventIdCallableRequest(
             eventId: eventId,
             inviteCode: inviteCode,
+            inviteLinkId: inviteLinkId,
           ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'join waitlist',
       resource: _collectionPath,
+    ),
+  );
+
+  Future<CreateEventInviteLinkCallableResponse> createInviteLink({
+    required String eventId,
+    required String label,
+    String? source,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('createEventInviteLink')
+          .call(
+            CreateEventInviteLinkCallableRequest(
+              eventId: eventId,
+              label: label,
+              source: source,
+            ).toJson(),
+          );
+      return CreateEventInviteLinkCallableResponse.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create invite link',
+      resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<void> disableInviteLink({
+    required String eventId,
+    required String inviteLinkId,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('disableEventInviteLink')
+        .call(
+          DisableEventInviteLinkCallableRequest(
+            eventId: eventId,
+            inviteLinkId: inviteLinkId,
+          ).toJson(),
+        ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'disable invite link',
+      resource: 'eventInviteLinks',
+    ),
+  );
+
+  Future<RecordEventInviteLinkOpenCallableResponse> recordInviteLinkOpen({
+    required String eventId,
+    required String inviteLinkId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('recordEventInviteLinkOpen')
+          .call(
+            RecordEventInviteLinkOpenCallableRequest(
+              eventId: eventId,
+              inviteLinkId: inviteLinkId,
+            ).toJson(),
+          );
+      return RecordEventInviteLinkOpenCallableResponse.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'record invite link open',
+      resource: 'eventInviteLinks',
     ),
   );
 
@@ -467,6 +565,60 @@ class EventRepository {
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'leave waitlist',
+          resource: _collectionPath,
+        ),
+      );
+
+  Future<CreateWaitlistOffersCallableResponse> createWaitlistOffers({
+    required String eventId,
+    required List<String> userIds,
+    int? expiresInMinutes,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('createEventWaitlistOffers')
+          .call(
+            CreateEventWaitlistOffersCallableRequest(
+              eventId: eventId,
+              userIds: userIds,
+              expiresInMinutes: expiresInMinutes,
+            ).toJson(),
+          );
+      return CreateWaitlistOffersCallableResponse.fromCallableData(result.data);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create waitlist offers',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<WaitlistOfferAcceptanceCallableResponse> acceptWaitlistOffer({
+    required String eventId,
+  }) => withBackendErrorContext(
+    () async {
+      final result = await _functions
+          .httpsCallable('acceptEventWaitlistOffer')
+          .call(EventIdCallableRequest(eventId: eventId).toJson());
+      return WaitlistOfferAcceptanceCallableResponse.fromCallableData(
+        result.data,
+      );
+    },
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'accept waitlist offer',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<void> declineWaitlistOffer({required String eventId}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('declineEventWaitlistOffer')
+            .call(EventIdCallableRequest(eventId: eventId).toJson()),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'decline waitlist offer',
           resource: _collectionPath,
         ),
       );
@@ -571,6 +723,10 @@ Stream<Event?> watchEvent(Ref ref, String eventId) =>
 @riverpod
 Stream<EventPrivateAccess?> watchEventPrivateAccess(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchPrivateAccess(eventId);
+
+@riverpod
+Stream<List<EventInviteLink>> watchEventInviteLinks(Ref ref, String eventId) =>
+    ref.watch(eventRepositoryProvider).watchInviteLinks(eventId);
 
 @riverpod
 Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>

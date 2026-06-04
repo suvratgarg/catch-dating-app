@@ -17,6 +17,7 @@ Future<void> showEventShareCardSheet(
   required Event event,
   required ExternalShareController share,
   String? inviteCode,
+  String? inviteLinkId,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -32,6 +33,7 @@ Future<void> showEventShareCardSheet(
       text: EventInviteShareCopy.eventDetailInviteText(
         event,
         inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
       ),
     ),
   );

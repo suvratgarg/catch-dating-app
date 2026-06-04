@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/presentation/club_action_keys.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -31,6 +32,7 @@ class MembershipButton extends ConsumerWidget {
         children: [
           Expanded(
             child: CatchButton(
+              key: ClubActionKeys.leaveButton,
               label: 'Leave club',
               onPressed: () => ClubMembershipController.leaveMutation.run(
                 ref,
@@ -64,6 +66,7 @@ class MembershipButton extends ConsumerWidget {
     }
 
     return CatchButton(
+      key: ClubActionKeys.joinButton,
       label: 'Join club',
       onPressed: () => ClubMembershipController.joinMutation.run(
         ref,

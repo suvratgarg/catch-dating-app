@@ -197,11 +197,16 @@ void main() {
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
           inviteCode: ' CATCH ',
+          inviteLinkId: ' invite-link-1 ',
         );
 
         expect(
           functions.callables['createStripeCheckoutSession']!.calls.single,
-          {'eventId': 'event-1', 'inviteCode': 'CATCH'},
+          {
+            'eventId': 'event-1',
+            'inviteCode': 'CATCH',
+            'inviteLinkId': 'invite-link-1',
+          },
         );
         expect(openedUrls.single.toString(), contains('checkout.stripe.com'));
         expect(razorpay.openCalls, isEmpty);
@@ -213,10 +218,16 @@ void main() {
     );
 
     test('bookFreeEvent calls the free-event booking function', () async {
-      await repository.bookFreeEvent(eventId: 'event-1');
+      await repository.bookFreeEvent(
+        eventId: 'event-1',
+        inviteCode: ' CATCH ',
+        inviteLinkId: ' invite-link-1 ',
+      );
 
       expect(functions.callables['signUpForFreeEvent']!.calls.single, {
         'eventId': 'event-1',
+        'inviteCode': 'CATCH',
+        'inviteLinkId': 'invite-link-1',
       });
     });
 

@@ -35,6 +35,7 @@ void main() {
                   event: event,
                   share: share,
                   inviteCode: 'VIP42',
+                  inviteLinkId: 'invite-link-1',
                 ),
                 child: const Text('Open'),
               ),
@@ -63,6 +64,7 @@ void main() {
 
     expect(sharedParams?.subject, 'Join me at ${event.title}');
     expect(sharedParams?.text, contains('invite=VIP42'));
+    expect(sharedParams?.text, contains('il=invite-link-1'));
     expect(sharedParams?.files, hasLength(1));
     expect(sharedParams?.fileNameOverrides, ['catch-event-invite.png']);
   });

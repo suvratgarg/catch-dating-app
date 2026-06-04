@@ -74,6 +74,10 @@ void main() {
                     averageWelcomeRating: 4.4,
                     averageStructureRating: 4.1,
                     safetyIncidentCount: 0,
+                    catchSentCount: 3,
+                    attendeesWhoCaughtSomeone: 2,
+                    catchRecipientCount: 3,
+                    catchRate: 1 / 3,
                     feedbackResponseCount: 4,
                   ),
                 ),
@@ -387,6 +391,10 @@ void main() {
                     averageWelcomeRating: 5,
                     averageStructureRating: 4,
                     safetyIncidentCount: 0,
+                    catchSentCount: 3,
+                    attendeesWhoCaughtSomeone: 2,
+                    catchRecipientCount: 3,
+                    catchRate: 0.4,
                     feedbackResponseCount: 2,
                   ),
                   assignments: [
@@ -441,10 +449,13 @@ void main() {
 
     expect(find.text('How reliable is this report?'), findsOneWidget);
     expect(find.text('Feedback 40%'), findsOneWidget);
+    expect(find.text('Caught someone 40%'), findsWidgets);
     expect(find.text('People included 80%'), findsOneWidget);
     expect(find.text('Opted out 20%'), findsOneWidget);
     expect(find.text('Wingman help 20%'), findsOneWidget);
     expect(find.text('2/5 feedback'), findsOneWidget);
+    expect(find.text('2 caught someone'), findsOneWidget);
+    expect(find.text('3 catches sent'), findsOneWidget);
     expect(find.text('4 assigned'), findsOneWidget);
     expect(find.text('1 opted out'), findsOneWidget);
     expect(find.text('1 host-help requests'), findsOneWidget);

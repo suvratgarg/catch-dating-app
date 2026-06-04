@@ -6,11 +6,13 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_domain_readiness.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -33,6 +35,7 @@ class EventDetailCta extends ConsumerWidget {
     required this.clubId,
     required this.participation,
     this.inviteCode,
+    this.inviteLinkId,
     this.now,
     this.darkSurface = false,
   });
@@ -42,6 +45,7 @@ class EventDetailCta extends ConsumerWidget {
   final String clubId;
   final EventParticipation? participation;
   final String? inviteCode;
+  final String? inviteLinkId;
   final DateTime? now;
   final bool darkSurface;
 
@@ -70,6 +74,8 @@ class EventDetailCta extends ConsumerWidget {
         requiresHostApproval &&
         participation?.status == EventParticipationStatus.waitlisted &&
         participation?.hasHostApproval == true;
+    final hasActiveWaitlistOffer =
+        participation?.isWaitlistOfferActiveAt(referenceNow) ?? false;
     final canRequestHostApproval =
         requiresHostApproval && eligibility is GenderCapacityReached;
     final supportsPaid = ref
@@ -88,12 +94,20 @@ class EventDetailCta extends ConsumerWidget {
     final leaveWMutation = ref.watch(
       EventBookingController.leaveWaitlistMutation,
     );
+    final acceptOfferMutation = ref.watch(
+      EventBookingController.acceptWaitlistOfferMutation,
+    );
+    final declineOfferMutation = ref.watch(
+      EventBookingController.declineWaitlistOfferMutation,
+    );
 
     final errorMutation = [
       bookMutation,
       cancelMutation,
       joinWMutation,
       leaveWMutation,
+      acceptOfferMutation,
+      declineOfferMutation,
     ].firstWhere((m) => m.hasError, orElse: () => bookMutation);
 
     return Column(
@@ -106,8 +120,87 @@ class EventDetailCta extends ConsumerWidget {
               context: AppErrorContext.event,
             ),
           ),
-        if (canRequestHostApproval)
+        if (hasActiveWaitlistOffer)
           BottomCTA(
+            label: !isFreeForViewer && !supportsPaid
+                ? 'Paid booking unavailable'
+                : isFreeForViewer
+                ? 'Accept spot'
+                : 'Accept spot and pay',
+            onPressed:
+                acceptOfferMutation.isPending ||
+                    (!isFreeForViewer && !supportsPaid)
+                ? null
+                : () {
+                    final router = GoRouter.maybeOf(context);
+                    final navigator = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    );
+                    EventBookingController.acceptWaitlistOfferMutation.run(
+                      ref,
+                      (tx) async {
+                        final data = await tx
+                            .get(eventBookingControllerProvider.notifier)
+                            .acceptWaitlistOffer(
+                              event: event,
+                              user: userProfile,
+                              inviteCode: inviteCode,
+                              inviteLinkId:
+                                  participation?.inviteLinkId ?? inviteLinkId,
+                            );
+                        if (data != null) {
+                          if (router == null) return;
+                          unawaited(
+                            router.pushNamed(
+                              Routes.paymentConfirmationScreen.name,
+                              extra: data,
+                            ),
+                          );
+                        } else {
+                          unawaited(
+                            navigator.push(
+                              MaterialPageRoute<void>(
+                                fullscreenDialog: true,
+                                builder: (routeContext) =>
+                                    EventJoinedCelebrationScreen(
+                                      event: event,
+                                      onViewEvent: () =>
+                                          Navigator.of(routeContext).pop(),
+                                      onBackHome: () {
+                                        Navigator.of(routeContext).pop();
+                                        router?.goNamed(
+                                          Routes.dashboardScreen.name,
+                                        );
+                                      },
+                                    ),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+            isLoading: acceptOfferMutation.isPending,
+            leadingContent: _WaitlistOfferLeading(
+              expiresAt: participation?.waitlistOfferExpiresAt,
+              isDeclining: declineOfferMutation.isPending,
+              onDecline: declineOfferMutation.isPending
+                  ? null
+                  : () =>
+                        EventBookingController.declineWaitlistOfferMutation.run(
+                          ref,
+                          (tx) async => tx
+                              .get(eventBookingControllerProvider.notifier)
+                              .declineWaitlistOffer(event: event),
+                        ),
+            ),
+            backgroundColor: ctaBackground,
+            dividerColor: ctaDivider,
+          )
+        else if (canRequestHostApproval)
+          BottomCTA(
+            buttonKey: EventActionKeys.joinWaitlistButton,
             label: needsRunPreferences
                 ? 'Set run preferences'
                 : 'Request to join',
@@ -119,7 +212,11 @@ class EventDetailCta extends ConsumerWidget {
                     ref,
                     (tx) async => tx
                         .get(eventBookingControllerProvider.notifier)
-                        .joinWaitlist(event: event, inviteCode: inviteCode),
+                        .joinWaitlist(
+                          event: event,
+                          inviteCode: inviteCode,
+                          inviteLinkId: inviteLinkId,
+                        ),
                   ),
             isLoading: joinWMutation.isPending,
             backgroundColor: ctaBackground,
@@ -128,6 +225,7 @@ class EventDetailCta extends ConsumerWidget {
         else
           switch (status) {
             EventSignUpStatus.eligible => BottomCTA(
+              buttonKey: EventActionKeys.bookButton,
               label: !isFreeForViewer && !supportsPaid
                   ? 'Paid booking unavailable'
                   : needsRunPreferences
@@ -157,6 +255,8 @@ class EventDetailCta extends ConsumerWidget {
                               event: event,
                               user: userProfile,
                               inviteCode: inviteCode,
+                              inviteLinkId:
+                                  participation?.inviteLinkId ?? inviteLinkId,
                             );
                         if (data != null) {
                           if (router == null) return;
@@ -211,6 +311,7 @@ class EventDetailCta extends ConsumerWidget {
               }
 
               return BottomCTA(
+                buttonKey: EventActionKeys.cancelBookingButton,
                 label: 'Cancel booking',
                 onPressed: cancelMutation.isPending
                     ? null
@@ -227,6 +328,7 @@ class EventDetailCta extends ConsumerWidget {
               );
             })(),
             EventSignUpStatus.full => BottomCTA(
+              buttonKey: EventActionKeys.joinWaitlistButton,
               label: needsRunPreferences
                   ? 'Set run preferences'
                   : requiresHostApproval
@@ -240,7 +342,11 @@ class EventDetailCta extends ConsumerWidget {
                       ref,
                       (tx) async => tx
                           .get(eventBookingControllerProvider.notifier)
-                          .joinWaitlist(event: event, inviteCode: inviteCode),
+                          .joinWaitlist(
+                            event: event,
+                            inviteCode: inviteCode,
+                            inviteLinkId: inviteLinkId,
+                          ),
                     ),
               isLoading: joinWMutation.isPending,
               backgroundColor: ctaBackground,
@@ -367,6 +473,44 @@ class PriceLeading extends StatelessWidget {
             context,
             color: CatchTokens.of(context).ink2,
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WaitlistOfferLeading extends StatelessWidget {
+  const _WaitlistOfferLeading({
+    required this.expiresAt,
+    required this.isDeclining,
+    required this.onDecline,
+  });
+
+  final DateTime? expiresAt;
+  final bool isDeclining;
+  final VoidCallback? onDecline;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final expiresLabel = expiresAt == null
+        ? 'Offer active'
+        : 'Until ${EventFormatters.time(expiresAt!)}';
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          expiresLabel,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        CatchTextButton(
+          label: isDeclining ? 'Declining' : 'Decline',
+          onPressed: onDecline,
+          tone: CatchTextButtonTone.neutral,
+          padding: EdgeInsets.zero,
         ),
       ],
     );

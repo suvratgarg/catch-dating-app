@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -14,7 +15,6 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -57,11 +57,24 @@ class EventSuccessManualQaScreen extends StatefulWidget {
 class _EventSuccessManualQaScreenState
     extends State<EventSuccessManualQaScreen> {
   _ManualQaStore? _store;
+  Future<_ManualQaStore>? _storeFuture;
 
   @override
   void initState() {
     super.initState();
-    _store = _ManualQaStore(onChanged: _handleStoreChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _storeFuture ??=
+        _ManualQaStore.load(
+          onChanged: _handleStoreChanged,
+          bundle: DefaultAssetBundle.of(context),
+        ).then((store) {
+          _store = store;
+          return store;
+        });
   }
 
   @override
@@ -76,8 +89,6 @@ class _EventSuccessManualQaScreenState
 
   @override
   Widget build(BuildContext context) {
-    final store = _store ??= _ManualQaStore(onChanged: _handleStoreChanged);
-    final data = store.fixtures;
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -89,34 +100,52 @@ class _EventSuccessManualQaScreenState
         ),
       ),
       body: SafeArea(
-        child: ListView(
-          padding: CatchInsets.contentRelaxed,
-          children: [
-            _ManualQaHero(data: data),
-            gapH16,
-            _ManualQaControls(
-              scenario: store.scenario,
-              onScenarioChanged: store.setScenario,
-            ),
-            gapH16,
-            _ManualQaSideBySide(
-              hostTab: store.hostTab,
-              data: data,
-              firstHelloEnabled: store.firstHelloEnabled,
-              firstHelloSkipped: store.firstHelloSkipped,
-              firstHelloCompleted: store.firstHelloCompleted,
-              microPodsOptedOut: store.microPodsOptedOut,
-              guidedRotationsOptedOut: store.guidedRotationsOptedOut,
-              fixtureActions: store.fixtureActions(_showFixtureAction),
-              onHostSectionChanged: store.setHostSection,
-              onCompatibilityAnswersSaved: store.saveCompatibilityAnswers,
-              onFirstHelloCompleted: store.completeFirstHelloMission,
-              onFirstHelloSkipped: store.skipFirstHelloMission,
-              onMicroPodsOptOutChanged: store.setMicroPodsOptedOut,
-              onGuidedRotationsOptOutChanged: store.setGuidedRotationsOptedOut,
-              onToggleAttendance: store.toggleAttendance,
-            ),
-          ],
+        child: FutureBuilder<_ManualQaStore>(
+          future: _storeFuture,
+          builder: (context, snapshot) {
+            final store = snapshot.data;
+            if (store == null) {
+              return Center(
+                child: snapshot.hasError
+                    ? Text(
+                        'Manual QA fixture failed to load: ${snapshot.error}',
+                        style: CatchTextStyles.supporting(context),
+                      )
+                    : const CircularProgressIndicator.adaptive(),
+              );
+            }
+            final data = store.fixtures;
+            return ListView(
+              padding: CatchInsets.contentRelaxed,
+              children: [
+                _ManualQaHero(data: data),
+                gapH16,
+                _ManualQaControls(
+                  scenario: store.scenario,
+                  onScenarioChanged: store.setScenario,
+                ),
+                gapH16,
+                _ManualQaSideBySide(
+                  hostTab: store.hostTab,
+                  data: data,
+                  firstHelloEnabled: store.firstHelloEnabled,
+                  firstHelloSkipped: store.firstHelloSkipped,
+                  firstHelloCompleted: store.firstHelloCompleted,
+                  microPodsOptedOut: store.microPodsOptedOut,
+                  guidedRotationsOptedOut: store.guidedRotationsOptedOut,
+                  fixtureActions: store.fixtureActions(_showFixtureAction),
+                  onHostSectionChanged: store.setHostSection,
+                  onCompatibilityAnswersSaved: store.saveCompatibilityAnswers,
+                  onFirstHelloCompleted: store.completeFirstHelloMission,
+                  onFirstHelloSkipped: store.skipFirstHelloMission,
+                  onMicroPodsOptOutChanged: store.setMicroPodsOptedOut,
+                  onGuidedRotationsOptOutChanged:
+                      store.setGuidedRotationsOptedOut,
+                  onToggleAttendance: store.toggleAttendance,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -132,9 +161,20 @@ class _EventSuccessManualQaScreenState
 }
 
 class _ManualQaStore {
-  _ManualQaStore({required this.onChanged});
+  _ManualQaStore({required this.onChanged, required this.fixtureData});
+
+  static Future<_ManualQaStore> load({
+    required VoidCallback onChanged,
+    required AssetBundle bundle,
+  }) async {
+    return _ManualQaStore(
+      onChanged: onChanged,
+      fixtureData: await _ManualQaFixtureData.load(bundle),
+    );
+  }
 
   final VoidCallback onChanged;
+  final _ManualQaFixtureData fixtureData;
 
   _ManualQaScenario scenario = _ManualQaScenario.racketPairs;
   EventSuccessHostTab hostTab = EventSuccessHostTab.setup;
@@ -172,6 +212,7 @@ class _ManualQaStore {
     savedCompatibilityAnswerIds: savedCompatibilityAnswerIds,
     checkedInOverride: checkedInOverride,
     countdownElapsed: _effectiveCountdownElapsed,
+    fixtureData: fixtureData,
   );
 
   void dispose() {
@@ -282,7 +323,7 @@ class _ManualQaStore {
   bool toggleAttendance(String uid) {
     hostTab = EventSuccessHostTab.live;
     final checkedInIds =
-        checkedInOverride ?? _ManualQaFixtures.defaultCheckedInIds.toSet();
+        checkedInOverride ?? fixtureData.defaultCheckedInIds.toSet();
     final next = checkedInIds.toSet();
     final isAttended = !next.remove(uid);
     if (isAttended) next.add(uid);
@@ -780,7 +821,7 @@ class _ManualQaHostManagePane extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
-      key: ValueKey(data.hostManageScopeKey),
+      key: ObjectKey(data),
       overrides: data.hostManageProviderOverrides(
         onToggleAttendance: onToggleAttendance,
       ),
@@ -987,6 +1028,142 @@ enum _ManualQaMoment {
   };
 }
 
+class _ManualQaFixtureData {
+  const _ManualQaFixtureData({
+    required this.hostUid,
+    required this.hostName,
+    required this.clubId,
+    required this.clubName,
+    required this.clubDescription,
+    required this.clubLocation,
+    required this.clubArea,
+    required this.viewer,
+    required this.profiles,
+    required this.defaultBookedIds,
+    required this.defaultCheckedInIds,
+    required this.defaultWaitlistedIds,
+    required this.wingmanTargetUid,
+    required this.scorecard,
+  });
+
+  static const _scenarioAsset = 'tool/demo/demo_seed/scenarios/host-demo.json';
+  static const _projectionAsset =
+      'tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json';
+
+  static Future<_ManualQaFixtureData> load(AssetBundle bundle) async {
+    final scenario = _stringMap(
+      jsonDecode(await bundle.loadString(_scenarioAsset)),
+      context: _scenarioAsset,
+    );
+    final salesDemo = _stringMap(
+      scenario['salesDemo'],
+      context: '$_scenarioAsset.salesDemo',
+    );
+    final host = _stringMap(
+      salesDemo['host'],
+      context: '$_scenarioAsset.salesDemo.host',
+    );
+    final club = _stringMap(
+      salesDemo['club'],
+      context: '$_scenarioAsset.salesDemo.club',
+    );
+    final eventSuccess = _stringMap(
+      salesDemo['eventSuccess'],
+      context: '$_scenarioAsset.salesDemo.eventSuccess',
+    );
+    final liveEvent = _eventByRole(salesDemo, 'hostLiveConsole');
+    final reportEvent = _eventByRole(salesDemo, 'hostPostEventReport');
+    final rosterPersonaIds = _stringList(salesDemo['rosterPersonaIds']);
+    final personas = _personasById(
+      _stringMap(
+        jsonDecode(await bundle.loadString(_projectionAsset)),
+        context: _projectionAsset,
+      ),
+    );
+    final profiles = [
+      for (final personaId in rosterPersonaIds)
+        _publicProfileFromPersona(_requirePersona(personas, personaId)),
+    ];
+    final viewerPersonaId = _requiredStringFrom(
+      eventSuccess,
+      'viewerPersonaId',
+    );
+    final bookedCount = _requiredIntFrom(liveEvent, 'bookedCount');
+    final checkedInCount = _requiredIntFrom(
+      eventSuccess,
+      'defaultCheckedInCount',
+    );
+    final waitlistedCount = _requiredIntFrom(
+      eventSuccess,
+      'defaultWaitlistedCount',
+    );
+    final bookedIds = rosterPersonaIds
+        .take(bookedCount)
+        .toList(growable: false);
+    return _ManualQaFixtureData(
+      hostUid: _requiredStringFrom(host, 'uid'),
+      hostName: _requiredStringFrom(host, 'displayName'),
+      clubId: _requiredStringFrom(club, 'id'),
+      clubName: _requiredStringFrom(club, 'name'),
+      clubDescription: _requiredStringFrom(club, 'description'),
+      clubLocation: _requiredStringFrom(club, 'location'),
+      clubArea: _requiredStringFrom(club, 'area'),
+      viewer: _userProfileFromPersona(
+        _requirePersona(personas, viewerPersonaId),
+        phoneNumber: _requiredStringFrom(host, 'phoneNumber'),
+      ),
+      profiles: List.unmodifiable(profiles),
+      defaultBookedIds: List.unmodifiable(bookedIds),
+      defaultCheckedInIds: List.unmodifiable(bookedIds.take(checkedInCount)),
+      defaultWaitlistedIds: List.unmodifiable(
+        rosterPersonaIds.skip(bookedCount).take(waitlistedCount),
+      ),
+      wingmanTargetUid: _requiredStringFrom(
+        eventSuccess,
+        'wingmanTargetPersonaId',
+      ),
+      scorecard: _scorecardFromJson(
+        _stringMap(
+          reportEvent['scorecard'],
+          context: 'hostPostEventReport.scorecard',
+        ),
+      ),
+    );
+  }
+
+  final String hostUid;
+  final String hostName;
+  final String clubId;
+  final String clubName;
+  final String clubDescription;
+  final String clubLocation;
+  final String clubArea;
+  final UserProfile viewer;
+  final List<PublicProfile> profiles;
+  final List<String> defaultBookedIds;
+  final List<String> defaultCheckedInIds;
+  final List<String> defaultWaitlistedIds;
+  final String wingmanTargetUid;
+  final EventSuccessScorecard scorecard;
+
+  List<String> get defaultProfileIds => [
+    ...defaultBookedIds,
+    ...defaultWaitlistedIds,
+  ];
+
+  PublicProfile profileByUid(String uid) {
+    return profiles.firstWhere(
+      (profile) => profile.uid == uid,
+      orElse: () => profiles.first,
+    );
+  }
+
+  String displayNameForUid(String uid) => profileByUid(uid).name;
+
+  String uidAt(int index) =>
+      defaultProfileIds[index % defaultProfileIds.length];
+}
+
 class _ManualQaFixtures {
   _ManualQaFixtures({
     required this.scenario,
@@ -1005,6 +1182,7 @@ class _ManualQaFixtures {
     required this.savedCompatibilityAnswerIds,
     required this.checkedInOverride,
     required this.countdownElapsed,
+    required this.fixtureData,
   }) {
     playbook = scenario.playbook;
     event = _eventForScenario();
@@ -1052,9 +1230,9 @@ class _ManualQaFixtures {
           revealStartedAt: _revealStartedAt,
         );
     roster = EventParticipationRoster(
-      bookedIds: defaultBookedIds,
+      bookedIds: fixtureData.defaultBookedIds,
       checkedInIds: _checkedInIds,
-      waitlistedIds: defaultWaitlistedIds,
+      waitlistedIds: fixtureData.defaultWaitlistedIds,
     );
     viewer = _userProfile();
     profiles = _publicProfiles();
@@ -1086,39 +1264,10 @@ class _ManualQaFixtures {
   final List<String>? savedCompatibilityAnswerIds;
   final Set<String>? checkedInOverride;
   final Duration countdownElapsed;
+  final _ManualQaFixtureData fixtureData;
 
   static final _clockNow = DateTime.now();
   static final _createdAt = _clockNow.subtract(const Duration(days: 4));
-  static const hostUid = 'manual-qa-host';
-  static const defaultBookedIds = [
-    'runner-1',
-    'runner-2',
-    'runner-3',
-    'runner-4',
-    'runner-5',
-    'runner-6',
-    'runner-7',
-    'runner-8',
-  ];
-  static const defaultCheckedInIds = [
-    'runner-1',
-    'runner-2',
-    'runner-3',
-    'runner-4',
-    'runner-5',
-  ];
-  static const defaultWaitlistedIds = ['runner-9'];
-  static const defaultProfileIds = [
-    'runner-1',
-    'runner-2',
-    'runner-3',
-    'runner-4',
-    'runner-5',
-    'runner-6',
-    'runner-7',
-    'runner-8',
-    'runner-9',
-  ];
 
   late final EventSuccessPlaybook playbook;
   late final Event event;
@@ -1150,10 +1299,12 @@ class _ManualQaFixtures {
       eventId: event.id,
       clubId: event.clubId,
       observerUid: viewer.uid,
-      targetUid: 'runner-2',
-      targetDisplayName: 'Arjun',
+      targetUid: fixtureData.wingmanTargetUid,
+      targetDisplayName: fixtureData.displayNameForUid(
+        fixtureData.wingmanTargetUid,
+      ),
       targetContext:
-          'Look for Arjun near the host table. He is checked in for this fixture.',
+          'Look for ${fixtureData.displayNameForUid(fixtureData.wingmanTargetUid)} near the host table. They are checked in for this fixture.',
       question: 'Ask what kind of partner makes an event feel easy to join.',
       answerOptions: const [
         EventSuccessArrivalMissionAnswerOption(
@@ -1234,11 +1385,6 @@ class _ManualQaFixtures {
     EventSuccessHostTab.report => 'Report',
   };
 
-  String get hostManageScopeKey =>
-      '${scenario.name}:${moment.name}:$activeStepIndex:'
-      '${roster.checkedInIds.join(',')}:${roster.waitlistedIds.join(',')}:'
-      '${revealStatus.name}:$activeRevealRoundIndex';
-
   // ignore: strict_top_level_inference, inference preserves Riverpod's private override type.
   hostManageProviderOverrides({
     required bool Function(String uid) onToggleAttendance,
@@ -1257,7 +1403,7 @@ class _ManualQaFixtures {
     final wingmanProfileKey = eventSuccessPeerUidsKey(wingmanProfileUids);
 
     return [
-      uidProvider.overrideWith((ref) => Stream.value(hostUid)),
+      uidProvider.overrideWith((ref) => Stream.value(fixtureData.hostUid)),
       eventRepositoryProvider.overrideWith(
         (ref) => _ManualQaEventRepository(
           event: event,
@@ -1286,9 +1432,9 @@ class _ManualQaFixtures {
       watchEventSuccessPlanProvider(
         event.id,
       ).overrideWith((ref) => Stream.value(plan)),
-      watchEventSuccessScorecardProvider(event.id).overrideWith(
-        (ref) => Stream.value(EventSuccessSampleScorecards.strongSocialRun),
-      ),
+      watchEventSuccessScorecardProvider(
+        event.id,
+      ).overrideWith((ref) => Stream.value(fixtureData.scorecard)),
       watchEventSuccessAssignmentsProvider(
         event.id,
       ).overrideWith((ref) => Stream.value(assignments)),
@@ -1320,14 +1466,14 @@ class _ManualQaFixtures {
   }
 
   List<String> get _checkedInIds =>
-      (checkedInOverride ?? defaultCheckedInIds.toSet()).toList(
+      (checkedInOverride ?? fixtureData.defaultCheckedInIds.toSet()).toList(
         growable: false,
       );
 
   Event _eventForScenario() {
     return Event(
       id: 'event-success-manual-qa',
-      clubId: 'club-event-success-manual-qa',
+      clubId: fixtureData.clubId,
       startTime: _eventStart,
       endTime: _eventStart.add(const Duration(minutes: 90)),
       meetingPoint: scenario.meetingPoint,
@@ -1337,23 +1483,32 @@ class _ManualQaFixtures {
       capacityLimit: scenario.targetCount,
       description: 'Manual QA fixture for event-success host and attendee UI.',
       priceInPaise: 0,
-      bookedCount: 8,
+      bookedCount: fixtureData.defaultBookedIds.length,
       checkedInCount: _checkedInIds.length,
-      waitlistedCount: 1,
-      genderCounts: const {'man': 4, 'woman': 4},
+      waitlistedCount: fixtureData.defaultWaitlistedIds.length,
+      genderCounts: _genderCountsFor(fixtureData.defaultBookedIds),
     );
+  }
+
+  Map<String, int> _genderCountsFor(List<String> uids) {
+    final counts = <String, int>{};
+    for (final uid in uids) {
+      final gender = fixtureData.profileByUid(uid).gender.name;
+      counts[gender] = (counts[gender] ?? 0) + 1;
+    }
+    return counts;
   }
 
   Club _clubForScenario() {
     return Club(
       id: event.clubId,
-      name: 'Manual QA Club',
-      description: 'Fixture club for Host Manage and attendee QA.',
-      location: 'Bengaluru',
-      area: scenario.meetingPoint,
-      hostUserId: hostUid,
-      hostName: 'Catch QA Host',
-      hostUserIds: const [hostUid],
+      name: fixtureData.clubName,
+      description: fixtureData.clubDescription,
+      location: fixtureData.clubLocation,
+      area: fixtureData.clubArea,
+      hostUserId: fixtureData.hostUid,
+      hostName: fixtureData.hostName,
+      hostUserIds: [fixtureData.hostUid],
       createdAt: _createdAt,
     );
   }
@@ -1386,7 +1541,7 @@ class _ManualQaFixtures {
       attendeeIds: roster.bookedIds,
       attendedIds: Set.unmodifiable(roster.checkedInIds),
       waitlistedIds: roster.waitlistedIds,
-      profileIds: defaultProfileIds,
+      profileIds: fixtureData.defaultProfileIds,
       participationsByUid: Map.unmodifiable({
         for (final participation in participations)
           participation.uid: participation,
@@ -1447,32 +1602,38 @@ class _ManualQaFixtures {
     if (!playbook.moduleIds.contains(EventSuccessModuleCatalog.microPods.id)) {
       return const [];
     }
+    final uid0 = fixtureData.uidAt(0);
+    final uid1 = fixtureData.uidAt(1);
+    final uid2 = fixtureData.uidAt(2);
+    final uid3 = fixtureData.uidAt(3);
+    final uid4 = fixtureData.uidAt(4);
+    final uid5 = fixtureData.uidAt(5);
     return [
       _assignment(
-        uid: 'runner-1',
+        uid: uid0,
         label: scenario.structureConfig.unitKind == EventSuccessUnitKind.teams
             ? 'Team 1'
             : 'Pod A',
         title: scenario.structureConfig.unitKind == EventSuccessUnitKind.teams
             ? 'Quiz Team 1'
             : 'Pace Pod A',
-        peerUids: const ['runner-2', 'runner-3', 'runner-4'],
+        peerUids: [uid1, uid2, uid3],
       ),
       _assignment(
-        uid: 'runner-2',
+        uid: uid1,
         label: scenario.structureConfig.unitKind == EventSuccessUnitKind.teams
             ? 'Team 1'
             : 'Pod A',
         title: scenario.structureConfig.unitKind == EventSuccessUnitKind.teams
             ? 'Quiz Team 1'
             : 'Pace Pod A',
-        peerUids: const ['runner-1', 'runner-3', 'runner-4'],
+        peerUids: [uid0, uid2, uid3],
       ),
       _assignment(
-        uid: 'runner-3',
+        uid: uid2,
         label: 'Team 2',
         title: 'Team 2',
-        peerUids: const ['runner-5', 'runner-6'],
+        peerUids: [uid4, uid5],
       ),
     ];
   }
@@ -1487,27 +1648,32 @@ class _ManualQaFixtures {
     final round1 = round0.add(
       Duration(minutes: plan.structureConfig.rotationIntervalMinutes ?? 15),
     );
+    final uid0 = fixtureData.uidAt(0);
+    final uid1 = fixtureData.uidAt(1);
+    final uid2 = fixtureData.uidAt(2);
+    final uid3 = fixtureData.uidAt(3);
+    final uid4 = fixtureData.uidAt(4);
     return [
       _rotationAssignment(
-        uid: 'runner-1',
-        peerUids: const ['runner-2', 'runner-5'],
+        uid: uid0,
+        peerUids: [uid1, uid4],
         slots: [
-          _rotationSlot(0, round0, 'runner-2', 'mutual_interest'),
-          _rotationSlot(1, round1, 'runner-5', 'questionnaire_match'),
+          _rotationSlot(0, round0, uid1, 'mutual_interest'),
+          _rotationSlot(1, round1, uid4, 'questionnaire_match'),
         ],
       ),
       _rotationAssignment(
-        uid: 'runner-2',
-        peerUids: const ['runner-1', 'runner-4'],
+        uid: uid1,
+        peerUids: [uid0, uid3],
         slots: [
-          _rotationSlot(0, round0, 'runner-1', 'mutual_interest'),
-          _rotationSlot(1, round1, 'runner-4', 'one_way_interest'),
+          _rotationSlot(0, round0, uid0, 'mutual_interest'),
+          _rotationSlot(1, round1, uid3, 'one_way_interest'),
         ],
       ),
       _rotationAssignment(
-        uid: 'runner-3',
-        peerUids: const ['runner-4'],
-        slots: [_rotationSlot(0, round0, 'runner-4', 'social')],
+        uid: uid2,
+        peerUids: [uid3],
+        slots: [_rotationSlot(0, round0, uid3, 'social')],
       ),
     ];
   }
@@ -1608,7 +1774,7 @@ class _ManualQaFixtures {
         eventId: event.id,
         clubId: event.clubId,
         requesterUid: viewer.uid,
-        targetUid: 'runner-2',
+        targetUid: fixtureData.wingmanTargetUid,
         status: EventSuccessWingmanRequestStatus.active,
         hostVisibleConsent: true,
         note: 'Pair me if it feels natural.',
@@ -1621,9 +1787,9 @@ class _ManualQaFixtures {
   List<EventSuccessFeedback> _feedback() {
     if (moment != _ManualQaMoment.postEvent) return const [];
     return [
-      _feedbackFor(uid: 'runner-1', metNewPeopleCount: 4),
-      _feedbackFor(uid: 'runner-2', metNewPeopleCount: 3),
-      _feedbackFor(uid: 'runner-3', metNewPeopleCount: 1),
+      _feedbackFor(uid: fixtureData.uidAt(0), metNewPeopleCount: 4),
+      _feedbackFor(uid: fixtureData.uidAt(1), metNewPeopleCount: 3),
+      _feedbackFor(uid: fixtureData.uidAt(2), metNewPeopleCount: 1),
     ];
   }
 
@@ -1681,107 +1847,11 @@ class _ManualQaFixtures {
   }
 
   UserProfile _userProfile() {
-    return UserProfile(
-      uid: 'runner-1',
-      name: 'Maya Sharma',
-      firstName: 'Maya',
-      displayName: 'Maya',
-      dateOfBirth: DateTime(1998, 2, 14),
-      gender: Gender.woman,
-      phoneNumber: '+919999999991',
-      profileComplete: true,
-      interestedInGenders: const [Gender.man],
-      city: 'Bengaluru',
-      occupation: 'Product designer',
-      relationshipGoal: RelationshipGoal.relationship,
-      activityPreferences: const ActivityPreferences(
-        running: RunningPreferences(
-          preferredDistances: [PreferredDistance.fiveK],
-          runningReasons: [RunReason.social],
-          preferredRunTimes: [PreferredRunTime.evening],
-          version: currentRunPreferencesVersion,
-        ),
-      ),
-    );
+    return fixtureData.viewer;
   }
 
   List<PublicProfile> _publicProfiles() {
-    return const [
-      PublicProfile(
-        uid: 'runner-1',
-        name: 'Maya',
-        age: 28,
-        gender: Gender.woman,
-        city: 'Bengaluru',
-        occupation: 'Product designer',
-        relationshipGoal: RelationshipGoal.relationship,
-      ),
-      PublicProfile(
-        uid: 'runner-2',
-        name: 'Arjun',
-        age: 30,
-        gender: Gender.man,
-        city: 'Bengaluru',
-        occupation: 'Founder',
-        relationshipGoal: RelationshipGoal.relationship,
-      ),
-      PublicProfile(
-        uid: 'runner-3',
-        name: 'Kabir',
-        age: 31,
-        gender: Gender.man,
-        city: 'Bengaluru',
-        occupation: 'Architect',
-      ),
-      PublicProfile(
-        uid: 'runner-4',
-        name: 'Nisha',
-        age: 28,
-        gender: Gender.woman,
-        city: 'Bengaluru',
-        occupation: 'Chef',
-      ),
-      PublicProfile(
-        uid: 'runner-5',
-        name: 'Rohan',
-        age: 32,
-        gender: Gender.man,
-        city: 'Bengaluru',
-        occupation: 'Engineer',
-      ),
-      PublicProfile(
-        uid: 'runner-6',
-        name: 'Ira',
-        age: 27,
-        gender: Gender.woman,
-        city: 'Bengaluru',
-        occupation: 'Consultant',
-      ),
-      PublicProfile(
-        uid: 'runner-7',
-        name: 'Dev',
-        age: 29,
-        gender: Gender.man,
-        city: 'Bengaluru',
-        occupation: 'Product manager',
-      ),
-      PublicProfile(
-        uid: 'runner-8',
-        name: 'Tara',
-        age: 26,
-        gender: Gender.woman,
-        city: 'Bengaluru',
-        occupation: 'Writer',
-      ),
-      PublicProfile(
-        uid: 'runner-9',
-        name: 'Vihaan',
-        age: 33,
-        gender: Gender.man,
-        city: 'Bengaluru',
-        occupation: 'Analyst',
-      ),
-    ];
+    return fixtureData.profiles;
   }
 
   List<PublicProfile> _profilesFor(List<String> uids) {
@@ -1975,4 +2045,236 @@ List<String> _wingmanProfileUids(List<EventSuccessWingmanRequest> requests) {
       ..add(request.targetUid);
   }
   return uids.toList()..sort();
+}
+
+Map<String, Object?> _eventByRole(Map<String, Object?> salesDemo, String role) {
+  for (final item in _list(salesDemo['events'])) {
+    final event = _stringMap(item, context: 'salesDemo.events');
+    if (_optionalStringFrom(event, 'role') == role) return event;
+  }
+  throw StateError('Missing host-demo event role "$role".');
+}
+
+Map<String, Map<String, Object?>> _personasById(Map<String, Object?> root) {
+  if (_optionalStringFrom(root, 'kind') !=
+      'sales-demo-persona-profile-projection') {
+    throw StateError('Expected sales demo persona profile projection.');
+  }
+  return {
+    for (final item in _list(root['personas']))
+      _requiredStringFrom(
+        _stringMap(item, context: 'projection.personas'),
+        'id',
+      ): _stringMap(
+        item,
+        context: 'projection.personas',
+      ),
+  };
+}
+
+Map<String, Object?> _requirePersona(
+  Map<String, Map<String, Object?>> personas,
+  String personaId,
+) {
+  final persona = personas[personaId];
+  if (persona == null) throw StateError('Unknown persona "$personaId".');
+  return persona;
+}
+
+PublicProfile _publicProfileFromPersona(Map<String, Object?> persona) {
+  return PublicProfile(
+    uid: _requiredStringFrom(persona, 'id'),
+    name: _requiredStringFrom(persona, 'displayName'),
+    age: _ageFromBirthDate(_requiredStringFrom(persona, 'dateOfBirth')),
+    gender: _genderFromName(_requiredStringFrom(persona, 'gender')),
+    city:
+        _optionalStringFrom(persona, 'cityLabel') ??
+        _optionalStringFrom(persona, 'city'),
+    height: _optionalIntFrom(persona, 'heightCm'),
+    occupation: _optionalStringFrom(persona, 'occupation'),
+    company: _optionalStringFrom(persona, 'company'),
+    relationshipGoal: RelationshipGoal.relationship,
+    activityPreferences: const ActivityPreferences(
+      running: RunningPreferences(
+        preferredDistances: [PreferredDistance.fiveK],
+        runningReasons: [RunReason.social],
+        preferredRunTimes: [PreferredRunTime.evening],
+        version: currentRunPreferencesVersion,
+      ),
+    ),
+  );
+}
+
+UserProfile _userProfileFromPersona(
+  Map<String, Object?> persona, {
+  required String phoneNumber,
+}) {
+  final firstName = _requiredStringFrom(persona, 'firstName');
+  return UserProfile(
+    uid: _requiredStringFrom(persona, 'id'),
+    name: _requiredStringFrom(persona, 'displayName'),
+    firstName: firstName,
+    lastName: _optionalStringFrom(persona, 'lastName') ?? '',
+    displayName: _requiredStringFrom(persona, 'displayName'),
+    dateOfBirth: DateTime.parse(_requiredStringFrom(persona, 'dateOfBirth')),
+    gender: _genderFromName(_requiredStringFrom(persona, 'gender')),
+    phoneNumber: phoneNumber,
+    profileComplete: true,
+    interestedInGenders: const [Gender.man, Gender.woman, Gender.nonBinary],
+    city:
+        _optionalStringFrom(persona, 'cityLabel') ??
+        _optionalStringFrom(persona, 'city'),
+    height: _optionalIntFrom(persona, 'heightCm'),
+    occupation: _optionalStringFrom(persona, 'occupation'),
+    company: _optionalStringFrom(persona, 'company'),
+    relationshipGoal: RelationshipGoal.relationship,
+    activityPreferences: const ActivityPreferences(
+      running: RunningPreferences(
+        preferredDistances: [PreferredDistance.fiveK],
+        runningReasons: [RunReason.social],
+        preferredRunTimes: [PreferredRunTime.evening],
+        version: currentRunPreferencesVersion,
+      ),
+    ),
+  );
+}
+
+EventSuccessScorecard _scorecardFromJson(Map<String, Object?> json) {
+  return EventSuccessScorecard(
+    bookedCount: _requiredIntFrom(json, 'bookedCount'),
+    checkedInCount: _requiredIntFrom(json, 'checkedInCount'),
+    attendeesWhoMetTwoPlusPeople: _requiredIntFrom(
+      json,
+      'attendeesWhoMetTwoPlusPeople',
+    ),
+    mutualMatchCount: _requiredIntFrom(json, 'mutualMatchCount'),
+    chatStartedCount: _requiredIntFrom(json, 'chatStartedCount'),
+    averageWelcomeRating: _requiredDoubleFrom(json, 'averageWelcomeRating'),
+    averageStructureRating: _requiredDoubleFrom(json, 'averageStructureRating'),
+    safetyIncidentCount: _requiredIntFrom(json, 'safetyIncidentCount'),
+    catchSentCount: _requiredIntFrom(json, 'catchSentCount'),
+    attendeesWhoCaughtSomeone: _requiredIntFrom(
+      json,
+      'attendeesWhoCaughtSomeone',
+    ),
+    catchRecipientCount: _requiredIntFrom(json, 'catchRecipientCount'),
+    catchRate: _requiredDoubleFrom(json, 'catchRate'),
+    feedbackResponseCount: _requiredIntFrom(json, 'feedbackResponseCount'),
+    assignmentParticipantCount: _requiredIntFrom(
+      json,
+      'assignmentParticipantCount',
+    ),
+    assignmentOptOutCount: _requiredIntFrom(json, 'assignmentOptOutCount'),
+    wingmanRequestCount: _requiredIntFrom(json, 'wingmanRequestCount'),
+    funnel: _scorecardFunnelFromJson(json['funnel']),
+  );
+}
+
+EventSuccessHostFunnel _scorecardFunnelFromJson(Object? value) {
+  if (value is! Map) return EventSuccessHostFunnel.empty;
+  final json = Map<String, Object?>.from(value);
+  return EventSuccessHostFunnel(
+    inviteLinkCount: _optionalIntFrom(json, 'inviteLinkCount') ?? 0,
+    inviteOpenCount: _optionalIntFrom(json, 'inviteOpenCount') ?? 0,
+    totalDemandCount: _optionalIntFrom(json, 'totalDemandCount') ?? 0,
+    requestCount: _optionalIntFrom(json, 'requestCount') ?? 0,
+    pendingRequestCount: _optionalIntFrom(json, 'pendingRequestCount') ?? 0,
+    approvedRequestCount: _optionalIntFrom(json, 'approvedRequestCount') ?? 0,
+    declinedRequestCount: _optionalIntFrom(json, 'declinedRequestCount') ?? 0,
+    directSignupCount: _optionalIntFrom(json, 'directSignupCount') ?? 0,
+    waitlistJoinCount: _optionalIntFrom(json, 'waitlistJoinCount') ?? 0,
+    waitlistOfferCount: _optionalIntFrom(json, 'waitlistOfferCount') ?? 0,
+    waitlistOfferActiveCount:
+        _optionalIntFrom(json, 'waitlistOfferActiveCount') ?? 0,
+    waitlistOfferAcceptedCount:
+        _optionalIntFrom(json, 'waitlistOfferAcceptedCount') ?? 0,
+    waitlistOfferDeclinedCount:
+        _optionalIntFrom(json, 'waitlistOfferDeclinedCount') ?? 0,
+    waitlistOfferExpiredCount:
+        _optionalIntFrom(json, 'waitlistOfferExpiredCount') ?? 0,
+    checkoutStartedCount: _optionalIntFrom(json, 'checkoutStartedCount') ?? 0,
+    paymentPendingCount: _optionalIntFrom(json, 'paymentPendingCount') ?? 0,
+    paymentCompletedCount: _optionalIntFrom(json, 'paymentCompletedCount') ?? 0,
+    paymentFailedCount: _optionalIntFrom(json, 'paymentFailedCount') ?? 0,
+    paymentRefundedCount: _optionalIntFrom(json, 'paymentRefundedCount') ?? 0,
+    bookedCount: _optionalIntFrom(json, 'bookedCount') ?? 0,
+    checkedInCount: _optionalIntFrom(json, 'checkedInCount') ?? 0,
+    noShowCount: _optionalIntFrom(json, 'noShowCount') ?? 0,
+    catchSentCount: _optionalIntFrom(json, 'catchSentCount') ?? 0,
+    attendeesWhoCaughtSomeone:
+        _optionalIntFrom(json, 'attendeesWhoCaughtSomeone') ?? 0,
+    mutualMatchCount: _optionalIntFrom(json, 'mutualMatchCount') ?? 0,
+    chatStartedCount: _optionalIntFrom(json, 'chatStartedCount') ?? 0,
+    repeatAttendeeCount: _optionalIntFrom(json, 'repeatAttendeeCount') ?? 0,
+  );
+}
+
+Gender _genderFromName(String value) {
+  return Gender.values.firstWhere(
+    (gender) => gender.name == value,
+    orElse: () => Gender.other,
+  );
+}
+
+int _ageFromBirthDate(String value) {
+  final birthDate = DateTime.parse(value);
+  final referenceDate = DateTime(2026, 5, 31);
+  var age = referenceDate.year - birthDate.year;
+  final birthdayThisYear = DateTime(
+    referenceDate.year,
+    birthDate.month,
+    birthDate.day,
+  );
+  if (referenceDate.isBefore(birthdayThisYear)) age -= 1;
+  return age;
+}
+
+String _requiredStringFrom(Map<String, Object?> json, String key) {
+  final value = _optionalStringFrom(json, key);
+  if (value == null) throw StateError('Missing required string "$key".');
+  return value;
+}
+
+String? _optionalStringFrom(Map<String, Object?> json, String key) {
+  final value = json[key];
+  if (value is! String) return null;
+  final trimmed = value.trim();
+  return trimmed.isEmpty ? null : trimmed;
+}
+
+int _requiredIntFrom(Map<String, Object?> json, String key) {
+  final value = _optionalIntFrom(json, key);
+  if (value == null) throw StateError('Missing required int "$key".');
+  return value;
+}
+
+double _requiredDoubleFrom(Map<String, Object?> json, String key) {
+  final value = json[key];
+  if (value is num) return value.toDouble();
+  throw StateError('Missing required number "$key".');
+}
+
+int? _optionalIntFrom(Map<String, Object?> json, String key) {
+  final value = json[key];
+  if (value is num) return value.round();
+  return null;
+}
+
+Map<String, Object?> _stringMap(Object? value, {required String context}) {
+  if (value is Map) {
+    return value.map((key, child) => MapEntry(key.toString(), child));
+  }
+  throw StateError('Expected object in $context.');
+}
+
+List<Object?> _list(Object? value) {
+  if (value is List) return value;
+  return const <Object?>[];
+}
+
+List<String> _stringList(Object? value) {
+  return [
+    for (final item in _list(value))
+      if (item is String) item,
+  ];
 }

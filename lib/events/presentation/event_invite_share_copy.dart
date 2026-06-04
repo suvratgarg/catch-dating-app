@@ -3,19 +3,29 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 
 abstract final class EventInviteShareCopy {
-  static Uri eventUri(Event event, {String? inviteCode}) => AppDeepLinks.event(
+  static Uri eventUri(
+    Event event, {
+    String? inviteCode,
+    String? inviteLinkId,
+  }) => AppDeepLinks.event(
     clubId: event.clubId,
     eventId: event.id,
     inviteCode: inviteCode,
+    inviteLinkId: inviteLinkId,
   );
 
   static String subject(Event event) => 'Join me at ${event.title}';
 
-  static String eventDetailInviteText(Event event, {String? inviteCode}) {
+  static String eventDetailInviteText(
+    Event event, {
+    String? inviteCode,
+    String? inviteLinkId,
+  }) {
     return _composeInvite(
       event,
       intro: 'This feels like your kind of plan.',
       inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
     );
   }
 
@@ -50,8 +60,13 @@ abstract final class EventInviteShareCopy {
     Event event, {
     required String intro,
     String? inviteCode,
+    String? inviteLinkId,
   }) {
-    final link = eventUri(event, inviteCode: inviteCode);
+    final link = eventUri(
+      event,
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+    );
     return [
       intro,
       '',

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/presentation/club_action_keys.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -132,6 +133,7 @@ class HostClubManagementPanel extends StatelessWidget {
                 ],
                 gapH12,
                 CatchButton(
+                  key: ClubActionKeys.addEventButton,
                   label: 'Add event',
                   onPressed: onCreateEvent,
                   icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
@@ -139,6 +141,7 @@ class HostClubManagementPanel extends StatelessWidget {
                 ),
                 gapH10,
                 CatchButton(
+                  key: ClubActionKeys.editButton,
                   label: 'Edit club',
                   onPressed: onEditClub,
                   icon: Icon(CatchIcons.editOutlined, size: CatchIcon.md),

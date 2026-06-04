@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
@@ -5,6 +7,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_compan
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
@@ -18,15 +21,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventSuccessManualQaScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await tester.pumpWidget(_manualQaTestHarness());
+    await _pumpManualQaReady(tester);
 
     expect(find.text('Event success manual QA'), findsOneWidget);
     expect(find.text('Fixture scenario'), findsOneWidget);
@@ -59,15 +55,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventSuccessManualQaScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await tester.pumpWidget(_manualQaTestHarness());
+    await _pumpManualQaReady(tester);
 
     await _tapHostSection(tester, 'Live');
 
@@ -126,25 +115,25 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventSuccessManualQaScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await tester.pumpWidget(_manualQaTestHarness());
+    await _pumpManualQaReady(tester);
 
     final companion = find.byType(EventSuccessCompanionScreen);
-    final playfulOption = find.descendant(
-      of: companion,
-      matching: find.text('Playful competition'),
-    );
-    await tester.ensureVisible(playfulOption);
-    await tester.pump();
-    await tester.tap(playfulOption);
-    await tester.pump();
+    for (final answer in const [
+      'Playful competition',
+      'A thoughtful question',
+      'Ideas and trivia',
+      'Plan another activity',
+    ]) {
+      final option = find.descendant(
+        of: companion,
+        matching: find.text(answer),
+      );
+      await tester.ensureVisible(option);
+      await tester.pump();
+      await tester.tap(option);
+      await tester.pump();
+    }
 
     final saveButton = find.descendant(
       of: companion,
@@ -152,8 +141,8 @@ void main() {
     );
     await tester.ensureVisible(saveButton);
     await tester.pump();
-    await tester.tap(saveButton);
-    await pumpFeatureUi(tester);
+    _pressCatchButton(tester, saveButton);
+    await _pumpManualQaFrames(tester, frames: 40);
 
     expect(
       find.descendant(
@@ -174,15 +163,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventSuccessManualQaScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await tester.pumpWidget(_manualQaTestHarness());
+    await _pumpManualQaReady(tester);
 
     await _tapHostSection(tester, 'Live');
     await _scrollHostManageUntilVisible(tester, 'Guest');
@@ -208,15 +190,8 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const EventSuccessManualQaScreen(),
-        ),
-      ),
-    );
-    await pumpFeatureUi(tester);
+    await tester.pumpWidget(_manualQaTestHarness());
+    await _pumpManualQaReady(tester);
 
     await tester.tap(find.text('Singles mixer'));
     await tester.pump();
@@ -250,11 +225,61 @@ void main() {
   });
 }
 
+Widget _manualQaTestHarness() {
+  return ProviderScope(
+    child: MaterialApp(
+      theme: AppTheme.light,
+      home: DefaultAssetBundle(
+        bundle: _ManualQaTestAssetBundle(),
+        child: const EventSuccessManualQaScreen(),
+      ),
+    ),
+  );
+}
+
+class _ManualQaTestAssetBundle extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) async {
+    if (!key.startsWith('tool/demo/demo_seed/')) {
+      return rootBundle.load(key);
+    }
+    final data = Uint8List.fromList(File(key).readAsBytesSync());
+    return ByteData.sublistView(data);
+  }
+
+  @override
+  Future<String> loadString(String key, {bool cache = true}) async {
+    if (!key.startsWith('tool/demo/demo_seed/')) {
+      return rootBundle.loadString(key, cache: cache);
+    }
+    return File(key).readAsStringSync();
+  }
+}
+
+Future<void> _pumpManualQaReady(WidgetTester tester) async {
+  for (var i = 0; i < 80; i += 1) {
+    await tester.pump(const Duration(milliseconds: 25));
+    if (find.text('Fixture scenario').evaluate().isNotEmpty) return;
+    final error = find.textContaining('Manual QA fixture failed');
+    if (error.evaluate().isNotEmpty) {
+      final text = tester.widget<Text>(error.first);
+      fail(text.data ?? 'Manual QA fixture failed without details.');
+    }
+  }
+  expect(find.text('Fixture scenario'), findsOneWidget);
+}
+
+Future<void> _pumpManualQaFrames(WidgetTester tester, {int frames = 8}) async {
+  for (var i = 0; i < frames; i += 1) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+}
+
 Future<void> _tapHostNext(WidgetTester tester) async {
   final nextButton = find.byKey(const ValueKey('eventSuccessNextStepButton'));
   await _scrollHostManageFinderUntilVisible(tester, nextButton);
   await tester.pump();
-  await tester.tap(nextButton.first);
+  _pressCatchButton(tester, nextButton);
   await tester.pump();
 }
 
@@ -277,7 +302,7 @@ Future<void> _tapHostSection(WidgetTester tester, String label) async {
   await tester.ensureVisible(section.first);
   await tester.pump();
   await tester.tap(section.first);
-  await pumpFeatureUi(tester);
+  await _pumpManualQaFrames(tester);
 }
 
 Future<void> _scrollHostManageUntilVisible(
@@ -318,6 +343,12 @@ Future<void> _tapHostButton(WidgetTester tester, String label) async {
   final nextButton = find.widgetWithText(CatchButton, label);
   await _scrollHostManageFinderUntilVisible(tester, nextButton);
   await tester.pump();
-  await tester.tap(nextButton.first);
+  _pressCatchButton(tester, nextButton);
   await tester.pump();
+}
+
+void _pressCatchButton(WidgetTester tester, Finder finder) {
+  final button = tester.widget<CatchButton>(finder.first);
+  expect(button.onPressed, isNotNull);
+  button.onPressed!();
 }

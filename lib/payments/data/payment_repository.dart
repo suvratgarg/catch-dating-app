@@ -83,9 +83,14 @@ class PaymentRepository {
     required String userEmail,
     required String userContact,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     if (currencyCode.trim().toUpperCase() != defaultCurrencyCode) {
-      return _processStripeCheckout(eventId: eventId, inviteCode: inviteCode);
+      return _processStripeCheckout(
+        eventId: eventId,
+        inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
+      );
     }
     return _processRazorpayPayment(
       eventId: eventId,
@@ -94,6 +99,7 @@ class PaymentRepository {
       userEmail: userEmail,
       userContact: userContact,
       inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
     );
   }
 
@@ -104,6 +110,7 @@ class PaymentRepository {
     required String userEmail,
     required String userContact,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
@@ -120,6 +127,7 @@ class PaymentRepository {
     final orderResult = await _createOrder(
       eventId: eventId,
       inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
     );
     final order = _parseOrderResponse(orderResult.data);
 
@@ -174,10 +182,12 @@ class PaymentRepository {
   Future<PaymentConfirmationData> _processStripeCheckout({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     final result = await _createStripeCheckoutSession(
       eventId: eventId,
       inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
     );
     final session = _parseStripeCheckoutResponse(result.data);
     final opened = await withBackendErrorContext(
@@ -213,25 +223,29 @@ class PaymentRepository {
 
   /// Signs the current user up for a free event via the [signUpForFreeEvent]
   /// Cloud Function, which validates the event is free and checks capacity.
-  Future<void> bookFreeEvent({required String eventId, String? inviteCode}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('signUpForFreeEvent')
-            .call(
-              EventBookingCallableRequest(
-                eventId: eventId,
-                inviteCode: inviteCode,
-              ).toJson(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'book an event',
-          resource: 'events',
+  Future<void> bookFreeEvent({
+    required String eventId,
+    String? inviteCode,
+    String? inviteLinkId,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('signUpForFreeEvent')
+        .call(
+          EventBookingCallableRequest(
+            eventId: eventId,
+            inviteCode: inviteCode,
+            inviteLinkId: inviteLinkId,
+          ).toJson(),
         ),
-        mapper: _eventBookingErrorMapper(
-          fallbackMessage: 'Unable to book this event right now.',
-        ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'book an event',
+      resource: 'events',
+    ),
+    mapper: _eventBookingErrorMapper(
+      fallbackMessage: 'Unable to book this event right now.',
+    ),
+  );
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
@@ -313,6 +327,7 @@ class PaymentRepository {
   Future<HttpsCallableResult<Object?>> _createOrder({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createRazorpayOrder')
@@ -320,6 +335,7 @@ class PaymentRepository {
           CreateRazorpayOrderCallableRequest(
             eventId: eventId,
             inviteCode: inviteCode,
+            inviteLinkId: inviteLinkId,
           ).toJson(),
         ),
     context: const BackendErrorContext(
@@ -335,6 +351,7 @@ class PaymentRepository {
   Future<HttpsCallableResult<Object?>> _createStripeCheckoutSession({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createStripeCheckoutSession')
@@ -342,6 +359,7 @@ class PaymentRepository {
           CreateStripeCheckoutSessionCallableRequest(
             eventId: eventId,
             inviteCode: inviteCode?.trim(),
+            inviteLinkId: inviteLinkId?.trim(),
           ).toJson(),
         ),
     context: const BackendErrorContext(

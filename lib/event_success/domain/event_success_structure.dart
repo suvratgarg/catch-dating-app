@@ -57,6 +57,39 @@ enum EventSuccessUnitKind implements Labelled {
       '$count ${count == 1 ? singularLabel : label.toLowerCase()}';
 }
 
+enum EventSuccessRotationRepeatStrategy implements Labelled {
+  avoid('Avoid repeats'),
+  allowWhenExhausted('Fill extra rounds');
+
+  const EventSuccessRotationRepeatStrategy(this.label);
+
+  @override
+  final String label;
+}
+
+enum EventSuccessActivityAssignmentAttribute implements Labelled {
+  paceBand('Pace'),
+  skillBand('Skill'),
+  roleBand('Role');
+
+  const EventSuccessActivityAssignmentAttribute(this.label);
+
+  @override
+  final String label;
+
+  String get balanceLabel => switch (this) {
+    EventSuccessActivityAssignmentAttribute.paceBand => 'Spread pace',
+    EventSuccessActivityAssignmentAttribute.skillBand => 'Spread skill',
+    EventSuccessActivityAssignmentAttribute.roleBand => 'Spread roles',
+  };
+
+  String get clusterLabel => switch (this) {
+    EventSuccessActivityAssignmentAttribute.paceBand => 'Pace together',
+    EventSuccessActivityAssignmentAttribute.skillBand => 'Skill together',
+    EventSuccessActivityAssignmentAttribute.roleBand => 'Role together',
+  };
+}
+
 class EventSuccessStructureConfig {
   const EventSuccessStructureConfig({
     required this.unitKind,
@@ -64,10 +97,15 @@ class EventSuccessStructureConfig {
     this.unitCount,
     this.rotationIntervalMinutes,
     this.revealCountdownSeconds = 10,
+    this.rotationRepeatStrategy = EventSuccessRotationRepeatStrategy.avoid,
+    this.maxPairMeetings = 2,
+    this.balanceActivityAttributes = const [],
+    this.clusterActivityAttributes = const [],
   }) : assert(unitSize > 0),
        assert(unitCount == null || unitCount > 0),
        assert(rotationIntervalMinutes == null || rotationIntervalMinutes >= 5),
-       assert(revealCountdownSeconds >= 0);
+       assert(revealCountdownSeconds >= 0),
+       assert(maxPairMeetings >= 1);
 
   const EventSuccessStructureConfig.legacyDefault()
     : this(
@@ -76,6 +114,10 @@ class EventSuccessStructureConfig {
         unitCount: null,
         rotationIntervalMinutes: null,
         revealCountdownSeconds: 10,
+        rotationRepeatStrategy: EventSuccessRotationRepeatStrategy.avoid,
+        maxPairMeetings: 2,
+        balanceActivityAttributes: const [],
+        clusterActivityAttributes: const [],
       );
 
   factory EventSuccessStructureConfig.defaultForActivity(
@@ -155,6 +197,21 @@ class EventSuccessStructureConfig {
         min: 0,
         max: 60,
       ),
+      rotationRepeatStrategy: _repeatStrategyFromJson(
+        json['rotationRepeatStrategy'],
+      ),
+      maxPairMeetings: _intInRange(
+        json['maxPairMeetings'],
+        fallback: 2,
+        min: 1,
+        max: 10,
+      ),
+      balanceActivityAttributes: _activityAttributesFromJson(
+        json['balanceActivityAttributes'],
+      ),
+      clusterActivityAttributes: _activityAttributesFromJson(
+        json['clusterActivityAttributes'],
+      ),
     );
   }
 
@@ -163,6 +220,10 @@ class EventSuccessStructureConfig {
   final int? unitCount;
   final int? rotationIntervalMinutes;
   final int revealCountdownSeconds;
+  final EventSuccessRotationRepeatStrategy rotationRepeatStrategy;
+  final int maxPairMeetings;
+  final List<EventSuccessActivityAssignmentAttribute> balanceActivityAttributes;
+  final List<EventSuccessActivityAssignmentAttribute> clusterActivityAttributes;
 
   bool get rotates => rotationIntervalMinutes != null;
 
@@ -171,14 +232,22 @@ class EventSuccessStructureConfig {
       unitSize == 4 &&
       unitCount == null &&
       rotationIntervalMinutes == null &&
-      revealCountdownSeconds == 10;
+      revealCountdownSeconds == 10 &&
+      rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
+      maxPairMeetings == 2 &&
+      balanceActivityAttributes.isEmpty &&
+      clusterActivityAttributes.isEmpty;
 
   bool get isDeprecatedTeamRotationDefault =>
       unitKind == EventSuccessUnitKind.teams &&
       unitSize == 5 &&
       unitCount == 3 &&
       rotationIntervalMinutes == null &&
-      revealCountdownSeconds == 10;
+      revealCountdownSeconds == 10 &&
+      rotationRepeatStrategy == EventSuccessRotationRepeatStrategy.avoid &&
+      maxPairMeetings == 2 &&
+      balanceActivityAttributes.isEmpty &&
+      clusterActivityAttributes.isEmpty;
 
   int estimatedUnitCount(int attendeeCount) {
     return estimateForAttendance(attendeeCount).unitCount;
@@ -221,6 +290,10 @@ class EventSuccessStructureConfig {
     Object? unitCount = unsetSentinel,
     Object? rotationIntervalMinutes = unsetSentinel,
     int? revealCountdownSeconds,
+    EventSuccessRotationRepeatStrategy? rotationRepeatStrategy,
+    int? maxPairMeetings,
+    List<EventSuccessActivityAssignmentAttribute>? balanceActivityAttributes,
+    List<EventSuccessActivityAssignmentAttribute>? clusterActivityAttributes,
   }) {
     return EventSuccessStructureConfig(
       unitKind: unitKind ?? this.unitKind,
@@ -233,6 +306,13 @@ class EventSuccessStructureConfig {
           : rotationIntervalMinutes as int?,
       revealCountdownSeconds:
           revealCountdownSeconds ?? this.revealCountdownSeconds,
+      rotationRepeatStrategy:
+          rotationRepeatStrategy ?? this.rotationRepeatStrategy,
+      maxPairMeetings: maxPairMeetings ?? this.maxPairMeetings,
+      balanceActivityAttributes:
+          balanceActivityAttributes ?? this.balanceActivityAttributes,
+      clusterActivityAttributes:
+          clusterActivityAttributes ?? this.clusterActivityAttributes,
     );
   }
 
@@ -243,6 +323,16 @@ class EventSuccessStructureConfig {
     if (rotationIntervalMinutes != null)
       'rotationIntervalMinutes': rotationIntervalMinutes,
     'revealCountdownSeconds': revealCountdownSeconds,
+    'rotationRepeatStrategy': rotationRepeatStrategy.name,
+    'maxPairMeetings': maxPairMeetings,
+    if (balanceActivityAttributes.isNotEmpty)
+      'balanceActivityAttributes': _activityAttributesToJson(
+        balanceActivityAttributes,
+      ),
+    if (clusterActivityAttributes.isNotEmpty)
+      'clusterActivityAttributes': _activityAttributesToJson(
+        clusterActivityAttributes,
+      ),
   };
 
   @override
@@ -253,7 +343,17 @@ class EventSuccessStructureConfig {
             other.unitSize == unitSize &&
             other.unitCount == unitCount &&
             other.rotationIntervalMinutes == rotationIntervalMinutes &&
-            other.revealCountdownSeconds == revealCountdownSeconds;
+            other.revealCountdownSeconds == revealCountdownSeconds &&
+            other.rotationRepeatStrategy == rotationRepeatStrategy &&
+            other.maxPairMeetings == maxPairMeetings &&
+            _activityAttributeListsEqual(
+              other.balanceActivityAttributes,
+              balanceActivityAttributes,
+            ) &&
+            _activityAttributeListsEqual(
+              other.clusterActivityAttributes,
+              clusterActivityAttributes,
+            );
   }
 
   @override
@@ -263,6 +363,10 @@ class EventSuccessStructureConfig {
     unitCount,
     rotationIntervalMinutes,
     revealCountdownSeconds,
+    rotationRepeatStrategy,
+    maxPairMeetings,
+    Object.hashAll(balanceActivityAttributes),
+    Object.hashAll(clusterActivityAttributes),
   );
 }
 
@@ -297,4 +401,51 @@ int _intInRange(
 int? _nullableIntInRange(Object? value, {required int min, required int max}) {
   if (value == null || value is! num) return null;
   return value.toInt().clamp(min, max).toInt();
+}
+
+EventSuccessRotationRepeatStrategy _repeatStrategyFromJson(Object? value) {
+  if (value is! String) return EventSuccessRotationRepeatStrategy.avoid;
+  return EventSuccessRotationRepeatStrategy.values.firstWhere(
+    (strategy) => strategy.name == value,
+    orElse: () => EventSuccessRotationRepeatStrategy.avoid,
+  );
+}
+
+List<EventSuccessActivityAssignmentAttribute> _activityAttributesFromJson(
+  Object? value,
+) {
+  if (value is! Iterable) {
+    return const [];
+  }
+  final seen = <EventSuccessActivityAssignmentAttribute>{};
+  final attributes = <EventSuccessActivityAssignmentAttribute>[];
+  for (final item in value) {
+    if (item is! String) continue;
+    EventSuccessActivityAssignmentAttribute? attribute;
+    for (final candidate in EventSuccessActivityAssignmentAttribute.values) {
+      if (candidate.name == item) {
+        attribute = candidate;
+        break;
+      }
+    }
+    if (attribute == null || !seen.add(attribute)) continue;
+    attributes.add(attribute);
+  }
+  return List.unmodifiable(attributes);
+}
+
+List<String> _activityAttributesToJson(
+  List<EventSuccessActivityAssignmentAttribute> attributes,
+) => [for (final attribute in attributes) attribute.name];
+
+bool _activityAttributeListsEqual(
+  List<EventSuccessActivityAssignmentAttribute> a,
+  List<EventSuccessActivityAssignmentAttribute> b,
+) {
+  if (identical(a, b)) return true;
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i += 1) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }

@@ -420,10 +420,75 @@ void main() {
     );
 
     test('joinWaitlistViaFunction calls the matching Cloud Function', () async {
-      await repository.joinWaitlistViaFunction(eventId: 'event-1');
+      await repository.joinWaitlistViaFunction(
+        eventId: 'event-1',
+        inviteCode: 'CATCH-DELHI',
+        inviteLinkId: 'invite-link-1',
+      );
 
       expect(functions.callables['joinEventWaitlist']!.calls, [
-        {'eventId': 'event-1'},
+        {
+          'eventId': 'event-1',
+          'inviteCode': 'CATCH-DELHI',
+          'inviteLinkId': 'invite-link-1',
+        },
+      ]);
+    });
+
+    test('createInviteLink calls the matching Cloud Function', () async {
+      (functions.httpsCallable('createEventInviteLink') as TestHttpsCallable)
+          .resultData = {
+        'inviteLinkId': 'invite-link-1',
+        'eventId': 'event-1',
+        'label': 'Instagram bio',
+        'source': 'instagram',
+      };
+
+      final result = await repository.createInviteLink(
+        eventId: 'event-1',
+        label: 'Instagram bio',
+        source: 'instagram',
+      );
+
+      expect(functions.callables['createEventInviteLink']!.calls, [
+        {'eventId': 'event-1', 'label': 'Instagram bio', 'source': 'instagram'},
+      ]);
+      expect(result.inviteLinkId, 'invite-link-1');
+      expect(result.label, 'Instagram bio');
+    });
+
+    test('recordInviteLinkOpen calls the matching Cloud Function', () async {
+      (functions.httpsCallable('recordEventInviteLinkOpen')
+              as TestHttpsCallable)
+          .resultData = {
+        'accepted': true,
+        'disabled': false,
+        'eventId': 'event-1',
+        'inviteLinkId': 'invite-link-1',
+        'label': 'Instagram bio',
+        'source': 'instagram',
+      };
+
+      final result = await repository.recordInviteLinkOpen(
+        eventId: 'event-1',
+        inviteLinkId: 'invite-link-1',
+      );
+
+      expect(functions.callables['recordEventInviteLinkOpen']!.calls, [
+        {'eventId': 'event-1', 'inviteLinkId': 'invite-link-1'},
+      ]);
+      expect(result.accepted, isTrue);
+      expect(result.source, 'instagram');
+    });
+
+    test('disableInviteLink calls the matching Cloud Function', () async {
+      await repository.disableInviteLink(
+        eventId: 'event-1',
+        inviteLinkId: 'invite-link-1',
+      );
+
+      expect(functions.callables['disableEventInviteLink']!.calls, [
+        {'eventId': 'event-1', 'inviteLinkId': 'invite-link-1'},
       ]);
     });
 
@@ -431,6 +496,69 @@ void main() {
       await repository.leaveWaitlist(eventId: 'event-1');
 
       expect(functions.callables['leaveEventWaitlist']!.calls, [
+        {'eventId': 'event-1'},
+      ]);
+    });
+
+    test('createWaitlistOffers calls the matching Cloud Function', () async {
+      (functions.httpsCallable('createEventWaitlistOffers')
+              as TestHttpsCallable)
+          .resultData = {
+        'createdCount': 2,
+        'skippedCount': 1,
+        'offers': [
+          {
+            'uid': 'runner-1',
+            'status': 'created',
+            'expiresAtMillis': 1767220200000,
+          },
+          {'uid': 'runner-3', 'status': 'skipped', 'reason': 'capacity_full'},
+        ],
+      };
+
+      final result = await repository.createWaitlistOffers(
+        eventId: 'event-1',
+        userIds: ['runner-1', 'runner-2', 'runner-3'],
+        expiresInMinutes: 45,
+      );
+
+      expect(functions.callables['createEventWaitlistOffers']!.calls, [
+        {
+          'eventId': 'event-1',
+          'userIds': ['runner-1', 'runner-2', 'runner-3'],
+          'expiresInMinutes': 45,
+        },
+      ]);
+      expect(result.createdCount, 2);
+      expect(result.skippedCount, 1);
+      expect(result.offers.first.uid, 'runner-1');
+      expect(result.offers.first.status, 'created');
+      expect(result.offers.first.expiresAtMillis, 1767220200000);
+      expect(result.offers.last.reason, 'capacity_full');
+    });
+
+    test('acceptWaitlistOffer calls the matching Cloud Function', () async {
+      (functions.httpsCallable('acceptEventWaitlistOffer') as TestHttpsCallable)
+          .resultData = {
+        'accepted': true,
+        'requiresPayment': true,
+        'booked': false,
+      };
+
+      final result = await repository.acceptWaitlistOffer(eventId: 'event-1');
+
+      expect(functions.callables['acceptEventWaitlistOffer']!.calls, [
+        {'eventId': 'event-1'},
+      ]);
+      expect(result.accepted, isTrue);
+      expect(result.requiresPayment, isTrue);
+      expect(result.booked, isFalse);
+    });
+
+    test('declineWaitlistOffer calls the matching Cloud Function', () async {
+      await repository.declineWaitlistOffer(eventId: 'event-1');
+
+      expect(functions.callables['declineEventWaitlistOffer']!.calls, [
         {'eventId': 'event-1'},
       ]);
     });

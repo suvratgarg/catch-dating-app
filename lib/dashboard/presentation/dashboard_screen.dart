@@ -80,7 +80,9 @@ class DashboardScreen extends ConsumerWidget {
             );
 
             final showEmptyDashboard =
-                signedUpEvents.isEmpty && viewModel.arrivalAction == null;
+                signedUpEvents.isEmpty &&
+                viewModel.arrivalAction == null &&
+                viewModel.hostEventTools.isEmpty;
 
             return _DashboardHomeScreen(
               header: showEmptyDashboard

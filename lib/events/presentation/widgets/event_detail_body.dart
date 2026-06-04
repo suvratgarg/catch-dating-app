@@ -47,6 +47,7 @@ class EventDetailBody extends ConsumerWidget {
     required this.isSaved,
     required this.participation,
     this.inviteCode,
+    this.inviteLinkId,
     this.onShareEvent,
     this.now,
     this.presentationMode = EventDetailPresentationMode.standard,
@@ -62,6 +63,7 @@ class EventDetailBody extends ConsumerWidget {
   final bool isSaved;
   final EventParticipation? participation;
   final String? inviteCode;
+  final String? inviteLinkId;
   final EventShareHandler? onShareEvent;
   final DateTime? now;
   final EventDetailPresentationMode presentationMode;
@@ -90,7 +92,7 @@ class EventDetailBody extends ConsumerWidget {
     void shareEvent(BuildContext buttonContext) => unawaited(
       onShareEvent != null
           ? onShareEvent!(buttonContext, event)
-          : _shareEvent(buttonContext, event, share, inviteCode),
+          : _shareEvent(buttonContext, event, share, inviteCode, inviteLinkId),
     );
 
     if (isAuthenticated) {
@@ -115,6 +117,7 @@ class EventDetailBody extends ConsumerWidget {
         clubId: clubId,
         eventId: event.id,
         inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
         darkSurface: isSpotlightDark,
       );
     } else if (userProfile != null && !isHost) {
@@ -124,6 +127,7 @@ class EventDetailBody extends ConsumerWidget {
         clubId: clubId,
         participation: participation,
         inviteCode: inviteCode,
+        inviteLinkId: inviteLinkId,
         now: now,
         darkSurface: isSpotlightDark,
       );
@@ -436,12 +440,14 @@ Future<void> _shareEvent(
   Event event,
   ExternalShareController share,
   String? inviteCode,
+  String? inviteLinkId,
 ) async {
   await showEventShareCardSheet(
     context,
     event: event,
     share: share,
     inviteCode: inviteCode,
+    inviteLinkId: inviteLinkId,
   );
 }
 
@@ -501,12 +507,14 @@ class _GuestBookCta extends StatelessWidget {
     required this.clubId,
     required this.eventId,
     this.inviteCode,
+    this.inviteLinkId,
     this.darkSurface = false,
   });
 
   final String clubId;
   final String eventId;
   final String? inviteCode;
+  final String? inviteLinkId;
   final bool darkSurface;
 
   @override
@@ -532,6 +540,7 @@ class _GuestBookCta extends StatelessWidget {
                     clubId: clubId,
                     eventId: eventId,
                     inviteCode: inviteCode,
+                    inviteLinkId: inviteLinkId,
                   ),
                 },
               ).toString(),

@@ -16,6 +16,8 @@ enum EventParticipationStatus {
 
 enum EventJoinRequestStatus { pending, approved, declined }
 
+enum EventWaitlistOfferStatus { active, accepted, declined, expired, cancelled }
+
 @freezed
 abstract class EventParticipation with _$EventParticipation {
   const EventParticipation._();
@@ -39,13 +41,39 @@ abstract class EventParticipation with _$EventParticipation {
     @JsonKey() EventJoinRequestStatus? hostApprovalStatus,
     @NullableTimestampConverter() DateTime? hostApprovalDecidedAt,
     String? hostApprovalDecidedBy,
+    @JsonKey() EventWaitlistOfferStatus? waitlistOfferStatus,
+    @NullableTimestampConverter() DateTime? waitlistOfferedAt,
+    @NullableTimestampConverter() DateTime? waitlistOfferExpiresAt,
+    @NullableTimestampConverter() DateTime? waitlistOfferAcceptedAt,
+    String? waitlistOfferId,
+    String? inviteLinkId,
+    String? inviteSource,
+    @NullableTimestampConverter() DateTime? inviteCapturedAt,
   }) = _EventParticipation;
 
   factory EventParticipation.fromJson(Map<String, dynamic> json) =>
       _$EventParticipationFromJson(json);
 
   bool get hasHostApproval =>
-      hostApprovalStatus == EventJoinRequestStatus.approved;
+      hostApprovalStatus == EventJoinRequestStatus.approved ||
+      isWaitlistOfferAcceptedAt(DateTime.now());
+
+  bool isWaitlistOfferActiveAt(DateTime now) =>
+      status == EventParticipationStatus.waitlisted &&
+      waitlistOfferStatus == EventWaitlistOfferStatus.active &&
+      _offerExpiresAfter(now);
+
+  bool isWaitlistOfferAcceptedAt(DateTime now) =>
+      status == EventParticipationStatus.waitlisted &&
+      waitlistOfferStatus == EventWaitlistOfferStatus.accepted &&
+      _offerExpiresAfter(now);
+
+  bool get hasOpenWaitlistOffer =>
+      waitlistOfferStatus == EventWaitlistOfferStatus.active ||
+      waitlistOfferStatus == EventWaitlistOfferStatus.accepted;
+
+  bool _offerExpiresAfter(DateTime now) =>
+      waitlistOfferExpiresAt != null && waitlistOfferExpiresAt!.isAfter(now);
 }
 
 String eventParticipationId({required String eventId, required String uid}) =>

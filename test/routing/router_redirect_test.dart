@@ -1,47 +1,16 @@
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-UserProfile _completeUser() => UserProfile(
-  uid: 'user-1',
-  name: 'Runner',
-  dateOfBirth: DateTime(1995, 6, 15),
-  gender: Gender.man,
-  phoneNumber: '+910000000000',
-  profileComplete: true,
-  interestedInGenders: const [Gender.woman],
-  profilePhotos: [
-    ProfilePhoto.uploaded(
-      position: 0,
-      url: 'https://example.test/one.jpg',
-      storagePath: 'test-profiles/user-1/0.jpg',
-      now: DateTime(2026),
-    ),
-    ProfilePhoto.uploaded(
-      position: 1,
-      url: 'https://example.test/two.jpg',
-      storagePath: 'test-profiles/user-1/1.jpg',
-      now: DateTime(2026),
-    ),
-  ],
-  profilePrompts: [
-    for (final promptId in defaultProfilePromptIds)
-      ProfilePromptAnswer(
-        promptId: promptId,
-        prompt: profilePromptTitle(promptId),
-        answer: 'Answer for $promptId.',
-      ),
-  ],
-  activityPreferences: const ActivityPreferences(
-    running: RunningPreferences(version: currentRunPreferencesVersion),
-  ),
-);
+import '../support/profile_readiness_fixtures.dart';
+
+const _testUid = 'user-1';
+
+UserProfile _socialReadyUser() => buildSocialReadyUser(uid: _testUid);
 
 UserProfile _identityIncompleteUser() => UserProfile(
-  uid: 'user-1',
+  uid: _testUid,
   name: 'New Runner',
   dateOfBirth: DateTime(1995, 6, 15),
   gender: Gender.man,
@@ -50,7 +19,7 @@ UserProfile _identityIncompleteUser() => UserProfile(
 );
 
 UserProfile _bookingReadyUser() =>
-    _completeUser().copyWith(profileComplete: false);
+    buildBookingReadyIncompleteUser(uid: _testUid);
 
 String? _redirect({
   required AsyncValue<String?> uidAsync,
@@ -152,7 +121,7 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
+            uidAsync: const AsyncData(_testUid),
             userProfileAsync: const AsyncData(null),
             location: '/clubs',
             matchedLocation: Routes.clubsListScreen.path,
@@ -191,7 +160,7 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
+            uidAsync: const AsyncData(_testUid),
             userProfileAsync: AsyncData(_identityIncompleteUser()),
             location: '/auth?from=%2Fchats%2Fmatch-1',
             matchedLocation: Routes.authScreen.path,
@@ -206,7 +175,7 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
+            uidAsync: const AsyncData(_testUid),
             userProfileAsync: AsyncData(_bookingReadyUser()),
             location: '/clubs/club-1/events/event-1',
             matchedLocation: Routes.eventDetailScreen.path,
@@ -219,7 +188,7 @@ void main() {
     test('booking-ready users are sent to profile completion for catches', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
+          uidAsync: const AsyncData(_testUid),
           userProfileAsync: AsyncData(_bookingReadyUser()),
           location: '/catches/event-1?tab=recent',
           matchedLocation: Routes.swipeEventScreen.path,
@@ -231,7 +200,7 @@ void main() {
     test('profile-completion onboarding is allowed until social ready', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
+          uidAsync: const AsyncData(_testUid),
           userProfileAsync: AsyncData(_bookingReadyUser()),
           location:
               '/onboarding?intent=complete-profile&from=%2Fcatches%2Fevent-1',
@@ -246,9 +215,9 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
+            uidAsync: const AsyncData(_testUid),
             userProfileAsync: AsyncData(
-              _completeUser().copyWith(
+              _socialReadyUser().copyWith(
                 activityPreferences: const ActivityPreferences(),
               ),
             ),
@@ -264,8 +233,8 @@ void main() {
     test('run-preference onboarding resumes once run preferences are ready', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
-          userProfileAsync: AsyncData(_completeUser()),
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_socialReadyUser()),
           location:
               '/onboarding?intent=complete-run-preferences&from=%2Fclubs%2Fclub-1%2Fevents%2Fevent-1',
           matchedLocation: Routes.onboardingScreen.path,
@@ -291,8 +260,8 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
-            userProfileAsync: AsyncData(_completeUser()),
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: AsyncData(_socialReadyUser()),
             location: '/onboarding?from=%2Fchats%2Fmatch-1',
             matchedLocation: Routes.onboardingScreen.path,
           ),
@@ -304,8 +273,8 @@ void main() {
     test('fully set-up users visiting the auth route land on dashboard', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
-          userProfileAsync: AsyncData(_completeUser()),
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_socialReadyUser()),
           location: '/auth',
           matchedLocation: Routes.authScreen.path,
         ),
@@ -318,8 +287,8 @@ void main() {
       () {
         expect(
           _redirect(
-            uidAsync: const AsyncData('user-1'),
-            userProfileAsync: AsyncData(_completeUser()),
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: AsyncData(_socialReadyUser()),
             location: '/start?from=%2Fclubs%2Fclub-1',
             matchedLocation: Routes.startScreen.path,
           ),
@@ -343,8 +312,8 @@ void main() {
     test('invalid from values are discarded on resume', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
-          userProfileAsync: AsyncData(_completeUser()),
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_socialReadyUser()),
           location: '/auth?from=chats/match-1',
           matchedLocation: Routes.authScreen.path,
         ),
@@ -355,8 +324,8 @@ void main() {
     test('authority-style from values are discarded on resume', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
-          userProfileAsync: AsyncData(_completeUser()),
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_socialReadyUser()),
           location: '/auth?from=%2F%2Fexample.com%2Fclubs',
           matchedLocation: Routes.authScreen.path,
         ),
@@ -367,8 +336,8 @@ void main() {
     test('transient pending destinations resume to dashboard', () {
       expect(
         _redirect(
-          uidAsync: const AsyncData('user-1'),
-          userProfileAsync: AsyncData(_completeUser()),
+          uidAsync: const AsyncData(_testUid),
+          userProfileAsync: AsyncData(_socialReadyUser()),
           location: '/loading?from=%2Fauth',
           matchedLocation: Routes.loadingScreen.path,
         ),

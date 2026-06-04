@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
@@ -15,13 +18,14 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventDetailScreen extends ConsumerWidget {
+class EventDetailScreen extends ConsumerStatefulWidget {
   const EventDetailScreen({
     super.key,
     required this.clubId,
     required this.eventId,
     this.initialEvent,
     this.inviteCode,
+    this.inviteLinkId,
     this.presentationMode = EventDetailPresentationMode.standard,
     this.heroTag,
   });
@@ -30,12 +34,56 @@ class EventDetailScreen extends ConsumerWidget {
   final String eventId;
   final Event? initialEvent;
   final String? inviteCode;
+  final String? inviteLinkId;
   final EventDetailPresentationMode presentationMode;
   final Object? heroTag;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final vmAsync = ref.watch(eventDetailViewModelProvider(eventId));
+  ConsumerState<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
+  String? _recordedInviteLinkId;
+
+  @override
+  void initState() {
+    super.initState();
+    _recordInviteLinkOpen();
+  }
+
+  @override
+  void didUpdateWidget(covariant EventDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.eventId != widget.eventId ||
+        oldWidget.inviteLinkId != widget.inviteLinkId) {
+      _recordInviteLinkOpen();
+    }
+  }
+
+  void _recordInviteLinkOpen() {
+    final inviteLinkId = widget.inviteLinkId?.trim();
+    if (inviteLinkId == null || inviteLinkId.isEmpty) return;
+    if (_recordedInviteLinkId == '${widget.eventId}:$inviteLinkId') return;
+    _recordedInviteLinkId = '${widget.eventId}:$inviteLinkId';
+    unawaited(_recordInviteLinkOpenBestEffort(inviteLinkId));
+  }
+
+  Future<void> _recordInviteLinkOpenBestEffort(String inviteLinkId) async {
+    try {
+      await ref
+          .read(eventRepositoryProvider)
+          .recordInviteLinkOpen(
+            eventId: widget.eventId,
+            inviteLinkId: inviteLinkId,
+          );
+    } catch (_) {
+      // Invite attribution must never block event detail rendering.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vmAsync = ref.watch(eventDetailViewModelProvider(widget.eventId));
     final vm = vmAsync.asData?.value;
 
     if (vm != null) {
@@ -43,7 +91,7 @@ class EventDetailScreen extends ConsumerWidget {
     }
 
     if (vmAsync.isLoading && _initialEventMatchesRoute) {
-      return _buildInitialEventBody(ref, initialEvent!);
+      return _buildInitialEventBody(ref, widget.initialEvent!);
     }
 
     if (vmAsync.isLoading) {
@@ -54,7 +102,8 @@ class EventDetailScreen extends ConsumerWidget {
       return CatchErrorScaffold.fromError(
         vmAsync.error!,
         context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
+        onRetry: () =>
+            ref.invalidate(eventDetailViewModelProvider(widget.eventId)),
       );
     }
 
@@ -65,23 +114,24 @@ class EventDetailScreen extends ConsumerWidget {
   }
 
   bool get _initialEventMatchesRoute =>
-      initialEvent != null &&
-      initialEvent!.id == eventId &&
-      initialEvent!.clubId == clubId;
+      widget.initialEvent != null &&
+      widget.initialEvent!.id == widget.eventId &&
+      widget.initialEvent!.clubId == widget.clubId;
 
   Widget _buildBody(EventDetailViewModel vm) {
     return EventDetailBody(
       event: vm.event,
       userProfile: vm.userProfile,
-      clubId: clubId,
+      clubId: widget.clubId,
       reviews: vm.reviews,
       isAuthenticated: vm.isAuthenticated,
       isHost: vm.isHost,
       isSaved: vm.isSaved,
       participation: vm.participation,
-      inviteCode: inviteCode,
-      presentationMode: presentationMode,
-      heroTag: heroTag,
+      inviteCode: widget.inviteCode,
+      inviteLinkId: widget.inviteLinkId,
+      presentationMode: widget.presentationMode,
+      heroTag: widget.heroTag,
     );
   }
 
@@ -114,15 +164,16 @@ class EventDetailScreen extends ConsumerWidget {
     return EventDetailBody(
       event: event,
       userProfile: userProfile,
-      clubId: clubId,
+      clubId: widget.clubId,
       reviews: reviews,
       isAuthenticated: isAuthenticated,
       isHost: currentUid != null && club?.isHostedBy(currentUid) == true,
       isSaved: savedEvent != null,
       participation: participation,
-      inviteCode: inviteCode,
-      presentationMode: presentationMode,
-      heroTag: heroTag,
+      inviteCode: widget.inviteCode,
+      inviteLinkId: widget.inviteLinkId,
+      presentationMode: widget.presentationMode,
+      heroTag: widget.heroTag,
     );
   }
 }

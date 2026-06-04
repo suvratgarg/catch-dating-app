@@ -16,12 +16,15 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
@@ -30,6 +33,7 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendanc
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -409,6 +413,7 @@ class _PrivateAccessBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final inviteLinksAsync = ref.watch(watchEventInviteLinksProvider(event.id));
     final inviteCode = access?.inviteCode.trim();
     final inviteLink = inviteCode == null || inviteCode.isEmpty
         ? null
@@ -475,6 +480,12 @@ class _PrivateAccessBody extends ConsumerWidget {
               ),
               fullWidth: true,
             ),
+            gapH18,
+            _HostInviteLinksList(
+              event: event,
+              inviteCode: inviteCode,
+              linksAsync: inviteLinksAsync,
+            ),
           ],
         ],
       ),
@@ -509,6 +520,329 @@ class _PrivateAccessBody extends ConsumerWidget {
       );
     }
   }
+}
+
+class _HostInviteLinksList extends ConsumerWidget {
+  const _HostInviteLinksList({
+    required this.event,
+    required this.inviteCode,
+    required this.linksAsync,
+  });
+
+  final Event event;
+  final String inviteCode;
+  final AsyncValue<List<EventInviteLink>> linksAsync;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Named invite links',
+                style: CatchTextStyles.labelL(context),
+              ),
+            ),
+            CatchButton(
+              label: 'New link',
+              onPressed: () => unawaited(_createNamedLink(context, ref)),
+              variant: CatchButtonVariant.secondary,
+              icon: Icon(CatchIcons.addRounded),
+            ),
+          ],
+        ),
+        gapH6,
+        Text(
+          'Track which channels create demand, bookings, arrivals, catches, and chats.',
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
+        gapH12,
+        linksAsync.when(
+          loading: () => Text(
+            'Loading invite links...',
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+          error: (error, _) => CatchInlineErrorState.fromError(
+            error,
+            context: AppErrorContext.event,
+            compact: true,
+            onRetry: () =>
+                ref.invalidate(watchEventInviteLinksProvider(event.id)),
+          ),
+          data: (links) => links.isEmpty
+              ? Text(
+                  'Create links for Instagram bio, WhatsApp alumni, venue partners, or any channel you want to compare.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                )
+              : Column(
+                  children: [
+                    for (final link in links)
+                      _HostInviteLinkRow(
+                        event: event,
+                        inviteCode: inviteCode,
+                        link: link,
+                      ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _createNamedLink(BuildContext context, WidgetRef ref) async {
+    final draft = await _showInviteLinkDialog(context);
+    if (draft == null) return;
+    try {
+      final response = await ref
+          .read(eventRepositoryProvider)
+          .createInviteLink(
+            eventId: event.id,
+            label: draft.label,
+            source: draft.source,
+          );
+      final url = _inviteLinkUrl(
+        event: event,
+        inviteCode: inviteCode,
+        inviteLinkId: response.inviteLinkId,
+      );
+      await Clipboard.setData(ClipboardData(text: url));
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${response.label} copied.')));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not create invite link.')),
+      );
+    }
+  }
+}
+
+class _HostInviteLinkRow extends ConsumerWidget {
+  const _HostInviteLinkRow({
+    required this.event,
+    required this.inviteCode,
+    required this.link,
+  });
+
+  final Event event;
+  final String inviteCode;
+  final EventInviteLink link;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final url = _inviteLinkUrl(
+      event: event,
+      inviteCode: inviteCode,
+      inviteLinkId: link.id,
+    );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      child: CatchSurface(
+        padding: CatchInsets.contentDense,
+        borderColor: t.line,
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          link.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.labelL(context),
+                        ),
+                      ),
+                      if (link.isDisabled) ...[
+                        gapW8,
+                        const CatchBadge(
+                          label: 'Disabled',
+                          tone: CatchBadgeTone.neutral,
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (link.source != null) ...[
+                    gapH2,
+                    Text(
+                      link.source!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                    ),
+                  ],
+                  gapH8,
+                  Text(
+                    _inviteLinkStats(link),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
+              ),
+            ),
+            gapW8,
+            Tooltip(
+              message: 'Copy link',
+              child: IconBtn(
+                onTap: () => unawaited(_copyInviteLink(context, url)),
+                child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
+              ),
+            ),
+            if (!link.isDisabled) ...[
+              gapW8,
+              Tooltip(
+                message: 'Disable link',
+                child: IconBtn(
+                  onTap: () => unawaited(_disableInviteLink(context, ref)),
+                  child: Icon(
+                    CatchIcons.hourglassDisabledRounded,
+                    size: CatchIcon.sm,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _copyInviteLink(BuildContext context, String url) async {
+    await Clipboard.setData(ClipboardData(text: url));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${link.label} copied.')));
+  }
+
+  Future<void> _disableInviteLink(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Disable invite link?',
+      message:
+          'This stops new attribution for ${link.label}, but keeps its history in reporting.',
+      actions: const [
+        CatchDialogAction(label: 'Keep active', value: false),
+        CatchDialogAction(label: 'Disable', value: true, isDestructive: true),
+      ],
+    );
+    if (confirmed != true) return;
+    try {
+      await ref
+          .read(eventRepositoryProvider)
+          .disableInviteLink(eventId: event.id, inviteLinkId: link.id);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${link.label} disabled.')));
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not disable invite link.')),
+      );
+    }
+  }
+}
+
+class _InviteLinkDraft {
+  const _InviteLinkDraft({required this.label, this.source});
+
+  final String label;
+  final String? source;
+}
+
+Future<_InviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
+  final labelController = TextEditingController();
+  final sourceController = TextEditingController();
+  try {
+    return showDialog<_InviteLinkDraft>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          final label = labelController.text.trim();
+          final source = sourceController.text.trim();
+          return AlertDialog(
+            title: const Text('New invite link'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchTextField(
+                  label: 'Label',
+                  controller: labelController,
+                  hintText: 'Instagram bio',
+                  textCapitalization: TextCapitalization.words,
+                  onChanged: (_) => setState(() {}),
+                ),
+                gapH12,
+                CatchTextField(
+                  label: 'Source',
+                  isOptional: true,
+                  controller: sourceController,
+                  hintText: 'instagram',
+                  onChanged: (_) => setState(() {}),
+                ),
+              ],
+            ),
+            actions: [
+              CatchTextButton(
+                label: 'Cancel',
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              CatchTextButton(
+                label: 'Create',
+                onPressed: label.isEmpty
+                    ? null
+                    : () => Navigator.of(context).pop(
+                        _InviteLinkDraft(
+                          label: label,
+                          source: source.isEmpty ? null : source,
+                        ),
+                      ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  } finally {
+    labelController.dispose();
+    sourceController.dispose();
+  }
+}
+
+String _inviteLinkUrl({
+  required Event event,
+  required String inviteCode,
+  required String inviteLinkId,
+}) {
+  return AppDeepLinks.event(
+    clubId: event.clubId,
+    eventId: event.id,
+    inviteCode: inviteCode,
+    inviteLinkId: inviteLinkId,
+  ).toString();
+}
+
+String _inviteLinkStats(EventInviteLink link) {
+  return [
+    '${link.openCount} opens',
+    '${link.requestCount} requests',
+    '${link.confirmedCount} confirmed',
+    '${link.checkedInCount} checked in',
+    '${link.catcherCount} caught',
+    '${link.chatStartedCount} chats',
+  ].join(' | ');
 }
 
 class _HostEventActionsCard extends ConsumerWidget {

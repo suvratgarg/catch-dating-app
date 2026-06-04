@@ -617,6 +617,10 @@ class _CoachPanel extends StatelessWidget {
                 value: brief.scorecard.introCoverageRate,
               ),
               EventSuccessMetricPill(
+                label: 'Caught someone',
+                value: brief.scorecard.caughtSomeoneRate,
+              ),
+              EventSuccessMetricPill(
                 label: 'Host help',
                 value: brief.scorecard.wingmanRequestRate,
               ),

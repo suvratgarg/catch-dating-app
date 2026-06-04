@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,11 +40,16 @@ void main() {
         event: buildEvent(),
         user: buildUser(),
         inviteCode: 'CATCH-DELHI',
+        inviteLinkId: 'invite-link-1',
       );
 
       expect(fakePaymentRepository.bookFreeEventCalled, isTrue);
       expect(fakePaymentRepository.bookedFreeEventId, 'event-1');
       expect(fakePaymentRepository.bookedFreeEventInviteCode, 'CATCH-DELHI');
+      expect(
+        fakePaymentRepository.bookedFreeEventInviteLinkId,
+        'invite-link-1',
+      );
       expect(fakePaymentRepository.processPaymentCalled, isFalse);
     });
 
@@ -116,11 +123,16 @@ void main() {
             event: buildEvent(id: 'paid-event', priceInPaise: 50000),
             user: buildUser(uid: 'runner-7'),
             inviteCode: 'CATCH-DELHI',
+            inviteLinkId: 'invite-link-1',
           );
 
       expect(
         fakePaymentRepository.lastProcessPaymentCall!.inviteCode,
         'CATCH-DELHI',
+      );
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.inviteLinkId,
+        'invite-link-1',
       );
     });
 
@@ -290,10 +302,12 @@ void main() {
             .joinWaitlist(
               event: buildEvent(id: 'event-42'),
               inviteCode: 'CATCH-DELHI',
+              inviteLinkId: 'invite-link-1',
             );
 
         expect(fakeEventRepository.joinedWaitlistEventId, 'event-42');
         expect(fakeEventRepository.joinedWaitlistInviteCode, 'CATCH-DELHI');
+        expect(fakeEventRepository.joinedWaitlistInviteLinkId, 'invite-link-1');
       },
     );
 
@@ -313,6 +327,136 @@ void main() {
           .leaveWaitlist(event: buildEvent(id: 'event-42'));
 
       expect(fakeEventRepository.leftWaitlistEventId, 'event-42');
+    });
+
+    test('createWaitlistOffer delegates to the event repository', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .createWaitlistOffer(eventId: 'event-42', userId: 'runner-9');
+
+      expect(fakeEventRepository.createdWaitlistOfferEventId, 'event-42');
+      expect(fakeEventRepository.createdWaitlistOfferUserIds, ['runner-9']);
+    });
+
+    test('createWaitlistOffers delegates bulk offers in order', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .createWaitlistOffers(
+            eventId: 'event-42',
+            userIds: ['runner-2', 'runner-3'],
+          );
+
+      expect(fakeEventRepository.createdWaitlistOfferEventId, 'event-42');
+      expect(fakeEventRepository.createdWaitlistOfferUserIds, [
+        'runner-2',
+        'runner-3',
+      ]);
+    });
+
+    test('acceptWaitlistOffer keeps free accepted offers in-app', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          paymentRepositoryProvider.overrideWith(
+            (ref) => FakePaymentRepository(),
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      final result = await container
+          .read(eventBookingControllerProvider.notifier)
+          .acceptWaitlistOffer(
+            event: buildEvent(id: 'event-42'),
+            user: buildUser(),
+          );
+
+      expect(result, isNull);
+      expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-42');
+    });
+
+    test(
+      'acceptWaitlistOffer starts checkout for paid accepted offers',
+      () async {
+        final fakeEventRepository = FakeEventRepository()
+          ..acceptWaitlistOfferResponse =
+              const WaitlistOfferAcceptanceCallableResponse(
+                accepted: true,
+                requiresPayment: true,
+                booked: false,
+              );
+        final fakePaymentRepository = FakePaymentRepository()
+          ..processPaymentResult = const PaymentConfirmationData(
+            eventId: 'event-42',
+            paymentId: 'pay-1',
+            orderId: 'order-1',
+            amountInPaise: 25000,
+            currency: 'INR',
+          );
+        final container = ProviderContainer(
+          overrides: [
+            eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+            paymentRepositoryProvider.overrideWith(
+              (ref) => fakePaymentRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        await primeUidProvider(container);
+
+        final result = await container
+            .read(eventBookingControllerProvider.notifier)
+            .acceptWaitlistOffer(
+              event: buildEvent(id: 'event-42', priceInPaise: 25000),
+              user: buildUser(),
+            );
+
+        expect(result?.paymentId, 'pay-1');
+        expect(fakeEventRepository.acceptedWaitlistOfferEventId, 'event-42');
+        expect(fakePaymentRepository.processPaymentCalled, isTrue);
+      },
+    );
+
+    test('declineWaitlistOffer delegates to the event repository', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .declineWaitlistOffer(event: buildEvent(id: 'event-42'));
+
+      expect(fakeEventRepository.declinedWaitlistOfferEventId, 'event-42');
     });
 
     test('approveJoinRequest delegates to the event repository', () async {

@@ -48,6 +48,25 @@ _EventParticipation _$EventParticipationFromJson(Map<String, dynamic> json) =>
         json['hostApprovalDecidedAt'] as Timestamp?,
       ),
       hostApprovalDecidedBy: json['hostApprovalDecidedBy'] as String?,
+      waitlistOfferStatus: $enumDecodeNullable(
+        _$EventWaitlistOfferStatusEnumMap,
+        json['waitlistOfferStatus'],
+      ),
+      waitlistOfferedAt: const NullableTimestampConverter().fromJson(
+        json['waitlistOfferedAt'] as Timestamp?,
+      ),
+      waitlistOfferExpiresAt: const NullableTimestampConverter().fromJson(
+        json['waitlistOfferExpiresAt'] as Timestamp?,
+      ),
+      waitlistOfferAcceptedAt: const NullableTimestampConverter().fromJson(
+        json['waitlistOfferAcceptedAt'] as Timestamp?,
+      ),
+      waitlistOfferId: json['waitlistOfferId'] as String?,
+      inviteLinkId: json['inviteLinkId'] as String?,
+      inviteSource: json['inviteSource'] as String?,
+      inviteCapturedAt: const NullableTimestampConverter().fromJson(
+        json['inviteCapturedAt'] as Timestamp?,
+      ),
     );
 
 Map<String, dynamic> _$EventParticipationToJson(
@@ -77,6 +96,23 @@ Map<String, dynamic> _$EventParticipationToJson(
     instance.hostApprovalDecidedAt,
   ),
   'hostApprovalDecidedBy': instance.hostApprovalDecidedBy,
+  'waitlistOfferStatus':
+      _$EventWaitlistOfferStatusEnumMap[instance.waitlistOfferStatus],
+  'waitlistOfferedAt': const NullableTimestampConverter().toJson(
+    instance.waitlistOfferedAt,
+  ),
+  'waitlistOfferExpiresAt': const NullableTimestampConverter().toJson(
+    instance.waitlistOfferExpiresAt,
+  ),
+  'waitlistOfferAcceptedAt': const NullableTimestampConverter().toJson(
+    instance.waitlistOfferAcceptedAt,
+  ),
+  'waitlistOfferId': instance.waitlistOfferId,
+  'inviteLinkId': instance.inviteLinkId,
+  'inviteSource': instance.inviteSource,
+  'inviteCapturedAt': const NullableTimestampConverter().toJson(
+    instance.inviteCapturedAt,
+  ),
 };
 
 const _$EventParticipationStatusEnumMap = {
@@ -98,4 +134,12 @@ const _$EventJoinRequestStatusEnumMap = {
   EventJoinRequestStatus.pending: 'pending',
   EventJoinRequestStatus.approved: 'approved',
   EventJoinRequestStatus.declined: 'declined',
+};
+
+const _$EventWaitlistOfferStatusEnumMap = {
+  EventWaitlistOfferStatus.active: 'active',
+  EventWaitlistOfferStatus.accepted: 'accepted',
+  EventWaitlistOfferStatus.declined: 'declined',
+  EventWaitlistOfferStatus.expired: 'expired',
+  EventWaitlistOfferStatus.cancelled: 'cancelled',
 };

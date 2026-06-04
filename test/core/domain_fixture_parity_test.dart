@@ -153,20 +153,10 @@ void main() {
       expect(match.user2Id, isNotEmpty);
     });
 
-    test('Review decodes a synthetic review document', () {
-      // No review_doc.json fixture exists; build a minimal valid one.
-      final json = <String, dynamic>{
-        'id': 'review-1',
-        'clubId': 'club-1',
-        'eventId': 'event-1',
-        'reviewerUserId': 'runner-2',
-        'reviewerName': 'Runner Two',
-        'rating': 5,
-        'comment': 'Great event.',
-        'createdAt': Timestamp.fromMillisecondsSinceEpoch(1778889600000),
-      };
+    test('Review decodes review_doc.json', () {
+      final json = _loadFixture('review_doc.json', injectIdField: 'id');
       final review = Review.fromJson(json);
-      expect(review.id, 'review-1');
+      expect(review.id, isNotEmpty);
       expect(review.rating, 5);
     });
 

@@ -5,11 +5,13 @@ import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart'
@@ -101,7 +103,15 @@ EventParticipation buildEventParticipation({
   Gender? genderAtSignup,
   String? cohortAtSignup,
   EventJoinRequestStatus? hostApprovalStatus,
+  EventWaitlistOfferStatus? waitlistOfferStatus,
+  DateTime? waitlistOfferedAt,
+  DateTime? waitlistOfferExpiresAt,
+  DateTime? waitlistOfferAcceptedAt,
+  String? waitlistOfferId,
   String? paymentId,
+  String? inviteLinkId,
+  String? inviteSource,
+  DateTime? inviteCapturedAt,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
   return EventParticipation(
@@ -129,6 +139,14 @@ EventParticipation buildEventParticipation({
     cohortAtSignup: cohortAtSignup,
     paymentId: paymentId,
     hostApprovalStatus: hostApprovalStatus,
+    waitlistOfferStatus: waitlistOfferStatus,
+    waitlistOfferedAt: waitlistOfferedAt,
+    waitlistOfferExpiresAt: waitlistOfferExpiresAt,
+    waitlistOfferAcceptedAt: waitlistOfferAcceptedAt,
+    waitlistOfferId: waitlistOfferId,
+    inviteLinkId: inviteLinkId,
+    inviteSource: inviteSource,
+    inviteCapturedAt: inviteCapturedAt,
   );
 }
 
@@ -304,6 +322,9 @@ class FakeEventRepository extends Fake implements EventRepository {
   Object? updateEventError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
+  Object? createWaitlistOfferError;
+  Object? acceptWaitlistOfferError;
+  Object? declineWaitlistOfferError;
   Object? decideJoinRequestError;
   Object? markAttendanceError;
   String? cancelledEventId;
@@ -315,6 +336,25 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? updatedEventInviteCode;
   String? joinedWaitlistEventId;
   String? joinedWaitlistInviteCode;
+  String? joinedWaitlistInviteLinkId;
+  String? createdInviteLinkEventId;
+  String? createdInviteLinkLabel;
+  String? createdInviteLinkSource;
+  String? disabledInviteLinkEventId;
+  String? disabledInviteLinkId;
+  String? recordedInviteOpenEventId;
+  String? recordedInviteOpenLinkId;
+  String? createdWaitlistOfferEventId;
+  List<String>? createdWaitlistOfferUserIds;
+  int? createdWaitlistOfferExpiresInMinutes;
+  String? acceptedWaitlistOfferEventId;
+  String? declinedWaitlistOfferEventId;
+  WaitlistOfferAcceptanceCallableResponse acceptWaitlistOfferResponse =
+      const WaitlistOfferAcceptanceCallableResponse(
+        accepted: true,
+        requiresPayment: false,
+        booked: true,
+      );
   String? decidedJoinRequestEventId;
   String? decidedJoinRequestUserId;
   String? decidedJoinRequestDecision;
@@ -330,6 +370,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   final Map<String, List<Event>> attendedEvents = {};
   final Map<String, List<Event>> signedUpEvents = {};
   final Map<String, EventPrivateAccess?> privateAccessByEventId = {};
+  final Map<String, List<EventInviteLink>> inviteLinksByEventId = {};
   List<String>? recommendedClubIds;
   List<Event> recommendedEvents = const [];
 
@@ -359,6 +400,10 @@ class FakeEventRepository extends Fake implements EventRepository {
   @override
   Stream<EventPrivateAccess?> watchPrivateAccess(String eventId) =>
       Stream.value(privateAccessByEventId[eventId]);
+
+  @override
+  Stream<List<EventInviteLink>> watchInviteLinks(String eventId) =>
+      Stream.value(inviteLinksByEventId[eventId] ?? const []);
 
   @override
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
@@ -421,12 +466,55 @@ class FakeEventRepository extends Fake implements EventRepository {
   Future<void> joinWaitlistViaFunction({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     if (joinWaitlistError != null) {
       throw joinWaitlistError!;
     }
     joinedWaitlistEventId = eventId;
     joinedWaitlistInviteCode = inviteCode;
+    joinedWaitlistInviteLinkId = inviteLinkId;
+  }
+
+  @override
+  Future<CreateEventInviteLinkCallableResponse> createInviteLink({
+    required String eventId,
+    required String label,
+    String? source,
+  }) async {
+    createdInviteLinkEventId = eventId;
+    createdInviteLinkLabel = label;
+    createdInviteLinkSource = source;
+    return CreateEventInviteLinkCallableResponse(
+      inviteLinkId: 'invite-link-1',
+      eventId: eventId,
+      label: label,
+      source: source,
+    );
+  }
+
+  @override
+  Future<void> disableInviteLink({
+    required String eventId,
+    required String inviteLinkId,
+  }) async {
+    disabledInviteLinkEventId = eventId;
+    disabledInviteLinkId = inviteLinkId;
+  }
+
+  @override
+  Future<RecordEventInviteLinkOpenCallableResponse> recordInviteLinkOpen({
+    required String eventId,
+    required String inviteLinkId,
+  }) async {
+    recordedInviteOpenEventId = eventId;
+    recordedInviteOpenLinkId = inviteLinkId;
+    return RecordEventInviteLinkOpenCallableResponse(
+      accepted: true,
+      disabled: false,
+      eventId: eventId,
+      inviteLinkId: inviteLinkId,
+    );
   }
 
   @override
@@ -435,6 +523,43 @@ class FakeEventRepository extends Fake implements EventRepository {
       throw leaveWaitlistError!;
     }
     leftWaitlistEventId = eventId;
+  }
+
+  @override
+  Future<CreateWaitlistOffersCallableResponse> createWaitlistOffers({
+    required String eventId,
+    required List<String> userIds,
+    int? expiresInMinutes,
+  }) async {
+    if (createWaitlistOfferError != null) {
+      throw createWaitlistOfferError!;
+    }
+    createdWaitlistOfferEventId = eventId;
+    createdWaitlistOfferUserIds = userIds;
+    createdWaitlistOfferExpiresInMinutes = expiresInMinutes;
+    return const CreateWaitlistOffersCallableResponse(
+      createdCount: 1,
+      skippedCount: 0,
+    );
+  }
+
+  @override
+  Future<WaitlistOfferAcceptanceCallableResponse> acceptWaitlistOffer({
+    required String eventId,
+  }) async {
+    if (acceptWaitlistOfferError != null) {
+      throw acceptWaitlistOfferError!;
+    }
+    acceptedWaitlistOfferEventId = eventId;
+    return acceptWaitlistOfferResponse;
+  }
+
+  @override
+  Future<void> declineWaitlistOffer({required String eventId}) async {
+    if (declineWaitlistOfferError != null) {
+      throw declineWaitlistOfferError!;
+    }
+    declinedWaitlistOfferEventId = eventId;
   }
 
   @override
@@ -527,11 +652,13 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
       currencyCode.trim().toUpperCase() == 'INR' ? supportsPaid : true;
 
   String? bookedFreeEventInviteCode;
+  String? bookedFreeEventInviteLinkId;
 
   @override
   Future<void> bookFreeEvent({
     required String eventId,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     if (bookFreeEventError != null) {
       throw bookFreeEventError!;
@@ -539,6 +666,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     bookFreeEventCalled = true;
     bookedFreeEventId = eventId;
     bookedFreeEventInviteCode = inviteCode;
+    bookedFreeEventInviteLinkId = inviteLinkId;
   }
 
   @override
@@ -550,6 +678,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     required String userEmail,
     required String userContact,
     String? inviteCode,
+    String? inviteLinkId,
   }) async {
     if (!supportsPaid) {
       throw const PaidBookingUnsupportedException();
@@ -566,6 +695,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
       userEmail: userEmail,
       userContact: userContact,
       inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
     );
     return processPaymentResult ??
         PaymentConfirmationData(
@@ -590,6 +720,7 @@ class ProcessPaymentCall {
     required this.userEmail,
     required this.userContact,
     this.inviteCode,
+    this.inviteLinkId,
   });
 
   final String eventId;
@@ -599,6 +730,7 @@ class ProcessPaymentCall {
   final String userEmail;
   final String userContact;
   final String? inviteCode;
+  final String? inviteLinkId;
 }
 
 class FakePublicProfileRepository extends Fake

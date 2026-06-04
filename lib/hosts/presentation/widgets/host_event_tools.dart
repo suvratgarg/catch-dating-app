@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:flutter/material.dart';
 
 class HostEventToolItem {
@@ -282,6 +283,11 @@ class HostEventToolCard extends StatelessWidget {
       ],
       actions: [
         EventActionCardAction(
+          key: switch (action) {
+            _HostEventAction.takeAttendance =>
+              HostEventActionKeys.takeAttendanceButton,
+            _ => null,
+          },
           label: action.label,
           icon: action.icon,
           variant: CatchButtonVariant.primary,
