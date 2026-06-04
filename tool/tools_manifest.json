@@ -171,6 +171,16 @@
       "checks": ["bash -n tool/check_data_contract.sh"]
     },
     {
+      "id": "test:app-shell-integration",
+      "category": "test",
+      "path": "tool/test_app_shell_integration.sh",
+      "command": "bash tool/test_app_shell_integration.sh",
+      "safety": "local-build-test",
+      "status": "active",
+      "description": "Runs the split deterministic app-shell integration suites on a local Flutter desktop device.",
+      "checks": ["bash -n tool/test_app_shell_integration.sh"]
+    },
+    {
       "id": "contracts:generate-business-rules",
       "category": "contracts",
       "path": "tool/contracts/generate_business_rules.mjs",
@@ -426,6 +436,16 @@
       "status": "internal",
       "description": "Shared demo schedule-lock and event timing policy helpers.",
       "checks": ["node --check tool/demo/demo_schedule_policy.mjs"]
+    },
+    {
+      "id": "demo:seed-scenario-catalog",
+      "category": "demo",
+      "path": "tool/demo/demo_seed_scenario_catalog.mjs",
+      "command": "node --test tool/demo/demo_seed_scenario_catalog.test.mjs",
+      "safety": "local-test",
+      "status": "internal",
+      "description": "Loads and validates reusable demo seed scenario metadata.",
+      "checks": ["node --check tool/demo/demo_seed_scenario_catalog.mjs", "node --test tool/demo/demo_seed_scenario_catalog.test.mjs"]
     },
     {
       "id": "demo:seed",

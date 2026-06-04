@@ -19,15 +19,15 @@ Modes:
 EOF
 }
 
-mode_args=()
+mode_arg=""
 case "${1:-}" in
   "")
     ;;
   --summary)
-    mode_args+=(--summary)
+    mode_arg="--summary"
     ;;
   --count)
-    mode_args+=(--count)
+    mode_arg="--count"
     ;;
   --help|-h)
     usage
@@ -40,7 +40,13 @@ case "${1:-}" in
 esac
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+if [[ -n "$mode_arg" ]]; then
+  exec bash tool/check_catch_ui_lint_drift.sh \
+    --code "catch_no_raw_content_dimension" \
+    --label "sizing doctrine" \
+    "$mode_arg"
+fi
+
 exec bash tool/check_catch_ui_lint_drift.sh \
   --code "catch_no_raw_content_dimension" \
-  --label "sizing doctrine" \
-  "${mode_args[@]}"
+  --label "sizing doctrine"

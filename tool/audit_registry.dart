@@ -16,6 +16,7 @@ const trackedPaths = [
   'packages',
   'pubspec.lock',
   'pubspec.yaml',
+  'integration_test',
   'test',
   'functions/src',
   'functions/test',

@@ -595,13 +595,21 @@ emulator backed.
 
 ### Current Pending Integration Tests
 
-Last updated: 2026-05-13.
+Last updated: 2026-06-04.
 
-The local app-shell suite in `integration_test/app_shell_smoke_test.dart`
-currently covers the deterministic feature-flow surface with service side
-effects faked at repository/provider boundaries. Keep these pending tests out
-of the default local suite unless they are made emulator-backed or gated behind
-an explicit device/live-service test target.
+The deterministic app-shell integration coverage is tracked in
+`docs/plans/integration_test_architecture_tracker.md`. Run the split local
+suite with:
+
+```bash
+node tool/run.mjs run test:app-shell-integration
+```
+
+The split suite covers app-shell launch/routing plus focused club, event,
+dashboard, Catches, chat, settings, review, and regression flows with service
+side effects faked at repository/provider boundaries. Keep the pending
+live-service tests below out of the default local suite unless they are made
+emulator-backed or gated behind an explicit device/live-service test target.
 
 | Area | Local code-side coverage now present | Pending test/evidence | Required environment |
 | --- | --- | --- | --- |
