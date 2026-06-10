@@ -588,6 +588,81 @@
       "checks": ["bash -n tool/write_ios_maps_key_xcconfig.sh"]
     },
     {
+      "id": "host-discovery:validate",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/validate_discovery_data.mjs",
+      "command": "node tool/host_discovery/validate_discovery_data.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates organizer discovery categories, candidate batches, seed links, and dedupe keys.",
+      "checks": [
+        "node --check tool/host_discovery/validate_discovery_data.mjs",
+        "node tool/host_discovery/validate_discovery_data.mjs --check"
+      ]
+    },
+    {
+      "id": "host-discovery:plan-searches",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/plan_search_runs.mjs",
+      "command": "node tool/host_discovery/plan_search_runs.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Builds the deterministic organizer discovery search plan while skipping fresh run logs.",
+      "checks": [
+        "node --check tool/host_discovery/plan_search_runs.mjs",
+        "node tool/host_discovery/plan_search_runs.mjs --check"
+      ]
+    },
+    {
+      "id": "host-discovery:source-evidence",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/generate_source_evidence.mjs",
+      "command": "node tool/host_discovery/generate_source_evidence.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Normalizes organizer discovery run logs into source evidence records for future Firestore import.",
+      "checks": [
+        "node --check tool/host_discovery/generate_source_evidence.mjs",
+        "node tool/host_discovery/generate_source_evidence.mjs --check"
+      ]
+    },
+    {
+      "id": "host-discovery:index-readiness",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/check_index_readiness.mjs",
+      "command": "node tool/host_discovery/check_index_readiness.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Checks seeded organizer pages against the noindex-to-index readiness gate.",
+      "checks": [
+        "node --check tool/host_discovery/check_index_readiness.mjs",
+        "node tool/host_discovery/check_index_readiness.mjs --check"
+      ]
+    },
+    {
+      "id": "host-discovery:import-plan",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/export_seed_import_plan.mjs",
+      "command": "node tool/host_discovery/export_seed_import_plan.mjs",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Exports a dry-run Firestore write plan for approved organizer seed docs and source evidence.",
+      "checks": [
+        "node --check tool/host_discovery/export_seed_import_plan.mjs",
+        "node tool/host_discovery/export_seed_import_plan.mjs --check"
+      ]
+    },
+    {
+      "id": "host-discovery:apply-import-plan",
+      "category": "host-discovery",
+      "path": "tool/host_discovery/apply_seed_import_plan.mjs",
+      "command": "node tool/host_discovery/apply_seed_import_plan.mjs",
+      "safety": "remote-write-guarded",
+      "status": "active",
+      "description": "Applies an approved host discovery Firestore import plan with explicit project, overwrite, and prod guardrails.",
+      "checks": ["node --check tool/host_discovery/apply_seed_import_plan.mjs"]
+    },
+    {
       "id": "marketing:device-frame",
       "category": "marketing",
       "path": "tool/marketing/frame_device_capture.dart",

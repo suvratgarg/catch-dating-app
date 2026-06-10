@@ -115,6 +115,22 @@ void main() {
       ]);
     });
 
+    test('setReviewResponse delegates host responses to callable', () async {
+      await repository.setReviewResponse(
+        reviewId: 'event-1~runner-1',
+        message: 'Thanks for joining us.',
+      );
+
+      final callable =
+          functions.httpsCallable('setReviewResponse') as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'reviewId': 'event-1~runner-1',
+          'message': 'Thanks for joining us.',
+        },
+      ]);
+    });
+
     test(
       'watchUserReviewForEvent emits the deterministic review doc',
       () async {

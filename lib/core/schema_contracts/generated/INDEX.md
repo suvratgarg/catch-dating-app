@@ -24,6 +24,7 @@ Do not edit it by hand.
 | ClubDocument | `firestore/clubs.schema.json` | `functions/src/shared/generated/clubDocument.ts` |
 | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `functions/src/shared/generated/clubMembershipDocument.ts` |
 | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `functions/src/shared/generated/clubHostClaimDocument.ts` |
+| ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `functions/src/shared/generated/clubClaimRequestDocument.ts` |
 | EventDocument | `firestore/events.schema.json` | `functions/src/shared/generated/eventDocument.ts` |
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
@@ -62,6 +63,11 @@ Do not edit it by hand.
 | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `functions/src/shared/generated/addClubHostCallablePayload.ts` |
 | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `functions/src/shared/generated/removeClubHostCallablePayload.ts` |
 | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `functions/src/shared/generated/transferClubOwnershipCallablePayload.ts` |
+| RequestClubClaimCallablePayload | `callables/request_club_claim_payload.schema.json` | `functions/src/shared/generated/requestClubClaimCallablePayload.ts` |
+| AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `functions/src/shared/generated/adminDecideClubClaimCallablePayload.ts` |
+| AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts` |
+| AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `functions/src/shared/generated/adminGetClubDetailsCallablePayload.ts` |
+| AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts` |
 | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `functions/src/shared/generated/startClubHostConversationCallablePayload.ts` |
 | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `functions/src/shared/generated/archiveClubCallablePayload.ts` |
 | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `functions/src/shared/generated/deleteClubCallablePayload.ts` |
@@ -86,8 +92,11 @@ Do not edit it by hand.
 | MarkEventAttendanceCallableResponse | `callable_responses/mark_event_attendance_response.schema.json` | `functions/src/shared/generated/markEventAttendanceCallableResponse.ts` |
 | SelfCheckInAttendanceCallablePayload | `callables/self_check_in_attendance_payload.schema.json` | `functions/src/shared/generated/selfCheckInAttendanceCallablePayload.ts` |
 | CreateEventReviewCallablePayload | `callables/create_event_review_payload.schema.json` | `functions/src/shared/generated/createEventReviewCallablePayload.ts` |
+| CreatePublicClubReviewCallablePayload | `callables/create_public_club_review_payload.schema.json` | `functions/src/shared/generated/createPublicClubReviewCallablePayload.ts` |
+| ListPublicClubReviewsCallablePayload | `callables/list_public_club_reviews_payload.schema.json` | `functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts` |
 | UpdateEventReviewCallablePayload | `callables/update_event_review_payload.schema.json` | `functions/src/shared/generated/updateEventReviewCallablePayload.ts` |
 | DeleteEventReviewCallablePayload | `callables/delete_event_review_payload.schema.json` | `functions/src/shared/generated/deleteEventReviewCallablePayload.ts` |
+| SetReviewResponseCallablePayload | `callables/set_review_response_payload.schema.json` | `functions/src/shared/generated/setReviewResponseCallablePayload.ts` |
 | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `functions/src/shared/generated/blockUserCallablePayload.ts` |
 | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `functions/src/shared/generated/unblockUserCallablePayload.ts` |
 | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `functions/src/shared/generated/reportUserCallablePayload.ts` |
@@ -132,6 +141,7 @@ Do not edit it by hand.
 | `schemaClubDocumentSchema` | ClubDocument | `firestore/clubs.schema.json` | `lib/core/schema_contracts/generated/schemas/club_document.g.dart` |
 | `schemaClubMembershipDocumentSchema` | ClubMembershipDocument | `firestore/club_memberships.schema.json` | `lib/core/schema_contracts/generated/schemas/club_membership_document.g.dart` |
 | `schemaClubHostClaimDocumentSchema` | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/club_host_claim_document.g.dart` |
+| `schemaClubClaimRequestDocumentSchema` | ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/club_claim_request_document.g.dart` |
 | `schemaEventDocumentSchema` | EventDocument | `firestore/events.schema.json` | `lib/core/schema_contracts/generated/schemas/event_document.g.dart` |
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
@@ -170,6 +180,11 @@ Do not edit it by hand.
 | `schemaAddClubHostCallablePayloadSchema` | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/add_club_host_callable_payload.g.dart` |
 | `schemaRemoveClubHostCallablePayloadSchema` | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/remove_club_host_callable_payload.g.dart` |
 | `schemaTransferClubOwnershipCallablePayloadSchema` | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/transfer_club_ownership_callable_payload.g.dart` |
+| `schemaRequestClubClaimCallablePayloadSchema` | RequestClubClaimCallablePayload | `callables/request_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/request_club_claim_callable_payload.g.dart` |
+| `schemaAdminDecideClubClaimCallablePayloadSchema` | AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_club_claim_callable_payload.g.dart` |
+| `schemaAdminSetClubIndexStatusCallablePayloadSchema` | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_club_index_status_callable_payload.g.dart` |
+| `schemaAdminGetClubDetailsCallablePayloadSchema` | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_get_club_details_callable_payload.g.dart` |
+| `schemaAdminUpdateClubDetailsCallablePayloadSchema` | AdminUpdateClubDetailsCallablePayload | `callables/admin_update_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_update_club_details_callable_payload.g.dart` |
 | `schemaStartClubHostConversationCallablePayloadSchema` | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/start_club_host_conversation_callable_payload.g.dart` |
 | `schemaArchiveClubCallablePayloadSchema` | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/archive_club_callable_payload.g.dart` |
 | `schemaDeleteClubCallablePayloadSchema` | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_club_callable_payload.g.dart` |
@@ -194,8 +209,11 @@ Do not edit it by hand.
 | `schemaMarkEventAttendanceCallableResponseSchema` | MarkEventAttendanceCallableResponse | `callable_responses/mark_event_attendance_response.schema.json` | `lib/core/schema_contracts/generated/schemas/mark_event_attendance_callable_response.g.dart` |
 | `schemaSelfCheckInAttendanceCallablePayloadSchema` | SelfCheckInAttendanceCallablePayload | `callables/self_check_in_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/self_check_in_attendance_callable_payload.g.dart` |
 | `schemaCreateEventReviewCallablePayloadSchema` | CreateEventReviewCallablePayload | `callables/create_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_event_review_callable_payload.g.dart` |
+| `schemaCreatePublicClubReviewCallablePayloadSchema` | CreatePublicClubReviewCallablePayload | `callables/create_public_club_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/create_public_club_review_callable_payload.g.dart` |
+| `schemaListPublicClubReviewsCallablePayloadSchema` | ListPublicClubReviewsCallablePayload | `callables/list_public_club_reviews_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_public_club_reviews_callable_payload.g.dart` |
 | `schemaUpdateEventReviewCallablePayloadSchema` | UpdateEventReviewCallablePayload | `callables/update_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_event_review_callable_payload.g.dart` |
 | `schemaDeleteEventReviewCallablePayloadSchema` | DeleteEventReviewCallablePayload | `callables/delete_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/delete_event_review_callable_payload.g.dart` |
+| `schemaSetReviewResponseCallablePayloadSchema` | SetReviewResponseCallablePayload | `callables/set_review_response_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_review_response_callable_payload.g.dart` |
 | `schemaBlockUserCallablePayloadSchema` | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/block_user_callable_payload.g.dart` |
 | `schemaUnblockUserCallablePayloadSchema` | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/unblock_user_callable_payload.g.dart` |
 | `schemaReportUserCallablePayloadSchema` | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/report_user_callable_payload.g.dart` |
@@ -233,6 +251,10 @@ Do not edit it by hand.
 | AddClubHostCallableRequest | AddClubHostCallablePayload | `callables/add_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/add_club_host_callable_request.g.dart` |
 | RemoveClubHostCallableRequest | RemoveClubHostCallablePayload | `callables/remove_club_host_payload.schema.json` | `lib/core/schema_contracts/generated/callables/remove_club_host_callable_request.g.dart` |
 | TransferClubOwnershipCallableRequest | TransferClubOwnershipCallablePayload | `callables/transfer_club_ownership_payload.schema.json` | `lib/core/schema_contracts/generated/callables/transfer_club_ownership_callable_request.g.dart` |
+| RequestClubClaimCallableRequest | RequestClubClaimCallablePayload | `callables/request_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/callables/request_club_claim_callable_request.g.dart` |
+| AdminDecideClubClaimCallableRequest | AdminDecideClubClaimCallablePayload | `callables/admin_decide_club_claim_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_club_claim_callable_request.g.dart` |
+| AdminSetClubIndexStatusCallableRequest | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_club_index_status_callable_request.g.dart` |
+| AdminGetClubDetailsCallableRequest | AdminGetClubDetailsCallablePayload | `callables/admin_get_club_details_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_get_club_details_callable_request.g.dart` |
 | StartClubHostConversationCallableRequest | StartClubHostConversationCallablePayload | `callables/start_club_host_conversation_payload.schema.json` | `lib/core/schema_contracts/generated/callables/start_club_host_conversation_callable_request.g.dart` |
 | ArchiveClubCallableRequest | ArchiveClubCallablePayload | `callables/archive_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/archive_club_callable_request.g.dart` |
 | DeleteClubCallableRequest | DeleteClubCallablePayload | `callables/delete_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_club_callable_request.g.dart` |
@@ -257,8 +279,11 @@ Do not edit it by hand.
 | CompleteEventSuccessFirstHelloMissionCallableRequest | CompleteEventSuccessFirstHelloMissionCallablePayload | `callables/complete_event_success_first_hello_mission_payload.schema.json` | `lib/core/schema_contracts/generated/callables/complete_event_success_first_hello_mission_callable_request.g.dart` |
 | SelfCheckInAttendanceCallableRequest | SelfCheckInAttendanceCallablePayload | `callables/self_check_in_attendance_payload.schema.json` | `lib/core/schema_contracts/generated/callables/self_check_in_attendance_callable_request.g.dart` |
 | CreateEventReviewCallableRequest | CreateEventReviewCallablePayload | `callables/create_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_event_review_callable_request.g.dart` |
+| CreatePublicClubReviewCallableRequest | CreatePublicClubReviewCallablePayload | `callables/create_public_club_review_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_public_club_review_callable_request.g.dart` |
+| ListPublicClubReviewsCallableRequest | ListPublicClubReviewsCallablePayload | `callables/list_public_club_reviews_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_public_club_reviews_callable_request.g.dart` |
 | UpdateEventReviewCallableRequest | UpdateEventReviewCallablePayload | `callables/update_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/callables/update_event_review_callable_request.g.dart` |
 | DeleteEventReviewCallableRequest | DeleteEventReviewCallablePayload | `callables/delete_event_review_payload.schema.json` | `lib/core/schema_contracts/generated/callables/delete_event_review_callable_request.g.dart` |
+| SetReviewResponseCallableRequest | SetReviewResponseCallablePayload | `callables/set_review_response_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_review_response_callable_request.g.dart` |
 | BlockUserCallableRequest | BlockUserCallablePayload | `callables/block_user_payload.schema.json` | `lib/core/schema_contracts/generated/callables/block_user_callable_request.g.dart` |
 | UnblockUserCallableRequest | UnblockUserCallablePayload | `callables/unblock_user_payload.schema.json` | `lib/core/schema_contracts/generated/callables/unblock_user_callable_request.g.dart` |
 | ReportUserCallableRequest | ReportUserCallablePayload | `callables/report_user_payload.schema.json` | `lib/core/schema_contracts/generated/callables/report_user_callable_request.g.dart` |
@@ -275,6 +300,7 @@ Do not edit it by hand.
 | Schema | Reason |
 |---|---|
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
+| AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | RefreshStripeHostPaymentAccountCallablePayload | no properties |
 
 ## Registry And Validator Outputs

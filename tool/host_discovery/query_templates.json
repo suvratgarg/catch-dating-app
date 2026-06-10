@@ -1,0 +1,77 @@
+[
+  {
+    "id": "run_club_city_v1",
+    "category": "social_run_club",
+    "sources": ["web_search", "places_text_search", "instagram_manual"],
+    "queryTemplates": [
+      "run club {city}",
+      "social run {city}",
+      "community run {city}",
+      "running club {city}",
+      "site:instagram.com run club {city}",
+      "\"{candidateName}\" {city}",
+      "\"{candidateName}\" official"
+    ],
+    "fitSignals": [
+      "recurring runs",
+      "social hangout after activity",
+      "mixed adult community",
+      "manual signup or DM flow",
+      "public event evidence"
+    ]
+  },
+  {
+    "id": "organizer_brand_city_v1",
+    "category": "organizer_brand",
+    "sources": ["web_search", "official_site", "event_platforms", "instagram_manual"],
+    "queryTemplates": [
+      "\"{candidateName}\" {city}",
+      "\"{candidateName}\" running",
+      "\"{candidateName}\" events",
+      "\"{candidateName}\" registration",
+      "\"{candidateName}\" Luma"
+    ],
+    "fitSignals": [
+      "official website",
+      "community programming",
+      "city-specific event evidence",
+      "event-platform host profile",
+      "brand plus organizer identity"
+    ]
+  },
+  {
+    "id": "singles_events_city_v1",
+    "category": "singles_event_operator",
+    "sources": ["web_search", "event_platforms", "instagram_manual"],
+    "queryTemplates": [
+      "singles events {city}",
+      "speed dating {city}",
+      "singles mixer {city}",
+      "curated singles dinner {city}"
+    ],
+    "fitSignals": [
+      "single adults",
+      "paid or RSVP events",
+      "guest curation",
+      "repeat cadence",
+      "post-event introduction pain"
+    ]
+  },
+  {
+    "id": "racket_social_city_v1",
+    "category": "racket_sport_social",
+    "sources": ["web_search", "places_text_search", "instagram_manual"],
+    "queryTemplates": [
+      "pickleball social {city}",
+      "padel social {city}",
+      "tennis mixer {city}",
+      "badminton social {city}"
+    ],
+    "fitSignals": [
+      "rotations or pairings",
+      "mixed-gender social play",
+      "court capacity limits",
+      "waitlist or booking pressure"
+    ]
+  }
+]

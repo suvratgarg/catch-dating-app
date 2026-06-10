@@ -636,12 +636,20 @@ export interface ClubDocument {
   description: string;
   location: string | null;
   area: string;
-  hostUserId: string;
-  hostName: string;
-  hostAvatarUrl: string | null;
-  ownerUserId: string;
   /**
-   * @minItems 1
+   * Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.
+   */
+  hostUserId: string | null;
+  /**
+   * Legacy host display projection. Null when the organizer has not been claimed by a Catch user.
+   */
+  hostName: string | null;
+  hostAvatarUrl: string | null;
+  /**
+   * Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.
+   */
+  ownerUserId: string | null;
+  /**
    * @maxItems 20
    */
   hostUserIds: string[];
@@ -671,6 +679,132 @@ export interface ClubDocument {
   archivedAt: FirebaseFirestore.Timestamp | null;
   archiveReason: string | null;
   hostDefaults?: ClubHostDefaults;
+  /**
+   * Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.
+   */
+  entityKind?:
+    | "club"
+    | "venue"
+    | "eventOrganizer"
+    | "creatorCommunity"
+    | "brand";
+  /**
+   * @maxItems 20
+   */
+  entitySubtypes?: string[];
+  /**
+   * Reader-facing category label for web and discovery surfaces.
+   */
+  displayCategory?: string | null;
+  cityName?: string | null;
+  regionName?: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
+  /**
+   * Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.
+   */
+  appVisibility?: "discoverable" | "hidden";
+  /**
+   * Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.
+   */
+  ownership?: {
+    state: "programmatic" | "userCreated" | "claimed" | "transferred";
+    ownerUserId: string | null;
+    primaryHostUserId: string | null;
+    /**
+     * @maxItems 20
+     */
+    hostUserIds: string[];
+    claimedAt: FirebaseFirestore.Timestamp | null;
+    claimedByUid: string | null;
+  };
+  claim?: {
+    state: "unclaimed" | "claimPending" | "claimed" | "verified" | "suppressed";
+    claimHref: string | null;
+    lastClaimRequestId: string | null;
+  };
+  publicPage?: {
+    slug: string;
+    citySlug: string | null;
+    canonicalPath: string;
+    publishStatus: "draft" | "qa" | "published" | "suppressed" | "removed";
+    indexStatus: "noindex" | "indexReady" | "indexed";
+    robots: "noindex, follow" | "index, follow";
+    seoTitle: string | null;
+    seoDescription: string | null;
+    lastRenderedAt: FirebaseFirestore.Timestamp | null;
+    indexReview?: {
+      reviewedAt: FirebaseFirestore.Timestamp;
+      reviewedByUid: string;
+      indexStatus: "noindex" | "indexReady" | "indexed";
+      checklist: {
+        sourceEvidenceVerified: boolean;
+        mediaRightsVerified: boolean;
+        cadenceVerified: boolean;
+        ownerContactVerified: boolean;
+      };
+      reviewNote: string | null;
+    } | null;
+  };
+  provenance?: {
+    origin: "userCreated" | "scraper" | "adminSeed" | "import";
+    sourceConfidence: "seedOnly" | "low" | "medium" | "high" | "ownerVerified";
+    verificationStatus: "unverified" | "sourceBacked" | "ownerVerified";
+    lastVerifiedAt: FirebaseFirestore.Timestamp | null;
+  };
+  /**
+   * Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.
+   */
+  publicProfile?: {
+    headline?: string | null;
+    summary?: string | null;
+    sourceSummary?: string | null;
+    /**
+     * @maxItems 12
+     */
+    formats?: string[];
+    /**
+     * @maxItems 20
+     */
+    facts?: {
+      label: string;
+      value: string;
+    }[];
+    /**
+     * @maxItems 8
+     */
+    fitNotes?: string[];
+    /**
+     * @maxItems 12
+     */
+    missingEvidence?: string[];
+    /**
+     * @maxItems 12
+     */
+    eventEvidence?: {
+      title: string;
+      date: string;
+      location: string;
+      summary: string;
+      /**
+       * @maxItems 12
+       */
+      facts: string[];
+      sourceLabel: string;
+      sourceHref: string;
+    }[];
+  };
+  /**
+   * @maxItems 20
+   */
+  publicSources?: {
+    type: string;
+    label: string;
+    detail: string;
+    href: string | null;
+    confidence: "low" | "medium" | "high";
+    lastCheckedAt: FirebaseFirestore.Timestamp | null;
+  }[];
 }
 
 /**
@@ -694,6 +828,37 @@ export interface ClubHostClaimDocument {
   uid: string;
   clubId: string;
   createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Server-owned organizer listing claim request stored at clubClaimRequests/{requestId}.
+ */
+export interface ClubClaimRequestDocument {
+  requestId: string;
+  clubId: string;
+  requesterUid: string;
+  requesterName: string;
+  requesterRole:
+    | "owner"
+    | "founder"
+    | "manager"
+    | "marketer"
+    | "venueManager"
+    | "other";
+  businessEmail: string | null;
+  businessPhone: string | null;
+  /**
+   * @maxItems 8
+   */
+  proofUrls: string[];
+  message: string | null;
+  status: "pending" | "approved" | "rejected" | "withdrawn" | "superseded";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  decidedAt: FirebaseFirestore.Timestamp | null;
+  decidedByUid: string | null;
+  decisionReason: string | null;
+  previousRequestId: string | null;
 }
 
 /**
@@ -1432,17 +1597,48 @@ export interface ActivityNotificationDocument {
 }
 
 /**
- * Canonical attended-event review stored at reviews/{reviewId}.
+ * Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.
  */
 export interface ReviewDocument {
   clubId: string;
   eventId?: string | null;
-  reviewerUserId: string;
+  /**
+   * Catch user id for signed-in reviewers. Null for anonymous public listing reviews.
+   */
+  reviewerUserId: string | null;
   reviewerName: string;
   rating: number;
   comment: string;
+  /**
+   * Verified reviews are created only after attended Catch events; public listing reviews are unverified.
+   */
+  verificationStatus?: "verified" | "unverified";
+  /**
+   * Submission surface that created the review.
+   */
+  source?: "catchEvent" | "publicListing";
+  /**
+   * Public rendering status for organizer listing pages.
+   */
+  moderationStatus?: "published" | "pending" | "rejected";
+  /**
+   * True when the public display name should be the anonymous fallback rather than a user-supplied or profile name.
+   */
+  isAnonymous?: boolean;
+  /**
+   * Website path that submitted an unverified public listing review.
+   */
+  submittedFromPath?: string | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp | null;
+  ownerResponse?: {
+    hostUserId: string;
+    hostName: string;
+    hostAvatarUrl: string | null;
+    message: string;
+    createdAt: FirebaseFirestore.Timestamp;
+    updatedAt: FirebaseFirestore.Timestamp;
+  };
 }
 
 /**

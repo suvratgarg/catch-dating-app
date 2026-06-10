@@ -548,6 +548,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /clubClaimRequests/{requestId} {
+      allow read, write: if false;
+    }
+
     match /clubs/{clubId} {
       allow read: if true;
 

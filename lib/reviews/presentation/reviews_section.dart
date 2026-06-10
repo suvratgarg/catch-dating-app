@@ -7,14 +7,20 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
+import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Read-only club review aggregate.
 ///
@@ -93,6 +99,10 @@ class EventReviewsSection extends StatelessWidget {
                   existingReview: review,
                 )
               : null,
+          onRespondToReview: isHost
+              ? (review) =>
+                    showReviewResponseSheet(context: context, review: review)
+              : null,
         ),
 
         // Review writes are event-scoped so one user can review each event once.
@@ -129,6 +139,7 @@ class ReviewsPreviewSection extends StatelessWidget {
     this.compactEmptyState = false,
     this.emptyMessage,
     this.onEditReview,
+    this.onRespondToReview,
   });
 
   final List<Review> reviews;
@@ -138,6 +149,7 @@ class ReviewsPreviewSection extends StatelessWidget {
   final bool compactEmptyState;
   final String? emptyMessage;
   final ValueChanged<Review>? onEditReview;
+  final ValueChanged<Review>? onRespondToReview;
 
   void _showAllReviews(BuildContext context) {
     showModalBottomSheet<void>(
@@ -160,6 +172,9 @@ class ReviewsPreviewSection extends StatelessWidget {
                 onEdit: isOwn && onEditReview != null
                     ? () => onEditReview!(review)
                     : null,
+                onRespond: onRespondToReview == null
+                    ? null
+                    : () => onRespondToReview!(review),
               );
             },
           ),
@@ -233,6 +248,9 @@ class ReviewsPreviewSection extends StatelessWidget {
                       previewReviews[i].reviewerUserId == currentUid
                   ? () => onEditReview!(previewReviews[i])
                   : null,
+              onRespond: onRespondToReview == null
+                  ? null
+                  : () => onRespondToReview!(previewReviews[i]),
             ),
             if (i < previewReviews.length - 1) gapH12,
           ],
@@ -256,11 +274,13 @@ class ReviewCard extends StatelessWidget {
     required this.review,
     required this.isOwn,
     this.onEdit,
+    this.onRespond,
   });
 
   final Review review;
   final bool isOwn;
   final VoidCallback? onEdit;
+  final VoidCallback? onRespond;
 
   @override
   Widget build(BuildContext context) {
@@ -301,6 +321,21 @@ class ReviewCard extends StatelessWidget {
                     ),
                   ),
                 ),
+              if (onRespond != null)
+                Tooltip(
+                  message: review.ownerResponse == null
+                      ? 'Respond as host'
+                      : 'Edit host response',
+                  child: IconBtn(
+                    key: ReviewKeys.respondToReviewButton(review.id),
+                    onTap: onRespond!,
+                    child: Icon(
+                      CatchIcons.rateReviewOutlined,
+                      size: CatchIcon.xs,
+                      color: t.primary,
+                    ),
+                  ),
+                ),
             ],
           ),
           if (review.comment.isNotEmpty) ...[
@@ -309,6 +344,166 @@ class ReviewCard extends StatelessWidget {
               review.comment,
               style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
+          ],
+          if (review.ownerResponse case final response?) ...[
+            gapH12,
+            _ReviewOwnerResponseBlock(response: response),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ReviewOwnerResponseBlock extends StatelessWidget {
+  const _ReviewOwnerResponseBlock({required this.response});
+
+  final ReviewOwnerResponse response;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      width: double.infinity,
+      padding: CatchInsets.contentDense,
+      radius: CatchRadius.sm,
+      backgroundColor: t.accent.withValues(
+        alpha: CatchOpacity.activityIconFill,
+      ),
+      borderColor: t.accent.withValues(alpha: CatchOpacity.activityIconBorder),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              PersonAvatar(
+                name: response.hostName,
+                imageUrl: response.hostAvatarUrl,
+                size: 24,
+              ),
+              gapW8,
+              Expanded(
+                child: Text(
+                  'Host response · ${response.hostName}',
+                  style: CatchTextStyles.labelS(context, color: t.ink),
+                ),
+              ),
+            ],
+          ),
+          gapH6,
+          Text(
+            response.message,
+            style: CatchTextStyles.supporting(context, color: t.ink2),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+Future<void> showReviewResponseSheet({
+  required BuildContext context,
+  required Review review,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => _ReviewResponseSheet(review: review),
+  );
+}
+
+class _ReviewResponseSheet extends ConsumerStatefulWidget {
+  const _ReviewResponseSheet({required this.review});
+
+  final Review review;
+
+  @override
+  ConsumerState<_ReviewResponseSheet> createState() =>
+      _ReviewResponseSheetState();
+}
+
+class _ReviewResponseSheetState extends ConsumerState<_ReviewResponseSheet> {
+  late final TextEditingController _messageController;
+  bool _didResetMutation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _messageController = TextEditingController(
+      text: widget.review.ownerResponse?.message ?? '',
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didResetMutation) return;
+    _didResetMutation = true;
+    WriteReviewController.responseMutation.reset(ref);
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final message = _messageController.text.trim();
+    if (message.isEmpty) return;
+    try {
+      await WriteReviewController.responseMutation.run(ref, (tx) async {
+        await tx
+            .get(writeReviewControllerProvider.notifier)
+            .setOwnerResponse(reviewId: widget.review.id, message: message);
+      });
+    } catch (_) {
+      // Inline ErrorBanner owns user-facing error display.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mutation = ref.watch(WriteReviewController.responseMutation);
+    final canSubmit = _messageController.text.trim().isNotEmpty;
+
+    ref.listen(WriteReviewController.responseMutation, (prev, next) {
+      if (prev?.isPending == true && next.isSuccess) {
+        Navigator.of(context).pop();
+      }
+    });
+
+    return CatchBottomSheetScaffold(
+      title: widget.review.ownerResponse == null
+          ? 'Respond to review'
+          : 'Edit response',
+      keyboardSafe: true,
+      action: CatchButton(
+        key: ReviewKeys.submitOwnerResponseButton,
+        label: 'Save response',
+        onPressed: !canSubmit || mutation.isPending ? null : _submit,
+        isLoading: mutation.isPending,
+        fullWidth: true,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchTextField(
+            key: ReviewKeys.ownerResponseField,
+            label: 'Response',
+            controller: _messageController,
+            maxLines: 4,
+            hintText: 'Thank the attendee or clarify what happened',
+            textCapitalization: TextCapitalization.sentences,
+            inputFormatters: [LengthLimitingTextInputFormatter(1000)],
+            onChanged: (_) => setState(() {}),
+          ),
+          if (mutation.hasError) ...[
+            gapH12,
+            ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

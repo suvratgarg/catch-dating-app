@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
-    show DeleteEventReviewCallableRequest;
+    show DeleteEventReviewCallableRequest, SetReviewResponseCallableRequest;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/reviews/data/review_callable_adapters.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -136,6 +136,23 @@ class ReviewsRepository {
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'delete review',
+      resource: _collectionPath,
+    ),
+  );
+
+  Future<void> setReviewResponse({
+    required String reviewId,
+    required String message,
+  }) => withBackendErrorContext(
+    () => _functions.httpsCallable('setReviewResponse').call(
+      SetReviewResponseCallableRequest(
+        reviewId: reviewId,
+        message: message,
+      ).toJson(),
+    ),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'set review response',
       resource: _collectionPath,
     ),
   );

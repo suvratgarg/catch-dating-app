@@ -2236,15 +2236,26 @@ export const clubDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.",
       "x-catch-ownership": "callable-owned"
     },
     "hostName": {
-      "type": "string",
-      "minLength": 1,
+      "type": [
+        "string",
+        "null"
+      ],
       "maxLength": 120,
+      "description": "Legacy host display projection. Null when the organizer has not been claimed by a Catch user.",
       "x-catch-ownership": "callable-owned"
     },
     "hostAvatarUrl": {
@@ -2261,14 +2272,21 @@ export const clubDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "callable-owned"
     },
     "ownerUserId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.",
       "x-catch-ownership": "callable-owned"
     },
     "hostUserIds": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 20,
       "uniqueItems": true,
       "items": {
@@ -2280,7 +2298,6 @@ export const clubDocumentSchema: Record<string, unknown> = {
     },
     "hostProfiles": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 20,
       "items": {
         "type": "object",
@@ -3376,6 +3393,688 @@ export const clubDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "entityKind": {
+      "type": "string",
+      "enum": [
+        "club",
+        "venue",
+        "eventOrganizer",
+        "creatorCommunity",
+        "brand"
+      ],
+      "description": "Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "entitySubtypes": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "displayCategory": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Reader-facing category label for web and discovery surfaces.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cityName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "regionName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "countryCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "countryName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "appVisibility": {
+      "type": "string",
+      "enum": [
+        "discoverable",
+        "hidden"
+      ],
+      "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.",
+      "required": [
+        "state",
+        "ownerUserId",
+        "primaryHostUserId",
+        "hostUserIds",
+        "claimedAt",
+        "claimedByUid"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "programmatic",
+            "userCreated",
+            "claimed",
+            "transferred"
+          ]
+        },
+        "ownerUserId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "primaryHostUserId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hostUserIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "claimedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "claimedByUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "claimHref",
+        "lastClaimRequestId"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified",
+            "suppressed"
+          ]
+        },
+        "claimHref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "lastClaimRequestId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "citySlug",
+        "canonicalPath",
+        "publishStatus",
+        "indexStatus",
+        "robots",
+        "seoTitle",
+        "seoDescription",
+        "lastRenderedAt"
+      ],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "citySlug": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "canonicalPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed"
+          ]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed"
+          ]
+        },
+        "robots": {
+          "type": "string",
+          "enum": [
+            "noindex, follow",
+            "index, follow"
+          ]
+        },
+        "seoTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "seoDescription": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "lastRenderedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "indexReview": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "reviewedAt",
+            "reviewedByUid",
+            "indexStatus",
+            "checklist",
+            "reviewNote"
+          ],
+          "properties": {
+            "reviewedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            "reviewedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "indexStatus": {
+              "type": "string",
+              "enum": [
+                "noindex",
+                "indexReady",
+                "indexed"
+              ]
+            },
+            "checklist": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sourceEvidenceVerified",
+                "mediaRightsVerified",
+                "cadenceVerified",
+                "ownerContactVerified"
+              ],
+              "properties": {
+                "sourceEvidenceVerified": {
+                  "type": "boolean"
+                },
+                "mediaRightsVerified": {
+                  "type": "boolean"
+                },
+                "cadenceVerified": {
+                  "type": "boolean"
+                },
+                "ownerContactVerified": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "reviewNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "sourceConfidence",
+        "verificationStatus",
+        "lastVerifiedAt"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "enum": [
+            "userCreated",
+            "scraper",
+            "adminSeed",
+            "import"
+          ]
+        },
+        "sourceConfidence": {
+          "type": "string",
+          "enum": [
+            "seedOnly",
+            "low",
+            "medium",
+            "high",
+            "ownerVerified"
+          ]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": [
+            "unverified",
+            "sourceBacked",
+            "ownerVerified"
+          ]
+        },
+        "lastVerifiedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "publicProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.",
+      "properties": {
+        "headline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 800
+        },
+        "sourceSummary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 800
+        },
+        "formats": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "facts": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "value"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "fitNotes": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        },
+        "missingEvidence": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "eventEvidence": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "date",
+              "location",
+              "summary",
+              "facts",
+              "sourceLabel",
+              "sourceHref"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "date": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "location": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "facts": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                }
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceHref": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicSources": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "label",
+          "detail",
+          "href",
+          "confidence",
+          "lastCheckedAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+          },
+          "href": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "lastCheckedAt": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -3636,6 +4335,225 @@ export const clubHostClaimDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "server-only"
+    }
+  }
+} as const;
+
+export const clubClaimRequestDocumentSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/club_claim_requests.schema.json",
+  "title": "ClubClaimRequestDocument",
+  "description": "Server-owned organizer listing claim request stored at clubClaimRequests/{requestId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "clubClaimRequests",
+  "x-firestore-path": "clubClaimRequests/{requestId}",
+  "x-document-id-field": "requestId",
+  "x-owner": "requestClubClaim and adminDecideClubClaim callables",
+  "required": [
+    "requestId",
+    "clubId",
+    "requesterUid",
+    "requesterName",
+    "requesterRole",
+    "businessEmail",
+    "businessPhone",
+    "proofUrls",
+    "message",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "decidedAt",
+    "decidedByUid",
+    "decisionReason",
+    "previousRequestId"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterRole": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "founder",
+        "manager",
+        "marketer",
+        "venueManager",
+        "other"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "businessEmail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320,
+      "x-catch-ownership": "callable-owned"
+    },
+    "businessPhone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 32,
+      "x-catch-ownership": "callable-owned"
+    },
+    "proofUrls": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "uniqueItems": true,
+      "x-catch-ownership": "callable-owned"
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "withdrawn",
+        "superseded"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "decidedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "decidedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "decisionReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "previousRequestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;
@@ -9454,7 +10372,7 @@ export const reviewDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reviews.schema.json",
   "title": "ReviewDocument",
-  "description": "Canonical attended-event review stored at reviews/{reviewId}.",
+  "description": "Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reviews",
@@ -9494,9 +10412,17 @@ export const reviewDocumentSchema: Record<string, unknown> = {
       "x-catch-ownership": "callable-owned"
     },
     "reviewerUserId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180,
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Catch user id for signed-in reviewers. Null for anonymous public listing reviews.",
       "x-catch-ownership": "callable-owned"
     },
     "reviewerName": {
@@ -9514,6 +10440,48 @@ export const reviewDocumentSchema: Record<string, unknown> = {
     "comment": {
       "type": "string",
       "maxLength": 1000,
+      "x-catch-ownership": "callable-owned"
+    },
+    "verificationStatus": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "unverified"
+      ],
+      "description": "Verified reviews are created only after attended Catch events; public listing reviews are unverified.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "catchEvent",
+        "publicListing"
+      ],
+      "description": "Submission surface that created the review.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "moderationStatus": {
+      "type": "string",
+      "enum": [
+        "published",
+        "pending",
+        "rejected"
+      ],
+      "description": "Public rendering status for organizer listing pages.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "isAnonymous": {
+      "type": "boolean",
+      "description": "True when the public display name should be the anonymous fallback rather than a user-supplied or profile name.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "submittedFromPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240,
+      "description": "Website path that submitted an unverified public listing review.",
       "x-catch-ownership": "callable-owned"
     },
     "createdAt": {
@@ -9564,6 +10532,88 @@ export const reviewDocumentSchema: Record<string, unknown> = {
         }
       ],
       "x-catch-ownership": "callable-owned"
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostUserId",
+        "hostName",
+        "hostAvatarUrl",
+        "message",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "x-catch-ownership": "callable-owned"
+        },
+        "hostName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-catch-ownership": "callable-owned"
+        },
+        "hostAvatarUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "x-catch-ownership": "callable-owned"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "x-catch-ownership": "callable-owned"
+        },
+        "createdAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        },
+        "updatedAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          },
+          "x-catch-ownership": "callable-owned"
+        }
+      }
     },
     "synthetic": {
       "type": "boolean",
@@ -12810,6 +13860,494 @@ export const transferClubOwnershipCallablePayloadSchema: Record<string, unknown>
   }
 } as const;
 
+export const requestClubClaimCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/request_club_claim_payload.schema.json",
+  "title": "RequestClubClaimCallablePayload",
+  "description": "Callable payload accepted by requestClubClaim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "requesterName",
+    "requesterRole"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requesterName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "requesterRole": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "founder",
+        "manager",
+        "marketer",
+        "venueManager",
+        "other"
+      ]
+    },
+    "businessEmail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "businessPhone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 32
+    },
+    "proofUrls": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "maxLength": 2048
+      },
+      "uniqueItems": true
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
+export const adminDecideClubClaimCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
+  "title": "AdminDecideClubClaimCallablePayload",
+  "description": "Callable payload accepted by adminDecideClubClaim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "decision"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "approve",
+        "reject"
+      ]
+    },
+    "decisionReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
+export const adminSetClubIndexStatusCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+  "title": "AdminSetClubIndexStatusCallablePayload",
+  "description": "Callable payload accepted by adminSetClubIndexStatus.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "indexStatus",
+    "checklist"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "indexStatus": {
+      "type": "string",
+      "enum": [
+        "noindex",
+        "indexReady",
+        "indexed"
+      ]
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceEvidenceVerified",
+        "mediaRightsVerified",
+        "cadenceVerified",
+        "ownerContactVerified"
+      ],
+      "properties": {
+        "sourceEvidenceVerified": {
+          "type": "boolean"
+        },
+        "mediaRightsVerified": {
+          "type": "boolean"
+        },
+        "cadenceVerified": {
+          "type": "boolean"
+        },
+        "ownerContactVerified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "reviewNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
+export const adminGetClubDetailsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_get_club_details_payload.schema.json",
+  "title": "AdminGetClubDetailsCallablePayload",
+  "description": "Callable payload accepted by adminGetClubDetails.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
+export const adminUpdateClubDetailsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_update_club_details_payload.schema.json",
+  "title": "AdminUpdateClubDetailsCallablePayload",
+  "description": "Callable payload accepted by adminUpdateClubDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
+  "x-callable-shape": "patch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "fields"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "location": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "area": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "instagramHandle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "imageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "profileImageUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entityKind": {
+          "type": "string",
+          "enum": [
+            "club",
+            "venue",
+            "eventOrganizer",
+            "creatorCommunity",
+            "brand"
+          ]
+        },
+        "entitySubtypes": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "displayCategory": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "cityName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "regionName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "countryCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{2}$"
+        },
+        "countryName": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": [
+            "discoverable",
+            "hidden"
+          ]
+        },
+        "publicPage": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "citySlug": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "canonicalPath": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "publishStatus": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "qa",
+                "published",
+                "suppressed",
+                "removed"
+              ]
+            },
+            "seoTitle": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "seoDescription": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 320
+            }
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "sourceConfidence": {
+              "type": "string",
+              "enum": [
+                "seedOnly",
+                "low",
+                "medium",
+                "high",
+                "ownerVerified"
+              ]
+            },
+            "verificationStatus": {
+              "type": "string",
+              "enum": [
+                "unverified",
+                "sourceBacked",
+                "ownerVerified"
+              ]
+            }
+          }
+        },
+        "publicProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "headline": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 160
+            },
+            "summary": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 800
+            },
+            "sourceSummary": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 800
+            },
+            "formats": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "fitNotes": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400
+              }
+            },
+            "missingEvidence": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          }
+        }
+      }
+    },
+    "reviewNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+} as const;
+
 export const startClubHostConversationCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/start_club_host_conversation_payload.schema.json",
@@ -15152,6 +16690,72 @@ export const createEventReviewCallablePayloadSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const createPublicClubReviewCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_public_club_review_payload.schema.json",
+  "title": "CreatePublicClubReviewCallablePayload",
+  "description": "Callable payload accepted by createPublicClubReview for unverified public organizer listing reviews.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId",
+    "rating",
+    "comment",
+    "reviewerName",
+    "isAnonymous"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "comment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "reviewerName": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "isAnonymous": {
+      "type": "boolean"
+    },
+    "submittedFromPath": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  }
+} as const;
+
+export const listPublicClubReviewsCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_public_club_reviews_payload.schema.json",
+  "title": "ListPublicClubReviewsCallablePayload",
+  "description": "Callable payload accepted by listPublicClubReviews for public organizer listing review hydration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
 export const updateEventReviewCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/update_event_review_payload.schema.json",
@@ -15197,6 +16801,31 @@ export const deleteEventReviewCallablePayloadSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    }
+  }
+} as const;
+
+export const setReviewResponseCallablePayloadSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_review_response_payload.schema.json",
+  "title": "SetReviewResponseCallablePayload",
+  "description": "Callable payload accepted by setReviewResponse.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reviewId",
+    "message"
+  ],
+  "properties": {
+    "reviewId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
     }
   }
 } as const;

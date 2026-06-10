@@ -1,0 +1,150 @@
+{
+  "checkedAt": "2026-06-10",
+  "generatedFrom": {
+    "candidateBatches": [
+      "tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json"
+    ],
+    "seedDocs": [
+      "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json"
+    ],
+    "sourceEvidence": "tool/host_discovery/generated/source_evidence.json"
+  },
+  "results": [
+    {
+      "blockers": [
+        "current_cadence_verified",
+        "owner_or_contact_verified",
+        "media_permission_verified"
+      ],
+      "candidateId": "afterfly-run-club-indore",
+      "canonicalPath": "/organizers/indore/afterfly-run-club/",
+      "gates": [
+        {
+          "description": "Candidate has a backend-shaped seed club document.",
+          "id": "canonical_seed_doc",
+          "passed": true
+        },
+        {
+          "description": "Seed page remains QA/noindex until all readiness gates pass.",
+          "id": "qa_noindex_until_ready",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed page has a claim/correction path.",
+          "id": "unclaimed_claim_cta",
+          "passed": true
+        },
+        {
+          "description": "Programmatic listing is hidden from native app discovery until approved.",
+          "id": "hidden_from_app",
+          "passed": true
+        },
+        {
+          "description": "At least one high-confidence public source is available.",
+          "id": "stable_public_source",
+          "passed": true
+        },
+        {
+          "description": "Profile has enough original owner-safe summary and facts.",
+          "id": "owner_safe_profile_copy",
+          "passed": true
+        },
+        {
+          "description": "Target city identity is verified by public evidence.",
+          "id": "city_identity_verified",
+          "passed": true
+        },
+        {
+          "description": "Current event cadence is verified.",
+          "id": "current_cadence_verified",
+          "passed": false
+        },
+        {
+          "description": "Owner, host, or preferred business contact has been verified.",
+          "id": "owner_or_contact_verified",
+          "passed": false
+        },
+        {
+          "description": "Logo or profile media permission is verified, or a neutral/generated asset is selected.",
+          "id": "media_permission_verified",
+          "passed": false
+        }
+      ],
+      "indexReady": false,
+      "nextAction": "Verify current cadence and owner contact before changing indexStatus.",
+      "seedDocumentPath": "clubs/afterfly-run-club-indore"
+    },
+    {
+      "blockers": [
+        "city_identity_verified",
+        "current_cadence_verified",
+        "owner_or_contact_verified",
+        "media_permission_verified"
+      ],
+      "candidateId": "bhag-run-club-delhi",
+      "canonicalPath": "/organizers/delhi/bhag-run-club/",
+      "gates": [
+        {
+          "description": "Candidate has a backend-shaped seed club document.",
+          "id": "canonical_seed_doc",
+          "passed": true
+        },
+        {
+          "description": "Seed page remains QA/noindex until all readiness gates pass.",
+          "id": "qa_noindex_until_ready",
+          "passed": true
+        },
+        {
+          "description": "Unclaimed page has a claim/correction path.",
+          "id": "unclaimed_claim_cta",
+          "passed": true
+        },
+        {
+          "description": "Programmatic listing is hidden from native app discovery until approved.",
+          "id": "hidden_from_app",
+          "passed": true
+        },
+        {
+          "description": "At least one high-confidence public source is available.",
+          "id": "stable_public_source",
+          "passed": true
+        },
+        {
+          "description": "Profile has enough original owner-safe summary and facts.",
+          "id": "owner_safe_profile_copy",
+          "passed": true
+        },
+        {
+          "description": "Target city identity is verified by public evidence.",
+          "id": "city_identity_verified",
+          "passed": false
+        },
+        {
+          "description": "Current event cadence is verified.",
+          "id": "current_cadence_verified",
+          "passed": false
+        },
+        {
+          "description": "Owner, host, or preferred business contact has been verified.",
+          "id": "owner_or_contact_verified",
+          "passed": false
+        },
+        {
+          "description": "Logo or profile media permission is verified, or a neutral/generated asset is selected.",
+          "id": "media_permission_verified",
+          "passed": false
+        }
+      ],
+      "indexReady": false,
+      "nextAction": "Resolve whether to model Bhag as one national organizer or city-specific profiles.",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi"
+    }
+  ],
+  "schemaVersion": 1,
+  "summary": {
+    "blocked": 2,
+    "checked": 2,
+    "indexReady": 0
+  }
+}

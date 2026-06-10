@@ -1,0 +1,223 @@
+{
+  "counts": {
+    "byCandidate": {
+      "afterfly-run-club-indore": 2,
+      "bhag-run-club-delhi": 3
+    },
+    "byType": {
+      "embedded_event_data": 1,
+      "official_registration_page": 1,
+      "official_site": 1,
+      "public_event_page": 2
+    },
+    "publicDisplayAllowed": 4
+  },
+  "evidence": [
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "capturedAt": "2026-06-10",
+      "capturedButNotDisplayed": [],
+      "capturedFacts": [
+        "instagram_handle: afterfly.in",
+        "location_type: offline",
+        "timezone: Asia/Kolkata",
+        "geo_address_visibility: guests-only"
+      ],
+      "clubId": "afterfly-run-club-indore",
+      "displayPolicy": {
+        "excludedFromPublicProfile": [],
+        "notes": [
+          "Display original Catch-written summaries instead of copied source text.",
+          "Do not display raw images, private coordinates, registration counts, or commerce internals without owner permission."
+        ],
+        "ownerSafeSummaryAllowed": true,
+        "publicDisplayAllowed": false,
+        "rawSnapshotAllowedOnWebsite": false
+      },
+      "evidenceId": "afterfly-run-club-indore-embedded-event-data-1-b83767fe4c",
+      "futureFirestorePath": "clubSourceEvidence/afterfly-run-club-indore-embedded-event-data-1-b83767fe4c",
+      "runId": "2026-06-10-afterfly-run-club-indore",
+      "seedDocumentPath": "clubs/afterfly-run-club-indore",
+      "seedFile": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "sourceConfidence": "high",
+      "sourceOwner": null,
+      "sourceRunFile": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+      "sourceType": "embedded_event_data",
+      "sourceUrl": "https://luma.com/pxgmph3b"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "capturedAt": "2026-06-10",
+      "capturedButNotDisplayed": [
+        "Luma cover image URL",
+        "Luma host avatar URL",
+        "Obfuscated geo coordinates",
+        "Registration count from embedded page data"
+      ],
+      "capturedFacts": [
+        "Event title: AFTERFLY TAKEOFF RUN & RAVE",
+        "Host label: AFTER FLY",
+        "City/region: Indore, Madhya Pradesh",
+        "Categories: Fitness, Wellness",
+        "Event time: 2025-03-16 07:00-11:00 Asia/Kolkata",
+        "Public copy describes a social run followed by a post-run techno social",
+        "Meeting point copy mentions Traffic Park near Daly College",
+        "After-run copy mentions Tropico Cafe",
+        "Public page says registration is closed"
+      ],
+      "clubId": "afterfly-run-club-indore",
+      "displayPolicy": {
+        "excludedFromPublicProfile": [
+          "Luma cover image URL",
+          "Luma host avatar URL",
+          "Obfuscated geo coordinates",
+          "Registration count from embedded page data"
+        ],
+        "notes": [
+          "Display original Catch-written summaries instead of copied source text.",
+          "Do not display raw images, private coordinates, registration counts, or commerce internals without owner permission."
+        ],
+        "ownerSafeSummaryAllowed": true,
+        "publicDisplayAllowed": true,
+        "rawSnapshotAllowedOnWebsite": false
+      },
+      "evidenceId": "afterfly-run-club-indore-public-event-page-0-059470e42b",
+      "futureFirestorePath": "clubSourceEvidence/afterfly-run-club-indore-public-event-page-0-059470e42b",
+      "runId": "2026-06-10-afterfly-run-club-indore",
+      "seedDocumentPath": "clubs/afterfly-run-club-indore",
+      "seedFile": "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "sourceConfidence": "high",
+      "sourceOwner": "Luma",
+      "sourceRunFile": "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+      "sourceType": "public_event_page",
+      "sourceUrl": "https://luma.com/pxgmph3b"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "capturedAt": "2026-06-10",
+      "capturedButNotDisplayed": [],
+      "capturedFacts": [
+        "Registration page shares Bhag brand metadata",
+        "Page is an official event-registration surface"
+      ],
+      "clubId": "bhag-run-club-delhi",
+      "displayPolicy": {
+        "excludedFromPublicProfile": [],
+        "notes": [
+          "Display original Catch-written summaries instead of copied source text.",
+          "Do not display raw images, private coordinates, registration counts, or commerce internals without owner permission."
+        ],
+        "ownerSafeSummaryAllowed": true,
+        "publicDisplayAllowed": true,
+        "rawSnapshotAllowedOnWebsite": false
+      },
+      "evidenceId": "bhag-run-club-delhi-official-registration-page-1-2b2255c1d1",
+      "futureFirestorePath": "clubSourceEvidence/bhag-run-club-delhi-official-registration-page-1-2b2255c1d1",
+      "runId": "2026-06-10-bhag-run-club-delhi",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi",
+      "seedFile": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+      "sourceConfidence": "medium",
+      "sourceOwner": "Bhag Club Private Limited",
+      "sourceRunFile": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+      "sourceType": "official_registration_page",
+      "sourceUrl": "https://thebhag.in/pages/registration"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "capturedAt": "2026-06-10",
+      "capturedButNotDisplayed": [
+        "Shopify storefront internals",
+        "WhatsApp chat number",
+        "Commerce/app scripts"
+      ],
+      "capturedFacts": [
+        "Site title describes THE BHAG Club as a running community and premium activewear surface",
+        "Meta description mentions weekly runs, training programs, and activewear",
+        "Open Graph site_name: Bhag Club Private Limited"
+      ],
+      "clubId": "bhag-run-club-delhi",
+      "displayPolicy": {
+        "excludedFromPublicProfile": [
+          "Shopify storefront internals",
+          "WhatsApp chat number",
+          "Commerce/app scripts"
+        ],
+        "notes": [
+          "Display original Catch-written summaries instead of copied source text.",
+          "Do not display raw images, private coordinates, registration counts, or commerce internals without owner permission."
+        ],
+        "ownerSafeSummaryAllowed": true,
+        "publicDisplayAllowed": true,
+        "rawSnapshotAllowedOnWebsite": false
+      },
+      "evidenceId": "bhag-run-club-delhi-official-site-0-50c6e313d8",
+      "futureFirestorePath": "clubSourceEvidence/bhag-run-club-delhi-official-site-0-50c6e313d8",
+      "runId": "2026-06-10-bhag-run-club-delhi",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi",
+      "seedFile": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+      "sourceConfidence": "high",
+      "sourceOwner": "Bhag Club Private Limited",
+      "sourceRunFile": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+      "sourceType": "official_site",
+      "sourceUrl": "https://thebhag.in/"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "capturedAt": "2026-06-10",
+      "capturedButNotDisplayed": [
+        "Exact street address",
+        "Luma host avatar URL",
+        "Registration count from embedded page data"
+      ],
+      "capturedFacts": [
+        "Event title: Bhag GGN",
+        "Organizer calendar: BHAG RUNS",
+        "Host label: Bhag Club",
+        "Host website: https://www.thebhag.in",
+        "Host social handle: bhagclub",
+        "Event city/region: Gurugram, Haryana",
+        "Event time: 2025-11-08 07:00-09:00 Asia/Kolkata",
+        "Category: Fitness",
+        "Distance: 3KM",
+        "Registration type: free general admission"
+      ],
+      "clubId": "bhag-run-club-delhi",
+      "displayPolicy": {
+        "excludedFromPublicProfile": [
+          "Exact street address",
+          "Luma host avatar URL",
+          "Registration count from embedded page data"
+        ],
+        "notes": [
+          "Display original Catch-written summaries instead of copied source text.",
+          "Do not display raw images, private coordinates, registration counts, or commerce internals without owner permission."
+        ],
+        "ownerSafeSummaryAllowed": true,
+        "publicDisplayAllowed": true,
+        "rawSnapshotAllowedOnWebsite": false
+      },
+      "evidenceId": "bhag-run-club-delhi-public-event-page-2-6a052e81fa",
+      "futureFirestorePath": "clubSourceEvidence/bhag-run-club-delhi-public-event-page-2-6a052e81fa",
+      "runId": "2026-06-10-bhag-run-club-delhi",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi",
+      "seedFile": "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json",
+      "sourceConfidence": "high",
+      "sourceOwner": "Luma",
+      "sourceRunFile": "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json",
+      "sourceType": "public_event_page",
+      "sourceUrl": "https://luma.com/ixj7uqiu"
+    }
+  ],
+  "evidenceCount": 5,
+  "generatedFrom": {
+    "runs": [
+      "tool/host_discovery/runs/2026-06-10-afterfly-run-club-indore.json",
+      "tool/host_discovery/runs/2026-06-10-bhag-run-club-delhi.json"
+    ],
+    "seedDocs": [
+      "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json"
+    ]
+  },
+  "schemaVersion": 1
+}

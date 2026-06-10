@@ -208,6 +208,12 @@ export async function createStripeCheckoutSessionHandler(
   }
   const club = requireDoc<ClubDocument>(clubSnap, "ClubDocument");
   const hostUserId = clubOwnerUserId(club);
+  if (!hostUserId) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This organizer has not claimed payouts yet."
+    );
+  }
   const hostAccountSnap = await db
     .collection("hostPaymentAccounts")
     .doc(hostUserId)

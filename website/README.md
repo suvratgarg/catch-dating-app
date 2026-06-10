@@ -11,6 +11,12 @@ after matching changes land on `main`.
 The validation job checks generated design-token CSS, app-derived marketing
 media, screenshot design-context drift, and the Vite production build.
 
+Organizer listing pages include a Firebase-backed claim form. Production builds
+must set the Firebase web config and `VITE_WEBSITE_APPCHECK_SITE_KEY` from
+`env.example`; local development falls back to the checked-in dev Firebase web
+app config, but claim submission still needs an App Check site key because
+`requestClubClaim` enforces App Check.
+
 The deploy job uses the repo's existing `prod` Firebase alias and Google Cloud
 Workload Identity variables:
 
@@ -45,4 +51,8 @@ Primary web events:
 - `host_lead_started`
 - `host_lead_submit_attempt`
 - `host_lead_submitted`
+- `listing_claim_sign_in_started`
+- `listing_claim_signed_in`
+- `listing_claim_submit_attempt`
+- `listing_claim_submitted`
 - `generate_lead`

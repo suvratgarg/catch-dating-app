@@ -40,7 +40,7 @@ void main() {
         .submit(
           clubId: existing.clubId,
           eventId: existing.eventId!,
-          reviewerUserId: existing.reviewerUserId,
+          reviewerUserId: existing.reviewerUserId!,
           reviewerName: existing.reviewerName,
           rating: 5,
           comment: '  Updated  ',
@@ -82,6 +82,22 @@ void main() {
 
     expect(repository.deletedReviewId, 'review-1');
   });
+
+  test('setOwnerResponse delegates trimmed host response', () async {
+    final repository = _FakeReviewsRepository();
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await container
+        .read(writeReviewControllerProvider.notifier)
+        .setOwnerResponse(
+          reviewId: 'review-1',
+          message: '  Thanks for joining us.  ',
+        );
+
+    expect(repository.responseReviewId, 'review-1');
+    expect(repository.responseMessage, 'Thanks for joining us.');
+  });
 }
 
 ProviderContainer _reviewsContainer(_FakeReviewsRepository repository) {
@@ -90,6 +106,7 @@ ProviderContainer _reviewsContainer(_FakeReviewsRepository repository) {
   );
   WriteReviewController.submitMutation.reset(container);
   WriteReviewController.deleteMutation.reset(container);
+  WriteReviewController.responseMutation.reset(container);
   return container;
 }
 
@@ -97,6 +114,8 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
   Review? addedReview;
   Review? updatedReview;
   String? deletedReviewId;
+  String? responseReviewId;
+  String? responseMessage;
 
   @override
   Future<void> addReview(Review review) async {
@@ -111,5 +130,14 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
   @override
   Future<void> deleteReview(String reviewId) async {
     deletedReviewId = reviewId;
+  }
+
+  @override
+  Future<void> setReviewResponse({
+    required String reviewId,
+    required String message,
+  }) async {
+    responseReviewId = reviewId;
+    responseMessage = message;
   }
 }

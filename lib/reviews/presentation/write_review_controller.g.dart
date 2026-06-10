@@ -63,7 +63,7 @@ final class WriteReviewControllerProvider
 }
 
 String _$writeReviewControllerHash() =>
-    r'29424468d80067c7ddfaa536d72b27494402694c';
+    r'a5280d6bef96ad0a70bf3aad1c12d13c6af291e4';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
