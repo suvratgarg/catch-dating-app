@@ -37,7 +37,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -220,6 +221,10 @@ select {
 
 .ghost-button,
 .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   padding: 0 14px;
   cursor: pointer;
   font-weight: 700;
@@ -368,7 +373,7 @@ select {
 
 .queue-columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 10px;
 }
 
@@ -454,6 +459,142 @@ select {
 .decision-actions button:disabled {
   cursor: progress;
   opacity: 0.62;
+}
+
+.organizer-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.45fr);
+  gap: 14px;
+}
+
+.organizer-editor-panel {
+  min-height: 620px;
+}
+
+.organizer-loadbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.organizer-loadbar label,
+.field-control {
+  display: grid;
+  gap: 6px;
+}
+
+.organizer-loadbar span,
+.field-control span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.organizer-loadbar input,
+.field-control input,
+.field-control select,
+.field-control textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.organizer-loadbar input,
+.field-control input,
+.field-control select {
+  height: 36px;
+  padding: 0 10px;
+}
+
+.field-control textarea {
+  min-height: 82px;
+  padding: 9px 10px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.organizer-form {
+  display: grid;
+  gap: 13px;
+}
+
+.editor-section {
+  min-width: 0;
+  margin: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfbfa;
+}
+
+.editor-section legend {
+  padding: 0 6px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.form-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.editor-section > .field-control,
+.editor-section > .form-grid {
+  margin-top: 10px;
+}
+
+.empty-editor {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.organizer-state-list {
+  display: grid;
+  gap: 8px;
+}
+
+.state-row {
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f8fafc;
+}
+
+.state-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.state-row strong {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 13px;
 }
 
 .empty-row {
@@ -694,6 +835,14 @@ th {
   .queue-columns {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .organizer-editor-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form-grid.three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 820px) {
@@ -729,6 +878,12 @@ th {
   .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .organizer-loadbar,
+  .form-grid.two,
+  .form-grid.three {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 520px) {
@@ -744,5 +899,10 @@ th {
 
   .segmented button {
     flex: 1;
+  }
+
+  .organizer-loadbar .ghost-button,
+  .organizer-loadbar .primary-button {
+    width: 100%;
   }
 }

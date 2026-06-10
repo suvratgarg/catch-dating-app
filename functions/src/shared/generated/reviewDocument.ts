@@ -3,15 +3,38 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Canonical attended-event review stored at reviews/{reviewId}.
+ * Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.
  */
 export interface ReviewDocument {
   clubId: string;
   eventId?: string | null;
-  reviewerUserId: string;
+  /**
+   * Catch user id for signed-in reviewers. Null for anonymous public listing reviews.
+   */
+  reviewerUserId: string | null;
   reviewerName: string;
   rating: number;
   comment: string;
+  /**
+   * Verified reviews are created only after attended Catch events; public listing reviews are unverified.
+   */
+  verificationStatus?: "verified" | "unverified";
+  /**
+   * Submission surface that created the review.
+   */
+  source?: "catchEvent" | "publicListing";
+  /**
+   * Public rendering status for organizer listing pages.
+   */
+  moderationStatus?: "published" | "pending" | "rejected";
+  /**
+   * True when the public display name should be the anonymous fallback rather than a user-supplied or profile name.
+   */
+  isAnonymous?: boolean;
+  /**
+   * Website path that submitted an unverified public listing review.
+   */
+  submittedFromPath?: string | null;
   /**
    * Serialized Firestore Timestamp fixture shape.
    */
@@ -23,6 +46,26 @@ export interface ReviewDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  ownerResponse?: {
+    hostUserId: string;
+    hostName: string;
+    hostAvatarUrl: string | null;
+    message: string;
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    createdAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+    /**
+     * Serialized Firestore Timestamp fixture shape.
+     */
+    updatedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    };
+  };
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

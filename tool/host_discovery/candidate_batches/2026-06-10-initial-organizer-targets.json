@@ -1,0 +1,1109 @@
+{
+  "schemaVersion": 1,
+  "batchId": "2026-06-10-initial-organizer-targets",
+  "createdAt": "2026-06-10",
+  "status": "active",
+  "selectionPrinciples": [
+    "India-first organizers where Catch can improve bookings, attendance, live facilitation, post-event matching, or host analytics.",
+    "Prefer recurring social formats over one-off concerts, conferences, pure races, or passive venue listings.",
+    "Keep weak or city-ambiguous evidence in the backlog instead of promoting it to public pages.",
+    "Treat this file as a target backlog; only seed noindex pages after source review."
+  ],
+  "candidates": [
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "displayName": "AFTER FLY",
+      "city": "Indore",
+      "citySlug": "indore",
+      "region": "Madhya Pradesh",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p0",
+      "state": "page_seeded",
+      "fitScore": 5,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "seedDocumentPath": "clubs/afterfly-run-club-indore",
+      "canonicalPath": "/organizers/indore/afterfly-run-club/",
+      "aliases": ["Afterfly Run Club", "Afterfly"],
+      "identity": {
+        "website": null,
+        "instagramHandle": "afterfly.in",
+        "lumaUrl": "https://luma.com/pxgmph3b"
+      },
+      "fitSignals": ["social run", "post-run hangout", "public event evidence", "manual payment or DM flow"],
+      "sources": [
+        {
+          "type": "public_event_page",
+          "url": "https://luma.com/pxgmph3b",
+          "confidence": "high",
+          "notes": "Public Luma event page for AFTERFLY TAKEOFF RUN & RAVE in Indore."
+        }
+      ],
+      "nextAction": "Verify current cadence and owner contact before changing indexStatus."
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "displayName": "Bhag Club",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi NCR",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "brand",
+      "priority": "p0",
+      "state": "page_seeded",
+      "fitScore": 5,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_city_ambiguous",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi",
+      "canonicalPath": "/organizers/delhi/bhag-run-club/",
+      "aliases": ["Bhag Run Club", "BHAG RUNS"],
+      "identity": {
+        "website": "https://thebhag.in/",
+        "instagramHandle": "bhagclub",
+        "lumaUrl": "https://luma.com/ixj7uqiu"
+      },
+      "fitSignals": ["running community", "training programs", "public event evidence", "registration questions"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://thebhag.in/",
+          "confidence": "high",
+          "notes": "Official Bhag site confirms running community and brand positioning."
+        },
+        {
+          "type": "public_event_page",
+          "url": "https://luma.com/ixj7uqiu",
+          "confidence": "high",
+          "notes": "Bhag Club Luma event evidence is Gurugram/NCR, not a Delhi-specific event."
+        }
+      ],
+      "nextAction": "Resolve whether to model Bhag as one national organizer or city-specific profiles."
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "displayName": "Hyderabad Runners",
+      "city": "Hyderabad",
+      "citySlug": "hyderabad",
+      "region": "Telangana",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["Hyderabad Runners Society"],
+      "identity": {
+        "website": "https://hyderabadrunners.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["running groups", "club runs", "training programs", "large community"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://hyderabadrunners.com/",
+          "confidence": "high",
+          "notes": "Official site lists club runs, training, community programs, and events."
+        }
+      ],
+      "nextAction": "Check whether the organization has smaller social-run chapters or recurring open club runs that fit Catch."
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "displayName": "Jayanagar Jaguars",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["JJs"],
+      "identity": {
+        "website": "https://www.jayanagarjaguars.com/jjs/index.php",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["running group", "training community", "Bengaluru city presence"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.jayanagarjaguars.com/jjs/index.php",
+          "confidence": "high",
+          "notes": "Official domain redirects to this Jayanagar Jaguars path."
+        }
+      ],
+      "nextAction": "Find current social/open run cadence and whether bookings happen through a public form."
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "displayName": "Chennai Runners",
+      "city": "Chennai",
+      "citySlug": "chennai",
+      "region": "Tamil Nadu",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://chennairunners.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["running community", "city-wide running group", "official site"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://chennairunners.in/",
+          "confidence": "high",
+          "notes": "Reachable official Chennai Runners domain."
+        }
+      ],
+      "nextAction": "Review whether Chennai Runners has recurring smaller social formats rather than race-only programming."
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "displayName": "Striders",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["Striders Miles"],
+      "identity": {
+        "website": "https://striders.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["running community", "coached groups", "multiple city potential"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://striders.in/",
+          "confidence": "high",
+          "notes": "Reachable official Striders domain."
+        }
+      ],
+      "nextAction": "Determine city/chapter split and whether the Mumbai profile should represent the whole brand or a local chapter."
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "displayName": "Gurgaon Road Runners",
+      "city": "Gurugram",
+      "citySlug": "delhi-ncr",
+      "region": "Haryana",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["GRR"],
+      "identity": {
+        "website": "https://gurgaonroadrunners.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["NCR running community", "official site", "city-specific identity"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://gurgaonroadrunners.com/",
+          "confidence": "high",
+          "notes": "Reachable official Gurgaon Road Runners domain."
+        }
+      ],
+      "nextAction": "Check for current open runs and community/social formats."
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "displayName": "India Running",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "brand",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_brand_ambiguous",
+      "aliases": ["Bombay Running"],
+      "identity": {
+        "website": "https://indiarunning.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["running ecosystem", "possible city community", "official domain redirect"],
+      "sources": [
+        {
+          "type": "official_site_redirect",
+          "url": "https://www.bombayrunning.com/",
+          "confidence": "medium",
+          "notes": "Bombay Running domain redirects to IndiaRunning; needs identity review before seeding."
+        }
+      ],
+      "nextAction": "Verify whether this is an organizer, media platform, event marketplace, or brand before treating it as a Catch target."
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "displayName": "Go Heritage Run",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_city_ambiguous",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.goheritagerun.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["heritage runs", "small-group city experiences", "multi-city potential"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.goheritagerun.com/",
+          "confidence": "medium",
+          "notes": "Reachable official site; city and current cadence need verification."
+        }
+      ],
+      "nextAction": "Verify current events and decide whether this belongs under run clubs or walks/experiences."
+    },
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "displayName": "adidas Runners India",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "brand",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "needs_current_city_evidence",
+      "aliases": ["Adidas Runners"],
+      "identity": {
+        "website": "https://www.adidas.co.in/adidasrunners",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["brand-led running community", "city chapters", "recurring runs"],
+      "sources": [
+        {
+          "type": "official_brand_page",
+          "url": "https://www.adidas.co.in/adidasrunners",
+          "confidence": "medium",
+          "notes": "Brand community target; needs India and city-specific event confirmation."
+        }
+      ],
+      "nextAction": "Confirm active India city chapters and organizer contact path."
+    },
+    {
+      "candidateId": "lodhi-run-club-delhi",
+      "displayName": "Lodhi Run Club",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 4,
+      "sourceConfidence": "low",
+      "verificationStatus": "needs_public_source",
+      "aliases": [],
+      "identity": {
+        "website": null,
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["location-specific run club", "NCR social-run candidate"],
+      "sources": [
+        {
+          "type": "manual_research_needed",
+          "url": null,
+          "confidence": "low",
+          "notes": "Target hypothesis from city/category strategy; needs deterministic source pass."
+        }
+      ],
+      "nextAction": "Run source discovery before qualifying or seeding."
+    },
+    {
+      "candidateId": "cubbon-runs-bengaluru",
+      "displayName": "Cubbon Runs",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "social_run_club",
+      "entityKind": "club",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 4,
+      "sourceConfidence": "low",
+      "verificationStatus": "needs_public_source",
+      "aliases": [],
+      "identity": {
+        "website": null,
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["park-based social run candidate", "Bengaluru category coverage"],
+      "sources": [
+        {
+          "type": "manual_research_needed",
+          "url": null,
+          "confidence": "low",
+          "notes": "Target hypothesis from Bengaluru social-run category; needs source verification."
+        }
+      ],
+      "nextAction": "Find official/public source and current organizer identity."
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "displayName": "Floh",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "singles_event_operator",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 5,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.floh.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["singles community", "dating intent", "events", "paid membership or access"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.floh.in/",
+          "confidence": "high",
+          "notes": "Reachable official singles/dating community site."
+        }
+      ],
+      "nextAction": "Check current city operations and whether Mumbai should be a page or the entity should remain national."
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "displayName": "Playace",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "singles_event_operator",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 4,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_needs_current_cadence",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.playace.co/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["social events", "small-group offline discovery", "potential singles adjacency"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.playace.co/",
+          "confidence": "medium",
+          "notes": "Reachable site; current event cadence and city scope need review."
+        }
+      ],
+      "nextAction": "Verify whether Playace is active and whether singles or social mixer events are current."
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "displayName": "Gay Bombay",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "singles_event_operator",
+      "entityKind": "creatorCommunity",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_sensitive_category",
+      "aliases": [],
+      "identity": {
+        "website": "https://gaybombay.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["LGBTQ social community", "events and meetups", "Mumbai-specific"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://gaybombay.in/",
+          "confidence": "medium",
+          "notes": "Reachable official community site; use extra care with sensitive-community claims."
+        }
+      ],
+      "nextAction": "Confirm owner-safe public positioning and avoid dating framing unless the organizer uses it."
+    },
+    {
+      "candidateId": "platonicity-delhi-ncr",
+      "displayName": "Platonicity",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi NCR",
+      "countryCode": "IN",
+      "categoryId": "singles_event_operator",
+      "entityKind": "creatorCommunity",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 4,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_needs_current_cadence",
+      "aliases": [],
+      "identity": {
+        "website": null,
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["offline meetups", "speed dating adjacency", "city-spanning community"],
+      "sources": [
+        {
+          "type": "public_reference",
+          "url": "https://en.wikipedia.org/wiki/Pragati_Singh",
+          "confidence": "medium",
+          "notes": "Public reference mentions Platonicity offline meetups across Delhi, Bengaluru, and Mumbai; current official source needed."
+        }
+      ],
+      "nextAction": "Find current official/community source and confirm active programming."
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "displayName": "Kommune",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "creator_community_host",
+      "entityKind": "creatorCommunity",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.kommuneity.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["creator community", "offline events", "storytelling formats"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.kommuneity.com/",
+          "confidence": "high",
+          "notes": "Reachable official site for a creator/community event brand."
+        }
+      ],
+      "nextAction": "Decide whether Catch should target creator-community operators or keep them as an adjacency."
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "displayName": "Doolally",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "venue_led_social",
+      "entityKind": "venue",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://new.doolally.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["venue-led programming", "games and socials", "Mumbai/Pune footprint"],
+      "sources": [
+        {
+          "type": "official_site_redirect",
+          "url": "https://doolally.in/",
+          "confidence": "high",
+          "notes": "Official domain redirects to new.doolally.in."
+        }
+      ],
+      "nextAction": "Verify current recurring social formats such as board games, trivia, or community nights."
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "displayName": "Board Game Company",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "board_game_social",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://boardgamecompany.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["board games", "low-pressure interaction", "group events"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://boardgamecompany.in/",
+          "confidence": "high",
+          "notes": "Reachable official Board Game Company domain."
+        }
+      ],
+      "nextAction": "Confirm whether the company hosts recurring public socials or mainly supplies games."
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "displayName": "The Habitat",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "venue_led_social",
+      "entityKind": "venue",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_adjacency",
+      "aliases": ["Habitat"],
+      "identity": {
+        "website": "https://thehabitat.co.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["venue programming", "small-room events", "community room adjacency"],
+      "sources": [
+        {
+          "type": "official_site_redirect",
+          "url": "https://www.thehabitat.co.in/",
+          "confidence": "medium",
+          "notes": "Reachable venue site; may be stronger as a venue partner than organizer listing."
+        }
+      ],
+      "nextAction": "Check if they run recurring social participation events, not only performances."
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "displayName": "Lahe Lahe",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "creator_community_host",
+      "entityKind": "venue",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.lahe-lahe.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["community arts space", "offline participation formats", "Bengaluru-specific"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.lahe-lahe.com/",
+          "confidence": "high",
+          "notes": "Reachable official community arts-space site."
+        }
+      ],
+      "nextAction": "Identify the most Catch-native recurring formats such as meetups, workshops, or circles."
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "displayName": "BLR Hubba",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "creator_community_host",
+      "entityKind": "eventOrganizer",
+      "priority": "p3",
+      "state": "candidate",
+      "fitScore": 2,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed_large_festival",
+      "aliases": ["Bengaluru Hubba"],
+      "identity": {
+        "website": "https://blrhubba.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city culture programming", "multi-venue events", "large event adjacency"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://blrhubba.in/",
+          "confidence": "high",
+          "notes": "Reachable official event site; likely a lower-fit festival-scale adjacency."
+        }
+      ],
+      "nextAction": "Keep as a discovery reference, not an early host acquisition target unless smaller community subprograms emerge."
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "displayName": "Under 25 Universe",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "creator_community_host",
+      "entityKind": "brand",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["Under 25"],
+      "identity": {
+        "website": "https://under25universe.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["young adult community", "offline events", "brand-led audience"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://under25universe.com/",
+          "confidence": "high",
+          "notes": "Reachable official Under 25 Universe site."
+        }
+      ],
+      "nextAction": "Check whether current events match Catch's singles/social operator ICP."
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "displayName": "Khaki Tours",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://khakitours.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city walks", "bookable experiences", "small-group offline events"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://khakitours.com/",
+          "confidence": "high",
+          "notes": "Reachable official tour/experience site."
+        }
+      ],
+      "nextAction": "Review whether the recurring walks have public guest discovery/search demand."
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "displayName": "Delhi By Foot",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://delhibyfoot.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city walks", "Delhi-specific experiences", "public booking surface"],
+      "sources": [
+        {
+          "type": "official_site_redirect",
+          "url": "https://www.delhibyfoot.in/",
+          "confidence": "high",
+          "notes": "Official domain redirects to delhibyfoot.in."
+        }
+      ],
+      "nextAction": "Check recurring public event cadence and owner-safe summary."
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "displayName": "Bangalore Walks",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["Bengaluru Walks"],
+      "identity": {
+        "website": "https://www.bangalorewalks.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city walks", "Bengaluru-specific experiences", "small-group programming"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.bangalorewalks.com/",
+          "confidence": "high",
+          "notes": "Reachable official Bangalore Walks site."
+        }
+      ],
+      "nextAction": "Review current walk schedule and claim contact."
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "displayName": "India Heritage Walks",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi NCR",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_needs_city_scope",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.indiaheritagewalks.org/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["heritage walks", "city experiences", "multi-city programming"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.indiaheritagewalks.org/",
+          "confidence": "medium",
+          "notes": "Reachable official site; city scope and current public cadence need review."
+        }
+      ],
+      "nextAction": "Determine whether to model as one national organizer or city-specific profiles."
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "displayName": "Soul Travelling",
+      "city": "Goa",
+      "citySlug": "goa",
+      "region": "Goa",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.soultravelling.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city experiences", "bookable group activities", "tour and walk programming"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.soultravelling.in/",
+          "confidence": "high",
+          "notes": "Reachable official experience company site."
+        }
+      ],
+      "nextAction": "Check whether Goa social discovery use cases are stronger than tour booking use cases."
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "displayName": "No Footprints",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "walks_experiences",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "low",
+      "verificationStatus": "source_probe_timeout",
+      "aliases": ["NFP Explore"],
+      "identity": {
+        "website": "https://www.nfpexplore.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["city experiences", "Mumbai tours", "small-group programming"],
+      "sources": [
+        {
+          "type": "official_site_probe",
+          "url": "https://www.nfpexplore.com/",
+          "confidence": "low",
+          "notes": "Candidate source probe timed out locally; recheck before qualification."
+        }
+      ],
+      "nextAction": "Retry source discovery and confirm active public events."
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "displayName": "The Bohri Kitchen",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "supper_club",
+      "entityKind": "eventOrganizer",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["TBK"],
+      "identity": {
+        "website": "https://thebohrikitchen.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["hosted meals", "limited seats", "food experience", "Mumbai-specific"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://thebohrikitchen.com/",
+          "confidence": "high",
+          "notes": "Reachable official hosted food experience site."
+        }
+      ],
+      "nextAction": "Check whether current public programming is recurring and owner-safe to summarize."
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "displayName": "Conosh",
+      "city": "Bengaluru",
+      "citySlug": "bengaluru",
+      "region": "Karnataka",
+      "countryCode": "IN",
+      "categoryId": "supper_club",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed_platform_ambiguous",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.conosh.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["food experiences", "community dining", "hosted events"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://www.conosh.com/",
+          "confidence": "high",
+          "notes": "Reachable official food experience platform site."
+        }
+      ],
+      "nextAction": "Decide whether Conosh is a target organizer, source platform, or competitor/adjacency."
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "displayName": "Authenticook",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "supper_club",
+      "entityKind": "eventOrganizer",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_platform_ambiguous",
+      "aliases": [],
+      "identity": {
+        "website": "https://www.authenticook.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["hosted meals", "food experiences", "limited seats"],
+      "sources": [
+        {
+          "type": "official_site_probe",
+          "url": "https://www.authenticook.com/",
+          "confidence": "medium",
+          "notes": "Domain responds to GET but rejects HEAD; review source manually before seeding."
+        }
+      ],
+      "nextAction": "Confirm current activity, city scope, and whether this is an organizer or marketplace."
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "displayName": "PadelPark India",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "racket_sport_social",
+      "entityKind": "venue",
+      "priority": "p1",
+      "state": "qualified",
+      "fitScore": 4,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed",
+      "aliases": ["PadelPark"],
+      "identity": {
+        "website": "https://www.padelpark.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["racket sport", "court capacity", "social play potential"],
+      "sources": [
+        {
+          "type": "official_site_redirect",
+          "url": "https://padelpark.in/",
+          "confidence": "high",
+          "notes": "Official domain redirects to www.padelpark.in."
+        }
+      ],
+      "nextAction": "Find public social-mixer or beginner-session evidence."
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "displayName": "Rackonnect",
+      "city": "Delhi NCR",
+      "citySlug": "delhi-ncr",
+      "region": "Delhi NCR",
+      "countryCode": "IN",
+      "categoryId": "racket_sport_social",
+      "entityKind": "brand",
+      "priority": "p2",
+      "state": "candidate",
+      "fitScore": 3,
+      "sourceConfidence": "high",
+      "verificationStatus": "source_backed_platform_ambiguous",
+      "aliases": [],
+      "identity": {
+        "website": "https://rackonnect.com/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["racket sports", "venue network", "sports booking adjacency"],
+      "sources": [
+        {
+          "type": "official_site",
+          "url": "https://rackonnect.com/",
+          "confidence": "high",
+          "notes": "Reachable official racket-sport domain."
+        }
+      ],
+      "nextAction": "Determine if Rackonnect hosts social events or is primarily a sports venue/platform."
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "displayName": "SOCIAL",
+      "city": "Mumbai",
+      "citySlug": "mumbai",
+      "region": "Maharashtra",
+      "countryCode": "IN",
+      "categoryId": "venue_led_social",
+      "entityKind": "venue",
+      "priority": "p3",
+      "state": "candidate",
+      "fitScore": 2,
+      "sourceConfidence": "medium",
+      "verificationStatus": "source_backed_large_venue_brand",
+      "aliases": ["Social Offline"],
+      "identity": {
+        "website": "https://www.socialoffline.in/",
+        "instagramHandle": null,
+        "lumaUrl": null
+      },
+      "fitSignals": ["venue brand", "events", "young adult audience"],
+      "sources": [
+        {
+          "type": "official_site_probe",
+          "url": "https://www.socialoffline.in/",
+          "confidence": "medium",
+          "notes": "Domain is reachable but returned HTTP 403 to HEAD; review manually before using source copy."
+        }
+      ],
+      "nextAction": "Use as an adjacency unless a specific venue-led social event series fits Catch."
+    }
+  ]
+}

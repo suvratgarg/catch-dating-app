@@ -127,6 +127,7 @@ export function buildClubSearchRecord(
   if (
     club.status !== "active" ||
     club.archived ||
+    club.appVisibility === "hidden" ||
     !location ||
     club.name.trim().length === 0
   ) {
@@ -140,7 +141,7 @@ export function buildClubSearchRecord(
     description: club.description,
     location,
     area: club.area,
-    hostName: club.hostName,
+    hostName: club.hostName ?? club.name,
     tags: Array.isArray(club.tags) ? club.tags : [],
     memberCount: finiteNumberOrZero(club.memberCount),
     rating: finiteNumberOrZero(club.rating),
@@ -172,6 +173,7 @@ export function buildEventSearchRecord(
     event.status !== "active" ||
     club.status !== "active" ||
     club.archived ||
+    club.appVisibility === "hidden" ||
     !discoveryCityName ||
     startTimeEpoch == null
   ) {

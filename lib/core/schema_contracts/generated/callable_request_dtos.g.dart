@@ -14,6 +14,9 @@
 // toJson() classes.
 
 export 'callables/add_club_host_callable_request.g.dart';
+export 'callables/admin_decide_club_claim_callable_request.g.dart';
+export 'callables/admin_get_club_details_callable_request.g.dart';
+export 'callables/admin_set_club_index_status_callable_request.g.dart';
 export 'callables/archive_club_callable_request.g.dart';
 export 'callables/block_user_callable_request.g.dart';
 export 'callables/cancel_event_callable_request.g.dart';
@@ -24,6 +27,7 @@ export 'callables/create_event_callable_request.g.dart';
 export 'callables/create_event_invite_link_callable_request.g.dart';
 export 'callables/create_event_review_callable_request.g.dart';
 export 'callables/create_event_waitlist_offers_callable_request.g.dart';
+export 'callables/create_public_club_review_callable_request.g.dart';
 export 'callables/create_stripe_checkout_session_callable_request.g.dart';
 export 'callables/create_stripe_host_onboarding_link_callable_request.g.dart';
 export 'callables/delete_club_callable_request.g.dart';
@@ -33,6 +37,7 @@ export 'callables/disable_event_invite_link_callable_request.g.dart';
 export 'callables/event_id_callable_request.g.dart';
 export 'callables/event_join_request_decision_callable_request.g.dart';
 export 'callables/explore_search_callable_request.g.dart';
+export 'callables/list_public_club_reviews_callable_request.g.dart';
 export 'callables/mark_event_attendance_callable_request.g.dart';
 export 'callables/override_event_success_groups_callable_request.g.dart';
 export 'callables/override_event_success_rotations_callable_request.g.dart';
@@ -41,9 +46,11 @@ export 'callables/places_autocomplete_callable_request.g.dart';
 export 'callables/record_event_invite_link_open_callable_request.g.dart';
 export 'callables/remove_club_host_callable_request.g.dart';
 export 'callables/report_user_callable_request.g.dart';
+export 'callables/request_club_claim_callable_request.g.dart';
 export 'callables/request_suvbot_demo_operation_callable_request.g.dart';
 export 'callables/self_check_in_attendance_callable_request.g.dart';
 export 'callables/set_club_notification_preference_callable_request.g.dart';
+export 'callables/set_review_response_callable_request.g.dart';
 export 'callables/start_club_host_conversation_callable_request.g.dart';
 export 'callables/start_event_success_first_hello_mission_callable_request.g.dart';
 export 'callables/submit_event_success_wingman_request_callable_request.g.dart';

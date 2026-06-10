@@ -196,6 +196,7 @@ Review buildReview({
   String reviewerName = 'Runner 1',
   int rating = 5,
   String comment = 'Loved it.',
+  ReviewOwnerResponse? ownerResponse,
   DateTime? createdAt,
 }) {
   return Review(
@@ -206,6 +207,7 @@ Review buildReview({
     reviewerName: reviewerName,
     rating: rating,
     comment: comment,
+    ownerResponse: ownerResponse,
     createdAt: createdAt ?? DateTime(2025, 1, 2),
   );
 }

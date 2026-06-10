@@ -20,9 +20,10 @@ VITE_ADMIN_FIREBASE_ENV=dev
 VITE_ADMIN_APPCHECK_SITE_KEY=<dev-web-app-check-site-key>
 ```
 
-Live mode calls `adminGetOverview` for dashboard data and
-`adminDecideAccessApplication` for access review decisions. The signed-in
-Firebase user must have at least one admin custom claim for overview reads:
-`admin`, `adminOwner`, `safetyReviewer`, `support`, `finance`, or
-`analyticsViewer`. Access application Approve/Deny requires `admin`,
-`adminOwner`, or `support`.
+Live mode calls `adminGetOverview` for dashboard data,
+`adminDecideAccessApplication` for access review decisions, and
+`adminDecideClubClaim` for organizer claim review. The signed-in Firebase user
+must have at least one admin custom claim for overview reads: `admin`,
+`adminOwner`, `safetyReviewer`, `support`, `finance`, or `analyticsViewer`.
+Access application Approve/Deny and organizer claim Approve/Reject require
+`admin`, `adminOwner`, or `support`.

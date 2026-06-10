@@ -76,6 +76,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/clubHostClaimDocument.ts",
   },
   {
+    name: "ClubClaimRequestDocument",
+    source: "firestore/club_claim_requests.schema.json",
+    typeOutput: "functions/src/shared/generated/clubClaimRequestDocument.ts",
+  },
+  {
     name: "EventDocument",
     source: "firestore/events.schema.json",
     typeOutput: "functions/src/shared/generated/eventDocument.ts",
@@ -290,6 +295,36 @@ const schemaSpecs = [
       "functions/src/shared/generated/transferClubOwnershipCallablePayload.ts",
   },
   {
+    name: "RequestClubClaimCallablePayload",
+    source: "callables/request_club_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/requestClubClaimCallablePayload.ts",
+  },
+  {
+    name: "AdminDecideClubClaimCallablePayload",
+    source: "callables/admin_decide_club_claim_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminDecideClubClaimCallablePayload.ts",
+  },
+  {
+    name: "AdminSetClubIndexStatusCallablePayload",
+    source: "callables/admin_set_club_index_status_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetClubIndexStatusCallablePayload.ts",
+  },
+  {
+    name: "AdminGetClubDetailsCallablePayload",
+    source: "callables/admin_get_club_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminGetClubDetailsCallablePayload.ts",
+  },
+  {
+    name: "AdminUpdateClubDetailsCallablePayload",
+    source: "callables/admin_update_club_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminUpdateClubDetailsCallablePayload.ts",
+  },
+  {
     name: "StartClubHostConversationCallablePayload",
     source: "callables/start_club_host_conversation_payload.schema.json",
     typeOutput:
@@ -442,6 +477,18 @@ const schemaSpecs = [
       "functions/src/shared/generated/createEventReviewCallablePayload.ts",
   },
   {
+    name: "CreatePublicClubReviewCallablePayload",
+    source: "callables/create_public_club_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createPublicClubReviewCallablePayload.ts",
+  },
+  {
+    name: "ListPublicClubReviewsCallablePayload",
+    source: "callables/list_public_club_reviews_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listPublicClubReviewsCallablePayload.ts",
+  },
+  {
     name: "UpdateEventReviewCallablePayload",
     source: "callables/update_event_review_payload.schema.json",
     typeOutput:
@@ -452,6 +499,12 @@ const schemaSpecs = [
     source: "callables/delete_event_review_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/deleteEventReviewCallablePayload.ts",
+  },
+  {
+    name: "SetReviewResponseCallablePayload",
+    source: "callables/set_review_response_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/setReviewResponseCallablePayload.ts",
   },
   {
     name: "BlockUserCallablePayload",

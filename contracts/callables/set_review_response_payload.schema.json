@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_review_response_payload.schema.json",
+  "title": "SetReviewResponseCallablePayload",
+  "description": "Callable payload accepted by setReviewResponse.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reviewId", "message"],
+  "properties": {
+    "reviewId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "message": {"type": "string", "minLength": 1, "maxLength": 1000}
+  }
+}

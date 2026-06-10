@@ -19,6 +19,7 @@ class EventDetailSocialSection extends StatelessWidget {
     required this.reviews,
     required this.userProfile,
     required this.isAuthenticated,
+    required this.isHost,
     required this.participation,
     this.now,
     this.surfaceStyle,
@@ -29,6 +30,7 @@ class EventDetailSocialSection extends StatelessWidget {
   final List<Review> reviews;
   final UserProfile? userProfile;
   final bool isAuthenticated;
+  final bool isHost;
   final EventParticipation? participation;
   final DateTime? now;
   final EventDetailSurfaceStyle? surfaceStyle;
@@ -64,6 +66,7 @@ class EventDetailSocialSection extends StatelessWidget {
             reviews: reviews,
             currentUid: profile.uid,
             userProfile: profile,
+            isHost: isHost,
             hasAttended: hasReviewAccess,
           ),
         ],

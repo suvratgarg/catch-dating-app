@@ -16,6 +16,7 @@ part 'write_review_controller.g.dart';
 class WriteReviewController extends _$WriteReviewController {
   static final submitMutation = Mutation<void>();
   static final deleteMutation = Mutation<void>();
+  static final responseMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -60,5 +61,21 @@ class WriteReviewController extends _$WriteReviewController {
       throw ArgumentError.value(reviewId, 'reviewId', 'Review id is required.');
     }
     await ref.read(reviewsRepositoryProvider).deleteReview(reviewId);
+  }
+
+  Future<void> setOwnerResponse({
+    required String reviewId,
+    required String message,
+  }) async {
+    final trimmedMessage = message.trim();
+    if (reviewId.isEmpty) {
+      throw ArgumentError.value(reviewId, 'reviewId', 'Review id is required.');
+    }
+    if (trimmedMessage.isEmpty) {
+      throw ArgumentError.value(message, 'message', 'Response is required.');
+    }
+    await ref
+        .read(reviewsRepositoryProvider)
+        .setReviewResponse(reviewId: reviewId, message: trimmedMessage);
   }
 }

@@ -1,0 +1,168 @@
+import {onCall, CallableRequest, HttpsError} from
+  "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+import {appCheckCallableOptions} from "../shared/callableOptions";
+import {requireAdminRole} from "./adminAuth";
+import {setAdminAuditLogInTransaction} from "./adminAudit";
+import {AdminSetClubIndexStatusCallablePayload} from
+  "../shared/generated/adminSetClubIndexStatusCallablePayload";
+import {validateAdminSetClubIndexStatusCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
+
+const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
+
+interface ClubIndexingDeps {
+  firestore: () => FirebaseFirestore.Firestore;
+  serverTimestamp: () => FirebaseFirestore.FieldValue;
+}
+
+const defaultDeps: ClubIndexingDeps = {
+  firestore: () => admin.firestore(),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+};
+
+export interface AdminSetClubIndexStatusResponse {
+  clubId: string;
+  indexStatus: "noindex" | "indexReady" | "indexed";
+  publishStatus: "qa" | "published";
+  robots: "noindex, follow" | "index, follow";
+}
+
+type IndexReviewChecklist =
+  AdminSetClubIndexStatusCallablePayload["checklist"];
+
+/**
+ * Reviews and updates the SEO indexing state for a public organizer page.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {ClubIndexingDeps} deps Injectable dependencies.
+ * @return {Promise<AdminSetClubIndexStatusResponse>} Updated page state.
+ */
+export async function adminSetClubIndexStatusHandler(
+  request: CallableRequest<unknown>,
+  deps: ClubIndexingDeps = defaultDeps
+): Promise<AdminSetClubIndexStatusResponse> {
+  const adminContext = requireAdminRole(request, indexReviewRoles);
+  const data =
+    validateCallableWithAjv<AdminSetClubIndexStatusCallablePayload>(
+      request,
+      validateAdminSetClubIndexStatusCallablePayload,
+      normalizeAdminSetClubIndexStatusPayload
+    );
+  assertChecklistForIndexableStatus(data.indexStatus, data.checklist);
+
+  const db = deps.firestore();
+  const clubRef = db.collection("clubs").doc(data.clubId);
+  const timestamp = deps.serverTimestamp();
+  const publishStatus = data.indexStatus === "noindex" ? "qa" : "published";
+  const robots = data.indexStatus === "noindex" ?
+    "noindex, follow" :
+    "index, follow";
+
+  await db.runTransaction(async (tx) => {
+    const clubSnap = await tx.get(clubRef);
+    if (!clubSnap.exists) {
+      throw new HttpsError("not-found", "Organizer listing not found.");
+    }
+
+    tx.update(clubRef, {
+      "publicPage.indexStatus": data.indexStatus,
+      "publicPage.publishStatus": publishStatus,
+      "publicPage.robots": robots,
+      "publicPage.indexReview": {
+        reviewedAt: timestamp,
+        reviewedByUid: adminContext.uid,
+        indexStatus: data.indexStatus,
+        checklist: data.checklist,
+        reviewNote: data.reviewNote ?? null,
+      },
+    });
+    setAdminAuditLogInTransaction(tx, db, adminContext, {
+      action: "adminSetClubIndexStatus",
+      targetPath: clubRef.path,
+      request,
+      before: {},
+      after: {
+        clubId: data.clubId,
+        indexStatus: data.indexStatus,
+        publishStatus,
+        robots,
+      },
+      note: data.reviewNote,
+      serverTimestamp: deps.serverTimestamp,
+    });
+  });
+
+  return {
+    clubId: data.clubId,
+    indexStatus: data.indexStatus,
+    publishStatus,
+    robots,
+  };
+}
+
+/**
+ * Normalizes nullable review note text before schema validation.
+ * @param {unknown} value Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeAdminSetClubIndexStatusPayload(value: unknown): unknown {
+  if (!value || typeof value !== "object") return value;
+  const data = value as Record<string, unknown>;
+  return {
+    ...data,
+    clubId: normalizeString(data.clubId),
+    indexStatus: normalizeString(data.indexStatus),
+    reviewNote: normalizeNullableString(data.reviewNote),
+  };
+}
+
+/**
+ * Requires every index-readiness gate before a page can become indexable.
+ * @param {string} indexStatus Target index status.
+ * @param {IndexReviewChecklist} checklist Admin-reviewed checklist.
+ */
+function assertChecklistForIndexableStatus(
+  indexStatus: string,
+  checklist: IndexReviewChecklist
+) {
+  if (indexStatus === "noindex") return;
+  const complete =
+    checklist.sourceEvidenceVerified &&
+    checklist.mediaRightsVerified &&
+    checklist.cadenceVerified &&
+    checklist.ownerContactVerified;
+  if (!complete) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Source evidence, media rights, cadence, and owner/contact " +
+        "verification must be reviewed before indexing."
+    );
+  }
+}
+
+/**
+ * Trims string payload fields.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Trimmed value.
+ */
+function normalizeString(value: unknown): unknown {
+  return typeof value === "string" ? value.trim() : value;
+}
+
+/**
+ * Trims optional string fields and converts blanks to null.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Normalized nullable text.
+ */
+function normalizeNullableString(value: unknown): unknown {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
+}
+
+export const adminSetClubIndexStatus = onCall(
+  appCheckCallableOptions,
+  (request) => adminSetClubIndexStatusHandler(request)
+);
