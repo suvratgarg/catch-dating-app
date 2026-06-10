@@ -29,6 +29,7 @@ import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_
 import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
@@ -138,6 +139,7 @@ Finder _exploreListScrollable() {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
   group('Clubs widgets', () {
     testWidgets('ClubsList shows the empty state when there are no clubs', (
@@ -950,7 +952,7 @@ void main() {
       expect(container.read(clubSearchQueryProvider), isEmpty);
     });
 
-    testWidgets('ClubsHeader add button navigates to create club', (
+    testWidgets('ClubsHeader hides create-club action in consumer app', (
       tester,
     ) async {
       final router = GoRouter(
@@ -965,12 +967,6 @@ void main() {
                 ),
               ),
             ),
-          ),
-          GoRoute(
-            path: '/create-club',
-            name: Routes.createClubScreen.name,
-            builder: (_, _) =>
-                const Text('Create club', textDirection: TextDirection.ltr),
           ),
         ],
       );
@@ -991,10 +987,8 @@ void main() {
       );
       await _pumpClubUi(tester);
 
-      await tester.tap(find.byIcon(CatchIcons.add));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Create club'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.add), findsNothing);
+      expect(find.text('Create club'), findsNothing);
     });
 
     testWidgets('directory and avatar chip variants render club metadata', (
@@ -1582,6 +1576,7 @@ void main() {
     testWidgets('ClubDetailBody host view exposes edit and create navigation', (
       tester,
     ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
       final club = buildClub(
         id: 'club-host',
         area: 'Saket',
@@ -1610,7 +1605,7 @@ void main() {
           ),
           GoRoute(
             path: '/edit/:clubId',
-            name: Routes.editClubScreen.name,
+            name: Routes.hostEditClubScreen.name,
             builder: (_, state) => Text(
               'Edit ${state.pathParameters['clubId']}',
               textDirection: TextDirection.ltr,
@@ -1618,7 +1613,7 @@ void main() {
           ),
           GoRoute(
             path: '/create/:clubId',
-            name: Routes.createEventScreen.name,
+            name: Routes.hostCreateEventScreen.name,
             builder: (_, state) => Text(
               'Create ${state.pathParameters['clubId']}',
               textDirection: TextDirection.ltr,
@@ -1651,7 +1646,8 @@ void main() {
       expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
       expect(find.text('Share'), findsNothing);
       expect(find.text('Hosted by Asha Host'), findsOneWidget);
-      expect(find.text('View profile'), findsOneWidget);
+      expect(find.text('Public profile'), findsOneWidget);
+      expect(find.text('View profile'), findsNothing);
       expect(find.text('Club host'), findsNothing);
       expect(find.text('Hosts events in Saket'), findsNothing);
 
@@ -1681,67 +1677,69 @@ void main() {
       expect(find.text('Create club-host'), findsOneWidget);
     });
 
-    testWidgets('ClubDetailBody shows host identity and opens host profile', (
-      tester,
-    ) async {
-      final club = buildClub(
-        id: 'club-host-profile',
-        hostUserId: 'host-42',
-        hostName: 'Asha Shah',
-      );
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) => Scaffold(
-              body: ClubDetailBody(
-                club: club,
-                upcoming: const [],
-                reviews: const [],
-                userProfile: buildUser(uid: 'runner-1'),
-                uid: 'runner-1',
-                isHost: false,
-                isMember: false,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
+    testWidgets(
+      'ClubDetailBody shows host identity without opening a dating profile',
+      (tester) async {
+        final club = buildClub(
+          id: 'club-host-profile',
+          hostUserId: 'host-42',
+          hostName: 'Asha Shah',
+        );
+        final router = GoRouter(
+          initialLocation: '/',
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, _) => Scaffold(
+                body: ClubDetailBody(
+                  club: club,
+                  upcoming: const [],
+                  reviews: const [],
+                  userProfile: buildUser(uid: 'runner-1'),
+                  uid: 'runner-1',
+                  isHost: false,
+                  isMember: false,
+                  isMutating: false,
+                  clubPushNotificationsEnabled: false,
+                  isClubPushMutating: false,
+                  isAuthenticated: true,
+                ),
               ),
             ),
-          ),
-          GoRoute(
-            path: '/profiles/:uid',
-            name: Routes.publicProfileScreen.name,
-            builder: (_, state) => Text(
-              'Profile ${state.pathParameters['uid']}',
-              textDirection: TextDirection.ltr,
+            GoRoute(
+              path: '/profiles/:uid',
+              name: Routes.publicProfileScreen.name,
+              builder: (_, state) => Text(
+                'Profile ${state.pathParameters['uid']}',
+                textDirection: TextDirection.ltr,
+              ),
+            ),
+          ],
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
             ),
           ),
-        ],
-      );
+        );
+        await _pumpClubUi(tester);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp.router(
-            theme: AppTheme.light,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await _pumpClubUi(tester);
+        expect(find.text('Host'), findsNothing);
+        expect(find.text('Hosted by Asha Shah'), findsOneWidget);
+        expect(find.text('Public profile'), findsOneWidget);
+        expect(find.text('View profile'), findsNothing);
+        expect(find.text('Club host'), findsNothing);
+        expect(find.text('Hosts events in Bandra'), findsNothing);
 
-      expect(find.text('Host'), findsNothing);
-      expect(find.text('Hosted by Asha Shah'), findsOneWidget);
-      expect(find.text('View profile'), findsOneWidget);
-      expect(find.text('Club host'), findsNothing);
-      expect(find.text('Hosts events in Bandra'), findsNothing);
+        await tester.tap(find.text('Hosted by Asha Shah'));
+        await _pumpClubUi(tester);
 
-      await tester.tap(find.text('Hosted by Asha Shah'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Profile host-42'), findsOneWidget);
-    });
+        expect(find.text('Profile host-42'), findsNothing);
+      },
+    );
 
     testWidgets('ClubDetailBody shows multiple hosts and messages a host', (
       tester,
@@ -1844,6 +1842,7 @@ void main() {
     testWidgets('ClubDetailBody owner sees host team management actions', (
       tester,
     ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
       final club = buildClub(
         id: 'club-owner-hosts',
         hostUserId: 'owner-1',

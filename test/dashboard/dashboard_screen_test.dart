@@ -6,6 +6,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -103,6 +104,8 @@ dynamic _activityNotificationsOverride(
 ).overrideWithValue(AsyncData<List<ActivityNotification>>(notifications));
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   group('DashboardScreen', () {
     testWidgets('shows a loading state while booked events are loading', (
       tester,
@@ -194,58 +197,55 @@ void main() {
       expect(find.byType(DashboardFull), findsNothing);
     });
 
-    testWidgets(
-      'shows hosted event tools even when there are no booked events',
-      (tester) async {
-        final now = DateTime.now();
-        final user = buildUser(uid: 'host-1');
-        final hostedRun = buildEvent(
-          id: 'hosted-event',
-          clubId: 'club-host',
-          startTime: now.subtract(const Duration(minutes: 5)),
-          endTime: now.add(const Duration(minutes: 55)),
-        );
+    testWidgets('keeps host tools out of the consumer empty state', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final user = buildUser(uid: 'host-1');
+      final hostedRun = buildEvent(
+        id: 'hosted-event',
+        clubId: 'club-host',
+        startTime: now.subtract(const Duration(minutes: 5)),
+        endTime: now.add(const Duration(minutes: 55)),
+      );
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              watchUserProfileProvider.overrideWith(
-                (ref) => Stream.value(user),
-              ),
-              _membershipsOverride(user, const []),
-              _activityNotificationsOverride(user),
-              watchSignedUpEventsProvider(
-                user.uid,
-              ).overrideWithValue(const AsyncData<List<Event>>([])),
-              watchAttendedEventsProvider(
-                user.uid,
-              ).overrideWithValue(const AsyncData<List<Event>>([])),
-              dashboardRecommendedEventsProvider(
-                _recommendationsQueryFor(user.uid, const []),
-              ).overrideWithValue(_noRecommendationCandidates),
-              eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
-              uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
-              eventCheckInLocationServiceProvider.overrideWithValue(
-                const _FakeEventCheckInLocationService(),
-              ),
-              ..._dashboardHostOverrides(user, hostedEvents: [hostedRun]),
-            ],
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: const DashboardScreen(),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
+            watchSignedUpEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            watchAttendedEventsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+            dashboardRecommendedEventsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+            eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            eventCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeEventCheckInLocationService(),
             ),
+            ..._dashboardHostOverrides(user, hostedEvents: [hostedRun]),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const DashboardScreen(),
           ),
-        );
+        ),
+      );
 
-        await _pumpDashboardUi(tester);
+      await _pumpDashboardUi(tester);
 
-        expect(find.text("Let's find your first event"), findsNothing);
-        expect(find.byType(DashboardFullSliverBody), findsOneWidget);
-        expect(find.text('Host event'), findsOneWidget);
-        expect(find.text('Attendance open'), findsOneWidget);
-        expect(find.text('Take attendance'), findsOneWidget);
-      },
-    );
+      expect(find.text("Let's find your first event"), findsOneWidget);
+      expect(find.byType(DashboardFullSliverBody), findsNothing);
+      expect(find.text('Host event'), findsNothing);
+      expect(find.text('Attendance open'), findsNothing);
+      expect(find.text('Take attendance'), findsNothing);
+    });
 
     testWidgets('shows the full dashboard when booked events exist', (
       tester,
@@ -1157,6 +1157,7 @@ void main() {
     testWidgets('shows host attendance inside the consolidated host rail', (
       tester,
     ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
       final now = DateTime.now();
       final user = buildUser(uid: 'host-1');
       final hostedRun = buildEvent(
@@ -1204,6 +1205,7 @@ void main() {
     testWidgets('shows a paged host tools rail for hosted events', (
       tester,
     ) async {
+      AppConfig.configureEntrypointRole(AppRole.host);
       final now = DateTime.now();
       final user = buildUser(uid: 'host-1');
       final hostedEvents = [

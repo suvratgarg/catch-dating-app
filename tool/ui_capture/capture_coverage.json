@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-31",
+  "updated": "2026-06-11",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -257,6 +257,97 @@
       "status": "excluded",
       "priority": "P3",
       "reason": "Route requires transaction extra; capture only with deterministic confirmation data."
+    },
+    {
+      "routeId": "hostHomeScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "New host operations home for the split host app; needs a dedicated host-shell capture fixture."
+    },
+    {
+      "routeId": "hostClubsScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "New host clubs management surface; needs a dedicated host-shell capture fixture."
+    },
+    {
+      "routeId": "hostClubDetailScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host-mode club detail includes professional host controls and should not be aliased to the consumer member detail capture."
+    },
+    {
+      "routeId": "hostCreateClubScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "createClubScreen",
+      "reason": "Host app create-club route reuses the existing create-club form surface."
+    },
+    {
+      "routeId": "hostEditClubScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "editClubScreen",
+      "reason": "Host app edit-club route reuses the existing edit-club form surface."
+    },
+    {
+      "routeId": "hostCreateEventScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "createEventScreen",
+      "reason": "Host app create-event route reuses the canonical host event setup flow."
+    },
+    {
+      "routeId": "hostAppEventDetailScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Host app event detail can render host-state actions and needs a dedicated host fixture."
+    },
+    {
+      "routeId": "hostAppEventManageScreen",
+      "status": "alias",
+      "priority": "P1",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Host app manage route enters the canonical host event management surface."
+    },
+    {
+      "routeId": "hostAppEditEventScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "editHostedEventScreen",
+      "reason": "Host app edit-event route reuses the canonical hosted event edit surface."
+    },
+    {
+      "routeId": "hostAppAttendanceSheet",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Host app attendance route opens the canonical live attendance section of host event management."
+    },
+    {
+      "routeId": "hostAppEventSuccessScreen",
+      "status": "alias",
+      "priority": "P2",
+      "canonicalRouteId": "hostEventManageScreen",
+      "reason": "Host app Event Success route enters the canonical host event management surface."
+    },
+    {
+      "routeId": "hostInboxScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Professional host inbox is separate from consumer dating chats and needs a dedicated host-message capture fixture."
+    },
+    {
+      "routeId": "hostChatScreen",
+      "status": "planned",
+      "priority": "P1",
+      "reason": "Professional host conversation view should be captured separately from dating chat."
+    },
+    {
+      "routeId": "hostSettingsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Host account/settings surface is distinct from consumer account settings and needs a host profile fixture."
     },
     {
       "routeId": "eventPolicyLabScreen",

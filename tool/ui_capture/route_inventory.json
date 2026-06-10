@@ -3,11 +3,11 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "6c11c44aed0ed8c33cf40fcad662d28eebb3dd35cb99b366c0ca7aa77429a343",
-    "routeContractSha256": "57eaf56cc8aed62031e52c4b9c0845ab7f8980d0a36b53e00773a8930be47bbf",
+    "normalizedFileSha256": "ea5b9f2f988dbaf46e92ba8dfd3582c62cfefb0d4812597b3b8f1d3eef1a8f87",
+    "routeContractSha256": "809192043e10919777505b5fb70bfc04e52d4ae1fbfe74159c466246b0bba3d3",
     "goRouteCount": 40,
     "shellBranchCount": 5,
-    "enumRouteCount": 40,
+    "enumRouteCount": 54,
     "referencedRouteCount": 40
   },
   "routes": [
@@ -344,6 +344,141 @@
       "requiresFixture": false,
       "gated": false,
       "referencedByGoRouter": true
+    },
+    {
+      "id": "hostHomeScreen",
+      "path": "/host",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostClubsScreen",
+      "path": "/host/clubs",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostClubDetailScreen",
+      "path": "/host/clubs/:clubId",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostCreateClubScreen",
+      "path": "/host/clubs/create-club",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostEditClubScreen",
+      "path": "/host/clubs/:clubId/edit",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostCreateEventScreen",
+      "path": "/host/clubs/:clubId/create-event",
+      "pathParameters": [
+        "clubId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostAppEventDetailScreen",
+      "path": "/host/clubs/:clubId/events/:eventId",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostAppEventManageScreen",
+      "path": "/host/clubs/:clubId/events/:eventId/manage",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostAppEditEventScreen",
+      "path": "/host/clubs/:clubId/events/:eventId/edit",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostAppAttendanceSheet",
+      "path": "/host/clubs/:clubId/events/:eventId/attendance",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostAppEventSuccessScreen",
+      "path": "/host/clubs/:clubId/events/:eventId/success",
+      "pathParameters": [
+        "clubId",
+        "eventId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostInboxScreen",
+      "path": "/host/inbox",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostChatScreen",
+      "path": "/host/inbox/:matchId",
+      "pathParameters": [
+        "matchId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
+      "id": "hostSettingsScreen",
+      "path": "/host/settings",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
     },
     {
       "id": "eventPolicyLabScreen",
