@@ -16,9 +16,58 @@ const _androidIconSizes = <String, int>{
   'mipmap-xxxhdpi': 192,
 };
 
-const _flavorBadges = <String, _FlavorBadge>{
-  'dev': _FlavorBadge(label: 'D', fillToken: 'ink'),
-  'staging': _FlavorBadge(label: 'S', fillToken: 'warning'),
+const _iconVariants = <String, _IconVariant>{
+  'dev': _IconVariant(
+    generatedName: 'catch_icon_dev.png',
+    androidSourceSet: 'dev',
+    appleIconSet: 'AppIcon-dev',
+    filenamePrefix: 'dev',
+    badges: [_IconBadge(label: 'D', fillToken: 'ink')],
+  ),
+  'staging': _IconVariant(
+    generatedName: 'catch_icon_staging.png',
+    androidSourceSet: 'staging',
+    appleIconSet: 'AppIcon-staging',
+    filenamePrefix: 'staging',
+    badges: [_IconBadge(label: 'S', fillToken: 'warning')],
+  ),
+  'host-dev': _IconVariant(
+    generatedName: 'catch_icon_host_dev.png',
+    androidSourceSet: 'hostDev',
+    appleIconSet: 'AppIcon-host-dev',
+    filenamePrefix: 'host-dev',
+    badges: [
+      _IconBadge(label: 'H', fillToken: 'success'),
+      _IconBadge(
+        label: 'D',
+        fillToken: 'ink',
+        corner: _BadgeCorner.topLeft,
+        radiusScale: 0.12,
+      ),
+    ],
+  ),
+  'host-staging': _IconVariant(
+    generatedName: 'catch_icon_host_staging.png',
+    androidSourceSet: 'hostStaging',
+    appleIconSet: 'AppIcon-host-staging',
+    filenamePrefix: 'host-staging',
+    badges: [
+      _IconBadge(label: 'H', fillToken: 'success'),
+      _IconBadge(
+        label: 'S',
+        fillToken: 'warning',
+        corner: _BadgeCorner.topLeft,
+        radiusScale: 0.12,
+      ),
+    ],
+  ),
+  'host-prod': _IconVariant(
+    generatedName: 'catch_icon_host_prod.png',
+    androidSourceSet: 'hostProd',
+    appleIconSet: 'AppIcon-host-prod',
+    filenamePrefix: 'host-prod',
+    badges: [_IconBadge(label: 'H', fillToken: 'success')],
+  ),
 };
 
 void main() {
@@ -31,57 +80,70 @@ void main() {
   _syncPubspecTokens(tokens);
   _writeNativeBrandManifest(tokens);
 
-  for (final entry in _flavorBadges.entries) {
-    final flavor = entry.key;
-    final badge = entry.value;
-    final icon = _buildFlavorIcon(baseIcon, badge, tokens);
-    final generatedSourcePath = '$_generatedIconDir/catch_icon_$flavor.png';
+  for (final entry in _iconVariants.entries) {
+    final variant = entry.value;
+    final icon = _buildVariantIcon(baseIcon, variant, tokens);
+    final generatedSourcePath = '$_generatedIconDir/${variant.generatedName}';
     _writePng(generatedSourcePath, icon);
-    _writeAndroidFlavorIcons(flavor, icon);
-    _writeIosFlavorIconSet(flavor, icon);
-    _writeMacosFlavorIconSet(flavor, icon);
+    _writeAndroidIcons(variant.androidSourceSet, icon);
+    _writeIosIconSet(variant, icon);
+    _writeMacosIconSet(variant, icon);
   }
 
   _verifyPubspecTokens(tokens);
   stdout.writeln('Generated native flavor brand assets from $_tokenPath.');
 }
 
-image.Image _buildFlavorIcon(
+image.Image _buildVariantIcon(
   image.Image baseIcon,
-  _FlavorBadge badge,
+  _IconVariant variant,
   _NativeBrandTokens tokens,
 ) {
   final icon = baseIcon.convert(numChannels: 4);
+  for (final badge in variant.badges) {
+    _drawBadge(icon, badge, tokens);
+  }
+  return icon;
+}
+
+void _drawBadge(image.Image icon, _IconBadge badge, _NativeBrandTokens tokens) {
   final badgeFill = tokens.color(badge.fillToken, 'light');
   final badgeInk = tokens.color('primaryInk', 'light');
   final badgeRing = tokens.color('bg', 'light');
   final shadow = image.ColorRgba8(0, 0, 0, 88);
   final size = math.min(icon.width, icon.height);
-  final radius = (size * 0.205).round();
+  final radius = (size * badge.radiusScale).round();
   final ring = (size * 0.027).round();
   final margin = (size * 0.076).round();
-  final center = size - margin - radius;
+  final centerX = switch (badge.corner) {
+    _BadgeCorner.topLeft => margin + radius,
+    _BadgeCorner.bottomRight => size - margin - radius,
+  };
+  final centerY = switch (badge.corner) {
+    _BadgeCorner.topLeft => margin + radius,
+    _BadgeCorner.bottomRight => size - margin - radius,
+  };
 
   image.fillCircle(
     icon,
-    x: center + (size * 0.012).round(),
-    y: center + (size * 0.018).round(),
+    x: centerX + (size * 0.012).round(),
+    y: centerY + (size * 0.018).round(),
     radius: radius + ring,
     color: shadow,
     antialias: true,
   );
   image.fillCircle(
     icon,
-    x: center,
-    y: center,
+    x: centerX,
+    y: centerY,
     radius: radius + ring,
     color: badgeRing,
     antialias: true,
   );
   image.fillCircle(
     icon,
-    x: center,
-    y: center,
+    x: centerX,
+    y: centerY,
     radius: radius,
     color: badgeFill,
     antialias: true,
@@ -104,14 +166,12 @@ image.Image _buildFlavorIcon(
   image.compositeImage(
     icon,
     label,
-    dstX: center - label.width ~/ 2,
-    dstY: center - label.height ~/ 2,
+    dstX: centerX - label.width ~/ 2,
+    dstY: centerY - label.height ~/ 2,
   );
-
-  return icon;
 }
 
-void _writeAndroidFlavorIcons(String flavor, image.Image source) {
+void _writeAndroidIcons(String sourceSet, image.Image source) {
   for (final entry in _androidIconSizes.entries) {
     final resized = image.copyResize(
       source,
@@ -120,15 +180,16 @@ void _writeAndroidFlavorIcons(String flavor, image.Image source) {
       interpolation: image.Interpolation.cubic,
     );
     _writePng(
-      'android/app/src/$flavor/res/${entry.key}/ic_launcher.png',
+      'android/app/src/$sourceSet/res/${entry.key}/ic_launcher.png',
       resized,
     );
   }
 }
 
-void _writeIosFlavorIconSet(String flavor, image.Image source) {
+void _writeIosIconSet(_IconVariant variant, image.Image source) {
   final basePath = 'ios/Runner/Assets.xcassets/AppIcon.appiconset';
-  final outputPath = 'ios/Runner/Assets.xcassets/AppIcon-$flavor.appiconset';
+  final outputPath =
+      'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset';
   final contents = _readJsonMap('$basePath/Contents.json');
   final images = contents['images'] as List<dynamic>;
 
@@ -137,7 +198,7 @@ void _writeIosFlavorIconSet(String flavor, image.Image source) {
     if (filename == null) continue;
     final outputFilename = filename.replaceFirst(
       'Icon-App-',
-      'Icon-App-$flavor-',
+      'Icon-App-${variant.filenamePrefix}-',
     );
     item['filename'] = outputFilename;
     final pixelSize = _applePixelSize(item);
@@ -155,9 +216,10 @@ void _writeIosFlavorIconSet(String flavor, image.Image source) {
   _writeJson('$outputPath/Contents.json', contents);
 }
 
-void _writeMacosFlavorIconSet(String flavor, image.Image source) {
+void _writeMacosIconSet(_IconVariant variant, image.Image source) {
   final basePath = 'macos/Runner/Assets.xcassets/AppIcon.appiconset';
-  final outputPath = 'macos/Runner/Assets.xcassets/AppIcon-$flavor.appiconset';
+  final outputPath =
+      'macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset';
   final contents = _readJsonMap('$basePath/Contents.json');
   final images = contents['images'] as List<dynamic>;
 
@@ -166,7 +228,7 @@ void _writeMacosFlavorIconSet(String flavor, image.Image source) {
     if (filename == null) continue;
     final outputFilename = filename.replaceFirst(
       'app_icon_',
-      'app_icon_${flavor}_',
+      'app_icon_${variant.filenamePrefix}_',
     );
     item['filename'] = outputFilename;
     final pixelSize = _applePixelSize(item);
@@ -199,17 +261,18 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
       'web_theme': tokens.colorHex('ink', 'light'),
       'dev_badge': tokens.colorHex('ink', 'light'),
       'staging_badge': tokens.colorHex('warning', 'light'),
+      'host_badge': tokens.colorHex('success', 'light'),
       'badge_ink': tokens.colorHex('primaryInk', 'light'),
     },
     'generated': [
-      'assets/branding/generated/catch_icon_dev.png',
-      'assets/branding/generated/catch_icon_staging.png',
-      'android/app/src/dev/res/**/ic_launcher.png',
-      'android/app/src/staging/res/**/ic_launcher.png',
-      'ios/Runner/Assets.xcassets/AppIcon-dev.appiconset',
-      'ios/Runner/Assets.xcassets/AppIcon-staging.appiconset',
-      'macos/Runner/Assets.xcassets/AppIcon-dev.appiconset',
-      'macos/Runner/Assets.xcassets/AppIcon-staging.appiconset',
+      for (final variant in _iconVariants.values)
+        'assets/branding/generated/${variant.generatedName}',
+      for (final variant in _iconVariants.values)
+        'android/app/src/${variant.androidSourceSet}/res/**/ic_launcher.png',
+      for (final variant in _iconVariants.values)
+        'ios/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
+      for (final variant in _iconVariants.values)
+        'macos/Runner/Assets.xcassets/${variant.appleIconSet}.appiconset',
     ],
   });
 }
@@ -351,9 +414,34 @@ class _NativeBrandTokens {
   }
 }
 
-class _FlavorBadge {
-  const _FlavorBadge({required this.label, required this.fillToken});
+class _IconVariant {
+  const _IconVariant({
+    required this.generatedName,
+    required this.androidSourceSet,
+    required this.appleIconSet,
+    required this.filenamePrefix,
+    required this.badges,
+  });
+
+  final String generatedName;
+  final String androidSourceSet;
+  final String appleIconSet;
+  final String filenamePrefix;
+  final List<_IconBadge> badges;
+}
+
+enum _BadgeCorner { topLeft, bottomRight }
+
+class _IconBadge {
+  const _IconBadge({
+    required this.label,
+    required this.fillToken,
+    this.corner = _BadgeCorner.bottomRight,
+    this.radiusScale = 0.205,
+  });
 
   final String label;
   final String fillToken;
+  final _BadgeCorner corner;
+  final double radiusScale;
 }

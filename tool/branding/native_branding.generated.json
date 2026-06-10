@@ -6,16 +6,29 @@
     "web_theme": "#16140F",
     "dev_badge": "#16140F",
     "staging_badge": "#B9770F",
+    "host_badge": "#2F7D55",
     "badge_ink": "#F4F4F1"
   },
   "generated": [
     "assets/branding/generated/catch_icon_dev.png",
     "assets/branding/generated/catch_icon_staging.png",
+    "assets/branding/generated/catch_icon_host_dev.png",
+    "assets/branding/generated/catch_icon_host_staging.png",
+    "assets/branding/generated/catch_icon_host_prod.png",
     "android/app/src/dev/res/**/ic_launcher.png",
     "android/app/src/staging/res/**/ic_launcher.png",
+    "android/app/src/hostDev/res/**/ic_launcher.png",
+    "android/app/src/hostStaging/res/**/ic_launcher.png",
+    "android/app/src/hostProd/res/**/ic_launcher.png",
     "ios/Runner/Assets.xcassets/AppIcon-dev.appiconset",
     "ios/Runner/Assets.xcassets/AppIcon-staging.appiconset",
+    "ios/Runner/Assets.xcassets/AppIcon-host-dev.appiconset",
+    "ios/Runner/Assets.xcassets/AppIcon-host-staging.appiconset",
+    "ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset",
     "macos/Runner/Assets.xcassets/AppIcon-dev.appiconset",
-    "macos/Runner/Assets.xcassets/AppIcon-staging.appiconset"
+    "macos/Runner/Assets.xcassets/AppIcon-staging.appiconset",
+    "macos/Runner/Assets.xcassets/AppIcon-host-dev.appiconset",
+    "macos/Runner/Assets.xcassets/AppIcon-host-staging.appiconset",
+    "macos/Runner/Assets.xcassets/AppIcon-host-prod.appiconset"
   ]
 }

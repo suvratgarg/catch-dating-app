@@ -1,0 +1,9 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile-host-prod.xcconfig"
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+#include "Generated.xcconfig"
+#include? "GoogleMapsKeys.xcconfig"
+APS_ENVIRONMENT=development
+APP_ATTEST_ENVIRONMENT=production
+FIREBASE_IOS_URL_SCHEME=
+
+GOOGLE_MAPS_IOS_API_KEY=$(GOOGLE_MAPS_IOS_API_KEY_PROD)

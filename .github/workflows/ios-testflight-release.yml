@@ -3,6 +3,14 @@ name: iOS TestFlight Release
 on:
   workflow_dispatch:
     inputs:
+      app_role:
+        description: App binary to archive.
+        required: true
+        default: consumer
+        type: choice
+        options:
+          - consumer
+          - host
       upload_to_testflight:
         description: Break-glass only. Xcode Cloud is the canonical TestFlight uploader.
         required: true
@@ -19,16 +27,21 @@ permissions:
 
 jobs:
   prod-ios:
-    name: Prod iOS archive
+    name: Prod iOS archive (${{ inputs.app_role }})
     runs-on: macos-26
     environment: prod
     timeout-minutes: 60
 
     env:
+      APP_ROLE: ${{ inputs.app_role }}
       ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-      EXPORT_PATH: build/ios/export/prod
+      ARCHIVE_PATH: ${{ runner.temp }}/${{ inputs.app_role == 'host' && 'HostRunner' || 'Runner' }}.xcarchive
+      EXPECTED_BUNDLE_ID: ${{ inputs.app_role == 'host' && 'com.catchdates.host' || 'com.catchdates.app' }}
+      EXPORT_PATH: build/ios/export/${{ inputs.app_role == 'host' && 'host-prod' || 'prod' }}
+      IOS_CONFIGURATION: ${{ inputs.app_role == 'host' && 'Release-host-prod' || 'Release-prod' }}
+      IOS_SCHEME: ${{ inputs.app_role == 'host' && 'host-prod' || 'prod' }}
 
     steps:
       - uses: actions/checkout@v6
@@ -59,17 +72,17 @@ jobs:
           chmod 600 "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
 
       - name: Prepare prod Flutter iOS configuration
-        run: ./tool/flutter_with_env.sh prod build ios --release --config-only
+        run: ./tool/flutter_with_env.sh prod --role "$APP_ROLE" build ios --release --config-only
 
       - name: Archive prod iOS app
         run: |
           set -euo pipefail
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
-            -scheme prod \
-            -configuration Release-prod \
+            -scheme "$IOS_SCHEME" \
+            -configuration "$IOS_CONFIGURATION" \
             -destination generic/platform=iOS \
-            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -archivePath "$ARCHIVE_PATH" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
@@ -79,17 +92,30 @@ jobs:
 
       - name: Verify archived Maps key
         run: |
+          set -euo pipefail
+          archived_app="$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -type d -name '*.app' -print -quit)"
+          if [[ -z "$archived_app" ]]; then
+            echo "Could not find archived app in $ARCHIVE_PATH/Products/Applications."
+            exit 1
+          fi
+
+          bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$archived_app/Info.plist")"
+          if [[ "$bundle_id" != "$EXPECTED_BUNDLE_ID" ]]; then
+            echo "Archived bundle ID '$bundle_id' did not match expected '$EXPECTED_BUNDLE_ID'."
+            exit 1
+          fi
+
           node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
-            --ios-built-plist "$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app/Info.plist"
+            --ios-built-plist "$archived_app/Info.plist"
 
       - name: Export prod IPA
         run: |
           set -euo pipefail
           xcodebuild \
             -exportArchive \
-            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -archivePath "$ARCHIVE_PATH" \
             -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist ios/ExportOptions.prod.plist \
             -allowProvisioningUpdates \
@@ -100,22 +126,36 @@ jobs:
       - name: Verify exported entitlements
         run: |
           set -euo pipefail
-          ipa_path="$EXPORT_PATH/Catch.ipa"
-          extract_dir="$RUNNER_TEMP/catch-ipa"
-          profile_plist="$RUNNER_TEMP/catch-profile.plist"
+          ipa_path="$(find "$EXPORT_PATH" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
+          extract_dir="$RUNNER_TEMP/${APP_ROLE}-ipa"
+          profile_plist="$RUNNER_TEMP/${APP_ROLE}-profile.plist"
 
-          test -f "$ipa_path"
+          if [[ -z "$ipa_path" ]]; then
+            echo "Could not find exported IPA under $EXPORT_PATH."
+            exit 1
+          fi
           rm -rf "$extract_dir"
           mkdir -p "$extract_dir"
           ditto -x -k "$ipa_path" "$extract_dir"
+          exported_app="$(find "$extract_dir/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
+          if [[ -z "$exported_app" ]]; then
+            echo "Could not find exported .app inside $ipa_path."
+            exit 1
+          fi
+
+          bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$exported_app/Info.plist")"
+          if [[ "$bundle_id" != "$EXPECTED_BUNDLE_ID" ]]; then
+            echo "Exported bundle ID '$bundle_id' did not match expected '$EXPECTED_BUNDLE_ID'."
+            exit 1
+          fi
 
           node tool/firebase/validate_google_maps_config.mjs \
             --env prod \
             --platform ios \
-            --ios-built-plist "$extract_dir/Payload/Runner.app/Info.plist"
+            --ios-built-plist "$exported_app/Info.plist"
 
           openssl cms -inform DER -verify -noverify \
-            -in "$extract_dir/Payload/Runner.app/embedded.mobileprovision" \
+            -in "$exported_app/embedded.mobileprovision" \
             -out "$profile_plist"
 
           profile_name="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$profile_plist")"
@@ -127,14 +167,17 @@ jobs:
             exit 1
           fi
 
-          codesign -d --entitlements - "$extract_dir/Payload/Runner.app" > "$RUNNER_TEMP/catch-entitlements.txt" 2>/dev/null
-          grep -q 'com.apple.developer.healthkit' "$RUNNER_TEMP/catch-entitlements.txt"
-          grep -q 'applinks:catchdates.com' "$RUNNER_TEMP/catch-entitlements.txt"
+          entitlements_path="$RUNNER_TEMP/${APP_ROLE}-entitlements.txt"
+          codesign -d --entitlements - "$exported_app" > "$entitlements_path" 2>/dev/null
+          grep -q 'com.apple.developer.healthkit' "$entitlements_path"
+          grep -q 'applinks:catchdates.com' "$entitlements_path"
 
           {
             echo "## iOS export verification"
             echo
+            echo "- App role: \`$APP_ROLE\`"
             echo "- IPA: \`$ipa_path\`"
+            echo "- Bundle ID: \`$bundle_id\`"
             echo "- Profile: \`$profile_name\`"
             echo "- App ID: \`$app_id\`"
             echo "- HealthKit entitlement: \`$healthkit\`"
@@ -144,8 +187,8 @@ jobs:
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v6
         with:
-          name: catch-ios-prod-ipa
-          path: build/ios/export/prod/Catch.ipa
+          name: catch-ios-${{ inputs.app_role }}-prod-ipa
+          path: build/ios/export/**/*.ipa
           if-no-files-found: error
           retention-days: 14
 
@@ -180,7 +223,7 @@ jobs:
 
           xcodebuild \
             -exportArchive \
-            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -archivePath "$ARCHIVE_PATH" \
             -exportPath "$RUNNER_TEMP/testflight-upload" \
             -exportOptionsPlist "$upload_options" \
             -allowProvisioningUpdates \

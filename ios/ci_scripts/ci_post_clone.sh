@@ -67,6 +67,19 @@ flutter config --no-analytics
 flutter --version
 flutter precache --ios
 
+app_role="${CATCH_APP_ROLE:-consumer}"
+if [[ "${CI_XCODEBUILD_SCHEME:-}" == host-* ]]; then
+  app_role="host"
+fi
+case "$app_role" in
+  consumer|host) ;;
+  *)
+    echo "Unsupported CATCH_APP_ROLE: $app_role"
+    echo "Use consumer or host."
+    exit 64
+    ;;
+esac
+
 version_line="$(awk '/^version: / { print $2; exit }' pubspec.yaml)"
 build_name="${FLUTTER_BUILD_NAME:-${version_line%%+*}}"
 
@@ -78,8 +91,7 @@ else
   build_number="$(date -u +%Y%m%d%H%M)"
 fi
 
-echo "Preparing Flutter iOS config for prod $build_name ($build_number)"
-./tool/use_firebase_environment.sh prod >/dev/null
+echo "Preparing Flutter iOS config for prod/$app_role $build_name ($build_number)"
 
 # ios/Flutter/GoogleMapsKeys.xcconfig is gitignored, so it is absent from a
 # fresh CI clone. Without it the GoogleMapsApiKey Info.plist value is empty,
@@ -89,13 +101,11 @@ echo "Writing prod iOS Google Maps key"
 
 ensure_cocoapods
 run_with_retry 3 20 flutter pub get
-run_with_retry 3 30 flutter build ios \
+run_with_retry 3 30 ./tool/flutter_with_env.sh prod --role "$app_role" build ios \
   --config-only \
   --release \
-  --flavor prod \
   --build-name="$build_name" \
-  --build-number="$build_number" \
-  --dart-define-from-file="$repo_root/tool/env/dart_defines/prod.json"
+  --build-number="$build_number"
 
 cd ios
 run_with_retry 3 30 pod install

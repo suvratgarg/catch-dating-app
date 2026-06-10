@@ -11,6 +11,15 @@ on:
         options:
           - staging
           - prod
+      app_role:
+        description: App role to verify.
+        required: true
+        default: consumer
+        type: choice
+        options:
+          - consumer
+          - host
+          - both
 
 jobs:
   checklist:
@@ -46,8 +55,15 @@ jobs:
 
       - name: Validate checked-in Firebase config for environment
         run: |
-          ./tool/use_firebase_environment.sh "${{ inputs.environment }}"
-          ./tool/validate_firebase_environment.sh "${{ inputs.environment }}"
+          roles="${{ inputs.app_role }}"
+          if [[ "$roles" == "both" ]]; then
+            roles="consumer host"
+          fi
+
+          for role in $roles; do
+            ./tool/use_firebase_environment.sh "${{ inputs.environment }}" "$role"
+            ./tool/validate_firebase_environment.sh "${{ inputs.environment }}" "$role"
+          done
 
       - name: Flutter analysis
         run: flutter analyze --no-fatal-infos
@@ -68,7 +84,19 @@ jobs:
         run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
       - name: Build release web artifact
-        run: ./tool/flutter_with_env.sh "${{ inputs.environment }}" build web --release
+        run: |
+          roles="${{ inputs.app_role }}"
+          if [[ "$roles" == "both" ]]; then
+            roles="consumer host"
+          fi
+
+          for role in $roles; do
+            if [[ "$role" == "consumer" ]]; then
+              ./tool/flutter_with_env.sh "${{ inputs.environment }}" build web --release
+            else
+              ./tool/flutter_with_env.sh "${{ inputs.environment }}" --role host build web --release
+            fi
+          done
 
       - name: Write release checklist summary
         run: |
@@ -76,6 +104,7 @@ jobs:
             echo "## Release readiness"
             echo
             echo "- Environment: \`${{ inputs.environment }}\`"
+            echo "- App role: \`${{ inputs.app_role }}\`"
             echo "- Firebase config validation: passed"
             echo "- Flutter analysis: passed"
             echo "- Flutter tests: passed"
