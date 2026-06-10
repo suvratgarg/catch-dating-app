@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-31",
+  "updated": "2026-06-10",
   "description": "Consolidated inventory of remote operational surfaces. This file groups Firebase deploys, environment switching, data repair/backfill, App Check/security console work, CI gates, and App Store/TestFlight release operations without changing the underlying tools.",
   "operations": [
     {
@@ -9,7 +9,7 @@
       "status": "active",
       "safety": "local-writes-config",
       "environments": ["dev", "staging", "prod"],
-      "purpose": "Select and verify the active Firebase/native app configuration before local builds, CI release builds, deploys, or console-driven checks.",
+      "purpose": "Select and verify the active Firebase/native app configuration before local builds, CI release builds, deploys, or console-driven checks, including consumer and host app roles.",
       "entrypoints": [
         {"kind": "tool-id", "ref": "env:use-firebase"},
         {"kind": "tool-id", "ref": "env:validate-firebase"},
@@ -22,12 +22,13 @@
         {"kind": "doc", "ref": "docs/release_operations.md"}
       ],
       "requiredChecks": [
-        "tool/validate_firebase_environment.sh <env>",
+        "tool/validate_firebase_environment.sh <env> <consumer|host>",
         "node tool/firebase/validate_google_maps_config.mjs --env <env> --platform ios"
       ],
       "notes": [
         "Environment aliases are defined in .firebaserc.",
-        "Active checked-in config files are copied from firebase/<env> by tool/use_firebase_environment.sh."
+        "Active checked-in config files are copied from firebase/<env> or firebase/<env>/host by tool/use_firebase_environment.sh.",
+        "The Android source-set google-services.json at android/app/src/<env>/ is also an active working copy and must match the selected app role."
       ]
     },
     {
@@ -123,11 +124,14 @@
       "requiredChecks": [
         "functions/test/callable-app-check.test.cjs",
         "tool/validate_firebase_environment.sh <env>",
-        "Console evidence for provider registration and enforcement before release"
+        "Console evidence for provider registration and enforcement before release or after Firebase app registration changes"
       ],
       "notes": [
         "No local script should pretend to prove console enforcement by itself.",
-        "The manifest makes the manual console dependency explicit for future automation."
+        "The manifest makes the manual console dependency explicit for future automation.",
+        "Host Android Firebase apps were registered on 2026-06-10 and mirror the matching consumer app SHA fingerprints for dev, staging, and prod.",
+        "Host App Check provider registrations were verified in Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise.",
+        "Firebase CLI 15.1.0 and gcloud 566.0.0 do not expose App Check app-management commands in this local toolchain."
       ]
     },
     {
@@ -154,7 +158,8 @@
       ],
       "notes": [
         "Workflow-specific proof still belongs in GitHub Actions run summaries.",
-        "This manifest is the local index for deciding which workflow owns which operational concern."
+        "This manifest is the local index for deciding which workflow owns which operational concern.",
+        "App Build Matrix includes host web, Android debug, and iOS simulator build coverage; Release Readiness can validate consumer, host, or both app roles."
       ]
     },
     {
@@ -163,12 +168,14 @@
       "status": "break-glass",
       "safety": "remote-release-break-glass",
       "environments": ["prod"],
-      "purpose": "Track iOS archive, export, App Store Connect authentication, TestFlight evidence, and the decision that Xcode Cloud is canonical for routine TestFlight upload.",
+      "purpose": "Track consumer and host iOS archive, export, App Store Connect authentication, TestFlight evidence, and the decision that Xcode Cloud is canonical for routine TestFlight upload.",
       "entrypoints": [
         {"kind": "tool-id", "ref": "env:flutter"},
         {"kind": "tool-id", "ref": "platform:ios-maps-key"},
         {"kind": "tool-id", "ref": "firebase:maps-config"},
         {"kind": "workflow", "ref": ".github/workflows/ios-testflight-release.yml"},
+        {"kind": "config", "ref": "ios/ci_scripts/ci_post_clone.sh"},
+        {"kind": "config", "ref": "ios/ci_scripts/ci_post_xcodebuild.sh"},
         {"kind": "doc", "ref": "docs/release_operations.md"},
         {
           "kind": "manual",
@@ -176,15 +183,28 @@
           "owner": "docs/release_operations.md",
           "ticket": "testflight-console-evidence-required",
           "guardrail": "Confirm Xcode Cloud workflow, TestFlight groups, and break-glass upload reason before any external TestFlight release."
+        },
+        {
+          "kind": "manual",
+          "ref": "App Store Connect host Xcode Cloud workflow for com.catchdates.host",
+          "owner": "docs/release_operations.md",
+          "ticket": "host-testflight-console-evidence-required",
+          "guardrail": "Configure the host Xcode Cloud workflow in Xcode, then prove one host TestFlight upload/install/launch cycle before external host beta."
         }
       ],
       "requiredChecks": [
         "GitHub workflow upload_to_testflight=false for routine archives.",
         "break_glass_reason is required when GitHub uploads to TestFlight.",
+        "For app_role=host, verify exported bundle ID com.catchdates.host.",
         "Verify exported Maps key, HealthKit entitlement, and Associated Domains entitlement."
       ],
       "notes": [
         "GitHub TestFlight upload is break-glass only while Xcode Cloud remains canonical.",
+        "GitHub iOS TestFlight Release supports app_role=consumer and app_role=host; host uses host-prod with Release-host-prod and a separate artifact name.",
+        "Apple Developer App ID Catch Host/com.catchdates.host and App Store Connect app id 6778927317 were created on 2026-06-10; SKU is catch-host-ios.",
+        "Xcode Cloud host workflows should set CATCH_APP_ROLE=host if the host-prod scheme is not exposed through CI_XCODEBUILD_SCHEME.",
+        "App Store Connect web for the host app currently says to create the Xcode Cloud workflow in Xcode.",
+        "App Store Connect displays an updated Apple Developer Program License Agreement notice that the Account Holder should accept before treating host uploads/submissions as release-ready.",
         "App Store review metadata and TestFlight group membership remain console-owned."
       ]
     }

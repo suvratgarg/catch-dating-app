@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -63,8 +64,10 @@ class ClubDetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final showMembershipControls = isAuthenticated && !isHost;
-    final isOwner = club.isOwnedBy(uid);
+    final isHostApp = AppConfig.appRole.isHost;
+    final showMembershipControls = isAuthenticated && !isHost && !isHostApp;
+    final showHostControls = isHostApp && isHost;
+    final isOwner = isHostApp && club.isOwnedBy(uid);
     const contentGap = SizedBox(height: CatchLayout.detailScreenContentGap);
     const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
 
@@ -86,7 +89,8 @@ class ClubDetailBody extends StatelessWidget {
                 contentGap,
                 _ClubHostSection(
                   club: club,
-                  canViewProfile: isAuthenticated,
+                  canViewProfile: false,
+                  canMessageHost: isAuthenticated && !isHostApp,
                   currentUid: uid,
                 ),
                 contentGap,
@@ -96,17 +100,17 @@ class ClubDetailBody extends StatelessWidget {
                   _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
                   contentGap,
                 ],
-                if (isHost) ...[
+                if (showHostControls) ...[
                   HostClubManagementPanel(
                     club: club,
                     events: upcoming,
                     onEditClub: () => context.pushNamed(
-                      Routes.editClubScreen.name,
+                      Routes.hostEditClubScreen.name,
                       pathParameters: {'clubId': club.id},
                       extra: club,
                     ),
                     onCreateEvent: () => context.pushNamed(
-                      Routes.createEventScreen.name,
+                      Routes.hostCreateEventScreen.name,
                       pathParameters: {'clubId': club.id},
                       extra: club,
                     ),
@@ -140,7 +144,7 @@ class ClubDetailBody extends StatelessWidget {
           ),
           ClubScheduleSection(
             events: upcoming,
-            isHost: isHost,
+            isHost: showHostControls,
             onEventSelected: (event) => context.pushNamed(
               Routes.eventDetailScreen.name,
               pathParameters: {'clubId': club.id, 'eventId': event.id},
@@ -169,11 +173,13 @@ class _ClubHostSection extends ConsumerWidget {
   const _ClubHostSection({
     required this.club,
     required this.canViewProfile,
+    required this.canMessageHost,
     required this.currentUid,
   });
 
   final Club club;
   final bool canViewProfile;
+  final bool canMessageHost;
   final String? currentUid;
 
   @override
@@ -227,7 +233,7 @@ class _ClubHostSection extends ConsumerWidget {
                   borderColor: t.primarySoft,
                   showChevron: canViewProfile,
                   onMessage:
-                      canViewProfile &&
+                      canMessageHost &&
                           currentUid != null &&
                           currentUid != host.uid &&
                           !messageMutation.isPending

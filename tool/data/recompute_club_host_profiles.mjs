@@ -28,10 +28,7 @@ export async function main(argv = process.argv.slice(2)) {
   const admin = requireFromFunctions("firebase-admin");
   admin.initializeApp({projectId: resolveProjectId(args)});
   const db = admin.firestore();
-  const plan = await buildClubHostProfileRepairPlan(
-    db,
-    loadProfileProjection()
-  );
+  const plan = await buildClubHostProfileRepairPlan(db);
 
   if (args.json) {
     console.log(JSON.stringify(plan.summary, null, 2));
@@ -48,16 +45,15 @@ export async function main(argv = process.argv.slice(2)) {
   console.log("\nApplied club host profile repairs.");
 }
 
-export async function buildClubHostProfileRepairPlan(
-  firestore,
-  profileProjection
-) {
-  const [clubsSnap, usersSnap] = await Promise.all([
+export async function buildClubHostProfileRepairPlan(firestore) {
+  const [clubsSnap, hostProfilesSnap] = await Promise.all([
     firestore.collection("clubs").get(),
-    firestore.collection("users").get(),
+    firestore.collection("hostProfiles").get(),
   ]);
 
-  const users = new Map(usersSnap.docs.map((doc) => [doc.id, doc.data()]));
+  const hostProfileDocs = new Map(
+    hostProfilesSnap.docs.map((doc) => [doc.id, doc.data()])
+  );
   const warnings = [];
   const repairs = [];
 
@@ -70,29 +66,21 @@ export async function buildClubHostProfileRepairPlan(
     }
 
     const hostUserIds = resolveHostUserIds(club, ownerUserId);
-    const missingHostUserId = hostUserIds.find((uid) => !users.has(uid));
-    if (missingHostUserId) {
-      warnings.push(
-        `${clubDoc.ref.path} references missing users/${missingHostUserId}.`
-      );
-      continue;
-    }
-    const deletedHostUserId = hostUserIds.find((uid) =>
-      users.get(uid)?.deleted === true
-    );
-    if (deletedHostUserId) {
-      warnings.push(
-        `${clubDoc.ref.path} is hosted by deleted users/${deletedHostUserId}.`
-      );
-      continue;
-    }
 
     const hostProfiles = hostUserIds.map((uid) => {
-      const user = users.get(uid);
+      const hostProfile = hostProfileDocs.get(uid);
+      const fallback = existingClubHostProfile(club, uid, ownerUserId);
+      if (!hostProfile) {
+        warnings.push(
+          `${clubDoc.ref.path} has no hostProfiles/${uid}; ` +
+          "using the existing club host snapshot fallback."
+        );
+      }
       return {
         uid,
-        displayName: profileProjection.publicDisplayName(user),
-        avatarUrl: profileProjection.publicAvatarUrl(user),
+        displayName: nonBlank(hostProfile?.displayName) ??
+          fallback.displayName,
+        avatarUrl: nonBlank(hostProfile?.avatarUrl) ?? fallback.avatarUrl,
         role: uid === ownerUserId ? "owner" : "host",
       };
     });
@@ -128,7 +116,7 @@ export async function buildClubHostProfileRepairPlan(
     repairs,
     summary: {
       clubsScanned: clubsSnap.size,
-      usersScanned: usersSnap.size,
+      hostProfilesScanned: hostProfilesSnap.size,
       repairsNeeded: repairs.length,
       warnings,
       repairs,
@@ -143,18 +131,6 @@ export async function applyClubHostProfileRepairPlan(firestore, plan) {
       batch.update(firestore.doc(repair.path), repair.expected);
     }
     await batch.commit();
-  }
-}
-
-function loadProfileProjection() {
-  try {
-    return requireFromFunctions("./lib/shared/profileProjection.js");
-  } catch (error) {
-    throw new Error(
-      "Could not load functions/lib/shared/profileProjection.js. " +
-      "Event `npm --prefix functions run build` before this repair tool. " +
-      `Original error: ${error.message}`
-    );
   }
 }
 
@@ -216,9 +192,10 @@ function resolveProjectId(parsed) {
 function printHelp() {
   console.log(`Usage: node tool/data/recompute_club_host_profiles.mjs [options]
 
-Recomputes club host projection fields from users/{uid} profile documents.
+Recomputes club host projection fields from hostProfiles/{uid} documents.
 Backfills ownerUserId, hostUserIds, hostProfiles, and profileImageUrl for
-legacy clubs while preserving the old hostName/hostAvatarUrl projection.
+legacy clubs while preserving existing club host snapshots when a host profile
+document has not been created yet.
 
 Options:
   --apply                 Write repairs. Default is dry-run.
@@ -254,6 +231,25 @@ function resolveHostUserIds(club, ownerUserId) {
     .filter((uid, index, all) => all.indexOf(uid) === index);
 }
 
+function existingClubHostProfile(club, uid, ownerUserId) {
+  const existingProfile = Array.isArray(club.hostProfiles) ?
+    club.hostProfiles.find((host) => host?.uid === uid) :
+    null;
+  const isOwner = uid === ownerUserId;
+  return {
+    displayName: nonBlank(existingProfile?.displayName) ??
+      (isOwner ? nonBlank(club.hostName) : null) ??
+      "Catch Host",
+    avatarUrl: nonBlank(existingProfile?.avatarUrl) ??
+      (isOwner ? nonBlank(club.hostAvatarUrl) : null),
+  };
+}
+
+function nonBlank(value) {
+  const normalized = typeof value === "string" ? value.trim() : "";
+  return normalized || null;
+}
+
 function stableStringify(value) {
   return JSON.stringify(stableValue(value));
 }
@@ -273,7 +269,7 @@ function stableValue(value) {
 function printSummary(summary) {
   console.log("Club host profile repair plan");
   console.log(`Clubs scanned: ${summary.clubsScanned}`);
-  console.log(`Users scanned: ${summary.usersScanned}`);
+  console.log(`Host profiles scanned: ${summary.hostProfilesScanned}`);
   console.log(`Repairs needed: ${summary.repairsNeeded}`);
 
   if (summary.repairs.length > 0) {

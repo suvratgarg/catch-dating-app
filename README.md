@@ -219,9 +219,10 @@ environment, so switch first:
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
 - Push notifications are wired in-repo for Android and iOS.
-  Android now has `dev`, `staging`, and `prod` product flavors; the dev flavor uses `com.catchdates.app.dev`, while prod uses `com.catchdates.app`.
-  iOS/macOS now have matching `dev`, `staging`, and `prod` schemes/build configurations. Dev builds use `com.catchdates.app.dev`; prod builds use `com.catchdates.app`.
-  App Check is registered and enforced for Android, iOS/macOS, and web in all three Firebase environments.
+  Android now has `dev`, `staging`, and `prod` product flavors for the consumer app plus host role application IDs: `com.catchdates.host.dev`, `com.catchdates.host.staging`, and `com.catchdates.host`.
+  iOS/macOS now have matching consumer `dev`, `staging`, and `prod` schemes/build configurations plus host `host-dev`, `host-staging`, and `host-prod` schemes. Host iOS bundle IDs use `com.catchdates.host.dev`, `com.catchdates.host.staging`, and `com.catchdates.host`.
+  Host builds use generated host-specific launcher icons (`AppIcon-host-*` on Apple platforms and `host*` Android launcher resources), and the manual GitHub TestFlight workflow can archive either `consumer` or `host`.
+  App Check is registered and enforced for consumer and host Android, iOS/macOS, and web apps in all three Firebase environments.
   macOS push is intentionally disabled; direct Developer ID distribution is
   validated, but phone auth runtime behavior on macOS is intentionally deferred.
   Web push has Firebase Web Push VAPID keys in the checked-in Dart define files for the configured environments.

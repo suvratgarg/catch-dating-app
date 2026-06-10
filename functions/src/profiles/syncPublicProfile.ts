@@ -5,11 +5,11 @@ import {
   UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
-  publicAvatarUrl,
   publicProfileFromUserProfileDoc,
 } from "../shared/profileProjection";
 import {isSocialReadyUserProfile} from "../shared/profileReadiness";
 import {clubHostProfiles} from "../shared/clubHosts";
+import {HostProfileDocument} from "../shared/hostProfiles";
 
 interface SyncPublicProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -25,6 +25,16 @@ export const syncPublicProfile = onDocumentWritten(
     const {userId} = event.params;
     const user = event.data?.after.data() as UserProfileDocument | undefined;
     await syncUserProfileProjectionsHandler(userId, user);
+  }
+);
+
+export const syncHostProfile = onDocumentWritten(
+  "hostProfiles/{userId}",
+  async (event) => {
+    const {userId} = event.params;
+    const hostProfile = event.data?.after.data() as
+      HostProfileDocument | undefined;
+    await syncHostProfileProjectionsHandler(userId, hostProfile);
   }
 );
 
@@ -80,10 +90,6 @@ export async function syncUserProfileProjectionsHandler(
   logger.info("Syncing public profile", {userId});
   await Promise.all([
     publicProfileRef.set(publicProfile),
-    syncHostedClubHostProfile(userId, {
-      hostName: publicProfile.name,
-      hostAvatarUrl: publicAvatarUrl(user),
-    }, deps),
     syncAuthoredReviewReviewerProfile(userId, {
       reviewerName: publicProfile.name,
     }, deps),
@@ -91,11 +97,30 @@ export async function syncUserProfileProjectionsHandler(
 }
 
 /**
- * Updates hosted club denormalized host profile fields.
+ * Syncs professional host-owned denormalized projections.
+ * @param {string} userId Host user id.
+ * @param {HostProfileDocument | undefined} hostProfile Current host profile,
+ * undefined when the source document was deleted.
+ * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
+ * @return {Promise<void>}
+ */
+export async function syncHostProfileProjectionsHandler(
+  userId: string,
+  hostProfile: HostProfileDocument | undefined,
+  deps: SyncPublicProfileDeps = defaultDeps
+): Promise<void> {
+  await syncHostedClubHostProfile(userId, {
+    hostName: nonBlank(hostProfile?.displayName) ?? "Catch Host",
+    hostAvatarUrl: nonBlank(hostProfile?.avatarUrl),
+  }, deps);
+}
+
+/**
+ * Updates hosted club denormalized professional host profile fields.
  * @param {string} userId Host user id.
  * @param {object} patch Host projection patch.
- * @param {string} patch.hostName Public host display name.
- * @param {string | null} patch.hostAvatarUrl Public host avatar URL.
+ * @param {string} patch.hostName Professional host display name.
+ * @param {string | null} patch.hostAvatarUrl Professional host avatar URL.
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
@@ -161,4 +186,14 @@ export async function syncAuthoredReviewReviewerProfile(
   const batch = db.batch();
   reviewsSnap.docs.forEach((doc) => batch.set(doc.ref, patch, {merge: true}));
   await batch.commit();
+}
+
+/**
+ * Returns a trimmed string when a host profile field has display text.
+ * @param {string | null | undefined} value Candidate profile text.
+ * @return {string | null} Normalized text or null.
+ */
+function nonBlank(value: string | null | undefined): string | null {
+  const normalized = value?.trim();
+  return normalized ? normalized : null;
 }

@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
@@ -30,6 +31,7 @@ import 'package:catch_dating_app/events/presentation/event_location_map_screen.d
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -50,7 +52,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncValue, ConsumerWidget, Provider, WidgetRef;
+    show AsyncData, AsyncValue, ConsumerWidget, Provider, WidgetRef;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -100,6 +102,20 @@ enum Routes {
   settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history'),
   paymentConfirmationScreen('/payment-confirmation'),
+  hostHomeScreen('/host'),
+  hostClubsScreen('/host/clubs'),
+  hostClubDetailScreen('/host/clubs/:clubId'),
+  hostCreateClubScreen('/host/clubs/create-club'),
+  hostEditClubScreen('/host/clubs/:clubId/edit'),
+  hostCreateEventScreen('/host/clubs/:clubId/create-event'),
+  hostAppEventDetailScreen('/host/clubs/:clubId/events/:eventId'),
+  hostAppEventManageScreen('/host/clubs/:clubId/events/:eventId/manage'),
+  hostAppEditEventScreen('/host/clubs/:clubId/events/:eventId/edit'),
+  hostAppAttendanceSheet('/host/clubs/:clubId/events/:eventId/attendance'),
+  hostAppEventSuccessScreen('/host/clubs/:clubId/events/:eventId/success'),
+  hostInboxScreen('/host/inbox'),
+  hostChatScreen('/host/inbox/:matchId'),
+  hostSettingsScreen('/host/settings'),
   eventPolicyLabScreen('/dev/event-policy-lab'),
   eventSuccessLabScreen('/dev/event-success-lab'),
   eventSuccessManualQaScreen('/dev/event-success-manual-qa'),
@@ -212,6 +228,10 @@ final _clubsShellKey = GlobalKey<NavigatorState>();
 final _catchesShellKey = GlobalKey<NavigatorState>();
 final _chatsShellKey = GlobalKey<NavigatorState>();
 final _profileShellKey = GlobalKey<NavigatorState>();
+final _hostEventsShellKey = GlobalKey<NavigatorState>();
+final _hostClubsShellKey = GlobalKey<NavigatorState>();
+final _hostInboxShellKey = GlobalKey<NavigatorState>();
+final _hostSettingsShellKey = GlobalKey<NavigatorState>();
 
 const _fromQueryParam = 'from';
 const _onboardingIntentQueryParam = 'intent';
@@ -230,7 +250,9 @@ GoRouter goRouter(Ref ref) {
   final analytics = ref.read(appAnalyticsProvider);
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
-  ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
+  if (!AppConfig.appRole.isHost) {
+    ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
+  }
 
   ref.onDispose(notifier.dispose);
 
@@ -242,7 +264,9 @@ GoRouter goRouter(Ref ref) {
     redirect: (context, state) {
       return appRedirect(
         uidAsync: ref.read(uidProvider),
-        userProfileAsync: ref.read(watchUserProfileProvider),
+        userProfileAsync: AppConfig.appRole.isHost
+            ? const AsyncData<UserProfile?>(null)
+            : ref.read(watchUserProfileProvider),
         matchedLocation: state.matchedLocation,
         uri: state.uri,
       );
@@ -312,55 +336,59 @@ GoRouter goRouter(Ref ref) {
         name: Routes.dashboardEventDetailScreen.name,
         builder: (context, state) => _eventDetailScreen(state),
       ),
-      GoRoute(
-        path: Routes.dashboardHostEventManageScreen.path,
-        builder: (context, state) => HostEventManageRouteScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
-          initialSection: _hostManageSectionFromState(state),
+      if (AppConfig.appRole.isHost)
+        GoRoute(
+          path: Routes.dashboardHostEventManageScreen.path,
+          builder: (context, state) => HostEventManageRouteScreen(
+            clubId: state.pathParameters['clubId']!,
+            eventId: state.pathParameters['eventId']!,
+            initialEvent: switch (state.extra) {
+              final Event event => event,
+              _ => null,
+            },
+            initialSection: _hostManageSectionFromState(state),
+          ),
         ),
-      ),
-      GoRoute(
-        path: Routes.hostEventManageScreen.path,
-        name: Routes.hostEventManageScreen.name,
-        builder: (context, state) => HostEventManageRouteScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
-          initialSection: _hostManageSectionFromState(state),
+      if (AppConfig.appRole.isHost)
+        GoRoute(
+          path: Routes.hostEventManageScreen.path,
+          name: Routes.hostEventManageScreen.name,
+          builder: (context, state) => HostEventManageRouteScreen(
+            clubId: state.pathParameters['clubId']!,
+            eventId: state.pathParameters['eventId']!,
+            initialEvent: switch (state.extra) {
+              final Event event => event,
+              _ => null,
+            },
+            initialSection: _hostManageSectionFromState(state),
+          ),
         ),
-      ),
-      GoRoute(
-        path: Routes.editHostedEventScreen.path,
-        name: Routes.editHostedEventScreen.name,
-        builder: (context, state) => EditHostedEventRouteScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
+      if (AppConfig.appRole.isHost)
+        GoRoute(
+          path: Routes.editHostedEventScreen.path,
+          name: Routes.editHostedEventScreen.name,
+          builder: (context, state) => EditHostedEventRouteScreen(
+            clubId: state.pathParameters['clubId']!,
+            eventId: state.pathParameters['eventId']!,
+            initialEvent: switch (state.extra) {
+              final Event event => event,
+              _ => null,
+            },
+          ),
         ),
-      ),
-      GoRoute(
-        path: Routes.eventSuccessHostScreen.path,
-        name: Routes.eventSuccessHostScreen.name,
-        builder: (context, state) => HostEventManageRouteScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-          initialEvent: switch (state.extra) {
-            final Event event => event,
-            _ => null,
-          },
+      if (AppConfig.appRole.isHost)
+        GoRoute(
+          path: Routes.eventSuccessHostScreen.path,
+          name: Routes.eventSuccessHostScreen.name,
+          builder: (context, state) => HostEventManageRouteScreen(
+            clubId: state.pathParameters['clubId']!,
+            eventId: state.pathParameters['eventId']!,
+            initialEvent: switch (state.extra) {
+              final Event event => event,
+              _ => null,
+            },
+          ),
         ),
-      ),
       GoRoute(
         path: Routes.paymentHistoryScreen.path,
         name: Routes.paymentHistoryScreen.name,
@@ -426,169 +454,319 @@ GoRouter goRouter(Ref ref) {
           },
         ),
       ),
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) =>
-            AppShell(navigationShell: navigationShell),
-        branches: [
-          // ── Branch 0: Home / Dashboard ───────────────────────────────
-          StatefulShellBranch(
-            navigatorKey: _dashboardShellKey,
-            observers: [AnalyticsRouteObserver(analytics)],
-            routes: [
-              GoRoute(
-                path: Routes.dashboardScreen.path,
-                name: Routes.dashboardScreen.name,
-                builder: (context, state) => const DashboardScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'notifications',
-                    name: Routes.notificationsScreen.name,
-                    builder: (context, state) => const ActivityScreen(),
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          // ── Branch 1: Clubs ──────────────────────────────────────────
-          StatefulShellBranch(
-            navigatorKey: _clubsShellKey,
-            observers: [AnalyticsRouteObserver(analytics)],
-            routes: [
-              GoRoute(
-                path: Routes.clubsListScreen.path,
-                name: Routes.clubsListScreen.name,
-                builder: (context, state) => const ClubsListScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'create-club',
-                    name: Routes.createClubScreen.name,
-                    parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => const CreateClubScreen(),
-                  ),
-                  GoRoute(
-                    path: ':clubId',
-                    name: Routes.clubDetailScreen.name,
-                    pageBuilder: _clubDetailPage,
-                    routes: [
-                      GoRoute(
-                        path: 'events/:eventId',
-                        name: Routes.eventDetailScreen.name,
-                        pageBuilder: _eventDetailPage,
-                        routes: [
-                          GoRoute(
-                            path: 'attendance',
-                            name: Routes.attendanceSheet.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                HostEventManageRouteScreen(
-                                  clubId: state.pathParameters['clubId']!,
-                                  eventId: state.pathParameters['eventId']!,
-                                  initialEvent: switch (state.extra) {
-                                    final Event event => event,
-                                    _ => null,
-                                  },
-                                  initialSection: HostEventManageSection.live,
-                                ),
-                          ),
-                          GoRoute(
-                            path: 'companion',
-                            name: Routes.eventSuccessCompanionScreen.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                EventSuccessCompanionRouteScreen(
-                                  clubId: state.pathParameters['clubId']!,
-                                  eventId: state.pathParameters['eventId']!,
-                                  initialEvent: switch (state.extra) {
-                                    final Event event => event,
-                                    _ => null,
-                                  },
-                                ),
-                          ),
-                        ],
-                      ),
-                      GoRoute(
-                        path: 'edit',
-                        name: Routes.editClubScreen.name,
-                        parentNavigatorKey: _rootNavigatorKey,
-                        builder: (context, state) => EditClubRouteScreen(
-                          clubId: state.pathParameters['clubId']!,
-                          initialClub: switch (state.extra) {
-                            final Club rc => rc,
-                            _ => null,
-                          },
-                        ),
-                      ),
-                      GoRoute(
-                        path: 'create-event',
-                        name: Routes.createEventScreen.name,
-                        parentNavigatorKey: _rootNavigatorKey,
-                        builder: (context, state) => CreateEventRouteScreen(
-                          clubId: state.pathParameters['clubId']!,
-                          initialClub: switch (state.extra) {
-                            final Club rc => rc,
-                            _ => null,
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          // ── Branch 2: Catches (swipe) ────────────────────────────────
-          StatefulShellBranch(
-            navigatorKey: _catchesShellKey,
-            observers: [AnalyticsRouteObserver(analytics)],
-            routes: [
-              GoRoute(
-                path: Routes.swipeHubScreen.path,
-                name: Routes.swipeHubScreen.name,
-                builder: (context, state) => const SwipeHubScreen(),
-                routes: [
-                  GoRoute(
-                    path: ':eventId/recap',
-                    name: Routes.eventRecapScreen.name,
-                    builder: (context, state) => EventRecapScreen(
-                      eventId: state.pathParameters['eventId']!,
+      if (AppConfig.appRole.isHost)
+        _hostShellRoute(analytics)
+      else
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) =>
+              AppShell(navigationShell: navigationShell),
+          branches: [
+            // ── Branch 0: Home / Dashboard ───────────────────────────────
+            StatefulShellBranch(
+              navigatorKey: _dashboardShellKey,
+              observers: [AnalyticsRouteObserver(analytics)],
+              routes: [
+                GoRoute(
+                  path: Routes.dashboardScreen.path,
+                  name: Routes.dashboardScreen.name,
+                  builder: (context, state) => const DashboardScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'notifications',
+                      name: Routes.notificationsScreen.name,
+                      builder: (context, state) => const ActivityScreen(),
                     ),
-                  ),
+                  ],
+                ),
+              ],
+            ),
+
+            // ── Branch 1: Clubs ──────────────────────────────────────────
+            StatefulShellBranch(
+              navigatorKey: _clubsShellKey,
+              observers: [AnalyticsRouteObserver(analytics)],
+              routes: [
+                GoRoute(
+                  path: Routes.clubsListScreen.path,
+                  name: Routes.clubsListScreen.name,
+                  builder: (context, state) => const ClubsListScreen(),
+                  routes: [
+                    if (AppConfig.appRole.isHost)
+                      GoRoute(
+                        path: 'create-club',
+                        name: Routes.createClubScreen.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => const CreateClubScreen(),
+                      ),
+                    GoRoute(
+                      path: ':clubId',
+                      name: Routes.clubDetailScreen.name,
+                      pageBuilder: _clubDetailPage,
+                      routes: [
+                        GoRoute(
+                          path: 'events/:eventId',
+                          name: Routes.eventDetailScreen.name,
+                          pageBuilder: _eventDetailPage,
+                          routes: [
+                            if (AppConfig.appRole.isHost)
+                              GoRoute(
+                                path: 'attendance',
+                                name: Routes.attendanceSheet.name,
+                                parentNavigatorKey: _rootNavigatorKey,
+                                builder: (context, state) =>
+                                    HostEventManageRouteScreen(
+                                      clubId: state.pathParameters['clubId']!,
+                                      eventId: state.pathParameters['eventId']!,
+                                      initialEvent: switch (state.extra) {
+                                        final Event event => event,
+                                        _ => null,
+                                      },
+                                      initialSection:
+                                          HostEventManageSection.live,
+                                    ),
+                              ),
+                            GoRoute(
+                              path: 'companion',
+                              name: Routes.eventSuccessCompanionScreen.name,
+                              parentNavigatorKey: _rootNavigatorKey,
+                              builder: (context, state) =>
+                                  EventSuccessCompanionRouteScreen(
+                                    clubId: state.pathParameters['clubId']!,
+                                    eventId: state.pathParameters['eventId']!,
+                                    initialEvent: switch (state.extra) {
+                                      final Event event => event,
+                                      _ => null,
+                                    },
+                                  ),
+                            ),
+                          ],
+                        ),
+                        if (AppConfig.appRole.isHost)
+                          GoRoute(
+                            path: 'edit',
+                            name: Routes.editClubScreen.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) => EditClubRouteScreen(
+                              clubId: state.pathParameters['clubId']!,
+                              initialClub: switch (state.extra) {
+                                final Club rc => rc,
+                                _ => null,
+                              },
+                            ),
+                          ),
+                        if (AppConfig.appRole.isHost)
+                          GoRoute(
+                            path: 'create-event',
+                            name: Routes.createEventScreen.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) => CreateEventRouteScreen(
+                              clubId: state.pathParameters['clubId']!,
+                              initialClub: switch (state.extra) {
+                                final Club rc => rc,
+                                _ => null,
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // ── Branch 2: Catches (swipe) ────────────────────────────────
+            StatefulShellBranch(
+              navigatorKey: _catchesShellKey,
+              observers: [AnalyticsRouteObserver(analytics)],
+              routes: [
+                GoRoute(
+                  path: Routes.swipeHubScreen.path,
+                  name: Routes.swipeHubScreen.name,
+                  builder: (context, state) => const SwipeHubScreen(),
+                  routes: [
+                    GoRoute(
+                      path: ':eventId/recap',
+                      name: Routes.eventRecapScreen.name,
+                      builder: (context, state) => EventRecapScreen(
+                        eventId: state.pathParameters['eventId']!,
+                      ),
+                    ),
+                    GoRoute(
+                      path: ':eventId',
+                      name: Routes.swipeEventScreen.name,
+                      parentNavigatorKey: _rootNavigatorKey,
+                      builder: (context, state) => SwipeScreen(
+                        eventId: state.pathParameters['eventId']!,
+                        vibeIds: switch (state.extra) {
+                          final Set<String> ids => ids,
+                          _ => const {},
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // ── Branch 3: Chats ──────────────────────────────────────────
+            StatefulShellBranch(
+              navigatorKey: _chatsShellKey,
+              observers: [AnalyticsRouteObserver(analytics)],
+              routes: [
+                GoRoute(
+                  path: Routes.matchesListScreen.path,
+                  name: Routes.matchesListScreen.name,
+                  builder: (context, state) => const ChatsListScreen(),
+                  routes: [
+                    GoRoute(
+                      path: ':matchId',
+                      name: Routes.chatScreen.name,
+                      builder: (context, state) => ChatScreen(
+                        matchId: state.pathParameters['matchId']!,
+                        otherProfile: switch (state.extra) {
+                          final PublicProfile p => p,
+                          _ => null,
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // ── Branch 4: Profile ────────────────────────────────────────
+            StatefulShellBranch(
+              navigatorKey: _profileShellKey,
+              observers: [AnalyticsRouteObserver(analytics)],
+              routes: [
+                GoRoute(
+                  path: Routes.profileScreen.path,
+                  name: Routes.profileScreen.name,
+                  builder: (context, state) => const ProfileScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
+    ],
+  );
+}
+
+StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
+  return StatefulShellRoute.indexedStack(
+    builder: (context, state, navigationShell) =>
+        HostAppShell(navigationShell: navigationShell),
+    branches: [
+      StatefulShellBranch(
+        navigatorKey: _hostEventsShellKey,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostHomeScreen.path,
+            name: Routes.hostHomeScreen.name,
+            builder: (context, state) => const HostOperationsHomeScreen(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: _hostClubsShellKey,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostClubsScreen.path,
+            name: Routes.hostClubsScreen.name,
+            builder: (context, state) => const HostClubsScreen(),
+            routes: [
+              GoRoute(
+                path: 'create-club',
+                name: Routes.hostCreateClubScreen.name,
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const CreateClubScreen(),
+              ),
+              GoRoute(
+                path: ':clubId',
+                name: Routes.hostClubDetailScreen.name,
+                pageBuilder: _clubDetailPage,
+                routes: [
                   GoRoute(
-                    path: ':eventId',
-                    name: Routes.swipeEventScreen.name,
+                    path: 'edit',
+                    name: Routes.hostEditClubScreen.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => SwipeScreen(
-                      eventId: state.pathParameters['eventId']!,
-                      vibeIds: switch (state.extra) {
-                        final Set<String> ids => ids,
-                        _ => const {},
+                    builder: (context, state) => EditClubRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      initialClub: switch (state.extra) {
+                        final Club club => club,
+                        _ => null,
                       },
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-
-          // ── Branch 3: Chats ──────────────────────────────────────────
-          StatefulShellBranch(
-            navigatorKey: _chatsShellKey,
-            observers: [AnalyticsRouteObserver(analytics)],
-            routes: [
-              GoRoute(
-                path: Routes.matchesListScreen.path,
-                name: Routes.matchesListScreen.name,
-                builder: (context, state) => const ChatsListScreen(),
-                routes: [
                   GoRoute(
-                    path: ':matchId',
-                    name: Routes.chatScreen.name,
-                    builder: (context, state) => ChatScreen(
-                      matchId: state.pathParameters['matchId']!,
-                      otherProfile: switch (state.extra) {
-                        final PublicProfile p => p,
+                    path: 'create-event',
+                    name: Routes.hostCreateEventScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => CreateEventRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      initialClub: switch (state.extra) {
+                        final Club club => club,
+                        _ => null,
+                      },
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId',
+                    name: Routes.eventDetailScreen.name,
+                    pageBuilder: _eventDetailPage,
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId/manage',
+                    name: Routes.hostAppEventManageScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => HostEventManageRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      eventId: state.pathParameters['eventId']!,
+                      initialEvent: switch (state.extra) {
+                        final Event event => event,
+                        _ => null,
+                      },
+                      initialSection: _hostManageSectionFromState(state),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId/edit',
+                    name: Routes.hostAppEditEventScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => EditHostedEventRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      eventId: state.pathParameters['eventId']!,
+                      initialEvent: switch (state.extra) {
+                        final Event event => event,
+                        _ => null,
+                      },
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId/attendance',
+                    name: Routes.hostAppAttendanceSheet.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => HostEventManageRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      eventId: state.pathParameters['eventId']!,
+                      initialEvent: switch (state.extra) {
+                        final Event event => event,
+                        _ => null,
+                      },
+                      initialSection: HostEventManageSection.live,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId/success',
+                    name: Routes.hostAppEventSuccessScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => HostEventManageRouteScreen(
+                      clubId: state.pathParameters['clubId']!,
+                      eventId: state.pathParameters['eventId']!,
+                      initialEvent: switch (state.extra) {
+                        final Event event => event,
                         _ => null,
                       },
                     ),
@@ -597,18 +775,40 @@ GoRouter goRouter(Ref ref) {
               ),
             ],
           ),
-
-          // ── Branch 4: Profile ────────────────────────────────────────
-          StatefulShellBranch(
-            navigatorKey: _profileShellKey,
-            observers: [AnalyticsRouteObserver(analytics)],
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: _hostInboxShellKey,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostInboxScreen.path,
+            name: Routes.hostInboxScreen.name,
+            builder: (context, state) => const ChatsListScreen(),
             routes: [
               GoRoute(
-                path: Routes.profileScreen.path,
-                name: Routes.profileScreen.name,
-                builder: (context, state) => const ProfileScreen(),
+                path: ':matchId',
+                name: Routes.hostChatScreen.name,
+                builder: (context, state) => ChatScreen(
+                  matchId: state.pathParameters['matchId']!,
+                  otherProfile: switch (state.extra) {
+                    final PublicProfile profile => profile,
+                    _ => null,
+                  },
+                ),
               ),
             ],
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        navigatorKey: _hostSettingsShellKey,
+        observers: [AnalyticsRouteObserver(analytics)],
+        routes: [
+          GoRoute(
+            path: Routes.hostSettingsScreen.path,
+            name: Routes.hostSettingsScreen.name,
+            builder: (context, state) => const HostAccountScreen(),
           ),
         ],
       ),
@@ -676,10 +876,14 @@ String? appRedirect({
   final onStart = matchedLocation == Routes.startScreen.path;
   final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
   final onAuth = matchedLocation == Routes.authScreen.path;
+  final isHostApp = AppConfig.appRole.isHost;
 
   final isWaitingOnAuth = uidAsync.isLoading;
   final isWaitingOnProfile =
-      uidAsync.hasValue && uidAsync.value != null && userProfileAsync.isLoading;
+      !isHostApp &&
+      uidAsync.hasValue &&
+      uidAsync.value != null &&
+      userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
     if (_isPublicRoute(matchedLocation)) return null;
@@ -699,6 +903,13 @@ String? appRedirect({
       Routes.startScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
+  }
+
+  if (isHostApp) {
+    if (onLoading || onStart || onAuth || onOnboarding) {
+      return _resumeDestination(uri);
+    }
+    return null;
   }
 
   final onProfileCompletionOnboarding =
@@ -760,11 +971,14 @@ String? _pendingDestination({
 
 String _resumeDestination(Uri uri) {
   final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
-  if (from == null) return Routes.dashboardScreen.path;
+  final defaultPath = AppConfig.appRole.isHost
+      ? Routes.hostHomeScreen.path
+      : Routes.dashboardScreen.path;
+  if (from == null) return defaultPath;
 
   final targetPath = Uri.parse(from).path;
   if (_isTransientRoute(targetPath)) {
-    return Routes.dashboardScreen.path;
+    return defaultPath;
   }
   return from;
 }

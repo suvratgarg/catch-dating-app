@@ -4,9 +4,6 @@ import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
-  UserProfileDocument,
-} from "../shared/generated/firestoreAdminTypes";
-import {
   normalizeOptionalUploadedPhotoForFirestore,
   normalizeUploadedPhotosForFirestore,
 } from "../shared/uploadedPhotoNormalization";
@@ -15,12 +12,15 @@ import {CreateClubCallablePayload} from
   "../shared/generated/createClubCallablePayload";
 import {validateCreateClubCallablePayload} from
   "../shared/generated/schemaValidators";
-import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {validateCallableWithAjv} from "../shared/validation";
 import {
   activeClubMembershipPatch,
   clubMembershipId,
 } from "../shared/relationshipDocuments";
-import {publicAvatarUrl, publicDisplayName} from "../shared/profileProjection";
+import {
+  hostProfileSeedPatch,
+  professionalHostSnapshot,
+} from "../shared/hostProfiles";
 import {normalizeCreateClubPayload} from "./clubPayloadNormalization";
 
 interface CreateClubDeps {
@@ -65,6 +65,7 @@ export async function createClubHandler(
     .collection("clubMemberships")
     .doc(clubMembershipId(clubRef.id, hostUserId));
   const userRef = db.collection("users").doc(hostUserId);
+  const hostProfileRef = db.collection("hostProfiles").doc(hostUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   const existingHostedClubSnap = await db
     .collection("clubs")
@@ -79,11 +80,18 @@ export async function createClubHandler(
   }
 
   await db.runTransaction(async (tx) => {
-    const [clubSnap, hostClaimSnap, userSnap, deletedUserSnap] =
+    const [
+      clubSnap,
+      hostClaimSnap,
+      userSnap,
+      hostProfileSnap,
+      deletedUserSnap,
+    ] =
       await Promise.all([
         tx.get(clubRef),
         tx.get(hostClaimRef),
         tx.get(userRef),
+        tx.get(hostProfileRef),
         tx.get(deletedUserRef),
       ]);
 
@@ -96,9 +104,6 @@ export async function createClubHandler(
         "You can only host one club."
       );
     }
-    if (!userSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
-    }
     if (deletedUserSnap.exists) {
       throw new HttpsError(
         "failed-precondition",
@@ -106,22 +111,14 @@ export async function createClubHandler(
       );
     }
 
-    const user = requireDoc<UserProfileDocument>(
-
+    const hostProfile = professionalHostSnapshot({
+      uid: hostUserId,
+      hostProfileSnap,
       userSnap,
-
-      "UserProfileDocument"
-
-    );
-    if (user.profileComplete !== true) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Complete your profile before creating a club."
-      );
-    }
-
-    const hostName = publicDisplayName(user);
-    const hostAvatarUrl = publicAvatarUrl(user);
+      role: "owner",
+    });
+    const hostName = hostProfile.displayName;
+    const hostAvatarUrl = hostProfile.avatarUrl;
     const clubPhotos = normalizeUploadedPhotosForFirestore(data.clubPhotos);
     const logoPhoto = normalizeOptionalUploadedPhotoForFirestore(
       data.logoPhoto
@@ -137,12 +134,7 @@ export async function createClubHandler(
       hostAvatarUrl,
       ownerUserId: hostUserId,
       hostUserIds: [hostUserId],
-      hostProfiles: [{
-        uid: hostUserId,
-        displayName: hostName,
-        avatarUrl: hostAvatarUrl,
-        role: "owner",
-      }],
+      hostProfiles: [hostProfile],
       createdAt: deps.serverTimestamp(),
       imageUrl: primaryPhotoUrl(clubPhotos) ?? data.imageUrl ?? null,
       profileImageUrl: thumbnailOrUrl(logoPhoto) ??
@@ -223,6 +215,13 @@ export async function createClubHandler(
       clubId: clubRef.id,
       createdAt: deps.serverTimestamp(),
     });
+    if (!hostProfileSnap.exists) {
+      tx.set(
+        hostProfileRef,
+        hostProfileSeedPatch(hostProfile, deps.serverTimestamp()),
+        {merge: true}
+      );
+    }
   });
 
   return {clubId: clubRef.id};

@@ -1,5 +1,6 @@
 {
   "APP_ENV": "prod",
+  "CATCH_APP_ROLE": "consumer",
   "USE_FIREBASE_EMULATORS": "false",
   "USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER": "false",
   "ENABLE_PUSH_MESSAGING": "true",

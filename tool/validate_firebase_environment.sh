@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod>"
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+  echo "Usage: ./tool/validate_firebase_environment.sh <dev|staging|prod> [consumer|host]"
   exit 1
 fi
 
 environment="$1"
+app_role="${2:-consumer}"
 
 case "$environment" in
   dev|staging|prod) ;;
@@ -16,9 +17,21 @@ case "$environment" in
     ;;
 esac
 
+case "$app_role" in
+  consumer|host) ;;
+  *)
+    echo "Unsupported app role: $app_role"
+    exit 1
+    ;;
+esac
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 define_file="$repo_root/tool/env/dart_defines/$environment.json"
+firebase_source_prefix="firebase/$environment"
+if [[ "$app_role" == "host" ]]; then
+  firebase_source_prefix="firebase/$environment/host"
+fi
 
 if [[ ! -f "$define_file" ]]; then
   echo "Missing dart define file: tool/env/dart_defines/$environment.json"
@@ -67,10 +80,11 @@ else
 fi
 
 copy_specs=(
-  "firebase/$environment/android/google-services.json|android/app/google-services.json"
-  "firebase/$environment/ios/GoogleService-Info.plist|ios/Runner/GoogleService-Info.plist"
-  "firebase/$environment/macos/GoogleService-Info.plist|macos/Runner/GoogleService-Info.plist"
-  "firebase/$environment/web/firebase-messaging-sw.js|web/firebase-messaging-sw.js"
+  "$firebase_source_prefix/android/google-services.json|android/app/google-services.json"
+  "$firebase_source_prefix/android/google-services.json|android/app/src/$environment/google-services.json"
+  "$firebase_source_prefix/ios/GoogleService-Info.plist|ios/Runner/GoogleService-Info.plist"
+  "$firebase_source_prefix/macos/GoogleService-Info.plist|macos/Runner/GoogleService-Info.plist"
+  "$firebase_source_prefix/web/firebase-messaging-sw.js|web/firebase-messaging-sw.js"
 )
 
 status=0
@@ -99,8 +113,8 @@ for spec in "${copy_specs[@]}"; do
 done
 
 if [[ $status -ne 0 ]]; then
-  echo "Run ./tool/use_firebase_environment.sh $environment to refresh active config files."
+  echo "Run ./tool/use_firebase_environment.sh $environment $app_role to refresh active config files."
   exit "$status"
 fi
 
-echo "Firebase environment '$environment' is active and internally consistent."
+echo "Firebase environment '$environment' ($app_role) is active and internally consistent."

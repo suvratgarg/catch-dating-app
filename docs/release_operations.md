@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.7.3
-updated: 2026-05-28
+version: 1.7.5
+updated: 2026-06-10
 owner: recursive_audit_loop
 status: active
 ---
@@ -229,21 +229,34 @@ functions in non-interactive CI.
 ## Release Setup Evidence Snapshot
 
 Current setup/build/signing/distribution verdict: there is no known local
-build, Firebase, Firestore, App Check, Gradle, Xcode, Apple signing, Developer
-ID, notarization, or trust-chain blocker remaining in the current workspace.
+build, Firebase, Firestore, Gradle, Xcode, Apple signing, Developer ID,
+notarization, App Check, or trust-chain blocker remaining in the current
+workspace. Host app store distribution still needs product-release evidence:
+Xcode Cloud setup for `com.catchdates.host` and a host TestFlight
+upload/install/launch proof.
 
 Verified setup state:
 
 - Web builds, Android signed APK/AAB creation, iOS App Store IPA export, and
   macOS release builds have passed in the current release setup evidence.
 - Android upload-key SHA-1/SHA-256 fingerprints are registered on Firebase for
-  the currently verified upload artifacts.
-- Firebase App Check provider configs and enforcement are verified for active
-  Android, iOS/macOS, and web registrations.
+  the currently verified consumer and host upload artifacts.
+- Firebase App Check provider configs and enforcement are verified for the
+  consumer Android, iOS/macOS, and web registrations plus the 2026-06-10 host
+  Android, iOS, and web registrations. Host Android uses Play Integrity, host
+  iOS uses App Attest, and host web uses reCAPTCHA Enterprise across dev,
+  staging, and prod.
+- Apple Developer App ID `Catch Host` / `com.catchdates.host` is registered
+  under team `2HQBK4UMUT` with App Attest, Associated Domains, HealthKit, and
+  Push Notifications enabled. App Store Connect app `Catch Host` exists as app
+  id `6778927317`, SKU `catch-host-ios`, primary language English (U.S.), iOS
+  platform, and Full Access user access.
 - Direct macOS distribution is Developer ID signed, timestamped, notarized,
   stapled, and Gatekeeper accepted.
-- TestFlight upload/install/launch and iOS Maps behavior are confirmed through
-  App Store Connect/Xcode Cloud evidence.
+- Consumer TestFlight upload/install/launch and iOS Maps behavior are confirmed
+  through App Store Connect/Xcode Cloud evidence. Host TestFlight still needs a
+  real archive/upload/install/launch proof after the Apple-side app record and
+  Xcode Cloud workflow are configured.
 
 Still outside this setup verdict:
 
@@ -254,6 +267,10 @@ Still outside this setup verdict:
 - Play internal testing, store metadata, privacy/data-safety forms,
   screenshots, legal/support URLs, and production Crashlytics/Analytics
   dashboard validation remain release-management/product tasks.
+- App Store Connect currently displays an updated Apple Developer Program
+  License Agreement notice. The Account Holder should accept it before treating
+  host TestFlight uploads or store submissions as release-ready if Apple blocks
+  either action.
 - Play app-signing certificate fingerprints still need to be added to Firebase
   after Play Console enrollment. Local upload-key fingerprints are already
   registered.
@@ -655,11 +672,38 @@ and requires a reason explaining why Xcode Cloud is not being used.
 
 The workflow uses App Store Connect API key authentication for
 `xcodebuild -allowProvisioningUpdates`, exports with
-`ios/ExportOptions.prod.plist`, archives the `prod` scheme with
-`Release-prod`, verifies the archived and exported app contain the prod iOS
-Maps key, verifies the exported profile contains HealthKit, checks the signed
-app contains HealthKit and Associated Domains, and stores the IPA as a
-short-lived GitHub Actions artifact.
+`ios/ExportOptions.prod.plist`, and stores the IPA as a short-lived GitHub
+Actions artifact. It defaults to the consumer `prod` scheme with `Release-prod`;
+selecting `app_role=host` archives `host-prod` with `Release-host-prod` and
+expects bundle ID `com.catchdates.host`. Both paths verify the archived and
+exported app contain the prod iOS Maps key, verify the exported bundle ID,
+verify the exported profile contains HealthKit, and check the signed app
+contains HealthKit and Associated Domains.
+
+## Host TestFlight Status
+
+The host app now has local/native build identity, Firebase identity, distinct
+launcher icons, an Apple Developer App ID, an App Store Connect app record, and
+GitHub break-glass archive/export support for `com.catchdates.host.dev`,
+`com.catchdates.host.staging`, and `com.catchdates.host`, but routine
+TestFlight distribution is not proven yet. Before external host beta
+distribution:
+
+1. Add or update the Xcode Cloud workflow to archive `host-prod` with
+   `Release-host-prod`. Set `CATCH_APP_ROLE=host` on the workflow if Xcode Cloud
+   does not expose the `host-prod` scheme through `CI_XCODEBUILD_SCHEME`.
+   App Store Connect web for app id `6778927317` currently says to create the
+   workflow in Xcode.
+2. Confirm provisioning, Associated Domains, HealthKit, Maps key injection,
+   App Attest, and Firebase host config are present in the exported host IPA.
+3. Upload one host build to TestFlight and verify install, launch, App Check,
+   maps, phone auth, push registration, and host event-management entrypoints.
+
+Current host icon status: host builds use generated `AppIcon-host-dev`,
+`AppIcon-host-staging`, and `AppIcon-host-prod` catalogs on iOS/macOS, plus
+Android `hostDev`, `hostStaging`, and `hostProd` launcher resources. Regenerate
+them with `dart run tool/branding/generate_native_brand_assets.dart` after
+native brand-token or base-icon changes.
 
 ## Xcode Cloud Start Conditions
 
@@ -695,13 +739,17 @@ in each CI surface.
 ## Xcode Cloud iOS Builds
 
 Xcode Cloud is a second iOS build path, separate from the GitHub Actions
-`iOS TestFlight Release` workflow. It builds the `prod` flavor with
-`Release-prod` and can distribute to TestFlight directly from App Store Connect.
+`iOS TestFlight Release` workflow. The consumer workflow builds the `prod`
+flavor with `Release-prod`; the host workflow should build `host-prod` with
+`Release-host-prod`. Xcode Cloud can distribute either app to TestFlight
+directly from App Store Connect once each app record and workflow is configured.
 
 Two CI scripts drive it:
 
 - `ios/ci_scripts/ci_post_clone.sh` installs Flutter, applies the prod Firebase
-  environment, writes the prod iOS Google Maps key, and runs `pod install`.
+  environment for `consumer` or `host`, writes the prod iOS Google Maps key, and
+  runs `pod install`. It uses `CATCH_APP_ROLE=host` or a `host-*` Xcode scheme to
+  prepare `lib/main_host.dart` with the host prod flavor.
 - `ios/ci_scripts/ci_post_xcodebuild.sh` verifies the archived app's
   `GoogleMapsApiKey` is a real key before the build can reach TestFlight.
 

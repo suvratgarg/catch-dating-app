@@ -121,6 +121,7 @@ The current contract layer covers:
 - shared reusable definitions under `contracts/shared/`;
 - private profile documents at `users/{uid}`;
 - public profile projection documents at `publicProfiles/{uid}`;
+- professional host identity documents at `hostProfiles/{uid}`;
 - embedded profile prompt answers;
 - embedded photo prompt answers;
 - embedded `ProfilePhoto` storage metadata objects;

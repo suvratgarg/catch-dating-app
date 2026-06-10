@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
@@ -145,7 +146,11 @@ class MatchRepository {
 List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
   final buckets = <String, List<Match>>{};
   for (final match in matches) {
-    buckets.putIfAbsent(match.otherId(uid), () => []).add(match);
+    final otherId = match.otherId(uid);
+    final bucketKey = match.isClubHostInquiry
+        ? 'hostInquiry:${match.clubId ?? 'unknown'}:$otherId'
+        : 'match:$otherId';
+    buckets.putIfAbsent(bucketKey, () => []).add(match);
   }
 
   return buckets.values.map((bucket) {
@@ -193,7 +198,10 @@ Stream<Match?> matchStream(Ref ref, String matchId) =>
 int totalUnreadCount(Ref ref, String uid) {
   final matches =
       ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
-  return collapseMatchesByOtherUser(matches, uid)
+  final roleMatches = AppConfig.appRole.isHost
+      ? matches.where((match) => match.isClubHostInquiry).toList()
+      : matches;
+  return collapseMatchesByOtherUser(roleMatches, uid)
       .where((match) => !match.isBlocked)
       .fold(0, (total, match) => total + match.unreadConversationCountFor(uid));
 }

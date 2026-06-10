@@ -2,17 +2,34 @@
 set -euo pipefail
 
 if [[ $# -lt 2 ]]; then
-  echo "Usage: ./tool/flutter_with_env.sh <dev|staging|prod> <flutter args...>"
+  echo "Usage: ./tool/flutter_with_env.sh <dev|staging|prod> [--role <consumer|host>] <flutter args...>"
   exit 1
 fi
 
 environment="$1"
 shift
+app_role="${CATCH_APP_ROLE:-consumer}"
+
+if [[ $# -ge 2 && "$1" == "--role" ]]; then
+  app_role="$2"
+  shift 2
+elif [[ $# -ge 1 && ( "$1" == "consumer" || "$1" == "host" ) ]]; then
+  app_role="$1"
+  shift
+fi
 
 case "$environment" in
   dev|staging|prod) ;;
   *)
     echo "Unsupported environment: $environment"
+    exit 1
+    ;;
+esac
+
+case "$app_role" in
+  consumer|host) ;;
+  *)
+    echo "Unsupported app role: $app_role"
     exit 1
     ;;
 esac
@@ -92,33 +109,75 @@ is_ios_target() {
   esac
 }
 
+is_macos_target() {
+  case "$1" in
+    macos|macOS|darwin|Darwin) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_android_target() {
+  case "$1" in
+    *android*|*Android*|emulator*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 load_local_env_file "$repo_root/.env.$environment.local"
 load_local_env_file "$repo_root/.env.local"
 
-"$repo_root/tool/use_firebase_environment.sh" "$environment" >/dev/null
+export ORG_GRADLE_PROJECT_catchAppRole="$app_role"
 
 flutter_args=("$@")
 target_device="$(extract_target_device)"
 
+native_flavor="$environment"
+if [[ "$app_role" == "host" ]]; then
+  if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
+    case "${flutter_args[1]}" in
+      ipa|ios|macos)
+        native_flavor="host-$environment"
+        ;;
+    esac
+  elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
+    if is_ios_target "$target_device" || is_macos_target "$target_device"; then
+      native_flavor="host-$environment"
+    fi
+  fi
+fi
+
+"$repo_root/tool/use_firebase_environment.sh" "$environment" "$app_role" >/dev/null
+
 has_flavor=0
+has_target=0
 for arg in "${flutter_args[@]}"; do
   if [[ "$arg" == "--flavor" || "$arg" == --flavor=* ]]; then
     has_flavor=1
-    break
+  fi
+  if [[ "$arg" == "-t" || "$arg" == "--target" || "$arg" == --target=* ]]; then
+    has_target=1
   fi
 done
+
+if [[ $has_target -eq 0 && ${#flutter_args[@]} -ge 1 ]]; then
+  case "${flutter_args[0]}" in
+    run|build|drive)
+      flutter_args+=("-t" "lib/main_${app_role}.dart")
+      ;;
+  esac
+fi
 
 if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
   case "${flutter_args[1]}" in
     apk|appbundle|ipa|ios|macos)
       if [[ $has_flavor -eq 0 ]]; then
-        flutter_args+=("--flavor" "$environment")
+        flutter_args+=("--flavor" "$native_flavor")
       fi
       ;;
   esac
 elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavor -eq 0 ]]; then
   if ! is_web_target "$target_device"; then
-      flutter_args+=("--flavor" "$environment")
+      flutter_args+=("--flavor" "$native_flavor")
   fi
 fi
 
@@ -137,15 +196,10 @@ elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
     :
   elif is_ios_target "$target_device"; then
     maps_platform="ios"
+  elif is_android_target "$target_device"; then
+    maps_platform="android"
   else
-    case "$target_device" in
-      *android*|*Android*|emulator*)
-        maps_platform="android"
-        ;;
-      *)
-      maps_platform="all"
-      ;;
-    esac
+    maps_platform="all"
   fi
 fi
 
@@ -210,6 +264,7 @@ EOF
 fi
 
 extra_dart_defines=()
+extra_dart_defines+=("--dart-define=CATCH_APP_ROLE=${app_role}")
 if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
   extra_dart_defines+=(
     "--dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=${FIREBASE_APP_CHECK_DEBUG_TOKEN}"

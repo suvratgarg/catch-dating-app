@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
@@ -628,6 +629,10 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
 /// UI from offering a creation path after a host already has a club.
 @riverpod
 AsyncValue<bool> canCreateClub(Ref ref) {
+  if (!AppConfig.appRole.isHost) {
+    return const AsyncData(false);
+  }
+
   final uidAsync = ref.watch(uidProvider);
   if (uidAsync.isLoading) {
     return const AsyncLoading();

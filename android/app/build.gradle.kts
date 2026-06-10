@@ -32,6 +32,15 @@ fun googleMapsApiKeyFor(environmentName: String): String =
     googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY_$environmentName")
         .ifBlank { googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY") }
 
+val catchAppRole = providers.gradleProperty("catchAppRole").orElse("consumer").get()
+if (catchAppRole !in setOf("consumer", "host")) {
+    throw GradleException(
+        "Unsupported catchAppRole '$catchAppRole'. Use consumer or host."
+    )
+}
+val isHostApp = catchAppRole == "host"
+val baseApplicationId = if (isHostApp) "com.catchdates.host" else "com.catchdates.app"
+
 val releaseBuildRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true)
 }
@@ -82,28 +91,36 @@ if (releaseBuildRequested && releaseStoreFile != null && !releaseStoreFile.exist
 // the active file otherwise fails deep inside the google-services plugin with a
 // cryptic "No matching client" error. Fail early with an actionable message.
 val flavorApplicationIds = mapOf(
-    "dev" to "com.catchdates.app.dev",
-    "staging" to "com.catchdates.app.staging",
-    "prod" to "com.catchdates.app",
+    "dev" to "$baseApplicationId.dev",
+    "staging" to "$baseApplicationId.staging",
+    "prod" to baseApplicationId,
 )
 val requestedFlavor = flavorApplicationIds.keys.firstOrNull { flavor ->
     gradle.startParameter.taskNames.any { task ->
         task.contains(flavor, ignoreCase = true)
     }
 }
-val googleServicesFile = project.file("google-services.json")
-if (requestedFlavor != null && googleServicesFile.exists()) {
+if (requestedFlavor != null) {
+    val googleServicesFiles = listOf(
+        project.file("google-services.json"),
+        project.file("src/$requestedFlavor/google-services.json"),
+    )
     val expectedApplicationId = flavorApplicationIds.getValue(requestedFlavor)
-    val packagePattern =
-        Regex("\"package_name\"\\s*:\\s*\"" + Regex.escape(expectedApplicationId) + "\"")
-    if (!packagePattern.containsMatchIn(googleServicesFile.readText())) {
-        throw GradleException(
-            "android/app/google-services.json does not contain the '$requestedFlavor' " +
-                "flavor package ($expectedApplicationId). The checked-in file is an " +
-                "environment working copy — run " +
-                "./tool/use_firebase_environment.sh $requestedFlavor before building " +
-                "the $requestedFlavor flavor, or use ./tool/flutter_with_env.sh."
-        )
+    for (googleServicesFile in googleServicesFiles) {
+        if (!googleServicesFile.exists()) {
+            continue
+        }
+        val packagePattern =
+            Regex("\"package_name\"\\s*:\\s*\"" + Regex.escape(expectedApplicationId) + "\"")
+        if (!packagePattern.containsMatchIn(googleServicesFile.readText())) {
+            throw GradleException(
+                "${googleServicesFile.path} does not contain the '$requestedFlavor' " +
+                    "flavor package ($expectedApplicationId). The checked-in file is an " +
+                    "environment working copy — run " +
+                    "./tool/use_firebase_environment.sh $requestedFlavor $catchAppRole before building " +
+                    "the $requestedFlavor flavor, or use ./tool/flutter_with_env.sh."
+            )
+        }
     }
 }
 
@@ -122,7 +139,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.catchdates.app"
+        applicationId = baseApplicationId
         minSdk = maxOf(26, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -137,19 +154,33 @@ android {
         create("dev") {
             dimension = "environment"
             applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "Catch Dev")
+            resValue("string", "app_name", if (isHostApp) "Catch Host Dev" else "Catch Dev")
             manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("DEV")
         }
         create("staging") {
             dimension = "environment"
             applicationIdSuffix = ".staging"
-            resValue("string", "app_name", "Catch Staging")
+            resValue("string", "app_name", if (isHostApp) "Catch Host Staging" else "Catch Staging")
             manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("STAGING")
         }
         create("prod") {
             dimension = "environment"
-            resValue("string", "app_name", "Catch")
+            resValue("string", "app_name", if (isHostApp) "Catch Host" else "Catch")
             manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("PROD")
+        }
+    }
+
+    if (isHostApp) {
+        sourceSets {
+            getByName("dev") {
+                res.setSrcDirs(listOf("src/hostDev/res"))
+            }
+            getByName("staging") {
+                res.setSrcDirs(listOf("src/hostStaging/res"))
+            }
+            getByName("prod") {
+                res.setSrcDirs(listOf("src/hostProd/res"))
+            }
         }
     }
 

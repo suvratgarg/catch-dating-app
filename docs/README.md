@@ -91,6 +91,7 @@ durable owners above or closed in code.
 | `sales_demo_seed_tracker.md` | Sales-grade synthetic supply is active: canonical personas/assets, cohort scope, image production, U.S./India market packs, host sales scenario, event policy coverage, and migration of lower-quality demo surfaces remain. |
 | `marketing_landing_page_tracker.md` | Marketing site research and preview are active; keep until the approved website rewrite and app visual-direction follow-up are folded into durable owner docs. |
 | `plans/admin_analytics_dashboard_tracker.md` | Admin console implementation is active: live ops actions, deployment, analytics APIs, and finance ledger work remain. Pairs with `admin_analytics_dashboard_spec.md`. |
+| `plans/host_consumer_app_split_tracker.md` | Host/consumer app split implementation record: app role, router split, host shell, consumer cleanup, host identity, professional message-host chat, push tokens, native targets, Firebase configs, App Check, and deep-link contracts are implemented; keep as evidence until host store/TestFlight release follow-ups are folded into release docs. |
 
 Completed temporary trackers removed or folded into owner docs after code
 verification include `dashboard_run_focus_tracker.md`,

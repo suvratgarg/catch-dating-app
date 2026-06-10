@@ -153,6 +153,7 @@ Options:
 async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false} = {}) {
   const topLevel = [
     "users",
+    "hostProfiles",
     "publicProfiles",
     "clubs",
     "clubMemberships",
@@ -214,6 +215,7 @@ function createReport({projectId, emulatorHost}) {
 
 function validateAll(collections, currentReport, {checkScheduleLocks = false} = {}) {
   const users = byId(collections.users);
+  const hostProfiles = byId(collections.hostProfiles);
   const publicProfiles = byId(collections.publicProfiles);
   const clubs = byId(collections.clubs);
   const events = byId(collections.events);
@@ -271,7 +273,7 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
   );
   validateClubHostProfileProjections(
     collections.clubs,
-    users,
+    hostProfiles,
     currentReport
   );
   validateSchedulePolicy(collections, currentReport, {checkScheduleLocks});
@@ -781,29 +783,38 @@ function validateRunAggregateCounts(events, eventParticipations, currentReport) 
   }
 }
 
-function validateClubHostProfileProjections(clubs, users, currentReport) {
+function validateClubHostProfileProjections(clubs, hostProfiles, currentReport) {
   for (const doc of clubs) {
     const data = doc.data;
     if (typeof data.hostUserId !== "string" || data.hostUserId.length === 0) {
       continue;
     }
-    const host = users.get(data.hostUserId)?.data;
-    if (!host || host.deleted === true) continue;
 
-    const expectedName = publicDisplayName(host);
-    const expectedAvatarUrl = publicAvatarUrl(host);
+    const hostProfile = hostProfiles.get(data.hostUserId)?.data;
+    if (!hostProfile) continue;
+
+    const expectedName = professionalDisplayName(hostProfile);
+    const expectedAvatarUrl = professionalAvatarUrl(hostProfile);
     if (data.hostName !== expectedName) {
       issue(currentReport, "error", doc.path, "club-host-name-drift",
-        `hostName is ${JSON.stringify(data.hostName)}, but users/` +
+        `hostName is ${JSON.stringify(data.hostName)}, but hostProfiles/` +
         `${data.hostUserId} projects to ${JSON.stringify(expectedName)}.`);
     }
     if ((data.hostAvatarUrl ?? null) !== expectedAvatarUrl) {
       issue(currentReport, "error", doc.path, "club-host-avatar-drift",
         `hostAvatarUrl is ${JSON.stringify(data.hostAvatarUrl ?? null)}, ` +
-        `but users/${data.hostUserId} projects to ` +
+        `but hostProfiles/${data.hostUserId} projects to ` +
         `${JSON.stringify(expectedAvatarUrl)}.`);
     }
   }
+}
+
+function professionalDisplayName(hostProfile) {
+  return hostProfile.displayName?.trim() || "Catch Host";
+}
+
+function professionalAvatarUrl(hostProfile) {
+  return hostProfile.avatarUrl?.trim() || null;
 }
 
 function publicDisplayName(user) {

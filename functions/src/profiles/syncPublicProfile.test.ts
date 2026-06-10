@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   syncAuthoredReviewReviewerProfile,
   syncHostedClubHostProfile,
+  syncHostProfileProjectionsHandler,
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
 import {defaultProfilePromptIds} from "../shared/generated/schemaRegistry";
@@ -172,7 +173,7 @@ function profilePhotos(thumbnailUrl = "https://example.test/thumb-1.jpg") {
   ];
 }
 
-test("syncUserProfileProjectionsHandler syncs public profile and clubs",
+test("syncUserProfileProjectionsHandler syncs public profile and reviews only",
   async () => {
     const firestore = new FakeFirestore({
       "clubs/club-1": {
@@ -213,14 +214,8 @@ test("syncUserProfileProjectionsHandler syncs public profile and clubs",
     );
     assert.deepEqual(firestore.get("clubs/club-1"), {
       hostUserId: "host-1",
-      hostName: "Asha Updated",
-      hostAvatarUrl: "https://example.test/new-thumb.jpg",
-      hostProfiles: [{
-        uid: "host-1",
-        displayName: "Asha Updated",
-        avatarUrl: "https://example.test/new-thumb.jpg",
-        role: "owner",
-      }],
+      hostName: "Old Name",
+      hostAvatarUrl: "https://old.test/avatar.jpg",
       memberCount: 3,
     });
     assert.equal(
@@ -273,6 +268,90 @@ test("syncHostedClubHostProfile updates every club hosted by the user",
     assert.equal(firestore.get("clubs/club-1")?.hostName, "New Host");
     assert.equal(firestore.get("clubs/club-2")?.hostName, "New Host");
     assert.equal(firestore.get("clubs/club-3")?.hostName, "Other");
+  }
+);
+
+test("syncHostProfileProjectionsHandler owns club host display snapshots",
+  async () => {
+    const firestore = new FakeFirestore({
+      "clubs/club-1": {
+        hostUserId: "host-1",
+        hostName: "Old 1",
+        hostAvatarUrl: null,
+      },
+      "clubs/club-2": {
+        hostUserId: "host-2",
+        hostUserIds: ["host-2", "host-1"],
+        hostProfiles: [
+          {
+            uid: "host-2",
+            displayName: "Other",
+            avatarUrl: null,
+            role: "owner",
+          },
+          {
+            uid: "host-1",
+            displayName: "Old 2",
+            avatarUrl: "https://old.test/avatar.jpg",
+            role: "host",
+          },
+        ],
+      },
+      "clubs/club-3": {hostUserId: "host-3", hostName: "Unchanged"},
+    });
+
+    await syncHostProfileProjectionsHandler(
+      "host-1",
+      {
+        displayName: "Asha Studio",
+        avatarUrl: "https://example.test/host-avatar.jpg",
+      },
+      {firestore: () => firestore as never}
+    );
+
+    assert.deepEqual(firestore.get("clubs/club-1"), {
+      hostUserId: "host-1",
+      hostName: "Asha Studio",
+      hostAvatarUrl: "https://example.test/host-avatar.jpg",
+      hostProfiles: [{
+        uid: "host-1",
+        displayName: "Asha Studio",
+        avatarUrl: "https://example.test/host-avatar.jpg",
+        role: "owner",
+      }],
+    });
+    assert.deepEqual(firestore.get("clubs/club-2")?.hostProfiles, [
+      {
+        uid: "host-2",
+        displayName: "Other",
+        avatarUrl: null,
+        role: "owner",
+      },
+      {
+        uid: "host-1",
+        displayName: "Asha Studio",
+        avatarUrl: "https://example.test/host-avatar.jpg",
+        role: "host",
+      },
+    ]);
+    assert.equal(firestore.get("clubs/club-3")?.hostName, "Unchanged");
+  }
+);
+
+test("syncHostProfileProjectionsHandler never falls back to dating identity",
+  async () => {
+    const firestore = new FakeFirestore({
+      "clubs/club-1": {hostUserId: "host-1", hostName: "Old 1"},
+    });
+
+    await syncHostProfileProjectionsHandler(
+      "host-1",
+      undefined,
+      {firestore: () => firestore as never}
+    );
+
+    assert.equal(firestore.get("clubs/club-1")?.hostName, "Catch Host");
+    assert.equal(firestore.get("clubs/club-1")?.hostAvatarUrl, null);
   }
 );
 

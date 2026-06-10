@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -675,14 +676,16 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
-  final hostedClubs = _mergeDashboardHostClubs(
-    hostedClubs:
-        ref.watch(watchClubsHostedByProvider(uid)).asData?.value ??
-        const <Club>[],
-    ownedClubs:
-        ref.watch(watchClubsOwnedByProvider(uid)).asData?.value ??
-        const <Club>[],
-  );
+  final hostedClubs = AppConfig.appRole.isHost
+      ? _mergeDashboardHostClubs(
+          hostedClubs:
+              ref.watch(watchClubsHostedByProvider(uid)).asData?.value ??
+              const <Club>[],
+          ownedClubs:
+              ref.watch(watchClubsOwnedByProvider(uid)).asData?.value ??
+              const <Club>[],
+        )
+      : const <Club>[];
   final hostedEvents = <Event>[];
   for (final club in hostedClubs) {
     final events = ref.watch(watchEventsForClubProvider(club.id)).asData?.value;

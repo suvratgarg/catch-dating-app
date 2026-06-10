@@ -18,6 +18,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
     required this.profile,
     required this.onReport,
     required this.onBlock,
+    this.profileNavigationEnabled = true,
     this.onShareCard,
   });
 
@@ -27,6 +28,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
   final PublicProfile? profile;
   final VoidCallback onReport;
   final VoidCallback onBlock;
+  final bool profileNavigationEnabled;
   final VoidCallback? onShareCard;
 
   @override
@@ -38,7 +40,7 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
       titleWidget: _ChatTitle(
         name: name,
         photoUrl: photoUrl,
-        onTap: otherUid == null
+        onTap: otherUid == null || !profileNavigationEnabled
             ? null
             : () => context.pushNamed(
                 Routes.publicProfileScreen.name,

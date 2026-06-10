@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_profiles.schema.json",
+  "title": "HostProfileDocument",
+  "description": "Professional host identity stored at hostProfiles/{uid}. This document is separate from users/{uid} dating profile data and publicProfiles/{uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostProfiles",
+  "x-firestore-path": "hostProfiles/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "owner direct write, callable seeded during host club operations",
+  "required": [
+    "displayName",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": ".*\\S.*",
+      "description": "Professional display name for host, club, event, and support-chat surfaces."
+    },
+    "avatarUrl": {
+      "type": ["string", "null"],
+      "maxLength": 2048,
+      "description": "Professional host avatar or organization logo URL."
+    },
+    "roleTitle": {
+      "type": ["string", "null"],
+      "maxLength": 80,
+      "description": "Professional title such as Founder, Coach, Organizer, or Community Lead."
+    },
+    "bio": {
+      "type": ["string", "null"],
+      "maxLength": 500,
+      "description": "Professional host bio. Must not mirror dating-profile prompts."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "pending", "suspended"]
+    },
+    "verified": {
+      "type": "boolean"
+    },
+    "linkedClubIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "createdAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

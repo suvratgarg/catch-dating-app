@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -19,10 +20,13 @@ class ChatConversationsList extends StatelessWidget {
           if (index.isOdd) return const SizedBox(height: CatchSpacing.s3);
 
           final preview = matches[index ~/ 2];
+          final routeName = AppConfig.appRole.isHost
+              ? Routes.hostChatScreen.name
+              : Routes.chatScreen.name;
           return ChatListTile(
             preview: preview,
             onTap: () => context.goNamed(
-              Routes.chatScreen.name,
+              routeName,
               pathParameters: {'matchId': preview.matchId},
             ),
           );

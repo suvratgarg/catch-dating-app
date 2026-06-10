@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -926,7 +927,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         event: createdEvent,
         inviteCode: _trimmedTextOrNull(_inviteCodeController),
         onManageEvent: () => context.goNamed(
-          Routes.hostEventManageScreen.name,
+          AppConfig.appRole.isHost
+              ? Routes.hostAppEventManageScreen.name
+              : Routes.hostEventManageScreen.name,
           pathParameters: {
             'clubId': widget.club.id,
             'eventId': createdEvent.id,
