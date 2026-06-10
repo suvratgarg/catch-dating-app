@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 
 const _deepLinkHost = 'catchdates.com';
@@ -29,9 +30,13 @@ class AppDeepLinks {
     required String eventId,
     String? inviteCode,
     String? inviteLinkId,
+    AppRole? appRole,
   }) {
+    final role = appRole ?? AppConfig.appRole;
     return _inAppRoute(
-      Routes.eventDetailScreen.path,
+      role.isHost
+          ? Routes.hostAppEventDetailScreen.path
+          : Routes.eventDetailScreen.path,
       pathParameters: {'clubId': clubId, 'eventId': eventId},
       queryParameters: _eventQuery(
         inviteCode: inviteCode,
@@ -60,10 +65,11 @@ Uri _inAppRoute(
   required Map<String, String> pathParameters,
   Map<String, String>? queryParameters,
 }) {
-  return Uri(
+  final route = Uri(
     pathSegments: _pathSegments(routePath, pathParameters),
     queryParameters: queryParameters,
   );
+  return Uri.parse('/$route');
 }
 
 List<String> _pathSegments(

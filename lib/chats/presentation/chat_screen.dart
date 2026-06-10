@@ -12,6 +12,8 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.da
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
@@ -320,17 +322,37 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       matchId: widget.matchId,
       otherUid: otherUid,
     );
+    final isHostInquiry = match?.isClubHostInquiry == true;
+    final hostInquiryClub = isHostInquiry && match?.clubId != null
+        ? ref.watch(watchClubProvider(match!.clubId!)).asData?.value
+        : null;
+    final hostProfile = otherUid == null
+        ? null
+        : _hostProfileFor(hostInquiryClub, otherUid);
+    final otherParticipantIsHost = hostProfile != null;
     final latestEventId = isSuvbot ? null : match?.latestEventId;
     final eventAsync = latestEventId == null
         ? const AsyncData<Event?>(null)
         : ref.watch(watchEventProvider(latestEventId));
-    final otherProfileAsync = otherUid == null || isSuvbot
+    final shouldReadPublicProfile =
+        otherUid != null &&
+        !isSuvbot &&
+        (!isHostInquiry ||
+            (hostInquiryClub != null && !otherParticipantIsHost));
+    final otherProfileAsync = !shouldReadPublicProfile
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(watchPublicProfileProvider(otherUid));
     final share = ref.watch(externalShareControllerProvider);
-    final profile = otherProfileAsync.asData?.value ?? widget.initialProfile;
-    final name = isSuvbot ? 'Suvbot' : profile?.name ?? 'Chat';
-    final photoUrl = isSuvbot ? null : profile?.primaryPhotoThumbnailUrl;
+    final initialProfile = isHostInquiry ? null : widget.initialProfile;
+    final profile = otherProfileAsync.asData?.value ?? initialProfile;
+    final name = isSuvbot
+        ? 'Suvbot'
+        : hostProfile?.displayName ??
+              profile?.name ??
+              (isHostInquiry ? 'Host conversation' : 'Chat');
+    final photoUrl = isSuvbot
+        ? null
+        : hostProfile?.avatarUrl ?? profile?.primaryPhotoThumbnailUrl;
     final suvbotPending = ref.watch(SuvbotController.requestMutation).isPending;
     final suvbotActionsAsync = isSuvbot
         ? ref.watch(suvbotActionsProvider)
@@ -362,6 +384,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
           photoUrl: photoUrl,
           otherUid: isSuvbot ? null : otherUid,
           profile: isSuvbot ? null : profile,
+          profileNavigationEnabled: !isHostInquiry,
           onReport: otherUid == null || isSuvbot
               ? () {}
               : () => _reportUser(
@@ -374,7 +397,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
                   targetUserId: otherUid,
                   targetName: profile?.name ?? 'this person',
                 ),
-          onShareCard: otherUid == null || isSuvbot
+          onShareCard: otherUid == null || isSuvbot || isHostInquiry
               ? null
               : () => _showShareCard(
                   messages: messagesAsync.asData?.value ?? const [],
@@ -390,7 +413,11 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
               child: ChatMessageList(
                 messagesAsync: messagesAsync,
                 currentUid: uid,
-                otherName: isSuvbot ? 'Suvbot' : profile?.name ?? 'your match',
+                otherName: isSuvbot
+                    ? 'Suvbot'
+                    : isHostInquiry
+                    ? name
+                    : profile?.name ?? 'your match',
                 scrollController: _scrollController,
                 onRetry: () => ref.invalidate(
                   watchConversationMessagesProvider(widget.matchId),
@@ -423,6 +450,14 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       ),
     );
   }
+}
+
+ClubHostProfile? _hostProfileFor(Club? club, String uid) {
+  if (club == null) return null;
+  for (final host in club.displayHostProfiles) {
+    if (host.uid == uid) return host;
+  }
+  return null;
 }
 
 class _ChatMutationListeners extends StatelessWidget {

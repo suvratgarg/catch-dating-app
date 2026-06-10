@@ -5,7 +5,6 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
   ClubDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {AddClubHostCallablePayload} from
@@ -27,10 +26,12 @@ import {
 import {
   clubHostProfiles,
   clubHostUserIds,
-  ClubHostProfile,
   isClubOwner,
 } from "../shared/clubHosts";
-import {publicAvatarUrl, publicDisplayName} from "../shared/profileProjection";
+import {
+  hostProfileSeedPatch,
+  professionalHostSnapshot,
+} from "../shared/hostProfiles";
 import {normalizeClubHostPayload} from "./clubPayloadNormalization";
 
 interface ManageClubHostsDeps {
@@ -70,6 +71,7 @@ export async function addClubHostHandler(
   await db.runTransaction(async (tx) => {
     const clubRef = db.collection("clubs").doc(data.clubId);
     const targetUserRef = db.collection("users").doc(targetUid);
+    const targetHostProfileRef = db.collection("hostProfiles").doc(targetUid);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
     const targetDeletedRef = db.collection("deletedUsers").doc(targetUid);
     const membershipRef = db
@@ -79,18 +81,20 @@ export async function addClubHostHandler(
     const [
       clubSnap,
       targetUserSnap,
+      targetHostProfileSnap,
       callerDeletedSnap,
       targetDeletedSnap,
     ] = await Promise.all([
       tx.get(clubRef),
       tx.get(targetUserRef),
+      tx.get(targetHostProfileRef),
       tx.get(callerDeletedRef),
       tx.get(targetDeletedRef),
     ]);
 
     assertCanManageHostTeam(clubSnap, callerDeletedSnap, callerUid);
-    if (!targetUserSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
+    if (!targetUserSnap.exists && !targetHostProfileSnap.exists) {
+      throw new HttpsError("not-found", "Host profile not found.");
     }
     if (targetDeletedSnap.exists) {
       throw new HttpsError(
@@ -106,19 +110,13 @@ export async function addClubHostHandler(
       "ClubDocument"
 
     );
-    const user = requireDoc<UserProfileDocument>(
-      targetUserSnap,
-      "UserProfileDocument"
-    );
-    if (user.profileComplete !== true) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Co-hosts must complete their profile first."
-      );
-    }
-
     const hostIds = uniqueStrings([...clubHostUserIds(club), targetUid]);
-    const hostProfile = hostProfileForUser(targetUid, user);
+    const hostProfile = professionalHostSnapshot({
+      uid: targetUid,
+      hostProfileSnap: targetHostProfileSnap,
+      userSnap: targetUserSnap,
+      role: "host",
+    });
     const profiles = [
       ...clubHostProfiles(club).filter((host) => host.uid !== targetUid),
       hostProfile,
@@ -133,6 +131,14 @@ export async function addClubHostHandler(
       uid: targetUid,
       role: "host",
     }), {merge: true});
+    if (!targetHostProfileSnap.exists) {
+      const timestamp = admin.firestore.FieldValue.serverTimestamp();
+      tx.set(
+        targetHostProfileRef,
+        hostProfileSeedPatch(hostProfile, timestamp),
+        {merge: true}
+      );
+    }
   });
 
   return {added: true};
@@ -160,6 +166,7 @@ export async function transferClubOwnershipHandler(
   await db.runTransaction(async (tx) => {
     const clubRef = db.collection("clubs").doc(data.clubId);
     const targetUserRef = db.collection("users").doc(data.uid);
+    const targetHostProfileRef = db.collection("hostProfiles").doc(data.uid);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
     const targetDeletedRef = db.collection("deletedUsers").doc(data.uid);
     const previousClaimRef = db.collection("clubHostClaims").doc(callerUid);
@@ -174,12 +181,14 @@ export async function transferClubOwnershipHandler(
     const [
       clubSnap,
       targetUserSnap,
+      targetHostProfileSnap,
       callerDeletedSnap,
       targetDeletedSnap,
       nextClaimSnap,
     ] = await Promise.all([
       tx.get(clubRef),
       tx.get(targetUserRef),
+      tx.get(targetHostProfileRef),
       tx.get(callerDeletedRef),
       tx.get(targetDeletedRef),
       tx.get(nextClaimRef),
@@ -187,8 +196,8 @@ export async function transferClubOwnershipHandler(
 
     assertCanManageHostTeam(clubSnap, callerDeletedSnap, callerUid);
     if (callerUid === data.uid) return;
-    if (!targetUserSnap.exists) {
-      throw new HttpsError("not-found", "User profile not found.");
+    if (!targetUserSnap.exists && !targetHostProfileSnap.exists) {
+      throw new HttpsError("not-found", "Host profile not found.");
     }
     if (targetDeletedSnap.exists) {
       throw new HttpsError(
@@ -216,11 +225,12 @@ export async function transferClubOwnershipHandler(
         "Ownership can be transferred only to an existing co-host."
       );
     }
-    const targetUser = requireDoc<UserProfileDocument>(
-      targetUserSnap,
-      "UserProfileDocument"
-    );
-    const targetProfile = hostProfileForUser(data.uid, targetUser);
+    const targetProfile = professionalHostSnapshot({
+      uid: data.uid,
+      hostProfileSnap: targetHostProfileSnap,
+      userSnap: targetUserSnap,
+      role: "owner",
+    });
     const profiles = clubHostProfiles(club).map((host) => {
       if (host.uid === callerUid) return {...host, role: "host" as const};
       if (host.uid === data.uid) return {...targetProfile, role: "owner"};
@@ -255,6 +265,14 @@ export async function transferClubOwnershipHandler(
       uid: data.uid,
       role: "owner",
     }), {merge: true});
+    if (!targetHostProfileSnap.exists) {
+      const timestamp = admin.firestore.FieldValue.serverTimestamp();
+      tx.set(
+        targetHostProfileRef,
+        hostProfileSeedPatch(targetProfile, timestamp),
+        {merge: true}
+      );
+    }
   });
 
   return {transferred: true};
@@ -350,24 +368,6 @@ function assertCanManageHostTeam(
       "Only the club owner can manage club hosts."
     );
   }
-}
-
-/**
- * Builds the public co-host projection stored on the club document.
- * @param {string} uid Co-host user id.
- * @param {UserProfileDocument} user Private user profile.
- * @return {ClubHostProfile} Public host profile projection.
- */
-function hostProfileForUser(
-  uid: string,
-  user: UserProfileDocument
-): ClubHostProfile {
-  return {
-    uid,
-    displayName: publicDisplayName(user),
-    avatarUrl: publicAvatarUrl(user),
-    role: "host",
-  };
 }
 
 /**

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -23,6 +24,7 @@ class ChatsList extends ConsumerWidget {
     if (uid != null) {
       ref.listen(watchMatchesForUserProvider(uid), (previous, next) {
         if (!context.mounted) return;
+        if (AppConfig.appRole.isHost) return;
         if (previous == null || !previous.hasValue || !next.hasValue) return;
         final prevIds = previous.value!.map((m) => m.id).toSet();
         final newMatches = next.value!

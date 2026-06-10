@@ -1,7 +1,10 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   group('AppDeepLinks', () {
     test('builds a club detail URL from the router path contract', () {
       expect(
@@ -26,6 +29,22 @@ void main() {
 
     test('rejects missing route parameter values', () {
       expect(() => AppDeepLinks.club(''), throwsArgumentError);
+    });
+
+    test('builds consumer in-app event paths by default', () {
+      expect(
+        AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
+        '/clubs/club-1/events/event-1',
+      );
+    });
+
+    test('builds host in-app event paths for host app role', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      expect(
+        AppDeepLinks.inAppEventPath(clubId: 'club-1', eventId: 'event-1'),
+        '/host/clubs/club-1/events/event-1',
+      );
     });
   });
 }

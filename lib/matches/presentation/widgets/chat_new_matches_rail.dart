@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -15,15 +16,19 @@ class ChatNewMatchesRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isHostApp = AppConfig.appRole.isHost;
     return CatchHorizontalRail(
-      title: 'New matches',
+      title: isHostApp ? 'New host inquiries' : 'New matches',
       itemCount: matches.length,
       itemBuilder: (context, index) {
         final preview = matches[index];
+        final routeName = AppConfig.appRole.isHost
+            ? Routes.hostChatScreen.name
+            : Routes.chatScreen.name;
         return _NewMatchAvatar(
           preview: preview,
           onTap: () => context.goNamed(
-            Routes.chatScreen.name,
+            routeName,
             pathParameters: {'matchId': preview.matchId},
           ),
         );

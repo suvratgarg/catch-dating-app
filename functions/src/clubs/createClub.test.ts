@@ -391,8 +391,34 @@ test("createClubHandler creates a club and host membership edge",
       clubId: "club-1",
       createdAt: {kind: "serverTimestamp"},
     });
+    assert.deepEqual(h.firestore.get("hostProfiles/host-1"), {
+      displayName: "Asha Host",
+      avatarUrl: "https://example.com/avatar-thumb.jpg",
+      status: "active",
+      createdAt: {kind: "serverTimestamp"},
+      updatedAt: {kind: "serverTimestamp"},
+    });
   }
 );
+
+test("createClubHandler uses host profile without dating profile", async () => {
+  const h = harness({
+    "hostProfiles/host-1": {
+      displayName: "Asha Studio",
+      avatarUrl: "https://example.com/host.jpg",
+      status: "active",
+    },
+  });
+
+  await createClubHandler(request("host-1", payload()), h.deps);
+
+  assert.equal(h.firestore.get("clubs/club-1")?.hostName, "Asha Studio");
+  assert.equal(
+    h.firestore.get("clubs/club-1")?.hostAvatarUrl,
+    "https://example.com/host.jpg"
+  );
+  assert.equal(h.firestore.get("users/host-1"), undefined);
+});
 
 test("createClubHandler can generate the club id server-side", async () => {
   const h = harness({
@@ -428,7 +454,6 @@ test("createClubHandler rejects unsafe creation states", async () => {
   const h = harness({
     "clubs/existing": {name: "Existing"},
     "users/host-1": profile(),
-    "users/incomplete": profile({profileComplete: false}),
     "users/deleted": profile(),
     "deletedUsers/deleted": {deletedAt: "now"},
   });
@@ -443,14 +468,6 @@ test("createClubHandler rejects unsafe creation states", async () => {
       h.deps
     ),
     (error) => assertHttpsCode(error, "already-exists")
-  );
-  await assert.rejects(
-    () => createClubHandler(request("missing", payload()), h.deps),
-    (error) => assertHttpsCode(error, "not-found")
-  );
-  await assert.rejects(
-    () => createClubHandler(request("incomplete", payload()), h.deps),
-    (error) => assertHttpsCode(error, "failed-precondition")
   );
   await assert.rejects(
     () => createClubHandler(request("deleted", payload()), h.deps),

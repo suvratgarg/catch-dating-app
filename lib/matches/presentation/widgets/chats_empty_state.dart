@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -22,6 +23,7 @@ class ChatsEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isHostApp = AppConfig.appRole.isHost;
     return Padding(
       padding: CatchInsets.contentRelaxed,
       child: Column(
@@ -29,9 +31,15 @@ class ChatsEmptyState extends StatelessWidget {
         children: [
           const SizedBox(height: CatchSpacing.s10),
           CatchEmptyState(
-            icon: CatchIcons.favoriteRounded,
-            title: title,
-            message: message,
+            icon: isHostApp
+                ? CatchIcons.chatBubbleOutlineRounded
+                : CatchIcons.favoriteRounded,
+            title: isHostApp && title == 'No catches yet'
+                ? 'No host inquiries yet'
+                : title,
+            message: isHostApp && title == 'No catches yet'
+                ? 'Message-host conversations from guests and attendees will appear here.'
+                : message,
             titleStyle: CatchTextStyles.headlineS(context),
           ),
         ],

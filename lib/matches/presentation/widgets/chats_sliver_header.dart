@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -31,12 +32,15 @@ class _ChatsBrowseHeaderState extends ConsumerState<_ChatsBrowseHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final isHostApp = AppConfig.appRole.isHost;
     final query = ref.watch(chatSearchQueryProvider);
     final searchActive = _searchOpen || query.isNotEmpty;
 
     return CatchBrowseHeader(
-      title: 'Chats',
-      subtitle: 'Messages from your matches',
+      title: isHostApp ? 'Inbox' : 'Chats',
+      subtitle: isHostApp
+          ? 'Message-host conversations'
+          : 'Messages from your matches',
       searchActive: searchActive,
       searchField: ChatSearchField(
         autofocus: true,

@@ -379,6 +379,67 @@ service cloud.firestore {
         && optionalString(request.resource.data, 'fcmToken');
     }
 
+    function isValidPushInstallation(data) {
+      return data.keys().hasOnly([
+          'token',
+          'appRole',
+          'environment',
+          'platform',
+          'appVersion',
+          'buildNumber',
+          'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'token',
+          'appRole',
+          'environment',
+          'platform',
+          'updatedAt'
+        ])
+        && data.token is string
+        && data.token.size() > 0
+        && data.appRole in ['consumer', 'host']
+        && data.environment in ['dev', 'staging', 'prod']
+        && data.platform in [
+          'android', 'ios', 'web', 'macos', 'windows', 'linux', 'fuchsia'
+        ]
+        && optionalString(data, 'appVersion')
+        && optionalString(data, 'buildNumber')
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidHostProfile(data) {
+      return data.keys().hasOnly([
+          'displayName',
+          'avatarUrl',
+          'roleTitle',
+          'bio',
+          'status',
+          'verified',
+          'linkedClubIds',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'displayName',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.displayName is string
+        && data.displayName.size() > 0
+        && data.displayName.size() <= 80
+        && optionalString(data, 'avatarUrl')
+        && optionalString(data, 'roleTitle')
+        && optionalString(data, 'bio')
+        && data.status in ['active', 'pending', 'suspended']
+        && (!hasField(data, 'verified') || data.verified is bool)
+        && (!hasField(data, 'linkedClubIds') ||
+          (data.linkedClubIds is list && data.linkedClubIds.size() <= 20))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     function isValidUserUpdate(uid) {
       return isAuthed()
         && request.auth.uid == uid
@@ -433,6 +494,24 @@ service cloud.firestore {
       // Client-side deletes are blocked — account deletion is handled
       // exclusively by the requestAccountDeletion Cloud Function, which
       // uses the admin SDK to anonymize the document in place.
+      allow delete: if false;
+
+      match /pushInstallations/{installationId} {
+        allow read: if isAuthed() && request.auth.uid == uid;
+        allow create, update: if isAuthed()
+          && request.auth.uid == uid
+          && isValidPushInstallation(request.resource.data);
+        allow delete: if isAuthed() && request.auth.uid == uid;
+      }
+    }
+
+    // Professional host identity. This is intentionally separate from
+    // users/{uid} dating profile data and publicProfiles/{uid}.
+    match /hostProfiles/{uid} {
+      allow read: if true;
+      allow create, update: if isAuthed()
+        && request.auth.uid == uid
+        && isValidHostProfile(request.resource.data);
       allow delete: if false;
     }
 

@@ -5,30 +5,17 @@ import {
   buildClubHostProfileRepairPlan,
 } from "./recompute_club_host_profiles.mjs";
 
-const projection = {
-  publicDisplayName: (user) =>
-    user.displayName?.trim() || user.firstName?.trim() || "Runner",
-  publicAvatarUrl: (user) =>
-    user.profilePhotos?.[0]?.thumbnailUrl ??
-    user.profilePhotos?.[0]?.url ??
-    null,
-};
-
 test("buildClubHostProfileRepairPlan finds stale host projections",
   async () => {
     const firestore = fakeFirestore({
-      users: {
+      hostProfiles: {
         "host-1": {
           displayName: "New Host",
-          profilePhotos: [
-            profilePhoto("https://example.com/new-full.jpg", {
-              thumbnailUrl: "https://example.com/new-thumb.jpg",
-            }),
-          ],
+          avatarUrl: "https://example.com/new-thumb.jpg",
         },
         "host-2": {
-          firstName: "Second",
-          profilePhotos: [profilePhoto("https://example.com/second.jpg")],
+          displayName: "Second",
+          avatarUrl: "https://example.com/second.jpg",
         },
       },
       clubs: {
@@ -58,10 +45,7 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
       },
     });
 
-    const plan = await buildClubHostProfileRepairPlan(
-      firestore,
-      projection
-    );
+    const plan = await buildClubHostProfileRepairPlan(firestore);
 
     assert.deepEqual(plan.summary.repairs, [
       {
@@ -90,9 +74,35 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
           profileImageUrl: null,
         },
       },
+      {
+        path: "clubs/club-3",
+        clubId: "club-3",
+        hostUserId: "missing",
+        current: {
+          hostName: "Missing",
+          hostAvatarUrl: null,
+          ownerUserId: null,
+          hostUserIds: [],
+          hostProfiles: [],
+          profileImageUrl: null,
+        },
+        expected: {
+          hostName: "Missing",
+          hostAvatarUrl: null,
+          ownerUserId: "missing",
+          hostUserIds: ["missing"],
+          hostProfiles: [{
+            uid: "missing",
+            displayName: "Missing",
+            avatarUrl: null,
+            role: "owner",
+          }],
+          profileImageUrl: null,
+        },
+      },
     ]);
     assert.deepEqual(plan.summary.warnings, [
-      "clubs/club-3 references missing users/missing.",
+      "clubs/club-3 has no hostProfiles/missing; using the existing club host snapshot fallback.",
     ]);
   }
 );
@@ -100,14 +110,14 @@ test("buildClubHostProfileRepairPlan finds stale host projections",
 test("buildClubHostProfileRepairPlan refreshes multi-host projections",
   async () => {
     const firestore = fakeFirestore({
-      users: {
+      hostProfiles: {
         "owner-1": {
           displayName: "Owner One",
-          profilePhotos: [profilePhoto("https://example.com/owner.jpg")],
+          avatarUrl: "https://example.com/owner.jpg",
         },
         "cohost-1": {
           displayName: "Co Host",
-          profilePhotos: [profilePhoto("https://example.com/cohost.jpg")],
+          avatarUrl: "https://example.com/cohost.jpg",
         },
       },
       clubs: {
@@ -128,10 +138,7 @@ test("buildClubHostProfileRepairPlan refreshes multi-host projections",
       },
     });
 
-    const plan = await buildClubHostProfileRepairPlan(
-      firestore,
-      projection
-    );
+    const plan = await buildClubHostProfileRepairPlan(firestore);
 
     assert.deepEqual(plan.summary.repairs, [
       {
@@ -180,7 +187,7 @@ test("buildClubHostProfileRepairPlan refreshes multi-host projections",
 test("applyClubHostProfileRepairPlan writes only planned host fields",
   async () => {
     const firestore = fakeFirestore({
-      users: {},
+      hostProfiles: {},
       clubs: {
         "club-1": {hostName: "Old", area: "Bandra"},
         "club-2": {hostName: "Stable"},
@@ -247,18 +254,5 @@ function docSnapshot(collectionName, id, value) {
     id,
     ref: {path: `${collectionName}/${id}`},
     data: () => ({...value}),
-  };
-}
-
-function profilePhoto(url, {thumbnailUrl = url} = {}) {
-  return {
-    id: "photo-1",
-    url,
-    thumbnailUrl,
-    storagePath: "users/host/photos/photo-1.jpg",
-    thumbnailStoragePath: "users/host/photoThumbnails/photo-1.jpg",
-    prompt: null,
-    moderation: null,
-    position: 0,
   };
 }

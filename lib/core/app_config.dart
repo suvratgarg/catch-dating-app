@@ -27,6 +27,29 @@ enum AppEnvironment {
   }
 }
 
+enum AppRole {
+  consumer('consumer'),
+  host('host');
+
+  const AppRole(this.value);
+
+  final String value;
+
+  bool get isHost => this == AppRole.host;
+
+  static AppRole fromValue(String value) {
+    return switch (value.trim().toLowerCase()) {
+      'consumer' || 'guest' => AppRole.consumer,
+      'host' || 'organizer' => AppRole.host,
+      _ => throw ArgumentError.value(
+        value,
+        'CATCH_APP_ROLE',
+        'Unsupported app role. Use consumer or host.',
+      ),
+    };
+  }
+}
+
 class AppConfig {
   const AppConfig._();
 
@@ -35,8 +58,29 @@ class AppConfig {
     defaultValue: 'dev',
   );
 
+  static const String _rawAppRole = String.fromEnvironment(
+    'CATCH_APP_ROLE',
+    defaultValue: 'consumer',
+  );
+
+  static AppRole? _entrypointAppRoleOverride;
+
   static AppEnvironment get environment =>
       AppEnvironment.fromValue(_rawAppEnvironment);
+
+  static AppRole get appRole =>
+      _entrypointAppRoleOverride ?? AppRole.fromValue(_rawAppRole);
+
+  static String get appRoleName => appRole.value;
+
+  static void configureEntrypointRole(AppRole role) {
+    _entrypointAppRoleOverride = role;
+  }
+
+  @visibleForTesting
+  static void resetEntrypointRoleOverrideForTesting() {
+    _entrypointAppRoleOverride = null;
+  }
 
   @visibleForTesting
   static bool isEventPolicyLabAvailable({
@@ -56,7 +100,11 @@ class AppConfig {
 
   static String get environmentName => environment.value;
 
-  static String get appTitle => environment.appTitle;
+  static String get appTitle {
+    if (!appRole.isHost) return environment.appTitle;
+    if (environment.isProduction) return 'Catch Host';
+    return 'Catch Host (${environment.bannerLabel})';
+  }
 
   @visibleForTesting
   static Duration remoteConfigMinimumFetchIntervalFor({
@@ -138,7 +186,11 @@ class AppConfig {
 
   static bool get shouldShowEnvironmentBanner => !environment.isProduction;
 
-  static String get environmentBannerLabel => environment.bannerLabel;
+  static String get environmentBannerLabel {
+    if (!appRole.isHost) return environment.bannerLabel;
+    if (environment.bannerLabel.isEmpty) return '';
+    return 'HOST ${environment.bannerLabel}';
+  }
 
   static const bool useFirebaseEmulators = bool.fromEnvironment(
     'USE_FIREBASE_EMULATORS',

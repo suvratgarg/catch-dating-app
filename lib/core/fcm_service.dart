@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
@@ -10,7 +11,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'fcm_service.g.dart';
 
@@ -28,10 +31,27 @@ void registerFirebaseMessagingBackgroundHandler() {
 String? chatRouteFromMessageData(Map<String, Object?> data) {
   final matchId = data['matchId'];
   if (matchId is! String || matchId.isEmpty) return null;
+  if (AppConfig.appRole.isHost) return '/host/inbox/$matchId';
   return '/chats/$matchId';
 }
 
+String? hostEventManageRouteFromMessageData(Map<String, Object?> data) {
+  if (!AppConfig.appRole.isHost) return null;
+  final type = data['type'];
+  if (type != 'hostEventManage' &&
+      type != 'hostEventReady' &&
+      type != 'eventHostManage') {
+    return null;
+  }
+  final clubId = data['clubId'];
+  final eventId = data['eventId'];
+  if (clubId is! String || clubId.isEmpty) return null;
+  if (eventId is! String || eventId.isEmpty) return null;
+  return '/host/clubs/$clubId/events/$eventId/manage';
+}
+
 String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
+  if (AppConfig.appRole.isHost) return null;
   if (data['type'] != 'eventCompanionReady') return null;
   final clubId = data['clubId'];
   final eventId = data['eventId'];
@@ -41,7 +61,9 @@ String? eventCompanionRouteFromMessageData(Map<String, Object?> data) {
 }
 
 String? routeFromMessageData(Map<String, Object?> data) =>
-    chatRouteFromMessageData(data) ?? eventCompanionRouteFromMessageData(data);
+    hostEventManageRouteFromMessageData(data) ??
+    chatRouteFromMessageData(data) ??
+    eventCompanionRouteFromMessageData(data);
 
 void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
   final route = routeFromMessageData(data);
@@ -51,9 +73,12 @@ void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
 class FcmService {
   FcmService(this._db, this._errorLogger);
 
+  static const _installationIdPreferenceKey = 'catch.pushInstallationId';
+
   final FirebaseFirestore _db;
   final ErrorLogger _errorLogger;
   Future<void>? _initialization;
+  Future<String>? _installationId;
   String? _initializedUid;
   StreamSubscription<String>? _tokenRefreshSubscription;
   StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
@@ -165,7 +190,23 @@ class FcmService {
 
   Future<void> _saveToken(String uid, String token) async {
     try {
-      await _db.collection('users').doc(uid).update({'fcmToken': token});
+      final installationId = await _pushInstallationId();
+      final packageInfo = await PackageInfo.fromPlatform();
+      final userRef = _db.collection('users').doc(uid);
+      await userRef.collection('pushInstallations').doc(installationId).set({
+        'token': token,
+        'appRole': AppConfig.appRoleName,
+        'environment': AppConfig.environmentName,
+        'platform': _platformName,
+        'appVersion': packageInfo.version,
+        'buildNumber': packageInfo.buildNumber,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      // Legacy compatibility for existing consumer notification senders.
+      if (!AppConfig.appRole.isHost) {
+        await userRef.update({'fcmToken': token});
+      }
     } catch (e, st) {
       _errorLogger.logAppException(
         normalizeBackendError(
@@ -179,6 +220,35 @@ class FcmService {
         ),
       );
     }
+  }
+
+  Future<String> _pushInstallationId() {
+    return _installationId ??= _loadOrCreatePushInstallationId();
+  }
+
+  Future<String> _loadOrCreatePushInstallationId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final existing = prefs.getString(_installationIdPreferenceKey);
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    final generated =
+        '${AppConfig.appRoleName}_${_platformName}_'
+        '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}_'
+        '${Random.secure().nextInt(1 << 31).toRadixString(36)}';
+    await prefs.setString(_installationIdPreferenceKey, generated);
+    return generated;
+  }
+
+  String get _platformName {
+    if (kIsWeb) return 'web';
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android => 'android',
+      TargetPlatform.iOS => 'ios',
+      TargetPlatform.macOS => 'macos',
+      TargetPlatform.windows => 'windows',
+      TargetPlatform.linux => 'linux',
+      TargetPlatform.fuchsia => 'fuchsia',
+    };
   }
 }
 

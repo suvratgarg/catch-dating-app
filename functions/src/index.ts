@@ -104,7 +104,10 @@ export {
   setReviewResponse,
   updateEventReview,
 } from "./reviews/mutateReview";
-export {syncPublicProfile} from "./profiles/syncPublicProfile";
+export {
+  syncHostProfile,
+  syncPublicProfile,
+} from "./profiles/syncPublicProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
 export {
   generateProfilePhotoThumbnail,

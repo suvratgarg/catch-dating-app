@@ -22,17 +22,35 @@ firebase/<env>/macos/GoogleService-Info.plist
 firebase/<env>/web/firebase-messaging-sw.js
 ```
 
+Host app builds use separate Firebase app registrations so host and consumer
+apps can be installed side by side. Add role-specific host configs at:
+
+```text
+firebase/<env>/host/android/google-services.json
+firebase/<env>/host/ios/GoogleService-Info.plist
+firebase/<env>/host/macos/GoogleService-Info.plist
+firebase/<env>/host/web/firebase-messaging-sw.js
+```
+
+`./tool/use_firebase_environment.sh <env> <consumer|host>` copies the selected
+Android config to both `android/app/google-services.json` and
+`android/app/src/<env>/google-services.json`. The latter is required because
+the Android Google Services Gradle plugin reads the flavor source-set file when
+building the `dev`, `staging`, or `prod` flavor.
+
 Current state:
 
 - `dev` is configured from Firebase project `catchdates-dev`.
 - `staging` is configured from Firebase project `catchdates-staging`.
 - `prod` is configured from the existing Firebase project `catch-dating-app-64e51`.
-- Android product flavors are wired for `dev`, `staging`, and `prod`.
+- Android product flavors are wired for `dev`, `staging`, and `prod`, with the
+  app role supplied through `ORG_GRADLE_PROJECT_catchAppRole`.
 - Android upload-key SHA-1/SHA-256 fingerprints are registered on the dev,
-  staging, and production Firebase Android apps. Add Play app-signing
-  certificate fingerprints after Play App Signing enrollment.
-- iOS/macOS schemes and build configurations are wired for `dev`, `staging`,
-  and `prod` through `tool/platform/configure_apple_flavors.rb`.
+  staging, and production consumer and host Firebase Android apps. Add Play
+  app-signing certificate fingerprints after Play App Signing enrollment.
+- iOS/macOS schemes and build configurations are wired for consumer
+  `dev`, `staging`, and `prod`, plus host `host-dev`, `host-staging`, and
+  `host-prod`, through `tool/platform/configure_apple_flavors.rb`.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
 - App Check is registered for Android, iOS/macOS, and web in all three Firebase
@@ -95,9 +113,19 @@ Last consolidated from live environment evidence on 2026-05-21.
   query billing status during Functions deploys, so disabling
   `cloudbilling.googleapis.com` breaks GitHub OIDC deploy jobs even when
   service-account authentication succeeds.
-- Active Firebase app registrations are one Android, one iOS, and one web app
-  per environment for `com.catchdates.app`. Production active registrations are
-  `Catch Prod Android`, `Catch Prod iOS`, and `Catch Prod Web`.
+- Active Firebase app registrations are one consumer Android, one consumer iOS,
+  one consumer web, one host Android, one host iOS, and one host web app per
+  environment. Production active registrations include `Catch Prod Android`,
+  `Catch Prod iOS`, `Catch Prod Web`, `Catch Host Prod Android`,
+  `Catch Host Prod iOS`, and `Catch Host Prod Web`.
+- Host Firebase SDK config files were downloaded on 2026-06-10 for dev,
+  staging, and prod. Host Android SHA fingerprints were registered from the
+  matching consumer apps on 2026-06-10 and the host Android SDK configs were
+  refreshed afterward. Host App Check provider registrations were verified in
+  Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play
+  Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise. Firebase
+  CLI `15.1.0` and `gcloud` `566.0.0` do not expose App Check app-management
+  commands in this local toolchain.
 - App Check service enforcement is `ENFORCED` for Firestore, Storage, and
   Firebase Authentication in all three projects. Callable Cloud Functions use
   `enforceAppCheck: true`; the public marketing waitlist endpoint remains
@@ -132,6 +160,7 @@ Run Flutter with the matching `APP_ENV` define file:
 
 ```bash
 ./tool/flutter_with_env.sh dev run
+./tool/flutter_with_env.sh dev --role host run
 ./tool/flutter_with_env.sh staging run -d chrome
 ./tool/flutter_with_env.sh prod build apk
 ```
@@ -150,10 +179,12 @@ Explicit Apple examples:
 flutter build ios --simulator --no-codesign --flavor dev --dart-define=APP_ENV=dev
 flutter build ios --simulator --no-codesign --flavor staging --dart-define=APP_ENV=staging
 flutter build ios --simulator --no-codesign --flavor prod --dart-define=APP_ENV=prod
+./tool/flutter_with_env.sh dev --role host build ios --simulator --no-codesign
 
 flutter build macos --debug --flavor dev --dart-define=APP_ENV=dev
 flutter build macos --debug --flavor staging --dart-define=APP_ENV=staging
 flutter build macos --debug --flavor prod --dart-define=APP_ENV=prod
+./tool/flutter_with_env.sh dev --role host build macos --debug
 ```
 
 Regenerate Apple flavor project files after changing app IDs, labels, or

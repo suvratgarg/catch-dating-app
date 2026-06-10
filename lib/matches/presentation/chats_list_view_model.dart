@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -76,7 +79,13 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final query = ref.watch(chatSearchQueryProvider);
 
   return matchesAsync.whenData((matches) {
-    final matchesByPerson = collapseMatchesByOtherUser(matches, uid);
+    final roleMatches = AppConfig.appRole.isHost
+        ? matches.where((match) => match.isClubHostInquiry)
+        : matches;
+    final matchesByPerson = collapseMatchesByOtherUser(
+      roleMatches.toList(growable: false),
+      uid,
+    );
     final previews = matchesByPerson
         .map((match) => _previewForMatch(ref, match, uid))
         .toList();
@@ -117,9 +126,21 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
 
 ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
   final otherUid = match.otherId(uid);
-  final profile = ref.watch(watchPublicProfileProvider(otherUid)).asData?.value;
-  final displayName = profile?.name ?? 'Unknown';
-  final photoUrl = profile?.primaryPhotoThumbnailUrl;
+  final club = match.isClubHostInquiry && match.clubId != null
+      ? ref.watch(watchClubProvider(match.clubId!)).asData?.value
+      : null;
+  final hostProfile = _hostProfileFor(club, otherUid);
+  final otherParticipantIsHost = hostProfile != null;
+  final shouldReadPublicProfile =
+      !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
+  final profile = shouldReadPublicProfile
+      ? ref.watch(watchPublicProfileProvider(otherUid)).asData?.value
+      : null;
+  final displayName =
+      hostProfile?.displayName ??
+      profile?.name ??
+      (match.isClubHostInquiry ? 'Host conversation' : 'Unknown');
+  final photoUrl = hostProfile?.avatarUrl ?? profile?.primaryPhotoThumbnailUrl;
   final hasConversation = match.lastMessagePreview != null;
   final String previewText;
   if (!hasConversation) {
@@ -142,4 +163,12 @@ ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
     hasConversation: hasConversation,
     eventIds: match.eventIds,
   );
+}
+
+ClubHostProfile? _hostProfileFor(Club? club, String uid) {
+  if (club == null) return null;
+  for (final host in club.displayHostProfiles) {
+    if (host.uid == uid) return host;
+  }
+  return null;
 }
