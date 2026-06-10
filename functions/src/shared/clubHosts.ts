@@ -20,11 +20,11 @@ type MultiHostClubFields = ClubDocument & {
 /**
  * Returns the canonical club owner id, falling back to legacy hostUserId.
  * @param {ClubDocument} club Club document.
- * @return {string} Owner user id.
+ * @return {string|null} Owner user id when the organizer is claimed.
  */
-export function clubOwnerUserId(club: ClubDocument): string {
+export function clubOwnerUserId(club: ClubDocument): string | null {
   const multiHostClub = club as MultiHostClubFields;
-  return multiHostClub.ownerUserId ?? club.hostUserId;
+  return multiHostClub.ownerUserId ?? club.hostUserId ?? null;
 }
 
 /**
@@ -59,7 +59,8 @@ export function isClubHost(club: ClubDocument, uid: string): boolean {
  * @return {boolean} True when the user owns the club.
  */
 export function isClubOwner(club: ClubDocument, uid: string): boolean {
-  return clubOwnerUserId(club) === uid;
+  const ownerUserId = clubOwnerUserId(club);
+  return ownerUserId !== null && ownerUserId === uid;
 }
 
 /**
@@ -72,6 +73,7 @@ export function clubHostProfiles(club: ClubDocument): ClubHostProfile[] {
   if (multiHostClub.hostProfiles?.length) {
     return multiHostClub.hostProfiles;
   }
+  if (!club.hostUserId || !club.hostName) return [];
   return [{
     uid: club.hostUserId,
     displayName: club.hostName,

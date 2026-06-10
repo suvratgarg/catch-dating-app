@@ -52,6 +52,10 @@ export {
   removeClubHost,
   transferClubOwnership,
 } from "./clubs/manageClubHosts";
+export {
+  adminDecideClubClaim,
+  requestClubClaim,
+} from "./clubs/clubClaims";
 export {syncClubMemberStats} from "./clubs/syncClubMemberStats";
 export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
 export {
@@ -94,7 +98,10 @@ export {
 export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
   createEventReview,
+  createPublicClubReview,
   deleteEventReview,
+  listPublicClubReviews,
+  setReviewResponse,
   updateEventReview,
 } from "./reviews/mutateReview";
 export {syncPublicProfile} from "./profiles/syncPublicProfile";
@@ -124,3 +131,10 @@ export {adminGetOverview} from "./admin/overview";
 export {
   adminDecideAccessApplication,
 } from "./admin/accessApplications";
+export {
+  adminSetClubIndexStatus,
+} from "./admin/clubIndexing";
+export {
+  adminGetClubDetails,
+  adminUpdateClubDetails,
+} from "./admin/clubDetails";

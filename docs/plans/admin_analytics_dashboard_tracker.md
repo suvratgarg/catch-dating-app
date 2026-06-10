@@ -1,7 +1,7 @@
 ---
 doc_id: admin_analytics_dashboard_tracker
-version: 0.1.0
-updated: 2026-06-02
+version: 0.2.0
+updated: 2026-06-10
 owner: admin_analytics
 status: active
 ---
@@ -22,8 +22,10 @@ Read this tracker before continuing admin console implementation. Pair it with
 - `adminGetOverview` exists as the first admin callable overview endpoint.
 - `adminGetOverview` has custom-claim authorization and writes
   `adminAuditLogs` for reads.
+- The admin overview now includes pending organizer claim requests and can call
+  `adminDecideClubClaim` from the dashboard.
 - The dashboard UI is still mostly a shell: controls, rich analytics panels, and
-  most queue actions need live backend wiring.
+  several safety/payment queue actions still need live backend wiring.
 
 ## Active Milestone: Functional Live Ops MVP
 
@@ -38,6 +40,7 @@ deep BigQuery analytics.
 | ADM-004 | Live local admin mode | Pending | Requires deployed/emulated callable, App Check/dev token setup, and an admin custom claim on the test user. |
 | ADM-005 | Access application decision callable | Done | `adminDecideAccessApplication` approves/denies editable applications and writes audit logs. |
 | ADM-006 | Access application UI actions | Done | Approve/Deny buttons call the admin API, remove reviewed rows, decrement the pending metric, and show status feedback. |
+| ADM-006A | Organizer claim queue actions | Done | `adminGetOverview` lists pending `clubClaimRequests`; dashboard Approve/Reject calls `adminDecideClubClaim`, removes reviewed rows, and decrements pending organizer claims. |
 | ADM-007 | Firestore rules for launch access submissions | Pending | App-side `accessApplications` submission path appears scaffolded but not represented in current rules. |
 | ADM-008 | Safety report review actions | Pending | Needs status transition model, reviewer notes, and notification policy. |
 | ADM-009 | Payment issue queue actions | Pending | Needs refund/retry/reconciliation model and provider-specific constraints. |
@@ -78,6 +81,9 @@ Goal: make host money flows auditable before paid launch.
 - 2026-06-02: Created persistent tracker. Added
   `adminDecideAccessApplication`, role-restricted access review authorization,
   audit logging, unit coverage, and dashboard Approve/Deny actions.
+- 2026-06-10: Added pending organizer claim queue data to `adminGetOverview`,
+  dashboard Approve/Reject actions for `adminDecideClubClaim`, sample rows, and
+  queue normalization coverage.
 
 ## Latest Verification
 
@@ -90,6 +96,11 @@ Goal: make host money flows auditable before paid launch.
   - Browser check on `http://127.0.0.1:5174/`: Approve removed one sample
     access application and decremented pending applications; Deny cleared the
     queue and left no body-level horizontal overflow.
+- 2026-06-10:
+  - `npm --prefix admin run typecheck`
+  - `npm --prefix functions run build`
+  - `npm --prefix functions run lint`
+  - `node --test functions/lib/admin/overview.test.js`
 
 ## Next Recommended Slice
 

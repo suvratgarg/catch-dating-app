@@ -31,6 +31,8 @@ export interface AdminOverviewResponse {
     moderationFlags: AdminQueueItem[];
     eventSafetyReports: AdminQueueItem[];
     accessApplications: AdminQueueItem[];
+    clubClaimRequests: AdminQueueItem[];
+    clubIndexReviews: AdminQueueItem[];
     paymentIssues: AdminQueueItem[];
   };
   dataQuality: Array<{
@@ -151,6 +153,8 @@ export async function adminGetOverviewHandler(
     pendingModerationFlags,
     openEventSafetyReports,
     pendingAccessApplications,
+    pendingClubClaimRequests,
+    indexReviewPages,
     activeHosts,
     activeEvents,
     completedPayments,
@@ -161,6 +165,8 @@ export async function adminGetOverviewHandler(
     moderationFlags,
     eventSafetyReports,
     accessApplications,
+    clubClaimRequests,
+    clubIndexReviews,
     paymentIssues,
   ] = await Promise.all([
     countAuthUsersCreatedSince(deps.auth(), today),
@@ -177,6 +183,14 @@ export async function adminGetOverviewHandler(
     ),
     countCollection(
       db.collection("accessApplications").where("status", "==", "pending")
+    ),
+    countCollection(
+      db.collection("clubClaimRequests").where("status", "==", "pending")
+    ),
+    countCollection(
+      db.collection("clubs")
+        .where("publicPage.publishStatus", "==", "qa")
+        .where("publicPage.indexStatus", "==", "noindex")
     ),
     countCollection(db.collection("clubHostClaims")),
     countCollection(
@@ -212,6 +226,14 @@ export async function adminGetOverviewHandler(
       "pending",
       "accessApplication"
     ),
+    listQueueItems(
+      db,
+      "clubClaimRequests",
+      "status",
+      "pending",
+      "clubClaimRequest"
+    ),
+    listClubIndexReviewItems(db),
     listPaymentIssueItems(db),
   ]);
 
@@ -245,6 +267,12 @@ export async function adminGetOverviewHandler(
         "Pending applications",
         pendingAccessApplications
       ),
+      metric(
+        "pendingClubClaims",
+        "Pending organizer claims",
+        pendingClubClaimRequests
+      ),
+      metric("indexReviewPages", "Index review pages", indexReviewPages),
       metric("activeHosts", "Active host claims", activeHosts),
       metric("activeEvents", "Active events", activeEvents),
       metric("completedPayments", "Completed payments", completedPayments),
@@ -261,6 +289,8 @@ export async function adminGetOverviewHandler(
       moderationFlags,
       eventSafetyReports,
       accessApplications,
+      clubClaimRequests,
+      clubIndexReviews,
       paymentIssues,
     },
     dataQuality: [
@@ -347,6 +377,24 @@ async function listQueueItems(
     .get();
   return snapshot.docs.map((doc) =>
     normalizeQueueItem(kind, `${collection}/${doc.id}`, doc.data())
+  );
+}
+
+/**
+ * Lists organizer pages waiting for a human SEO indexing review.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @return {Promise<AdminQueueItem[]>} Index review rows.
+ */
+async function listClubIndexReviewItems(
+  db: FirebaseFirestore.Firestore
+): Promise<AdminQueueItem[]> {
+  const snapshot = await db.collection("clubs")
+    .where("publicPage.publishStatus", "==", "qa")
+    .where("publicPage.indexStatus", "==", "noindex")
+    .limit(5)
+    .get();
+  return snapshot.docs.map((doc) =>
+    normalizeQueueItem("clubIndexReview", `clubs/${doc.id}`, doc.data())
   );
 }
 
@@ -445,6 +493,41 @@ export function normalizeQueueItem(
       targetPath,
     };
   }
+  if (kind === "clubClaimRequest") {
+    return {
+      id: targetPath,
+      title: stringValue(data.requesterName) ??
+        stringValue(data.requesterUid) ??
+        "Organizer claim",
+      detail: [
+        `club ${stringValue(data.clubId) ?? "unknown"}`,
+        stringValue(data.requesterRole),
+        stringValue(data.businessEmail) ??
+          stringValue(data.businessPhone) ??
+          "no contact",
+        `${arrayLength(data.proofUrls)} proof links`,
+      ].filter(Boolean).join(" - "),
+      status,
+      createdAt,
+      targetPath,
+    };
+  }
+  if (kind === "clubIndexReview") {
+    const publicPage = objectValue(data.publicPage);
+    const provenance = objectValue(data.provenance);
+    return {
+      id: targetPath,
+      title: stringValue(data.name) ?? "Organizer page",
+      detail: [
+        stringValue(publicPage?.canonicalPath),
+        stringValue(provenance?.sourceConfidence),
+        stringValue(provenance?.verificationStatus),
+      ].filter(Boolean).join(" - "),
+      status: stringValue(publicPage?.indexStatus) ?? "noindex",
+      createdAt: isoFromTimestamp(provenance?.lastVerifiedAt) ?? createdAt,
+      targetPath,
+    };
+  }
   if (kind === "paymentIssue") {
     return {
       id: targetPath,
@@ -516,10 +599,29 @@ function stringValue(value: unknown): string | null {
 }
 
 /**
+ * Returns a plain object candidate, excluding arrays and null.
+ * @param {unknown} value Candidate value.
+ * @return {Record<string, unknown> | null} Object value.
+ */
+function objectValue(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+/**
  * Returns a finite number value.
  * @param {unknown} value Candidate value.
  * @return {number | null} Number value.
  */
 function numberValue(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+/**
+ * Returns the length of an array value.
+ * @param {unknown} value Candidate array.
+ * @return {number} Array length or zero.
+ */
+function arrayLength(value: unknown): number {
+  return Array.isArray(value) ? value.length : 0;
 }

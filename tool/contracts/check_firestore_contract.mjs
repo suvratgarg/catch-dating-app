@@ -502,22 +502,56 @@ function schemaModelFields(schema) {
 
 function extractInterfaceFields(source, interfaceName) {
   const escapedName = interfaceName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(
-    `export interface ${escapedName} \\{([\\s\\S]*?)\\n\\}`,
+  const headerMatch = new RegExp(
+    `export interface ${escapedName}\\s*\\{`,
     "m"
   ).exec(source);
-  if (!match) {
+  if (!headerMatch || headerMatch.index === undefined) {
     return null;
   }
 
+  const openBraceIndex = source.indexOf("{", headerMatch.index);
+  const closeBraceIndex = matchingBraceIndex(source, openBraceIndex);
+  if (openBraceIndex === -1 || closeBraceIndex === -1) {
+    return null;
+  }
+
+  const body = source.slice(openBraceIndex + 1, closeBraceIndex);
   const fields = new Set();
-  for (const line of match[1].split("\n")) {
-    const fieldMatch = /^\s*([A-Za-z_$][A-Za-z0-9_$]*)\??:/.exec(line);
+  let depth = 1;
+  for (const line of body.split("\n")) {
+    const fieldMatch = depth === 1 ?
+      /^\s*([A-Za-z_$][A-Za-z0-9_$]*)\??:/.exec(line) :
+      null;
     if (fieldMatch) {
       fields.add(fieldMatch[1]);
     }
+    depth += braceDelta(line);
   }
   return fields;
+}
+
+function matchingBraceIndex(source, openBraceIndex) {
+  if (openBraceIndex === -1) return -1;
+  let depth = 0;
+  for (let index = openBraceIndex; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === "{") depth += 1;
+    if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  return -1;
+}
+
+function braceDelta(line) {
+  let delta = 0;
+  for (const char of line) {
+    if (char === "{") delta += 1;
+    if (char === "}") delta -= 1;
+  }
+  return delta;
 }
 
 function extractFirstHasOnlyFields(source, functionHeader) {

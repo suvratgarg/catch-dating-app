@@ -22,6 +22,8 @@ node tool/run.mjs run demo:ops --help
 - `design/`: visual review and design-preview entrypoints.
 - `env/`: checked-in Dart define files for app environments.
 - `firebase/`: Firebase project/config helper scripts.
+- `host_discovery/`: organizer acquisition backlog, deterministic search plans,
+  seed listing fixtures, and dedupe indexes for claimable organizer pages.
 - `lib/`: shared Node helper modules for repo paths, CLI parsing, and Firebase project selection.
 - Completed one-time migration tools are retired after prod verification; historical
   evidence lives in the audit registry and migration contract metadata.
@@ -105,6 +107,47 @@ node tool/marketing/export_app_screenshots.mjs --check
 node tool/marketing/export_app_screenshots.mjs --check-design-json
 node tool/marketing/export_app_screenshots.mjs --update-design-json
 ```
+
+## Host Discovery
+
+Organizer discovery starts with a machine-readable candidate backlog, not public
+pages. The initial batch lives at
+`tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json`
+and is validated against `target_categories.json`, seed listing docs, and
+dedupe keys.
+
+```sh
+node tool/host_discovery/validate_discovery_data.mjs
+node tool/host_discovery/validate_discovery_data.mjs --check
+node tool/host_discovery/plan_search_runs.mjs
+node tool/host_discovery/plan_search_runs.mjs --check
+node tool/host_discovery/generate_source_evidence.mjs
+node tool/host_discovery/generate_source_evidence.mjs --check
+node tool/host_discovery/check_index_readiness.mjs
+node tool/host_discovery/check_index_readiness.mjs --check
+node tool/host_discovery/export_seed_import_plan.mjs
+node tool/host_discovery/export_seed_import_plan.mjs --check
+node tool/host_discovery/apply_seed_import_plan.mjs --project catchdates-dev
+node tool/host_discovery/apply_seed_import_plan.mjs --project catchdates-dev --write
+node tool/run.mjs check --category host-discovery
+```
+
+The apply command is dry-run by default. Production writes require the explicit
+prod guard:
+
+```sh
+node tool/host_discovery/apply_seed_import_plan.mjs --project catch-dating-app-64e51 --allow-prod --confirm-prod-project catch-dating-app-64e51
+node tool/host_discovery/apply_seed_import_plan.mjs --project catch-dating-app-64e51 --write --allow-prod --confirm-prod-project catch-dating-app-64e51
+```
+
+Generated files are checked in so reviews can see exactly which candidates and
+searches are active:
+
+- `tool/host_discovery/generated/candidate_dedupe_index.json`
+- `tool/host_discovery/generated/search_plan.json`
+- `tool/host_discovery/generated/source_evidence.json`
+- `tool/host_discovery/generated/index_readiness_report.json`
+- `tool/host_discovery/generated/firestore_seed_import_plan.json`
 
 ## Design Tokens
 

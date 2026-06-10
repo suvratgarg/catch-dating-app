@@ -1,0 +1,1929 @@
+{
+  "candidateCount": 35,
+  "candidates": [
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "adidas-runners-india:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "adidas.co.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.adidas.co.in/adidasrunners"
+        },
+        {
+          "type": "website_host",
+          "value": "adidas.co.in"
+        }
+      ],
+      "displayName": "adidas Runners India",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.adidas.co.in/adidasrunners"
+      ],
+      "state": "candidate",
+      "verificationStatus": "needs_current_city_evidence"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "canonicalPath": "/organizers/indore/afterfly-run-club/",
+      "categoryId": "social_run_club",
+      "citySlug": "indore",
+      "dedupeKeys": [
+        {
+          "type": "canonical_path",
+          "value": "/organizers/indore/afterfly-run-club/"
+        },
+        {
+          "type": "event_url",
+          "value": "https://luma.com/pxgmph3b"
+        },
+        {
+          "type": "instagram",
+          "value": "afterfly.in"
+        },
+        {
+          "type": "name_city",
+          "value": "after-fly:indore"
+        },
+        {
+          "type": "seed_document",
+          "value": "clubs/afterfly-run-club-indore"
+        },
+        {
+          "type": "source_url",
+          "value": "https://luma.com/pxgmph3b"
+        }
+      ],
+      "displayName": "AFTER FLY",
+      "fitScore": 5,
+      "priority": "p0",
+      "seedDocumentPath": "clubs/afterfly-run-club-indore",
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://luma.com/pxgmph3b"
+      ],
+      "state": "page_seeded",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "canonicalPath": null,
+      "categoryId": "supper_club",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "authenticook:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "authenticook.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.authenticook.com"
+        },
+        {
+          "type": "website_host",
+          "value": "authenticook.com"
+        }
+      ],
+      "displayName": "Authenticook",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.authenticook.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_platform_ambiguous"
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "bangalore-walks:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "bangalorewalks.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.bangalorewalks.com"
+        },
+        {
+          "type": "website_host",
+          "value": "bangalorewalks.com"
+        }
+      ],
+      "displayName": "Bangalore Walks",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.bangalorewalks.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "canonicalPath": "/organizers/delhi/bhag-run-club/",
+      "categoryId": "social_run_club",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "canonical_path",
+          "value": "/organizers/delhi/bhag-run-club/"
+        },
+        {
+          "type": "event_url",
+          "value": "https://luma.com/ixj7uqiu"
+        },
+        {
+          "type": "instagram",
+          "value": "bhagclub"
+        },
+        {
+          "type": "name_city",
+          "value": "bhag-club:delhi-ncr"
+        },
+        {
+          "type": "official_host",
+          "value": "thebhag.in"
+        },
+        {
+          "type": "seed_document",
+          "value": "clubs/bhag-run-club-delhi"
+        },
+        {
+          "type": "source_url",
+          "value": "https://luma.com/ixj7uqiu"
+        },
+        {
+          "type": "source_url",
+          "value": "https://thebhag.in"
+        },
+        {
+          "type": "website_host",
+          "value": "thebhag.in"
+        }
+      ],
+      "displayName": "Bhag Club",
+      "fitScore": 5,
+      "priority": "p0",
+      "seedDocumentPath": "clubs/bhag-run-club-delhi",
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://luma.com/ixj7uqiu",
+        "https://thebhag.in/"
+      ],
+      "state": "page_seeded",
+      "verificationStatus": "source_backed_city_ambiguous"
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "creator_community_host",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "blr-hubba:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "blrhubba.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://blrhubba.in"
+        },
+        {
+          "type": "website_host",
+          "value": "blrhubba.in"
+        }
+      ],
+      "displayName": "BLR Hubba",
+      "fitScore": 2,
+      "priority": "p3",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://blrhubba.in/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_large_festival"
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "canonicalPath": null,
+      "categoryId": "board_game_social",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "board-game-company:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "boardgamecompany.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://boardgamecompany.in"
+        },
+        {
+          "type": "website_host",
+          "value": "boardgamecompany.in"
+        }
+      ],
+      "displayName": "Board Game Company",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://boardgamecompany.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "chennai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "chennai-runners:chennai"
+        },
+        {
+          "type": "official_host",
+          "value": "chennairunners.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://chennairunners.in"
+        },
+        {
+          "type": "website_host",
+          "value": "chennairunners.in"
+        }
+      ],
+      "displayName": "Chennai Runners",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://chennairunners.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "supper_club",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "conosh:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "conosh.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.conosh.com"
+        },
+        {
+          "type": "website_host",
+          "value": "conosh.com"
+        }
+      ],
+      "displayName": "Conosh",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.conosh.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_platform_ambiguous"
+    },
+    {
+      "candidateId": "cubbon-runs-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "cubbon-runs:bengaluru"
+        }
+      ],
+      "displayName": "Cubbon Runs",
+      "fitScore": 4,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "low",
+      "sourceUrls": [],
+      "state": "candidate",
+      "verificationStatus": "needs_public_source"
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "delhi-by-foot:delhi-ncr"
+        },
+        {
+          "type": "official_host",
+          "value": "delhibyfoot.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.delhibyfoot.in"
+        },
+        {
+          "type": "website_host",
+          "value": "delhibyfoot.in"
+        }
+      ],
+      "displayName": "Delhi By Foot",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.delhibyfoot.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "canonicalPath": null,
+      "categoryId": "venue_led_social",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "doolally:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "doolally.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://doolally.in"
+        },
+        {
+          "type": "website_host",
+          "value": "new.doolally.in"
+        }
+      ],
+      "displayName": "Doolally",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://doolally.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "canonicalPath": null,
+      "categoryId": "singles_event_operator",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "floh:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "floh.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.floh.in"
+        },
+        {
+          "type": "website_host",
+          "value": "floh.in"
+        }
+      ],
+      "displayName": "Floh",
+      "fitScore": 5,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.floh.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "canonicalPath": null,
+      "categoryId": "singles_event_operator",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "gay-bombay:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "gaybombay.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://gaybombay.in"
+        },
+        {
+          "type": "website_host",
+          "value": "gaybombay.in"
+        }
+      ],
+      "displayName": "Gay Bombay",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://gaybombay.in/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_sensitive_category"
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "go-heritage-run:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "goheritagerun.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.goheritagerun.com"
+        },
+        {
+          "type": "website_host",
+          "value": "goheritagerun.com"
+        }
+      ],
+      "displayName": "Go Heritage Run",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.goheritagerun.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_city_ambiguous"
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "gurgaon-road-runners:delhi-ncr"
+        },
+        {
+          "type": "official_host",
+          "value": "gurgaonroadrunners.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://gurgaonroadrunners.com"
+        },
+        {
+          "type": "website_host",
+          "value": "gurgaonroadrunners.com"
+        }
+      ],
+      "displayName": "Gurgaon Road Runners",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://gurgaonroadrunners.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "hyderabad",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "hyderabad-runners:hyderabad"
+        },
+        {
+          "type": "official_host",
+          "value": "hyderabadrunners.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://hyderabadrunners.com"
+        },
+        {
+          "type": "website_host",
+          "value": "hyderabadrunners.com"
+        }
+      ],
+      "displayName": "Hyderabad Runners",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://hyderabadrunners.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "india-heritage-walks:delhi-ncr"
+        },
+        {
+          "type": "official_host",
+          "value": "indiaheritagewalks.org"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.indiaheritagewalks.org"
+        },
+        {
+          "type": "website_host",
+          "value": "indiaheritagewalks.org"
+        }
+      ],
+      "displayName": "India Heritage Walks",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.indiaheritagewalks.org/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_needs_city_scope"
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "india-running:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "bombayrunning.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.bombayrunning.com"
+        },
+        {
+          "type": "website_host",
+          "value": "indiarunning.com"
+        }
+      ],
+      "displayName": "India Running",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.bombayrunning.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_brand_ambiguous"
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "jayanagar-jaguars:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "jayanagarjaguars.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.jayanagarjaguars.com/jjs/index.php"
+        },
+        {
+          "type": "website_host",
+          "value": "jayanagarjaguars.com"
+        }
+      ],
+      "displayName": "Jayanagar Jaguars",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.jayanagarjaguars.com/jjs/index.php"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "khaki-tours:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "khakitours.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://khakitours.com"
+        },
+        {
+          "type": "website_host",
+          "value": "khakitours.com"
+        }
+      ],
+      "displayName": "Khaki Tours",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://khakitours.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "canonicalPath": null,
+      "categoryId": "creator_community_host",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "kommune:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "kommuneity.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.kommuneity.com"
+        },
+        {
+          "type": "website_host",
+          "value": "kommuneity.com"
+        }
+      ],
+      "displayName": "Kommune",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.kommuneity.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "creator_community_host",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "lahe-lahe:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "lahe-lahe.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.lahe-lahe.com"
+        },
+        {
+          "type": "website_host",
+          "value": "lahe-lahe.com"
+        }
+      ],
+      "displayName": "Lahe Lahe",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.lahe-lahe.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "lodhi-run-club-delhi",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "lodhi-run-club:delhi-ncr"
+        }
+      ],
+      "displayName": "Lodhi Run Club",
+      "fitScore": 4,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "low",
+      "sourceUrls": [],
+      "state": "candidate",
+      "verificationStatus": "needs_public_source"
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "no-footprints:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "nfpexplore.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.nfpexplore.com"
+        },
+        {
+          "type": "website_host",
+          "value": "nfpexplore.com"
+        }
+      ],
+      "displayName": "No Footprints",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "low",
+      "sourceUrls": [
+        "https://www.nfpexplore.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_probe_timeout"
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "canonicalPath": null,
+      "categoryId": "racket_sport_social",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "padelpark-india:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "padelpark.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://padelpark.in"
+        },
+        {
+          "type": "website_host",
+          "value": "padelpark.in"
+        }
+      ],
+      "displayName": "PadelPark India",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://padelpark.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "platonicity-delhi-ncr",
+      "canonicalPath": null,
+      "categoryId": "singles_event_operator",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "platonicity:delhi-ncr"
+        },
+        {
+          "type": "source_url",
+          "value": "https://en.wikipedia.org/wiki/Pragati_Singh"
+        }
+      ],
+      "displayName": "Platonicity",
+      "fitScore": 4,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://en.wikipedia.org/wiki/Pragati_Singh"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_needs_current_cadence"
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "canonicalPath": null,
+      "categoryId": "singles_event_operator",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "playace:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "playace.co"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.playace.co"
+        },
+        {
+          "type": "website_host",
+          "value": "playace.co"
+        }
+      ],
+      "displayName": "Playace",
+      "fitScore": 4,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.playace.co/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_needs_current_cadence"
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "canonicalPath": null,
+      "categoryId": "racket_sport_social",
+      "citySlug": "delhi-ncr",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "rackonnect:delhi-ncr"
+        },
+        {
+          "type": "official_host",
+          "value": "rackonnect.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://rackonnect.com"
+        },
+        {
+          "type": "website_host",
+          "value": "rackonnect.com"
+        }
+      ],
+      "displayName": "Rackonnect",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://rackonnect.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_platform_ambiguous"
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "canonicalPath": null,
+      "categoryId": "venue_led_social",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "social:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "socialoffline.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.socialoffline.in"
+        },
+        {
+          "type": "website_host",
+          "value": "socialoffline.in"
+        }
+      ],
+      "displayName": "SOCIAL",
+      "fitScore": 2,
+      "priority": "p3",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.socialoffline.in/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_large_venue_brand"
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "canonicalPath": null,
+      "categoryId": "walks_experiences",
+      "citySlug": "goa",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "soul-travelling:goa"
+        },
+        {
+          "type": "official_host",
+          "value": "soultravelling.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.soultravelling.in"
+        },
+        {
+          "type": "website_host",
+          "value": "soultravelling.in"
+        }
+      ],
+      "displayName": "Soul Travelling",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://www.soultravelling.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "canonicalPath": null,
+      "categoryId": "social_run_club",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "striders:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "striders.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://striders.in"
+        },
+        {
+          "type": "website_host",
+          "value": "striders.in"
+        }
+      ],
+      "displayName": "Striders",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://striders.in/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "canonicalPath": null,
+      "categoryId": "supper_club",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "the-bohri-kitchen:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "thebohrikitchen.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://thebohrikitchen.com"
+        },
+        {
+          "type": "website_host",
+          "value": "thebohrikitchen.com"
+        }
+      ],
+      "displayName": "The Bohri Kitchen",
+      "fitScore": 4,
+      "priority": "p1",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://thebohrikitchen.com/"
+      ],
+      "state": "qualified",
+      "verificationStatus": "source_backed"
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "canonicalPath": null,
+      "categoryId": "venue_led_social",
+      "citySlug": "mumbai",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "the-habitat:mumbai"
+        },
+        {
+          "type": "official_host",
+          "value": "thehabitat.co.in"
+        },
+        {
+          "type": "source_url",
+          "value": "https://www.thehabitat.co.in"
+        },
+        {
+          "type": "website_host",
+          "value": "thehabitat.co.in"
+        }
+      ],
+      "displayName": "The Habitat",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "medium",
+      "sourceUrls": [
+        "https://www.thehabitat.co.in/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed_adjacency"
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "canonicalPath": null,
+      "categoryId": "creator_community_host",
+      "citySlug": "bengaluru",
+      "dedupeKeys": [
+        {
+          "type": "name_city",
+          "value": "under-25-universe:bengaluru"
+        },
+        {
+          "type": "official_host",
+          "value": "under25universe.com"
+        },
+        {
+          "type": "source_url",
+          "value": "https://under25universe.com"
+        },
+        {
+          "type": "website_host",
+          "value": "under25universe.com"
+        }
+      ],
+      "displayName": "Under 25 Universe",
+      "fitScore": 3,
+      "priority": "p2",
+      "seedDocumentPath": null,
+      "sourceConfidence": "high",
+      "sourceUrls": [
+        "https://under25universe.com/"
+      ],
+      "state": "candidate",
+      "verificationStatus": "source_backed"
+    }
+  ],
+  "counts": {
+    "byCategory": {
+      "board_game_social": 1,
+      "creator_community_host": 4,
+      "racket_sport_social": 2,
+      "singles_event_operator": 4,
+      "social_run_club": 11,
+      "supper_club": 3,
+      "venue_led_social": 3,
+      "walks_experiences": 7
+    },
+    "byCity": {
+      "bengaluru": 8,
+      "chennai": 1,
+      "delhi-ncr": 7,
+      "goa": 1,
+      "hyderabad": 1,
+      "indore": 1,
+      "mumbai": 16
+    },
+    "byPriority": {
+      "p0": 2,
+      "p1": 15,
+      "p2": 16,
+      "p3": 2
+    },
+    "byState": {
+      "candidate": 18,
+      "page_seeded": 2,
+      "qualified": 15
+    }
+  },
+  "dedupeKeys": [
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "canonical_path",
+      "value": "/organizers/delhi/bhag-run-club/"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "canonical_path",
+      "value": "/organizers/indore/afterfly-run-club/"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "event_url",
+      "value": "https://luma.com/ixj7uqiu"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "event_url",
+      "value": "https://luma.com/pxgmph3b"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "instagram",
+      "value": "afterfly.in"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "instagram",
+      "value": "bhagclub"
+    },
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "type": "name_city",
+      "value": "adidas-runners-india:mumbai"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "name_city",
+      "value": "after-fly:indore"
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "type": "name_city",
+      "value": "authenticook:mumbai"
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "type": "name_city",
+      "value": "bangalore-walks:bengaluru"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "name_city",
+      "value": "bhag-club:delhi-ncr"
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "type": "name_city",
+      "value": "blr-hubba:bengaluru"
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "type": "name_city",
+      "value": "board-game-company:mumbai"
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "type": "name_city",
+      "value": "chennai-runners:chennai"
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "type": "name_city",
+      "value": "conosh:bengaluru"
+    },
+    {
+      "candidateId": "cubbon-runs-bengaluru",
+      "type": "name_city",
+      "value": "cubbon-runs:bengaluru"
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "type": "name_city",
+      "value": "delhi-by-foot:delhi-ncr"
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "type": "name_city",
+      "value": "doolally:mumbai"
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "type": "name_city",
+      "value": "floh:mumbai"
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "type": "name_city",
+      "value": "gay-bombay:mumbai"
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "type": "name_city",
+      "value": "go-heritage-run:bengaluru"
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "type": "name_city",
+      "value": "gurgaon-road-runners:delhi-ncr"
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "type": "name_city",
+      "value": "hyderabad-runners:hyderabad"
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "type": "name_city",
+      "value": "india-heritage-walks:delhi-ncr"
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "type": "name_city",
+      "value": "india-running:mumbai"
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "type": "name_city",
+      "value": "jayanagar-jaguars:bengaluru"
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "type": "name_city",
+      "value": "khaki-tours:mumbai"
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "type": "name_city",
+      "value": "kommune:mumbai"
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "type": "name_city",
+      "value": "lahe-lahe:bengaluru"
+    },
+    {
+      "candidateId": "lodhi-run-club-delhi",
+      "type": "name_city",
+      "value": "lodhi-run-club:delhi-ncr"
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "type": "name_city",
+      "value": "no-footprints:mumbai"
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "type": "name_city",
+      "value": "padelpark-india:mumbai"
+    },
+    {
+      "candidateId": "platonicity-delhi-ncr",
+      "type": "name_city",
+      "value": "platonicity:delhi-ncr"
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "type": "name_city",
+      "value": "playace:mumbai"
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "type": "name_city",
+      "value": "rackonnect:delhi-ncr"
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "type": "name_city",
+      "value": "social:mumbai"
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "type": "name_city",
+      "value": "soul-travelling:goa"
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "type": "name_city",
+      "value": "striders:mumbai"
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "type": "name_city",
+      "value": "the-bohri-kitchen:mumbai"
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "type": "name_city",
+      "value": "the-habitat:mumbai"
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "type": "name_city",
+      "value": "under-25-universe:bengaluru"
+    },
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "type": "official_host",
+      "value": "adidas.co.in"
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "type": "official_host",
+      "value": "authenticook.com"
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "type": "official_host",
+      "value": "bangalorewalks.com"
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "type": "official_host",
+      "value": "blrhubba.in"
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "type": "official_host",
+      "value": "boardgamecompany.in"
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "type": "official_host",
+      "value": "bombayrunning.com"
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "type": "official_host",
+      "value": "chennairunners.in"
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "type": "official_host",
+      "value": "conosh.com"
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "type": "official_host",
+      "value": "delhibyfoot.in"
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "type": "official_host",
+      "value": "doolally.in"
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "type": "official_host",
+      "value": "floh.in"
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "type": "official_host",
+      "value": "gaybombay.in"
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "type": "official_host",
+      "value": "goheritagerun.com"
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "type": "official_host",
+      "value": "gurgaonroadrunners.com"
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "type": "official_host",
+      "value": "hyderabadrunners.com"
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "type": "official_host",
+      "value": "indiaheritagewalks.org"
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "type": "official_host",
+      "value": "jayanagarjaguars.com"
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "type": "official_host",
+      "value": "khakitours.com"
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "type": "official_host",
+      "value": "kommuneity.com"
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "type": "official_host",
+      "value": "lahe-lahe.com"
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "type": "official_host",
+      "value": "nfpexplore.com"
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "type": "official_host",
+      "value": "padelpark.in"
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "type": "official_host",
+      "value": "playace.co"
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "type": "official_host",
+      "value": "rackonnect.com"
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "type": "official_host",
+      "value": "socialoffline.in"
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "type": "official_host",
+      "value": "soultravelling.in"
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "type": "official_host",
+      "value": "striders.in"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "official_host",
+      "value": "thebhag.in"
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "type": "official_host",
+      "value": "thebohrikitchen.com"
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "type": "official_host",
+      "value": "thehabitat.co.in"
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "type": "official_host",
+      "value": "under25universe.com"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "seed_document",
+      "value": "clubs/afterfly-run-club-indore"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "seed_document",
+      "value": "clubs/bhag-run-club-delhi"
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "type": "source_url",
+      "value": "https://blrhubba.in"
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "type": "source_url",
+      "value": "https://boardgamecompany.in"
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "type": "source_url",
+      "value": "https://chennairunners.in"
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "type": "source_url",
+      "value": "https://doolally.in"
+    },
+    {
+      "candidateId": "platonicity-delhi-ncr",
+      "type": "source_url",
+      "value": "https://en.wikipedia.org/wiki/Pragati_Singh"
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "type": "source_url",
+      "value": "https://gaybombay.in"
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "type": "source_url",
+      "value": "https://gurgaonroadrunners.com"
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "type": "source_url",
+      "value": "https://hyderabadrunners.com"
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "type": "source_url",
+      "value": "https://khakitours.com"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "source_url",
+      "value": "https://luma.com/ixj7uqiu"
+    },
+    {
+      "candidateId": "afterfly-run-club-indore",
+      "type": "source_url",
+      "value": "https://luma.com/pxgmph3b"
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "type": "source_url",
+      "value": "https://padelpark.in"
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "type": "source_url",
+      "value": "https://rackonnect.com"
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "type": "source_url",
+      "value": "https://striders.in"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "source_url",
+      "value": "https://thebhag.in"
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "type": "source_url",
+      "value": "https://thebohrikitchen.com"
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "type": "source_url",
+      "value": "https://under25universe.com"
+    },
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "type": "source_url",
+      "value": "https://www.adidas.co.in/adidasrunners"
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "type": "source_url",
+      "value": "https://www.authenticook.com"
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "type": "source_url",
+      "value": "https://www.bangalorewalks.com"
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "type": "source_url",
+      "value": "https://www.bombayrunning.com"
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "type": "source_url",
+      "value": "https://www.conosh.com"
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "type": "source_url",
+      "value": "https://www.delhibyfoot.in"
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "type": "source_url",
+      "value": "https://www.floh.in"
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "type": "source_url",
+      "value": "https://www.goheritagerun.com"
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "type": "source_url",
+      "value": "https://www.indiaheritagewalks.org"
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "type": "source_url",
+      "value": "https://www.jayanagarjaguars.com/jjs/index.php"
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "type": "source_url",
+      "value": "https://www.kommuneity.com"
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "type": "source_url",
+      "value": "https://www.lahe-lahe.com"
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "type": "source_url",
+      "value": "https://www.nfpexplore.com"
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "type": "source_url",
+      "value": "https://www.playace.co"
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "type": "source_url",
+      "value": "https://www.socialoffline.in"
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "type": "source_url",
+      "value": "https://www.soultravelling.in"
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "type": "source_url",
+      "value": "https://www.thehabitat.co.in"
+    },
+    {
+      "candidateId": "adidas-runners-india-mumbai",
+      "type": "website_host",
+      "value": "adidas.co.in"
+    },
+    {
+      "candidateId": "authenticook-mumbai",
+      "type": "website_host",
+      "value": "authenticook.com"
+    },
+    {
+      "candidateId": "bangalore-walks-bengaluru",
+      "type": "website_host",
+      "value": "bangalorewalks.com"
+    },
+    {
+      "candidateId": "blr-hubba-bengaluru",
+      "type": "website_host",
+      "value": "blrhubba.in"
+    },
+    {
+      "candidateId": "board-game-company-india",
+      "type": "website_host",
+      "value": "boardgamecompany.in"
+    },
+    {
+      "candidateId": "chennai-runners-chennai",
+      "type": "website_host",
+      "value": "chennairunners.in"
+    },
+    {
+      "candidateId": "conosh-bengaluru",
+      "type": "website_host",
+      "value": "conosh.com"
+    },
+    {
+      "candidateId": "delhi-by-foot-delhi",
+      "type": "website_host",
+      "value": "delhibyfoot.in"
+    },
+    {
+      "candidateId": "floh-india-mumbai",
+      "type": "website_host",
+      "value": "floh.in"
+    },
+    {
+      "candidateId": "gay-bombay-mumbai",
+      "type": "website_host",
+      "value": "gaybombay.in"
+    },
+    {
+      "candidateId": "go-heritage-run-bengaluru",
+      "type": "website_host",
+      "value": "goheritagerun.com"
+    },
+    {
+      "candidateId": "gurgaon-road-runners-gurugram",
+      "type": "website_host",
+      "value": "gurgaonroadrunners.com"
+    },
+    {
+      "candidateId": "hyderabad-runners-hyderabad",
+      "type": "website_host",
+      "value": "hyderabadrunners.com"
+    },
+    {
+      "candidateId": "india-heritage-walks-delhi",
+      "type": "website_host",
+      "value": "indiaheritagewalks.org"
+    },
+    {
+      "candidateId": "india-running-mumbai",
+      "type": "website_host",
+      "value": "indiarunning.com"
+    },
+    {
+      "candidateId": "jayanagar-jaguars-bengaluru",
+      "type": "website_host",
+      "value": "jayanagarjaguars.com"
+    },
+    {
+      "candidateId": "khaki-tours-mumbai",
+      "type": "website_host",
+      "value": "khakitours.com"
+    },
+    {
+      "candidateId": "kommune-mumbai",
+      "type": "website_host",
+      "value": "kommuneity.com"
+    },
+    {
+      "candidateId": "lahe-lahe-bengaluru",
+      "type": "website_host",
+      "value": "lahe-lahe.com"
+    },
+    {
+      "candidateId": "doolally-mumbai",
+      "type": "website_host",
+      "value": "new.doolally.in"
+    },
+    {
+      "candidateId": "no-footprints-mumbai",
+      "type": "website_host",
+      "value": "nfpexplore.com"
+    },
+    {
+      "candidateId": "padelpark-india-mumbai",
+      "type": "website_host",
+      "value": "padelpark.in"
+    },
+    {
+      "candidateId": "playace-mumbai",
+      "type": "website_host",
+      "value": "playace.co"
+    },
+    {
+      "candidateId": "rackonnect-delhi-ncr",
+      "type": "website_host",
+      "value": "rackonnect.com"
+    },
+    {
+      "candidateId": "social-offline-mumbai",
+      "type": "website_host",
+      "value": "socialoffline.in"
+    },
+    {
+      "candidateId": "soul-travelling-goa",
+      "type": "website_host",
+      "value": "soultravelling.in"
+    },
+    {
+      "candidateId": "striders-mumbai",
+      "type": "website_host",
+      "value": "striders.in"
+    },
+    {
+      "candidateId": "bhag-run-club-delhi",
+      "type": "website_host",
+      "value": "thebhag.in"
+    },
+    {
+      "candidateId": "the-bohri-kitchen-mumbai",
+      "type": "website_host",
+      "value": "thebohrikitchen.com"
+    },
+    {
+      "candidateId": "the-habitat-mumbai",
+      "type": "website_host",
+      "value": "thehabitat.co.in"
+    },
+    {
+      "candidateId": "under-25-universe-bengaluru",
+      "type": "website_host",
+      "value": "under25universe.com"
+    }
+  ],
+  "generatedFrom": {
+    "batches": [
+      "tool/host_discovery/candidate_batches/2026-06-10-initial-organizer-targets.json"
+    ],
+    "seedDocs": [
+      "tool/host_discovery/seed_clubs/afterfly-run-club-indore.json",
+      "tool/host_discovery/seed_clubs/bhag-run-club-delhi.json"
+    ],
+    "targetCategories": "tool/host_discovery/target_categories.json"
+  },
+  "inputHash": "ef6ddf57578d916bf691d9ae197cbde4b44e2953c572c91cbdfb843945bfe2bc",
+  "schemaVersion": 1
+}

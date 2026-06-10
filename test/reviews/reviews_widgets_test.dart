@@ -114,6 +114,72 @@ void main() {
     expect(repository.deletedReviewId, 'review-1');
   });
 
+  testWidgets('review cards display host responses', (tester) async {
+    final repository = _FakeReviewsRepository();
+    final user = buildUser(name: 'Asha');
+    final review = buildReview(
+      comment: 'Loved the pacing.',
+      ownerResponse: ReviewOwnerResponse(
+        hostUserId: 'host-1',
+        hostName: 'Afterfly',
+        message: 'Thanks for joining us.',
+        createdAt: DateTime(2026, 6),
+        updatedAt: DateTime(2026, 6),
+      ),
+    );
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await _pumpReviewsSection(
+      tester,
+      container: container,
+      user: user,
+      reviews: [review],
+    );
+
+    expect(find.text('Host response · Afterfly'), findsOneWidget);
+    expect(find.text('Thanks for joining us.'), findsOneWidget);
+  });
+
+  testWidgets('hosts can respond to event reviews', (tester) async {
+    final repository = _FakeReviewsRepository();
+    final user = buildUser(uid: 'host-1', name: 'Host');
+    final review = buildReview(
+      id: 'event-1~runner-1',
+      reviewerName: 'Runner',
+      comment: 'Loved the route.',
+    );
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await _pumpReviewsSection(
+      tester,
+      container: container,
+      user: user,
+      reviews: [review],
+      isHost: true,
+    );
+
+    expect(find.byKey(ReviewKeys.writeReviewButton), findsNothing);
+
+    await tester.tap(find.byKey(ReviewKeys.respondToReviewButton(review.id)));
+    await pumpFeatureUi(tester);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byKey(ReviewKeys.ownerResponseField),
+        matching: find.byType(TextField),
+      ),
+      '  Thanks for coming.  ',
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(ReviewKeys.submitOwnerResponseButton));
+    await pumpFeatureUi(tester);
+
+    expect(repository.responseReviewId, 'event-1~runner-1');
+    expect(repository.responseMessage, 'Thanks for coming.');
+  });
+
   testWidgets('review history lists own reviews and opens edit sheet', (
     tester,
   ) async {
@@ -169,6 +235,7 @@ Future<void> _pumpReviewsSection(
   required ProviderContainer container,
   required UserProfile user,
   required List<Review> reviews,
+  bool isHost = false,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -184,6 +251,7 @@ Future<void> _pumpReviewsSection(
               reviews: reviews,
               currentUid: user.uid,
               userProfile: user,
+              isHost: isHost,
               hasAttended: true,
             ),
           ),
@@ -200,6 +268,8 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
   final List<Review> reviewsByUser;
   Review? addedReview;
   String? deletedReviewId;
+  String? responseReviewId;
+  String? responseMessage;
 
   @override
   Stream<List<Review>> watchReviewsByUser(String reviewerUserId) =>
@@ -213,5 +283,14 @@ class _FakeReviewsRepository extends Fake implements ReviewsRepository {
   @override
   Future<void> deleteReview(String reviewId) async {
     deletedReviewId = reviewId;
+  }
+
+  @override
+  Future<void> setReviewResponse({
+    required String reviewId,
+    required String message,
+  }) async {
+    responseReviewId = reviewId;
+    responseMessage = message;
   }
 }

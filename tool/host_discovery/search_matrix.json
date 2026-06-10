@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-10",
+  "freshForDays": 90,
+  "genericSearches": [
+    {
+      "queryTemplateId": "run_club_city_v1",
+      "categoryId": "social_run_club",
+      "source": "web_search",
+      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "hyderabad", "indore", "chennai"]
+    },
+    {
+      "queryTemplateId": "singles_events_city_v1",
+      "categoryId": "singles_event_operator",
+      "source": "web_search",
+      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad"]
+    },
+    {
+      "queryTemplateId": "racket_social_city_v1",
+      "categoryId": "racket_sport_social",
+      "source": "web_search",
+      "citySlugs": ["delhi-ncr", "mumbai", "bengaluru", "pune", "hyderabad"]
+    }
+  ],
+  "candidateVerification": {
+    "enabled": true,
+    "queryTemplateId": "organizer_brand_city_v1",
+    "source": "web_search",
+    "states": ["candidate", "qualified", "page_seeded", "index_ready"],
+    "priorityTiers": ["p0", "p1", "p2"]
+  }
+}

@@ -102,6 +102,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // 3/hour
   createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   requestAccountDeletion: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+  createPublicClubReview: {maxRequests: 5, windowMs: 60 * 60 * 1000},
 };
 
 /** Default limit: 30/min for actions not explicitly listed above. */

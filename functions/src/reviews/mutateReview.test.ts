@@ -4,7 +4,10 @@ import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
   createEventReviewHandler,
+  createPublicClubReviewHandler,
   deleteEventReviewHandler,
+  listPublicClubReviewsHandler,
+  setReviewResponseHandler,
   updateEventReviewHandler,
 } from "./mutateReview";
 
@@ -12,6 +15,10 @@ type FakeData = Record<string, unknown>;
 
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
+
+  get id() {
+    return this.path.split("/").pop() ?? this.path;
+  }
 }
 
 class FakeSnapshot {
@@ -32,12 +39,85 @@ class FakeCollectionRef {
     private path: string
   ) {}
 
-  doc(docId: string) {
-    return new FakeDocRef(this.firestore, `${this.path}/${docId}`);
+  doc(docId?: string) {
+    return new FakeDocRef(
+      this.firestore,
+      `${this.path}/${docId ?? this.firestore.nextId()}`
+    );
+  }
+
+  where(field: string, op: "==", value: unknown) {
+    return new FakeQuery(this.firestore, this.path)
+      .where(field, op, value);
+  }
+}
+
+class FakeQuery {
+  private readonly filters: Array<{field: string; value: unknown}> = [];
+  private order: {field: string; direction: "asc" | "desc"} | null = null;
+  private maxResults: number | null = null;
+
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly path: string
+  ) {}
+
+  where(field: string, op: "==", value: unknown) {
+    assert.equal(op, "==");
+    const next = this.clone();
+    next.filters.push({field, value});
+    return next;
+  }
+
+  orderBy(field: string, direction: "asc" | "desc") {
+    const next = this.clone();
+    next.order = {field, direction};
+    return next;
+  }
+
+  limit(maxResults: number) {
+    const next = this.clone();
+    next.maxResults = maxResults;
+    return next;
+  }
+
+  async get() {
+    let docs = this.firestore
+      .collectionDocs(this.path)
+      .filter((doc) => this.filters.every(
+        (filter) => doc.data[filter.field] === filter.value
+      ));
+    if (this.order) {
+      const {field, direction} = this.order;
+      docs = docs.sort((a, b) => {
+        const left = comparableValue(a.data[field]);
+        const right = comparableValue(b.data[field]);
+        return direction === "desc" ? right - left : left - right;
+      });
+    }
+    if (this.maxResults !== null) {
+      docs = docs.slice(0, this.maxResults);
+    }
+    return {
+      docs: docs.map((doc) => ({
+        id: doc.id,
+        data: () => ({...doc.data}),
+      })),
+    };
+  }
+
+  private clone() {
+    const next = new FakeQuery(this.firestore, this.path);
+    next.filters.push(...this.filters);
+    next.order = this.order;
+    next.maxResults = this.maxResults;
+    return next;
   }
 }
 
 class FakeFirestore {
+  private autoId = 0;
+
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
 
   collection(collectionPath: string) {
@@ -60,6 +140,25 @@ class FakeFirestore {
 
   set(path: string, data: FakeData | undefined) {
     this.docs[path] = data;
+  }
+
+  collectionDocs(collectionPath: string) {
+    const depth = collectionPath.split("/").length + 1;
+    return Object.entries(this.docs)
+      .filter(([path, value]) =>
+        value !== undefined &&
+        path.startsWith(`${collectionPath}/`) &&
+        path.split("/").length === depth
+      )
+      .map(([path, data]) => ({
+        id: path.split("/").pop() ?? path,
+        data: {...data} as FakeData,
+      }));
+  }
+
+  nextId() {
+    this.autoId += 1;
+    return `auto-${this.autoId}`;
   }
 }
 
@@ -103,9 +202,11 @@ class FakeTransaction {
 function harness(initialDocs: Record<string, FakeData | undefined>) {
   const firestore = new FakeFirestore(initialDocs);
   const rateLimitCalls: string[] = [];
+  const ipRateLimitCalls: string[] = [];
   return {
     firestore,
     rateLimitCalls,
+    ipRateLimitCalls,
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
@@ -118,18 +219,27 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
       ) => {
         rateLimitCalls.push(`${uid}:${action}`);
       },
+      checkIpRateLimit: (
+        ip: string,
+        maxRequests?: number,
+        windowMs?: number
+      ) => {
+        ipRateLimitCalls.push(`${ip}:${maxRequests}:${windowMs}`);
+        return true;
+      },
     },
   };
 }
 
 function request(
   uid: string | null,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  rawRequest: Partial<CallableRequest["rawRequest"]> = {}
 ): CallableRequest<unknown> {
   return {
     auth: uid ? {uid, token: {}} as CallableRequest["auth"] : undefined,
     data,
-    rawRequest: {} as CallableRequest["rawRequest"],
+    rawRequest: rawRequest as CallableRequest["rawRequest"],
   } as CallableRequest<unknown>;
 }
 
@@ -139,6 +249,11 @@ function assertHttpsCode(error: unknown, code: string): boolean {
 
 function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
   return {
+    "clubs/club-1": {
+      name: "Club One",
+      status: "active",
+      archived: false,
+    },
     "users/runner-1": {
       name: "Runner One",
       firstName: "Runner",
@@ -153,6 +268,17 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
     },
     ...overrides,
   };
+}
+
+function comparableValue(value: unknown): number {
+  if (
+    value &&
+    typeof value === "object" &&
+    typeof (value as {_seconds?: unknown})._seconds === "number"
+  ) {
+    return (value as {_seconds: number})._seconds;
+  }
+  return 0;
 }
 
 test("createEventReviewHandler writes attended attendee review", async () => {
@@ -173,7 +299,157 @@ test("createEventReviewHandler writes attended attendee review", async () => {
   const review = h.firestore.get("reviews/event-1~runner-1");
   assert.equal(review?.reviewerName, "Runner");
   assert.equal(review?.comment, "Great event.");
+  assert.equal(review?.verificationStatus, "verified");
+  assert.equal(review?.source, "catchEvent");
+  assert.equal(review?.moderationStatus, "published");
+  assert.equal(review?.isAnonymous, false);
 });
+
+test("createPublicClubReviewHandler writes anonymous unverified review",
+  async () => {
+    const h = harness(baseDocs());
+
+    const result = await createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 4,
+        comment: "  Friendly group, easy to join.  ",
+        reviewerName: "",
+        isAnonymous: true,
+        submittedFromPath: "/organizers/indore/afterfly-run-club/",
+      }, {ip: "203.0.113.7"}),
+      h.deps
+    );
+
+    assert.equal(result.reviewId, "auto-1");
+    assert.equal(result.review.reviewerName, "Anonymous reviewer");
+    assert.equal(result.review.verificationStatus, "unverified");
+    assert.equal(result.review.source, "publicListing");
+    assert.deepEqual(h.ipRateLimitCalls, [
+      "203.0.113.7:5:3600000",
+    ]);
+    const review = h.firestore.get("reviews/auto-1");
+    assert.equal(review?.clubId, "club-1");
+    assert.equal(review?.eventId, null);
+    assert.equal(review?.reviewerUserId, null);
+    assert.equal(review?.reviewerName, "Anonymous reviewer");
+    assert.equal(review?.comment, "Friendly group, easy to join.");
+    assert.equal(review?.verificationStatus, "unverified");
+    assert.equal(review?.source, "publicListing");
+    assert.equal(review?.moderationStatus, "published");
+    assert.equal(review?.isAnonymous, true);
+    assert.equal(
+      review?.submittedFromPath,
+      "/organizers/indore/afterfly-run-club/"
+    );
+  });
+
+test("createPublicClubReviewHandler requires name when not anonymous",
+  async () => {
+    const h = harness(baseDocs());
+
+    await assert.rejects(
+      () => createPublicClubReviewHandler(
+        request(null, {
+          clubId: "club-1",
+          rating: 4,
+          comment: "Helpful.",
+          reviewerName: "  ",
+          isAnonymous: false,
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "invalid-argument")
+    );
+  });
+
+test("createPublicClubReviewHandler rejects missing organizer", async () => {
+  const h = harness(baseDocs({"clubs/club-1": undefined}));
+
+  await assert.rejects(
+    () => createPublicClubReviewHandler(
+      request(null, {
+        clubId: "club-1",
+        rating: 4,
+        comment: "Helpful.",
+        reviewerName: "Reviewer",
+        isAnonymous: false,
+      }),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "not-found")
+  );
+});
+
+test("listPublicClubReviewsHandler returns only public published reviews",
+  async () => {
+    const h = harness(baseDocs({
+      "reviews/public-1": {
+        clubId: "club-1",
+        eventId: null,
+        reviewerUserId: null,
+        reviewerName: "Anonymous reviewer",
+        rating: 4,
+        comment: "Good public review.",
+        verificationStatus: "unverified",
+        source: "publicListing",
+        moderationStatus: "published",
+        isAnonymous: true,
+        createdAt: {_seconds: 30, _nanoseconds: 0},
+      },
+      "reviews/verified-1": {
+        clubId: "club-1",
+        eventId: "event-1",
+        reviewerUserId: "runner-1",
+        reviewerName: "Runner",
+        rating: 5,
+        comment: "Great Catch event.",
+        createdAt: {_seconds: 20, _nanoseconds: 0},
+      },
+      "reviews/pending-1": {
+        clubId: "club-1",
+        eventId: null,
+        reviewerUserId: null,
+        reviewerName: "Pending",
+        rating: 3,
+        comment: "Pending review.",
+        moderationStatus: "pending",
+        createdAt: {_seconds: 40, _nanoseconds: 0},
+      },
+      "reviews/other-club": {
+        clubId: "club-2",
+        reviewerName: "Other",
+        rating: 5,
+        comment: "Other club.",
+        createdAt: {_seconds: 50, _nanoseconds: 0},
+      },
+    }));
+
+    const result = await listPublicClubReviewsHandler(
+      request(null, {clubId: "club-1"}),
+      h.deps
+    );
+
+    assert.deepEqual(
+      result.reviews.map((review) => ({
+        id: review.id,
+        verificationStatus: review.verificationStatus,
+        source: review.source,
+      })),
+      [
+        {
+          id: "public-1",
+          verificationStatus: "unverified",
+          source: "publicListing",
+        },
+        {
+          id: "verified-1",
+          verificationStatus: "verified",
+          source: "catchEvent",
+        },
+      ]
+    );
+  });
 
 test("createEventReviewHandler rejects non-attendees", async () => {
   const h = harness(baseDocs({
@@ -247,4 +523,139 @@ test("deleteEventReviewHandler deletes only author reviews", async () => {
   assert.deepEqual(result, {deleted: true});
   assert.deepEqual(h.rateLimitCalls, ["runner-1:deleteEventReview"]);
   assert.equal(h.firestore.get("reviews/event-1~runner-1"), undefined);
+});
+
+test("setReviewResponseHandler lets hosts respond", async () => {
+  const h = harness(baseDocs({
+    "users/host-1": {
+      displayName: "Host One",
+      profilePhotos: [{
+        id: "photo-1",
+        url: "https://example.com/host.jpg",
+        thumbnailUrl: "https://example.com/host-thumb.jpg",
+        storagePath: "profile_photos/host-1/photo-1.jpg",
+        thumbnailStoragePath: "profile_photos/host-1/photo-1_thumb.jpg",
+        position: 0,
+        createdAt: {toDate: () => new Date("2026-01-01T00:00:00.000Z")},
+        updatedAt: {toDate: () => new Date("2026-01-01T00:00:00.000Z")},
+      }],
+    },
+    "clubs/club-1": {
+      name: "Club One",
+      hostUserId: "host-1",
+      ownerUserId: "host-1",
+      hostUserIds: ["host-1"],
+      hostProfiles: [{
+        uid: "host-1",
+        displayName: "Club Host",
+        avatarUrl: "https://example.com/club-host.jpg",
+        role: "owner",
+      }],
+    },
+    "reviews/event-1~runner-1": {
+      clubId: "club-1",
+      eventId: "event-1",
+      reviewerUserId: "runner-1",
+      reviewerName: "Runner",
+      rating: 3,
+      comment: "Old.",
+      createdAt: {kind: "createdAt"},
+    },
+  }));
+
+  const result = await setReviewResponseHandler(
+    request("host-1", {
+      reviewId: "event-1~runner-1",
+      message: "  Thanks for coming.  ",
+    }),
+    h.deps
+  );
+
+  assert.deepEqual(result, {updated: true});
+  assert.deepEqual(h.rateLimitCalls, ["host-1:setReviewResponse"]);
+  const review = h.firestore.get("reviews/event-1~runner-1");
+  assert.deepEqual(review?.ownerResponse, {
+    hostUserId: "host-1",
+    hostName: "Club Host",
+    hostAvatarUrl: "https://example.com/club-host.jpg",
+    message: "Thanks for coming.",
+    createdAt: {kind: "serverTimestamp"},
+    updatedAt: {kind: "serverTimestamp"},
+  });
+});
+
+test("setReviewResponseHandler preserves response createdAt on edits",
+  async () => {
+    const createdAt = {kind: "existingCreatedAt"};
+    const h = harness(baseDocs({
+      "users/host-1": {displayName: "Host One"},
+      "clubs/club-1": {
+        name: "Club One",
+        hostUserId: "host-1",
+      },
+      "reviews/event-1~runner-1": {
+        clubId: "club-1",
+        eventId: "event-1",
+        reviewerUserId: "runner-1",
+        reviewerName: "Runner",
+        rating: 3,
+        comment: "Old.",
+        createdAt: {kind: "reviewCreatedAt"},
+        ownerResponse: {
+          hostUserId: "host-1",
+          hostName: "Host One",
+          hostAvatarUrl: null,
+          message: "First response.",
+          createdAt,
+          updatedAt: {kind: "oldUpdatedAt"},
+        },
+      },
+    }));
+
+    await setReviewResponseHandler(
+      request("host-1", {
+        reviewId: "event-1~runner-1",
+        message: "Updated response.",
+      }),
+      h.deps
+    );
+
+    const review = h.firestore.get("reviews/event-1~runner-1");
+    assert.equal(
+      (review?.ownerResponse as FakeData | undefined)?.createdAt,
+      createdAt
+    );
+    assert.equal(
+      (review?.ownerResponse as FakeData | undefined)?.message,
+      "Updated response."
+    );
+  });
+
+test("setReviewResponseHandler rejects non-host responders", async () => {
+  const h = harness(baseDocs({
+    "clubs/club-1": {
+      name: "Club One",
+      hostUserId: "host-1",
+    },
+    "reviews/event-1~runner-1": {
+      clubId: "club-1",
+      eventId: "event-1",
+      reviewerUserId: "runner-1",
+      reviewerName: "Runner",
+      rating: 3,
+      comment: "Old.",
+      createdAt: {kind: "createdAt"},
+    },
+  }));
+
+  await assert.rejects(
+    () => setReviewResponseHandler(
+      request("runner-1", {
+        reviewId: "event-1~runner-1",
+        message: "Not allowed.",
+      }),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "permission-denied")
+  );
 });

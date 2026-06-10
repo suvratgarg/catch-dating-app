@@ -204,6 +204,7 @@ class EventDetailBody extends ConsumerWidget {
                 reviews: reviews,
                 userProfile: userProfile,
                 isAuthenticated: isAuthenticated,
+                isHost: isHost,
                 participation: participation,
                 now: now,
                 surfaceStyle: style,

@@ -15,6 +15,7 @@ import {
   clubDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
+  clubClaimRequestDocumentSchema,
   eventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
@@ -53,6 +54,11 @@ import {
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
   transferClubOwnershipCallablePayloadSchema,
+  requestClubClaimCallablePayloadSchema,
+  adminDecideClubClaimCallablePayloadSchema,
+  adminSetClubIndexStatusCallablePayloadSchema,
+  adminGetClubDetailsCallablePayloadSchema,
+  adminUpdateClubDetailsCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
@@ -77,8 +83,11 @@ import {
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
+  createPublicClubReviewCallablePayloadSchema,
+  listPublicClubReviewsCallablePayloadSchema,
   updateEventReviewCallablePayloadSchema,
   deleteEventReviewCallablePayloadSchema,
+  setReviewResponseCallablePayloadSchema,
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
@@ -129,6 +138,7 @@ export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSc
 export const validateClubDocument = ajv.compile(clubDocumentSchema);
 export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
 export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);
+export const validateClubClaimRequestDocument = ajv.compile(clubClaimRequestDocumentSchema);
 export const validateEventDocument = ajv.compile(eventDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
@@ -167,6 +177,11 @@ export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallableP
 export const validateAddClubHostCallablePayload = ajv.compile(addClubHostCallablePayloadSchema);
 export const validateRemoveClubHostCallablePayload = ajv.compile(removeClubHostCallablePayloadSchema);
 export const validateTransferClubOwnershipCallablePayload = ajv.compile(transferClubOwnershipCallablePayloadSchema);
+export const validateRequestClubClaimCallablePayload = ajv.compile(requestClubClaimCallablePayloadSchema);
+export const validateAdminDecideClubClaimCallablePayload = ajv.compile(adminDecideClubClaimCallablePayloadSchema);
+export const validateAdminSetClubIndexStatusCallablePayload = ajv.compile(adminSetClubIndexStatusCallablePayloadSchema);
+export const validateAdminGetClubDetailsCallablePayload = ajv.compile(adminGetClubDetailsCallablePayloadSchema);
+export const validateAdminUpdateClubDetailsCallablePayload = ajv.compile(adminUpdateClubDetailsCallablePayloadSchema);
 export const validateStartClubHostConversationCallablePayload = ajv.compile(startClubHostConversationCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
@@ -191,8 +206,11 @@ export const validateCompleteEventSuccessFirstHelloMissionCallablePayload = ajv.
 export const validateMarkEventAttendanceCallableResponse = ajv.compile(markEventAttendanceCallableResponseSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
 export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);
+export const validateCreatePublicClubReviewCallablePayload = ajv.compile(createPublicClubReviewCallablePayloadSchema);
+export const validateListPublicClubReviewsCallablePayload = ajv.compile(listPublicClubReviewsCallablePayloadSchema);
 export const validateUpdateEventReviewCallablePayload = ajv.compile(updateEventReviewCallablePayloadSchema);
 export const validateDeleteEventReviewCallablePayload = ajv.compile(deleteEventReviewCallablePayloadSchema);
+export const validateSetReviewResponseCallablePayload = ajv.compile(setReviewResponseCallablePayloadSchema);
 export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePayloadSchema);
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);

@@ -69,13 +69,20 @@
       "x-catch-ownership": "callable-owned"
     },
     "hostUserId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ],
+      "description": "Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.",
       "x-catch-ownership": "callable-owned"
     },
     "hostName": {
-      "type": "string",
-      "minLength": 1,
+      "type": [
+        "string",
+        "null"
+      ],
       "maxLength": 120,
+      "description": "Legacy host display projection. Null when the organizer has not been claimed by a Catch user.",
       "x-catch-ownership": "callable-owned"
     },
     "hostAvatarUrl": {
@@ -83,12 +90,15 @@
       "x-catch-ownership": "callable-owned"
     },
     "ownerUserId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ],
+      "description": "Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.",
       "x-catch-ownership": "callable-owned"
     },
     "hostUserIds": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 20,
       "uniqueItems": true,
       "items": {
@@ -98,7 +108,6 @@
     },
     "hostProfiles": {
       "type": "array",
-      "minItems": 1,
       "maxItems": 20,
       "items": {
         "$ref": "../shared/event_common.schema.json#/definitions/clubHostProfile"
@@ -204,6 +213,461 @@
     "hostDefaults": {
       "$ref": "../shared/event_common.schema.json#/definitions/clubHostDefaults",
       "x-catch-ownership": "callable-owned"
+    },
+    "entityKind": {
+      "type": "string",
+      "enum": [
+        "club",
+        "venue",
+        "eventOrganizer",
+        "creatorCommunity",
+        "brand"
+      ],
+      "description": "Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "entitySubtypes": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "displayCategory": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "description": "Reader-facing category label for web and discovery surfaces.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "cityName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "regionName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "countryCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{2}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "countryName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120,
+      "x-catch-ownership": "callable-owned"
+    },
+    "appVisibility": {
+      "type": "string",
+      "enum": ["discoverable", "hidden"],
+      "description": "Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownership": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.",
+      "required": [
+        "state",
+        "ownerUserId",
+        "primaryHostUserId",
+        "hostUserIds",
+        "claimedAt",
+        "claimedByUid"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["programmatic", "userCreated", "claimed", "transferred"]
+        },
+        "ownerUserId": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "primaryHostUserId": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        },
+        "hostUserIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+          }
+        },
+        "claimedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+        },
+        "claimedByUid": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "claimHref", "lastClaimRequestId"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["unclaimed", "claimPending", "claimed", "verified", "suppressed"]
+        },
+        "claimHref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 240
+        },
+        "lastClaimRequestId": {
+          "anyOf": [
+            {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "citySlug",
+        "canonicalPath",
+        "publishStatus",
+        "indexStatus",
+        "robots",
+        "seoTitle",
+        "seoDescription",
+        "lastRenderedAt"
+      ],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "citySlug": {
+          "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+        },
+        "canonicalPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": ["draft", "qa", "published", "suppressed", "removed"]
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": ["noindex", "indexReady", "indexed"]
+        },
+        "robots": {
+          "type": "string",
+          "enum": ["noindex, follow", "index, follow"]
+        },
+        "seoTitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "seoDescription": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 320
+        },
+        "lastRenderedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+        },
+        "indexReview": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "reviewedAt",
+            "reviewedByUid",
+            "indexStatus",
+            "checklist",
+            "reviewNote"
+          ],
+          "properties": {
+            "reviewedAt": {
+              "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+            },
+            "reviewedByUid": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "indexStatus": {
+              "type": "string",
+              "enum": ["noindex", "indexReady", "indexed"]
+            },
+            "checklist": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sourceEvidenceVerified",
+                "mediaRightsVerified",
+                "cadenceVerified",
+                "ownerContactVerified"
+              ],
+              "properties": {
+                "sourceEvidenceVerified": {"type": "boolean"},
+                "mediaRightsVerified": {"type": "boolean"},
+                "cadenceVerified": {"type": "boolean"},
+                "ownerContactVerified": {"type": "boolean"}
+              }
+            },
+            "reviewNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "sourceConfidence",
+        "verificationStatus",
+        "lastVerifiedAt"
+      ],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "enum": ["userCreated", "scraper", "adminSeed", "import"]
+        },
+        "sourceConfidence": {
+          "type": "string",
+          "enum": ["seedOnly", "low", "medium", "high", "ownerVerified"]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": ["unverified", "sourceBacked", "ownerVerified"]
+        },
+        "lastVerifiedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "publicProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.",
+      "properties": {
+        "headline": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 800
+        },
+        "sourceSummary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 800
+        },
+        "formats": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "facts": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "value"],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          }
+        },
+        "fitNotes": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400
+          }
+        },
+        "missingEvidence": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "eventEvidence": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "date",
+              "location",
+              "summary",
+              "facts",
+              "sourceLabel",
+              "sourceHref"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "date": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "location": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              "facts": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                }
+              },
+              "sourceLabel": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceHref": {
+                "$ref": "../shared/profile_common.schema.json#/definitions/url"
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "publicSources": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "label", "detail", "href", "confidence", "lastCheckedAt"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+          },
+          "href": {
+            "anyOf": [
+              {"$ref": "../shared/profile_common.schema.json#/definitions/url"},
+              {"type": "null"}
+            ]
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "lastCheckedAt": {
+            "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

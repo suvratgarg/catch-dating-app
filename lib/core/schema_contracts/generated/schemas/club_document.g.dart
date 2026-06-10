@@ -81,15 +81,26 @@ const schemaClubDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'hostUserId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Legacy primary host user id. Null for programmatically generated, unclaimed organizer profiles.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostName': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
       'maxLength': 120,
+      'description': 'Legacy host display projection. Null when the organizer has not been claimed by a Catch user.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostAvatarUrl': <String, Object?>{
@@ -106,14 +117,21 @@ const schemaClubDocumentSchema = <String, Object?>{
       'x-catch-ownership': 'callable-owned',
     },
     'ownerUserId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Canonical owner user id after claim or user-created setup. Null for unclaimed programmatic profiles.',
       'x-catch-ownership': 'callable-owned',
     },
     'hostUserIds': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
       'maxItems': 20,
       'uniqueItems': true,
       'items': <String, Object?>{
@@ -125,7 +143,6 @@ const schemaClubDocumentSchema = <String, Object?>{
     },
     'hostProfiles': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
       'maxItems': 20,
       'items': <String, Object?>{
         'type': 'object',
@@ -1220,6 +1237,688 @@ const schemaClubDocumentSchema = <String, Object?>{
         },
       },
       'x-catch-ownership': 'callable-owned',
+    },
+    'entityKind': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'club',
+        'venue',
+        'eventOrganizer',
+        'creatorCommunity',
+        'brand',
+      ],
+      'description': 'Broad organizer identity. Keeps clubs as one subtype rather than forcing every host into club nomenclature.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'entitySubtypes': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'uniqueItems': true,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 80,
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'displayCategory': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'description': 'Reader-facing category label for web and discovery surfaces.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'cityName': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'regionName': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'countryCode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'pattern': '^[A-Z]{2}\$',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'countryName': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 120,
+      'x-catch-ownership': 'callable-owned',
+    },
+    'appVisibility': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'discoverable',
+        'hidden',
+      ],
+      'description': 'Whether the native app should show this organizer in browse surfaces. Scraped unclaimed profiles start hidden.',
+      'x-catch-ownership': 'callable-owned',
+    },
+    'ownership': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Claim-aware organizer ownership state. This is the forward-looking owner model; legacy host fields are maintained for app compatibility.',
+      'required': <Object?>[
+        'state',
+        'ownerUserId',
+        'primaryHostUserId',
+        'hostUserIds',
+        'claimedAt',
+        'claimedByUid',
+      ],
+      'properties': <String, Object?>{
+        'state': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'programmatic',
+            'userCreated',
+            'claimed',
+            'transferred',
+          ],
+        },
+        'ownerUserId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'primaryHostUserId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'hostUserIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+        },
+        'claimedAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'claimedByUid': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'claim': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'state',
+        'claimHref',
+        'lastClaimRequestId',
+      ],
+      'properties': <String, Object?>{
+        'state': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unclaimed',
+            'claimPending',
+            'claimed',
+            'verified',
+            'suppressed',
+          ],
+        },
+        'claimHref': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 240,
+        },
+        'lastClaimRequestId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publicPage': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'slug',
+        'citySlug',
+        'canonicalPath',
+        'publishStatus',
+        'indexStatus',
+        'robots',
+        'seoTitle',
+        'seoDescription',
+        'lastRenderedAt',
+      ],
+      'properties': <String, Object?>{
+        'slug': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[a-z0-9-]+\$',
+        },
+        'citySlug': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'minLength': 1,
+          'maxLength': 80,
+          'pattern': '^[a-z0-9-]+\$',
+        },
+        'canonicalPath': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 240,
+        },
+        'publishStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'draft',
+            'qa',
+            'published',
+            'suppressed',
+            'removed',
+          ],
+        },
+        'indexStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'noindex',
+            'indexReady',
+            'indexed',
+          ],
+        },
+        'robots': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'noindex, follow',
+            'index, follow',
+          ],
+        },
+        'seoTitle': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 120,
+        },
+        'seoDescription': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 320,
+        },
+        'lastRenderedAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'indexReview': <String, Object?>{
+          'type': <Object?>[
+            'object',
+            'null',
+          ],
+          'additionalProperties': false,
+          'required': <Object?>[
+            'reviewedAt',
+            'reviewedByUid',
+            'indexStatus',
+            'checklist',
+            'reviewNote',
+          ],
+          'properties': <String, Object?>{
+            'reviewedAt': <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            'reviewedByUid': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'indexStatus': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'noindex',
+                'indexReady',
+                'indexed',
+              ],
+            },
+            'checklist': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'sourceEvidenceVerified',
+                'mediaRightsVerified',
+                'cadenceVerified',
+                'ownerContactVerified',
+              ],
+              'properties': <String, Object?>{
+                'sourceEvidenceVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'mediaRightsVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'cadenceVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'ownerContactVerified': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
+            },
+            'reviewNote': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 1000,
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'provenance': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'origin',
+        'sourceConfidence',
+        'verificationStatus',
+        'lastVerifiedAt',
+      ],
+      'properties': <String, Object?>{
+        'origin': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'userCreated',
+            'scraper',
+            'adminSeed',
+            'import',
+          ],
+        },
+        'sourceConfidence': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'seedOnly',
+            'low',
+            'medium',
+            'high',
+            'ownerVerified',
+          ],
+        },
+        'verificationStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unverified',
+            'sourceBacked',
+            'ownerVerified',
+          ],
+        },
+        'lastVerifiedAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
+    'publicProfile': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Public, owner-safe organizer listing content derived from sources or owner edits. Raw scrape snapshots belong in private evidence collections.',
+      'properties': <String, Object?>{
+        'headline': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 160,
+        },
+        'summary': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 800,
+        },
+        'sourceSummary': <String, Object?>{
+          'type': <Object?>[
+            'string',
+            'null',
+          ],
+          'maxLength': 800,
+        },
+        'formats': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+        },
+        'facts': <String, Object?>{
+          'type': 'array',
+          'maxItems': 20,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'label',
+              'value',
+            ],
+            'properties': <String, Object?>{
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 80,
+              },
+              'value': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+            },
+          },
+        },
+        'fitNotes': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 400,
+          },
+        },
+        'missingEvidence': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 200,
+          },
+        },
+        'eventEvidence': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'title',
+              'date',
+              'location',
+              'summary',
+              'facts',
+              'sourceLabel',
+              'sourceHref',
+            ],
+            'properties': <String, Object?>{
+              'title': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+              },
+              'date': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'location': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 240,
+              },
+              'summary': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 600,
+              },
+              'facts': <String, Object?>{
+                'type': 'array',
+                'maxItems': 12,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 240,
+                },
+              },
+              'sourceLabel': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'sourceHref': <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
+    'publicSources': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'type',
+          'label',
+          'detail',
+          'href',
+          'confidence',
+          'lastCheckedAt',
+        ],
+        'properties': <String, Object?>{
+          'type': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'detail': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 600,
+          },
+          'href': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+          'confidence': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'low',
+              'medium',
+              'high',
+            ],
+          },
+          'lastCheckedAt': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'description': 'Serialized Firestore Timestamp fixture shape.',
+                'x-firestore-type': 'timestamp',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
+                'properties': <String, Object?>{
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
+                  '_nanoseconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 999999999,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'server-only',
     },
     'synthetic': <String, Object?>{
       'type': 'boolean',

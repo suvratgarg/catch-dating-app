@@ -11,13 +11,34 @@ abstract class Review with _$Review {
     @JsonKey(includeToJson: false) required String id,
     required String clubId,
     String? eventId,
-    required String reviewerUserId,
+    String? reviewerUserId,
     required String reviewerName,
     required int rating,
     required String comment,
+    @Default('verified') String verificationStatus,
+    @Default('catchEvent') String source,
+    @Default('published') String moderationStatus,
+    @Default(false) bool isAnonymous,
+    String? submittedFromPath,
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? updatedAt,
+    ReviewOwnerResponse? ownerResponse,
   }) = _Review;
 
   factory Review.fromJson(Map<String, dynamic> json) => _$ReviewFromJson(json);
+}
+
+@freezed
+abstract class ReviewOwnerResponse with _$ReviewOwnerResponse {
+  const factory ReviewOwnerResponse({
+    required String hostUserId,
+    required String hostName,
+    String? hostAvatarUrl,
+    required String message,
+    @TimestampConverter() required DateTime createdAt,
+    @TimestampConverter() required DateTime updatedAt,
+  }) = _ReviewOwnerResponse;
+
+  factory ReviewOwnerResponse.fromJson(Map<String, dynamic> json) =>
+      _$ReviewOwnerResponseFromJson(json);
 }

@@ -16,6 +16,7 @@ import {PublicProfileDocument} from "./publicProfileDocument";
 import {ClubDocument} from "./clubDocument";
 import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
+import {ClubClaimRequestDocument} from "./clubClaimRequestDocument";
 import {EventDocument} from "./eventDocument";
 import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventInviteLinkDocument} from "./eventInviteLinkDocument";
@@ -54,6 +55,11 @@ import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
 import {AddClubHostCallablePayload} from "./addClubHostCallablePayload";
 import {RemoveClubHostCallablePayload} from "./removeClubHostCallablePayload";
 import {TransferClubOwnershipCallablePayload} from "./transferClubOwnershipCallablePayload";
+import {RequestClubClaimCallablePayload} from "./requestClubClaimCallablePayload";
+import {AdminDecideClubClaimCallablePayload} from "./adminDecideClubClaimCallablePayload";
+import {AdminSetClubIndexStatusCallablePayload} from "./adminSetClubIndexStatusCallablePayload";
+import {AdminGetClubDetailsCallablePayload} from "./adminGetClubDetailsCallablePayload";
+import {AdminUpdateClubDetailsCallablePayload} from "./adminUpdateClubDetailsCallablePayload";
 import {StartClubHostConversationCallablePayload} from "./startClubHostConversationCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
@@ -78,8 +84,11 @@ import {CompleteEventSuccessFirstHelloMissionCallablePayload} from "./completeEv
 import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallableResponse";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
+import {CreatePublicClubReviewCallablePayload} from "./createPublicClubReviewCallablePayload";
+import {ListPublicClubReviewsCallablePayload} from "./listPublicClubReviewsCallablePayload";
 import {UpdateEventReviewCallablePayload} from "./updateEventReviewCallablePayload";
 import {DeleteEventReviewCallablePayload} from "./deleteEventReviewCallablePayload";
+import {SetReviewResponseCallablePayload} from "./setReviewResponseCallablePayload";
 import {BlockUserCallablePayload} from "./blockUserCallablePayload";
 import {UnblockUserCallablePayload} from "./unblockUserCallablePayload";
 import {ReportUserCallablePayload} from "./reportUserCallablePayload";
@@ -120,6 +129,7 @@ import {
   clubDocumentSchema,
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
+  clubClaimRequestDocumentSchema,
   eventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
@@ -158,6 +168,11 @@ import {
   addClubHostCallablePayloadSchema,
   removeClubHostCallablePayloadSchema,
   transferClubOwnershipCallablePayloadSchema,
+  requestClubClaimCallablePayloadSchema,
+  adminDecideClubClaimCallablePayloadSchema,
+  adminSetClubIndexStatusCallablePayloadSchema,
+  adminGetClubDetailsCallablePayloadSchema,
+  adminUpdateClubDetailsCallablePayloadSchema,
   startClubHostConversationCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
@@ -182,8 +197,11 @@ import {
   markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
+  createPublicClubReviewCallablePayloadSchema,
+  listPublicClubReviewsCallablePayloadSchema,
   updateEventReviewCallablePayloadSchema,
   deleteEventReviewCallablePayloadSchema,
+  setReviewResponseCallablePayloadSchema,
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
@@ -264,6 +282,10 @@ export const validateClubHostClaimDocument:
   ValidateFunction<ClubHostClaimDocument> =
     ajv.compile(clubHostClaimDocumentSchema) as
       ValidateFunction<ClubHostClaimDocument>;
+export const validateClubClaimRequestDocument:
+  ValidateFunction<ClubClaimRequestDocument> =
+    ajv.compile(clubClaimRequestDocumentSchema) as
+      ValidateFunction<ClubClaimRequestDocument>;
 export const validateEventDocument:
   ValidateFunction<EventDocument> =
     ajv.compile(eventDocumentSchema) as
@@ -416,6 +438,26 @@ export const validateTransferClubOwnershipCallablePayload:
   ValidateFunction<TransferClubOwnershipCallablePayload> =
     ajv.compile(transferClubOwnershipCallablePayloadSchema) as
       ValidateFunction<TransferClubOwnershipCallablePayload>;
+export const validateRequestClubClaimCallablePayload:
+  ValidateFunction<RequestClubClaimCallablePayload> =
+    ajv.compile(requestClubClaimCallablePayloadSchema) as
+      ValidateFunction<RequestClubClaimCallablePayload>;
+export const validateAdminDecideClubClaimCallablePayload:
+  ValidateFunction<AdminDecideClubClaimCallablePayload> =
+    ajv.compile(adminDecideClubClaimCallablePayloadSchema) as
+      ValidateFunction<AdminDecideClubClaimCallablePayload>;
+export const validateAdminSetClubIndexStatusCallablePayload:
+  ValidateFunction<AdminSetClubIndexStatusCallablePayload> =
+    ajv.compile(adminSetClubIndexStatusCallablePayloadSchema) as
+      ValidateFunction<AdminSetClubIndexStatusCallablePayload>;
+export const validateAdminGetClubDetailsCallablePayload:
+  ValidateFunction<AdminGetClubDetailsCallablePayload> =
+    ajv.compile(adminGetClubDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminGetClubDetailsCallablePayload>;
+export const validateAdminUpdateClubDetailsCallablePayload:
+  ValidateFunction<AdminUpdateClubDetailsCallablePayload> =
+    ajv.compile(adminUpdateClubDetailsCallablePayloadSchema) as
+      ValidateFunction<AdminUpdateClubDetailsCallablePayload>;
 export const validateStartClubHostConversationCallablePayload:
   ValidateFunction<StartClubHostConversationCallablePayload> =
     ajv.compile(startClubHostConversationCallablePayloadSchema) as
@@ -512,6 +554,14 @@ export const validateCreateEventReviewCallablePayload:
   ValidateFunction<CreateEventReviewCallablePayload> =
     ajv.compile(createEventReviewCallablePayloadSchema) as
       ValidateFunction<CreateEventReviewCallablePayload>;
+export const validateCreatePublicClubReviewCallablePayload:
+  ValidateFunction<CreatePublicClubReviewCallablePayload> =
+    ajv.compile(createPublicClubReviewCallablePayloadSchema) as
+      ValidateFunction<CreatePublicClubReviewCallablePayload>;
+export const validateListPublicClubReviewsCallablePayload:
+  ValidateFunction<ListPublicClubReviewsCallablePayload> =
+    ajv.compile(listPublicClubReviewsCallablePayloadSchema) as
+      ValidateFunction<ListPublicClubReviewsCallablePayload>;
 export const validateUpdateEventReviewCallablePayload:
   ValidateFunction<UpdateEventReviewCallablePayload> =
     ajv.compile(updateEventReviewCallablePayloadSchema) as
@@ -520,6 +570,10 @@ export const validateDeleteEventReviewCallablePayload:
   ValidateFunction<DeleteEventReviewCallablePayload> =
     ajv.compile(deleteEventReviewCallablePayloadSchema) as
       ValidateFunction<DeleteEventReviewCallablePayload>;
+export const validateSetReviewResponseCallablePayload:
+  ValidateFunction<SetReviewResponseCallablePayload> =
+    ajv.compile(setReviewResponseCallablePayloadSchema) as
+      ValidateFunction<SetReviewResponseCallablePayload>;
 export const validateBlockUserCallablePayload:
   ValidateFunction<BlockUserCallablePayload> =
     ajv.compile(blockUserCallablePayloadSchema) as

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reviews.schema.json",
   "title": "ReviewDocument",
-  "description": "Canonical attended-event review stored at reviews/{reviewId}.",
+  "description": "Canonical organizer review stored at reviews/{reviewId}. Verified reviews come from attended Catch events; unverified reviews can come from public listing pages.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reviews",
@@ -40,7 +40,11 @@
       "x-catch-ownership": "callable-owned"
     },
     "reviewerUserId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ],
+      "description": "Catch user id for signed-in reviewers. Null for anonymous public listing reviews.",
       "x-catch-ownership": "callable-owned"
     },
     "reviewerName": {
@@ -60,6 +64,35 @@
       "maxLength": 1000,
       "x-catch-ownership": "callable-owned"
     },
+    "verificationStatus": {
+      "type": "string",
+      "enum": ["verified", "unverified"],
+      "description": "Verified reviews are created only after attended Catch events; public listing reviews are unverified.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["catchEvent", "publicListing"],
+      "description": "Submission surface that created the review.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "moderationStatus": {
+      "type": "string",
+      "enum": ["published", "pending", "rejected"],
+      "description": "Public rendering status for organizer listing pages.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "isAnonymous": {
+      "type": "boolean",
+      "description": "True when the public display name should be the anonymous fallback rather than a user-supplied or profile name.",
+      "x-catch-ownership": "callable-owned"
+    },
+    "submittedFromPath": {
+      "type": ["string", "null"],
+      "maxLength": 240,
+      "description": "Website path that submitted an unverified public listing review.",
+      "x-catch-ownership": "callable-owned"
+    },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "x-catch-ownership": "callable-owned"
@@ -67,6 +100,49 @@
     "updatedAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
       "x-catch-ownership": "callable-owned"
+    },
+    "ownerResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostUserId",
+        "hostName",
+        "hostAvatarUrl",
+        "message",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "hostUserId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+          "x-catch-ownership": "callable-owned"
+        },
+        "hostName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-catch-ownership": "callable-owned"
+        },
+        "hostAvatarUrl": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "x-catch-ownership": "callable-owned"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "x-catch-ownership": "callable-owned"
+        },
+        "createdAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+          "x-catch-ownership": "callable-owned"
+        },
+        "updatedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+          "x-catch-ownership": "callable-owned"
+        }
+      }
     },
     "synthetic": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"

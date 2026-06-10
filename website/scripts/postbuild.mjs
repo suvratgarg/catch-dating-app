@@ -5,6 +5,8 @@ import {fileURLToPath} from "node:url";
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const websiteRoot = path.resolve(dirname, "..");
 const distRoot = path.join(websiteRoot, "dist");
+const hostListingsPath = path.join(websiteRoot, "src", "generated", "hostListings.json");
+const hostListings = JSON.parse(fs.readFileSync(hostListingsPath, "utf8"));
 
 const routeMetas = {
   "/": {
@@ -22,15 +24,43 @@ const routeMetas = {
     twitterDescription:
       "Event setup, admission, waitlists, live facilitation, check-in, and aggregate post-event reporting for hosts.",
   },
+  "/organizers/": {
+    title: "Organizer Search | Catch",
+    description:
+      "Search Catch organizer profiles by name, city, format, and review signal.",
+    canonical: "https://catchdates.com/organizers/",
+    twitterDescription: "Search Catch organizer and club profiles.",
+    robots: "noindex, follow",
+  },
 };
 
 const rootHtmlPath = path.join(distRoot, "index.html");
 const rootHtml = fs.readFileSync(rootHtmlPath, "utf8");
-fs.writeFileSync(rootHtmlPath, applyMeta(rootHtml, routeMetas["/"]));
+writeRoute("/", routeMetas["/"]);
 
-const hostDir = path.join(distRoot, "host");
-fs.mkdirSync(hostDir, {recursive: true});
-fs.writeFileSync(path.join(hostDir, "index.html"), applyMeta(rootHtml, routeMetas["/host/"]));
+writeRoute("/host/", routeMetas["/host/"]);
+writeRoute("/organizers/", routeMetas["/organizers/"]);
+
+for (const listing of hostListings) {
+  writeRoute(listing.path, {
+    title: `${listing.name} | ${listing.city} organizer profile | Catch`,
+    description: listing.description,
+    canonical: `https://catchdates.com${listing.path}`,
+    twitterDescription: listing.sourceSummary,
+    robots: listing.indexing,
+  });
+}
+
+function writeRoute(routePath, meta) {
+  if (routePath === "/") {
+    fs.writeFileSync(rootHtmlPath, applyMeta(rootHtml, meta));
+    return;
+  }
+
+  const routeDir = path.join(distRoot, ...routePath.split("/").filter(Boolean));
+  fs.mkdirSync(routeDir, {recursive: true});
+  fs.writeFileSync(path.join(routeDir, "index.html"), applyMeta(rootHtml, meta));
+}
 
 function applyMeta(html, meta) {
   return html
@@ -64,6 +94,11 @@ function applyMeta(html, meta) {
     .replace(
       /<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>/s,
       `<link rel="canonical" href="${escapeHtml(meta.canonical)}" />`
+    )
+    .replace(/\n\s*<meta\s+name="robots"\s+content="[^"]*"\s*\/?>/s, "")
+    .replace(
+      /\n\s*(<link\s+rel="canonical"\s+href="[^"]*"\s*\/?>)/s,
+      `\n${meta.robots ? `    <meta name="robots" content="${escapeHtml(meta.robots)}" />\n` : ""}    $1`
     );
 }
 

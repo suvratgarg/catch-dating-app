@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-10",
+  "batchSizeTarget": {
+    "minimum": 25,
+    "maximum": 50
+  },
+  "states": [
+    "candidate",
+    "qualified",
+    "page_seeded",
+    "index_ready",
+    "claim_pending",
+    "claimed",
+    "onboarded",
+    "suppressed"
+  ],
+  "priorityTiers": {
+    "p0": "Already seeded or should be reviewed for seeding next.",
+    "p1": "Strong ICP fit with at least one stable source.",
+    "p2": "Good ICP fit but needs stronger source or city evidence.",
+    "p3": "Useful adjacency or discovery source; do not seed before review."
+  },
+  "cities": [
+    {
+      "slug": "delhi-ncr",
+      "name": "Delhi NCR",
+      "countryCode": "IN",
+      "initialWeight": 5
+    },
+    {
+      "slug": "mumbai",
+      "name": "Mumbai",
+      "countryCode": "IN",
+      "initialWeight": 5
+    },
+    {
+      "slug": "bengaluru",
+      "name": "Bengaluru",
+      "countryCode": "IN",
+      "initialWeight": 5
+    },
+    {
+      "slug": "pune",
+      "name": "Pune",
+      "countryCode": "IN",
+      "initialWeight": 3
+    },
+    {
+      "slug": "hyderabad",
+      "name": "Hyderabad",
+      "countryCode": "IN",
+      "initialWeight": 3
+    },
+    {
+      "slug": "indore",
+      "name": "Indore",
+      "countryCode": "IN",
+      "initialWeight": 2
+    },
+    {
+      "slug": "goa",
+      "name": "Goa",
+      "countryCode": "IN",
+      "initialWeight": 2
+    },
+    {
+      "slug": "chennai",
+      "name": "Chennai",
+      "countryCode": "IN",
+      "initialWeight": 2
+    }
+  ],
+  "categories": [
+    {
+      "id": "social_run_club",
+      "label": "Social run clubs",
+      "entityKinds": ["club", "brand", "eventOrganizer"],
+      "whyItFits": "Shared activity, recurring attendance, natural post-run social layer, and strong need for RSVP, waitlist, and host analytics.",
+      "seedThreshold": "At least one stable public source plus city evidence and current or recent event cadence."
+    },
+    {
+      "id": "singles_event_operator",
+      "label": "Singles event operators",
+      "entityKinds": ["eventOrganizer", "creatorCommunity"],
+      "whyItFits": "Dating intent, guest curation, ratio management, payments, and post-event matching are core operational pain points.",
+      "seedThreshold": "Official site or public event profile confirming singles programming in the target city."
+    },
+    {
+      "id": "board_game_social",
+      "label": "Board game and low-pressure socials",
+      "entityKinds": ["club", "venue", "eventOrganizer"],
+      "whyItFits": "Structured interaction gives strangers a reason to talk without making the event feel like dating.",
+      "seedThreshold": "Recurring adult social events or venue programming with public event evidence."
+    },
+    {
+      "id": "creator_community_host",
+      "label": "Creator and community hosts",
+      "entityKinds": ["creatorCommunity", "eventOrganizer", "brand"],
+      "whyItFits": "Audience-led operators often use manual forms, DMs, and fragmented payments before needing a host platform.",
+      "seedThreshold": "Public community identity plus recurring offline events."
+    },
+    {
+      "id": "venue_led_social",
+      "label": "Venue-led social programming",
+      "entityKinds": ["venue", "eventOrganizer"],
+      "whyItFits": "Cafes, bars, breweries, coworking spaces, and cultural rooms can use Catch to turn programming into repeatable attendance.",
+      "seedThreshold": "Repeated social programming where the venue owns or co-owns the guest journey."
+    },
+    {
+      "id": "supper_club",
+      "label": "Supper clubs and hosted meals",
+      "entityKinds": ["eventOrganizer", "creatorCommunity", "venue"],
+      "whyItFits": "Curated tables, limited seats, payments, dietary constraints, and repeat attendees map to Catch host tools.",
+      "seedThreshold": "Public hosted meal or supper-club evidence, not just restaurant reservations."
+    },
+    {
+      "id": "racket_sport_social",
+      "label": "Racket sport socials",
+      "entityKinds": ["club", "venue", "eventOrganizer"],
+      "whyItFits": "Rotations, gender balance, court capacity, and waitlists make booking and live facilitation valuable.",
+      "seedThreshold": "Public social play, mixer, league, or beginner session evidence."
+    },
+    {
+      "id": "walks_experiences",
+      "label": "Walks and city experiences",
+      "entityKinds": ["eventOrganizer", "creatorCommunity"],
+      "whyItFits": "Recurring local experiences produce small groups where discovery, bookings, reminders, and post-event follow-up matter.",
+      "seedThreshold": "Official public tour or recurring experience source with city evidence."
+    }
+  ]
+}
