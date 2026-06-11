@@ -74,34 +74,6 @@
       "reason": "Same event detail surface reached from the dashboard."
     },
     {
-      "routeId": "dashboardHostEventManageScreen",
-      "status": "alias",
-      "priority": "P1",
-      "canonicalRouteId": "hostEventManageScreen",
-      "reason": "Host manage surface reached from the dashboard; canonical capture should include setup/live/report sections."
-    },
-    {
-      "routeId": "hostEventManageScreen",
-      "status": "captured",
-      "priority": "P1",
-      "captureIds": ["host_live_console", "host_post_event_report"],
-      "reason": "Canonical host manage route captured with live console and post-event report variants."
-    },
-    {
-      "routeId": "editHostedEventScreen",
-      "status": "captured",
-      "priority": "P2",
-      "captureIds": ["edit_hosted_event"],
-      "reason": "Hosted event edit fixture with map tiles disabled."
-    },
-    {
-      "routeId": "eventSuccessHostScreen",
-      "status": "alias",
-      "priority": "P2",
-      "canonicalRouteId": "hostEventManageScreen",
-      "reason": "Success host route currently enters the host manage setup section."
-    },
-    {
       "routeId": "eventLocationMapScreen",
       "status": "captured",
       "priority": "P3",
@@ -113,7 +85,7 @@
       "status": "captured",
       "priority": "P1",
       "captureIds": ["dashboard_home"],
-      "reason": "Main review surface with current user, upcoming event, hosted shortcut, notifications, and recommendations."
+      "reason": "Main review surface with current user, upcoming event, notifications, and recommendations."
     },
     {
       "routeId": "notificationsScreen",
@@ -137,13 +109,6 @@
       "reason": "Member-state club detail fixture with upcoming events and reviews."
     },
     {
-      "routeId": "editClubScreen",
-      "status": "captured",
-      "priority": "P3",
-      "captureIds": ["edit_club_basics"],
-      "reason": "Owned club edit fixture using the create/edit club form."
-    },
-    {
       "routeId": "eventDetailScreen",
       "status": "captured",
       "priority": "P1",
@@ -155,32 +120,11 @@
       "reason": "Canonical event detail captured across standard, ticket, and spotlight presentations; reused by calendar, saved, and dashboard aliases."
     },
     {
-      "routeId": "attendanceSheet",
-      "status": "alias",
-      "priority": "P2",
-      "canonicalRouteId": "hostEventManageScreen",
-      "reason": "Sheet-like route; host live capture should include attendance controls."
-    },
-    {
       "routeId": "eventSuccessCompanionScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": ["event_success_companion"],
       "reason": "Deterministic attendee companion fixture using the default live guide plan."
-    },
-    {
-      "routeId": "createClubScreen",
-      "status": "captured",
-      "priority": "P3",
-      "captureIds": ["create_club_basics"],
-      "reason": "Baseline first-step create-club fixture."
-    },
-    {
-      "routeId": "createEventScreen",
-      "status": "captured",
-      "priority": "P1",
-      "captureIds": ["host_event_setup"],
-      "reason": "Host event setup fixture with map tiles disabled for deterministic rendering."
     },
     {
       "routeId": "swipeHubScreen",
@@ -278,24 +222,24 @@
     },
     {
       "routeId": "hostCreateClubScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P2",
-      "canonicalRouteId": "createClubScreen",
-      "reason": "Host app create-club route reuses the existing create-club form surface."
+      "captureIds": ["create_club_basics"],
+      "reason": "Host app create-club route owns the create-club form surface."
     },
     {
       "routeId": "hostEditClubScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P2",
-      "canonicalRouteId": "editClubScreen",
-      "reason": "Host app edit-club route reuses the existing edit-club form surface."
+      "captureIds": ["edit_club_basics"],
+      "reason": "Host app edit-club route owns the edit-club form surface."
     },
     {
       "routeId": "hostCreateEventScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P1",
-      "canonicalRouteId": "createEventScreen",
-      "reason": "Host app create-event route reuses the canonical host event setup flow."
+      "captureIds": ["host_event_setup"],
+      "reason": "Host app create-event route owns the host event setup flow."
     },
     {
       "routeId": "hostAppEventDetailScreen",
@@ -305,30 +249,30 @@
     },
     {
       "routeId": "hostAppEventManageScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P1",
-      "canonicalRouteId": "hostEventManageScreen",
-      "reason": "Host app manage route enters the canonical host event management surface."
+      "captureIds": ["host_live_console", "host_post_event_report"],
+      "reason": "Host app manage route captured with live console and post-event report variants."
     },
     {
       "routeId": "hostAppEditEventScreen",
-      "status": "alias",
+      "status": "captured",
       "priority": "P2",
-      "canonicalRouteId": "editHostedEventScreen",
-      "reason": "Host app edit-event route reuses the canonical hosted event edit surface."
+      "captureIds": ["edit_hosted_event"],
+      "reason": "Host app edit-event route owns the hosted event edit surface."
     },
     {
       "routeId": "hostAppAttendanceSheet",
       "status": "alias",
       "priority": "P2",
-      "canonicalRouteId": "hostEventManageScreen",
+      "canonicalRouteId": "hostAppEventManageScreen",
       "reason": "Host app attendance route opens the canonical live attendance section of host event management."
     },
     {
       "routeId": "hostAppEventSuccessScreen",
       "status": "alias",
       "priority": "P2",
-      "canonicalRouteId": "hostEventManageScreen",
+      "canonicalRouteId": "hostAppEventManageScreen",
       "reason": "Host app Event Success route enters the canonical host event management surface."
     },
     {
@@ -348,6 +292,12 @@
       "status": "planned",
       "priority": "P2",
       "reason": "Host account/settings surface is distinct from consumer account settings and needs a host profile fixture."
+    },
+    {
+      "routeId": "hostProfileScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "Host profile editing is a new host settings sub-route and needs a dedicated host profile fixture."
     },
     {
       "routeId": "eventPolicyLabScreen",

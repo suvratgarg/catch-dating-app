@@ -3,12 +3,12 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "ea5b9f2f988dbaf46e92ba8dfd3582c62cfefb0d4812597b3b8f1d3eef1a8f87",
-    "routeContractSha256": "809192043e10919777505b5fb70bfc04e52d4ae1fbfe74159c466246b0bba3d3",
-    "goRouteCount": 40,
+    "normalizedFileSha256": "a542812bacd5400296b75a8465c77ba1f914d4699f9f0385443df6a058054b4d",
+    "routeContractSha256": "509abd376602f3b5bd6c9bd5f257a566b1c8a072635ea675f9b327efb29a1910",
+    "goRouteCount": 32,
     "shellBranchCount": 5,
-    "enumRouteCount": 54,
-    "referencedRouteCount": 40
+    "enumRouteCount": 47,
+    "referencedRouteCount": 33
   },
   "routes": [
     {
@@ -101,50 +101,6 @@
       "referencedByGoRouter": true
     },
     {
-      "id": "dashboardHostEventManageScreen",
-      "path": "/dashboard/clubs/:clubId/events/:eventId/manage",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "hostEventManageScreen",
-      "path": "/clubs/:clubId/events/:eventId/manage",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "editHostedEventScreen",
-      "path": "/clubs/:clubId/events/:eventId/edit",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "eventSuccessHostScreen",
-      "path": "/dashboard/clubs/:clubId/events/:eventId/success",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
       "id": "eventLocationMapScreen",
       "path": "/events/:eventId/location",
       "pathParameters": [
@@ -189,29 +145,8 @@
       "referencedByGoRouter": true
     },
     {
-      "id": "editClubScreen",
-      "path": "/clubs/:clubId/edit",
-      "pathParameters": [
-        "clubId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
       "id": "eventDetailScreen",
       "path": "/clubs/:clubId/events/:eventId",
-      "pathParameters": [
-        "clubId",
-        "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "attendanceSheet",
-      "path": "/clubs/:clubId/events/:eventId/attendance",
       "pathParameters": [
         "clubId",
         "eventId"
@@ -226,24 +161,6 @@
       "pathParameters": [
         "clubId",
         "eventId"
-      ],
-      "requiresFixture": true,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "createClubScreen",
-      "path": "/clubs/create-club",
-      "pathParameters": [],
-      "requiresFixture": false,
-      "gated": false,
-      "referencedByGoRouter": true
-    },
-    {
-      "id": "createEventScreen",
-      "path": "/clubs/:clubId/create-event",
-      "pathParameters": [
-        "clubId"
       ],
       "requiresFixture": true,
       "gated": false,
@@ -351,7 +268,7 @@
       "pathParameters": [],
       "requiresFixture": false,
       "gated": false,
-      "referencedByGoRouter": false
+      "referencedByGoRouter": true
     },
     {
       "id": "hostClubsScreen",
@@ -481,6 +398,14 @@
       "referencedByGoRouter": false
     },
     {
+      "id": "hostProfileScreen",
+      "path": "/host/settings/profile",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "referencedByGoRouter": false
+    },
+    {
       "id": "eventPolicyLabScreen",
       "path": "/dev/event-policy-lab",
       "pathParameters": [],
@@ -517,31 +442,24 @@
     }
   ],
   "goRouterRouteReferences": [
-    "attendanceSheet",
     "authScreen",
     "calendarEventDetailScreen",
     "calendarScreen",
     "chatScreen",
     "clubDetailScreen",
     "clubsListScreen",
-    "createClubScreen",
-    "createEventScreen",
     "dashboardEventDetailScreen",
-    "dashboardHostEventManageScreen",
     "dashboardScreen",
-    "editClubScreen",
-    "editHostedEventScreen",
     "eventDetailScreen",
     "eventLocationMapScreen",
     "eventPolicyLabScreen",
     "eventRecapScreen",
     "eventSuccessCompanionScreen",
-    "eventSuccessHostScreen",
     "eventSuccessLabScreen",
     "eventSuccessManualQaScreen",
     "eventSuccessPreviewScreen",
     "filtersScreen",
-    "hostEventManageScreen",
+    "hostHomeScreen",
     "loadingScreen",
     "matchesListScreen",
     "notificationsScreen",

@@ -166,7 +166,7 @@
       "fixtureKey": "salesDemo.host.eventSetup",
       "captureId": "host_event_setup",
       "routeIds": [
-        "createEventScreen"
+        "hostCreateEventScreen"
       ],
       "device": {
         "id": "iphone-17-pro",
@@ -217,7 +217,7 @@
       "fixtureKey": "salesDemo.host.liveConsole",
       "captureId": "host_live_console",
       "routeIds": [
-        "hostEventManageScreen"
+        "hostAppEventManageScreen"
       ],
       "device": {
         "id": "iphone-17-pro",
@@ -268,7 +268,7 @@
       "fixtureKey": "salesDemo.host.postEventReport",
       "captureId": "host_post_event_report",
       "routeIds": [
-        "hostEventManageScreen"
+        "hostAppEventManageScreen"
       ],
       "device": {
         "id": "iphone-17-pro",

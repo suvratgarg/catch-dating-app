@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.0.11
-updated: 2026-05-22
+version: 1.0.12
+updated: 2026-06-11
 owner: host_tooling
 status: active
 ---
@@ -33,22 +33,22 @@ The target state is:
 | --- | --- | --- | --- | --- | --- |
 | Dashboard host tools rail | `lib/dashboard/presentation/widgets/dashboard_full.dart` (`HostToolsRail`) | Per hosted event | Manage event, Take attendance, View report | Unbounded hosted events | Uses shared `HostEventToolsCarousel`; Dashboard owns route navigation only. The host card is self-contained, with in-card identity, lifecycle state, bounded progress, and a contextual CTA. |
 | Dashboard host tools model | `lib/dashboard/presentation/dashboard_full_view_model.dart` (`DashboardHostEventTool`) | Per hosted event | Uses `HostEventAttendanceState`, keeps non-cancelled past hosted events, and separates active from past operations | Unbounded hosted events | Dashboard owns composition and routing only. Attendance-window rules now live in `lib/hosts/domain/host_attendance_window.dart`. |
-| Club detail host management panel | `lib/clubs/presentation/detail/widgets/club_detail_body.dart` (`HostClubManagementPanel`) | Per club | Add event, Edit club, upcoming booked/waitlist/revenue stats | One hosted club by current product rule | Club detail now renders one host-only management section instead of separate tools and stats widgets. Club create/edit owns host defaults for event policy and event-success setup. |
+| Host app club management panel | `lib/hosts/presentation/host_operations_screen.dart` and `lib/hosts/presentation/widgets/host_club_tools.dart` | Per club | Add event, Edit club profile, payouts, host team | One owned club by current product rule; co-hosted clubs are separate rows | Public club detail is presentation-only. Host app Clubs owns profile edits, payouts, and host-team management; Host app Events owns event creation. |
 | Club schedule section | `lib/clubs/presentation/detail/widgets/club_schedule_section.dart` | Per event in hosted club context | Hosted badge and event detail navigation | Unbounded upcoming events | Resolved for first pass: host-owned events use the `HOSTED` tile state without turning schedule rows into dense control clusters. Deeper operations remain in Dashboard / Host Manage. |
 | Event detail top actions | `lib/events/presentation/widgets/event_detail_body.dart` and detail app bar widgets | Per event | Share, save, add to calendar for future signed-up or hosted events | Singleton per event | Top actions stay generic utilities. Host operations intentionally route through Dashboard and Host Manage instead of adding another detail-page host section. |
 | Event detail bottom CTA | `lib/events/presentation/widgets/event_detail_cta.dart` | Per event | Participant booking/waitlist/cancel states for non-host viewers | Singleton per viewer/event | Hosts no longer render this bottom footer. This keeps event detail from duplicating host tools that already exist on Dashboard and Host Manage. |
 | Host event manage route | `lib/routing/go_router.dart` and `lib/hosts/presentation/host_event_manage_screen.dart` (`HostEventManageRouteScreen`) | Per event | Host-gated route load and access check, optional lifecycle section | Singleton per event | Canonical route is `/clubs/:clubId/events/:eventId/manage`. Dashboard, event-success, and attendance paths are aliases into the same workspace with the relevant lifecycle section selected. |
 | Host event manage screen | `lib/hosts/presentation/host_event_manage_screen.dart` (`HostEventManageScreen`) | Per event | Setup, Live, Report sections, Edit event action | Singleton per event | Lifecycle workspace with a full-width segmented switcher. Setup combines event details/admin, event-success setup, and the read-only participant roster; Live combines check-in mutation with event-success live mode; Report combines attendance summary with the post-event host report. |
 | Host edit event route | `lib/hosts/presentation/edit_hosted_event_screen.dart` (`EditHostedEventRouteScreen`) | Per event | Host-gated published-event edit form | Singleton per event | Edits backend-supported operational fields from one place. Schedule and booking-policy controls lock once the event starts or has booking/waitlist/attendance activity. |
-| Create-event success handoff | `lib/events/presentation/create_event_success_screen.dart` and `create_event_screen.dart` | Newly created event | Manage event, Back to club | Singleton immediately after creation | Manage event now routes to canonical Host Manage instead of embedding a second management screen inside the create flow. |
+| Create-event success handoff | `lib/hosts/presentation/event_management/create/create_event_success_screen.dart` and `create_event_screen.dart` | Newly created event | Manage event, Back to club | Singleton immediately after creation | Manage event now routes to canonical Host Manage instead of embedding a second management screen inside the create flow. |
 | Event tile hosted status | `lib/events/presentation/widgets/event_tiles/event_tile_data.dart` and event tile atoms | Per event tile | `EventTileStatus.hosted` badge | Per tile | Existing hosted status can identify owned events, but it does not unlock host actions. This should feed into the same host action model instead of one-off tile affordances. |
 
 ## Backend-Ready Host Actions
 
 | Action | Backend status | Current UI status | Proposed UI treatment |
 | --- | --- | --- | --- |
-| Create event | Implemented through `createEvent` | Exposed from club host panel and create-event flow | Keep as club-level primary action through shared club host panel. |
-| Edit club | Implemented through `updateClub`/club repository update seam | Exposed from club host panel | Keep as club-level secondary action through shared club host panel. |
+| Create event | Implemented through `createEvent` | Exposed from Host app Events rows and the host create-event flow | Keep as an Events-tab action for the selected club; avoid duplicating it on public club detail. |
+| Edit club | Implemented through `updateClub`/club repository update seam | Exposed from Host app Clubs rows | Keep as a Clubs-tab action with payout and host-team management; avoid duplicating it on public club detail. |
 | Manage event | Operational screen implemented | Exposed from Dashboard and create success | Keep as the per-event host operations destination for roster, waitlist, stats, cancellation, unused-event deletion, and event-success entry. |
 | Take attendance | Implemented through `markEventAttendance` | Exposed from Dashboard when the window is open and through attendance/management routes | Keep Dashboard as the discoverable host action surface. Disabled state should explain open/closed windows; missed-attendance correction stays reachable through Host Manage for past events. |
 | Edit event | Backend edit seam exists | Exposed from Host Manage through `/clubs/:clubId/events/:eventId/edit` | Dedicated host edit form for backend-supported operational fields. Capacity, price, admission/event policy, invite setup, and cancellation policy are editable only before event activity exists; schedule edits have the same lock. Photo replacement and title edits remain explicit product-policy follow-ups. |
