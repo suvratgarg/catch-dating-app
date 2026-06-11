@@ -1359,9 +1359,9 @@ Set<String> _declaredTokenShadows(CompilationUnit node) {
 
   for (final declaration in node.declarations) {
     if (declaration is ClassDeclaration) {
-      addIfShadowed(declaration.name.lexeme);
+      addIfShadowed(declaration.namePart.typeName.lexeme);
     } else if (declaration is EnumDeclaration) {
-      addIfShadowed(declaration.name.lexeme);
+      addIfShadowed(declaration.namePart.typeName.lexeme);
     } else if (declaration is ExtensionDeclaration) {
       addIfShadowed(declaration.name?.lexeme);
     } else if (declaration is FunctionDeclaration) {

@@ -49,24 +49,14 @@ List<Widget> buildClubsListBodySlivers({
   bool includeClubDirectory = true,
   bool pinnedExploreDayHeaders = true,
 }) {
-  final canCreateClub = viewModel.joinedClubs.isEmpty
-      ? false
-      : ref.watch(canCreateClubProvider).asData?.value ?? false;
-
   return [
     if (includeJoinedClubsRail && viewModel.joinedClubs.isNotEmpty)
-      SliverToBoxAdapter(
-        child: ClubAvatarRail(
-          clubs: viewModel.joinedClubs,
-          showCreateButton: canCreateClub,
-        ),
-      ),
+      SliverToBoxAdapter(child: ClubAvatarRail(clubs: viewModel.joinedClubs)),
     if (viewModel.allClubs.isNotEmpty)
       ...buildExploreEventsSlivers(
         ref,
         candidateClubs: viewModel.allClubs,
         joinedClubIds: viewModel.joinedClubIds,
-        hostedClubIds: viewModel.hostedClubIds,
         pinnedDayHeaders: pinnedExploreDayHeaders,
       ),
     if (includeClubDirectory && viewModel.allClubs.isNotEmpty)
@@ -74,7 +64,6 @@ List<Widget> buildClubsListBodySlivers({
         context: context,
         clubs: viewModel.allClubs,
         joinedClubIds: viewModel.joinedClubIds,
-        hostedClubIds: viewModel.hostedClubIds,
       ),
     if (viewModel.allClubs.isNotEmpty)
       const SliverToBoxAdapter(child: ExploreEventTypeBrowseGrid()),

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  normalizeHostApplication,
   normalizeMarketingAnalytics,
   normalizeMarketingAttribution,
   normalizeWaitlistRole,
@@ -14,6 +15,7 @@ test("waitlistAllowedOrigins includes production custom domains", () => {
   assert.equal(origins.has("https://catchdates.com"), true);
   assert.equal(origins.has("https://www.catchdates.com"), true);
   assert.equal(origins.has("http://127.0.0.1:5175"), true);
+  assert.equal(origins.has("http://127.0.0.1:4187"), true);
   assert.equal(
     origins.has("https://catch-dating-app-64e51.web.app"),
     true
@@ -118,4 +120,59 @@ test("normalizeMarketingAnalytics keeps consent and event metadata", () => {
       submittedAt: "2026-06-02T00:01:00.000Z",
     }
   );
+});
+
+test("normalizeHostApplication keeps bounded operating fields", () => {
+  assert.deepEqual(
+    normalizeHostApplication({
+      organizationName: "  Sunday Table  ",
+      organizationType: "Venue",
+      operatingCity: "Mumbai",
+      communityLink: "https://example.com/events",
+      formats: ["Dinner", "Dinner", "Singles mixer"],
+      eventCadence: "Monthly",
+      nextEventName: "Long table no. 1",
+      nextEventDate: "2026-06-21",
+      eventLocation: "Bandra",
+      expectedCapacity: "24",
+      priceRange: "₹1,000–₹2,000",
+      admissionModel: "Request to join",
+      waitlistPlan: "Ranked timed offers",
+      paymentReadiness: "Need Catch payment onboarding",
+      eventSuccessModules: [
+        "Attendance and live roster",
+        "Private catch window",
+      ],
+      hostGoals: "Improve review quality",
+      operatingNotes: "Need help with arrival flow",
+      ignored: "drop me",
+    }),
+    {
+      organizationName: "Sunday Table",
+      organizationType: "Venue",
+      operatingCity: "Mumbai",
+      communityLink: "https://example.com/events",
+      formats: ["Dinner", "Singles mixer"],
+      eventCadence: "Monthly",
+      nextEventName: "Long table no. 1",
+      nextEventDate: "2026-06-21",
+      eventLocation: "Bandra",
+      expectedCapacity: "24",
+      priceRange: "₹1,000–₹2,000",
+      admissionModel: "Request to join",
+      waitlistPlan: "Ranked timed offers",
+      paymentReadiness: "Need Catch payment onboarding",
+      eventSuccessModules: [
+        "Attendance and live roster",
+        "Private catch window",
+      ],
+      hostGoals: "Improve review quality",
+      operatingNotes: "Need help with arrival flow",
+    }
+  );
+});
+
+test("normalizeHostApplication drops empty payloads", () => {
+  assert.equal(normalizeHostApplication({formats: []}), null);
+  assert.equal(normalizeHostApplication(null), null);
 });

@@ -79,14 +79,16 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                 onChanged: (value) => setState(() => _metPeople = value),
               ),
               gapH8,
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                value: _safetyConcern,
-                onChanged: (value) =>
-                    setState(() => _safetyConcern = value ?? false),
-                title: Text(
-                  'I want Catch to review a safety or comfort concern',
-                  style: CatchTextStyles.supporting(context),
+              ListTileMaterial(
+                child: CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _safetyConcern,
+                  onChanged: (value) =>
+                      setState(() => _safetyConcern = value ?? false),
+                  title: Text(
+                    'I want Catch to review a safety or comfort concern',
+                    style: CatchTextStyles.supporting(context),
+                  ),
                 ),
               ),
               _StageSoftBand(

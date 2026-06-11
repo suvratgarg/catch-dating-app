@@ -254,7 +254,7 @@ Future<void> _activateFirebaseAppCheck() async {
         ? AppleDebugProvider(debugToken: debugTokenOrNull)
         : const AppleAppAttestProvider(),
   );
-  if (useDebugProvider && !useAppleDebugProvider) {
+  if (useDebugProvider) {
     unawaited(_warmUpFirebaseAppCheckDebugToken());
   }
 }

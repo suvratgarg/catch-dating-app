@@ -44,6 +44,30 @@ class HostProfileRepository {
       resource: collectionPath,
     ),
   );
+
+  Future<void> saveHostProfile({
+    required String uid,
+    required String displayName,
+    String? roleTitle,
+    String? bio,
+  }) => withBackendErrorContext(
+    () => _hostProfileRef(uid).set({
+      'displayName': displayName.trim(),
+      'roleTitle': _nullableTrimmed(roleTitle),
+      'bio': _nullableTrimmed(bio),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'save host profile',
+      resource: collectionPath,
+    ),
+  );
+}
+
+String? _nullableTrimmed(String? value) {
+  final normalized = value?.trim();
+  return normalized == null || normalized.isEmpty ? null : normalized;
 }
 
 final hostProfileRepositoryProvider = Provider<HostProfileRepository>((ref) {

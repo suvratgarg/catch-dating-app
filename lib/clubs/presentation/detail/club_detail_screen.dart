@@ -3,9 +3,10 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -53,19 +54,8 @@ class ClubDetailScreen extends ConsumerWidget {
         child: MutationErrorSnackbarListener(
           mutation: ClubMembershipController.pushNotificationsMutation,
           child: MutationErrorSnackbarListener(
-            mutation: ClubHostManagementController.addHostMutation,
-            child: MutationErrorSnackbarListener(
-              mutation: ClubHostManagementController.removeHostMutation,
-              child: MutationErrorSnackbarListener(
-                mutation:
-                    ClubHostManagementController.transferOwnershipMutation,
-                child: MutationErrorSnackbarListener(
-                  mutation:
-                      ClubHostManagementController.startConversationMutation,
-                  child: child,
-                ),
-              ),
-            ),
+            mutation: ClubHostContactController.startConversationMutation,
+            child: child,
           ),
         ),
       ),
@@ -102,7 +92,10 @@ class ClubDetailScreen extends ConsumerWidget {
             reviews: const [],
             userProfile: currentUserProfile,
             uid: currentUid,
-            isHost: placeholderAuth && initialClub!.isHostedBy(currentUid),
+            isHost:
+                AppConfig.appRole.isHost &&
+                placeholderAuth &&
+                initialClub!.isHostedBy(currentUid),
             isMember:
                 placeholderAuth &&
                 currentMembership?.status == ClubMembershipStatus.active,

@@ -98,6 +98,8 @@ class EventSuccessRepository extends _EventSuccessRepositoryCore
         _EventSuccessWingmanRepository,
         _EventSuccessArrivalRepository {
   const EventSuccessRepository(this._db, {FirebaseFunctions? functions})
+    // Keep the public named parameter as `functions:` for tests and callers.
+    // ignore: prefer_initializing_formals
     : _functions = functions;
 
   @override

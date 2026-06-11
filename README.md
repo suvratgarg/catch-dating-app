@@ -145,6 +145,21 @@ builds and should not be used for real phone-number verification:
 DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=true ./tool/flutter_with_env.sh dev run -d "iPhone 17"
 ```
 
+For the Catch Host dev simulator loop, use the host wrapper. It loads the same
+local App Check debug token from `.env.local`, selects the host Firebase app, and
+keeps the normal Firebase Auth app-verification flow enabled for real phone
+numbers:
+
+```bash
+node tool/firebase/register_app_check_debug_token.mjs \
+  --env dev \
+  --role host \
+  --platform ios \
+  --display-name "Suvrat host dev iOS simulator"
+
+./tool/run_host_dev_simulator.sh "iPhone 17 Pro"
+```
+
 Android, iOS, and macOS builds use native flavors. The environment wrapper automatically adds the matching flavor for APK, App Bundle, iOS, and macOS builds:
 
 ```bash

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -114,7 +115,8 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
   return AsyncData(
     ClubDetailViewModel(
       club: club,
-      isHost: isAuthenticated && club.isHostedBy(uid),
+      isHost:
+          AppConfig.appRole.isHost && isAuthenticated && club.isHostedBy(uid),
       isMember: isAuthenticated && isActiveMember,
       upcomingEvents: upcomingEvents,
       reviews: reviews,

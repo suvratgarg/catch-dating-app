@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {
   CallableRequest,
   HttpsError,

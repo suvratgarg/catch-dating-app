@@ -1,12 +1,15 @@
 include: package:flutter_lints/flutter.yaml
 
 plugins:
-  riverpod_lint: 3.1.3
+  riverpod_lint: 3.1.4
   catch_ui_lints:
     path: packages/catch_ui_lints
 
 analyzer:
   exclude:
+    - build/**
+    - packages/**/build/**
+    - packages/phosphor_flutter/example/**
     - '**/*.g.dart'
     - '**/*.freezed.dart'
 

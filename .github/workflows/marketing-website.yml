@@ -36,7 +36,7 @@ permissions:
   contents: read
 
 env:
-  FIREBASE_TOOLS_VERSION: 15.1.0
+  FIREBASE_TOOLS_VERSION: 15.20.0
 
 jobs:
   validate:
@@ -55,7 +55,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.1"
           channel: stable
           cache: true
 

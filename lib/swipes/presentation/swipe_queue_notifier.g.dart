@@ -227,7 +227,7 @@ abstract class _$SwipeQueueNotifier
   });
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<List<PublicProfile>>, List<PublicProfile>>;
     final element =
@@ -238,6 +238,9 @@ abstract class _$SwipeQueueNotifier
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args.$1, vibeIds: _$args.vibeIds));
+    return element.handleCreate(
+      ref,
+      () => build(_$args.$1, vibeIds: _$args.vibeIds),
+    );
   }
 }

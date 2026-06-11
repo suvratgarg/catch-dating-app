@@ -6,7 +6,6 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,32 +87,6 @@ void main() {
       expect(viewModel.nextEvent?.id, 'upcoming');
       expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
-
-    test(
-      'selects owned clubs before hosted clubs for the dashboard shortcut',
-      () {
-        final hosted = buildClub(
-          id: 'hosted-club',
-          hostUserId: 'club-owner',
-          createdAt: DateTime(2026, 1, 2),
-        ).copyWith(hostUserIds: const ['runner-1']);
-        final owned = buildClub(
-          id: 'owned-club',
-          hostUserId: 'other-host',
-          createdAt: DateTime(2026, 1, 3),
-        ).copyWith(ownerUserId: 'runner-1');
-
-        final viewModel = buildDashboardFullViewModel(
-          signedUpEvents: const [],
-          uid: 'runner-1',
-          hostedOrOwnedClubs: [hosted, owned],
-          attendedEventsAsync: const AsyncData<List<Event>>([]),
-          recommendedEventsAsync: _noRecommendationCandidates,
-        );
-
-        expect(viewModel.hostedClubShortcut?.id, 'owned-club');
-      },
-    );
 
     test('surfaces attended section errors and clears the swipe event', () {
       final viewModel = buildDashboardFullViewModel(
@@ -454,75 +427,6 @@ void main() {
 
       expect(viewModel.arrivalAction?.kind, EventArrivalActionKind.selfCheckIn);
       expect(viewModel.arrivalAction?.event.id, 'check-in-event');
-    });
-
-    test('exposes open host attendance in host tools', () {
-      final now = DateTime(2026, 4, 23, 9, 5);
-      final hostedRun = buildEvent(
-        id: 'hosted-event',
-        startTime: DateTime(2026, 4, 23, 9),
-        endTime: DateTime(2026, 4, 23, 10),
-      );
-
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: const [],
-        uid: 'host-1',
-        hostedEvents: [hostedRun],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
-        now: now,
-      );
-
-      expect(viewModel.arrivalAction, isNull);
-      expect(viewModel.hostEventTools.single.event.id, 'hosted-event');
-      expect(
-        viewModel.hostEventTools.single.attendanceState,
-        HostEventAttendanceState.open,
-      );
-    });
-
-    test('keeps past hosted events with attendance-open events first', () {
-      final now = DateTime(2026, 4, 23, 9);
-      final recentlyEnded = buildEvent(
-        id: 'recently-ended-hosted',
-        startTime: now.subtract(const Duration(hours: 2)),
-        endTime: now.subtract(const Duration(hours: 1)),
-      );
-      final old = buildEvent(
-        id: 'old-hosted',
-        startTime: now.subtract(const Duration(hours: 10)),
-        endTime: now.subtract(const Duration(hours: 9)),
-      );
-      final later = buildEvent(
-        id: 'later-hosted',
-        startTime: now.add(const Duration(hours: 4)),
-      );
-      final sooner = buildEvent(
-        id: 'sooner-hosted',
-        startTime: now.add(const Duration(hours: 2)),
-      );
-
-      final viewModel = buildDashboardFullViewModel(
-        signedUpEvents: const [],
-        uid: 'host-1',
-        hostedEvents: [old, later, recentlyEnded, sooner],
-        attendedEventsAsync: const AsyncData<List<Event>>([]),
-        recommendedEventsAsync: _noRecommendationCandidates,
-        now: now,
-      );
-
-      expect(viewModel.hostEventTools.map((tool) => tool.event.id), [
-        'recently-ended-hosted',
-        'sooner-hosted',
-        'later-hosted',
-        'old-hosted',
-      ]);
-      expect(viewModel.hostEventTools.map((tool) => tool.attendanceState), [
-        HostEventAttendanceState.open,
-        HostEventAttendanceState.opensLater,
-        HostEventAttendanceState.opensLater,
-        HostEventAttendanceState.closed,
-      ]);
     });
   });
 }

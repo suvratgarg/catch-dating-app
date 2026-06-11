@@ -22,20 +22,21 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_policy_step.dart';
-import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
-import 'package:catch_dating_app/events/presentation/widgets/picker_tile.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/picker_tile.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -943,17 +944,19 @@ class _EditablePolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.openCapacity) ...[
             gapH12,
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: cohortCapsEnabled,
-              onChanged: onCohortCapsEnabledChanged,
-              title: Text(
-                'Cohort caps',
-                style: CatchTextStyles.labelL(context),
-              ),
-              subtitle: Text(
-                'Optionally cap straight men and straight women without making this a separate admission format.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+            ListTileMaterial(
+              child: SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                value: cohortCapsEnabled,
+                onChanged: onCohortCapsEnabledChanged,
+                title: Text(
+                  'Cohort caps',
+                  style: CatchTextStyles.labelL(context),
+                ),
+                subtitle: Text(
+                  'Optionally cap straight men and straight women without making this a separate admission format.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
               ),
             ),
             if (cohortCapsEnabled) ...[
@@ -994,17 +997,19 @@ class _EditablePolicyCard extends StatelessWidget {
           ],
           if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
             gapH12,
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: dynamicPricingEnabled,
-              onChanged: onDynamicPricingChanged,
-              title: Text(
-                'Demand pricing',
-                style: CatchTextStyles.labelL(context),
-              ),
-              subtitle: Text(
-                'Increase price for the over-demand cohort while preserving the event balance.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+            ListTileMaterial(
+              child: SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                value: dynamicPricingEnabled,
+                onChanged: onDynamicPricingChanged,
+                title: Text(
+                  'Demand pricing',
+                  style: CatchTextStyles.labelL(context),
+                ),
+                subtitle: Text(
+                  'Increase price for the over-demand cohort while preserving the event balance.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
               ),
             ),
             if (dynamicPricingEnabled) ...[

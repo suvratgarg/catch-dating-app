@@ -592,19 +592,7 @@ $RunningPreferencesCopyWith<$Res> get running {
 /// @nodoc
 mixin _$UserProfile {
 
-// Core (required at sign-up)
-@JsonKey(includeToJson: false) String get uid; String get name; String get firstName; String get lastName; String get displayName;@TimestampConverter() DateTime get dateOfBirth; Gender get gender; String get phoneNumber; String get countryCode; bool get profileComplete;// Optional profile/contact field. Authentication is phone-only.
- String get email; String? get instagramHandle;// Personality prompts
- List<ProfilePromptAnswer> get profilePrompts;// Photos
- List<ProfilePhoto> get profilePhotos;// Location
- String? get city; double? get latitude; double? get longitude;// Matching preferences. Profile creation/update validators require at least
-// one value before a profile can be saved.
- List<Gender> get interestedInGenders; int get minAgePreference; int get maxAgePreference;// Background (optional)
- int? get height; String? get occupation; String? get company; EducationLevel? get education; Religion? get religion; List<Language> get languages;// Intentions (optional)
- RelationshipGoal? get relationshipGoal;// Lifestyle (optional)
- DrinkingHabit? get drinking; SmokingHabit? get smoking; WorkoutFrequency? get workout; DietaryPreference? get diet; ChildrenStatus? get children;// Activity preferences
- ActivityPreferences get activityPreferences;// Notification / discovery preferences
- bool get prefsNewCatches; bool get prefsMessages; bool get prefsEventReminders; bool get prefsRunStatusUpdates; bool get prefsClubUpdates; bool get prefsWeeklyDigest; bool get prefsShowOnMap;
+@JsonKey(includeToJson: false) String get uid; String get name; String get firstName; String get lastName; String get displayName;@TimestampConverter() DateTime get dateOfBirth; Gender get gender; String get phoneNumber; String get countryCode; bool get profileComplete; String get email; String? get instagramHandle; List<ProfilePromptAnswer> get profilePrompts; List<ProfilePhoto> get profilePhotos; String? get city; double? get latitude; double? get longitude; List<Gender> get interestedInGenders; int get minAgePreference; int get maxAgePreference; int? get height; String? get occupation; String? get company; EducationLevel? get education; Religion? get religion; List<Language> get languages; RelationshipGoal? get relationshipGoal; DrinkingHabit? get drinking; SmokingHabit? get smoking; WorkoutFrequency? get workout; DietaryPreference? get diet; ChildrenStatus? get children; ActivityPreferences get activityPreferences; bool get prefsNewCatches; bool get prefsMessages; bool get prefsEventReminders; bool get prefsRunStatusUpdates; bool get prefsClubUpdates; bool get prefsWeeklyDigest; bool get prefsShowOnMap;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -849,7 +837,6 @@ class _UserProfile extends UserProfile {
   const _UserProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, this.firstName = '', this.lastName = '', this.displayName = '', @TimestampConverter() required this.dateOfBirth, required this.gender, required this.phoneNumber, this.countryCode = defaultCountryDialCode, required this.profileComplete, this.email = '', this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<ProfilePhoto> profilePhotos = const [], this.city, this.latitude, this.longitude, final  List<Gender> interestedInGenders = const [], this.minAgePreference = 18, this.maxAgePreference = maximumPreferredMatchAge, this.height, this.occupation, this.company, this.education, this.religion, final  List<Language> languages = const [], this.relationshipGoal, this.drinking, this.smoking, this.workout, this.diet, this.children, this.activityPreferences = const ActivityPreferences(), this.prefsNewCatches = true, this.prefsMessages = true, this.prefsEventReminders = true, this.prefsRunStatusUpdates = true, this.prefsClubUpdates = true, this.prefsWeeklyDigest = false, this.prefsShowOnMap = true}): _profilePrompts = profilePrompts,_profilePhotos = profilePhotos,_interestedInGenders = interestedInGenders,_languages = languages,super._();
   factory _UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
 
-// Core (required at sign-up)
 @override@JsonKey(includeToJson: false) final  String uid;
 @override final  String name;
 @override@JsonKey() final  String firstName;
@@ -860,36 +847,26 @@ class _UserProfile extends UserProfile {
 @override final  String phoneNumber;
 @override@JsonKey() final  String countryCode;
 @override final  bool profileComplete;
-// Optional profile/contact field. Authentication is phone-only.
 @override@JsonKey() final  String email;
 @override final  String? instagramHandle;
-// Personality prompts
  final  List<ProfilePromptAnswer> _profilePrompts;
-// Personality prompts
 @override@JsonKey() List<ProfilePromptAnswer> get profilePrompts {
   if (_profilePrompts is EqualUnmodifiableListView) return _profilePrompts;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_profilePrompts);
 }
 
-// Photos
  final  List<ProfilePhoto> _profilePhotos;
-// Photos
 @override@JsonKey() List<ProfilePhoto> get profilePhotos {
   if (_profilePhotos is EqualUnmodifiableListView) return _profilePhotos;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_profilePhotos);
 }
 
-// Location
 @override final  String? city;
 @override final  double? latitude;
 @override final  double? longitude;
-// Matching preferences. Profile creation/update validators require at least
-// one value before a profile can be saved.
  final  List<Gender> _interestedInGenders;
-// Matching preferences. Profile creation/update validators require at least
-// one value before a profile can be saved.
 @override@JsonKey() List<Gender> get interestedInGenders {
   if (_interestedInGenders is EqualUnmodifiableListView) return _interestedInGenders;
   // ignore: implicit_dynamic_type
@@ -898,7 +875,6 @@ class _UserProfile extends UserProfile {
 
 @override@JsonKey() final  int minAgePreference;
 @override@JsonKey() final  int maxAgePreference;
-// Background (optional)
 @override final  int? height;
 @override final  String? occupation;
 @override final  String? company;
@@ -911,17 +887,13 @@ class _UserProfile extends UserProfile {
   return EqualUnmodifiableListView(_languages);
 }
 
-// Intentions (optional)
 @override final  RelationshipGoal? relationshipGoal;
-// Lifestyle (optional)
 @override final  DrinkingHabit? drinking;
 @override final  SmokingHabit? smoking;
 @override final  WorkoutFrequency? workout;
 @override final  DietaryPreference? diet;
 @override final  ChildrenStatus? children;
-// Activity preferences
 @override@JsonKey() final  ActivityPreferences activityPreferences;
-// Notification / discovery preferences
 @override@JsonKey() final  bool prefsNewCatches;
 @override@JsonKey() final  bool prefsMessages;
 @override@JsonKey() final  bool prefsEventReminders;

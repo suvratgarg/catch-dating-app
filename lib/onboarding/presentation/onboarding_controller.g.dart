@@ -93,7 +93,7 @@ abstract class _$OnboardingController extends $Notifier<OnboardingData> {
   OnboardingData build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<OnboardingData, OnboardingData>;
     final element =
         ref.element
@@ -103,6 +103,6 @@ abstract class _$OnboardingController extends $Notifier<OnboardingData> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

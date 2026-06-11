@@ -115,7 +115,7 @@ final class AuthControllerProvider
   }
 }
 
-String _$authControllerHash() => r'01797b447a3bce5a6d1b408ad128ec8bf86a755d';
+String _$authControllerHash() => r'87c655c9b7082195520845d1967d69cde5add17a';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
@@ -132,7 +132,7 @@ abstract class _$AuthController extends $Notifier<AuthScreenState> {
   AuthScreenState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AuthScreenState, AuthScreenState>;
     final element =
         ref.element
@@ -142,6 +142,6 @@ abstract class _$AuthController extends $Notifier<AuthScreenState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

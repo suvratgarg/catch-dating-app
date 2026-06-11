@@ -123,28 +123,34 @@ class _DebugDetails extends StatelessWidget {
           childrenPadding: EdgeInsets.zero,
         ),
       ),
-      child: ExpansionTile(
-        title: Text(
-          'Developer details',
-          style: CatchTextStyles.labelM(context, color: tokens.danger),
-        ),
-        iconColor: tokens.danger,
-        collapsedIconColor: tokens.danger,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(CatchSpacing.s3),
-            decoration: BoxDecoration(
-              color: tokens.raised,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              border: Border.all(color: tokens.line),
-            ),
-            child: Text(
-              details,
-              style: CatchTextStyles.debugDetails(context, color: tokens.ink2),
-            ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: ExpansionTile(
+          title: Text(
+            'Developer details',
+            style: CatchTextStyles.labelM(context, color: tokens.danger),
           ),
-        ],
+          iconColor: tokens.danger,
+          collapsedIconColor: tokens.danger,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(CatchSpacing.s3),
+              decoration: BoxDecoration(
+                color: tokens.raised,
+                borderRadius: BorderRadius.circular(CatchRadius.md),
+                border: Border.all(color: tokens.line),
+              ),
+              child: Text(
+                details,
+                style: CatchTextStyles.debugDetails(
+                  context,
+                  color: tokens.ink2,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

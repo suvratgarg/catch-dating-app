@@ -224,6 +224,13 @@ class AppConfig {
     'FIREBASE_APP_CHECK_DEBUG_TOKEN',
   );
 
+  static final Uri hostAppUrl = Uri.parse(
+    const String.fromEnvironment(
+      'CATCH_HOST_APP_URL',
+      defaultValue: 'https://catchdates.com/host',
+    ),
+  );
+
   static const bool useFirebaseAppCheckDebugProvider = bool.fromEnvironment(
     'USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER',
   );

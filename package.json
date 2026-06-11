@@ -18,7 +18,11 @@
     "web:tokens": "dart run tool/design_tokens.dart",
     "web:tokens:check": "dart run tool/design_tokens.dart --check"
   },
+  "devDependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.61.0"
+    "@rollup/rollup-linux-x64-gnu": "4.61.1"
   }
 }

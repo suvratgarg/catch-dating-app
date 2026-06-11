@@ -1,20 +1,17 @@
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/create/create_club_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -24,12 +21,13 @@ import 'package:catch_dating_app/event_success/presentation/event_success_event_
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_manual_qa_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
@@ -52,7 +50,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
-    show AsyncData, AsyncValue, ConsumerWidget, Provider, WidgetRef;
+    show AsyncData, AsyncValue, Provider;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -69,12 +67,6 @@ enum Routes {
   savedEventDetailScreen('/saved-events/clubs/:clubId/events/:eventId'),
   filtersScreen('/filters'),
   dashboardEventDetailScreen('/dashboard/clubs/:clubId/events/:eventId'),
-  dashboardHostEventManageScreen(
-    '/dashboard/clubs/:clubId/events/:eventId/manage',
-  ),
-  hostEventManageScreen('/clubs/:clubId/events/:eventId/manage'),
-  editHostedEventScreen('/clubs/:clubId/events/:eventId/edit'),
-  eventSuccessHostScreen('/dashboard/clubs/:clubId/events/:eventId/success'),
   eventLocationMapScreen('/events/:eventId/location'),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
@@ -82,12 +74,8 @@ enum Routes {
   // Clubs branch (index 1)
   clubsListScreen('/clubs'),
   clubDetailScreen('/clubs/:clubId'),
-  editClubScreen('/clubs/:clubId/edit'),
   eventDetailScreen('/clubs/:clubId/events/:eventId'),
-  attendanceSheet('/clubs/:clubId/events/:eventId/attendance'),
   eventSuccessCompanionScreen('/clubs/:clubId/events/:eventId/companion'),
-  createClubScreen('/clubs/create-club'),
-  createEventScreen('/clubs/:clubId/create-event'),
   // Catches branch (index 2)
   swipeHubScreen('/catches'),
   swipeEventScreen('/catches/:eventId'),
@@ -116,6 +104,7 @@ enum Routes {
   hostInboxScreen('/host/inbox'),
   hostChatScreen('/host/inbox/:matchId'),
   hostSettingsScreen('/host/settings'),
+  hostProfileScreen('/host/settings/profile'),
   eventPolicyLabScreen('/dev/event-policy-lab'),
   eventSuccessLabScreen('/dev/event-success-lab'),
   eventSuccessManualQaScreen('/dev/event-success-manual-qa'),
@@ -123,6 +112,30 @@ enum Routes {
 
   const Routes(this.path);
   final String path;
+}
+
+const Set<Routes> _hostOnlyRoutes = {
+  Routes.hostHomeScreen,
+  Routes.hostClubsScreen,
+  Routes.hostClubDetailScreen,
+  Routes.hostCreateClubScreen,
+  Routes.hostEditClubScreen,
+  Routes.hostCreateEventScreen,
+  Routes.hostAppEventDetailScreen,
+  Routes.hostAppEventManageScreen,
+  Routes.hostAppEditEventScreen,
+  Routes.hostAppAttendanceSheet,
+  Routes.hostAppEventSuccessScreen,
+  Routes.hostInboxScreen,
+  Routes.hostChatScreen,
+  Routes.hostSettingsScreen,
+  Routes.hostProfileScreen,
+};
+
+@visibleForTesting
+bool routeAvailableForAppRole(Routes route, AppRole role) {
+  if (_hostOnlyRoutes.contains(route)) return role.isHost;
+  return true;
 }
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
@@ -250,6 +263,11 @@ GoRouter goRouter(Ref ref) {
   final analytics = ref.read(appAnalyticsProvider);
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
+  ref.listen(authControllerProvider, (previous, next) {
+    if (previous?.hasPendingVerification != next.hasPendingVerification) {
+      notifier.notify();
+    }
+  });
   if (!AppConfig.appRole.isHost) {
     ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
   }
@@ -267,6 +285,9 @@ GoRouter goRouter(Ref ref) {
         userProfileAsync: AppConfig.appRole.isHost
             ? const AsyncData<UserProfile?>(null)
             : ref.read(watchUserProfileProvider),
+        hasPendingAuthVerification: ref
+            .read(authControllerProvider)
+            .hasPendingVerification,
         matchedLocation: state.matchedLocation,
         uri: state.uri,
       );
@@ -336,59 +357,6 @@ GoRouter goRouter(Ref ref) {
         name: Routes.dashboardEventDetailScreen.name,
         builder: (context, state) => _eventDetailScreen(state),
       ),
-      if (AppConfig.appRole.isHost)
-        GoRoute(
-          path: Routes.dashboardHostEventManageScreen.path,
-          builder: (context, state) => HostEventManageRouteScreen(
-            clubId: state.pathParameters['clubId']!,
-            eventId: state.pathParameters['eventId']!,
-            initialEvent: switch (state.extra) {
-              final Event event => event,
-              _ => null,
-            },
-            initialSection: _hostManageSectionFromState(state),
-          ),
-        ),
-      if (AppConfig.appRole.isHost)
-        GoRoute(
-          path: Routes.hostEventManageScreen.path,
-          name: Routes.hostEventManageScreen.name,
-          builder: (context, state) => HostEventManageRouteScreen(
-            clubId: state.pathParameters['clubId']!,
-            eventId: state.pathParameters['eventId']!,
-            initialEvent: switch (state.extra) {
-              final Event event => event,
-              _ => null,
-            },
-            initialSection: _hostManageSectionFromState(state),
-          ),
-        ),
-      if (AppConfig.appRole.isHost)
-        GoRoute(
-          path: Routes.editHostedEventScreen.path,
-          name: Routes.editHostedEventScreen.name,
-          builder: (context, state) => EditHostedEventRouteScreen(
-            clubId: state.pathParameters['clubId']!,
-            eventId: state.pathParameters['eventId']!,
-            initialEvent: switch (state.extra) {
-              final Event event => event,
-              _ => null,
-            },
-          ),
-        ),
-      if (AppConfig.appRole.isHost)
-        GoRoute(
-          path: Routes.eventSuccessHostScreen.path,
-          name: Routes.eventSuccessHostScreen.name,
-          builder: (context, state) => HostEventManageRouteScreen(
-            clubId: state.pathParameters['clubId']!,
-            eventId: state.pathParameters['eventId']!,
-            initialEvent: switch (state.extra) {
-              final Event event => event,
-              _ => null,
-            },
-          ),
-        ),
       GoRoute(
         path: Routes.paymentHistoryScreen.path,
         name: Routes.paymentHistoryScreen.name,
@@ -454,7 +422,7 @@ GoRouter goRouter(Ref ref) {
           },
         ),
       ),
-      if (AppConfig.appRole.isHost)
+      if (routeAvailableForAppRole(Routes.hostHomeScreen, AppConfig.appRole))
         _hostShellRoute(analytics)
       else
         StatefulShellRoute.indexedStack(
@@ -491,13 +459,6 @@ GoRouter goRouter(Ref ref) {
                   name: Routes.clubsListScreen.name,
                   builder: (context, state) => const ClubsListScreen(),
                   routes: [
-                    if (AppConfig.appRole.isHost)
-                      GoRoute(
-                        path: 'create-club',
-                        name: Routes.createClubScreen.name,
-                        parentNavigatorKey: _rootNavigatorKey,
-                        builder: (context, state) => const CreateClubScreen(),
-                      ),
                     GoRoute(
                       path: ':clubId',
                       name: Routes.clubDetailScreen.name,
@@ -508,23 +469,6 @@ GoRouter goRouter(Ref ref) {
                           name: Routes.eventDetailScreen.name,
                           pageBuilder: _eventDetailPage,
                           routes: [
-                            if (AppConfig.appRole.isHost)
-                              GoRoute(
-                                path: 'attendance',
-                                name: Routes.attendanceSheet.name,
-                                parentNavigatorKey: _rootNavigatorKey,
-                                builder: (context, state) =>
-                                    HostEventManageRouteScreen(
-                                      clubId: state.pathParameters['clubId']!,
-                                      eventId: state.pathParameters['eventId']!,
-                                      initialEvent: switch (state.extra) {
-                                        final Event event => event,
-                                        _ => null,
-                                      },
-                                      initialSection:
-                                          HostEventManageSection.live,
-                                    ),
-                              ),
                             GoRoute(
                               path: 'companion',
                               name: Routes.eventSuccessCompanionScreen.name,
@@ -541,32 +485,6 @@ GoRouter goRouter(Ref ref) {
                             ),
                           ],
                         ),
-                        if (AppConfig.appRole.isHost)
-                          GoRoute(
-                            path: 'edit',
-                            name: Routes.editClubScreen.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => EditClubRouteScreen(
-                              clubId: state.pathParameters['clubId']!,
-                              initialClub: switch (state.extra) {
-                                final Club rc => rc,
-                                _ => null,
-                              },
-                            ),
-                          ),
-                        if (AppConfig.appRole.isHost)
-                          GoRoute(
-                            path: 'create-event',
-                            name: Routes.createEventScreen.name,
-                            parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => CreateEventRouteScreen(
-                              clubId: state.pathParameters['clubId']!,
-                              initialClub: switch (state.extra) {
-                                final Club rc => rc,
-                                _ => null,
-                              },
-                            ),
-                          ),
                       ],
                     ),
                   ],
@@ -681,7 +599,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
                 path: 'create-club',
                 name: Routes.hostCreateClubScreen.name,
                 parentNavigatorKey: _rootNavigatorKey,
-                builder: (context, state) => const CreateClubScreen(),
+                builder: (context, state) => const HostCreateClubScreen(),
               ),
               GoRoute(
                 path: ':clubId',
@@ -692,7 +610,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
                     path: 'edit',
                     name: Routes.hostEditClubScreen.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => EditClubRouteScreen(
+                    builder: (context, state) => HostEditClubRouteScreen(
                       clubId: state.pathParameters['clubId']!,
                       initialClub: switch (state.extra) {
                         final Club club => club,
@@ -704,7 +622,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
                     path: 'create-event',
                     name: Routes.hostCreateEventScreen.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => CreateEventRouteScreen(
+                    builder: (context, state) => HostCreateEventRouteScreen(
                       clubId: state.pathParameters['clubId']!,
                       initialClub: switch (state.extra) {
                         final Club club => club,
@@ -714,7 +632,7 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
                   ),
                   GoRoute(
                     path: 'events/:eventId',
-                    name: Routes.eventDetailScreen.name,
+                    name: Routes.hostAppEventDetailScreen.name,
                     pageBuilder: _eventDetailPage,
                   ),
                   GoRoute(
@@ -809,6 +727,13 @@ StatefulShellRoute _hostShellRoute(AppAnalytics analytics) {
             path: Routes.hostSettingsScreen.path,
             name: Routes.hostSettingsScreen.name,
             builder: (context, state) => const HostAccountScreen(),
+            routes: [
+              GoRoute(
+                path: 'profile',
+                name: Routes.hostProfileScreen.name,
+                builder: (context, state) => const HostProfileScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -848,13 +773,7 @@ bool _isPublicRoute(String matchedLocation) {
   if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.clubsListScreen.path) return true;
 
-  if (matchedLocation.startsWith('/clubs/') &&
-      matchedLocation != Routes.createClubScreen.path) {
-    // Write-oriented sub-routes still require auth.
-    if (matchedLocation.endsWith('/edit')) return false;
-    if (matchedLocation.endsWith('/create-event')) return false;
-    if (matchedLocation.endsWith('/manage')) return false;
-    if (matchedLocation.endsWith('/attendance')) return false;
+  if (matchedLocation.startsWith('/clubs/')) {
     return true;
   }
 
@@ -869,6 +788,7 @@ bool _isPublicRoute(String matchedLocation) {
 String? appRedirect({
   required AsyncValue<String?> uidAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
+  required bool hasPendingAuthVerification,
   required String matchedLocation,
   required Uri uri,
 }) {
@@ -898,6 +818,15 @@ String? appRedirect({
   final userProfile = userProfileAsync.value;
 
   if (uid == null) {
+    if (hasPendingAuthVerification && !onAuth) {
+      if (!_isPublicRoute(matchedLocation) ||
+          _isTransientRoute(matchedLocation)) {
+        return _locationWithFrom(
+          Routes.authScreen.path,
+          from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+        );
+      }
+    }
     if (_isPublicRoute(matchedLocation)) return null;
     return _locationWithFrom(
       Routes.startScreen.path,
@@ -1039,74 +968,6 @@ class _RouterLoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const CatchStartupLoadingScreen();
-  }
-}
-
-class CreateEventRouteScreen extends ConsumerWidget {
-  const CreateEventRouteScreen({
-    super.key,
-    required this.clubId,
-    this.initialClub,
-  });
-
-  final String clubId;
-  final Club? initialClub;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (initialClub != null) {
-      return CreateEventScreen(club: initialClub!);
-    }
-
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
-    return clubAsync.when(
-      loading: () => const _RouterLoadingScreen(),
-      error: (error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
-      ),
-      data: (club) => club == null
-          ? const CatchErrorScaffold(
-              title: 'Club not found',
-              message: 'This club is no longer available.',
-            )
-          : CreateEventScreen(club: club),
-    );
-  }
-}
-
-class EditClubRouteScreen extends ConsumerWidget {
-  const EditClubRouteScreen({
-    super.key,
-    required this.clubId,
-    this.initialClub,
-  });
-
-  final String clubId;
-  final Club? initialClub;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (initialClub != null) {
-      return CreateClubScreen(initialClub: initialClub!);
-    }
-
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
-    return clubAsync.when(
-      loading: () => const _RouterLoadingScreen(),
-      error: (error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
-      ),
-      data: (club) => club == null
-          ? const CatchErrorScaffold(
-              title: 'Club not found',
-              message: 'This club is no longer available.',
-            )
-          : CreateClubScreen(initialClub: club),
-    );
   }
 }
 

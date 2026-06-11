@@ -16,7 +16,7 @@ run_analyze_probe() {
   cat >"$probe_path"
 
   set +e
-  probe_output="$(flutter analyze --no-fatal-infos "$probe_path" 2>&1)"
+  probe_output="$(dart analyze "$probe_path" 2>&1)"
   probe_status=$?
   set -e
 

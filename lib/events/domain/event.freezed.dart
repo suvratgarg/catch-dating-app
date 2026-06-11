@@ -15,13 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
-@JsonKey(includeToJson: false) String get id; String get clubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint;@JsonKey(includeIfNull: false) EventMeetingLocation? get meetingLocation; double? get startingPointLat; double? get startingPointLng; String? get locationDetails;@JsonKey(includeIfNull: false) String? get photoUrl; List<UploadedPhoto> get eventPhotos; EventFormatSnapshot get eventFormat; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; String get currency;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy;// Denormalized gender counts maintained atomically by Cloud Functions.
-// Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
- Map<String, int> get genderCounts;// Denormalized event-policy cohort counts maintained by Cloud Functions.
-// Keys are EventCohortIds values.
- Map<String, int> get cohortCounts;// Denormalized waitlist demand by event-policy cohort. Used for dynamic
-// pricing quotes without reading the whole waitlist on every client view.
- Map<String, int> get waitlistedCohortCounts;
+@JsonKey(includeToJson: false) String get id; String get clubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint;@JsonKey(includeIfNull: false) EventMeetingLocation? get meetingLocation; double? get startingPointLat; double? get startingPointLng; String? get locationDetails;@JsonKey(includeIfNull: false) String? get photoUrl; List<UploadedPhoto> get eventPhotos; EventFormatSnapshot get eventFormat; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; String get currency;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy; Map<String, int> get genderCounts; Map<String, int> get cohortCounts; Map<String, int> get waitlistedCohortCounts;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -287,33 +281,21 @@ class _Event extends Event {
 @override final  String? cancellationReason;
 @override@JsonKey() final  EventConstraints constraints;
 @override@JsonKey(includeIfNull: false) final  EventPolicyBundle? eventPolicy;
-// Denormalized gender counts maintained atomically by Cloud Functions.
-// Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
  final  Map<String, int> _genderCounts;
-// Denormalized gender counts maintained atomically by Cloud Functions.
-// Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
 @override@JsonKey() Map<String, int> get genderCounts {
   if (_genderCounts is EqualUnmodifiableMapView) return _genderCounts;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_genderCounts);
 }
 
-// Denormalized event-policy cohort counts maintained by Cloud Functions.
-// Keys are EventCohortIds values.
  final  Map<String, int> _cohortCounts;
-// Denormalized event-policy cohort counts maintained by Cloud Functions.
-// Keys are EventCohortIds values.
 @override@JsonKey() Map<String, int> get cohortCounts {
   if (_cohortCounts is EqualUnmodifiableMapView) return _cohortCounts;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_cohortCounts);
 }
 
-// Denormalized waitlist demand by event-policy cohort. Used for dynamic
-// pricing quotes without reading the whole waitlist on every client view.
  final  Map<String, int> _waitlistedCohortCounts;
-// Denormalized waitlist demand by event-policy cohort. Used for dynamic
-// pricing quotes without reading the whole waitlist on every client view.
 @override@JsonKey() Map<String, int> get waitlistedCohortCounts {
   if (_waitlistedCohortCounts is EqualUnmodifiableMapView) return _waitlistedCohortCounts;
   // ignore: implicit_dynamic_type

@@ -1,15 +1,11 @@
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/city_picker.dart';
 import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_search_field.dart';
-import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_browse_header.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 const double _clubsBrowseHeaderHeight = CatchLayout.browseHeaderHeight;
 
@@ -46,8 +42,6 @@ class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final canCreate = ref.watch(canCreateClubProvider).asData?.value ?? false;
     final query = ref.watch(clubSearchQueryProvider);
     final searchActive = _searchOpen || query.isNotEmpty;
 
@@ -65,25 +59,6 @@ class _ClubsBrowseHeaderState extends ConsumerState<ClubsBrowseHeaderContent> {
       searchActionVisible: widget.showSearchAction,
       searchTooltip: 'Search events or clubs',
       searchSemanticLabel: 'Search events or clubs',
-      actions: [
-        if (canCreate)
-          Tooltip(
-            message: 'Create club',
-            child: Semantics(
-              button: true,
-              label: 'Create club',
-              child: IconBtn(
-                size: 44,
-                onTap: () => context.pushNamed(Routes.createClubScreen.name),
-                child: Icon(
-                  CatchIcons.add,
-                  size: CatchIcon.control,
-                  color: t.ink,
-                ),
-              ),
-            ),
-          ),
-      ],
       backgroundColor: widget.backgroundColor,
     );
   }

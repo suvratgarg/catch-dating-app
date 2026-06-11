@@ -82,7 +82,7 @@
       "command": "bash tool/check_riverpod_lint.sh",
       "safety": "local",
       "status": "active",
-      "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in flutter analyze.",
+      "description": "Verifies Riverpod's analysis_server_plugin diagnostics are active in dart analyze.",
       "checks": ["bash -n tool/check_riverpod_lint.sh"]
     },
     {
@@ -102,7 +102,7 @@
       "command": "bash tool/check_catch_ui_lint_drift.sh",
       "safety": "local",
       "status": "active",
-      "description": "Reports migrated Catch UI lint drift counts from flutter analyze output, including optional JSON count artifacts.",
+      "description": "Reports migrated Catch UI lint drift counts from dart analyze output, including optional JSON count artifacts.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --count"
@@ -508,6 +508,16 @@
       "checks": ["node --check tool/firebase/list_firebase_function_targets.mjs"]
     },
     {
+      "id": "firebase:register-app-check-debug-token",
+      "category": "firebase",
+      "path": "tool/firebase/register_app_check_debug_token.mjs",
+      "command": "node tool/firebase/register_app_check_debug_token.mjs",
+      "safety": "remote-write-dev-token",
+      "status": "active",
+      "description": "Registers a known local Firebase App Check debug token for an explicit app id.",
+      "checks": ["node --check tool/firebase/register_app_check_debug_token.mjs"]
+    },
+    {
       "id": "firebase:create-config-cities",
       "category": "firebase",
       "path": "tool/firebase/create_config_cities.mjs",
@@ -526,6 +536,16 @@
       "status": "active",
       "description": "Runs Flutter with active Firebase environment and dart defines.",
       "checks": ["bash -n tool/flutter_with_env.sh"]
+    },
+    {
+      "id": "env:host-dev-simulator",
+      "category": "env",
+      "path": "tool/run_host_dev_simulator.sh",
+      "command": "./tool/run_host_dev_simulator.sh",
+      "safety": "local-build-run",
+      "status": "active",
+      "description": "Runs the Catch host dev app on an iOS simulator with local App Check debug settings.",
+      "checks": ["bash -n tool/run_host_dev_simulator.sh"]
     },
     {
       "id": "env:firebase",

@@ -10,6 +10,7 @@ interface JoinWaitlistBody {
   role?: unknown;
   instagram?: unknown;
   website?: unknown;
+  hostApplication?: unknown;
   attribution?: unknown;
   analytics?: unknown;
 }
@@ -28,9 +29,11 @@ const localOrigins = [
   "http://localhost:5000",
   "http://localhost:5175",
   "http://localhost:8123",
+  "http://localhost:4187",
   "http://127.0.0.1:5000",
   "http://127.0.0.1:5175",
   "http://127.0.0.1:8123",
+  "http://127.0.0.1:4187",
 ];
 
 const attributionValueKeys = new Set([
@@ -192,6 +195,83 @@ function normalizeOptionalMarketingText(
     return null;
   }
   return text.slice(0, maxLength);
+}
+
+/**
+ * Normalizes a bounded string array from a marketing form.
+ * @param {unknown} value Raw array payload.
+ * @param {number} maxItems Maximum accepted values.
+ * @param {number} maxLength Maximum length per value.
+ * @return {string[]} Sanitized string values.
+ */
+function normalizeMarketingStringArray(
+  value: unknown,
+  maxItems = 12,
+  maxLength = 120
+): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const normalized = value
+    .map((item) => normalizeOptionalMarketingText(item, maxLength))
+    .filter((item): item is string => Boolean(item));
+  return [...new Set(normalized)].slice(0, maxItems);
+}
+
+/**
+ * Normalizes the richer host application packet from the marketing site.
+ * @param {unknown} value Raw host application payload.
+ * @return {Record<string, unknown>|null} Sanitized host application payload.
+ */
+export function normalizeHostApplication(
+  value: unknown
+): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const raw = value as Record<string, unknown>;
+  const application = {
+    organizationName: normalizeOptionalMarketingText(
+      raw.organizationName,
+      140
+    ),
+    organizationType: normalizeOptionalMarketingText(
+      raw.organizationType,
+      80
+    ),
+    operatingCity: normalizeOptionalMarketingText(raw.operatingCity, 80),
+    communityLink: normalizeOptionalMarketingText(raw.communityLink, 512),
+    formats: normalizeMarketingStringArray(raw.formats, 10, 80),
+    eventCadence: normalizeOptionalMarketingText(raw.eventCadence, 80),
+    nextEventName: normalizeOptionalMarketingText(raw.nextEventName, 160),
+    nextEventDate: normalizeOptionalMarketingText(raw.nextEventDate, 80),
+    eventLocation: normalizeOptionalMarketingText(raw.eventLocation, 180),
+    expectedCapacity: normalizeOptionalMarketingText(
+      raw.expectedCapacity,
+      40
+    ),
+    priceRange: normalizeOptionalMarketingText(raw.priceRange, 80),
+    admissionModel: normalizeOptionalMarketingText(raw.admissionModel, 80),
+    waitlistPlan: normalizeOptionalMarketingText(raw.waitlistPlan, 80),
+    paymentReadiness: normalizeOptionalMarketingText(
+      raw.paymentReadiness,
+      120
+    ),
+    eventSuccessModules: normalizeMarketingStringArray(
+      raw.eventSuccessModules,
+      16,
+      120
+    ),
+    hostGoals: normalizeOptionalMarketingText(raw.hostGoals, 1000),
+    operatingNotes: normalizeOptionalMarketingText(raw.operatingNotes, 1000),
+  };
+
+  const hasValue = Object.values(application).some((item) =>
+    Array.isArray(item) ? item.length > 0 : Boolean(item)
+  );
+  return hasValue ? application : null;
 }
 
 /**
@@ -361,6 +441,7 @@ export const joinWaitlist = onRequest(
     const role = normalizeWaitlistRole(submittedRole);
     const instagram = normalizeInstagram(body.instagram);
     const honeypot = normalizeText(body.website);
+    const hostApplication = normalizeHostApplication(body.hostApplication);
     const marketingAttribution = normalizeMarketingAttribution(
       body.attribution
     );
@@ -435,6 +516,7 @@ export const joinWaitlist = onRequest(
         source: "catchdates.com",
         referrer: referrer || null,
         userAgent: userAgent || null,
+        hostApplication,
         marketingAnalytics,
         marketingAttribution,
       };
@@ -467,6 +549,7 @@ export const joinWaitlist = onRequest(
         eventName: conversionName,
         leadId: waitlistRef.id,
         leadPath: waitlistRef.path,
+        hostApplication,
         role,
         source: "catchdates.com",
         status: "readyForReview",

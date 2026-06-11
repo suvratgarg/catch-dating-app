@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import * as crypto from "crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";

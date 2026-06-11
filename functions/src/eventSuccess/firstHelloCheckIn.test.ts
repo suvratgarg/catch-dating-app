@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest} from "firebase-functions/v2/https";

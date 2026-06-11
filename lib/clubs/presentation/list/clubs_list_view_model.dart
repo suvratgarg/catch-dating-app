@@ -3,7 +3,6 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
@@ -92,7 +91,6 @@ class ClubBrowseFilterSelection {
     this.distanceFilter = ExploreDistanceFilter.any,
     this.highRatedOnly = false,
     this.joinedOnly = false,
-    this.hostedOnly = false,
     this.activityTag,
     this.area,
   }) : timeFilter =
@@ -105,7 +103,6 @@ class ClubBrowseFilterSelection {
   final ExploreDistanceFilter distanceFilter;
   final bool highRatedOnly;
   final bool joinedOnly;
-  final bool hostedOnly;
   final String? activityTag;
   final String? area;
 
@@ -120,7 +117,6 @@ class ClubBrowseFilterSelection {
       distanceFilter != ExploreDistanceFilter.any ||
       highRatedOnly ||
       joinedOnly ||
-      hostedOnly ||
       activityTag != null ||
       area != null;
 
@@ -130,7 +126,6 @@ class ClubBrowseFilterSelection {
     bool? thisWeekOnly,
     bool? highRatedOnly,
     bool? joinedOnly,
-    bool? hostedOnly,
     Object? activityTag = unsetSentinel,
     Object? area = unsetSentinel,
   }) {
@@ -145,7 +140,6 @@ class ClubBrowseFilterSelection {
           : distanceFilter as ExploreDistanceFilter,
       highRatedOnly: highRatedOnly ?? this.highRatedOnly,
       joinedOnly: joinedOnly ?? this.joinedOnly,
-      hostedOnly: hostedOnly ?? this.hostedOnly,
       activityTag: identical(activityTag, unsetSentinel)
           ? this.activityTag
           : activityTag as String?,
@@ -161,7 +155,6 @@ class ClubBrowseFilterSelection {
             other.distanceFilter == distanceFilter &&
             other.highRatedOnly == highRatedOnly &&
             other.joinedOnly == joinedOnly &&
-            other.hostedOnly == hostedOnly &&
             other.activityTag == activityTag &&
             other.area == area;
   }
@@ -172,7 +165,6 @@ class ClubBrowseFilterSelection {
     distanceFilter,
     highRatedOnly,
     joinedOnly,
-    hostedOnly,
     activityTag,
     area,
   );
@@ -194,7 +186,6 @@ abstract class ClubsListViewModel with _$ClubsListViewModel {
     required List<Club> joinedClubs,
     required List<Club> allClubs,
     @Default({}) Set<String> joinedClubIds,
-    @Default({}) Set<String> hostedClubIds,
   }) = _ClubsListViewModel;
 
   bool get isEmpty => allClubs.isEmpty;
@@ -202,7 +193,6 @@ abstract class ClubsListViewModel with _$ClubsListViewModel {
   factory ClubsListViewModel.partition({
     required List<Club> clubs,
     required Set<String> joinedClubIds,
-    Set<String> hostedClubIds = const {},
   }) {
     final joinedClubs = <Club>[];
     final activeClubIds = <String>{};
@@ -218,7 +208,6 @@ abstract class ClubsListViewModel with _$ClubsListViewModel {
       joinedClubs: List.unmodifiable(joinedClubs),
       allClubs: List.unmodifiable(clubs),
       joinedClubIds: activeClubIds,
-      hostedClubIds: hostedClubIds.intersection(activeClubIds),
     );
   }
 }
@@ -329,10 +318,6 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
     state = state.copyWith(joinedOnly: !state.joinedOnly);
   }
 
-  void toggleHostedOnly() {
-    state = state.copyWith(hostedOnly: !state.hostedOnly);
-  }
-
   void toggleActivityTag(String tag) {
     final next = _normalizeFilterValue(tag);
     if (next == null) return;
@@ -368,7 +353,6 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
 AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
   final city = ref.watch(selectedClubCityProvider);
   final locationClubsAsync = ref.watch(watchClubsByLocationProvider(city.name));
-  final uidAsync = ref.watch(uidProvider);
 
   if (locationClubsAsync.isLoading) {
     return const AsyncLoading();
@@ -380,40 +364,7 @@ AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
     );
   }
   final locationClubs = locationClubsAsync.asData?.value ?? const <Club>[];
-  if (!uidAsync.hasValue || uidAsync.hasError) {
-    return AsyncData(List.unmodifiable(locationClubs));
-  }
-  final uid = uidAsync.asData?.value;
-  if (uid == null) {
-    return AsyncData(List.unmodifiable(locationClubs));
-  }
-
-  final hostedClubsAsync = ref.watch(watchClubsHostedByProvider(uid));
-  final ownedClubsAsync = ref.watch(watchClubsOwnedByProvider(uid));
-
-  if (hostedClubsAsync.isLoading || ownedClubsAsync.isLoading) {
-    return const AsyncLoading();
-  }
-  if (hostedClubsAsync.hasError) {
-    return AsyncError(
-      hostedClubsAsync.error!,
-      hostedClubsAsync.stackTrace ?? StackTrace.current,
-    );
-  }
-  if (ownedClubsAsync.hasError) {
-    return AsyncError(
-      ownedClubsAsync.error!,
-      ownedClubsAsync.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  return AsyncData(
-    mergeExploreSourceClubs(
-      locationClubs: locationClubs,
-      hostedClubs: hostedClubsAsync.asData?.value ?? const <Club>[],
-      ownedClubs: ownedClubsAsync.asData?.value ?? const <Club>[],
-    ),
-  );
+  return AsyncData(List.unmodifiable(locationClubs));
 }
 
 @riverpod
@@ -436,17 +387,9 @@ AsyncValue<List<Club>> filteredClubs(Ref ref) {
     return AsyncData(sourceClubs);
   }
 
-  final uid = ref.watch(uidProvider).asData?.value;
-  final pinnedClubs = uid == null
-      ? const <Club>[]
-      : sourceClubs
-            .where((club) => club.isHostedBy(uid))
-            .toList(growable: false);
-  final localFallback = _localSearchWithPinnedClubs(
-    sourceClubs: sourceClubs,
-    pinnedClubs: pinnedClubs,
-    normalizedQuery: normalizedQuery,
-  );
+  final localFallback = sourceClubs
+      .where((club) => matchesClubSearchQuery(club, normalizedQuery))
+      .toList(growable: false);
   final searchAsync = ref.watch(
     exploreServerSearchProvider(query: query, cityName: city.name),
   );
@@ -477,58 +420,7 @@ AsyncValue<List<Club>> filteredClubs(Ref ref) {
     ids: searchResult.clubIds,
     clubs: searchedClubsAsync.asData?.value ?? const <Club>[],
   );
-  return AsyncData(
-    mergeSearchMatchesWithPinnedClubs(
-      rankedMatches: rankedMatches,
-      pinnedClubs: pinnedClubs,
-    ),
-  );
-}
-
-List<Club> mergeExploreSourceClubs({
-  required List<Club> locationClubs,
-  required List<Club> hostedClubs,
-  required List<Club> ownedClubs,
-}) {
-  final byId = <String, Club>{};
-  for (final club in locationClubs) {
-    byId[club.id] = club;
-  }
-  for (final club in hostedClubs) {
-    byId[club.id] = club;
-  }
-  for (final club in ownedClubs) {
-    byId[club.id] = club;
-  }
-  return List.unmodifiable(byId.values);
-}
-
-List<Club> _localSearchWithPinnedClubs({
-  required List<Club> sourceClubs,
-  required List<Club> pinnedClubs,
-  required String normalizedQuery,
-}) {
-  final localMatches = sourceClubs
-      .where((club) => matchesClubSearchQuery(club, normalizedQuery))
-      .toList(growable: false);
-  return mergeSearchMatchesWithPinnedClubs(
-    rankedMatches: localMatches,
-    pinnedClubs: pinnedClubs,
-  );
-}
-
-List<Club> mergeSearchMatchesWithPinnedClubs({
-  required List<Club> rankedMatches,
-  required List<Club> pinnedClubs,
-}) {
-  final byId = <String, Club>{};
-  for (final club in rankedMatches) {
-    byId[club.id] = club;
-  }
-  for (final club in pinnedClubs) {
-    byId[club.id] = club;
-  }
-  return List.unmodifiable(byId.values);
+  return AsyncData(rankedMatches);
 }
 
 List<Club> _rankClubsById({
@@ -599,58 +491,16 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
           .map((membership) => membership.clubId)
           .toSet() ??
       <String>{};
-  final hostedClubIds = uid == null
-      ? <String>{}
-      : sourceClubs
-            .where((club) => club.isHostedBy(uid))
-            .map((club) => club.id)
-            .toSet();
-  final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
+  final joinedClubIds = membershipClubIds;
   final clubs = applyClubBrowseFilters(
     clubs: sourceClubs,
     filters: browseFilters,
     joinedClubIds: joinedClubIds,
-    hostedClubIds: hostedClubIds,
   );
 
   return AsyncData(
-    ClubsListViewModel.partition(
-      clubs: clubs,
-      joinedClubIds: joinedClubIds,
-      hostedClubIds: hostedClubIds,
-    ),
+    ClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
   );
-}
-
-/// **Pattern D: View-model provider**
-///
-/// Derives the create-club affordance from the server-owned hosted-club query.
-/// The callable enforces the one-club invariant; this provider keeps the list
-/// UI from offering a creation path after a host already has a club.
-@riverpod
-AsyncValue<bool> canCreateClub(Ref ref) {
-  if (!AppConfig.appRole.isHost) {
-    return const AsyncData(false);
-  }
-
-  final uidAsync = ref.watch(uidProvider);
-  if (uidAsync.isLoading) {
-    return const AsyncLoading();
-  }
-  if (uidAsync.hasError) {
-    return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
-    );
-  }
-
-  final uid = uidAsync.asData?.value;
-  if (uid == null) {
-    return const AsyncData(false);
-  }
-
-  final ownedAsync = ref.watch(watchClubsOwnedByProvider(uid));
-  return ownedAsync.whenData((clubs) => clubs.isEmpty);
 }
 
 bool matchesClubSearchQuery(Club club, String normalizedQuery) {
@@ -664,7 +514,6 @@ List<Club> applyClubBrowseFilters({
   required List<Club> clubs,
   required ClubBrowseFilterSelection filters,
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
   DateTime? now,
 }) {
   if (!filters.hasActiveFilters) return clubs;
@@ -679,9 +528,6 @@ List<Club> applyClubBrowseFilters({
           return false;
         }
         if (filters.joinedOnly && !joinedClubIds.contains(club.id)) {
-          return false;
-        }
-        if (filters.hostedOnly && !hostedClubIds.contains(club.id)) {
           return false;
         }
         final activityTag = filters.activityTag;

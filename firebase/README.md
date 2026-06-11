@@ -124,8 +124,11 @@ Last consolidated from live environment evidence on 2026-05-21.
   refreshed afterward. Host App Check provider registrations were verified in
   Firebase Console on 2026-06-10 for dev, staging, and prod: Android uses Play
   Integrity, iOS uses App Attest, and web uses reCAPTCHA Enterprise. Firebase
-  CLI `15.1.0` and `gcloud` `566.0.0` do not expose App Check app-management
-  commands in this local toolchain.
+  CLI `15.20.0` and `gcloud` `566.0.0` do not expose App Check app-management
+  commands in this local toolchain. Use
+  `node tool/firebase/register_app_check_debug_token.mjs` for explicitly
+  approved local debug-token registration; it reads the token from `.env.local`
+  and does not print it.
 - App Check service enforcement is `ENFORCED` for Firestore, Storage, and
   Firebase Authentication in all three projects. Callable Cloud Functions use
   `enforceAppCheck: true`; the public marketing waitlist endpoint remains
@@ -161,6 +164,7 @@ Run Flutter with the matching `APP_ENV` define file:
 ```bash
 ./tool/flutter_with_env.sh dev run
 ./tool/flutter_with_env.sh dev --role host run
+./tool/run_host_dev_simulator.sh "iPhone 17 Pro"
 ./tool/flutter_with_env.sh staging run -d chrome
 ./tool/flutter_with_env.sh prod build apk
 ```

@@ -11,7 +11,6 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/clubs/presentation/create/create_club_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
@@ -38,7 +37,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
-import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
@@ -47,7 +45,9 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -1309,7 +1309,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
           ),
         ),
       ),
-      canCreateClubProvider.overrideWithValue(const AsyncData(false)),
       exploreFeedViewModelProvider.overrideWithValue(
         AsyncData(ExploreFeedViewModel(items: _memberDiscoveryItems)),
       ),
@@ -1319,7 +1318,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'create_club_basics',
-    routeIds: const <String>['createClubScreen'],
+    routeIds: const <String>['hostCreateClubScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
@@ -1331,7 +1330,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'edit_club_basics',
-    routeIds: const <String>['editClubScreen'],
+    routeIds: const <String>['hostEditClubScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
@@ -1343,7 +1342,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_event_setup',
-    routeIds: const <String>['createEventScreen'],
+    routeIds: const <String>['hostCreateEventScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.eventSetup'],
     providerOverrides: [
@@ -1364,7 +1363,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'edit_hosted_event',
-    routeIds: const <String>['editHostedEventScreen'],
+    routeIds: const <String>['hostAppEditEventScreen'],
     device: CaptureDevice.iphone17Pro,
     providerOverrides: [
       uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
@@ -1383,7 +1382,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_live_console',
-    routeIds: const <String>['hostEventManageScreen'],
+    routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.liveConsole'],
     providerOverrides: [
@@ -1417,7 +1416,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'host_post_event_report',
-    routeIds: const <String>['hostEventManageScreen'],
+    routeIds: const <String>['hostAppEventManageScreen'],
     device: CaptureDevice.iphone17Pro,
     marketingFixtureKeys: const <String>['salesDemo.host.postEventReport'],
     providerOverrides: [

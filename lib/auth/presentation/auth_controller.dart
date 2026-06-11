@@ -35,6 +35,13 @@ abstract class AuthScreenState with _$AuthScreenState {
   }) = _AuthScreenState;
 }
 
+extension AuthScreenStateX on AuthScreenState {
+  bool get hasPendingVerification =>
+      step == AuthStep.otp &&
+      verificationId != null &&
+      verificationId!.isNotEmpty;
+}
+
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
 /// Owns the phone-auth screen state while the user moves between phone entry
@@ -108,8 +115,9 @@ class AuthController extends _$AuthController {
               if (!completer.isCompleted) completer.complete();
             },
             verificationFailed: (e) {
-              _debugLog(
-                'AuthController.sendOtp verificationFailed: code=${e.code}',
+              _debugLogAppException(
+                'AuthController.sendOtp verificationFailed',
+                e,
               );
               if (!completer.isCompleted) completer.completeError(e);
             },
@@ -181,5 +189,17 @@ class AuthController extends _$AuthController {
       return;
     }
     debugPrint(message);
+  }
+
+  void _debugLogAppException(String label, AppException error) {
+    _debugLog('$label: code=${error.code}');
+    final debugMessage = error.debugMessage;
+    if (debugMessage != null && debugMessage.isNotEmpty) {
+      _debugLog('$label debug: $debugMessage');
+    }
+    final cause = error.cause;
+    if (cause != null) {
+      _debugLog('$label cause: ${cause.runtimeType}: $cause');
+    }
   }
 }

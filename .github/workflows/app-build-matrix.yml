@@ -17,7 +17,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.9'
+          flutter-version: '3.44.1'
           channel: stable
           cache: true
 
@@ -52,7 +52,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.9'
+          flutter-version: '3.44.1'
           channel: stable
           cache: true
 
@@ -85,7 +85,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.41.9'
+          flutter-version: '3.44.1'
           channel: stable
           cache: true
 
@@ -97,7 +97,7 @@ jobs:
         run: ./tool/write_ios_maps_key_xcconfig.sh dev
 
       - name: Build dev iOS simulator artifact
-        run: ./tool/flutter_with_env.sh dev build ios --simulator --no-codesign
+        run: ./tool/flutter_with_env.sh dev build ios --debug --simulator --no-codesign
 
       - name: Build dev host iOS simulator artifact
-        run: ./tool/flutter_with_env.sh dev --role host build ios --simulator --no-codesign
+        run: ./tool/flutter_with_env.sh dev --role host build ios --debug --simulator --no-codesign

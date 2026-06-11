@@ -93,7 +93,7 @@ abstract class _$PhotoUploadController extends $Notifier<PhotoUploadState> {
   PhotoUploadState build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<PhotoUploadState, PhotoUploadState>;
     final element =
         ref.element
@@ -103,6 +103,6 @@ abstract class _$PhotoUploadController extends $Notifier<PhotoUploadState> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

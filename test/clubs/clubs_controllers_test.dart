@@ -3,12 +3,13 @@ import 'dart:typed_data';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/clubs/presentation/create/create_club_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -32,6 +33,8 @@ ClubMembership _membership({
 );
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   group('ClubMembershipController', () {
     test('join requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeClubsRepository();
@@ -125,8 +128,8 @@ void main() {
     });
   });
 
-  group('ClubHostManagementController', () {
-    test('forwards owner host-management actions to the repository', () async {
+  group('ClubHostContactController', () {
+    test('starts a host conversation through the repository', () async {
       final fakeRepository = FakeClubsRepository();
       final container = ProviderContainer(
         overrides: [
@@ -144,25 +147,13 @@ void main() {
       await container.pump();
 
       final controller = container.read(
-        clubHostManagementControllerProvider.notifier,
+        clubHostContactControllerProvider.notifier,
       );
-      await controller.addHostByPhone(
-        clubId: 'club-1',
-        phoneNumber: '98765 43210',
-      );
-      await controller.removeHost(clubId: 'club-1', uid: 'host-2');
-      await controller.transferOwnership(clubId: 'club-1', uid: 'host-2');
       final matchId = await controller.startConversation(
         clubId: 'club-1',
         hostUid: 'host-2',
       );
 
-      expect(fakeRepository.addedHostClubId, 'club-1');
-      expect(fakeRepository.addedHostPhoneNumber, '98765 43210');
-      expect(fakeRepository.removedHostClubId, 'club-1');
-      expect(fakeRepository.removedHostUid, 'host-2');
-      expect(fakeRepository.transferredOwnershipClubId, 'club-1');
-      expect(fakeRepository.transferredOwnershipUid, 'host-2');
       expect(fakeRepository.startedConversationClubId, 'club-1');
       expect(fakeRepository.startedConversationHostUid, 'host-2');
       expect(matchId, fakeRepository.nextHostConversationMatchId);
@@ -217,7 +208,7 @@ void main() {
       expect(result.isLoading, isTrue);
     });
 
-    test('keeps schedule visible while secondary auth data hydrates', () {
+    test('consumer role keeps owned club detail in consumer mode', () {
       final now = DateTime(2025, 1, 1, 9);
       final futureEvent = buildEvent(
         id: 'future-event',
@@ -235,11 +226,26 @@ void main() {
       );
 
       final vm = result.requireValue!;
-      expect(vm.isHost, isTrue);
+      expect(vm.isHost, isFalse);
       expect(vm.upcomingEvents.map((event) => event.id), ['future-event']);
       expect(vm.reviews, isEmpty);
       expect(vm.userProfile, isNull);
       expect(vm.isMember, isFalse);
+    });
+
+    test('host role derives host club detail state', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      final result = buildClubDetailViewModel(
+        clubAsync: AsyncData(buildClub()),
+        eventsAsync: const AsyncData(<Event>[]),
+        reviewsAsync: const AsyncData(<Review>[]),
+        userProfileAsync: const AsyncLoading(),
+        uidAsync: const AsyncData('host-1'),
+        membershipAsync: const AsyncLoading(),
+      );
+
+      expect(result.requireValue!.isHost, isTrue);
     });
 
     test('returns null data when the club stream yields no club', () {

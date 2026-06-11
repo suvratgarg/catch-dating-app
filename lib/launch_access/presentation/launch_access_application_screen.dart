@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_config_provider.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
@@ -247,23 +248,25 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            SwitchListTile.adaptive(
-              value: draft.wantsToHost,
-              contentPadding: EdgeInsets.zero,
-              title: Text(
-                'I might host',
-                style: CatchTextStyles.sectionTitle(context, color: t.ink),
+            ListTileMaterial(
+              child: SwitchListTile.adaptive(
+                value: draft.wantsToHost,
+                contentPadding: EdgeInsets.zero,
+                title: Text(
+                  'I might host',
+                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
+                ),
+                subtitle: Text(
+                  'Useful if you already run a club, venue, or social format.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
+                onChanged: (value) {
+                  LaunchAccessController.submitMutation.reset(ref);
+                  ref
+                      .read(launchAccessControllerProvider.notifier)
+                      .setWantsToHost(value);
+                },
               ),
-              subtitle: Text(
-                'Useful if you already run a club, venue, or social format.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-              onChanged: (value) {
-                LaunchAccessController.submitMutation.reset(ref);
-                ref
-                    .read(launchAccessControllerProvider.notifier)
-                    .setWantsToHost(value);
-              },
             ),
             gapH24,
             CatchTextField(

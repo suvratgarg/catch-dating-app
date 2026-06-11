@@ -3,7 +3,7 @@
 # Catch UI lint drift helper.
 #
 # Replaces the retired design-token scanner count mode for the migrated
-# color/text-style/font rules. Enforcement lives in flutter analyze; this script
+# color/text-style/font rules. Enforcement lives in dart analyze; this script
 # is only the aggregate reporting layer.
 set -euo pipefail
 
@@ -86,7 +86,7 @@ done
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 set +e
-analyze_output="$(flutter analyze --no-fatal-infos 2>&1)"
+analyze_output="$(dart analyze 2>&1)"
 analyze_status=$?
 set -e
 
@@ -193,7 +193,7 @@ fi
 
 if [ "$analyze_status" -ne 0 ]; then
   echo ""
-  echo "flutter analyze failed without migrated color/text/font drift. Output:"
+  echo "dart analyze failed without migrated color/text/font drift. Output:"
   echo "$analyze_output"
   exit "$analyze_status"
 fi

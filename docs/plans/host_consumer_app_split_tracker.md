@@ -72,7 +72,7 @@ Verified App Check evidence:
 - Dev, staging, and prod host Android apps show `Play Integrity` and `Registered` in Firebase Console.
 - Dev, staging, and prod host iOS apps show `App Attest` and `Registered` in Firebase Console.
 - Dev, staging, and prod host web apps show `reCAPTCHA Enterprise` and `Registered` in Firebase Console.
-- Firebase CLI `15.1.0` and `gcloud` `566.0.0` do not expose App Check app-management commands in this local toolchain, so the provider evidence was captured through Firebase Console refreshes.
+- Firebase CLI `15.20.0` and `gcloud` `566.0.0` do not expose App Check app-management commands in this local toolchain, so the provider evidence was captured through Firebase Console refreshes.
 
 ## Workstreams
 

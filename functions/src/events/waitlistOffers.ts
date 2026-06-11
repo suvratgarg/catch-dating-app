@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {
   CallableRequest,

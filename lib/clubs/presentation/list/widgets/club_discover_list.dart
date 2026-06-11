@@ -13,7 +13,6 @@ List<Widget> buildClubDirectorySlivers({
   required BuildContext context,
   required List<Club> clubs,
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
 }) {
   return [
     SliverToBoxAdapter(
@@ -32,7 +31,6 @@ List<Widget> buildClubDirectorySlivers({
             ClubListTile(
               club: clubs[index],
               isJoined: joinedClubIds.contains(clubs[index].id),
-              isHost: hostedClubIds.contains(clubs[index].id),
             ),
           ],
         ],
@@ -48,12 +46,10 @@ class ClubDiscoverList extends StatelessWidget {
     super.key,
     required this.clubs,
     required this.joinedClubIds,
-    required this.hostedClubIds,
   });
 
   final List<Club> clubs;
   final Set<String> joinedClubIds;
-  final Set<String> hostedClubIds;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +58,6 @@ class ClubDiscoverList extends StatelessWidget {
         context: context,
         clubs: clubs,
         joinedClubIds: joinedClubIds,
-        hostedClubIds: hostedClubIds,
       ),
     );
   }

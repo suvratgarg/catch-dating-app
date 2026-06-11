@@ -15,12 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PublicProfile {
 
-@JsonKey(includeToJson: false) String get uid; String get name; int get age; Gender get gender; List<ProfilePromptAnswer> get profilePrompts; List<ProfilePhoto> get profilePhotos;// Location
- String? get city;// Background
- int? get height; String? get occupation; String? get company; EducationLevel? get education; Religion? get religion; List<Language> get languages;// Intentions
- RelationshipGoal? get relationshipGoal;// Lifestyle
- DrinkingHabit? get drinking; SmokingHabit? get smoking; WorkoutFrequency? get workout; DietaryPreference? get diet; ChildrenStatus? get children;// Activity preferences
- ActivityPreferences get activityPreferences;
+@JsonKey(includeToJson: false) String get uid; String get name; int get age; Gender get gender; List<ProfilePromptAnswer> get profilePrompts; List<ProfilePhoto> get profilePhotos; String? get city; int? get height; String? get occupation; String? get company; EducationLevel? get education; Religion? get religion; List<Language> get languages; RelationshipGoal? get relationshipGoal; DrinkingHabit? get drinking; SmokingHabit? get smoking; WorkoutFrequency? get workout; DietaryPreference? get diet; ChildrenStatus? get children; ActivityPreferences get activityPreferences;
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -263,9 +258,7 @@ class _PublicProfile implements PublicProfile {
   return EqualUnmodifiableListView(_profilePhotos);
 }
 
-// Location
 @override final  String? city;
-// Background
 @override final  int? height;
 @override final  String? occupation;
 @override final  String? company;
@@ -278,15 +271,12 @@ class _PublicProfile implements PublicProfile {
   return EqualUnmodifiableListView(_languages);
 }
 
-// Intentions
 @override final  RelationshipGoal? relationshipGoal;
-// Lifestyle
 @override final  DrinkingHabit? drinking;
 @override final  SmokingHabit? smoking;
 @override final  WorkoutFrequency? workout;
 @override final  DietaryPreference? diet;
 @override final  ChildrenStatus? children;
-// Activity preferences
 @override@JsonKey() final  ActivityPreferences activityPreferences;
 
 /// Create a copy of PublicProfile

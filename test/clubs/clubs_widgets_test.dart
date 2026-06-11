@@ -5,8 +5,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/create/create_club_controller.dart';
-import 'package:catch_dating_app/clubs/presentation/create/create_club_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
@@ -52,6 +50,8 @@ import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -282,7 +282,6 @@ void main() {
                 buildClub(id: 'discover-1'),
               ],
               joinedClubIds: {'joined-1'},
-              hostedClubIds: {'joined-1'},
             ),
           ),
         ]);
@@ -975,9 +974,6 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            watchClubsOwnedByProvider(
-              'host-1',
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
           child: MaterialApp.router(
             theme: AppTheme.light,
@@ -1056,22 +1052,16 @@ void main() {
       );
     });
 
-    testWidgets('ClubListTile labels hosted clubs distinctly from joined', (
+    testWidgets('ClubListTile labels joined clubs without host state', (
       tester,
     ) async {
       await pumpTestApp(
         tester,
-        ClubListTile(
-          club: buildClub(name: 'Host Club'),
-          isJoined: true,
-          isHost: true,
-        ),
+        ClubListTile(club: buildClub(name: 'Host Club'), isJoined: true),
       );
 
-      // Host > Joined > Join: hosts get the "You host" sash; the
-      // legacy "Joined" sash is suppressed; the Join CTA is hidden.
-      expect(find.text('You host'), findsOneWidget);
-      expect(find.text('Joined'), findsNothing);
+      expect(find.text('You host'), findsNothing);
+      expect(find.text('Joined'), findsOneWidget);
       expect(find.text('Join'), findsNothing);
     });
 
@@ -1573,7 +1563,7 @@ void main() {
       expect(find.text('SIGNAL HILL / MUMBAI'), findsOneWidget);
     });
 
-    testWidgets('ClubDetailBody host view exposes edit and create navigation', (
+    testWidgets('ClubDetailBody host view stays a public club profile', (
       tester,
     ) async {
       AppConfig.configureEntrypointRole(AppRole.host);
@@ -1601,22 +1591,6 @@ void main() {
                 isClubPushMutating: false,
                 isAuthenticated: true,
               ),
-            ),
-          ),
-          GoRoute(
-            path: '/edit/:clubId',
-            name: Routes.hostEditClubScreen.name,
-            builder: (_, state) => Text(
-              'Edit ${state.pathParameters['clubId']}',
-              textDirection: TextDirection.ltr,
-            ),
-          ),
-          GoRoute(
-            path: '/create/:clubId',
-            name: Routes.hostCreateEventScreen.name,
-            builder: (_, state) => Text(
-              'Create ${state.pathParameters['clubId']}',
-              textDirection: TextDirection.ltr,
             ),
           ),
         ],
@@ -1651,30 +1625,16 @@ void main() {
       expect(find.text('Club host'), findsNothing);
       expect(find.text('Hosts events in Saket'), findsNothing);
 
-      await tester.scrollUntilVisible(find.text('Booked'), 240);
-      await _pumpClubUi(tester);
+      expect(find.text('HOST TOOLS'), findsNothing);
+      expect(find.text('Edit club'), findsNothing);
+      expect(find.text('Add event'), findsNothing);
+      expect(find.text('Payouts'), findsNothing);
+      expect(find.text('Set up payouts'), findsNothing);
+      expect(find.text('Host team'), findsNothing);
 
-      expect(find.text('Booked'), findsOneWidget);
-      expect(find.text('HOST TOOLS'), findsOneWidget);
-      expect(find.text('Edit club'), findsOneWidget);
-      expect(find.text('Add event'), findsOneWidget);
-
-      await tester.ensureVisible(find.text('Edit club'));
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
       await _pumpClubUi(tester);
-      await tester.tap(find.text('Edit club'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Edit club-host'), findsOneWidget);
-
-      router.go('/');
-      await _pumpClubUi(tester);
-
-      await tester.ensureVisible(find.text('Add event'));
-      await _pumpClubUi(tester);
-      await tester.tap(find.text('Add event'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Create club-host'), findsOneWidget);
+      expect(find.text('HOSTED'), findsNothing);
     });
 
     testWidgets(
@@ -1839,68 +1799,72 @@ void main() {
       expect(find.text('Chat host-inquiry-1'), findsOneWidget);
     });
 
-    testWidgets('ClubDetailBody owner sees host team management actions', (
-      tester,
-    ) async {
-      AppConfig.configureEntrypointRole(AppRole.host);
-      final club = buildClub(
-        id: 'club-owner-hosts',
-        hostUserId: 'owner-1',
-        ownerUserId: 'owner-1',
-        hostUserIds: const ['owner-1', 'host-2'],
-        hostProfiles: const [
-          ClubHostProfile(
-            uid: 'owner-1',
-            displayName: 'Owner Host',
-            role: ClubHostRole.owner,
-          ),
-          ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
-        ],
-      );
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('owner-1')),
+    testWidgets(
+      'ClubDetailBody owner does not see host team management actions',
+      (tester) async {
+        AppConfig.configureEntrypointRole(AppRole.host);
+        final club = buildClub(
+          id: 'club-owner-hosts',
+          hostUserId: 'owner-1',
+          ownerUserId: 'owner-1',
+          hostUserIds: const ['owner-1', 'host-2'],
+          hostProfiles: const [
+            ClubHostProfile(
+              uid: 'owner-1',
+              displayName: 'Owner Host',
+              role: ClubHostRole.owner,
+            ),
+            ClubHostProfile(uid: 'host-2', displayName: 'Co Host'),
           ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: Scaffold(
-              body: ClubDetailBody(
-                club: club,
-                upcoming: const [],
-                reviews: const [],
-                userProfile: buildUser(uid: 'owner-1'),
-                uid: 'owner-1',
-                isHost: true,
-                isMember: true,
-                isMutating: false,
-                clubPushNotificationsEnabled: false,
-                isClubPushMutating: false,
-                isAuthenticated: true,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              uidProvider.overrideWith((ref) => Stream.value('owner-1')),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: Scaffold(
+                body: ClubDetailBody(
+                  club: club,
+                  upcoming: const [],
+                  reviews: const [],
+                  userProfile: buildUser(uid: 'owner-1'),
+                  uid: 'owner-1',
+                  isHost: true,
+                  isMember: true,
+                  isMutating: false,
+                  clubPushNotificationsEnabled: false,
+                  isClubPushMutating: false,
+                  isAuthenticated: true,
+                ),
               ),
             ),
           ),
-        ),
-      );
-      await _pumpClubUi(tester);
+        );
+        await _pumpClubUi(tester);
 
-      await tester.scrollUntilVisible(find.text('Host team'), 240);
-      await _pumpClubUi(tester);
+        expect(find.text('Host team'), findsNothing);
+        expect(find.byTooltip('Add host'), findsNothing);
+        expect(find.byTooltip('Host actions'), findsNothing);
+        expect(find.text('Transfer ownership'), findsNothing);
+        expect(find.text('Remove host'), findsNothing);
 
-      expect(find.text('Host team'), findsOneWidget);
-      expect(find.byTooltip('Add host'), findsOneWidget);
-      expect(find.text('Owner Host'), findsWidgets);
-      expect(find.text('Co Host'), findsWidgets);
-
-      await tester.ensureVisible(findLastByTooltip('Host actions'));
-      await _pumpClubUi(tester);
-      await tester.tap(findLastByTooltip('Host actions'));
-      await _pumpClubUi(tester);
-
-      expect(find.text('Transfer ownership'), findsOneWidget);
-      expect(find.text('Remove host'), findsOneWidget);
-    });
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -700));
+        await _pumpClubUi(tester);
+        expect(
+          find.text('Publish an event when this club is ready to meet.'),
+          findsNothing,
+        );
+        expect(
+          find.text(
+            'Future events will appear here once the host publishes one.',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets(
       'ClubDetailBody keeps club review aggregate read-only below schedule',

@@ -573,7 +573,6 @@ String _collapsedScopeLabel({
     if (filters.distanceFilter != ExploreDistanceFilter.any)
       'within ${_distanceScopeLabel(filters.distanceFilter)}',
     if (filters.joinedOnly) 'joined',
-    if (filters.hostedOnly) 'hosted',
     if (filters.highRatedOnly) 'high rated',
     ?filters.activityTag,
     ?filters.area,

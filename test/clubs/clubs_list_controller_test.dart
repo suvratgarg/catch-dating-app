@@ -217,12 +217,10 @@ void main() {
           timeFilter: ExploreTimeFilter.thisWeek,
           highRatedOnly: true,
           joinedOnly: true,
-          hostedOnly: true,
           activityTag: 'Tempo',
           area: 'bandra',
         ),
         joinedClubIds: {'matching-club', 'stale-event-club', 'wrong-area-club'},
-        hostedClubIds: {'matching-club', 'low-rated-club'},
         now: now,
       );
 
@@ -250,41 +248,11 @@ void main() {
           timeFilter: ExploreTimeFilter.weekend,
         ),
         joinedClubIds: const {},
-        hostedClubIds: const {},
         now: now,
       );
 
       expect(filtered.map((club) => club.id), ['weekend-club']);
     });
-
-    test(
-      'mergeExploreSourceClubs keeps hosted clubs outside the city feed',
-      () {
-        final cityClub = buildClub(id: 'city-club');
-        final hostedClub = buildClub(
-          id: 'hosted-club',
-          location: 'indore',
-          hostUserId: 'runner-1',
-        );
-        final ownedClub = buildClub(
-          id: 'owned-club',
-          location: 'delhi',
-          ownerUserId: 'runner-1',
-        );
-
-        final merged = mergeExploreSourceClubs(
-          locationClubs: [cityClub],
-          hostedClubs: [hostedClub],
-          ownedClubs: [ownedClub],
-        );
-
-        expect(merged.map((club) => club.id), [
-          'city-club',
-          'hosted-club',
-          'owned-club',
-        ]);
-      },
-    );
 
     test(
       'clubsListViewModelProvider partitions joined and discover clubs',
@@ -317,12 +285,6 @@ void main() {
                 hostedClub,
               ]),
             ),
-            watchClubsHostedByProvider(
-              'runner-1',
-            ).overrideWith((ref) => Stream.value([hostedClub])),
-            watchClubsOwnedByProvider(
-              'runner-1',
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
           ],
         );
         addTearDown(container.dispose);
@@ -346,7 +308,6 @@ void main() {
         expect(viewModel.joinedClubs.map((club) => club.id), [
           'member-club',
           'followed-club',
-          'hosted-club',
         ]);
         expect(viewModel.allClubs.map((club) => club.id), [
           'member-club',
@@ -354,12 +315,7 @@ void main() {
           'discover-club',
           'hosted-club',
         ]);
-        expect(viewModel.joinedClubIds, {
-          'member-club',
-          'followed-club',
-          'hosted-club',
-        });
-        expect(viewModel.hostedClubIds, {'hosted-club'});
+        expect(viewModel.joinedClubIds, {'member-club', 'followed-club'});
       },
     );
 
@@ -529,12 +485,6 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
-            watchClubsHostedByProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
-            watchClubsOwnedByProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),
@@ -620,12 +570,6 @@ void main() {
             watchClubsByLocationProvider(
               'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
-            watchClubsHostedByProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
-            watchClubsOwnedByProvider(
-              user.uid,
-            ).overrideWith((ref) => Stream.value(const <Club>[])),
             watchActiveClubMembershipsForUserProvider(
               user.uid,
             ).overrideWith((ref) => Stream.value(const <ClubMembership>[])),

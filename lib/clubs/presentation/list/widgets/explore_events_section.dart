@@ -45,7 +45,6 @@ List<Widget> buildExploreEventsSlivers(
   bool pinnedDayHeaders = true,
   List<Club> candidateClubs = const <Club>[],
   Set<String> joinedClubIds = const <String>{},
-  Set<String> hostedClubIds = const <String>{},
 }) {
   final feedAsync = ref.watch(exploreFeedViewModelProvider);
   final filters = ref.watch(clubBrowseFiltersProvider);
@@ -90,7 +89,6 @@ List<Widget> buildExploreEventsSlivers(
       final hasDiscoverableClubCandidates = _rankClubIntermixCandidates(
         candidateClubs,
         joinedClubIds: joinedClubIds,
-        hostedClubIds: hostedClubIds,
       ).isNotEmpty;
       final canUseSyntheticVisualFill = _shouldUseExploreSyntheticVisualFill;
       return value.isEmpty &&
@@ -106,7 +104,6 @@ List<Widget> buildExploreEventsSlivers(
               value,
               candidateClubs: candidateClubs,
               joinedClubIds: joinedClubIds,
-              hostedClubIds: hostedClubIds,
               pinnedDayHeaders: pinnedDayHeaders,
               showThisWeekList:
                   filters.timeFilter == ExploreTimeFilter.thisWeek,
@@ -134,14 +131,12 @@ List<Widget> _exploreContentSlivers(
   ExploreFeedViewModel viewModel, {
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
   required bool pinnedDayHeaders,
   required bool showThisWeekList,
 }) {
   final effectiveCandidateClubs = _withDebugSyntheticExploreClubs(
     candidateClubs,
     joinedClubIds: joinedClubIds,
-    hostedClubIds: hostedClubIds,
   );
   final effectiveItems = _withDebugSyntheticExploreItems(
     viewModel.items,
@@ -165,7 +160,6 @@ List<Widget> _exploreContentSlivers(
     viewModel: layoutViewModel,
     candidateClubs: effectiveCandidateClubs,
     joinedClubIds: joinedClubIds,
-    hostedClubIds: hostedClubIds,
     excludeEventIds: thisWeekEventIds,
   );
   if (cards.isEmpty && thisWeekItems.isEmpty) {
@@ -216,13 +210,11 @@ List<_MixedExploreCard> _buildMixedFeedCards({
   required ExploreFeedViewModel viewModel,
   required List<Club> candidateClubs,
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
   Set<String> excludeEventIds = const <String>{},
 }) {
   final rankedClubs = _rankClubIntermixCandidates(
     candidateClubs,
     joinedClubIds: joinedClubIds,
-    hostedClubIds: hostedClubIds,
   );
   final firstClub = rankedClubs.firstOrNull;
   final secondClub = rankedClubs.skip(1).firstOrNull;
@@ -263,13 +255,11 @@ List<_MixedExploreCard> _buildMixedFeedCards({
 List<Club> _rankClubIntermixCandidates(
   List<Club> clubs, {
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
 }) {
   final ranked = clubs
       .where((club) => club.status == ClubLifecycleStatus.active)
       .where((club) => !club.archived)
       .where((club) => !joinedClubIds.contains(club.id))
-      .where((club) => !hostedClubIds.contains(club.id))
       .toList();
   ranked.sort((a, b) {
     final aHasNextEvent = a.nextEventAt != null || a.nextEventLabel != null;
@@ -791,7 +781,6 @@ bool get _shouldUseExploreSyntheticVisualFill =>
 List<Club> _withDebugSyntheticExploreClubs(
   List<Club> clubs, {
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
 }) {
   if (!_shouldUseExploreSyntheticVisualFill) return clubs;
 
@@ -800,7 +789,6 @@ List<Club> _withDebugSyntheticExploreClubs(
   while (_rankClubIntermixCandidates(
         result,
         joinedClubIds: joinedClubIds,
-        hostedClubIds: hostedClubIds,
       ).length <
       _syntheticExploreTargetClubCount) {
     result.add(_syntheticExploreClub(syntheticIndex));
