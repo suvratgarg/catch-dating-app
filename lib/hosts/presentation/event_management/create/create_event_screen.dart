@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -22,19 +21,19 @@ import 'package:catch_dating_app/event_success/domain/event_success_defaults.dar
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/events/presentation/create_event_controller.dart';
-import 'package:catch_dating_app/events/presentation/create_event_draft_controller.dart';
-import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/events/presentation/widgets/create_event_step_header.dart';
-import 'package:catch_dating_app/events/presentation/widgets/draft_picker_sheet.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_details_step.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_policy_step.dart';
-import 'package:catch_dating_app/events/presentation/widgets/event_success_step.dart';
-import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart';
-import 'package:catch_dating_app/events/presentation/widgets/when_step.dart';
-import 'package:catch_dating_app/events/presentation/widgets/where_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_step_header.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_details_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_success_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/when_step.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/where_step.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -927,9 +926,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         event: createdEvent,
         inviteCode: _trimmedTextOrNull(_inviteCodeController),
         onManageEvent: () => context.goNamed(
-          AppConfig.appRole.isHost
-              ? Routes.hostAppEventManageScreen.name
-              : Routes.hostEventManageScreen.name,
+          Routes.hostAppEventManageScreen.name,
           pathParameters: {
             'clubId': widget.club.id,
             'eventId': createdEvent.id,

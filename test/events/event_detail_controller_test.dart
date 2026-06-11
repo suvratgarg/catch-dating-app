@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'events_test_helpers.dart';
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
   group('buildEventDetailViewModel', () {
     test('returns loading while any dependency is still loading', () {
       final result = buildEventDetailViewModel(
@@ -32,7 +35,7 @@ void main() {
       expect(result.isLoading, isTrue);
     });
 
-    test('returns data when all dependencies succeed', () {
+    test('consumer role treats owned events as consumer event detail', () {
       final event = buildEvent();
       final user = buildUser();
       final review = buildReview(reviewerUserId: 'runner-2');
@@ -53,9 +56,26 @@ void main() {
       expect(value!.event, event);
       expect(value.userProfile, user);
       expect(value.reviews, [review]);
-      expect(value.isHost, isTrue);
+      expect(value.isHost, isFalse);
       expect(value.isSaved, isFalse);
       expect(value.participation, isNull);
+    });
+
+    test('host role derives host event detail state', () {
+      AppConfig.configureEntrypointRole(AppRole.host);
+
+      final result = buildEventDetailViewModel(
+        eventAsync: AsyncData(buildEvent()),
+        userProfileAsync: AsyncData(buildUser(uid: 'host-1')),
+        reviewsAsync: const AsyncData(<Review>[]),
+        clubAsync: AsyncData(buildClub()),
+        savedEventAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
+        currentUid: 'host-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.requireValue!.isHost, isTrue);
     });
 
     test('returns saved state from the saved event relationship doc', () {
@@ -281,7 +301,7 @@ void main() {
         expect(value!.event, event);
         expect(value.userProfile, user);
         expect(value.reviews, [review]);
-        expect(value.isHost, isTrue);
+        expect(value.isHost, isFalse);
         expect(value.isSaved, isFalse);
         expect(value.participation, isNull);
       },

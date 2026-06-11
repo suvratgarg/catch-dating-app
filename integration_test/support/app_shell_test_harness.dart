@@ -413,7 +413,6 @@ List<Object> appShellTestOverrides({
     ),
     exploreSourceClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
     filteredClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
-    canCreateClubProvider.overrideWithValue(AsyncData(canCreateClub)),
     eventRepositoryProvider.overrideWithValue(
       eventRepository ?? event_helpers.FakeEventRepository(),
     ),

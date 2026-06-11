@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

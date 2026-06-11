@@ -41,11 +41,7 @@ void main() {
             builder: (_, _) => Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  ClubDiscoverList(
-                    clubs: [club],
-                    joinedClubIds: const {},
-                    hostedClubIds: const {},
-                  ),
+                  ClubDiscoverList(clubs: [club], joinedClubIds: const {}),
                 ],
               ),
             ),
@@ -57,11 +53,6 @@ void main() {
                   'Club ${state.pathParameters['clubId']}',
                   textDirection: TextDirection.ltr,
                 ),
-              ),
-              GoRoute(
-                path: 'create-club',
-                name: Routes.createClubScreen.name,
-                builder: (_, _) => const SizedBox.shrink(),
               ),
             ],
           ),

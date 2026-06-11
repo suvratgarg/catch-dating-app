@@ -386,7 +386,7 @@ class _CardVariationLabScreen extends StatelessWidget {
                   title: 'Club directory identity card',
                   source: 'ClubListTile(directory, no imageUrl)',
                   maxWidth: 430,
-                  child: ClubListTile(club: fixtures.runClub, isHost: true),
+                  child: ClubListTile(club: fixtures.runClub),
                 ),
                 _LabSample(
                   title: 'Club avatar chip',

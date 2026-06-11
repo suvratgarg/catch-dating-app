@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -130,6 +131,7 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
       ? participationAsync.asData?.value
       : null;
   final isHost =
+      AppConfig.appRole.isHost &&
       isAuthenticated &&
       currentUid != null &&
       club?.isHostedBy(currentUid) == true;

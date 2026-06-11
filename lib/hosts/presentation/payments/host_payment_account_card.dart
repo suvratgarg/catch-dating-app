@@ -115,14 +115,13 @@ class _HostPaymentAccountCardState
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
               children: [
-                CatchBadge(
-                  label: account.defaultCurrency,
-                ),
-                CatchBadge(
-                  label: account.country,
-                ),
+                CatchBadge(label: account.defaultCurrency),
+                CatchBadge(label: account.country),
                 if (account.disabledReason != null)
-                  const CatchBadge(label: 'Restricted', tone: CatchBadgeTone.warning),
+                  const CatchBadge(
+                    label: 'Restricted',
+                    tone: CatchBadgeTone.warning,
+                  ),
               ],
             ),
           ],

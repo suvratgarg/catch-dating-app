@@ -1,6 +1,3 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -8,7 +5,6 @@ import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -51,8 +47,6 @@ class DashboardFullViewModel {
     required this.arrivalAction,
     required this.activeSwipeEvent,
     required this.pendingReviewEvent,
-    required this.hostEventTools,
-    required this.hostedClubShortcut,
     required this.attendedEventsSection,
     required this.weeklyActivitySection,
     required this.recommendationsSection,
@@ -63,27 +57,10 @@ class DashboardFullViewModel {
   final EventArrivalAction? arrivalAction;
   final Event? activeSwipeEvent;
   final Event? pendingReviewEvent;
-  final List<DashboardHostEventTool> hostEventTools;
-  final Club? hostedClubShortcut;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
   final DashboardSectionModel<WeeklyActivitySnapshot> weeklyActivitySection;
   final DashboardSectionModel<List<DashboardEventRecommendation>>
   recommendationsSection;
-}
-
-class DashboardHostEventTool {
-  const DashboardHostEventTool({
-    required this.event,
-    required this.attendanceState,
-    this.isPast = false,
-  });
-
-  final Event event;
-  final HostEventAttendanceState attendanceState;
-  final bool isPast;
-
-  bool get canTakeAttendance =>
-      attendanceState == HostEventAttendanceState.open;
 }
 
 class DashboardEventRecommendation {
@@ -104,8 +81,6 @@ DashboardFullViewModel buildDashboardFullViewModel({
   required List<Event> signedUpEvents,
   String? uid,
   UserProfile? viewer,
-  List<Event> hostedEvents = const [],
-  List<Club> hostedOrOwnedClubs = const [],
   required AsyncValue<List<Event>> attendedEventsAsync,
   required AsyncValue<List<DashboardEventRecommendationCandidate>>
   recommendedEventsAsync,
@@ -122,7 +97,6 @@ DashboardFullViewModel buildDashboardFullViewModel({
           .where((event) => event.startTime.isAfter(effectiveNow))
           .toList()
         ..sort((a, b) => a.startTime.compareTo(b.startTime));
-  final hostEventTools = _buildHostEventTools(hostedEvents, now: effectiveNow);
 
   final nextEvent = upcomingEvents.firstOrNull;
 
@@ -199,32 +173,10 @@ DashboardFullViewModel buildDashboardFullViewModel({
     arrivalAction: arrivalAction,
     activeSwipeEvent: activeSwipeEvent,
     pendingReviewEvent: pendingReviewEvent,
-    hostEventTools: hostEventTools,
-    hostedClubShortcut: selectHostedClubShortcut(hostedOrOwnedClubs, uid: uid),
     attendedEventsSection: attendedEventsSection,
     weeklyActivitySection: weeklyActivitySection,
     recommendationsSection: recommendationsSection,
   );
-}
-
-Club? selectHostedClubShortcut(List<Club> clubs, {required String? uid}) {
-  if (uid == null) return null;
-  final byId = <String, Club>{};
-  for (final club in clubs) {
-    if (club.archived || club.status != ClubLifecycleStatus.active) continue;
-    if (!club.isHostedBy(uid)) continue;
-    byId[club.id] = club;
-  }
-
-  final candidates = byId.values.toList(growable: false)
-    ..sort((left, right) {
-      final leftOwned = left.isOwnedBy(uid);
-      final rightOwned = right.isOwnedBy(uid);
-      if (leftOwned != rightOwned) return leftOwned ? -1 : 1;
-      return left.createdAt.compareTo(right.createdAt);
-    });
-
-  return candidates.firstOrNull;
 }
 
 DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
@@ -371,52 +323,6 @@ WeeklyActivitySource _weeklyActivitySource({
     return WeeklyActivitySource.healthPlatform;
   }
   return WeeklyActivitySource.catchFallback;
-}
-
-List<DashboardHostEventTool> _buildHostEventTools(
-  List<Event> hostedEvents, {
-  required DateTime now,
-}) {
-  final tools = <DashboardHostEventTool>[];
-  for (final event in hostedEvents) {
-    if (event.isCancelled) continue;
-    final attendanceState = hostEventAttendanceStateFor(event: event, now: now);
-    tools.add(
-      DashboardHostEventTool(
-        event: event,
-        attendanceState: attendanceState,
-        isPast: isPastHostedEventForOperations(
-          event: event,
-          attendanceState: attendanceState,
-          now: now,
-        ),
-      ),
-    );
-  }
-
-  tools.sort((a, b) => _compareHostEventTools(a, b, now: now));
-  return tools;
-}
-
-int _compareHostEventTools(
-  DashboardHostEventTool a,
-  DashboardHostEventTool b, {
-  required DateTime now,
-}) {
-  final rankA = _hostEventToolRank(a, now: now);
-  final rankB = _hostEventToolRank(b, now: now);
-  if (rankA != rankB) return rankA.compareTo(rankB);
-
-  if (rankA == 2) {
-    return b.event.startTime.compareTo(a.event.startTime);
-  }
-  return a.event.startTime.compareTo(b.event.startTime);
-}
-
-int _hostEventToolRank(DashboardHostEventTool tool, {required DateTime now}) {
-  if (tool.canTakeAttendance) return 0;
-  if (tool.event.startTime.isAfter(now)) return 1;
-  return 2;
 }
 
 Event? _latestUnreviewedAttendedEvent(
@@ -676,30 +582,10 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
-  final hostedClubs = AppConfig.appRole.isHost
-      ? _mergeDashboardHostClubs(
-          hostedClubs:
-              ref.watch(watchClubsHostedByProvider(uid)).asData?.value ??
-              const <Club>[],
-          ownedClubs:
-              ref.watch(watchClubsOwnedByProvider(uid)).asData?.value ??
-              const <Club>[],
-        )
-      : const <Club>[];
-  final hostedEvents = <Event>[];
-  for (final club in hostedClubs) {
-    final events = ref.watch(watchEventsForClubProvider(club.id)).asData?.value;
-    if (events != null) {
-      hostedEvents.addAll(events);
-    }
-  }
-
   return buildDashboardFullViewModel(
     signedUpEvents: signedUpEvents,
     uid: uid,
     viewer: user,
-    hostedEvents: hostedEvents,
-    hostedOrOwnedClubs: hostedClubs,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
     weeklyActivityAsync: ref.watch(weeklyActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
@@ -712,18 +598,4 @@ DashboardFullViewModel dashboardFullViewModel(
       ),
     ),
   );
-}
-
-List<Club> _mergeDashboardHostClubs({
-  required List<Club> hostedClubs,
-  required List<Club> ownedClubs,
-}) {
-  final byId = <String, Club>{};
-  for (final club in hostedClubs) {
-    byId[club.id] = club;
-  }
-  for (final club in ownedClubs) {
-    byId[club.id] = club;
-  }
-  return List.unmodifiable(byId.values);
 }

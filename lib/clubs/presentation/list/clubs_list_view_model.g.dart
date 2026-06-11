@@ -68,7 +68,7 @@ abstract class _$SelectedClubCity extends $Notifier<CityData> {
   CityData build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<CityData, CityData>;
     final element =
         ref.element
@@ -78,7 +78,7 @@ abstract class _$SelectedClubCity extends $Notifier<CityData> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -122,7 +122,7 @@ abstract class _$SelectedClubCityWasUserSelected extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -132,7 +132,7 @@ abstract class _$SelectedClubCityWasUserSelected extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -192,7 +192,7 @@ abstract class _$ClubSearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
@@ -202,7 +202,7 @@ abstract class _$ClubSearchQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -238,14 +238,14 @@ final class ClubBrowseFiltersProvider
   }
 }
 
-String _$clubBrowseFiltersHash() => r'2825da946d50e1d853e730b5209ce8db50a37954';
+String _$clubBrowseFiltersHash() => r'77b8922f9c63bf304813bb044aca241981124131';
 
 abstract class _$ClubBrowseFilters
     extends $Notifier<ClubBrowseFilterSelection> {
   ClubBrowseFilterSelection build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<ClubBrowseFilterSelection, ClubBrowseFilterSelection>;
     final element =
@@ -256,7 +256,7 @@ abstract class _$ClubBrowseFilters
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -323,7 +323,7 @@ final class ExploreSourceClubsProvider
 }
 
 String _$exploreSourceClubsHash() =>
-    r'51fb947f75d1d40444e01ec6252463d38720f19e';
+    r'c17b186f62eafa9990297476f92912f761b5a578';
 
 @ProviderFor(filteredClubs)
 final filteredClubsProvider = FilteredClubsProvider._();
@@ -370,7 +370,7 @@ final class FilteredClubsProvider
   }
 }
 
-String _$filteredClubsHash() => r'e04f6673db3b25c7630dd2bcbdbdd9b8830fb51d';
+String _$filteredClubsHash() => r'fb0c62506b110570bafd3a64d65dc5c18e546e2a';
 
 /// **Pattern D: View-model provider**
 ///
@@ -440,67 +440,4 @@ final class ClubsListViewModelProvider
 }
 
 String _$clubsListViewModelHash() =>
-    r'77c1c31e3798d6542606b539a9900a437fea45eb';
-
-/// **Pattern D: View-model provider**
-///
-/// Derives the create-club affordance from the server-owned hosted-club query.
-/// The callable enforces the one-club invariant; this provider keeps the list
-/// UI from offering a creation path after a host already has a club.
-
-@ProviderFor(canCreateClub)
-final canCreateClubProvider = CanCreateClubProvider._();
-
-/// **Pattern D: View-model provider**
-///
-/// Derives the create-club affordance from the server-owned hosted-club query.
-/// The callable enforces the one-club invariant; this provider keeps the list
-/// UI from offering a creation path after a host already has a club.
-
-final class CanCreateClubProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<bool>,
-          AsyncValue<bool>,
-          AsyncValue<bool>
-        >
-    with $Provider<AsyncValue<bool>> {
-  /// **Pattern D: View-model provider**
-  ///
-  /// Derives the create-club affordance from the server-owned hosted-club query.
-  /// The callable enforces the one-club invariant; this provider keeps the list
-  /// UI from offering a creation path after a host already has a club.
-  CanCreateClubProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'canCreateClubProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$canCreateClubHash();
-
-  @$internal
-  @override
-  $ProviderElement<AsyncValue<bool>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  AsyncValue<bool> create(Ref ref) {
-    return canCreateClub(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<bool> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<bool>>(value),
-    );
-  }
-}
-
-String _$canCreateClubHash() => r'2ee88d3f7f0ed39d0ac07f94f95e1b9742d86e9c';
+    r'aeca704da5575ade89546abb98a68f1cd3d9e7fa';

@@ -665,10 +665,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
                       ),
                       if (link.isDisabled) ...[
                         gapW8,
-                        const CatchBadge(
-                          label: 'Disabled',
-                          tone: CatchBadgeTone.neutral,
-                        ),
+                        const CatchBadge(label: 'Disabled'),
                       ],
                     ],
                   ),
@@ -921,7 +918,7 @@ class _HostEventActionsCard extends ConsumerWidget {
               onPressed: isMutating
                   ? null
                   : () => context.pushNamed(
-                      Routes.editHostedEventScreen.name,
+                      Routes.hostAppEditEventScreen.name,
                       pathParameters: {
                         'clubId': event.clubId,
                         'eventId': event.id,

@@ -14,6 +14,7 @@ abstract final class SettingsKeys {
   static const weeklyDigestSwitch = ValueKey('settings.weeklyDigest.switch');
   static const reviewHistoryRow = ValueKey('settings.reviewHistory.row');
   static const paymentHistoryRow = ValueKey('settings.paymentHistory.row');
+  static const hostAppRow = ValueKey('settings.hostApp.row');
   static const eventPolicyLabRow = ValueKey('settings.eventPolicyLab.row');
   static const eventSuccessLabRow = ValueKey('settings.eventSuccessLab.row');
   static const eventSuccessManualQaRow = ValueKey(

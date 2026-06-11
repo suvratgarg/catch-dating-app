@@ -15,11 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EventDraft {
 
- String get id; String get clubId; DateTime get savedAt;// Event Details step
- String? get distance; String? get capacity; String? get price; String? get description; String? get activityKind; String? get customActivityLabel; String? get interactionModel; String? get paceName;// Where step
- String? get meetingPoint; String? get locationDetails; String? get meetingLocationAddress; String? get meetingLocationPlaceId; double? get startingPointLat; double? get startingPointLng;// When step
- int? get selectedDateMillis; int? get selectedStartHour; int? get selectedStartMinute; int get durationMinutes;// Rules step
- String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen; String? get admissionPreset; String? get inviteCode; bool get dynamicPricingEnabled; String? get dynamicPricingStep; String? get dynamicPricingMax; String? get cancellationPolicy; EventSuccessDefaults get eventSuccessDefaults;
+ String get id; String get clubId; DateTime get savedAt; String? get distance; String? get capacity; String? get price; String? get description; String? get activityKind; String? get customActivityLabel; String? get interactionModel; String? get paceName; String? get meetingPoint; String? get locationDetails; String? get meetingLocationAddress; String? get meetingLocationPlaceId; double? get startingPointLat; double? get startingPointLng; int? get selectedDateMillis; int? get selectedStartHour; int? get selectedStartMinute; int get durationMinutes; String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen; String? get admissionPreset; String? get inviteCode; bool get dynamicPricingEnabled; String? get dynamicPricingStep; String? get dynamicPricingMax; String? get cancellationPolicy; EventSuccessDefaults get eventSuccessDefaults;
 /// Create a copy of EventDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -259,7 +255,6 @@ class _EventDraft implements EventDraft {
 @override final  String id;
 @override final  String clubId;
 @override final  DateTime savedAt;
-// Event Details step
 @override final  String? distance;
 @override final  String? capacity;
 @override final  String? price;
@@ -268,19 +263,16 @@ class _EventDraft implements EventDraft {
 @override final  String? customActivityLabel;
 @override final  String? interactionModel;
 @override final  String? paceName;
-// Where step
 @override final  String? meetingPoint;
 @override final  String? locationDetails;
 @override final  String? meetingLocationAddress;
 @override final  String? meetingLocationPlaceId;
 @override final  double? startingPointLat;
 @override final  double? startingPointLng;
-// When step
 @override final  int? selectedDateMillis;
 @override final  int? selectedStartHour;
 @override final  int? selectedStartMinute;
 @override@JsonKey() final  int durationMinutes;
-// Rules step
 @override final  String? minAge;
 @override final  String? maxAge;
 @override final  String? maxMen;

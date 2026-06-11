@@ -39,4 +39,23 @@ void main() {
     expect(opened, isFalse);
     expect(launchCallCount, 0);
   });
+
+  test('openHostApp uses the configured host app handoff URL', () async {
+    Uri? launchedUri;
+    LaunchMode? launchMode;
+    final controller = ExternalLinkController((
+      uri, {
+      mode = LaunchMode.platformDefault,
+    }) async {
+      launchedUri = uri;
+      launchMode = mode;
+      return true;
+    });
+
+    final opened = await controller.openHostApp();
+
+    expect(opened, isTrue);
+    expect(launchedUri, Uri.parse('https://catchdates.com/host'));
+    expect(launchMode, LaunchMode.externalApplication);
+  });
 }

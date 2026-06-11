@@ -32,7 +32,10 @@ class PaymentRepository {
            externalUrlLauncher ??
            ((uri, {mode = LaunchMode.platformDefault}) =>
                launchUrl(uri, mode: mode)),
+       // Keep these named parameters stable for payment tests and platform overrides.
+       // ignore: prefer_initializing_formals
        _isWebOverride = isWebOverride,
+       // ignore: prefer_initializing_formals
        _targetPlatformOverride = targetPlatformOverride;
 
   final FirebaseFunctions _functions;

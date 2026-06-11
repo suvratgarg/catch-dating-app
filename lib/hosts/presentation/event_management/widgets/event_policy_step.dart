@@ -5,10 +5,11 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
-import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -269,18 +270,23 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SwitchListTile.adaptive(
-                    key: CreateEventFormKeys.cohortCapsToggle,
-                    contentPadding: EdgeInsets.zero,
-                    value: cohortCapsEnabled,
-                    onChanged: onCohortCapsEnabledChanged,
-                    title: Text(
-                      'Cohort caps',
-                      style: CatchTextStyles.labelL(context),
-                    ),
-                    subtitle: Text(
-                      'Optionally cap straight men and straight women without making this a separate admission format.',
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ListTileMaterial(
+                    child: SwitchListTile.adaptive(
+                      key: CreateEventFormKeys.cohortCapsToggle,
+                      contentPadding: EdgeInsets.zero,
+                      value: cohortCapsEnabled,
+                      onChanged: onCohortCapsEnabledChanged,
+                      title: Text(
+                        'Cohort caps',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      subtitle: Text(
+                        'Optionally cap straight men and straight women without making this a separate admission format.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
                     ),
                   ),
                   if (cohortCapsEnabled) ...[
@@ -365,18 +371,23 @@ class EventPolicyStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SwitchListTile.adaptive(
-                    key: CreateEventFormKeys.dynamicPricingToggle,
-                    contentPadding: EdgeInsets.zero,
-                    value: dynamicPricingEnabled,
-                    onChanged: onDynamicPricingChanged,
-                    title: Text(
-                      'Demand pricing',
-                      style: CatchTextStyles.labelL(context),
-                    ),
-                    subtitle: Text(
-                      'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ListTileMaterial(
+                    child: SwitchListTile.adaptive(
+                      key: CreateEventFormKeys.dynamicPricingToggle,
+                      contentPadding: EdgeInsets.zero,
+                      value: dynamicPricingEnabled,
+                      onChanged: onDynamicPricingChanged,
+                      title: Text(
+                        'Demand pricing',
+                        style: CatchTextStyles.labelL(context),
+                      ),
+                      subtitle: Text(
+                        'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
+                        style: CatchTextStyles.supporting(
+                          context,
+                          color: t.ink2,
+                        ),
+                      ),
                     ),
                   ),
                   if (dynamicPricingEnabled) ...[

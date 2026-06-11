@@ -4,18 +4,16 @@ class _DirectoryCard extends StatelessWidget {
   const _DirectoryCard({
     required this.club,
     required this.isJoined,
-    required this.isHost,
     this.onTap,
   });
 
   final Club club;
   final bool isJoined;
-  final bool isHost;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final sash = _membershipSashFor(isHost: isHost, isJoined: isJoined);
+    final sash = _membershipSashFor(isJoined: isJoined);
     final hasCoverImage = _hasCoverImage(club);
 
     return Semantics(
@@ -25,14 +23,12 @@ class _DirectoryCard extends StatelessWidget {
           ? _DirectoryPhotoCard(
               club: club,
               isJoined: isJoined,
-              isHost: isHost,
               sash: sash,
               onTap: onTap,
             )
           : _DirectoryIdentityCard(
               club: club,
               isJoined: isJoined,
-              isHost: isHost,
               sash: sash,
               onTap: onTap,
             ),
@@ -44,14 +40,12 @@ class _DirectoryPhotoCard extends StatelessWidget {
   const _DirectoryPhotoCard({
     required this.club,
     required this.isJoined,
-    required this.isHost,
     required this.sash,
     this.onTap,
   });
 
   final Club club;
   final bool isJoined;
-  final bool isHost;
   final _MembershipSash? sash;
   final VoidCallback? onTap;
 
@@ -72,7 +66,6 @@ class _DirectoryPhotoCard extends StatelessWidget {
       footer: _ClubDirectoryFooter(
         club: club,
         isJoined: isJoined,
-        isHost: isHost,
         visibleTags: visibleTags,
       ),
     );
@@ -83,14 +76,12 @@ class _DirectoryIdentityCard extends StatelessWidget {
   const _DirectoryIdentityCard({
     required this.club,
     required this.isJoined,
-    required this.isHost,
     required this.sash,
     this.onTap,
   });
 
   final Club club;
   final bool isJoined;
-  final bool isHost;
   final _MembershipSash? sash;
   final VoidCallback? onTap;
 
@@ -112,7 +103,6 @@ class _DirectoryIdentityCard extends StatelessWidget {
       footer: _ClubDirectoryFooter(
         club: club,
         isJoined: isJoined,
-        isHost: isHost,
         visibleTags: visibleTags,
       ),
     );
@@ -265,13 +255,11 @@ class _ClubDirectoryFooter extends StatelessWidget {
   const _ClubDirectoryFooter({
     required this.club,
     required this.isJoined,
-    required this.isHost,
     required this.visibleTags,
   });
 
   final Club club;
   final bool isJoined;
-  final bool isHost;
   final List<String> visibleTags;
 
   @override
@@ -288,7 +276,7 @@ class _ClubDirectoryFooter extends StatelessWidget {
           ),
           gapH10,
         ],
-        _ClubHostActionRow(club: club, isJoined: isJoined, isHost: isHost),
+        _ClubHostActionRow(club: club, isJoined: isJoined),
         if (visibleTags.isNotEmpty) ...[
           gapH10,
           _ClubRule(color: t.line),
@@ -315,26 +303,17 @@ class _ClubRule extends StatelessWidget {
 }
 
 class _ClubHostActionRow extends StatelessWidget {
-  const _ClubHostActionRow({
-    required this.club,
-    required this.isJoined,
-    required this.isHost,
-  });
+  const _ClubHostActionRow({required this.club, required this.isJoined});
 
   final Club club;
   final bool isJoined;
-  final bool isHost;
 
   @override
   Widget build(BuildContext context) {
     return ClubHostIdentityLine(
       hostName: club.hostName,
       hostAvatarUrl: club.hostAvatarUrl,
-      trailing: _MembershipButton(
-        clubId: club.id,
-        isJoined: isJoined,
-        isHost: isHost,
-      ),
+      trailing: _MembershipButton(clubId: club.id, isJoined: isJoined),
     );
   }
 }
@@ -351,19 +330,7 @@ String _directoryCaption(Club club) {
   return '${club.area} / ${cityLabel(club.location)}'.toUpperCase();
 }
 
-_MembershipSash? _membershipSashFor({
-  required bool isHost,
-  required bool isJoined,
-}) {
-  // Hosts are also included in joinedClubIds upstream; host has to win
-  // precedence so owners do not render as ordinary joined members.
-  if (isHost) {
-    return _MembershipSash(
-      label: 'You host',
-      icon: CatchIcons.hostBadge,
-      tone: CatchSashTone.solid,
-    );
-  }
+_MembershipSash? _membershipSashFor({required bool isJoined}) {
   if (isJoined) {
     return _MembershipSash(
       label: 'Joined',
@@ -391,19 +358,14 @@ List<String> _visibleTags(Club club) {
 }
 
 class _MembershipButton extends StatelessWidget {
-  const _MembershipButton({
-    required this.clubId,
-    required this.isJoined,
-    required this.isHost,
-  });
+  const _MembershipButton({required this.clubId, required this.isJoined});
 
   final String clubId;
   final bool isJoined;
-  final bool isHost;
 
   @override
   Widget build(BuildContext context) {
-    if (isHost || isJoined) {
+    if (isJoined) {
       // Membership state is communicated via the corner sash on the photo
       // now; no redundant button needed.
       return const SizedBox.shrink();

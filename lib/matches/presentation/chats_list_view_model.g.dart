@@ -47,7 +47,7 @@ abstract class _$ChatSearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<String, String>;
     final element =
         ref.element
@@ -57,7 +57,7 @@ abstract class _$ChatSearchQuery extends $Notifier<String> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -109,4 +109,4 @@ final class ChatsListViewModelProvider
 }
 
 String _$chatsListViewModelHash() =>
-    r'c9fda5091488c93a8494c19e0f44ab3010999629';
+    r'543a4602098c9cb7239c67df5b1022ab86b8e50c';

@@ -4,8 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
-import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

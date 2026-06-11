@@ -14,12 +14,9 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.da
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class DashboardFull extends ConsumerWidget {
@@ -131,15 +128,11 @@ class DashboardFullSliverBody extends ConsumerWidget {
                   ),
                   gapH18,
                 ],
-                if (viewModel.hostEventTools.isNotEmpty) ...[
-                  HostToolsRail(tools: viewModel.hostEventTools),
-                  gapH18,
-                ],
                 DashboardStrideSection(
                   section: viewModel.weeklyActivitySection,
                 ),
                 gapH18,
-                QuickActions(hostedClubShortcut: viewModel.hostedClubShortcut),
+                const QuickActions(),
                 if (followedClubIds.isNotEmpty) ...[
                   gapH18,
                   DashboardClubsRail(clubIds: followedClubIds),
@@ -183,50 +176,6 @@ class DashboardFullSliverBody extends ConsumerWidget {
     return recommendations.isEmpty
         ? const []
         : [gapH18, Recommendations(recommendations: recommendations)];
-  }
-}
-
-class HostToolsRail extends StatelessWidget {
-  const HostToolsRail({super.key, required this.tools});
-
-  final List<DashboardHostEventTool> tools;
-
-  @override
-  Widget build(BuildContext context) {
-    return _HostToolsCarouselAdapter(tools: tools);
-  }
-}
-
-class _HostToolsCarouselAdapter extends StatelessWidget {
-  const _HostToolsCarouselAdapter({required this.tools});
-
-  final List<DashboardHostEventTool> tools;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostEventToolsCarousel(
-      tools: tools
-          .map(
-            (tool) => HostEventToolItem(
-              event: tool.event,
-              attendanceState: tool.attendanceState,
-            ),
-          )
-          .toList(growable: false),
-      onManageEvent: (event) => context.pushNamed(
-        Routes.hostEventManageScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-      ),
-      onTakeAttendance: (event) => context.pushNamed(
-        Routes.attendanceSheet.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-      ),
-      onViewReport: (event) => context.pushNamed(
-        Routes.hostEventManageScreen.name,
-        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
-        queryParameters: const {'section': 'report'},
-      ),
-    );
   }
 }
 

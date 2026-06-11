@@ -16,11 +16,11 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
-import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
-import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
-import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -33,8 +33,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
-import 'events_test_helpers.dart';
 
 void main() {
   group('CreateEventScreen', () {
@@ -1098,8 +1098,8 @@ Future<void> _pumpCreateEventFlow(
         ),
       ),
       GoRoute(
-        path: Routes.hostEventManageScreen.path,
-        name: Routes.hostEventManageScreen.name,
+        path: Routes.hostAppEventManageScreen.path,
+        name: Routes.hostAppEventManageScreen.name,
         builder: (context, state) => HostEventManageScreen(
           club: club,
           event: switch (state.extra) {

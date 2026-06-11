@@ -34,14 +34,12 @@ class ClubListTile extends StatelessWidget {
     required this.club,
     this.variant = ClubListTileVariant.directory,
     this.isJoined = false,
-    this.isHost = false,
     this.showLiveBadge = false,
   });
 
   final Club club;
   final ClubListTileVariant variant;
   final bool isJoined;
-  final bool isHost;
 
   /// Only used by [ClubListTileVariant.avatarChip].
   final bool showLiveBadge;
@@ -58,7 +56,6 @@ class ClubListTile extends StatelessWidget {
       ClubListTileVariant.directory => _DirectoryCard(
         club: club,
         isJoined: isJoined,
-        isHost: isHost,
         onTap: () => _openDetail(context),
       ),
       ClubListTileVariant.avatarChip => _AvatarChip(

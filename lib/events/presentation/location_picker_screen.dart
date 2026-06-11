@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
@@ -419,29 +420,31 @@ class _PlaceSearchPanel extends StatelessWidget {
                 separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
                 itemBuilder: (context, index) {
                   final suggestion = suggestions[index];
-                  return ListTile(
-                    dense: true,
-                    leading: Icon(CatchIcons.placeOutlined),
-                    title: Text(
-                      suggestion.mainText.isNotEmpty
-                          ? suggestion.mainText
-                          : suggestion.description,
-                      style: CatchTextStyles.labelM(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: suggestion.secondaryText.isEmpty
-                        ? null
-                        : Text(
-                            suggestion.secondaryText,
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: t.ink2,
+                  return ListTileMaterial(
+                    child: ListTile(
+                      dense: true,
+                      leading: Icon(CatchIcons.placeOutlined),
+                      title: Text(
+                        suggestion.mainText.isNotEmpty
+                            ? suggestion.mainText
+                            : suggestion.description,
+                        style: CatchTextStyles.labelM(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: suggestion.secondaryText.isEmpty
+                          ? null
+                          : Text(
+                              suggestion.secondaryText,
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: t.ink2,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                    onTap: () => onSuggestionSelected(suggestion),
+                      onTap: () => onSuggestionSelected(suggestion),
+                    ),
                   );
                 },
               ),

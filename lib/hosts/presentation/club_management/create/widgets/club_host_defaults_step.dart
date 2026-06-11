@@ -6,10 +6,11 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
-import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -285,23 +286,25 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.openCapacity) ...[
             gapH12,
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: cohortCapsEnabled,
-              onChanged: (value) => _emit(
-                defaults.copyWith(
-                  admissionPreset: value
-                      ? EventAdmissionDefaultPreset.fixedCohortCaps
-                      : EventAdmissionDefaultPreset.openCapacity,
+            ListTileMaterial(
+              child: SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                value: cohortCapsEnabled,
+                onChanged: (value) => _emit(
+                  defaults.copyWith(
+                    admissionPreset: value
+                        ? EventAdmissionDefaultPreset.fixedCohortCaps
+                        : EventAdmissionDefaultPreset.openCapacity,
+                  ),
                 ),
-              ),
-              title: Text(
-                'Cohort caps',
-                style: CatchTextStyles.labelL(context),
-              ),
-              subtitle: Text(
-                'Optionally prefill straight men and straight women caps for open events.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                title: Text(
+                  'Cohort caps',
+                  style: CatchTextStyles.labelL(context),
+                ),
+                subtitle: Text(
+                  'Optionally prefill straight men and straight women caps for open events.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
               ),
             ),
           ],
@@ -338,27 +341,29 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
           if (selectedAdmissionPreset ==
               EventAdmissionDefaultPreset.balancedSingles) ...[
             gapH12,
-            SwitchListTile.adaptive(
-              contentPadding: EdgeInsets.zero,
-              value: defaults.dynamicPricingEnabled,
-              onChanged: (value) => _emit(
-                defaults.copyWith(
-                  dynamicPricingEnabled: value,
-                  dynamicPricingStepInPaise: value
-                      ? defaults.dynamicPricingStepInPaise ?? 25000
-                      : null,
-                  dynamicPricingMaxInPaise: value
-                      ? defaults.dynamicPricingMaxInPaise ?? 150000
-                      : null,
+            ListTileMaterial(
+              child: SwitchListTile.adaptive(
+                contentPadding: EdgeInsets.zero,
+                value: defaults.dynamicPricingEnabled,
+                onChanged: (value) => _emit(
+                  defaults.copyWith(
+                    dynamicPricingEnabled: value,
+                    dynamicPricingStepInPaise: value
+                        ? defaults.dynamicPricingStepInPaise ?? 25000
+                        : null,
+                    dynamicPricingMaxInPaise: value
+                        ? defaults.dynamicPricingMaxInPaise ?? 150000
+                        : null,
+                  ),
                 ),
-              ),
-              title: Text(
-                'Demand pricing',
-                style: CatchTextStyles.labelL(context),
-              ),
-              subtitle: Text(
-                'Prefill dynamic pricing controls for balanced singles events.',
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                title: Text(
+                  'Demand pricing',
+                  style: CatchTextStyles.labelL(context),
+                ),
+                subtitle: Text(
+                  'Prefill dynamic pricing controls for balanced singles events.',
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                ),
               ),
             ),
             if (defaults.dynamicPricingEnabled) ...[

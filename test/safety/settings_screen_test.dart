@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -13,6 +14,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -130,6 +132,7 @@ void main() {
 
     expect(find.byKey(SettingsKeys.reviewHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.hostAppRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventPolicyLabRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventSuccessLabRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventSuccessManualQaRow), findsOneWidget);
@@ -139,6 +142,28 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(authRepository.signOutCallCount, 1);
+  });
+
+  testWidgets('host app row opens the central handoff link', (tester) async {
+    Uri? launchedUri;
+    LaunchMode? launchMode;
+    final container = _settingsContainer(
+      user: buildUser(),
+      blockedUsers: const [],
+      externalUrlLauncher: (uri, {mode = LaunchMode.platformDefault}) async {
+        launchedUri = uri;
+        launchMode = mode;
+        return true;
+      },
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+    await tester.tap(find.byKey(SettingsKeys.hostAppRow));
+    await pumpFeatureUi(tester);
+
+    expect(launchedUri, Uri.parse('https://catchdates.com/host'));
+    expect(launchMode, LaunchMode.externalApplication);
   });
 
   testWidgets('delete account confirmation delegates to controller', (
@@ -187,6 +212,7 @@ ProviderContainer _settingsContainer({
   UserProfileRepository? userRepository,
   SafetyRepository? safetyRepository,
   AuthRepository? authRepository,
+  ExternalUrlLauncher? externalUrlLauncher,
   Map<String, PublicProfile> publicProfiles = const {},
 }) {
   final container = ProviderContainer(
@@ -195,6 +221,8 @@ ProviderContainer _settingsContainer({
       authRepositoryProvider.overrideWithValue(
         authRepository ?? _FakeSettingsAuthRepository(),
       ),
+      if (externalUrlLauncher != null)
+        externalUrlLauncherProvider.overrideWithValue(externalUrlLauncher),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
       userProfileRepositoryProvider.overrideWith(
         (ref) => userRepository ?? _FakeSettingsUserProfileRepository(),

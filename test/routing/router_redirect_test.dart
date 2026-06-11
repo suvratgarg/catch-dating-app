@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,18 +27,59 @@ String? _redirect({
   required AsyncValue<String?> uidAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
   required String location,
+  bool hasPendingAuthVerification = false,
   String? matchedLocation,
 }) {
   final uri = Uri.parse(location);
   return appRedirect(
     uidAsync: uidAsync,
     userProfileAsync: userProfileAsync,
+    hasPendingAuthVerification: hasPendingAuthVerification,
     matchedLocation: matchedLocation ?? uri.path,
     uri: uri,
   );
 }
 
 void main() {
+  tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  group('route role boundary', () {
+    test('host management routes are not available to consumer role', () {
+      final hostRoutes = Routes.values.where(
+        (route) => route.path.startsWith('/host'),
+      );
+
+      expect(hostRoutes, isNotEmpty);
+      for (final route in hostRoutes) {
+        expect(
+          routeAvailableForAppRole(route, AppRole.consumer),
+          isFalse,
+          reason: '${route.name} should stay host-app only.',
+        );
+        expect(routeAvailableForAppRole(route, AppRole.host), isTrue);
+      }
+    });
+
+    test('consumer in-app event deep links stay on consumer event routes', () {
+      expect(
+        AppDeepLinks.inAppEventPath(
+          clubId: 'club-1',
+          eventId: 'event-1',
+          appRole: AppRole.consumer,
+        ),
+        '/clubs/club-1/events/event-1',
+      );
+      expect(
+        AppDeepLinks.inAppEventPath(
+          clubId: 'club-1',
+          eventId: 'event-1',
+          appRole: AppRole.host,
+        ),
+        '/host/clubs/club-1/events/event-1',
+      );
+    });
+  });
+
   group('appRedirect', () {
     test(
       'unauthenticated users are sent to the start screen with the pending route',
@@ -308,6 +351,54 @@ void main() {
         null,
       );
     });
+
+    test(
+      'pending OTP verification returns signed-out users from start to auth',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            hasPendingAuthVerification: true,
+            location: '/start',
+            matchedLocation: Routes.startScreen.path,
+          ),
+          Routes.authScreen.path,
+        );
+      },
+    );
+
+    test(
+      'pending OTP verification returns signed-out users from default route to auth',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            hasPendingAuthVerification: true,
+            location: '/',
+            matchedLocation: Routes.dashboardScreen.path,
+          ),
+          '/auth?from=%2F',
+        );
+      },
+    );
+
+    test(
+      'pending OTP verification does not steal signed-out public club browsing',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            hasPendingAuthVerification: true,
+            location: '/clubs/club-1',
+            matchedLocation: Routes.clubDetailScreen.path,
+          ),
+          null,
+        );
+      },
+    );
 
     test('invalid from values are discarded on resume', () {
       expect(

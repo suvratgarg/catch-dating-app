@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -167,7 +168,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       clubId: widget.clubId,
       reviews: reviews,
       isAuthenticated: isAuthenticated,
-      isHost: currentUid != null && club?.isHostedBy(currentUid) == true,
+      isHost:
+          AppConfig.appRole.isHost &&
+          currentUid != null &&
+          club?.isHostedBy(currentUid) == true,
       isSaved: savedEvent != null,
       participation: participation,
       inviteCode: widget.inviteCode,

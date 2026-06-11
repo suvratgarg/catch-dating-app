@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -31,6 +32,8 @@ class ExternalLinkController {
       ),
     );
   }
+
+  Future<bool> openHostApp() => openExternal(AppConfig.hostAppUrl);
 
   Future<bool> open(Uri uri) {
     if (!uri.hasScheme) return Future.value(false);

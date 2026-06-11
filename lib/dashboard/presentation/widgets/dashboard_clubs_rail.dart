@@ -35,7 +35,6 @@ class DashboardClubsRail extends ConsumerWidget {
     if (clubs.isNotEmpty) {
       return ClubAvatarRail(
         clubs: clubs,
-        showCreateButton: false,
         showDivider: false,
         headerPadding: EdgeInsets.zero,
         listPadding: EdgeInsets.zero,

@@ -377,12 +377,6 @@ final eventDiscoveryViewModelProvider =
               .map((membership) => membership.clubId)
               .toSet() ??
           <String>{};
-      final hostedClubIds = uid == null
-          ? <String>{}
-          : sourceClubs
-                .where((club) => club.isHostedBy(uid))
-                .map((club) => club.id)
-                .toSet();
       final userProfile = userProfileAsync.asData?.value;
       final viewerCohortId = viewerCohortIdAsync.asData?.value;
 
@@ -505,7 +499,6 @@ final eventDiscoveryViewModelProvider =
                     userProfile: userProfile,
                     participation: participationByEventId[event.id],
                     isSaved: savedEventIds.contains(event.id),
-                    isHosted: hostedClubIds.contains(club.id),
                     isClubMember: isClubMember,
                     now: now,
                   ),
@@ -518,8 +511,7 @@ final eventDiscoveryViewModelProvider =
                 (item) => _matchesClubScopeFilters(
                   club: item.club,
                   filters: filters,
-                  joinedClubIds: {...membershipClubIds, ...hostedClubIds},
-                  hostedClubIds: hostedClubIds,
+                  joinedClubIds: membershipClubIds,
                   activityKindFilter: activityKindFilter,
                 ),
               )
@@ -544,12 +536,10 @@ bool _matchesClubScopeFilters({
   required Club club,
   required ClubBrowseFilterSelection filters,
   required Set<String> joinedClubIds,
-  required Set<String> hostedClubIds,
   required ActivityKind? activityKindFilter,
 }) {
   if (filters.highRatedOnly && club.rating < 4.5) return false;
   if (filters.joinedOnly && !joinedClubIds.contains(club.id)) return false;
-  if (filters.hostedOnly && !hostedClubIds.contains(club.id)) return false;
   final activityTag = filters.activityTag;
   if (activityTag != null &&
       activityKindFilter == null &&

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -80,6 +81,8 @@ class EventDetailBody extends ConsumerWidget {
     final share = ref.watch(externalShareControllerProvider);
     final calendar = ref.watch(eventCalendarControllerProvider);
     final now = this.now ?? DateTime.now();
+    final isHostApp = AppConfig.appRole.isHost;
+    final showConsumerActions = !isHostApp && !isHost;
     final isSpotlightDark =
         presentationMode == EventDetailPresentationMode.spotlightDark;
     final style = isSpotlightDark
@@ -112,7 +115,9 @@ class EventDetailBody extends ConsumerWidget {
       });
     }
 
-    if (!isAuthenticated) {
+    if (isHostApp) {
+      bottomNavigationBar = null;
+    } else if (!isAuthenticated) {
       bottomNavigationBar = _GuestBookCta(
         clubId: clubId,
         eventId: event.id,
@@ -120,7 +125,7 @@ class EventDetailBody extends ConsumerWidget {
         inviteLinkId: inviteLinkId,
         darkSurface: isSpotlightDark,
       );
-    } else if (userProfile != null && !isHost) {
+    } else if (userProfile != null && showConsumerActions) {
       bottomNavigationBar = EventDetailCta(
         event: event,
         userProfile: userProfile,
@@ -148,7 +153,7 @@ class EventDetailBody extends ConsumerWidget {
             showAddToCalendar: _canAddEventToCalendar(
               event: event,
               participation: participation,
-              isHost: isHost,
+              isHost: isHost || isHostApp,
               now: now,
             ),
             onAddToCalendar: (buttonContext) =>
@@ -179,7 +184,7 @@ class EventDetailBody extends ConsumerWidget {
               ),
               if (_canOpenCompanion(
                 participation: participation,
-                isHost: isHost,
+                showConsumerActions: showConsumerActions,
               ))
                 _EventCompanionEntry(
                   event: event,
@@ -189,7 +194,7 @@ class EventDetailBody extends ConsumerWidget {
               if (_canShowInviteLoop(
                 event: event,
                 participation: participation,
-                isHost: isHost,
+                showConsumerActions: showConsumerActions,
                 now: now,
               ))
                 _EventInviteLoopCard(
@@ -204,7 +209,7 @@ class EventDetailBody extends ConsumerWidget {
                 reviews: reviews,
                 userProfile: userProfile,
                 isAuthenticated: isAuthenticated,
-                isHost: isHost,
+                isHost: isHost || isHostApp,
                 participation: participation,
                 now: now,
                 surfaceStyle: style,
@@ -221,10 +226,12 @@ class EventDetailBody extends ConsumerWidget {
 bool _canShowInviteLoop({
   required Event event,
   required EventParticipation? participation,
-  required bool isHost,
+  required bool showConsumerActions,
   required DateTime now,
 }) {
-  if (isHost || event.isCancelled || !event.startTime.isAfter(now)) {
+  if (!showConsumerActions ||
+      event.isCancelled ||
+      !event.startTime.isAfter(now)) {
     return false;
   }
   return participation?.status == EventParticipationStatus.signedUp;
@@ -298,9 +305,9 @@ class _EventInviteLoopCard extends StatelessWidget {
 
 bool _canOpenCompanion({
   required EventParticipation? participation,
-  required bool isHost,
+  required bool showConsumerActions,
 }) {
-  if (isHost) return false;
+  if (!showConsumerActions) return false;
   return switch (participation?.status) {
     EventParticipationStatus.signedUp ||
     EventParticipationStatus.attended => true,

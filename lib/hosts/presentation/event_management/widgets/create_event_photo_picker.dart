@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/ordered_photo_picker.dart';
 import 'package:flutter/material.dart';
 

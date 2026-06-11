@@ -110,6 +110,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
   }
 
+  void _openHostApp() {
+    unawaited(ref.read(externalLinkControllerProvider).openHostApp());
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -190,6 +194,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 onTap: () => context.pushNamed(
                                   Routes.paymentHistoryScreen.name,
                                 ),
+                              ),
+                              SettingsRow(
+                                key: SettingsKeys.hostAppRow,
+                                label: 'Catch Host',
+                                value: 'Manage events and clubs',
+                                icon: CatchIcons.workOutlineRounded,
+                                onTap: _openHostApp,
                               ),
                               SettingsRow(
                                 key: SettingsKeys.signOutRow,

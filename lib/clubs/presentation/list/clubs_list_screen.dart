@@ -27,7 +27,7 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const double _exploreSheetPeekSize = CatchLayout.exploreSheetPeekSize;
@@ -520,7 +520,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
         // feed cards below the first viewport may not build until the user
         // scrolls. A generous cache extent keeps them in the widget tree so
         // semantic lookups and screen-reader navigation work straight away.
-        cacheExtent: 1600,
+        scrollCacheExtent: const ScrollCacheExtent.pixels(1600),
         slivers: [...nearbySlivers, ...bodySlivers],
       ),
     );

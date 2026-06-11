@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'club_host_management_controller.dart';
+part of 'club_host_contact_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,29 +9,28 @@ part of 'club_host_management_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(ClubHostManagementController)
-final clubHostManagementControllerProvider =
-    ClubHostManagementControllerProvider._();
+@ProviderFor(ClubHostContactController)
+final clubHostContactControllerProvider = ClubHostContactControllerProvider._();
 
-final class ClubHostManagementControllerProvider
-    extends $NotifierProvider<ClubHostManagementController, void> {
-  ClubHostManagementControllerProvider._()
+final class ClubHostContactControllerProvider
+    extends $NotifierProvider<ClubHostContactController, void> {
+  ClubHostContactControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'clubHostManagementControllerProvider',
+        name: r'clubHostContactControllerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$clubHostManagementControllerHash();
+  String debugGetCreateSourceHash() => _$clubHostContactControllerHash();
 
   @$internal
   @override
-  ClubHostManagementController create() => ClubHostManagementController();
+  ClubHostContactController create() => ClubHostContactController();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
@@ -42,14 +41,14 @@ final class ClubHostManagementControllerProvider
   }
 }
 
-String _$clubHostManagementControllerHash() =>
-    r'a4785376f8cf467377b23c357ca64c7c08839833';
+String _$clubHostContactControllerHash() =>
+    r'7055d9c7253851031a915f40e42dd1d030f845ac';
 
-abstract class _$ClubHostManagementController extends $Notifier<void> {
+abstract class _$ClubHostContactController extends $Notifier<void> {
   void build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<void, void>;
     final element =
         ref.element
@@ -59,6 +58,6 @@ abstract class _$ClubHostManagementController extends $Notifier<void> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

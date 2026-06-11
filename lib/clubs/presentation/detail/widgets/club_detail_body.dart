@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/club_host_management_controller.dart';
+import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/membership_button.dart';
@@ -13,18 +13,10 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
-import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
-import 'package:catch_dating_app/payments/presentation/host_payment_account_card.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -65,9 +57,10 @@ class ClubDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final isHostApp = AppConfig.appRole.isHost;
+    final eventDetailRouteName = isHostApp
+        ? Routes.hostAppEventDetailScreen.name
+        : Routes.eventDetailScreen.name;
     final showMembershipControls = isAuthenticated && !isHost && !isHostApp;
-    final showHostControls = isHostApp && isHost;
-    final isOwner = isHostApp && club.isOwnedBy(uid);
     const contentGap = SizedBox(height: CatchLayout.detailScreenContentGap);
     const sectionGap = SizedBox(height: CatchLayout.detailScreenSectionGap);
 
@@ -94,29 +87,6 @@ class ClubDetailBody extends StatelessWidget {
                   currentUid: uid,
                 ),
                 contentGap,
-                if (isOwner) ...[
-                  HostPaymentAccountCard(club: club),
-                  contentGap,
-                  _ClubOwnerHostManagementSection(club: club, currentUid: uid!),
-                  contentGap,
-                ],
-                if (showHostControls) ...[
-                  HostClubManagementPanel(
-                    club: club,
-                    events: upcoming,
-                    onEditClub: () => context.pushNamed(
-                      Routes.hostEditClubScreen.name,
-                      pathParameters: {'clubId': club.id},
-                      extra: club,
-                    ),
-                    onCreateEvent: () => context.pushNamed(
-                      Routes.hostCreateEventScreen.name,
-                      pathParameters: {'clubId': club.id},
-                      extra: club,
-                    ),
-                  ),
-                  contentGap,
-                ],
                 Text(
                   club.description,
                   style: CatchTextStyles.bodyLead(context, color: t.ink2),
@@ -144,9 +114,8 @@ class ClubDetailBody extends StatelessWidget {
           ),
           ClubScheduleSection(
             events: upcoming,
-            isHost: showHostControls,
             onEventSelected: (event) => context.pushNamed(
-              Routes.eventDetailScreen.name,
+              eventDetailRouteName,
               pathParameters: {'clubId': club.id, 'eventId': event.id},
               extra: event,
             ),
@@ -187,7 +156,7 @@ class _ClubHostSection extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final hosts = club.displayHostProfiles;
     final messageMutation = ref.watch(
-      ClubHostManagementController.startConversationMutation,
+      ClubHostContactController.startConversationMutation,
     );
 
     void openProfile(String uid) {
@@ -198,12 +167,11 @@ class _ClubHostSection extends ConsumerWidget {
     }
 
     Future<void> messageHost(ClubHostProfile host) async {
-      final matchId = await ClubHostManagementController
-          .startConversationMutation
+      final matchId = await ClubHostContactController.startConversationMutation
           .run(
             ref,
             (tx) => tx
-                .get(clubHostManagementControllerProvider.notifier)
+                .get(clubHostContactControllerProvider.notifier)
                 .startConversation(clubId: club.id, hostUid: host.uid),
           );
       if (!context.mounted) return;
@@ -330,268 +298,6 @@ class _ClubHostRow extends StatelessWidget {
   }
 }
 
-class _ClubOwnerHostManagementSection extends ConsumerWidget {
-  const _ClubOwnerHostManagementSection({
-    required this.club,
-    required this.currentUid,
-  });
-
-  final Club club;
-  final String currentUid;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final hosts = club.displayHostProfiles;
-    final addPending = ref
-        .watch(ClubHostManagementController.addHostMutation)
-        .isPending;
-    final removePending = ref
-        .watch(ClubHostManagementController.removeHostMutation)
-        .isPending;
-    final transferPending = ref
-        .watch(ClubHostManagementController.transferOwnershipMutation)
-        .isPending;
-    final actionPending = addPending || removePending || transferPending;
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.tileContentCompact,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Expanded(child: SectionHeader(title: 'Host team')),
-              IconButton.filledTonal(
-                tooltip: 'Add host',
-                onPressed: actionPending
-                    ? null
-                    : () => unawaited(_showAddHostSheet(context)),
-                icon: Icon(CatchIcons.personAddAlt1Rounded),
-              ),
-            ],
-          ),
-          gapH12,
-          for (final host in hosts) ...[
-            _OwnerHostRow(
-              host: host,
-              canManage: host.uid != currentUid && !actionPending,
-              onTransfer: () => unawaited(_confirmTransfer(context, ref, host)),
-              onRemove: () => unawaited(_confirmRemove(context, ref, host)),
-            ),
-            if (host != hosts.last) gapH10,
-          ],
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showAddHostSheet(BuildContext context) async {
-    final added = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => _AddHostSheet(clubId: club.id),
-    );
-    if (added == true && context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Host added.')));
-    }
-  }
-
-  Future<void> _confirmRemove(
-    BuildContext context,
-    WidgetRef ref,
-    ClubHostProfile host,
-  ) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Remove host?',
-      message:
-          '${host.displayName} will stay a club member but will lose host tools.',
-      actions: const [
-        CatchDialogAction(label: 'Cancel', value: false),
-        CatchDialogAction(label: 'Remove', value: true, isDestructive: true),
-      ],
-    );
-    if (confirmed != true) return;
-
-    await ClubHostManagementController.removeHostMutation.run(
-      ref,
-      (tx) => tx
-          .get(clubHostManagementControllerProvider.notifier)
-          .removeHost(clubId: club.id, uid: host.uid),
-    );
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${host.displayName} removed.')));
-  }
-
-  Future<void> _confirmTransfer(
-    BuildContext context,
-    WidgetRef ref,
-    ClubHostProfile host,
-  ) async {
-    final confirmed = await showCatchAdaptiveDialog<bool>(
-      context: context,
-      title: 'Transfer ownership?',
-      message:
-          '${host.displayName} will become the club owner. You will remain a host.',
-      actions: const [
-        CatchDialogAction(label: 'Cancel', value: false),
-        CatchDialogAction(label: 'Transfer', value: true, isDefault: true),
-      ],
-    );
-    if (confirmed != true) return;
-
-    await ClubHostManagementController.transferOwnershipMutation.run(
-      ref,
-      (tx) => tx
-          .get(clubHostManagementControllerProvider.notifier)
-          .transferOwnership(clubId: club.id, uid: host.uid),
-    );
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Ownership transferred to ${host.displayName}.')),
-    );
-  }
-}
-
-class _OwnerHostRow extends StatelessWidget {
-  const _OwnerHostRow({
-    required this.host,
-    required this.canManage,
-    required this.onTransfer,
-    required this.onRemove,
-  });
-
-  final ClubHostProfile host;
-  final bool canManage;
-  final VoidCallback onTransfer;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ClubHostAvatar(
-          name: host.displayName,
-          imageUrl: host.avatarUrl,
-          size: 42,
-        ),
-        gapW10,
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                host.displayName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              gapH4,
-              ClubHostRoleBadge(role: host.role),
-            ],
-          ),
-        ),
-        CatchActionMenu<String>(
-          tooltip: 'Host actions',
-          enabled: canManage,
-          icon: CatchIcons.moreHorizRounded,
-          onSelected: (value) {
-            if (value == 'transfer') onTransfer();
-            if (value == 'remove') onRemove();
-          },
-          items: [
-            CatchActionMenuItem(
-              value: 'transfer',
-              label: 'Transfer ownership',
-              icon: CatchIcons.adminPanelSettingsOutlined,
-            ),
-            CatchActionMenuItem(
-              value: 'remove',
-              label: 'Remove host',
-              icon: CatchIcons.personOffOutlined,
-              isDestructive: true,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _AddHostSheet extends ConsumerStatefulWidget {
-  const _AddHostSheet({required this.clubId});
-
-  final String clubId;
-
-  @override
-  ConsumerState<_AddHostSheet> createState() => _AddHostSheetState();
-}
-
-class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    final phone = _controller.text.trim();
-    if (phone.isEmpty) return;
-    await ClubHostManagementController.addHostMutation.run(
-      ref,
-      (tx) => tx
-          .get(clubHostManagementControllerProvider.notifier)
-          .addHostByPhone(clubId: widget.clubId, phoneNumber: phone),
-    );
-    if (!mounted) return;
-    Navigator.of(context).pop(true);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final mutation = ref.watch(ClubHostManagementController.addHostMutation);
-
-    return CatchBottomSheetScaffold(
-      title: 'Add host',
-      subtitle: 'Enter the phone number on their Catch profile.',
-      keyboardSafe: true,
-      action: CatchButton(
-        label: 'Add host',
-        onPressed: mutation.isPending ? null : () => unawaited(_submit()),
-        isLoading: mutation.isPending,
-        fullWidth: true,
-        icon: Icon(CatchIcons.personAddAlt1Rounded),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CatchTextField(
-            label: 'Phone number',
-            controller: _controller,
-            prefixIcon: Icon(CatchIcons.phoneOutlined),
-            keyboardType: TextInputType.phone,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => unawaited(_submit()),
-          ),
-          if (mutation.hasError) ...[
-            gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
 class _ClubContactSection extends ConsumerWidget {
   const _ClubContactSection({required this.club});
 
@@ -663,7 +369,7 @@ class _ContactRow extends StatelessWidget {
       button: true,
       label: label,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: CatchSpacing.micro10),
+        padding: CatchInsets.detailInlineRowBottomGap,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(CatchRadius.sm),

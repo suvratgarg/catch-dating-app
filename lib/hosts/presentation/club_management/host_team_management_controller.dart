@@ -3,14 +3,13 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'club_host_management_controller.g.dart';
+part 'host_team_management_controller.g.dart';
 
 @riverpod
-class ClubHostManagementController extends _$ClubHostManagementController {
+class HostTeamManagementController extends _$HostTeamManagementController {
   static final addHostMutation = Mutation<void>();
   static final removeHostMutation = Mutation<void>();
   static final transferOwnershipMutation = Mutation<void>();
-  static final startConversationMutation = Mutation<String>();
 
   @override
   void build() {}
@@ -40,15 +39,5 @@ class ClubHostManagementController extends _$ClubHostManagementController {
     await ref
         .read(clubsRepositoryProvider)
         .transferClubOwnership(clubId: clubId, uid: uid);
-  }
-
-  Future<String> startConversation({
-    required String clubId,
-    required String hostUid,
-  }) async {
-    requireSignedInUid(ref, action: 'message a club host');
-    return ref
-        .read(clubsRepositoryProvider)
-        .startClubHostConversation(clubId: clubId, hostUid: hostUid);
   }
 }

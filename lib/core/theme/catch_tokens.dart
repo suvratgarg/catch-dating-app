@@ -598,6 +598,11 @@ abstract final class CatchInsets {
     bottom: CatchSpacing.micro6,
   );
 
+  /// Bottom gap between compact inline rows in detail screens.
+  static const EdgeInsets detailInlineRowBottomGap = EdgeInsets.only(
+    bottom: CatchSpacing.micro10,
+  );
+
   /// Default content padding inside cards and bordered panels.
   static const EdgeInsets cardContent = content;
 

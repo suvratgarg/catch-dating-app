@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/list_tile_material.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
@@ -888,18 +889,20 @@ class _RecommendationSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return SwitchListTile.adaptive(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      value: active,
-      onChanged: onChanged,
-      title: Text(
-        recommendation.module.title,
-        style: CatchTextStyles.labelL(context),
-      ),
-      subtitle: Text(
-        recommendation.reason,
-        style: CatchTextStyles.supporting(context, color: t.ink2),
+    return ListTileMaterial(
+      child: SwitchListTile.adaptive(
+        dense: true,
+        contentPadding: EdgeInsets.zero,
+        value: active,
+        onChanged: onChanged,
+        title: Text(
+          recommendation.module.title,
+          style: CatchTextStyles.labelL(context),
+        ),
+        subtitle: Text(
+          recommendation.reason,
+          style: CatchTextStyles.supporting(context, color: t.ink2),
+        ),
       ),
     );
   }

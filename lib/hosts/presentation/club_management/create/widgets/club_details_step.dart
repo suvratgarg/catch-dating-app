@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/clubs/presentation/create/widgets/create_club_contact_fields.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_contact_fields.dart';
 import 'package:flutter/material.dart';
 
 class ClubDetailsStep extends StatelessWidget {

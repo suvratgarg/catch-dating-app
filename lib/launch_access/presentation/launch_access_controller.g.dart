@@ -53,7 +53,7 @@ abstract class _$LaunchAccessController
   LaunchAccessApplicationDraft build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<LaunchAccessApplicationDraft, LaunchAccessApplicationDraft>;
@@ -68,6 +68,6 @@ abstract class _$LaunchAccessController
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

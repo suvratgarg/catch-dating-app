@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -11,16 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key, this.hostedClubShortcut});
-
-  final Club? hostedClubShortcut;
+  const QuickActions({super.key});
 
   static const double _iconBoxSize = CatchSpacing.s9;
   static const double _tileSpacing = CatchSpacing.s3;
 
   void _onTap(BuildContext context, _QuickAction action) {
     if (action.route == null) return;
-    context.push(action.route!, extra: action.extra);
+    context.push(action.route!);
   }
 
   @override
@@ -71,16 +68,6 @@ class QuickActions extends StatelessWidget {
       label: 'Saved events',
       route: Routes.savedEventsScreen.path,
     ),
-    if (hostedClubShortcut case final club?)
-      _QuickAction(
-        icon: CatchIcons.homeRounded,
-        label: 'My club',
-        route: Routes.clubDetailScreen.path.replaceFirst(
-          ':clubId',
-          Uri.encodeComponent(club.id),
-        ),
-        extra: club,
-      ),
   ];
 }
 
@@ -126,15 +113,9 @@ class _QuickActionTile extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    this.route,
-    this.extra,
-  });
+  const _QuickAction({required this.icon, required this.label, this.route});
 
   final IconData icon;
   final String label;
   final String? route;
-  final Object? extra;
 }

@@ -80,9 +80,7 @@ class DashboardScreen extends ConsumerWidget {
             );
 
             final showEmptyDashboard =
-                signedUpEvents.isEmpty &&
-                viewModel.arrivalAction == null &&
-                viewModel.hostEventTools.isEmpty;
+                signedUpEvents.isEmpty && viewModel.arrivalAction == null;
 
             return _DashboardHomeScreen(
               header: showEmptyDashboard
@@ -92,7 +90,6 @@ class DashboardScreen extends ConsumerWidget {
                   ? DashboardEmptySliverBody(
                       weeklyActivitySection: viewModel.weeklyActivitySection,
                       followedClubIds: followedClubIds,
-                      hostedClubShortcut: viewModel.hostedClubShortcut,
                     )
                   : DashboardFullSliverBody(
                       viewModel: viewModel,
