@@ -1,4 +1,4 @@
-import {FormEvent, MouseEvent, useEffect, useMemo, useState} from "react";
+import {type CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useState} from "react";
 import {
   createMarketingEventId,
   getMarketingConsent,
@@ -22,10 +22,14 @@ import {
 } from "./firebase";
 import hostListingsJson from "./generated/hostListings.json";
 
-type PageKey = "home" | "host" | "organizers" | "listing";
+type PageKey = "home" | "host" | "organizers" | "listing" | "claim";
 type FormVariant = "member" | "host";
 type StatusTone = "" | "is-error" | "is-success";
 type StorePlatform = "ios" | "android";
+type OrganizerStatusFilter = "all" | "verified" | "claimed" | "unclaimed";
+type OrganizerSort = "relevance" | "reviews" | "rating" | "upcoming" | "confidence";
+type ClaimFlowStep = "listing" | "role" | "verify" | "submitted";
+type HostApplicationStep = "profile" | "event" | "policy" | "success" | "review";
 type ClaimStatus = {
   message: string;
   tone: StatusTone;
@@ -37,6 +41,49 @@ interface StoreCta {
   label: string;
   shortLabel: string;
   href: string;
+}
+
+interface ActivityMeta {
+  label: string;
+  token: string;
+  short: string;
+}
+
+interface HostCreateStep {
+  id: string;
+  title: string;
+  sub: string;
+  captureId?: string;
+  fields: Array<{label: string; value: string}>;
+}
+
+interface ClaimVerificationMethod {
+  id: "publicProof" | "email" | "phone";
+  title: string;
+  body: string;
+}
+
+interface HostApplicationDraft {
+  fullName: string;
+  email: string;
+  city: string;
+  customCity: string;
+  organizationName: string;
+  organizationType: string;
+  communityLink: string;
+  formats: string[];
+  eventCadence: string;
+  nextEventName: string;
+  nextEventDate: string;
+  eventLocation: string;
+  expectedCapacity: string;
+  priceRange: string;
+  admissionModel: string;
+  waitlistPlan: string;
+  paymentReadiness: string;
+  eventSuccessModules: string[];
+  hostGoals: string;
+  operatingNotes: string;
 }
 
 interface PageMeta {
@@ -189,6 +236,109 @@ const claimRoleOptions: Array<{value: ClubClaimRole; label: string}> = [
   {value: "other", label: "Other"},
 ];
 
+const claimFlowSteps: Array<{id: ClaimFlowStep; label: string}> = [
+  {id: "listing", label: "Find listing"},
+  {id: "role", label: "Your role"},
+  {id: "verify", label: "Verify"},
+  {id: "submitted", label: "Review"},
+];
+
+const claimVerificationMethods: ClaimVerificationMethod[] = [
+  {
+    id: "publicProof",
+    title: "Public proof links",
+    body: "Submit official sites, event pages, Instagram bios, Linktree, Luma, or venue pages that connect you to this organizer.",
+  },
+  {
+    id: "email",
+    title: "Official email",
+    body: "Use a domain or booking address that appears publicly for the organizer or venue.",
+  },
+  {
+    id: "phone",
+    title: "Venue or business phone",
+    body: "Use the publicly listed business phone so Catch can confirm the claim before owner tools unlock.",
+  },
+];
+
+const hostApplicationSteps: Array<{id: HostApplicationStep; label: string; body: string}> = [
+  {
+    id: "profile",
+    label: "Host profile",
+    body: "Who you are, what you run, and where Catch should place the operating profile.",
+  },
+  {
+    id: "event",
+    label: "Event draft",
+    body: "The first event you want to publish, with enough detail for a real setup review.",
+  },
+  {
+    id: "policy",
+    label: "Admission",
+    body: "Capacity, pricing, approval, waitlists, and payment readiness.",
+  },
+  {
+    id: "success",
+    label: "Run of show",
+    body: "Event Success modules you want live at the door, during the room, and after.",
+  },
+  {
+    id: "review",
+    label: "Submit",
+    body: "Catch receives the operating packet, not just an email address.",
+  },
+];
+
+const hostFormatOptions = [
+  "Dinner",
+  "Singles mixer",
+  "Social run",
+  "Padel or pickleball",
+  "Pub quiz",
+  "Bar crawl",
+  "Community meetup",
+  "Custom format",
+];
+
+const hostSuccessModuleOptions = [
+  "Booking balance preview",
+  "Attendance and live roster",
+  "Welcome script",
+  "Starter groups",
+  "Timed partner rotations",
+  "Host introduction help",
+  "Private catch window",
+  "Verified attendee reviews",
+  "Post-event report",
+];
+
+const initialHostApplicationDraft: HostApplicationDraft = {
+  fullName: "",
+  email: "",
+  city: "Mumbai",
+  customCity: "",
+  organizationName: "",
+  organizationType: "Independent host",
+  communityLink: "",
+  formats: ["Dinner"],
+  eventCadence: "Monthly",
+  nextEventName: "",
+  nextEventDate: "",
+  eventLocation: "",
+  expectedCapacity: "20",
+  priceRange: "₹1,000–₹2,000",
+  admissionModel: "Request to join",
+  waitlistPlan: "Ranked timed offers",
+  paymentReadiness: "Need Catch payment onboarding",
+  eventSuccessModules: [
+    "Attendance and live roster",
+    "Welcome script",
+    "Private catch window",
+  ],
+  hostGoals: "",
+  operatingNotes: "",
+};
+
 const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> = {
   home: {
     title: "Catch | The event before the match",
@@ -211,6 +361,14 @@ const pageMeta: Record<Exclude<PageKey, "listing">, PageMeta> = {
       "Search Catch organizer profiles by name, city, format, and review signal.",
     canonicalPath: "/organizers/",
     twitterDescription: "Search Catch organizer and club profiles.",
+    robots: "noindex, follow",
+  },
+  claim: {
+    title: "Claim your organizer listing | Catch",
+    description:
+      "Find an unclaimed organizer profile, verify ownership, and request access to Catch host tools.",
+    canonicalPath: "/claim/",
+    twitterDescription: "Claim an organizer profile and unlock Catch host tools.",
     robots: "noindex, follow",
   },
 };
@@ -400,6 +558,191 @@ const storeCtas: StoreCta[] = [
   },
 ];
 
+const activityMeta: Record<string, ActivityMeta> = {
+  socialRun: {
+    label: "Social run",
+    token: "var(--catch-activity-social-run-accent)",
+    short: "SR",
+  },
+  running: {
+    label: "Running",
+    token: "var(--catch-activity-running-accent)",
+    short: "RN",
+  },
+  dinner: {
+    label: "Dinner",
+    token: "var(--catch-activity-dinner-accent)",
+    short: "DN",
+  },
+  singlesMixer: {
+    label: "Singles mixer",
+    token: "var(--catch-activity-singles-mixer-accent)",
+    short: "MX",
+  },
+  pubQuiz: {
+    label: "Pub quiz",
+    token: "var(--catch-activity-pub-quiz-accent)",
+    short: "QZ",
+  },
+  racket: {
+    label: "Racket sport",
+    token: "var(--catch-activity-padel-accent)",
+    short: "RK",
+  },
+  open: {
+    label: "Open format",
+    token: "var(--catch-activity-open-activity-accent)",
+    short: "OP",
+  },
+};
+
+const claimUnlocks = [
+  "Respond to public reviews",
+  "Correct facts, formats, and contact details",
+  "Add official photos and logo permission",
+  "Publish Catch events with bookings and check-in",
+  "Show verified attendee reviews",
+  "See listing views, saves, and search appearance",
+];
+
+const hostCreateSteps: HostCreateStep[] = [
+  {
+    id: "basics",
+    title: "Event basics",
+    sub: "Name, activity format, and interaction model",
+    fields: [
+      {label: "Event name", value: "Long table dinner"},
+      {label: "Activity format", value: "Dinner"},
+      {label: "Interaction model", value: "Seated, conversation-first"},
+    ],
+  },
+  {
+    id: "location",
+    title: "Meeting location",
+    sub: "Venue, meeting point, and arrival notes",
+    fields: [
+      {label: "Venue", value: "Private table, address after booking"},
+      {label: "Meeting point", value: "Host greets guests at the door"},
+      {label: "Arrival note", value: "Seat together at 8:30 sharp"},
+    ],
+  },
+  {
+    id: "schedule",
+    title: "When",
+    sub: "Date, time, and check-in window",
+    fields: [
+      {label: "Event date", value: "Sat 21 Jun"},
+      {label: "Start time", value: "8:30 PM"},
+      {label: "Check-in opens", value: "30 min before"},
+    ],
+  },
+  {
+    id: "policy",
+    title: "Event policy",
+    sub: "Capacity, price, admission, waitlist, and cancellation",
+    captureId: "host-event-setup",
+    fields: [
+      {label: "Max attendees", value: "20"},
+      {label: "Admission", value: "Balanced request-to-join"},
+      {label: "Waitlist", value: "Timed offers after cancellations"},
+    ],
+  },
+  {
+    id: "guide",
+    title: "Live event guide",
+    sub: "Event Success defaults for the night",
+    captureId: "host-live-console",
+    fields: [
+      {label: "Playbook", value: "Dinner facilitation"},
+      {label: "Welcome script", value: "On"},
+      {label: "Timed partner rotations", value: "Every 25 min"},
+    ],
+  },
+];
+
+const eventSuccessStages = [
+  {id: "before", label: "Before", sub: "Bookings build"},
+  {id: "arrival", label: "Arrival", sub: "The door"},
+  {id: "opening", label: "Opening", sub: "First 15 min"},
+  {id: "mixing", label: "Mixing", sub: "Room in motion"},
+  {id: "activity", label: "Activity", sub: "Rounds and reveals"},
+  {id: "after", label: "After", sub: "Catch window"},
+  {id: "debrief", label: "Debrief", sub: "Host report"},
+];
+
+const eventSuccessModules = [
+  {
+    stage: "before",
+    title: "Booking balance preview",
+    attendee: "The room feels intentional instead of random.",
+    host: "Shows waitlist, cohort, skill, and pace gaps before the event.",
+  },
+  {
+    stage: "arrival",
+    title: "Attendance and live roster",
+    attendee: "Arrival is quick and the right people enter the loop.",
+    host: "Confirms who actually attended before matching and reviews.",
+  },
+  {
+    stage: "opening",
+    title: "Welcome script",
+    attendee: "The room gets clear social permission to talk.",
+    host: "A simple live guide for non-professional hosts.",
+  },
+  {
+    stage: "mixing",
+    title: "Help me say hi",
+    attendee: "Ask for help with a specific introduction, live.",
+    host: "Only explicit, consented requests become introductions.",
+  },
+  {
+    stage: "activity",
+    title: "Timed partner rotations",
+    attendee: "Everyone meets more people without doing the logistics.",
+    host: "Predictable mixing for games, tables, and teams. No repeats.",
+  },
+  {
+    stage: "activity",
+    title: "Synchronized partner reveal",
+    attendee: "The next assignment lands as a shared reveal.",
+    host: "Countdowns, clues, and round-by-round reveal control.",
+  },
+  {
+    stage: "after",
+    title: "Suggested first-message openers",
+    attendee: "A match starts with shared context instead of a cold hi.",
+    host: "Better chat starts, zero host involvement.",
+  },
+  {
+    stage: "debrief",
+    title: "Host recap",
+    attendee: "The next event feels better because this one taught us something.",
+    host: "Check-in, mixing, catches, reviews, and repeats become advice.",
+  },
+];
+
+const hostComparisonRows = [
+  ["Publish and ticket an event", "yes", "yes", "yes", "partial", "partial", "no"],
+  ["Admission rules and request-to-join", "yes", "no", "no", "no", "partial", "partial"],
+  ["Waitlists with timed offers", "yes", "partial", "partial", "no", "no", "partial"],
+  ["Balanced ratios and cohorts", "yes", "no", "no", "no", "no", "partial"],
+  ["Door check-in and live console", "yes", "partial", "yes", "no", "no", "partial"],
+  ["Proof of real attendance", "yes", "no", "partial", "no", "no", "no"],
+  ["Private post-event matching", "yes", "no", "no", "no", "no", "no"],
+  ["Verified attendee reviews", "yes", "no", "no", "no", "no", "no"],
+  ["Public reputation listing", "yes", "partial", "partial", "partial", "no", "no"],
+  ["Post-event host report", "yes", "partial", "partial", "no", "no", "partial"],
+];
+
+const hostComparisonColumns = [
+  "Catch",
+  "Luma",
+  "Eventbrite",
+  "Instagram",
+  "WhatsApp + forms",
+  "Spreadsheets",
+];
+
 function App() {
   const listing = getHostListingForPath(window.location.pathname);
   const fallbackPage = getPageKey();
@@ -410,6 +753,7 @@ function App() {
   useMarketingAnalytics(page);
   useDocumentMeta(meta);
   useRevealAnimations(page);
+  useHashScroll(page);
 
   return (
     <div className={`page-shell ${pageClassFor(page)}`}>
@@ -419,6 +763,8 @@ function App() {
         <HostPage captures={captures} />
       ) : page === "organizers" ? (
         <OrganizerSearchPage />
+      ) : page === "claim" ? (
+        <ClaimPage />
       ) : (
         <HomePage captures={captures} />
       )}
@@ -455,22 +801,18 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
 
           <div className="hero__inner">
             <div className="hero__copy">
-              <h1 data-reveal>Catch</h1>
-              <p className="hero__headline" data-reveal>
-                The event before the match.
-              </p>
+              <h1 data-reveal>Real events. Real hosts. The match comes after.</h1>
               <p className="hero__body" data-reveal>
-                Curated singles events become real dating context. Pick a hosted
-                event, show up, catch privately, and start the conversation with
-                something you already shared.
+                Find a hosted run, dinner, game night, or mixer near you. Show
+                up in person, then catch privately with people you actually met.
               </p>
               <div className="hero__actions" data-reveal>
                 <a
                   className="button"
-                  href="#waitlist"
-                  onClick={() => trackCtaClick("home_hero_join_waitlist", "#waitlist")}
+                  href="/organizers/"
+                  onClick={() => trackCtaClick("home_hero_browse_events", "/organizers/")}
                 >
-                  Join the waitlist
+                  Browse organizers
                 </a>
                 <a
                   className="button button--ghost"
@@ -486,17 +828,18 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
             <aside className="hero-panel" aria-label="Catch event panel" data-reveal>
               <div className="event-ticket">
                 <div>
-                  <span className="ui-label">Tonight</span>
-                  <h2>Table for twelve</h2>
+                  <span className="ui-label">This week</span>
+                  <h2>Events with a reason to talk</h2>
                 </div>
                 <span className="event-ticket__status">
-                  Private catches open after check-in
+                  Private catches open only after attendance
                 </span>
               </div>
               <div className="event-ticket__meta">
                 <span>Dinner</span>
+                <span>Social run</span>
                 <span>Host-led prompts</span>
-                <span>Post-event match window</span>
+                <span>Verified reviews</span>
               </div>
             </aside>
           </div>
@@ -522,6 +865,8 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
             ))}
           </div>
         </section>
+
+        <FeaturedOrganizersSection />
 
         <section className="story-section" id="members" aria-labelledby="loop-title">
           <div className="section-heading section-heading--wide" data-reveal>
@@ -618,6 +963,117 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
         ]}
       />
     </>
+  );
+}
+
+function FeaturedOrganizersSection() {
+  const featured = hostListings
+    .slice()
+    .sort((a, b) => listingProfileStrength(b) - listingProfileStrength(a))
+    .slice(0, 3);
+
+  return (
+    <section className="featured-organizers" aria-labelledby="featured-organizers-title">
+      <div className="section-heading" data-reveal>
+        <span className="ui-label">Organizer directory</span>
+        <h2 id="featured-organizers-title">The public loop starts with real host pages.</h2>
+        <p>
+          Searchable organizer profiles create a concrete path from discovery to
+          claim, reviews, host tools, events, and app usage.
+        </p>
+      </div>
+      <div className="featured-organizers__grid">
+        {featured.map((listing) => (
+          <OrganizerMiniCard listing={listing} key={listing.id} />
+        ))}
+      </div>
+      <div className="featured-organizers__cta" data-reveal>
+        <p>
+          Run events? Your profile can show public sources today, then verified
+          Catch activity after you claim and publish.
+        </p>
+        <a
+          className="button button--ghost-light"
+          href="/organizers/"
+          onClick={() => trackCtaClick("home_featured_organizers", "/organizers/")}
+        >
+          Open directory
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function OrganizerMiniCard({listing}: {listing: HostListing}) {
+  const activity = activityForListing(listing);
+  return (
+    <a
+      className="organizer-mini-card"
+      href={listing.path}
+      data-reveal
+      style={{"--activity": activity.token} as CSSProperties}
+      onClick={() => trackCtaClick("featured_organizer", listing.path)}
+    >
+      <ActivityMark listing={listing} />
+      <div>
+        <StatusBadge listing={listing} compact />
+        <h3>{listing.name}</h3>
+        <p>{listing.category} · {listing.city}</p>
+      </div>
+      <ProfileStrength value={listingProfileStrength(listing)} />
+    </a>
+  );
+}
+
+function ActivityMark({
+  listing,
+  size = "md",
+}: {
+  listing: HostListing;
+  size?: "sm" | "md" | "lg";
+}) {
+  const activity = activityForListing(listing);
+  return (
+    <span
+      className={`activity-mark activity-mark--${size} ${
+        isUnclaimedListing(listing) ? "is-unclaimed" : ""
+      }`}
+      style={{"--activity": activity.token} as CSSProperties}
+      aria-hidden="true"
+    >
+      {listing.logo.text || activity.short}
+    </span>
+  );
+}
+
+function StatusBadge({
+  listing,
+  compact = false,
+}: {
+  listing: HostListing;
+  compact?: boolean;
+}) {
+  const verified = isVerifiedListing(listing);
+  const label = verified
+    ? compact ? "Verified" : "Verified on Catch"
+    : isUnclaimedListing(listing)
+      ? "Unclaimed"
+      : "Claimed";
+  return (
+    <span className={`status-badge ${
+      verified ? "is-verified" : isUnclaimedListing(listing) ? "is-unclaimed" : "is-claimed"
+    }`}>
+      {label}
+    </span>
+  );
+}
+
+function ProfileStrength({value}: {value: number}) {
+  return (
+    <div className="profile-strength" aria-label={`Profile strength ${value}%`}>
+      <span>{value}%</span>
+      <i><b style={{width: `${value}%`}} /></i>
+    </div>
   );
 }
 
@@ -843,6 +1299,8 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
           <LoopList items={hostLoop} modifier="loop-list--host" />
         </section>
 
+        <CreateEventWalkthrough captures={captures} />
+
         <section
           className="surface-section"
           aria-labelledby="surface-title"
@@ -886,6 +1344,8 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
           </div>
         </section>
 
+        <EventSuccessShowcase captures={captures} />
+
         <section
           className="proof-ledger"
           aria-labelledby="proof-ledger-title"
@@ -907,6 +1367,8 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
             ))}
           </div>
         </section>
+
+        <HostComparisonSection />
 
         <section className="captures-section" id="screens" aria-labelledby="screens-title">
           <div className="section-heading" data-reveal>
@@ -939,7 +1401,7 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
               formats where the right singles can meet with more context.
             </p>
           </div>
-          <WaitlistForm variant="host" />
+          <HostApplicationFlow />
         </section>
       </main>
 
@@ -960,11 +1422,24 @@ function HostPage({captures}: {captures: Record<string, CaptureRecord>}) {
 function OrganizerSearchPage() {
   const initialQuery = new URLSearchParams(window.location.search).get("q") ?? "";
   const [query, setQuery] = useState(initialQuery);
+  const [statusFilter, setStatusFilter] = useState<OrganizerStatusFilter>("all");
+  const [formatFilter, setFormatFilter] = useState("all");
+  const [cityFilter, setCityFilter] = useState("all");
+  const [upcomingOnly, setUpcomingOnly] = useState(false);
+  const [minRating, setMinRating] = useState(0);
+  const [sort, setSort] = useState<OrganizerSort>("relevance");
   const normalizedQuery = query.trim().toLowerCase();
+  const cityOptions = useMemo(
+    () => [...new Set(hostListings.map((listing) => listing.city))].sort(),
+    []
+  );
+  const formatOptions = useMemo(
+    () => [...new Set(hostListings.flatMap((listing) => listing.formats))].sort(),
+    []
+  );
   const results = useMemo(() => {
-    if (!normalizedQuery) return hostListings;
     const terms = normalizedQuery.split(/\s+/).filter(Boolean);
-    return hostListings.filter((listing) => {
+    const filtered = hostListings.filter((listing) => {
       const haystack = [
         listing.searchText,
         listing.name,
@@ -974,9 +1449,20 @@ function OrganizerSearchPage() {
         listing.status,
         ...(listing.formats ?? []),
       ].filter(Boolean).join(" ").toLowerCase();
-      return terms.every((term) => haystack.includes(term));
+      if (terms.length && !terms.every((term) => haystack.includes(term))) return false;
+      if (statusFilter === "verified" && !isVerifiedListing(listing)) return false;
+      if (statusFilter === "claimed" && listing.status !== "claimed") return false;
+      if (statusFilter === "unclaimed" && !isUnclaimedListing(listing)) return false;
+      if (formatFilter !== "all" && !listing.formats.includes(formatFilter)) return false;
+      if (cityFilter !== "all" && listing.city !== cityFilter) return false;
+      if (upcomingOnly && !hasUpcomingCatchEvent(listing)) return false;
+      if (minRating > 0 && (listing.metrics?.rating ?? 0) < minRating) return false;
+      return true;
     });
-  }, [normalizedQuery]);
+    return filtered.slice().sort((a, b) => compareListings(a, b, sort));
+  }, [cityFilter, formatFilter, minRating, normalizedQuery, sort, statusFilter, upcomingOnly]);
+  const verifiedCount = hostListings.filter(isVerifiedListing).length;
+  const unclaimedCount = hostListings.filter(isUnclaimedListing).length;
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -992,6 +1478,18 @@ function OrganizerSearchPage() {
       query: normalizedQuery,
       result_count: results.length,
     });
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setStatusFilter("all");
+    setFormatFilter("all");
+    setCityFilter("all");
+    setUpcomingOnly(false);
+    setMinRating(0);
+    setSort("relevance");
+    window.history.replaceState(null, "", "/organizers/");
+    trackMarketingEvent("organizer_search_filters_cleared", {});
   }
 
   return (
@@ -1010,11 +1508,16 @@ function OrganizerSearchPage() {
         <section className="organizer-search-hero" aria-labelledby="organizer-search-title">
           <div className="section-heading section-heading--wide" data-reveal>
             <span className="ui-label">Organizer search</span>
-            <h1 id="organizer-search-title">Find clubs, hosts, and event organizers.</h1>
+            <h1 id="organizer-search-title">Every club, host, and venue running real events.</h1>
             <p>
-              Search seed listings and first-party Catch-created clubs by name,
-              city, format, host signal, and reviews.
+              Search source-backed seed listings and Catch-created clubs by
+              name, city, format, reviews, upcoming events, and claim state.
             </p>
+          </div>
+          <div className="organizer-search-stats" data-reveal>
+            <span><strong>{hostListings.length}</strong> profiles tracked</span>
+            <span><strong>{verifiedCount}</strong> verified on Catch</span>
+            <span><strong>{unclaimedCount}</strong> claimable seed pages</span>
           </div>
           <form className="organizer-search-form" onSubmit={handleSearch} data-reveal>
             <label>
@@ -1022,20 +1525,89 @@ function OrganizerSearchPage() {
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Try Sunday Table, Delhi, run club, dinner"
+                placeholder="Try Sunday Table, Indore, run club, dinner"
               />
             </label>
             <button className="button" type="submit">Search</button>
           </form>
-          <p className="organizer-search-count" data-reveal>
-            {results.length} {results.length === 1 ? "profile" : "profiles"}
-          </p>
+          <div className="organizer-filter-rail" data-reveal>
+            <label>
+              Status
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as OrganizerStatusFilter)}
+              >
+                <option value="all">Any status</option>
+                <option value="verified">Verified on Catch</option>
+                <option value="claimed">Claimed</option>
+                <option value="unclaimed">Unclaimed</option>
+              </select>
+            </label>
+            <label>
+              City
+              <select value={cityFilter} onChange={(event) => setCityFilter(event.target.value)}>
+                <option value="all">Any city</option>
+                {cityOptions.map((city) => <option key={city}>{city}</option>)}
+              </select>
+            </label>
+            <label>
+              Format
+              <select value={formatFilter} onChange={(event) => setFormatFilter(event.target.value)}>
+                <option value="all">Any format</option>
+                {formatOptions.map((format) => <option key={format}>{format}</option>)}
+              </select>
+            </label>
+            <label>
+              Rating
+              <select value={minRating} onChange={(event) => setMinRating(Number(event.target.value))}>
+                <option value={0}>Any rating</option>
+                <option value={4}>4.0+</option>
+                <option value={4.5}>4.5+</option>
+              </select>
+            </label>
+            <button
+              className={`filter-chip-button ${upcomingOnly ? "is-on" : ""}`}
+              type="button"
+              onClick={() => setUpcomingOnly((current) => !current)}
+            >
+              Has upcoming events
+            </button>
+            <label>
+              Sort
+              <select value={sort} onChange={(event) => setSort(event.target.value as OrganizerSort)}>
+                <option value="relevance">Relevance</option>
+                <option value="reviews">Most reviewed</option>
+                <option value="rating">Rating</option>
+                <option value="upcoming">Upcoming first</option>
+                <option value="confidence">Source confidence</option>
+              </select>
+            </label>
+          </div>
+          <div className="organizer-result-summary" data-reveal>
+            <p>
+              {results.length} {results.length === 1 ? "profile" : "profiles"}
+              {normalizedQuery ? ` for "${query.trim()}"` : ""}
+            </p>
+            <button className="see-all-button" type="button" onClick={clearFilters}>
+              Clear filters
+            </button>
+          </div>
         </section>
 
         <section className="organizer-results" aria-label="Organizer results">
-          {results.map((listing) => (
-            <OrganizerResultCard listing={listing} key={listing.id} />
-          ))}
+          {results.length ? (
+            results.map((listing) => (
+              <OrganizerResultCard listing={listing} key={listing.id} />
+            ))
+          ) : (
+            <div className="empty-results" data-reveal>
+              <h2>No organizer profiles match those filters.</h2>
+              <p>Try a wider city, format, or status filter.</p>
+              <button className="button button--ghost" type="button" onClick={clearFilters}>
+                Reset directory
+              </button>
+            </div>
+          )}
         </section>
       </main>
 
@@ -1053,30 +1625,551 @@ function OrganizerSearchPage() {
   );
 }
 
+function ClaimPage() {
+  const preselectedListing = getClaimListingFromUrl();
+  const [step, setStep] = useState<ClaimFlowStep>(
+    preselectedListing ? "role" : "listing"
+  );
+  const [listing, setListing] = useState<HostListing | null>(preselectedListing);
+  const [query, setQuery] = useState(preselectedListing?.name ?? "");
+  const [requesterName, setRequesterName] = useState("");
+  const [requesterRole, setRequesterRole] = useState<ClubClaimRole>("owner");
+  const [businessEmail, setBusinessEmail] = useState("");
+  const [businessPhone, setBusinessPhone] = useState("");
+  const [proofUrls, setProofUrls] = useState("");
+  const [message, setMessage] = useState("");
+  const [verificationMethod, setVerificationMethod] =
+    useState<ClaimVerificationMethod["id"]>("publicProof");
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<ClaimStatus>({message: "", tone: ""});
+
+  useEffect(() => {
+    return watchClaimAuthState((nextUser) => {
+      setUser(nextUser);
+      setAuthReady(true);
+      setRequesterName((current) => current || nextUser?.displayName || "");
+      setBusinessEmail((current) => current || nextUser?.email || "");
+    });
+  }, []);
+
+  const searchResults = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    const claimableListings = hostListings.filter(isUnclaimedListing);
+    if (normalized.length <= 1) return claimableListings.slice(0, 5);
+    return claimableListings
+      .filter((item) =>
+        [
+          item.name,
+          item.category,
+          item.city,
+          item.region,
+          ...item.formats,
+        ].join(" ").toLowerCase().includes(normalized)
+      )
+      .slice(0, 8);
+  }, [query]);
+
+  const currentStepIndex = claimFlowSteps.findIndex((item) => item.id === step);
+  const selectedMethod =
+    claimVerificationMethods.find((method) => method.id === verificationMethod) ??
+    claimVerificationMethods[0];
+  const canContinueRole =
+    Boolean(listing) &&
+    requesterName.trim().length >= 2 &&
+    (businessEmail.trim().length > 0 ||
+      businessPhone.trim().length > 0 ||
+      proofUrls.trim().length > 0);
+
+  async function handleSignIn() {
+    setIsSigningIn(true);
+    setStatus({message: "", tone: ""});
+    trackMarketingEvent("claim_flow_sign_in_started", {
+      listing_id: listing?.id ?? null,
+    });
+    try {
+      await signInForClaim();
+      trackMarketingEvent("claim_flow_signed_in", {
+        listing_id: listing?.id ?? null,
+      });
+    } catch (error) {
+      setStatus({message: readableError(error), tone: "is-error"});
+      trackMarketingEvent("claim_flow_sign_in_error", {
+        listing_id: listing?.id ?? null,
+      });
+    } finally {
+      setIsSigningIn(false);
+    }
+  }
+
+  async function handleClaimSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!listing) {
+      setStatus({message: "Choose a listing before submitting.", tone: "is-error"});
+      setStep("listing");
+      return;
+    }
+
+    const parsedProofUrls = parseProofUrls(proofUrls);
+    if (!requesterName.trim() || !requesterRole) {
+      setStatus({message: "Add your name and role before submitting.", tone: "is-error"});
+      setStep("role");
+      return;
+    }
+    if (!businessEmail.trim() && !businessPhone.trim() && parsedProofUrls.length === 0) {
+      setStatus({
+        message: "Add a business email, phone, or proof link.",
+        tone: "is-error",
+      });
+      setStep("role");
+      return;
+    }
+    if (!claimFirebaseConfigured) {
+      setStatus({
+        message:
+          "Claim submission needs the website Firebase/App Check config. The operating packet is ready, but this local build cannot submit it.",
+        tone: "is-error",
+      });
+      return;
+    }
+    if (!user) {
+      setStatus({message: "Sign in before submitting this claim.", tone: "is-error"});
+      return;
+    }
+
+    const reviewMessage = [
+      `Verification method: ${selectedMethod.title}`,
+      message.trim(),
+    ].filter(Boolean).join("\n\n");
+
+    setIsSubmitting(true);
+    setStatus({message: "", tone: ""});
+    trackMarketingEvent("claim_flow_submit_attempt", {
+      listing_id: listing.id,
+      proof_count: parsedProofUrls.length,
+      requester_role: requesterRole,
+      verification_method: verificationMethod,
+    });
+
+    try {
+      const response = await requestClubClaim({
+        clubId: listing.id,
+        requesterName: requesterName.trim(),
+        requesterRole,
+        businessEmail: businessEmail.trim() || null,
+        businessPhone: businessPhone.trim() || null,
+        proofUrls: parsedProofUrls,
+        message: reviewMessage || null,
+      });
+      setRequestId(response.requestId);
+      setStatus({
+        message: "Claim request received. Catch will review ownership before tools unlock.",
+        tone: "is-success",
+      });
+      setStep("submitted");
+      trackMarketingEvent("claim_flow_submitted", {
+        listing_id: listing.id,
+        proof_count: parsedProofUrls.length,
+        requester_role: requesterRole,
+        request_id: response.requestId,
+      });
+    } catch (error) {
+      setStatus({message: readableError(error), tone: "is-error"});
+      trackMarketingEvent("claim_flow_submit_error", {
+        listing_id: listing.id,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      <SiteHeader
+        brandHref="/"
+        nav={[
+          {href: "/organizers/", label: "Find listing"},
+          {href: "/host/", label: "Host tools"},
+          {href: "/#trust", label: "Trust"},
+        ]}
+        ctaHref="/host/#founding-hosts"
+        ctaLabel="Start fresh"
+      />
+
+      <main className="claim-flow">
+        <section className="claim-flow__hero">
+          <div className="claim-flow__intro" data-reveal>
+            <span className="ui-label">Claim your listing</span>
+            <h1>Take control of how your events show up.</h1>
+            <p>
+              Find an unclaimed organizer page, prove your role, and send the
+              operating packet Catch needs before owner tools unlock.
+            </p>
+          </div>
+          <div className="claim-flow__summary" data-reveal>
+            <strong>{listing?.name ?? "No listing selected"}</strong>
+            <span>
+              {listing ?
+                `${listing.category} · ${listing.city} · ${listing.sourceConfidence.replaceAll("_", " ")}` :
+                "Search the source-backed organizer directory first."}
+            </span>
+          </div>
+        </section>
+
+        <form className="claim-flow__workspace" onSubmit={handleClaimSubmit}>
+          <nav className="operational-step-rail" aria-label="Claim progress">
+            {claimFlowSteps.map((item, index) => (
+              <button
+                className={index === currentStepIndex ? "is-active" : index < currentStepIndex ? "is-done" : ""}
+                disabled={index > currentStepIndex}
+                key={item.id}
+                onClick={() => setStep(item.id)}
+                type="button"
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{item.label}</strong>
+              </button>
+            ))}
+          </nav>
+
+          <section className="claim-flow__panel" aria-live="polite">
+            {step === "listing" ? (
+              <div className="claim-flow__stage">
+                <div className="field-block">
+                  <label htmlFor="claim-search">Search unclaimed listings</label>
+                  <input
+                    id="claim-search"
+                    value={query}
+                    placeholder="Organizer, venue, category, or city"
+                    onChange={(event) => setQuery(event.currentTarget.value)}
+                  />
+                </div>
+                <div className="claim-listing-results">
+                  {searchResults.map((item) => (
+                    <button
+                      className={listing?.id === item.id ? "claim-result is-selected" : "claim-result"}
+                      key={item.id}
+                      onClick={() => {
+                        setListing(item);
+                        setQuery(item.name);
+                      }}
+                      type="button"
+                      style={{"--activity": activityForListing(item).token} as CSSProperties}
+                    >
+                      <ActivityMark listing={item} size="sm" />
+                      <span>
+                        <strong>{item.name}</strong>
+                        <small>{item.category} · {item.city} · {item.sources.length} sources</small>
+                      </span>
+                      <StatusBadge listing={item} compact />
+                    </button>
+                  ))}
+                  {!searchResults.length ? (
+                    <div className="claim-empty-state">
+                      <strong>No unclaimed listing found.</strong>
+                      <p>
+                        Start as a fresh host so Catch can create the organizer
+                        profile from first-party details.
+                      </p>
+                      <a className="button button--ghost" href="/host/#founding-hosts">
+                        Start fresh
+                      </a>
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flow-actions">
+                  <a className="button button--ghost" href="/host/#founding-hosts">
+                    My organizer is not listed
+                  </a>
+                  <button
+                    className="button"
+                    disabled={!listing}
+                    type="button"
+                    onClick={() => setStep("role")}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {step === "role" && listing ? (
+              <div className="claim-flow__stage">
+                <div className="selected-listing-card">
+                  <ActivityMark listing={listing} size="sm" />
+                  <span>
+                    <strong>{listing.name}</strong>
+                    <small>{listing.category} · {listing.city}</small>
+                  </span>
+                  <button className="see-all-button" type="button" onClick={() => setStep("listing")}>
+                    Change
+                  </button>
+                </div>
+
+                <div className="flow-field-grid">
+                  <div className="field-block">
+                    <label htmlFor="claim-name">Your name</label>
+                    <input
+                      id="claim-name"
+                      value={requesterName}
+                      autoComplete="name"
+                      onChange={(event) => setRequesterName(event.currentTarget.value)}
+                      required
+                    />
+                  </div>
+                  <div className="field-block">
+                    <label htmlFor="claim-role">Role</label>
+                    <select
+                      id="claim-role"
+                      value={requesterRole}
+                      onChange={(event) => setRequesterRole(event.currentTarget.value as ClubClaimRole)}
+                      required
+                    >
+                      {claimRoleOptions.map((option) => (
+                        <option value={option.value} key={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field-block">
+                    <label htmlFor="claim-email">Business email</label>
+                    <input
+                      id="claim-email"
+                      type="email"
+                      value={businessEmail}
+                      autoComplete="email"
+                      onChange={(event) => setBusinessEmail(event.currentTarget.value)}
+                    />
+                  </div>
+                  <div className="field-block">
+                    <label htmlFor="claim-phone">Business phone</label>
+                    <input
+                      id="claim-phone"
+                      type="tel"
+                      value={businessPhone}
+                      autoComplete="tel"
+                      onChange={(event) => setBusinessPhone(event.currentTarget.value)}
+                    />
+                  </div>
+                  <div className="field-block span-2">
+                    <label htmlFor="claim-proof">Proof links</label>
+                    <textarea
+                      id="claim-proof"
+                      rows={3}
+                      value={proofUrls}
+                      placeholder="Official website, Instagram, Luma, Linktree, or event page"
+                      onChange={(event) => setProofUrls(event.currentTarget.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flow-actions">
+                  <button className="button button--ghost" type="button" onClick={() => setStep("listing")}>
+                    Back
+                  </button>
+                  <button
+                    className="button"
+                    disabled={!canContinueRole}
+                    type="button"
+                    onClick={() => setStep("verify")}
+                  >
+                    Continue
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {step === "verify" && listing ? (
+              <div className="claim-flow__stage">
+                <div>
+                  <span className="ui-label">Verification method</span>
+                  <h2>How Catch should verify ownership.</h2>
+                  <p>
+                    Approved claims attach this page to a host account before
+                    editing, review responses, events, or analytics are unlocked.
+                  </p>
+                </div>
+
+                <div className="verification-methods">
+                  {claimVerificationMethods.map((method) => (
+                    <button
+                      className={verificationMethod === method.id ? "choice-card is-selected" : "choice-card"}
+                      key={method.id}
+                      type="button"
+                      onClick={() => setVerificationMethod(method.id)}
+                    >
+                      <strong>{method.title}</strong>
+                      <span>{method.body}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="claim-review-grid">
+                  <div>
+                    <span className="ui-label">Claim packet</span>
+                    <dl>
+                      <div><dt>Listing</dt><dd>{listing.name}</dd></div>
+                      <div><dt>Requester</dt><dd>{requesterName}</dd></div>
+                      <div><dt>Role</dt><dd>{claimRoleOptions.find((option) => option.value === requesterRole)?.label}</dd></div>
+                      <div><dt>Contact</dt><dd>{businessEmail || businessPhone || "Proof links only"}</dd></div>
+                    </dl>
+                  </div>
+                  <div>
+                    <span className="ui-label">Unlocks after approval</span>
+                    <ul>
+                      {claimUnlocks.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="field-block">
+                  <label htmlFor="claim-message">Note for review</label>
+                  <textarea
+                    id="claim-message"
+                    rows={3}
+                    value={message}
+                    maxLength={1000}
+                    placeholder="Anything Catch should know before approving ownership"
+                    onChange={(event) => setMessage(event.currentTarget.value)}
+                  />
+                </div>
+
+                <div className="claim-auth-row claim-auth-row--flow">
+                  <span>
+                    {user ?
+                      `Signed in as ${user.displayName || user.email || "Catch user"}` :
+                      authReady ?
+                        "Sign in with Google to submit the claim." :
+                        "Checking sign-in status."}
+                  </span>
+                  {user ? (
+                    <button className="button button--ghost" onClick={() => void signOutClaimUser()} type="button">
+                      Sign out
+                    </button>
+                  ) : (
+                    <button
+                      className="button button--ghost"
+                      disabled={!authReady || isSigningIn}
+                      onClick={() => void handleSignIn()}
+                      type="button"
+                    >
+                      {isSigningIn ? "Signing in..." : "Sign in"}
+                    </button>
+                  )}
+                </div>
+
+                <div className="flow-actions">
+                  <button className="button button--ghost" type="button" onClick={() => setStep("role")}>
+                    Back
+                  </button>
+                  <button className="button" disabled={isSubmitting || !user} type="submit">
+                    {isSubmitting ? "Submitting..." : "Submit claim"}
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {step === "submitted" && listing ? (
+              <div className="claim-flow__stage">
+                <div className="submitted-panel">
+                  <span className="submitted-panel__mark">✓</span>
+                  <div>
+                    <span className="ui-label">Claim in review</span>
+                    <h2>{listing.name} is waiting for owner approval.</h2>
+                    <p>
+                      {requestId ?
+                        `Request ${requestId} is pending. Catch will verify ownership before attaching host tools.` :
+                        "Catch will verify ownership before attaching host tools."}
+                    </p>
+                  </div>
+                </div>
+                <div className="owner-unlock-board">
+                  {[
+                    ["Profile", "Fix source details, description, photos, and event categories."],
+                    ["Events", "Publish the first Catch event with admission, price, waitlist, and Event Success."],
+                    ["Reviews", "Respond as owner and separate public reviews from verified attendee reviews."],
+                    ["Reports", "Track attendance, catches, matches, repeat interest, and safety totals."],
+                  ].map(([title, body]) => (
+                    <article key={title}>
+                      <span>{title}</span>
+                      <p>{body}</p>
+                    </article>
+                  ))}
+                </div>
+                <div className="flow-actions">
+                  <a className="button button--ghost" href={listing.path}>
+                    View public listing
+                  </a>
+                  <a className="button" href="/host/">
+                    Explore host tools
+                  </a>
+                </div>
+              </div>
+            ) : null}
+
+            <p className={`form-status ${status.tone}`.trim()} role="status" aria-live="polite">
+              {status.message}
+            </p>
+          </section>
+        </form>
+      </main>
+
+      <SiteFooter
+        brandHref="/"
+        body="Claimable organizer profiles with verified owner review before host tools unlock."
+        links={[
+          {href: "/organizers/", label: "Organizer search"},
+          {href: "/host/", label: "For hosts"},
+          {href: "/", label: "Member site"},
+        ]}
+      />
+    </>
+  );
+}
+
 function OrganizerResultCard({listing}: {listing: HostListing}) {
   const isAppCreated = listing.listingVariant === "appCreatedClub";
   const rating = listing.metrics?.rating;
   const reviewCount = listing.metrics?.reviewCount;
+  const activity = activityForListing(listing);
+  const nextEvent = listing.metrics?.nextEventLabel ?? listing.catchEvents?.find(
+    (event) => event.timeline === "upcoming"
+  )?.title;
   return (
-    <article className="organizer-result-card">
+    <article
+      className="organizer-result-card"
+      style={{"--activity": activity.token} as CSSProperties}
+    >
       <a href={listing.path}>
-        <div className="listing-mark organizer-result-card__mark" aria-hidden="true">
-          {listing.logo.text}
-        </div>
+        <ActivityMark listing={listing} size="lg" />
         <div className="organizer-result-card__body">
-          <span className="ui-label">{isAppCreated ? "Catch-created" : listing.status}</span>
+          <div className="organizer-card-topline">
+            <StatusBadge listing={listing} compact />
+            <span>{listing.city}</span>
+            <span>{activity.label}</span>
+          </div>
           <h2>{listing.name}</h2>
           <p>{listing.description}</p>
           <div className="listing-badge-row">
-            <span>{listing.city}</span>
             <span>{listing.category}</span>
             {rating ? <span>{rating.toFixed(1)} rating</span> : null}
             {reviewCount ? <span>{reviewCount} reviews</span> : null}
+            {nextEvent ? <span>{nextEvent}</span> : <span>{isAppCreated ? "No upcoming label" : "Cadence unverified"}</span>}
           </div>
           <div className="listing-format-row">
             {listing.formats.slice(0, 4).map((format) => (
               <span key={format}>{format}</span>
             ))}
+          </div>
+          <div className="organizer-result-card__footer">
+            <ProfileStrength value={listingProfileStrength(listing)} />
+            <span>{isAppCreated ? "Owner-managed profile" : `${listing.missingEvidence.length} proof gaps`}</span>
           </div>
         </div>
       </a>
@@ -1086,6 +2179,8 @@ function OrganizerResultCard({listing}: {listing: HostListing}) {
 
 function HostListingPage({listing}: {listing: HostListing}) {
   const isAppCreated = listing.listingVariant === "appCreatedClub";
+  const activity = activityForListing(listing);
+  const claimHref = isAppCreated ? listing.claim.href : claimHrefForListing(listing);
   const nav = [
     {href: "#profile", label: "Profile"},
     ...(listing.catchEvents?.length ? [{href: "#events", label: "Events"}] : []),
@@ -1100,15 +2195,22 @@ function HostListingPage({listing}: {listing: HostListing}) {
       <SiteHeader
         brandHref="/"
         nav={nav}
-        ctaHref={listing.claim.href}
+        ctaHref={claimHref}
         ctaLabel={isAppCreated ? listing.claim.label : "Claim listing"}
       />
 
       <main id="profile">
         <section className="listing-hero">
           <div className="listing-hero__inner">
-            <div className="listing-hero__copy" data-reveal>
-              <span className="ui-label">{listing.category}</span>
+            <div
+              className="listing-hero__copy"
+              data-reveal
+              style={{"--activity": activity.token} as CSSProperties}
+            >
+              <div className="listing-hero__eyebrow">
+                <StatusBadge listing={listing} />
+                <span className="ui-label">{listing.category}</span>
+              </div>
               <h1>{listing.headline}</h1>
               <p>{listing.description}</p>
               <div className="listing-badge-row" aria-label="Listing status">
@@ -1119,8 +2221,8 @@ function HostListingPage({listing}: {listing: HostListing}) {
               <div className="hero__actions">
                 <a
                   className="button"
-                  href={listing.claim.href}
-                  onClick={() => trackCtaClick("listing_claim", listing.claim.href)}
+                  href={claimHref}
+                  onClick={() => trackCtaClick("listing_claim", claimHref)}
                 >
                   {listing.claim.label}
                 </a>
@@ -1137,10 +2239,13 @@ function HostListingPage({listing}: {listing: HostListing}) {
               </div>
             </div>
 
-            <aside className="listing-panel" aria-label={`${listing.name} profile`} data-reveal>
-              <div className="listing-mark" aria-hidden="true">
-                {listing.logo.text}
-              </div>
+            <aside
+              className="listing-panel"
+              aria-label={`${listing.name} profile`}
+              data-reveal
+              style={{"--activity": activity.token} as CSSProperties}
+            >
+              <ActivityMark listing={listing} size="lg" />
               <div>
                 <span className="ui-label">
                   {isAppCreated ? "Catch organizer" : "Unclaimed profile"}
@@ -1162,6 +2267,7 @@ function HostListingPage({listing}: {listing: HostListing}) {
                   <span key={format}>{format}</span>
                 ))}
               </div>
+              <ListingDiagnosticsPanel listing={listing} />
             </aside>
           </div>
         </section>
@@ -1262,6 +2368,11 @@ function HostListingPage({listing}: {listing: HostListing}) {
               <div data-reveal>
                 <span className="ui-label">Before public indexing</span>
                 <h2 id="listing-missing-title">Missing evidence</h2>
+                <p>
+                  This is the pressure mechanic from the prototype: visitors can
+                  see what is known, what is missing, and why a verified Catch
+                  profile earns stronger placement.
+                </p>
               </div>
               <div className="claim-band__grid">
                 <ul className="missing-list" data-reveal>
@@ -1269,9 +2380,13 @@ function HostListingPage({listing}: {listing: HostListing}) {
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-                <ClaimListingPanel listing={listing} />
+                <div className="claim-band__rail">
+                  <ClaimUnlocksCard listing={listing} />
+                  <ClaimListingPanel listing={listing} />
+                </div>
               </div>
             </section>
+            <RecommendedOrganizersSection current={listing} />
           </>
         ) : null}
       </main>
@@ -1283,10 +2398,93 @@ function HostListingPage({listing}: {listing: HostListing}) {
           {href: "/host/", label: "For hosts"},
           {href: "#profile", label: "Profile"},
           {href: "#sources", label: "Sources"},
-          {href: listing.claim.href, label: "Claim"},
+          {href: claimHref, label: "Claim"},
         ]}
       />
     </>
+  );
+}
+
+function ListingDiagnosticsPanel({listing}: {listing: HostListing}) {
+  const verified = isVerifiedListing(listing);
+  const strength = listingProfileStrength(listing);
+  const diagnostics = verified
+    ? [
+        {ok: true, label: "Ownership and source model verified"},
+        {ok: true, label: "Catch events attached to profile"},
+        {ok: (listing.metrics?.reviewCount ?? 0) > 0, label: "Review signal visible"},
+        {ok: Boolean(listing.eventSuccessSummary), label: "Aggregate host report available"},
+      ]
+    : [
+        {ok: true, label: "Public facts collected from sources"},
+        {ok: false, label: "Ownership not verified"},
+        {ok: false, label: "No Catch events published"},
+        {ok: false, label: "No verified attendee reviews"},
+      ];
+
+  return (
+    <div className="listing-diagnostics">
+      <div className="listing-diagnostics__head">
+        <span className="ui-label">Profile strength</span>
+        <strong>{strength}%</strong>
+      </div>
+      <ProfileStrength value={strength} />
+      <ul>
+        {diagnostics.map((item) => (
+          <li className={item.ok ? "is-ok" : "is-missing"} key={item.label}>
+            <span aria-hidden="true">{item.ok ? "✓" : "!"}</span>
+            {item.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ClaimUnlocksCard({listing}: {listing: HostListing}) {
+  const claimHref = claimHrefForListing(listing);
+  return (
+    <aside className="claim-unlocks" data-reveal>
+      <span className="ui-label">Claiming unlocks</span>
+      <h3>What {listing.name} cannot show yet.</h3>
+      <ul>
+        {claimUnlocks.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+      <a
+        className="button"
+        href={claimHref}
+        onClick={() => trackCtaClick("claim_unlocks_panel", claimHref)}
+      >
+        Claim this listing
+      </a>
+    </aside>
+  );
+}
+
+function RecommendedOrganizersSection({current}: {current: HostListing}) {
+  const recommended = hostListings
+    .filter((listing) => listing.id !== current.id && isVerifiedListing(listing))
+    .slice(0, 3);
+  if (!recommended.length) return null;
+
+  return (
+    <section className="listing-section recommended-organizers" aria-labelledby="recommended-organizers-title">
+      <div className="section-heading" data-reveal>
+        <span className="ui-label">While you are here</span>
+        <h2 id="recommended-organizers-title">Verified organizers nearby in the product loop.</h2>
+        <p>
+          Unclaimed pages keep the source ledger visible, but verified profiles
+          can show owner-managed activity, reviews, and event outcomes.
+        </p>
+      </div>
+      <div className="featured-organizers__grid">
+        {recommended.map((listing) => (
+          <OrganizerMiniCard listing={listing} key={listing.id} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -2074,6 +3272,183 @@ function HostProductBoard() {
   );
 }
 
+function CreateEventWalkthrough({captures}: {captures: Record<string, CaptureRecord>}) {
+  const [activeStep, setActiveStep] = useState(3);
+  const step = hostCreateSteps[activeStep];
+  const captureId = step.captureId ?? "host-event-setup";
+
+  return (
+    <section className="host-create-flow" aria-labelledby="host-create-flow-title">
+      <div className="section-heading" data-reveal>
+        <span className="ui-label">From the host app</span>
+        <h2 id="host-create-flow-title">An event goes live in five steps.</h2>
+        <p>
+          The prototype called this out well: details and schedule are the easy
+          part. The differentiators are admission policy and the live Event
+          Success guide.
+        </p>
+      </div>
+      <div className="host-create-flow__grid">
+        <div className="host-create-flow__rail" data-reveal>
+          {hostCreateSteps.map((item, index) => (
+            <button
+              className={index === activeStep ? "is-active" : ""}
+              type="button"
+              onClick={() => setActiveStep(index)}
+              key={item.id}
+            >
+              <span>0{index + 1}</span>
+              <strong>{item.title}</strong>
+              <small>{item.sub}</small>
+            </button>
+          ))}
+        </div>
+        <div className="host-create-flow__mock" data-reveal>
+          <div className="mock-window__bar">
+            <span>Create event · step {activeStep + 1}/5</span>
+            <i>{step.title}</i>
+          </div>
+          <div className="host-create-flow__fields">
+            {step.fields.map((field) => (
+              <div key={field.label}>
+                <span className="ui-label">{field.label}</span>
+                <strong>{field.value}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="host-create-flow__actions">
+            <span>Save draft</span>
+            <strong>{activeStep === hostCreateSteps.length - 1 ? "Publish event" : "Next"}</strong>
+          </div>
+        </div>
+        <CaptureCard
+          id={captureId}
+          fallbackStep={step.title}
+          captures={captures}
+        />
+      </div>
+    </section>
+  );
+}
+
+function EventSuccessShowcase({captures}: {captures: Record<string, CaptureRecord>}) {
+  const [stage, setStage] = useState("activity");
+  const modules = eventSuccessModules.filter((module) => module.stage === stage);
+  const captureId = stage === "after"
+    ? "post-run-catch-window"
+    : stage === "debrief"
+      ? "host-post-event-report"
+      : "host-live-console";
+
+  return (
+    <section className="event-success-showcase" aria-labelledby="event-success-showcase-title">
+      <div className="section-heading" data-reveal>
+        <span className="ui-label">Event Success</span>
+        <h2 id="event-success-showcase-title">Optional modules, one live guide.</h2>
+        <p>
+          Social runs can stay lightweight. Mixers and dinners can carry full
+          facilitation. Every module makes a promise to guests and to the host.
+        </p>
+      </div>
+      <div className="event-success-stage-rail" data-reveal>
+        {eventSuccessStages.map((item, index) => (
+          <button
+            className={item.id === stage ? "is-active" : ""}
+            type="button"
+            onClick={() => setStage(item.id)}
+            key={item.id}
+          >
+            <span>0{index + 1}</span>
+            <strong>{item.label}</strong>
+            <small>{item.sub}</small>
+          </button>
+        ))}
+      </div>
+      <div className="event-success-showcase__grid">
+        <div className="event-success-module-grid" data-reveal>
+          {modules.map((module) => (
+            <article key={module.title}>
+              <span className="ui-label">{module.stage}</span>
+              <h3>{module.title}</h3>
+              <p><strong>For attendees:</strong> {module.attendee}</p>
+              <p><strong>For hosts:</strong> {module.host}</p>
+            </article>
+          ))}
+        </div>
+        <CaptureCard id={captureId} fallbackStep="Event Success" captures={captures} />
+      </div>
+      <div className="privacy-guardrail" data-reveal>
+        <strong>Guardrails are part of the product.</strong>
+        Hosts see aggregate coaching, never who caught whom. Attendees can opt
+        out of live modules, and blocked pairs are never assigned together.
+      </div>
+    </section>
+  );
+}
+
+function HostComparisonSection() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="host-comparison" aria-labelledby="host-comparison-title">
+      <div className="section-heading" data-reveal>
+        <span className="ui-label">The honest comparison</span>
+        <h2 id="host-comparison-title">Announcing an event is solved. Running one is not.</h2>
+      </div>
+      <div className="host-comparison__split">
+        <article data-reveal>
+          <span className="ui-label">Luma · Eventbrite · Instagram · WhatsApp · Forms</span>
+          <h3>They help you announce and ticket.</h3>
+          <p>
+            A page, a link, maybe a payment. Then hosts are back in DMs,
+            screenshots, spreadsheets, and manual door work.
+          </p>
+        </article>
+        <article data-reveal>
+          <span className="ui-label">Catch</span>
+          <h3>Catch fills it, runs it, and proves it.</h3>
+          <p>
+            Admission rules, waitlists, check-in, live console, attendance proof,
+            post-event matching, verified reviews, and host reports stay in one loop.
+          </p>
+        </article>
+      </div>
+      <button
+        className="see-all-button"
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+      >
+        {open ? "Hide full comparison" : "See full comparison"}
+      </button>
+      {open ? (
+        <div className="comparison-table-wrap" data-reveal>
+          <table className="comparison-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                {hostComparisonColumns.map((column) => (
+                  <th key={column}>{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {hostComparisonRows.map((row) => (
+                <tr key={row[0]}>
+                  <td>{row[0]}</td>
+                  {row.slice(1).map((value, index) => (
+                    <td key={`${row[0]}-${index}`} data-value={value}>
+                      {value === "yes" ? "Yes" : value === "partial" ? "Partial" : "No"}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 function CaptureCard({
   id,
   fallbackStep,
@@ -2098,6 +3473,578 @@ function CaptureCard({
         <strong>{capture?.caption ?? fallbackCaptionForCapture(id)}</strong>
       </figcaption>
     </figure>
+  );
+}
+
+function HostApplicationFlow() {
+  const [draft, setDraft] = useState<HostApplicationDraft>(initialHostApplicationDraft);
+  const [step, setStep] = useState<HostApplicationStep>("profile");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<{message: string; tone: StatusTone}>({
+    message: "",
+    tone: "",
+  });
+
+  const currentStepIndex = hostApplicationSteps.findIndex((item) => item.id === step);
+  const resolvedCity = draft.city === "Other" ? draft.customCity.trim() : draft.city;
+  const canContinue = hostApplicationStepIsComplete(step, draft);
+
+  function updateDraft<K extends keyof HostApplicationDraft>(
+    key: K,
+    value: HostApplicationDraft[K]
+  ) {
+    setDraft((current) => ({...current, [key]: value}));
+  }
+
+  function toggleDraftList(key: "formats" | "eventSuccessModules", value: string) {
+    setDraft((current) => {
+      const values = current[key];
+      const next = values.includes(value)
+        ? values.filter((item) => item !== value)
+        : [...values, value];
+      return {...current, [key]: next};
+    });
+  }
+
+  function handleFormStart() {
+    if (hasStarted) return;
+    setHasStarted(true);
+    trackMarketingEvent("host_operating_application_started", {
+      form_variant: "host",
+    });
+  }
+
+  function goNext() {
+    if (!canContinue) {
+      setStatus({
+        message: hostApplicationStepError(step),
+        tone: "is-error",
+      });
+      return;
+    }
+    const next = hostApplicationSteps[currentStepIndex + 1];
+    if (next) {
+      setStatus({message: "", tone: ""});
+      setStep(next.id);
+    }
+  }
+
+  function goBack() {
+    const previous = hostApplicationSteps[currentStepIndex - 1];
+    if (previous) setStep(previous.id);
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!hostApplicationIsComplete(draft)) {
+      setStatus({
+        message: "Finish the required profile, event, and operating fields before submitting.",
+        tone: "is-error",
+      });
+      return;
+    }
+
+    const eventId = createMarketingEventId("host_lead");
+    const conversionPayload = waitlistAnalyticsPayload(eventId, "host");
+    const body = {
+      fullName: draft.fullName.trim(),
+      email: draft.email.trim(),
+      city: resolvedCity,
+      role: "host",
+      instagram: draft.communityLink.trim(),
+      website: "",
+      hostApplication: {
+        organizationName: draft.organizationName.trim(),
+        organizationType: draft.organizationType,
+        operatingCity: resolvedCity,
+        communityLink: draft.communityLink.trim(),
+        formats: draft.formats,
+        eventCadence: draft.eventCadence,
+        nextEventName: draft.nextEventName.trim(),
+        nextEventDate: draft.nextEventDate,
+        eventLocation: draft.eventLocation.trim(),
+        expectedCapacity: draft.expectedCapacity,
+        priceRange: draft.priceRange,
+        admissionModel: draft.admissionModel,
+        waitlistPlan: draft.waitlistPlan,
+        paymentReadiness: draft.paymentReadiness,
+        eventSuccessModules: draft.eventSuccessModules,
+        hostGoals: draft.hostGoals.trim(),
+        operatingNotes: draft.operatingNotes.trim(),
+      },
+      ...conversionPayload,
+    };
+
+    setIsSubmitting(true);
+    setStatus({message: "", tone: ""});
+    trackMarketingEvent("host_operating_application_submit_attempt", {
+      city: body.city,
+      event_id: eventId,
+      format_count: draft.formats.length,
+      module_count: draft.eventSuccessModules.length,
+    });
+
+    try {
+      const response = await fetch("/api/join-waitlist", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body),
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        alreadyJoined?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(
+          typeof data.error === "string"
+            ? data.error
+            : "We couldn't submit the host application. Please try again."
+        );
+      }
+
+      setSubmitted(true);
+      setStatus({
+        message: data.alreadyJoined
+          ? "Application updated. Catch refreshed your operating packet."
+          : "Application submitted. Catch will review the host packet before onboarding.",
+        tone: "is-success",
+      });
+      trackMarketingEvent("host_operating_application_submitted", {
+        already_joined: Boolean(data.alreadyJoined),
+        city: body.city,
+        event_id: eventId,
+        format_count: draft.formats.length,
+        module_count: draft.eventSuccessModules.length,
+      });
+      trackMarketingEvent("generate_lead", {
+        city: body.city,
+        event_id: eventId,
+        form_variant: "host",
+        lead_type: "host",
+      });
+    } catch (error) {
+      setStatus({
+        message:
+          error instanceof Error ?
+            error.message :
+            "We couldn't submit the host application. Please try again.",
+        tone: "is-error",
+      });
+      trackMarketingEvent("host_operating_application_submit_error", {
+        event_id: eventId,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form
+      className="host-application"
+      onFocus={handleFormStart}
+      onSubmit={handleSubmit}
+    >
+      <nav className="operational-step-rail" aria-label="Host application steps">
+        {hostApplicationSteps.map((item, index) => (
+          <button
+            className={index === currentStepIndex ? "is-active" : index < currentStepIndex ? "is-done" : ""}
+            key={item.id}
+            onClick={() => setStep(item.id)}
+            type="button"
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{item.label}</strong>
+            <small>{item.body}</small>
+          </button>
+        ))}
+      </nav>
+
+      <div className="host-application__panel">
+        {submitted ? (
+          <div className="host-application__submitted">
+            <span className="submitted-panel__mark">✓</span>
+            <div>
+              <span className="ui-label">Host application received</span>
+              <h3>Catch has the operating packet for {draft.organizationName || "your host profile"}.</h3>
+              <p>
+                Approval still has to happen before the website can create clubs,
+                events, payouts, or owner dashboards on your behalf.
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        {!submitted && step === "profile" ? (
+          <div className="host-application__stage">
+            <div className="flow-field-grid">
+              <div className="field-block">
+                <label htmlFor="host-full-name">Full name</label>
+                <input
+                  id="host-full-name"
+                  value={draft.fullName}
+                  autoComplete="name"
+                  onChange={(event) => updateDraft("fullName", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-email">Email</label>
+                <input
+                  id="host-email"
+                  value={draft.email}
+                  type="email"
+                  autoComplete="email"
+                  onChange={(event) => updateDraft("email", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-city">Operating city</label>
+                <select
+                  id="host-city"
+                  value={draft.city}
+                  onChange={(event) => updateDraft("city", event.currentTarget.value)}
+                  required
+                >
+                  {cities.map((city) => (
+                    <option key={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+              {draft.city === "Other" ? (
+                <div className="field-block">
+                  <label htmlFor="host-custom-city">Your city</label>
+                  <input
+                    id="host-custom-city"
+                    value={draft.customCity}
+                    autoComplete="address-level2"
+                    onChange={(event) => updateDraft("customCity", event.currentTarget.value)}
+                    required
+                  />
+                </div>
+              ) : null}
+              <div className="field-block">
+                <label htmlFor="host-org-name">Organizer, venue, or community name</label>
+                <input
+                  id="host-org-name"
+                  value={draft.organizationName}
+                  onChange={(event) => updateDraft("organizationName", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-org-type">Host type</label>
+                <select
+                  id="host-org-type"
+                  value={draft.organizationType}
+                  onChange={(event) => updateDraft("organizationType", event.currentTarget.value)}
+                >
+                  <option>Independent host</option>
+                  <option>Run club</option>
+                  <option>Venue</option>
+                  <option>Community</option>
+                  <option>Event company</option>
+                </select>
+              </div>
+              <div className="field-block span-2">
+                <label htmlFor="host-community-link">Community or venue link</label>
+                <input
+                  id="host-community-link"
+                  value={draft.communityLink}
+                  autoComplete="url"
+                  placeholder="Instagram, website, Luma, Linktree, or venue page"
+                  onChange={(event) => updateDraft("communityLink", event.currentTarget.value)}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {!submitted && step === "event" ? (
+          <div className="host-application__stage">
+            <div className="field-block span-2">
+              <label>Formats you want to run</label>
+              <div className="choice-chip-grid">
+                {hostFormatOptions.map((format) => (
+                  <button
+                    className={draft.formats.includes(format) ? "choice-chip is-selected" : "choice-chip"}
+                    key={format}
+                    onClick={() => toggleDraftList("formats", format)}
+                    type="button"
+                  >
+                    {format}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flow-field-grid">
+              <div className="field-block">
+                <label htmlFor="host-event-cadence">Cadence</label>
+                <select
+                  id="host-event-cadence"
+                  value={draft.eventCadence}
+                  onChange={(event) => updateDraft("eventCadence", event.currentTarget.value)}
+                >
+                  <option>Weekly</option>
+                  <option>Biweekly</option>
+                  <option>Monthly</option>
+                  <option>Quarterly</option>
+                  <option>One-off launch</option>
+                </select>
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-event-name">First Catch event</label>
+                <input
+                  id="host-event-name"
+                  value={draft.nextEventName}
+                  placeholder="Long table no. 1, Saturday run, singles mixer"
+                  onChange={(event) => updateDraft("nextEventName", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-event-date">Target date</label>
+                <input
+                  id="host-event-date"
+                  value={draft.nextEventDate}
+                  type="date"
+                  onChange={(event) => updateDraft("nextEventDate", event.currentTarget.value)}
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-event-location">Venue or meeting area</label>
+                <input
+                  id="host-event-location"
+                  value={draft.eventLocation}
+                  onChange={(event) => updateDraft("eventLocation", event.currentTarget.value)}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {!submitted && step === "policy" ? (
+          <div className="host-application__stage">
+            <div className="flow-field-grid">
+              <div className="field-block">
+                <label htmlFor="host-capacity">Expected capacity</label>
+                <input
+                  id="host-capacity"
+                  value={draft.expectedCapacity}
+                  inputMode="numeric"
+                  onChange={(event) => updateDraft("expectedCapacity", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-price-range">Price range</label>
+                <input
+                  id="host-price-range"
+                  value={draft.priceRange}
+                  onChange={(event) => updateDraft("priceRange", event.currentTarget.value)}
+                />
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-admission">Admission model</label>
+                <select
+                  id="host-admission"
+                  value={draft.admissionModel}
+                  onChange={(event) => updateDraft("admissionModel", event.currentTarget.value)}
+                >
+                  <option>Open booking</option>
+                  <option>Request to join</option>
+                  <option>Invite-only</option>
+                  <option>Balanced ratio</option>
+                  <option>Members-only</option>
+                </select>
+              </div>
+              <div className="field-block">
+                <label htmlFor="host-waitlist-plan">Waitlist plan</label>
+                <select
+                  id="host-waitlist-plan"
+                  value={draft.waitlistPlan}
+                  onChange={(event) => updateDraft("waitlistPlan", event.currentTarget.value)}
+                >
+                  <option>Ranked timed offers</option>
+                  <option>Manual review</option>
+                  <option>Broadcast first come first served</option>
+                  <option>No waitlist</option>
+                </select>
+              </div>
+              <div className="field-block span-2">
+                <label htmlFor="host-payment">Payment readiness</label>
+                <select
+                  id="host-payment"
+                  value={draft.paymentReadiness}
+                  onChange={(event) => updateDraft("paymentReadiness", event.currentTarget.value)}
+                >
+                  <option>Need Catch payment onboarding</option>
+                  <option>Already sell paid tickets</option>
+                  <option>Free events first</option>
+                  <option>Sponsor or venue-funded</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {!submitted && step === "success" ? (
+          <div className="host-application__stage">
+            <div className="field-block span-2">
+              <label>Event Success modules to start with</label>
+              <div className="choice-chip-grid">
+                {hostSuccessModuleOptions.map((module) => (
+                  <button
+                    className={draft.eventSuccessModules.includes(module) ? "choice-chip is-selected" : "choice-chip"}
+                    key={module}
+                    onClick={() => toggleDraftList("eventSuccessModules", module)}
+                    type="button"
+                  >
+                    {module}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flow-field-grid">
+              <div className="field-block span-2">
+                <label htmlFor="host-goals">What should Catch help you improve?</label>
+                <textarea
+                  id="host-goals"
+                  value={draft.hostGoals}
+                  rows={3}
+                  placeholder="Better gender balance, less awkward arrivals, verified reviews, repeat attendance..."
+                  onChange={(event) => updateDraft("hostGoals", event.currentTarget.value)}
+                  required
+                />
+              </div>
+              <div className="field-block span-2">
+                <label htmlFor="host-operating-notes">Operating notes</label>
+                <textarea
+                  id="host-operating-notes"
+                  value={draft.operatingNotes}
+                  rows={3}
+                  placeholder="Constraints, safety needs, venue rules, approval preferences, payout timing, or launch questions"
+                  onChange={(event) => updateDraft("operatingNotes", event.currentTarget.value)}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {!submitted && step === "review" ? (
+          <div className="host-application__stage">
+            <div className="host-application__review">
+              <HostApplicationSummary title="Profile" rows={[
+                ["Host", draft.fullName],
+                ["Organization", draft.organizationName],
+                ["City", resolvedCity],
+                ["Link", draft.communityLink],
+              ]} />
+              <HostApplicationSummary title="First event" rows={[
+                ["Formats", draft.formats.join(", ")],
+                ["Event", draft.nextEventName],
+                ["Location", draft.eventLocation],
+                ["Cadence", draft.eventCadence],
+              ]} />
+              <HostApplicationSummary title="Operations" rows={[
+                ["Capacity", draft.expectedCapacity],
+                ["Admission", draft.admissionModel],
+                ["Waitlist", draft.waitlistPlan],
+                ["Payment", draft.paymentReadiness],
+              ]} />
+              <HostApplicationSummary title="Event Success" rows={[
+                ["Modules", draft.eventSuccessModules.join(", ")],
+                ["Goal", draft.hostGoals],
+              ]} />
+            </div>
+            <div className="operational-note">
+              <strong>What this does now</strong>
+              <p>
+                This submits a real host lead packet for review. Creating clubs,
+                events, payout accounts, and owner dashboards still requires
+                approval because those backend callables are host-authenticated.
+              </p>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="host-application__summary">
+          <div>
+            <span className="ui-label">Application completeness</span>
+            <ProfileStrength value={hostApplicationCompleteness(draft)} />
+          </div>
+          <ul>
+            {hostApplicationChecklist(draft).map((item) => (
+              <li className={item.done ? "is-done" : ""} key={item.label}>
+                <span>{item.done ? "✓" : "·"}</span>{item.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {!submitted ? (
+          <div className="flow-actions">
+            <button
+              className="button button--ghost"
+              disabled={currentStepIndex === 0}
+              onClick={goBack}
+              type="button"
+            >
+              Back
+            </button>
+            {step === "review" ? (
+              <button className="button" disabled={isSubmitting} type="submit">
+                {isSubmitting ? "Submitting..." : "Submit host packet"}
+              </button>
+            ) : (
+              <button className="button" onClick={goNext} type="button">
+                Continue
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="flow-actions">
+            <a className="button button--ghost" href="/organizers/">
+              Browse organizer pages
+            </a>
+            <a className="button" href="/claim/">
+              Claim an existing listing
+            </a>
+          </div>
+        )}
+
+        <p className={`form-status ${status.tone}`.trim()} role="status" aria-live="polite">
+          {status.message}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function HostApplicationSummary({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: Array<[string, string]>;
+}) {
+  return (
+    <article>
+      <span className="ui-label">{title}</span>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value || "Not provided"}</dd>
+          </div>
+        ))}
+      </dl>
+    </article>
   );
 }
 
@@ -2425,6 +4372,17 @@ function useRevealAnimations(page: PageKey) {
   }, [page]);
 }
 
+function useHashScroll(page: PageKey) {
+  useEffect(() => {
+    if (!window.location.hash) return undefined;
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(hash)?.scrollIntoView({block: "start"});
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [page]);
+}
+
 function useMarketingCaptures() {
   const [captures, setCaptures] = useState<Record<string, CaptureRecord>>({});
 
@@ -2452,7 +4410,160 @@ function useMarketingCaptures() {
   return captures;
 }
 
+function isVerifiedListing(listing: HostListing) {
+  return listing.listingVariant === "appCreatedClub" ||
+    listing.sourceConfidence === "first_party";
+}
+
+function isUnclaimedListing(listing: HostListing) {
+  return listing.status.toLowerCase() === "unclaimed";
+}
+
+function hasUpcomingCatchEvent(listing: HostListing) {
+  return Boolean(listing.metrics?.nextEventAt) ||
+    Boolean(listing.catchEvents?.some((event) => event.timeline === "upcoming"));
+}
+
+function listingProfileStrength(listing: HostListing) {
+  if (isVerifiedListing(listing)) {
+    let value = 72;
+    if (listing.catchEvents?.length) value += 8;
+    if (listing.eventSuccessSummary) value += 8;
+    if ((listing.metrics?.reviewCount ?? 0) > 0) value += 7;
+    if (listing.host) value += 5;
+    return Math.min(value, 96);
+  }
+  let value = listing.sourceConfidence === "high" ? 38 : 30;
+  value += Math.min(listing.sources.length * 3, 9);
+  value += Math.min((listing.eventEvidence?.length ?? 0) * 4, 8);
+  value -= Math.min(listing.missingEvidence.length * 2, 12);
+  return Math.max(24, Math.min(value, 55));
+}
+
+function activityForListing(listing: HostListing): ActivityMeta {
+  const text = [
+    listing.category,
+    ...listing.formats,
+    ...(listing.catchEvents ?? []).map((event) => event.activityKind),
+  ].join(" ").toLowerCase();
+  if (text.includes("dinner") || text.includes("table")) return activityMeta.dinner;
+  if (text.includes("mixer") || text.includes("singles")) return activityMeta.singlesMixer;
+  if (text.includes("run")) return activityMeta.socialRun;
+  if (text.includes("quiz") || text.includes("trivia")) return activityMeta.pubQuiz;
+  if (text.includes("padel") || text.includes("pickle") || text.includes("tennis") || text.includes("racket")) {
+    return activityMeta.racket;
+  }
+  return activityMeta.open;
+}
+
+function compareListings(a: HostListing, b: HostListing, sort: OrganizerSort) {
+  if (sort === "reviews") {
+    return (b.metrics?.reviewCount ?? 0) - (a.metrics?.reviewCount ?? 0);
+  }
+  if (sort === "rating") {
+    return (b.metrics?.rating ?? 0) - (a.metrics?.rating ?? 0);
+  }
+  if (sort === "upcoming") {
+    return Number(hasUpcomingCatchEvent(b)) - Number(hasUpcomingCatchEvent(a));
+  }
+  if (sort === "confidence") {
+    return confidenceRank(b.sourceConfidence) - confidenceRank(a.sourceConfidence);
+  }
+  return listingProfileStrength(b) - listingProfileStrength(a);
+}
+
+function confidenceRank(value: string) {
+  if (value === "first_party") return 4;
+  if (value === "high") return 3;
+  if (value === "medium") return 2;
+  if (value === "low") return 1;
+  return 0;
+}
+
+function hostApplicationStepIsComplete(
+  step: HostApplicationStep,
+  draft: HostApplicationDraft
+): boolean {
+  if (step === "profile") {
+    return Boolean(
+      draft.fullName.trim() &&
+      draft.email.trim() &&
+      (draft.city !== "Other" || draft.customCity.trim()) &&
+      draft.organizationName.trim() &&
+      draft.communityLink.trim()
+    );
+  }
+  if (step === "event") {
+    return Boolean(
+      draft.formats.length &&
+      draft.nextEventName.trim() &&
+      draft.eventLocation.trim()
+    );
+  }
+  if (step === "policy") {
+    return Boolean(
+      draft.expectedCapacity.trim() &&
+      draft.priceRange.trim() &&
+      draft.admissionModel &&
+      draft.waitlistPlan &&
+      draft.paymentReadiness
+    );
+  }
+  if (step === "success") {
+    return Boolean(draft.eventSuccessModules.length && draft.hostGoals.trim());
+  }
+  return hostApplicationIsComplete(draft);
+}
+
+function hostApplicationStepError(step: HostApplicationStep) {
+  switch (step) {
+    case "profile":
+      return "Add your identity, organizer name, city, and public link.";
+    case "event":
+      return "Choose at least one format and describe the first event and location.";
+    case "policy":
+      return "Add capacity, pricing, admission, waitlist, and payment readiness.";
+    case "success":
+      return "Choose at least one Event Success module and add your host goal.";
+    case "review":
+      return "Finish the required fields before submitting.";
+  }
+}
+
+function hostApplicationIsComplete(draft: HostApplicationDraft): boolean {
+  return hostApplicationSteps
+    .filter((item) => item.id !== "review")
+    .every((item) => hostApplicationStepIsComplete(item.id, draft));
+}
+
+function hostApplicationCompleteness(draft: HostApplicationDraft) {
+  const completed = hostApplicationChecklist(draft).filter((item) => item.done).length;
+  return Math.round((completed / hostApplicationChecklist(draft).length) * 100);
+}
+
+function hostApplicationChecklist(draft: HostApplicationDraft) {
+  return [
+    {
+      label: "Host identity and public link",
+      done: hostApplicationStepIsComplete("profile", draft),
+    },
+    {
+      label: "First event draft",
+      done: hostApplicationStepIsComplete("event", draft),
+    },
+    {
+      label: "Admission and payment policy",
+      done: hostApplicationStepIsComplete("policy", draft),
+    },
+    {
+      label: "Event Success setup",
+      done: hostApplicationStepIsComplete("success", draft),
+    },
+  ];
+}
+
 function getPageKey(): Exclude<PageKey, "listing"> {
+  if (window.location.pathname.startsWith("/claim")) return "claim";
   if (window.location.pathname.startsWith("/host")) return "host";
   if (window.location.pathname.startsWith("/organizers")) return "organizers";
   return "home";
@@ -2461,6 +4572,24 @@ function getPageKey(): Exclude<PageKey, "listing"> {
 function getHostListingForPath(pathname: string) {
   const normalizedPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
   return hostListings.find((listing) => listing.path === normalizedPath) ?? null;
+}
+
+function getClaimListingFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const idOrSlug = params.get("listing") ?? params.get("clubId");
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const pathSlug = pathParts[0] === "claim" ? pathParts[1] : null;
+  const lookup = idOrSlug ?? pathSlug;
+  if (!lookup) return null;
+  return hostListings.find((listing) =>
+    listing.id === lookup ||
+    listing.slug === lookup ||
+    listing.path === lookup
+  ) ?? null;
+}
+
+function claimHrefForListing(listing: HostListing) {
+  return `/claim/?listing=${encodeURIComponent(listing.id)}`;
 }
 
 function nullableString(value: FormDataEntryValue | null): string | null {
@@ -2549,6 +4678,7 @@ function pageClassFor(page: PageKey) {
   if (page === "host") return "host-page";
   if (page === "listing") return "listing-page";
   if (page === "organizers") return "organizers-page";
+  if (page === "claim") return "claim-page";
   return "home-page";
 }
 
