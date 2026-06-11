@@ -285,7 +285,7 @@ export async function runSuvbotDemoOperationForUser({
     });
   }
 
-  let reply = "";
+  let reply: string;
   try {
     reply = await runSuvbotAction({
       db,

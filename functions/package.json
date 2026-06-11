@@ -21,25 +21,34 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "@google-cloud/vision": "^5.3.6",
+    "@google-cloud/vision": "^5.3.7",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
-    "date-fns": "^4.0.0",
-    "firebase-admin": "^13.6.0",
-    "firebase-functions": "^7.0.0",
+    "date-fns": "^4.4.0",
+    "firebase-admin": "^13.10.0",
+    "firebase-functions": "^7.2.5",
     "razorpay": "^2.9.6",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^5.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.12.0",
-    "@typescript-eslint/parser": "^5.12.0",
-    "eslint": "^8.9.0",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.39.4",
+    "@firebase/rules-unit-testing": "^5.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.61.0",
+    "@typescript-eslint/parser": "^8.61.0",
+    "eslint": "^9.39.4",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-import": "^2.25.4",
-    "firebase-functions-test": "^3.4.1",
+    "eslint-plugin-import": "^2.32.0",
+    "firebase-functions-test": "^3.5.0",
     "json-schema-to-typescript": "^15.0.4",
-    "typescript": "^5.7.3"
+    "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@google-cloud/firestore": "^8.6.0",
+    "gaxios": "^7.1.5",
+    "retry-request": "^8.0.3",
+    "teeny-request": "^10.1.3",
+    "uuid": "^11.1.1"
   },
   "private": true
 }

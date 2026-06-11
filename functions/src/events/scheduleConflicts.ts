@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {HttpsError} from "firebase-functions/v2/https";
 import {
   EventDocument,

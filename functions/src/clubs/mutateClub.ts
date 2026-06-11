@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc, valid-jsdoc */
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";

@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import * as crypto from "crypto";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
