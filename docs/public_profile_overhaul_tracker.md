@@ -1,14 +1,14 @@
 ---
 doc_id: public_profile_overhaul_tracker
-version: 0.3.0
-updated: 2026-05-31
+version: 0.3.1
+updated: 2026-06-05
 owner: public_profile
 status: active
 ---
 
 # Public Profile Overhaul Tracker
 
-Last updated: 2026-05-31
+Last updated: 2026-06-05
 
 ## Goal
 
@@ -72,6 +72,14 @@ The next direction is to move away from the deck/card paradigm entirely. Now tha
 - `ProfileSurface` now builds `CatchProfileView` via the mapper for all three modes, so Catches + Profile Preview + Public Profile share the flagship at once.
 - **Visual regression coverage started:** `test/goldens/profile_view_test.dart` renders the full reactable surface in light + dark (advances the "Add visual regression coverage" item below). The [UI capture pipeline](plans/ui_capture_pipeline_plan.md) will extend per-screen coverage.
 - **Remaining:** reconcile the legacy profile widget tests for the new editorial treatment (section titles are tracked-mono **uppercase**; the no-photo state is on-brand **activity art**, not a "Photo coming soon" label); re-add `relationshipGoal` as a "Looking for" detail; finish the preview-tab nested-scroll integration (the flagship is a `CustomScrollView`). Device QA (floating pass-X, bottom-nav coexistence, reaction density) still pending.
+
+### 2026-06-05: Prompt Picker and Catches Copy Cleanup
+
+- Added catalog-backed profile prompt pickers in onboarding and Edit Profile so the three profile-prompt slots are no longer locked to the default prompt set.
+- Enforced prompt uniqueness across profile prompt slots and photo prompt/caption slots. Picker menus filter out prompt IDs used elsewhere, and domain/save-path normalization makes the edited slot win if stale or legacy data already contains duplicates.
+- Broadened `test/goldens/profile_view_test.dart` beyond the flagship reactable profile with dense long-content/multi-photo coverage and a missing-photo Dynamic Type variant, both rendered in light and dark.
+- Cleaned visible user-facing copy away from "swipe" language in profile-completion, Catches empty states, hub copy, attended-event labels, block copy, dashboard copy, and event-success playbook copy. Backend/domain/storage names still use `Swipe`/`swipes` pending a separate migration decision.
+- Deferred profile-quality coaching and compatibility-reason expansion for a guided follow-up pass.
 
 ## Current Product Decisions
 
@@ -270,20 +278,18 @@ Open modeling questions:
 | P0 | Update demo data to seed `profilePrompts`, `profilePhotos.prompt`, and preferred run times | Implemented | `tool/demo/seed_demo_data.mjs` now builds profile prompts, photo prompt selections inside grouped profile photos, and preferred run times from generated catalogs and validates seeded docs. |
 | P1 | Add one-shot legacy profile prompt backfill/repair tooling | Implemented | `tool/data/recompute_public_profiles.mjs` and schema-contract repair docs cover stale public-profile projection repair, including legacy `bio` cleanup. |
 | P1 | Implement mode-based reaction controls in the shared renderer | Implemented locally | Catches enables like/comment controls; Preview/Public Profile use the same renderer with controls disabled. |
-| P1 | Add prompt-picker UX for profile prompts and photo captions | Partially implemented | Photo prompt/caption editing is implemented in `ProfilePhotoEditorScreen`. Profile prompt selection still uses the fixed default prompt set in onboarding/edit profile. |
+| P1 | Add prompt-picker UX for profile prompts and photo captions | Implemented locally | Onboarding and Edit Profile now use catalog-backed profile prompt pickers. Photo prompt editing filters prompts already used by other photos, and domain/save-path normalization clears duplicate prompt selections. |
 | P1 | Expand compatibility reasons beyond v1 heuristics | Partially implemented | Existing reasons cover run title, relationship goal, running reason, time, distance, pace, language, and easy openers. Missing club/run history, prompt/caption themes, and richer non-running signals. |
 | P2 | Add richer profile quality coaching | Partially implemented | Edit Profile has a top strength card. Still missing inline prompt/photo coaching, Preview checklist, and post-onboarding nudges. |
-| P2 | Add visual regression coverage for profile surfaces | In progress | `test/goldens/profile_view_test.dart` covers the full reactable surface (light + dark). Still need cases for long names, dense chips, missing photos, multi-photo profiles, and Dynamic Type — to be folded into the [UI capture pipeline](plans/ui_capture_pipeline_plan.md). |
-| P2 | Audit user-facing copy for "swipe" language | Not started | Storage/domain names can remain for now, but user-facing Catches copy should match the new interaction model. Current live copy still includes swipe-window language. |
+| P2 | Add visual regression coverage for profile surfaces | Expanded locally | `test/goldens/profile_view_test.dart` now covers the full reactable surface, a dense long-content/multi-photo profile, and a missing-photo Dynamic Type profile in light + dark. UI capture pipeline/device captures still need a later route-level pass. |
+| P2 | Audit user-facing copy for "swipe" language | Implemented locally | Visible profile-completion, Catches, dashboard, block, and event-success copy now uses Catches/catch/profile language. Storage/domain/test identifiers still use `Swipe`/`swipes` until a separate migration. |
 
 ## Proposed Iteration Order
 
-1. Add profile prompt picker UX; photo prompt/caption editing is already done.
-2. Expand compatibility reasons with approved run-history and non-running signals.
-3. Add owner-only profile quality guidance in Preview and inline prompt/photo coaching.
-4. Add screenshot/golden checks for the final cardless profile surface.
-5. Do device visual QA for the floating pass X, bottom navigation coexistence, and section reaction density.
-6. Audit user-facing copy and move visible labels away from "swipe" where the new Catches interaction model applies.
+1. Expand compatibility reasons with approved run-history and non-running signals.
+2. Add owner-only profile quality guidance in Preview and inline prompt/photo coaching.
+3. Do device visual QA for the floating pass X, bottom navigation coexistence, and section reaction density.
+4. Extend route-level screenshot captures through the UI capture pipeline.
 
 ## Verification Plan
 

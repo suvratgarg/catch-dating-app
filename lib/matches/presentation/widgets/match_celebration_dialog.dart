@@ -94,7 +94,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
         icon: Icon(CatchIcons.sendRounded),
       ),
       secondaryAction: CelebrationAction(
-        label: 'Keep swiping',
+        label: 'Keep catching',
         onPressed: onKeepSwiping,
       ),
       onClose: onKeepSwiping,

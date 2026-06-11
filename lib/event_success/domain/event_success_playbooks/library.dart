@@ -10,7 +10,7 @@ abstract final class EventSuccessPlaybookLibrary {
     activityType: ActivityKind.socialRun,
     socialIntensity: EventSocialIntensity.light,
     summary:
-        'An event-first format that adds arrival structure, pace pods, optional prompts, and post-event swipe follow-up.',
+        'An event-first format that adds arrival structure, pace pods, optional prompts, and post-event Catches follow-up.',
     attendeePromise:
         'You can run naturally, meet people at your pace, and follow up privately afterward.',
     hostPromise:

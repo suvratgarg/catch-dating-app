@@ -95,7 +95,7 @@ class _GuestWhoIsGoing extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.lockOutlineRounded,
-                size: 16,
+                size: CatchIcon.xs,
                 color: surfaceStyle?.mutedColor ?? t.ink3,
               ),
               const SizedBox(width: CatchSpacing.s2),

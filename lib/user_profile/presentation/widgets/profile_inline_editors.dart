@@ -17,13 +17,17 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart'
         CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/update_user_profile_patch.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -608,6 +612,213 @@ class _ProfileInlineTextEntryEditorState
           : null,
       onCancel: _cancel,
       onSubmit: _submit,
+    );
+  }
+}
+
+class ProfileInlinePromptEntryEditor extends ConsumerStatefulWidget {
+  const ProfileInlinePromptEntryEditor({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.currentAnswer,
+    required this.currentPrompts,
+    required this.promptIndex,
+    required this.availablePromptIds,
+    required this.fieldName,
+    required this.isExpanded,
+    required this.onTap,
+    required this.onSaved,
+    required this.onCancel,
+    this.currentPromptId,
+    this.isAddAffordance = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final String currentAnswer;
+  final String? currentPromptId;
+  final List<ProfilePromptAnswer> currentPrompts;
+  final int promptIndex;
+  final List<String> availablePromptIds;
+  final String fieldName;
+  final bool isExpanded;
+  final bool isAddAffordance;
+  final VoidCallback onTap;
+  final ProfileInlineSaveCallback onSaved;
+  final VoidCallback onCancel;
+
+  @override
+  ConsumerState<ProfileInlinePromptEntryEditor> createState() =>
+      _ProfileInlinePromptEntryEditorState();
+}
+
+class _ProfileInlinePromptEntryEditorState
+    extends ConsumerState<ProfileInlinePromptEntryEditor>
+    with _InlineSaveState<ProfileInlinePromptEntryEditor> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  late String _selectedPromptId = _initialPromptId();
+  String? _validationError;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentAnswer);
+    _focusNode = FocusNode();
+    _controller.addListener(_clearValidationError);
+    if (widget.isExpanded) {
+      _requestFocusAfterExpansionFrame();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ProfileInlinePromptEntryEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isExpanded) return;
+    if (oldWidget.fieldName != widget.fieldName ||
+        oldWidget.currentAnswer != widget.currentAnswer) {
+      _controller.text = widget.currentAnswer;
+    }
+    if (oldWidget.fieldName != widget.fieldName ||
+        oldWidget.currentPromptId != widget.currentPromptId ||
+        !listEquals(oldWidget.availablePromptIds, widget.availablePromptIds)) {
+      _selectedPromptId = _initialPromptId();
+    }
+    if (!oldWidget.isExpanded) {
+      _requestFocusAfterExpansionFrame();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_clearValidationError);
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  String _initialPromptId() {
+    final currentPromptId = widget.currentPromptId;
+    if (currentPromptId != null &&
+        widget.availablePromptIds.contains(currentPromptId)) {
+      return currentPromptId;
+    }
+    return widget.availablePromptIds.first;
+  }
+
+  void _clearValidationError() {
+    if (_validationError == null) return;
+    setState(() => _validationError = null);
+  }
+
+  void _requestFocusAfterExpansionFrame() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !widget.isExpanded || isSaving || _focusNode.hasFocus) {
+        return;
+      }
+      _focusNode.requestFocus();
+    });
+  }
+
+  void _cancel() {
+    _controller.text = widget.currentAnswer;
+    setState(() => _selectedPromptId = _initialPromptId());
+    widget.onCancel();
+  }
+
+  Future<void> _submit() async {
+    if (isSaving) return;
+    final normalizedText = normalizeProfilePromptAnswer(_controller.text);
+    if (normalizedText != _controller.text) {
+      _controller.text = normalizedText;
+    }
+
+    final validationError = validateOptionalProfilePromptAnswer(normalizedText);
+    if (validationError != null) {
+      setState(() => _validationError = validationError);
+      return;
+    }
+
+    final updatedPrompts = replaceProfilePromptAnswerAtIndex(
+      current: widget.currentPrompts,
+      index: widget.promptIndex,
+      definition: profilePromptDefinition(_selectedPromptId),
+      answer: normalizedText,
+    );
+    final currentPrompts = normalizeProfilePromptAnswers(widget.currentPrompts);
+    if (listEquals(updatedPrompts, currentPrompts)) {
+      _cancel();
+      return;
+    }
+
+    final saved = await saveFields(
+      UpdateUserProfilePatch(profilePrompts: updatedPrompts),
+    );
+    if (saved && mounted) widget.onSaved();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedDefinition = profilePromptDefinition(_selectedPromptId);
+
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.label,
+      value: widget.value,
+      isExpanded: widget.isExpanded,
+      onTap: widget.onTap,
+      isSaving: isSaving,
+      isAddAffordance: widget.isAddAffordance,
+      animateValueContent: false,
+      valueContent: ProfileInlineTextValue(
+        label: selectedDefinition.title,
+        displayValue: widget.value,
+        placeholder: selectedDefinition.placeholder,
+        controller: _controller,
+        focusNode: _focusNode,
+        isEditing: widget.isExpanded,
+        enabled: !isSaving,
+        isAddAffordance: widget.isAddAffordance,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        maxLength: maximumProfilePromptAnswerLength,
+        showCounter: true,
+        collapseStackedBlankLines: true,
+        onSubmitted: (_) => _submit(),
+      ),
+      saveError: _validationError == null
+          ? buildSaveError()
+          : ErrorBanner(message: _validationError!),
+      actionLeading: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) => Text(
+          '${_controller.text.length} / $maximumProfilePromptAnswerLength',
+          key: const ValueKey('profile-inline-counter'),
+          style: CatchTextStyles.labelM(context),
+        ),
+      ),
+      onCancel: _cancel,
+      onSubmit: _submit,
+      editorChildren: [
+        const CatchFormFieldLabel(label: 'Prompt'),
+        gapH8,
+        CatchSelectMenu<String>(
+          values: widget.availablePromptIds,
+          value: _selectedPromptId,
+          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          semanticLabel: 'Profile prompt',
+          prefixIcon: Icon(CatchIcons.formatQuoteRounded),
+          onChanged: isSaving
+              ? null
+              : (promptId) {
+                  if (promptId == null) return;
+                  setState(() => _selectedPromptId = promptId);
+                },
+        ),
+      ],
     );
   }
 }

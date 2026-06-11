@@ -146,20 +146,20 @@ class _WhoIsGoingContent extends ConsumerWidget {
           if (event.isUpcoming)
             _SwipeWindowBanner(
               icon: CatchIcons.lockOutlineRounded,
-              message: 'Swiping unlocks for 24 hours after the event finishes.',
+              message: 'Catches unlock for 24 hours after the event finishes.',
               surfaceStyle: surfaceStyle,
             )
           else if (hasActiveSwipeWindow)
             _SwipeWindowBanner(
               icon: CatchIcons.favoriteRounded,
               message:
-                  'The swipe window is open for 24 hours after the event finishes.',
+                  'The catch window is open for 24 hours after the event finishes.',
               surfaceStyle: surfaceStyle,
             )
           else
             _SwipeWindowBanner(
               icon: CatchIcons.scheduleRounded,
-              message: 'The swipe window for this event has closed.',
+              message: 'The catch window for this event has closed.',
               surfaceStyle: surfaceStyle,
             ),
         ],

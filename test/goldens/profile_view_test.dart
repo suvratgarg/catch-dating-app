@@ -35,6 +35,37 @@ void main() {
       ),
     );
   }, tags: const ['golden']);
+
+  testWidgets('profile redesign dense long content (light + dark)', (
+    tester,
+  ) async {
+    await matchCatchGolden(
+      tester,
+      'profile_redesign_dense_long_content',
+      size: const Size(440, 2440),
+      textScale: 1.1,
+      precache: <ImageProvider<Object>>[_heroImage],
+      builder: (context) => CatchProfileView(
+        data: _denseLongProfileView(),
+        onReact: (target, comment) {},
+      ),
+    );
+  }, tags: const ['golden']);
+
+  testWidgets(
+    'profile redesign missing photos dynamic type (light + dark)',
+    (tester) async {
+      await matchCatchGolden(
+        tester,
+        'profile_redesign_missing_photos_dynamic_type',
+        size: const Size(390, 1960),
+        textScale: 1.3,
+        builder: (context) =>
+            CatchProfileView(data: _missingPhotoProfileView()),
+      );
+    },
+    tags: const ['golden'],
+  );
 }
 
 ProfileReactionTarget _target(
@@ -126,6 +157,189 @@ ProfileView _profileViewFromPersona(PublicProfile profile) {
           SwipeReactionTargetType.details,
           'Details',
         ),
+      ),
+    ],
+  );
+}
+
+ProfileView _denseLongProfileView() {
+  return ProfileView(
+    name: 'Ananya Rajagopalan-Merchant',
+    age: 31,
+    heroPhoto: _heroImage,
+    heroReaction: _target(
+      'hero-dense',
+      SwipeReactionTargetType.heroPhoto,
+      'Main photo',
+    ),
+    kicker: 'Was at · all-city social half shakeout',
+    kickerActivity: ActivityKind.socialRun,
+    metaLine:
+        'Urban planner · Lower Parel · 4 mutual clubs · Usually dawn miles',
+    sections: <ProfileSection>[
+      ProfileCompatibilitySection(
+        title: 'Why you might click',
+        reasons: const <String>[
+          'You both keep easy runs social and save harder efforts for planned workout days.',
+          'Both profiles mention coffee, route planning, and low-pressure introductions after events.',
+          'Recent attendance overlaps across community runs without exposing private location history.',
+        ],
+        confidence: const <String>[
+          'Verified photos',
+          'Active this week',
+          'Shared event',
+          'Mutual club',
+          'Prompt-rich',
+          'Runner since 2021',
+        ],
+        reaction: _target(
+          'compatibility-dense',
+          SwipeReactionTargetType.compatibility,
+          'Why you might click',
+        ),
+      ),
+      ProfilePromptSectionData(
+        question: 'My perfect event looks like',
+        answer:
+            'A route with one quiet stretch, one place where the whole pack regroups, and enough time after for unhurried coffee.',
+        reaction: _target(
+          'prompt-perfect-event-dense',
+          SwipeReactionTargetType.profilePrompt,
+          'My perfect event looks like',
+        ),
+      ),
+      ProfilePromptSectionData(
+        question: 'After an event, I am usually',
+        answer:
+            'Trying to remember everyone I spoke to, sending the route to friends, and pretending I did not plan the bakery stop.',
+        reaction: _target(
+          'prompt-after-event-dense',
+          SwipeReactionTargetType.profilePrompt,
+          'After an event, I am usually',
+        ),
+      ),
+      ProfilePromptSectionData(
+        question: 'My green flag is',
+        answer:
+            'Someone who can keep a conversation alive at recovery pace and still notice when the group needs to slow down.',
+        reaction: _target(
+          'prompt-green-flag-dense',
+          SwipeReactionTargetType.profilePrompt,
+          'My green flag is',
+        ),
+      ),
+      ProfileRunningSection(
+        pace: '5:05-6:45 /km',
+        distance: '5K, 10K, half',
+        reasons: const <String>[
+          'City exploration',
+          'Low-stress consistency',
+          'Long-run conversations',
+        ],
+        times: const <String>['Dawn', 'Late evening', 'Weekend long run'],
+        tags: const <String>[
+          'Easy miles',
+          'Route nerd',
+          'Coffee finish',
+          'Park loops',
+          'Travel runs',
+          'Recovery pace',
+        ],
+        reaction: _target(
+          'running-dense',
+          SwipeReactionTargetType.running,
+          'Running rhythm',
+        ),
+      ),
+      ProfilePhotoSection(
+        image: _heroImage,
+        caption:
+            'The one hill on the route that everyone complains about and secretly wants to repeat.',
+        reaction: _target(
+          'photo-hill-dense',
+          SwipeReactionTargetType.photo,
+          'Hill photo',
+        ),
+      ),
+      ProfilePhotoSection(
+        image: _heroImage,
+        caption:
+            'Post-run table evidence: medals, two extra coffees, and a route map covered in notes.',
+        reaction: _target(
+          'photo-coffee-dense',
+          SwipeReactionTargetType.photo,
+          'Coffee photo',
+        ),
+      ),
+      ProfileFactsSection(
+        title: 'Details',
+        facts: <ProfileFact>[
+          ProfileFact(
+            icon: CatchIcons.workOutlineRounded,
+            text: 'Urban planner focused on walkable neighborhoods',
+          ),
+          ProfileFact(
+            icon: CatchIcons.businessOutlined,
+            text: 'Designs safer street pilots with community groups',
+          ),
+          ProfileFact(icon: CatchIcons.straightenRounded, text: '168 cm'),
+          ProfileFact(
+            icon: CatchIcons.schoolOutlined,
+            text: 'Masters in urban design',
+          ),
+        ],
+        reaction: _target(
+          'details-dense',
+          SwipeReactionTargetType.details,
+          'Details',
+        ),
+      ),
+    ],
+  );
+}
+
+ProfileView _missingPhotoProfileView() {
+  return ProfileView(
+    name: 'Maya Shah',
+    age: 29,
+    kicker: 'Was at · neighborhood 5K',
+    kickerActivity: ActivityKind.openActivity,
+    metaLine: 'Product lead · Bandra · Prefers morning runs',
+    sections: <ProfileSection>[
+      const ProfileCompatibilitySection(
+        title: 'Why you might click',
+        reasons: <String>[
+          'Both of you use events for relaxed, in-person introductions.',
+          'Profiles are compatible on pace, distance, and weekend timing.',
+        ],
+        confidence: <String>['Shared event', 'Current run preferences'],
+      ),
+      const ProfilePromptSectionData(
+        question: 'My perfect event looks like',
+        answer:
+            'A friendly 5K where people wait at turns and nobody treats the first kilometer like a race.',
+      ),
+      const ProfileRunningSection(
+        pace: '5:30-7:00 /km',
+        distance: '5K, 10K',
+        reasons: <String>['Headspace miles', 'Meet people naturally'],
+        times: <String>['Morning', 'Weekend'],
+        tags: <String>['Conversational pace', 'Park loops', 'Cafe finish'],
+      ),
+      const ProfilePhotoSection(
+        image: null,
+        caption:
+            'Photo caption remains readable when the image fallback shows.',
+      ),
+      ProfileFactsSection(
+        title: 'Details',
+        facts: <ProfileFact>[
+          ProfileFact(
+            icon: CatchIcons.workOutlineRounded,
+            text: 'Product lead',
+          ),
+          ProfileFact(icon: CatchIcons.straightenRounded, text: '162 cm'),
+        ],
       ),
     ],
   );

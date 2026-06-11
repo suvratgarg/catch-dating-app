@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -24,23 +26,27 @@ class ProfilePromptsPage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
-  late final Map<String, TextEditingController> _controllers = {
-    for (final promptId in defaultProfilePromptIds)
-      promptId: TextEditingController(),
-  };
+  late final List<TextEditingController> _controllers = List.generate(
+    maxProfilePromptAnswers,
+    (_) => TextEditingController(),
+  );
+  late final List<String> _selectedPromptIds = List.generate(
+    maxProfilePromptAnswers,
+    _defaultPromptIdForSlot,
+  );
   bool _didSeed = false;
 
   @override
   void initState() {
     super.initState();
-    for (final controller in _controllers.values) {
+    for (final controller in _controllers) {
       controller.addListener(_handlePromptChanged);
     }
   }
 
   @override
   void dispose() {
-    for (final controller in _controllers.values) {
+    for (final controller in _controllers) {
       controller
         ..removeListener(_handlePromptChanged)
         ..dispose();
@@ -59,18 +65,24 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ref.read(watchUserProfileProvider).asData?.value?.profilePrompts ??
         const <ProfilePromptAnswer>[];
     final seed = draftPrompts.isNotEmpty ? draftPrompts : profilePrompts;
-    for (final prompt in normalizeProfilePromptAnswers(seed)) {
-      _controllers[prompt.promptId]?.text = prompt.answer;
+    final normalizedSeed = normalizeProfilePromptAnswers(seed);
+    for (final indexedPrompt in normalizedSeed.indexed) {
+      final index = indexedPrompt.$1;
+      if (index >= maxProfilePromptAnswers) break;
+      final prompt = indexedPrompt.$2;
+      _selectedPromptIds[index] = prompt.promptId;
+      _controllers[index].text = prompt.answer;
     }
+    _fillUnusedPromptDefaults();
   }
 
   List<ProfilePromptAnswer> _answers() {
     return normalizeProfilePromptAnswers(
-      defaultProfilePromptIds.map((promptId) {
-        final definition = profilePromptDefinition(promptId);
+      Iterable<ProfilePromptAnswer>.generate(maxProfilePromptAnswers, (index) {
+        final definition = profilePromptDefinition(_selectedPromptIds[index]);
         return profilePromptAnswerFor(
           definition: definition,
-          answer: _controllers[promptId]?.text ?? '',
+          answer: _controllers[index].text,
         );
       }),
     );
@@ -91,7 +103,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
 
     final t = CatchTokens.of(context);
     final answers = _answers();
-    final canContinue = answers.length == defaultProfilePromptIds.length;
+    final canContinue = answers.length == maxProfilePromptAnswers;
     final answeredCount = answers.length;
     final mutation = ref.watch(OnboardingController.completeMutation);
 
@@ -100,22 +112,25 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         gapH32,
         OnboardingStepHeader(
           title: widget.profileCompletionOnly
-              ? 'Add prompts to start swiping'
+              ? 'Add prompts to start catching'
               : 'Add your profile prompts',
           subtitle: widget.profileCompletionOnly
               ? 'Prompts give people something real to respond to before you match.'
               : 'Give people specific things to like, comment on, and ask about.',
         ),
         gapH24,
-        for (final promptId in defaultProfilePromptIds) ...[
+        for (var index = 0; index < maxProfilePromptAnswers; index += 1) ...[
           _PromptField(
-            definition: profilePromptDefinition(promptId),
-            controller: _controllers[promptId]!,
+            definition: profilePromptDefinition(_selectedPromptIds[index]),
+            controller: _controllers[index],
+            availablePromptIds: _availablePromptIds(index),
+            selectedPromptId: _selectedPromptIds[index],
+            onPromptChanged: (promptId) => _selectPrompt(index, promptId),
           ),
           gapH18,
         ],
         Text(
-          '$answeredCount / ${defaultProfilePromptIds.length} prompts answered',
+          '$answeredCount / $maxProfilePromptAnswers prompts answered',
           style: CatchTextStyles.statusLabel(
             context,
             color: canContinue ? t.success : t.ink2,
@@ -138,29 +153,106 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
       ],
     );
   }
+
+  void _selectPrompt(int index, String promptId) {
+    setState(() => _selectedPromptIds[index] = promptId);
+  }
+
+  List<String> _availablePromptIds(int index) {
+    final currentPromptId = _selectedPromptIds[index];
+    final usedPromptIds = {
+      for (final entry in _selectedPromptIds.indexed)
+        if (entry.$1 != index) entry.$2,
+    };
+    return [
+      if (!profilePromptCatalog.any(
+        (definition) => definition.id == currentPromptId,
+      ))
+        currentPromptId,
+      for (final definition in profilePromptCatalog)
+        if (!usedPromptIds.contains(definition.id) ||
+            definition.id == currentPromptId)
+          definition.id,
+    ];
+  }
+
+  void _fillUnusedPromptDefaults() {
+    final usedPromptIds = <String>{};
+    for (var index = 0; index < _selectedPromptIds.length; index += 1) {
+      final selected = _selectedPromptIds[index];
+      if (usedPromptIds.add(selected)) continue;
+      _selectedPromptIds[index] = _defaultPromptIdForSlot(index, usedPromptIds);
+      usedPromptIds.add(_selectedPromptIds[index]);
+    }
+  }
+
+  static String _defaultPromptIdForSlot(
+    int index, [
+    Set<String>? usedPromptIds,
+  ]) {
+    final used = usedPromptIds ?? const <String>{};
+    final defaultPromptId = index < defaultProfilePromptIds.length
+        ? defaultProfilePromptIds[index]
+        : null;
+    if (defaultPromptId != null && !used.contains(defaultPromptId)) {
+      return defaultPromptId;
+    }
+    return profilePromptCatalog
+        .firstWhere(
+          (definition) => !used.contains(definition.id),
+          orElse: () => profilePromptCatalog.first,
+        )
+        .id;
+  }
 }
 
 class _PromptField extends StatelessWidget {
-  const _PromptField({required this.definition, required this.controller});
+  const _PromptField({
+    required this.definition,
+    required this.controller,
+    required this.availablePromptIds,
+    required this.selectedPromptId,
+    required this.onPromptChanged,
+  });
 
   final ProfilePromptDefinition definition;
   final TextEditingController controller;
+  final List<String> availablePromptIds;
+  final String selectedPromptId;
+  final ValueChanged<String> onPromptChanged;
 
   @override
   Widget build(BuildContext context) {
-    return CatchTextField(
-      label: definition.title,
-      controller: controller,
-      hintText: definition.placeholder,
-      helperText:
-          '${controller.text.length} / $maximumProfilePromptAnswerLength',
-      keyboardType: TextInputType.multiline,
-      textInputAction: TextInputAction.newline,
-      textCapitalization: TextCapitalization.sentences,
-      maxLines: 4,
-      minLines: 3,
-      inputFormatters: [
-        LengthLimitingTextInputFormatter(maximumProfilePromptAnswerLength),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CatchSelectMenu<String>(
+          values: availablePromptIds,
+          value: selectedPromptId,
+          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          semanticLabel: 'Profile prompt',
+          prefixIcon: Icon(CatchIcons.formatQuoteRounded),
+          onChanged: (promptId) {
+            if (promptId == null) return;
+            onPromptChanged(promptId);
+          },
+        ),
+        gapH10,
+        CatchTextField(
+          label: definition.title,
+          controller: controller,
+          hintText: definition.placeholder,
+          helperText:
+              '${controller.text.length} / $maximumProfilePromptAnswerLength',
+          keyboardType: TextInputType.multiline,
+          textInputAction: TextInputAction.newline,
+          textCapitalization: TextCapitalization.sentences,
+          maxLines: 4,
+          minLines: 3,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(maximumProfilePromptAnswerLength),
+          ],
+        ),
       ],
     );
   }

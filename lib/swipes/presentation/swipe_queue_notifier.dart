@@ -149,7 +149,7 @@ Never _swipeQueueLoadTimedOut() {
   throw const BackendOperationException(
     code: 'swipe-candidates-timeout',
     message:
-        'Swipe profiles are taking too long to load. Please check your connection and try again.',
+        'Profiles are taking too long to load. Please check your connection and try again.',
     context: _swipeQueueLoadContext,
     retryable: true,
   );

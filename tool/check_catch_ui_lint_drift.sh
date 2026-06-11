@@ -10,12 +10,13 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--code CODE|--label LABEL|--all|--help]
+  bash tool/check_catch_ui_lint_drift.sh [--summary|--count|--json [PATH]|--code CODE|--label LABEL|--all|--help]
 
 Modes:
   default    Print summary plus matching diagnostics. Exit 1 if drift remains.
   --summary  Print summary only. Exit 1 if drift remains.
   --count    Print only the numeric drift count. Always exit 0.
+  --json     Print a JSON count artifact. Optionally also write it to PATH. Always exit 0.
   --code     Count one Catch UI lint code.
   --label    Human-readable label for summary output.
   --all      Count all Catch UI lint codes.
@@ -28,6 +29,7 @@ EOF
 MODE="default"
 CODE_REGEX="catch_no_raw_color|catch_no_raw_text_style|catch_no_raw_font_drift"
 LABEL="color/text/font"
+JSON_PATH=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -38,6 +40,15 @@ while [ $# -gt 0 ]; do
     --count)
       MODE="count"
       shift
+      ;;
+    --json)
+      MODE="json"
+      if [ $# -gt 1 ] && [[ "$2" != --* ]]; then
+        JSON_PATH="$2"
+        shift 2
+      else
+        shift
+      fi
       ;;
     --code)
       if [ $# -lt 2 ]; then
@@ -96,6 +107,58 @@ fi
 
 if [ "$MODE" = "count" ]; then
   echo "$total"
+  exit 0
+fi
+
+json_escape() {
+  sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' <<<"$1"
+}
+
+if [ "$MODE" = "json" ]; then
+  json_tmp="$(mktemp "${TMPDIR:-/tmp}/catch-ui-lint-drift-json.XXXXXX")"
+  {
+    echo "{"
+    printf '  "label": "%s",\n' "$(json_escape "$LABEL")"
+    printf '  "codeRegex": "%s",\n' "$(json_escape "$CODE_REGEX")"
+    printf '  "analyzeStatus": %s,\n' "$analyze_status"
+    if [ "$analyze_status" -eq 0 ]; then
+      echo '  "complete": true,'
+    else
+      echo '  "complete": false,'
+    fi
+    printf '  "total": %s,\n' "$total"
+    echo '  "counts": {'
+    awk '
+      {
+        while (match($0, /catch_[a-z0-9_]+/)) {
+          code = substr($0, RSTART, RLENGTH)
+          counts[code] += 1
+          $0 = substr($0, RSTART + RLENGTH)
+        }
+      }
+      END {
+        for (code in counts) print code "\t" counts[code]
+      }
+    ' "$tmp" | sort | awk '
+      BEGIN { first = 1 }
+      {
+        if (!first) printf ",\n"
+        first = 0
+        printf "    \"%s\": %d", $1, $2
+      }
+      END {
+        if (!first) printf "\n"
+      }
+    '
+    echo '  }'
+    echo "}"
+  } >"$json_tmp"
+
+  if [ -n "$JSON_PATH" ]; then
+    cat "$json_tmp" >"$JSON_PATH"
+  fi
+  cat "$json_tmp"
+  rm -f "$json_tmp"
   exit 0
 fi
 

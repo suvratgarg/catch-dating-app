@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -12,6 +13,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_p
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -255,7 +257,7 @@ void main() {
       },
     );
 
-    testWidgets('explains the swipe gate in profile-completion mode', (
+    testWidgets('explains the catches gate in profile-completion mode', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1.0;
@@ -278,16 +280,18 @@ void main() {
         child: const PhotosPage(profileCompletionOnly: true),
       );
 
-      expect(find.text('Complete your profile to swipe'), findsOneWidget);
+      expect(find.text('Complete your profile for Catches'), findsOneWidget);
       expect(
-        find.text('This only gates swiping. Event booking stays available.'),
+        find.text('This only gates Catches. Event booking stays available.'),
         findsOneWidget,
       );
     });
   });
 
   group('ProfilePromptsPage', () {
-    testWidgets('explains prompts as part of swipe completion', (tester) async {
+    testWidgets('explains prompts as part of catches completion', (
+      tester,
+    ) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);
 
@@ -297,12 +301,56 @@ void main() {
         child: const ProfilePromptsPage(profileCompletionOnly: true),
       );
 
-      expect(find.text('Add prompts to start swiping'), findsOneWidget);
+      expect(find.text('Add prompts to start catching'), findsOneWidget);
       expect(
         find.text(
           'Prompts give people something real to respond to before you match.',
         ),
         findsOneWidget,
+      );
+    });
+
+    testWidgets('prompt pickers hide prompts selected in other slots', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(1080, 2200);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final container = createOnboardingTestContainer();
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const ProfilePromptsPage(),
+      );
+
+      final menus = find.byType(CatchSelectMenu<String>);
+      expect(menus, findsNWidgets(maxProfilePromptAnswers));
+
+      await tester.tap(menus.at(1));
+      await pumpOnboardingUi(tester);
+
+      expect(
+        find.widgetWithText(
+          MenuItemButton,
+          profilePromptDefinition(profilePromptPerfectEventId).title,
+        ),
+        findsNothing,
+      );
+      final unusedPrompt = profilePromptCatalog.firstWhere(
+        (definition) => !defaultProfilePromptIds.contains(definition.id),
+      );
+      await tester.tap(find.widgetWithText(MenuItemButton, unusedPrompt.title));
+      await pumpOnboardingUi(tester);
+
+      await tester.tap(menus.at(2));
+      await pumpOnboardingUi(tester);
+
+      expect(
+        find.widgetWithText(MenuItemButton, unusedPrompt.title),
+        findsNothing,
       );
     });
   });

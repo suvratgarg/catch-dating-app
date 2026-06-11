@@ -40,8 +40,10 @@ names remain because cleanup passes, docs, and CI still call them, but the
 matching policy now lives in `packages/catch_ui_lints` and is reported from
 normal `flutter analyze --no-fatal-infos` output.
 
-Use `--summary` for review-friendly output and `--count` for cheap automated
-checks that only need a numeric debt signal.
+Use `--summary` for review-friendly output, `--count` for cheap automated
+checks that only need a numeric debt signal, and
+`tool/check_catch_ui_lint_drift.sh --all --json <path>` when a cleanup pass
+needs a reusable drift snapshot artifact with analyzer completion status.
 
 ## Analyzer Plugin Lints
 

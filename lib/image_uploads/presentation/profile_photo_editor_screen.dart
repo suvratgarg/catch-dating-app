@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
@@ -176,12 +177,27 @@ class _ProfilePhotoEditorScreenState
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final hasEditableImage = _imageBytes != null;
+    final profilePhotos =
+        ref
+            .watch(watchUserProfileProvider)
+            .asData
+            ?.value
+            ?.effectiveProfilePhotos ??
+        const <ProfilePhoto>[];
+    final usedPromptIds = {
+      for (final photo in profilePhotos)
+        if (photo.position != widget.index && photo.prompt != null)
+          photo.prompt!.promptId,
+    };
     final canSave =
         !_saving &&
         !_deleting &&
         !_loadingImage &&
         (widget.photo != null || hasEditableImage);
-    final promptChoices = _PhotoPromptChoice.values();
+    final promptChoices = _PhotoPromptChoice.values(
+      usedPromptIds: usedPromptIds,
+      currentPromptId: _promptId,
+    );
     final selectedPromptChoice = promptChoices.firstWhere(
       (choice) => choice.id == _promptId,
       orElse: () => promptChoices.first,
@@ -350,9 +366,14 @@ final class _PhotoPromptChoice {
   final String? id;
   final String label;
 
-  static List<_PhotoPromptChoice> values() => [
+  static List<_PhotoPromptChoice> values({
+    Set<String> usedPromptIds = const {},
+    String? currentPromptId,
+  }) => [
     const _PhotoPromptChoice(id: null, label: 'No prompt'),
     for (final definition in photoPromptCatalog)
-      _PhotoPromptChoice(id: definition.id, label: definition.title),
+      if (!usedPromptIds.contains(definition.id) ||
+          definition.id == currentPromptId)
+        _PhotoPromptChoice(id: definition.id, label: definition.title),
   ];
 }
