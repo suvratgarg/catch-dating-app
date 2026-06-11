@@ -83,6 +83,20 @@ node tool/check_remote_ops_manifest.mjs --check
 node tool/check_remote_ops_manifest.mjs --list
 ```
 
+## App Check Debug Tokens
+
+Local simulator App Check debug tokens are registered through a narrow helper
+that reads `FIREBASE_APP_CHECK_DEBUG_TOKEN` from the environment or `.env.local`
+without printing it:
+
+```sh
+node tool/firebase/register_app_check_debug_token.mjs --env dev --role host --platform ios
+./tool/run_host_dev_simulator.sh "iPhone 17 Pro"
+```
+
+Do not set `DISABLE_AUTH_APP_VERIFICATION_FOR_TESTING=true` for real
+phone-number verification. That flag is only for Firebase test phone numbers.
+
 ## Sales Demo Persona Profile Projection
 
 The sales demo persona catalog is projected into app-ready profile JSON before

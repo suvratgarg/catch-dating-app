@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.1+3
 
 environment:
-  sdk: ^3.10.4
+  sdk: ^3.12.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -35,15 +35,15 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   firebase_core: ^4.5.0
-  flutter_riverpod: ^3.2.1
-  riverpod_annotation: ^4.0.2
+  flutter_riverpod: ^3.3.2
+  riverpod_annotation: ^4.0.3
   firebase_auth: ^6.2.0
   go_router: ^17.1.0
   cloud_functions: ^6.0.7
-  razorpay_flutter: ^1.3.6
+  razorpay_flutter: ^1.4.5
   envied: ^1.1.0
   freezed_annotation: ^3.0.0
-  json_annotation: ^4.11.0
+  json_annotation: ^4.12.0
   cloud_firestore: ^6.1.3
   firebase_storage: ^13.1.0
   firebase_messaging: ^16.1.2
@@ -52,10 +52,10 @@ dependencies:
     sdk: flutter
   image_picker: ^1.2.1
   image: ^4.8.0
-  geolocator: ^13.0.0
+  geolocator: ^14.0.2
   package_info_plus: ^9.0.1
   url_launcher: ^6.3.2
-  google_fonts: ^6.2.1
+  google_fonts: ^8.1.0
   firebase_app_check: ^0.4.3
   share_plus: ^12.0.2
   shared_preferences: ^2.3.0
@@ -91,18 +91,22 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   build_runner: ^2.11.1
-  riverpod_generator: ^4.0.3
-  riverpod_lint: ^3.1.3
+  riverpod_generator: ^4.0.4
+  riverpod_lint: ^3.1.4
   catch_ui_lints:
     path: packages/catch_ui_lints
   envied_generator: ^1.1.0
   freezed: ^3.0.0
-  json_serializable: ^6.9.0
+  json_serializable: ^6.14.0
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.7
   fake_cloud_firestore: ^4.1.0+1
   firebase_auth_mocks: ^0.15.1
   json_schema: ^5.2.2
+
+dependency_overrides:
+  phosphor_flutter:
+    path: packages/phosphor_flutter
 
 # Native brand colors mirror design_context_pack/design_system/tokens.json.
 # Run `dart run tool/branding/generate_native_brand_assets.dart` after token
@@ -139,6 +143,10 @@ flutter_native_splash:
 
 # The following section is specific to Flutter packages.
 flutter:
+  config:
+    # Keep iOS/macOS on CocoaPods while FirebaseFirestore is supplied by the
+    # prebuilt Invertase pod; Flutter SPM integration links duplicate symbols.
+    enable-swift-package-manager: false
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -1,5 +1,6 @@
 // Firebase options for the dev environment.
 // ignore_for_file: type=lint
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform, kIsWeb;
@@ -7,15 +8,15 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptionsDev {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      return AppConfig.appRole.isHost ? hostWeb : web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        return AppConfig.appRole.isHost ? hostAndroid : android;
       case TargetPlatform.iOS:
-        return ios;
+        return AppConfig.appRole.isHost ? hostIos : ios;
       case TargetPlatform.macOS:
-        return macos;
+        return AppConfig.appRole.isHost ? hostMacos : macos;
       case TargetPlatform.windows:
       case TargetPlatform.linux:
         throw UnsupportedError(
@@ -47,6 +48,14 @@ class DefaultFirebaseOptionsDev {
     storageBucket: 'catchdates-dev.firebasestorage.app',
   );
 
+  static const FirebaseOptions hostAndroid = FirebaseOptions(
+    apiKey: 'AIzaSyCpzFHkPnvzLf9ti3JJ3dytrZ0ZiKxzWuY',
+    appId: '1:619661127800:android:0255790772b062ff077d8d',
+    messagingSenderId: '619661127800',
+    projectId: 'catchdates-dev',
+    storageBucket: 'catchdates-dev.firebasestorage.app',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCFQlvN1fhzrXZg09Bvygc-LGt7vyXsWHQ',
     appId: '1:619661127800:ios:e9456edea3f2427f077d8d',
@@ -56,6 +65,15 @@ class DefaultFirebaseOptionsDev {
     iosBundleId: 'com.catchdates.app.dev',
   );
 
+  static const FirebaseOptions hostIos = FirebaseOptions(
+    apiKey: 'AIzaSyCFQlvN1fhzrXZg09Bvygc-LGt7vyXsWHQ',
+    appId: '1:619661127800:ios:730bbfd6550efac0077d8d',
+    messagingSenderId: '619661127800',
+    projectId: 'catchdates-dev',
+    storageBucket: 'catchdates-dev.firebasestorage.app',
+    iosBundleId: 'com.catchdates.host.dev',
+  );
+
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCFQlvN1fhzrXZg09Bvygc-LGt7vyXsWHQ',
     appId: '1:619661127800:ios:e9456edea3f2427f077d8d',
@@ -63,5 +81,24 @@ class DefaultFirebaseOptionsDev {
     projectId: 'catchdates-dev',
     storageBucket: 'catchdates-dev.firebasestorage.app',
     iosBundleId: 'com.catchdates.app.dev',
+  );
+
+  static const FirebaseOptions hostMacos = FirebaseOptions(
+    apiKey: 'AIzaSyCFQlvN1fhzrXZg09Bvygc-LGt7vyXsWHQ',
+    appId: '1:619661127800:ios:730bbfd6550efac0077d8d',
+    messagingSenderId: '619661127800',
+    projectId: 'catchdates-dev',
+    storageBucket: 'catchdates-dev.firebasestorage.app',
+    iosBundleId: 'com.catchdates.host.dev',
+  );
+
+  static const FirebaseOptions hostWeb = FirebaseOptions(
+    apiKey: 'AIzaSyAl271K9YGiYZOEcNgoEwZiOQV0ydpWfrg',
+    appId: '1:619661127800:web:e347eaab416c5f20077d8d',
+    messagingSenderId: '619661127800',
+    projectId: 'catchdates-dev',
+    authDomain: 'catchdates-dev.firebaseapp.com',
+    storageBucket: 'catchdates-dev.firebasestorage.app',
+    measurementId: 'G-R05TM26KKB',
   );
 }

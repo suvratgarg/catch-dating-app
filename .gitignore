@@ -54,6 +54,7 @@ key.properties
 .pub-cache/
 .pub/
 /build/
+**/build/
 
 /coverage/
 **/coverage/
