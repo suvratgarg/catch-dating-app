@@ -1,7 +1,7 @@
 ---
 doc_id: ui_architecture
-version: 1.2.1
-updated: 2026-06-01
+version: 1.3.0
+updated: 2026-06-05
 owner: recursive_audit_loop
 status: active
 ---
@@ -112,6 +112,35 @@ Feature code that still writes `EdgeInsets.*(CatchSpacing...)` is surfaced by
 use an existing `CatchInsets` role, a named local inset contract owned by the
 component, or a layout primitive. Add a new semantic role when the existing
 contracts would be semantically wrong.
+
+### Token Tier Model
+
+Use the lowest tier that preserves intent, and move repeated feature-local
+roles upward only when they recur.
+
+| Tier | Owner | Examples | Use when |
+|---|---|---|---|
+| Primitive scale | `lib/core/theme/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIcon` | A reusable value is part of the global visual scale. |
+| Semantic layout role | `lib/core/theme/catch_tokens.dart` or a shared primitive | `CatchGaps.section`, `CatchInsets.pageBody`, `CatchLayout.maxContentWidth` | A value describes a repeated relationship or viewport/content contract. |
+| Expressive palette role | `ActivityPalette` / `CatchTokens` theme extensions | activity swatches, functional status colors, photo grade overlays | Color communicates activity, state, or theme meaning rather than decoration. |
+| Component contract | Owning component or primitive | profile tab body padding, ticket geometry, control shell sizing | A value is tied to one component family and should not become a global token yet. |
+| Sanctioned art | Painter/canvas owner with a narrow comment | graded image grain, activity artwork, map-pin canvas colors pending policy | Raw values are part of deliberate illustration/canvas output and are not layout tokens. |
+
+Do not add a new token namespace just because one raw value exists. Add a
+primitive token when the value belongs to the global scale; add a semantic role
+when the value names a repeated relationship; keep one-off component geometry in
+the component until reuse is real.
+
+`CatchBreakpoints` is intentionally rejected for now. Whole-window responsive
+classes already live in `ScreenSize`, while local component reflow thresholds
+live in `ComponentBreakpoints`; collapsing those into the design-token namespace
+would blur window and component ownership. `CatchLayout` remains appropriate for
+content clamps such as `maxContentWidth`.
+
+`CatchZIndex` is also rejected for now. Current Flutter stacking behavior is
+owned by widget order, overlays, navigators, and route/sheet primitives rather
+than repeated numeric z-index values. Introduce a named stacking contract only
+after two or more surfaces need the same explicit layer ordering.
 
 The CI smoke checks are:
 

@@ -88,7 +88,7 @@ class AttendedEventTile extends StatelessWidget {
               ),
               gapH4,
               const CatchBadge(
-                label: 'Swipe',
+                label: 'Catch',
                 tone: CatchBadgeTone.solid,
                 size: CatchBadgeSize.md,
               ),

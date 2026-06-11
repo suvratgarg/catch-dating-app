@@ -99,7 +99,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         bottom: false,
         child: Semantics(
           label: 'Profile tabs',
-          hint: 'Swipe left or right to switch between Edit and Preview.',
+          hint: 'Drag left or right to switch between Edit and Preview.',
           child: NestedScrollView(
             controller: _outerScrollController,
             headerSliverBuilder: (context, innerBoxIsScrolled) {

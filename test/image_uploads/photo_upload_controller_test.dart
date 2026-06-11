@@ -98,6 +98,13 @@ void main() {
     caption: caption,
   );
 
+  PhotoPromptAnswer catalogPrompt(int index, String promptId, String caption) =>
+      photoPromptAnswerFor(
+        photoIndex: index,
+        definition: photoPromptDefinition(promptId),
+        caption: caption,
+      );
+
   test('image upload policies keep picked media bounded by surface', () {
     expect(ImageUploadRepository.profilePhotoPolicy.maxWidth, 1600);
     expect(ImageUploadRepository.profilePhotoPolicy.quality, 85);
@@ -458,6 +465,49 @@ void main() {
       );
     },
   );
+
+  test('savePhoto clears the same prompt from other photos', () async {
+    final userProfileRepository = FakePhotoUserProfileRepository(
+      buildUser().copyWith(
+        profilePhotos: [
+          profilePhoto(0, prompt: prompt(0, 'Track day')),
+          profilePhoto(1, prompt: catalogPrompt(1, 'postRunGlow', 'Cafe stop')),
+        ],
+      ),
+    );
+    final imageUploadRepository = ControlledImageUploadRepository();
+    final container = ProviderContainer(
+      overrides: [
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
+        imageUploadRepositoryProvider.overrideWith(
+          (ref) => imageUploadRepository,
+        ),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    await container.pump();
+
+    await container
+        .read(photoUploadControllerProvider.notifier)
+        .savePhoto(index: 1, prompt: prompt(1, 'Finish line'));
+
+    final updatedPhotos = userProfileRepository.updatedProfilePhotos.single;
+    expect(imageUploadRepository.uploadedIndices, isEmpty);
+    expect(updatedPhotos.map((photo) => photo.prompt?.promptId), [
+      null,
+      'proofIRun',
+    ]);
+    expect(updatedPhotos.last.prompt?.caption, 'Finish line');
+  });
 }
 
 class _SilentErrorLogger extends ErrorLogger {

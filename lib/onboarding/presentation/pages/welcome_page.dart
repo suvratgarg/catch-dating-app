@@ -60,7 +60,7 @@ class WelcomePage extends ConsumerWidget {
                               ),
                               gapH16,
                               Text(
-                                'Meet someone on a group event. Swipe on people you '
+                                'Meet someone on a group event. Catch people you '
                                 'actually ran with - not strangers 30 miles away.',
                                 style: CatchTextStyles.proseL(
                                   context,

@@ -525,12 +525,7 @@ class _GuestBookCta extends StatelessWidget {
       child: ColoredBox(
         color: darkSurface ? t.ink : t.surface,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-            CatchSpacing.s4,
-            CatchSpacing.s4,
-          ),
+          padding: CatchInsets.contentBlock,
           child: CatchButton(
             label: 'Sign in to book this event',
             onPressed: () => context.go(

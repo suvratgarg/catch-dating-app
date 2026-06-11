@@ -208,7 +208,7 @@ class _CatchesIntroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                "You ran together.\nNow it's okay to swipe.",
+                'You ran together.\nNow you can catch.',
                 style: CatchTextStyles.headline(context, color: t.ink),
               ),
               gapH10,
@@ -349,7 +349,7 @@ class _CatchesEmptyState extends StatelessWidget {
                         gapW10,
                         Expanded(
                           child: Text(
-                            'Dating stays locked until you actually event together. No cold swiping strangers.',
+                            'Dating stays locked until you actually event together. No cold stranger browsing.',
                             style: CatchTextStyles.proseM(
                               context,
                               color: t.ink2,

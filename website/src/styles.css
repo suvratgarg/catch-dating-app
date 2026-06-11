@@ -73,7 +73,8 @@ a {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -220,6 +221,7 @@ main {
 .proof-section,
 .proof-ledger,
 .captures-section,
+.download-section,
 .trust-section,
 .waitlist-section,
 .site-footer {
@@ -241,6 +243,7 @@ main {
 .section-heading,
 .proof-section__copy,
 .waitlist__intro,
+.download-section__copy,
 .hero-panel,
 .product-board,
 .host-console,
@@ -298,6 +301,81 @@ h3 {
   gap: 12px;
   width: min(100%, 340px);
   margin-top: 34px;
+}
+
+.app-download-ctas {
+  display: grid;
+  width: min(100%, 520px);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.app-download-ctas__buttons {
+  display: grid;
+  gap: 10px;
+}
+
+.store-button {
+  display: grid;
+  min-height: 62px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--website-ghost-border);
+  border-radius: var(--radius);
+  background: var(--website-panel-bg);
+  color: var(--website-text);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.store-button:hover,
+.store-button:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--website-accent);
+  background: var(--website-ghost-hover-bg);
+}
+
+.store-button.is-pending {
+  border-style: dashed;
+}
+
+.store-button__mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--website-text);
+  color: var(--website-bg);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.store-button__kicker {
+  display: block;
+  color: var(--website-copy-faint);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.store-button strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.app-download-ctas__status {
+  min-height: 20px;
+  color: var(--website-copy-muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .hero-panel,
@@ -701,6 +779,35 @@ h3 {
   display: grid;
   gap: 18px;
   margin-top: 38px;
+}
+
+.download-section {
+  display: grid;
+  gap: 28px;
+  padding: 72px 0;
+  border-top: 1px solid var(--website-line);
+  border-bottom: 1px solid var(--website-line);
+}
+
+.download-section__copy {
+  max-width: 720px;
+}
+
+.download-section__copy h2 {
+  margin-top: 10px;
+  font-size: 42px;
+  line-height: 0.98;
+}
+
+.download-section__copy p {
+  margin-top: 18px;
+  color: var(--website-copy-muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.app-download-ctas--panel {
+  margin-top: 0;
 }
 
 .capture-card {
@@ -1732,6 +1839,10 @@ h3 {
     width: auto;
   }
 
+  .app-download-ctas__buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-panel {
     align-self: end;
   }
@@ -1790,6 +1901,11 @@ h3 {
 
   .proof-ledger__rows {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .download-section {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 0.56fr);
+    align-items: center;
   }
 
   .waitlist-form {
@@ -1873,6 +1989,7 @@ h3 {
   .section-heading h2,
   .proof-section__copy h2,
   .waitlist__intro h2,
+  .download-section__copy h2,
   .host-hero h1,
   .organizer-search-hero h1,
   .listing-hero h1,
@@ -1913,6 +2030,7 @@ h3 {
   .proof-section,
   .proof-ledger,
   .captures-section,
+  .download-section,
   .trust-section,
   .waitlist-section,
   .site-footer {
@@ -1968,6 +2086,7 @@ h3 {
   .section-heading h2,
   .proof-section__copy h2,
   .waitlist__intro h2,
+  .download-section__copy h2,
   .host-hero h1,
   .organizer-search-hero h1,
   .listing-hero h1,
@@ -1981,13 +2100,15 @@ h3 {
   .listing-hero__copy,
   .section-heading,
   .proof-section__copy,
-  .waitlist__intro {
+  .waitlist__intro,
+  .download-section__copy {
     max-width: 100%;
   }
 
   .section-heading h2,
   .proof-section__copy h2,
   .waitlist__intro h2,
+  .download-section__copy h2,
   .host-hero h1,
   .organizer-search-hero h1,
   .listing-hero h1,
@@ -2005,6 +2126,8 @@ h3 {
   .section-heading p,
   .proof-section__copy p,
   .waitlist__intro p,
+  .download-section__copy p,
+  .app-download-ctas__status,
   .format-card p,
   .loop-list p,
   .surface-grid p,
@@ -2038,6 +2161,7 @@ h3 {
   .proof-section,
   .proof-ledger,
   .captures-section,
+  .download-section,
   .trust-section,
   .waitlist-section,
   .site-footer {

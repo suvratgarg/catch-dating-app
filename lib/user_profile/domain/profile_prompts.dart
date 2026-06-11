@@ -163,6 +163,7 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
   Iterable<ProfilePromptAnswer> answers, {
   String? legacyBio,
 }) {
+  final orderedPromptIds = <String>[];
   final byPromptId = <String, ProfilePromptAnswer>{};
 
   for (final answer in answers) {
@@ -171,6 +172,7 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
     final normalizedAnswer = normalizeProfilePromptAnswer(answer.answer);
     if (normalizedAnswer.isEmpty) continue;
     final definition = profilePromptDefinition(promptId);
+    if (!byPromptId.containsKey(promptId)) orderedPromptIds.add(promptId);
     byPromptId[promptId] = answer.copyWith(
       promptId: promptId,
       prompt: definition.title,
@@ -182,6 +184,7 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
     final migratedBio = normalizeProfilePromptAnswer(legacyBio ?? '');
     if (migratedBio.isNotEmpty) {
       final definition = profilePromptDefinition(profilePromptPerfectEventId);
+      orderedPromptIds.add(definition.id);
       byPromptId[definition.id] = profilePromptAnswerFor(
         definition: definition,
         answer: migratedBio,
@@ -190,9 +193,8 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
   }
 
   final ordered = <ProfilePromptAnswer>[
-    for (final promptId in defaultProfilePromptIds)
-      if (byPromptId.containsKey(promptId)) byPromptId.remove(promptId)!,
-    ...byPromptId.values,
+    for (final promptId in orderedPromptIds)
+      if (byPromptId.containsKey(promptId)) byPromptId[promptId]!,
   ];
   return ordered.take(maxProfilePromptAnswers).toList(growable: false);
 }
@@ -215,8 +217,13 @@ List<PhotoPromptAnswer> normalizePhotoPromptAnswers(
     );
   }
 
-  return byPhotoIndex.values.toList(growable: false)
+  final ordered = byPhotoIndex.values.toList(growable: false)
     ..sort((a, b) => a.photoIndex.compareTo(b.photoIndex));
+  final usedPromptIds = <String>{};
+  return [
+    for (final answer in ordered)
+      if (usedPromptIds.add(answer.promptId)) answer,
+  ];
 }
 
 List<Map<String, dynamic>> profilePromptsToJson(
@@ -286,22 +293,52 @@ List<ProfilePromptAnswer> replaceProfilePromptAnswer({
   return normalizeProfilePromptAnswers(byPromptId.values);
 }
 
+List<ProfilePromptAnswer> replaceProfilePromptAnswerAtIndex({
+  required Iterable<ProfilePromptAnswer> current,
+  required int index,
+  required ProfilePromptDefinition definition,
+  required String answer,
+}) {
+  RangeError.checkValueInInterval(
+    index,
+    0,
+    maxProfilePromptAnswers - 1,
+    'index',
+  );
+  final prompts = normalizeProfilePromptAnswers(current).toList();
+  if (index < prompts.length) {
+    prompts.removeAt(index);
+  }
+  prompts.removeWhere((prompt) => prompt.promptId == definition.id);
+  final normalized = normalizeProfilePromptAnswer(answer);
+  if (normalized.isNotEmpty) {
+    final insertionIndex = index > prompts.length ? prompts.length : index;
+    prompts.insert(
+      insertionIndex,
+      profilePromptAnswerFor(definition: definition, answer: normalized),
+    );
+  }
+  return normalizeProfilePromptAnswers(prompts);
+}
+
 List<PhotoPromptAnswer> replacePhotoPromptAnswer({
   required Iterable<PhotoPromptAnswer> current,
   required int photoIndex,
   required PhotoPromptDefinition definition,
   String caption = '',
 }) {
-  final byPhotoIndex = {
-    for (final prompt in normalizePhotoPromptAnswers(current))
-      prompt.photoIndex: prompt,
-  };
   final normalized = normalizePhotoPromptCaption(caption);
-  byPhotoIndex[photoIndex] = photoPromptAnswerFor(
+  final normalizedAnswer = photoPromptAnswerFor(
     photoIndex: photoIndex,
     definition: definition,
     caption: normalized,
   );
+  final byPhotoIndex = {
+    for (final prompt in normalizePhotoPromptAnswers(current))
+      if (prompt.promptId != normalizedAnswer.promptId)
+        prompt.photoIndex: prompt,
+  };
+  byPhotoIndex[photoIndex] = normalizedAnswer;
   return normalizePhotoPromptAnswers(byPhotoIndex.values);
 }
 

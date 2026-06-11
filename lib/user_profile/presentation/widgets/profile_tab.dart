@@ -457,16 +457,29 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         ),
       ),
     ];
-    final prompts = defaultProfilePromptIds
-        .map((promptId) {
-          final definition = profilePromptDefinition(promptId);
-          return _profilePromptEntry(
-            context: context,
-            user: user,
-            definition: definition,
-          );
-        })
-        .toList(growable: false);
+    final promptAnswers = normalizeProfilePromptAnswers(user.profilePrompts);
+    final prompts = List<ProfileInfoEntry>.generate(maxProfilePromptAnswers, (
+      index,
+    ) {
+      final answer = index < promptAnswers.length ? promptAnswers[index] : null;
+      final usedPromptIds = {
+        for (final prompt in promptAnswers)
+          if (prompt.promptId != answer?.promptId) prompt.promptId,
+      };
+      final definition = _profilePromptDefinitionForSlot(
+        index: index,
+        answer: answer,
+        usedPromptIds: usedPromptIds,
+      );
+      return _profilePromptEntry(
+        context: context,
+        user: user,
+        index: index,
+        definition: definition,
+        answer: answer,
+        usedPromptIds: usedPromptIds,
+      );
+    }, growable: false);
 
     return widget.builder(context, [
       _ProfileQualityGuidanceCard(summary: profileQuality),
@@ -501,7 +514,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       gapH14,
       ProfileInfoSection(
         title: 'Profile prompts',
-        subtitle: '$completedPromptCount of ${prompts.length} answered',
+        subtitle: '$completedPromptCount of $maxProfilePromptAnswers answered',
         entries: prompts,
         grouped: true,
       ),
@@ -613,37 +626,78 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     );
   }
 
+  ProfilePromptDefinition _profilePromptDefinitionForSlot({
+    required int index,
+    required ProfilePromptAnswer? answer,
+    required Set<String> usedPromptIds,
+  }) {
+    final promptId = answer?.promptId;
+    if (promptId != null) return profilePromptDefinition(promptId);
+    final defaultPromptId = index < defaultProfilePromptIds.length
+        ? defaultProfilePromptIds[index]
+        : null;
+    if (defaultPromptId != null && !usedPromptIds.contains(defaultPromptId)) {
+      return profilePromptDefinition(defaultPromptId);
+    }
+    return profilePromptCatalog.firstWhere(
+      (definition) => !usedPromptIds.contains(definition.id),
+      orElse: () => profilePromptCatalog.first,
+    );
+  }
+
+  List<String> _availableProfilePromptIds({
+    required Set<String> usedPromptIds,
+    required String currentPromptId,
+  }) {
+    final ids = <String>[
+      if (!profilePromptCatalog.any(
+        (definition) => definition.id == currentPromptId,
+      ))
+        currentPromptId,
+      for (final definition in profilePromptCatalog)
+        if (!usedPromptIds.contains(definition.id) ||
+            definition.id == currentPromptId)
+          definition.id,
+    ];
+    return ids.isNotEmpty ? ids : <String>[profilePromptCatalog.first.id];
+  }
+
   ProfileInfoEntry _profilePromptEntry({
     required BuildContext context,
     required UserProfile user,
+    required int index,
     required ProfilePromptDefinition definition,
+    required ProfilePromptAnswer? answer,
+    required Set<String> usedPromptIds,
   }) {
-    final answer = profilePromptById(user.profilePrompts, definition.id);
     final text = answer?.answer ?? '';
-    return _textEntry(
-      context: context,
+    final fieldName = 'profilePrompt:$index';
+    final availablePromptIds = _availableProfilePromptIds(
+      usedPromptIds: usedPromptIds,
+      currentPromptId: answer?.promptId ?? definition.id,
+    );
+    return ProfileInfoEntry(
+      builder: (_) => ProfileInlinePromptEntryEditor(
+        key: ValueKey('inline-$fieldName-entry-editor'),
+        icon: CatchIcons.formatQuoteRounded,
+        label: definition.title,
+        value: text.isNotEmpty ? text : definition.placeholder,
+        currentAnswer: text,
+        currentPromptId: answer?.promptId ?? definition.id,
+        currentPrompts: user.profilePrompts,
+        promptIndex: index,
+        availablePromptIds: availablePromptIds,
+        fieldName: fieldName,
+        isExpanded: _isExpanded(fieldName),
+        isAddAffordance: text.isEmpty,
+        onTap: () => _toggleField(fieldName),
+        onSaved: _collapseField,
+        onCancel: _collapseField,
+      ),
       icon: CatchIcons.formatQuoteRounded,
       label: definition.title,
       value: text.isNotEmpty ? text : definition.placeholder,
-      currentValue: text,
-      fieldName: 'profilePrompts',
-      expansionKey: 'profilePrompt:${definition.id}',
       isAddAffordance: text.isEmpty,
-      maxLines: null,
-      maxLength: maximumProfilePromptAnswerLength,
-      showCounter: true,
-      collapseStackedBlankLines: true,
-      normalizeInput: normalizeProfilePromptAnswer,
-      keyboardType: TextInputType.multiline,
-      validator: validateOptionalProfilePromptAnswer,
-      toFieldValue: (value) => replaceProfilePromptAnswer(
-        current: user.profilePrompts,
-        definition: definition,
-        answer: value,
-      ),
-      patchForValue: (value) => UpdateUserProfilePatch(
-        profilePrompts: value as List<ProfilePromptAnswer>,
-      ),
     );
   }
 

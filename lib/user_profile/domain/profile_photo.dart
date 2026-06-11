@@ -212,7 +212,38 @@ List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
 
   final ordered = byId.values.toList(growable: false)
     ..sort((a, b) => a.position.compareTo(b.position));
-  return ordered.take(maximumProfilePhotoCount).toList(growable: false);
+  return ensureUniquePhotoPrompts(
+    ordered.take(maximumProfilePhotoCount),
+  ).toList(growable: false);
+}
+
+List<ProfilePhoto> ensureUniquePhotoPrompts(
+  Iterable<ProfilePhoto> photos, {
+  int? preferredPosition,
+}) {
+  final ordered = photos.toList(growable: false)
+    ..sort((a, b) => a.position.compareTo(b.position));
+  final usedPromptIds = <String>{};
+
+  final preferredPrompt = preferredPosition == null
+      ? null
+      : ordered
+            .where((photo) => photo.position == preferredPosition)
+            .firstOrNull
+            ?.prompt;
+  if (preferredPrompt != null) usedPromptIds.add(preferredPrompt.promptId);
+
+  return [
+    for (final photo in ordered)
+      if (photo.position == preferredPosition)
+        photo
+      else if (photo.prompt == null)
+        photo
+      else if (usedPromptIds.add(photo.prompt!.promptId))
+        photo
+      else
+        photo.copyWith(prompt: null),
+  ];
 }
 
 PhotoPromptAnswer? _normalizeEmbeddedPhotoPrompt(
@@ -356,6 +387,35 @@ ProfilePhoto replaceProfilePhotoPrompt({
     ),
     updatedAt: DateTime.now(),
   );
+}
+
+List<ProfilePhoto> replaceProfilePhotoPromptAtPosition({
+  required Iterable<ProfilePhoto> profilePhotos,
+  required int position,
+  required PhotoPromptAnswer? prompt,
+  DateTime? updatedAt,
+}) {
+  RangeError.checkValueInInterval(
+    position,
+    0,
+    maximumProfilePhotoCount - 1,
+    'position',
+  );
+  final timestamp = updatedAt ?? DateTime.now();
+  final updated = [
+    for (final photo in normalizeProfilePhotos(profilePhotos))
+      if (photo.position == position)
+        photo.copyWith(
+          prompt: prompt?.copyWith(photoIndex: position),
+          updatedAt: timestamp,
+        )
+      else
+        photo,
+  ];
+  return ensureUniquePhotoPrompts(
+    updated,
+    preferredPosition: position,
+  ).toList(growable: false);
 }
 
 String thumbnailStoragePathForStoragePath(String storagePath) {

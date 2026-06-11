@@ -57,6 +57,7 @@ expect_code_count() {
 run_analyze_probe "seeded violation corpus" <<'DART'
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart' as spacing;
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +81,7 @@ class CatchUiLintProbe extends StatelessWidget {
         const SizedBox(height: _probeCardHeight),
         const Icon(Icons.add, size: 24),
         const SizedBox(height: CatchSpacing.s3 + 2),
+        const SizedBox(height: spacing.CatchSpacing.s3 + 2),
         const Padding(
           padding: EdgeInsets.fromLTRB(
             CatchSpacing.s5,
@@ -91,9 +93,12 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         const Chip(label: Text('raw')),
         TextButton(onPressed: null, child: const Text('raw')),
+        const IconButton(onPressed: null, icon: Icon(Icons.close)),
         EventActivityBackdrop(
           visual: eventActivityVisual(ActivityKind.running),
         ),
+        Image.asset('assets/branding/catch_icon.png'),
+        const CircularProgressIndicator(strokeWidth: 2),
         const ColoredBox(color: Color(0xFFFF0000), child: SizedBox.shrink()),
         const ColoredBox(
           color: Color.fromARGB(255, 255, 0, 0),
@@ -130,6 +135,7 @@ class CatchUiLintProbe extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
+            border: Border.all(width: 2),
             borderRadius: BorderRadius.circular(12),
             boxShadow: const [
               BoxShadow(color: Colors.black, blurRadius: 12),
@@ -183,6 +189,12 @@ expect_code_count "seeded violation corpus" "catch_no_raw_shadow" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_motion" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_breakpoint" 1
 expect_code_count "seeded violation corpus" "catch_no_raw_surface_shell" 1
+expect_code_count "seeded violation corpus" "catch_no_raw_stroke_width" 2
+expect_code_count "seeded violation corpus" "catch_no_raw_asset_path" 1
+expect_code_count \
+  "seeded violation corpus" \
+  "catch_icon_button_requires_tooltip" \
+  1
 expect_code_count "seeded violation corpus" "catch_no_allow_debt" 1
 
 run_analyze_probe "transparent and token-backed clean cases" <<'DART'

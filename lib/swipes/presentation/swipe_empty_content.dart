@@ -39,7 +39,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
   if (currentUser == null) {
     return SwipeEmptyContent(
       title: 'Sign in required',
-      message: 'Sign in again to swipe on fellow attendees.',
+      message: 'Sign in again to catch fellow attendees.',
       icon: CatchIcons.lockOutlineRounded,
     );
   }
@@ -47,7 +47,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
   if (currentUserParticipation?.status != EventParticipationStatus.attended) {
     return SwipeEmptyContent(
       title: 'Catch unavailable',
-      message: 'You can only swipe on attendees from events you attended.',
+      message: 'You can only catch attendees from events you attended.',
       icon: CatchIcons.verifiedUserOutlined,
     );
   }
@@ -55,14 +55,14 @@ SwipeEmptyContent buildSwipeEmptyContent({
   if (event.isUpcoming) {
     return SwipeEmptyContent(
       title: 'Event in progress',
-      message: 'Swiping unlocks for 24 hours after the event finishes.',
+      message: 'Catches unlock for 24 hours after the event finishes.',
       icon: CatchIcons.scheduleRounded,
     );
   }
 
   if (!hasOpenSwipeWindow(event)) {
     return SwipeEmptyContent(
-      title: 'Swipe window closed',
+      title: 'Catch window closed',
       message: 'This event is past the 24-hour catch window.',
       icon: CatchIcons.hourglassDisabledRounded,
     );

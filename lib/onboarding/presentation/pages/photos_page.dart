@@ -57,7 +57,7 @@ class PhotosPage extends ConsumerWidget {
         gapH32,
         OnboardingStepHeader(
           title: profileCompletionOnly
-              ? 'Complete your profile to swipe'
+              ? 'Complete your profile for Catches'
               : 'Show yourself',
           subtitle: profileCompletionOnly
               ? 'Catches need photos so people can decide who they want to meet. You can still book events with your current details.'
@@ -71,7 +71,7 @@ class PhotosPage extends ConsumerWidget {
             Expanded(
               child: Text(
                 profileCompletionOnly
-                    ? 'This only gates swiping. Event booking stays available.'
+                    ? 'This only gates Catches. Event booking stays available.'
                     : 'Running photos boost catches by 2.3×',
                 style: CatchTextStyles.supporting(context, color: t.ink2),
               ),

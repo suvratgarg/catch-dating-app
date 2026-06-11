@@ -262,10 +262,14 @@ class PhotoUploadController extends _$PhotoUploadController {
         storagePath: upload.storagePath,
         prompt: prompt ?? existingPrompt,
       );
-      final updatedPhotos = replaceProfilePhotoAtPosition(
+      final replacedPhotos = replaceProfilePhotoAtPosition(
         profilePhotos: basePhotos,
         position: index,
         photo: uploadedPhoto,
+      );
+      final updatedPhotos = ensureUniquePhotoPrompts(
+        replacedPhotos,
+        preferredPosition: index,
       );
 
       await userProfileRepository.updateProfilePhotos(
@@ -284,17 +288,11 @@ class PhotoUploadController extends _$PhotoUploadController {
       final userProfileRepository = ref.read(userProfileRepositoryProvider);
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
       if (latestUser == null) throw const DocumentNotFoundException('users');
-      final now = DateTime.now();
-      final updatedPhotos = [
-        for (final photo in latestUser.effectiveProfilePhotos)
-          if (photo.position == index)
-            photo.copyWith(
-              prompt: prompt?.copyWith(photoIndex: index),
-              updatedAt: now,
-            )
-          else
-            photo,
-      ];
+      final updatedPhotos = replaceProfilePhotoPromptAtPosition(
+        profilePhotos: latestUser.effectiveProfilePhotos,
+        position: index,
+        prompt: prompt,
+      );
       await userProfileRepository.updateProfilePhotos(
         uid: uid,
         profilePhotos: updatedPhotos,

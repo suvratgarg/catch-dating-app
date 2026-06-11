@@ -102,7 +102,7 @@
       "command": "bash tool/check_catch_ui_lint_drift.sh",
       "safety": "local",
       "status": "active",
-      "description": "Reports migrated Catch UI color/text/font lint drift counts from flutter analyze output.",
+      "description": "Reports migrated Catch UI lint drift counts from flutter analyze output, including optional JSON count artifacts.",
       "checks": [
         "bash -n tool/check_catch_ui_lint_drift.sh",
         "bash tool/check_catch_ui_lint_drift.sh --count"

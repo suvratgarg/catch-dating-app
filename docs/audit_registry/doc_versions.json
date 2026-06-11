@@ -15,15 +15,15 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "4.1.7",
-    "updated": "2026-06-02",
+    "version": "4.1.8",
+    "updated": "2026-06-05",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "4.1.14",
-    "updated": "2026-06-01",
+    "version": "4.1.15",
+    "updated": "2026-06-05",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -141,10 +141,10 @@
   },
   "ui_architecture": {
     "path": "docs/ui_architecture.md",
-    "version": "1.2.1",
-    "updated": "2026-06-01",
+    "version": "1.3.0",
+    "updated": "2026-06-05",
     "status": "active",
-    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, or scroll-heavy widget tests."
+    "read_policy": "Read before changing shared screen padding, tab body insets, sliver-native screens, NestedScrollView tabs, sticky headers, scroll ownership, semantic UI lint policy, or design-token tier ownership."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",

@@ -16,7 +16,7 @@ void main() {
       expect(content.title, 'Catch unavailable');
     });
 
-    test('explains that swiping opens after the event ends', () {
+    test('explains that Catches opens after the event ends', () {
       final event = buildEvent();
       final content = buildSwipeEmptyContent(
         event: event,
@@ -31,7 +31,7 @@ void main() {
       expect(content.title, 'Event in progress');
       expect(
         content.message,
-        'Swiping unlocks for 24 hours after the event finishes.',
+        'Catches unlock for 24 hours after the event finishes.',
       );
     });
 
@@ -54,11 +54,11 @@ void main() {
       expect(content.title, 'Catch unavailable');
       expect(
         content.message,
-        'You can only swipe on attendees from events you attended.',
+        'You can only catch attendees from events you attended.',
       );
     });
 
-    test('explains when the swipe window has closed', () {
+    test('explains when the catch window has closed', () {
       final endedAt = DateTime.now().subtract(const Duration(hours: 26));
       final event = buildEvent(
         startTime: endedAt.subtract(const Duration(hours: 1)),
@@ -74,7 +74,7 @@ void main() {
         ),
       );
 
-      expect(content.title, 'Swipe window closed');
+      expect(content.title, 'Catch window closed');
     });
 
     test(

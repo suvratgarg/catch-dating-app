@@ -130,6 +130,15 @@ void main() {
       );
     }
 
+    PhotoPromptAnswer photoPrompt(int index, String promptId) {
+      final definition = photoPromptDefinition(promptId);
+      return photoPromptAnswerFor(
+        photoIndex: index,
+        definition: definition,
+        caption: 'Caption $index',
+      );
+    }
+
     test(
       'removeProfilePhotoAtPosition compacts positions and prompt indexes',
       () {
@@ -184,6 +193,106 @@ void main() {
       ]);
       expect(updated.map((photo) => photo.position), [0, 1, 2]);
       expect(updated.last.prompt?.photoIndex, 2);
+    });
+
+    test('normalizeProfilePhotos clears repeated photo prompt selections', () {
+      final updated = normalizeProfilePhotos([
+        photo(0, prompt: photoPrompt(0, 'proofIRun')),
+        photo(1, prompt: photoPrompt(1, 'proofIRun')),
+      ]);
+
+      expect(updated.first.prompt?.promptId, 'proofIRun');
+      expect(updated.last.prompt, isNull);
+    });
+
+    test('replaceProfilePhotoPromptAtPosition makes the edited slot win', () {
+      final updated = replaceProfilePhotoPromptAtPosition(
+        profilePhotos: [
+          photo(0, prompt: photoPrompt(0, 'proofIRun')),
+          photo(1, prompt: photoPrompt(1, 'postRunGlow')),
+        ],
+        position: 1,
+        prompt: photoPrompt(1, 'proofIRun'),
+        updatedAt: DateTime(2026, 5, 18),
+      );
+
+      expect(updated.map((photo) => photo.prompt?.promptId), [
+        null,
+        'proofIRun',
+      ]);
+      expect(updated.last.prompt?.photoIndex, 1);
+      expect(updated.last.updatedAt, DateTime(2026, 5, 18));
+    });
+  });
+
+  group('profile prompt helpers', () {
+    ProfilePromptAnswer prompt(String promptId, String answer) {
+      return profilePromptAnswerFor(
+        definition: profilePromptDefinition(promptId),
+        answer: answer,
+      );
+    }
+
+    test('replaceProfilePromptAnswerAtIndex keeps prompt ids unique', () {
+      final updated = replaceProfilePromptAnswerAtIndex(
+        current: [
+          prompt(profilePromptPerfectEventId, 'First answer.'),
+          prompt('afterEvent', 'Second answer.'),
+        ],
+        index: 1,
+        definition: profilePromptDefinition(profilePromptPerfectEventId),
+        answer: 'Moved answer.',
+      );
+
+      expect(updated.map((prompt) => prompt.promptId), [
+        profilePromptPerfectEventId,
+      ]);
+      expect(updated.single.answer, 'Moved answer.');
+    });
+
+    test('replaceProfilePromptAnswerAtIndex replaces the current slot', () {
+      final updated = replaceProfilePromptAnswerAtIndex(
+        current: [
+          prompt(profilePromptPerfectEventId, 'First answer.'),
+          prompt('afterEvent', 'Second answer.'),
+          prompt('greenFlag', 'Third answer.'),
+        ],
+        index: 1,
+        definition: profilePromptDefinition('favoriteRoute'),
+        answer: 'Trail loops.',
+      );
+
+      expect(updated.map((prompt) => prompt.promptId), [
+        profilePromptPerfectEventId,
+        'favoriteRoute',
+        'greenFlag',
+      ]);
+      expect(updated[1].answer, 'Trail loops.');
+    });
+
+    test('replacePhotoPromptAnswer makes the edited photo index win', () {
+      final updated = replacePhotoPromptAnswer(
+        current: [
+          photoPromptAnswerFor(
+            photoIndex: 0,
+            definition: photoPromptDefinition('proofIRun'),
+            caption: 'Track day',
+          ),
+          photoPromptAnswerFor(
+            photoIndex: 1,
+            definition: photoPromptDefinition('postRunGlow'),
+            caption: 'Cafe stop',
+          ),
+        ],
+        photoIndex: 1,
+        definition: photoPromptDefinition('proofIRun'),
+        caption: 'Finish line',
+      );
+
+      expect(updated, hasLength(1));
+      expect(updated.single.photoIndex, 1);
+      expect(updated.single.promptId, 'proofIRun');
+      expect(updated.single.caption, 'Finish line');
     });
   });
 

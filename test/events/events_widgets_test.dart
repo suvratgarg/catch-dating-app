@@ -789,7 +789,7 @@ void main() {
         expect(find.text('+1'), findsOneWidget);
         expect(
           find.text(
-            'The swipe window is open for 24 hours after the event finishes.',
+            'The catch window is open for 24 hours after the event finishes.',
           ),
           findsOneWidget,
         );

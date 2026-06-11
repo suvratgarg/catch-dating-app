@@ -9,7 +9,7 @@ Future<bool?> showBlockUserDialog({
     context: context,
     title: 'Block $name?',
     message:
-        'You will stop seeing each other in chats, matches, swipes, and '
+        'You will stop seeing each other in chats, matches, Catches, and '
         'future event slots where the other person is already booked.',
     confirmLabel: 'Block',
   );

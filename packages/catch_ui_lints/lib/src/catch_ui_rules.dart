@@ -117,6 +117,26 @@ const _tokenPrefixes = <String>{
   'CatchStroke',
 };
 
+const _tokenSourceNames = <String>{
+  ..._tokenPrefixes,
+  'ActivityPalette',
+  'CatchFonts',
+  'CatchTextStyles',
+  'CatchTokens',
+  'Sizes',
+};
+
+const _rawStrokeConstructors = <String>{
+  'Border',
+  'BorderSide',
+  'CircularProgressIndicator',
+  'Divider',
+  'LinearProgressIndicator',
+  'VerticalDivider',
+};
+
+const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
+
 const catchUiLintFontFamilies = <String>{
   'Newsreader',
   'Inter',
@@ -252,6 +272,24 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     severity: DiagnosticSeverity.INFO,
   );
 
+  static const noRawStrokeWidth = LintCode(
+    'catch_no_raw_stroke_width',
+    'Use CatchStroke or a primitive-owned stroke contract instead of a raw stroke width.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const noRawAssetPath = LintCode(
+    'catch_no_raw_asset_path',
+    'Route asset paths through a named asset contract instead of passing raw assets/... strings to image loaders.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
+  static const iconButtonRequiresTooltip = LintCode(
+    'catch_icon_button_requires_tooltip',
+    'Icon-only buttons need a tooltip or an enclosing semantic label.',
+    severity: DiagnosticSeverity.INFO,
+  );
+
   static const noAllowDebt = LintCode(
     'catch_no_allow_debt',
     'Remove temporary Catch UI allow debt or replace it with a narrow source-of-truth exception.',
@@ -289,6 +327,9 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     noRawMotion,
     noRawBreakpoint,
     noRawSurfaceShell,
+    noRawStrokeWidth,
+    noRawAssetPath,
+    iconButtonRequiresTooltip,
     noAllowDebt,
     noWidgetReturningMethod,
   ];
@@ -385,9 +426,12 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isUiSystemScannerPath;
   final bool allowRawControlConstructors;
   final List<int> _lineStarts;
+  Set<String> _locallyShadowedTokenNames = const <String>{};
 
   @override
   void visitCompilationUnit(CompilationUnit node) {
+    _locallyShadowedTokenNames = _declaredTokenShadows(node);
+
     for (final match in _allowDebtPattern.allMatches(source)) {
       if (_isThemeIndependentArtAllow(match.start)) continue;
       rule.reportAtOffset(
@@ -461,6 +505,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       _reportAtNode(node, CatchUiLayoutRules.noRawSurfaceShell);
     }
 
+    if (isUiSystemScannerPath && _iconButtonMissingTooltip(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.iconButtonRequiresTooltip);
+    }
+
     if (!isColorExemptPath && _isRawColorConstructor(node)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawColor);
     }
@@ -510,6 +558,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (isUiSystemScannerPath && _isRawShadowNamedArgument(node)) {
       _reportAtNode(node.expression, CatchUiLayoutRules.noRawShadow);
     }
+
+    if (isUiSystemScannerPath && _isRawStrokeNamedArgument(node)) {
+      _reportAtNode(node.expression, CatchUiLayoutRules.noRawStrokeWidth);
+    }
   }
 
   @override
@@ -519,8 +571,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         operator == TokenType.MINUS ||
         operator == TokenType.STAR ||
         operator == TokenType.SLASH) {
-      final leftIsToken = _isTokenReference(node.leftOperand);
-      final rightIsToken = _isTokenReference(node.rightOperand);
+      final leftIsToken = _isTokenReference(
+        node.leftOperand,
+        _locallyShadowedTokenNames,
+      );
+      final rightIsToken = _isTokenReference(
+        node.rightOperand,
+        _locallyShadowedTokenNames,
+      );
       final leftIsNumber = _isPositiveNumberLiteral(node.leftOperand);
       final rightIsNumber = _isPositiveNumberLiteral(node.rightOperand);
       if ((leftIsToken && (rightIsToken || rightIsNumber)) ||
@@ -593,10 +651,14 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitSimpleStringLiteral(SimpleStringLiteral node) {
-    if (!catchUiLintFontFamilies.contains(node.value)) return;
-    if (!_isFontFamilyNamedArgument(node)) return;
+    if (catchUiLintFontFamilies.contains(node.value) &&
+        _isFontFamilyNamedArgument(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawFontDrift);
+    }
 
-    _reportAtNode(node, CatchUiLayoutRules.noRawFontDrift);
+    if (isFeaturePresentationPath && _isRawAssetPathLiteral(node)) {
+      _reportAtNode(node, CatchUiLayoutRules.noRawAssetPath);
+    }
   }
 
   bool _isThemeIndependentArtAllow(int offset) {
@@ -635,8 +697,12 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _expressionUsesToken(Expression expression) {
     final text = expression.toSource();
-    if (_isTokenReference(expression)) return true;
-    return _tokenPrefixes.any((prefix) => text.contains('$prefix.')) ||
+    if (_isTokenReference(expression, _locallyShadowedTokenNames)) return true;
+    return _tokenPrefixes.any(
+          (prefix) =>
+              !_locallyShadowedTokenNames.contains(prefix) &&
+              text.contains('$prefix.'),
+        ) ||
         text.contains('ActivityPalette.') ||
         text.contains('CatchFonts.') ||
         text.contains('CatchTextStyles.') ||
@@ -727,6 +793,38 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     final name = node.name.label.name;
     if (name == 'elevation') return _isNumberAtLeast(node.expression, 1);
     if (name == 'shadowColor') return _isRawColorExpression(node.expression);
+    return false;
+  }
+
+  bool _isRawStrokeNamedArgument(NamedExpression node) {
+    if (_isInsideCustomPainter(node)) return false;
+
+    final name = node.name.label.name;
+    final constructorType = _ancestorConstructorType(node);
+    if (constructorType == null) return false;
+    if (!_rawStrokeConstructors.contains(constructorType)) return false;
+
+    if (name == 'width') {
+      if (constructorType != 'BorderSide' && constructorType != 'Border') {
+        return false;
+      }
+      return _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1);
+    }
+
+    if (name == 'strokeWidth') {
+      return constructorType == 'CircularProgressIndicator' ||
+              constructorType == 'LinearProgressIndicator'
+          ? _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1)
+          : false;
+    }
+
+    if (name == 'thickness') {
+      return constructorType == 'Divider' ||
+              constructorType == 'VerticalDivider'
+          ? _isNumberAtLeast(node.expression, _hairlineLiteralLimit + 0.1)
+          : false;
+    }
+
     return false;
   }
 
@@ -1032,6 +1130,53 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return parent is NamedExpression && parent.name.label.name == 'fontFamily';
   }
 
+  bool _isRawAssetPathLiteral(SimpleStringLiteral node) {
+    if (!node.value.startsWith('assets/')) return false;
+
+    final argumentList = node.parent;
+    if (argumentList is! ArgumentList) return false;
+
+    final invocation = argumentList.parent;
+    if (invocation is InstanceCreationExpression) {
+      final typeName = _constructorTypeName(invocation);
+      final constructorName = _constructorMemberName(invocation);
+      return _assetPathConstructors.contains(typeName) ||
+          ((typeName == 'Image' || typeName == 'SvgPicture') &&
+              constructorName == 'asset');
+    }
+    if (invocation is MethodInvocation) {
+      final methodName = invocation.methodName.name;
+      final target = invocation.target;
+      final targetName = target?.toSource();
+      if (methodName == 'asset') {
+        return targetName == 'Image' || targetName == 'SvgPicture';
+      }
+      if (methodName == 'load' || methodName == 'loadString') {
+        return targetName == 'rootBundle';
+      }
+    }
+    return false;
+  }
+
+  bool _iconButtonMissingTooltip(InstanceCreationExpression node) {
+    if (_constructorTypeName(node) != 'IconButton') return false;
+    if (_namedArgument(node, 'tooltip') != null) return false;
+    return !_hasSemanticAncestor(node);
+  }
+
+  bool _hasSemanticAncestor(AstNode node) {
+    var current = node.parent;
+    while (current != null) {
+      if (current is InstanceCreationExpression) {
+        final typeName = _constructorTypeName(current);
+        if (typeName == 'Semantics' || typeName == 'Tooltip') return true;
+      }
+      if (current is Statement || current is CollectionElement) return false;
+      current = current.parent;
+    }
+    return false;
+  }
+
   void _reportAtNode(
     AstNode node,
     LintCode diagnosticCode, {
@@ -1171,24 +1316,66 @@ double? _numberLiteralValue(Expression expression) {
   return null;
 }
 
-bool _isTokenReference(Expression expression) {
+bool _isTokenReference(
+  Expression expression, [
+  Set<String> shadowedTokenNames = const <String>{},
+]) {
+  bool isSanctionedTokenName(String name) =>
+      _tokenSourceNames.contains(name) && !shadowedTokenNames.contains(name);
+
+  if (expression is SimpleIdentifier) {
+    return isSanctionedTokenName(expression.name);
+  }
   if (expression is PrefixedIdentifier) {
-    return _tokenPrefixes.contains(expression.prefix.name);
+    return isSanctionedTokenName(expression.prefix.name) ||
+        isSanctionedTokenName(expression.identifier.name);
   }
   if (expression is PropertyAccess) {
     final target = expression.target;
-    return target != null && _isTokenReference(target);
+    return isSanctionedTokenName(expression.propertyName.name) ||
+        (target != null && _isTokenReference(target, shadowedTokenNames));
   }
   if (expression is MethodInvocation) {
     final target = expression.target;
     return target is SimpleIdentifier &&
+        !shadowedTokenNames.contains('CatchTokens') &&
         target.name == 'CatchTokens' &&
         expression.methodName.name == 'of';
   }
   if (expression is ParenthesizedExpression) {
-    return _isTokenReference(expression.expression);
+    return _isTokenReference(expression.expression, shadowedTokenNames);
   }
   return false;
+}
+
+Set<String> _declaredTokenShadows(CompilationUnit node) {
+  final shadows = <String>{};
+
+  void addIfShadowed(String? name) {
+    if (name != null && _tokenSourceNames.contains(name)) {
+      shadows.add(name);
+    }
+  }
+
+  for (final declaration in node.declarations) {
+    if (declaration is ClassDeclaration) {
+      addIfShadowed(declaration.name.lexeme);
+    } else if (declaration is EnumDeclaration) {
+      addIfShadowed(declaration.name.lexeme);
+    } else if (declaration is ExtensionDeclaration) {
+      addIfShadowed(declaration.name?.lexeme);
+    } else if (declaration is FunctionDeclaration) {
+      addIfShadowed(declaration.name.lexeme);
+    } else if (declaration is MixinDeclaration) {
+      addIfShadowed(declaration.name.lexeme);
+    } else if (declaration is TopLevelVariableDeclaration) {
+      for (final variable in declaration.variables.variables) {
+        addIfShadowed(variable.name.lexeme);
+      }
+    }
+  }
+
+  return shadows;
 }
 
 bool _usesCatchSpacing(Expression expression) {

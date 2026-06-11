@@ -50,8 +50,8 @@ void main() {
 
     await tester.tap(find.text('Send a message'));
     await tester.pump();
-    await tester.ensureVisible(find.text('Keep swiping'));
-    await tester.tap(find.text('Keep swiping'));
+    await tester.ensureVisible(find.text('Keep catching'));
+    await tester.tap(find.text('Keep catching'));
     await tester.pump();
 
     expect(sendPressed, 1);

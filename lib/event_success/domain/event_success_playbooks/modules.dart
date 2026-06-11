@@ -35,7 +35,7 @@ abstract final class EventSuccessModuleCatalog {
       'Use the shared event attendance system as the source of truth.',
       'Support QR check-in as one arrival method, not a separate product loop.',
       'Let hosts mark manual arrivals when phones fail.',
-      'Use checked-in attendees as the eligible pool for post-event swipes.',
+      'Use checked-in attendees as the eligible pool for post-event Catches.',
     ],
     riskControls: [
       'Never publish the full roster by default.',
@@ -167,7 +167,7 @@ abstract final class EventSuccessModuleCatalog {
     ],
     riskControls: [
       'Frame compatibility clues as conversation context, not certainty.',
-      'Do not expose normal post-event swipe targets to hosts.',
+      'Do not expose normal post-event catch targets to hosts.',
     ],
   );
 

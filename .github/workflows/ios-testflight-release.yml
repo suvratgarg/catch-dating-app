@@ -37,7 +37,7 @@ jobs:
       ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-      ARCHIVE_PATH: ${{ runner.temp }}/${{ inputs.app_role == 'host' && 'HostRunner' || 'Runner' }}.xcarchive
+      ARCHIVE_NAME: ${{ inputs.app_role == 'host' && 'HostRunner' || 'Runner' }}
       EXPECTED_BUNDLE_ID: ${{ inputs.app_role == 'host' && 'com.catchdates.host' || 'com.catchdates.app' }}
       EXPORT_PATH: build/ios/export/${{ inputs.app_role == 'host' && 'host-prod' || 'prod' }}
       IOS_CONFIGURATION: ${{ inputs.app_role == 'host' && 'Release-host-prod' || 'Release-prod' }}
@@ -53,6 +53,9 @@ jobs:
           cache: true
 
       - run: flutter pub get
+
+      - name: Configure archive path
+        run: echo "ARCHIVE_PATH=$RUNNER_TEMP/${ARCHIVE_NAME}.xcarchive" >> "$GITHUB_ENV"
 
       - name: Write prod iOS Maps key
         env:

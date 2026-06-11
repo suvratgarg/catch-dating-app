@@ -77,7 +77,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH32,
         OnboardingStepHeader(
           title: widget.profileCompletionOnly
-              ? 'Finish your swipe profile'
+              ? 'Finish your Catches profile'
               : widget.runPreferencesOnly
               ? 'Set your run preferences'
               : 'Your running style',

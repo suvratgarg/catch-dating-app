@@ -23,11 +23,11 @@ class DashboardEmpty extends StatelessWidget {
     (
       '02',
       'Actually show up',
-      'Event with the club. No swiping happens here. Just event.',
+      'Event with the club. No cold matching happens here. Just event.',
     ),
     (
       '03',
-      'Swipe within 24 hours',
+      'Catch within 24 hours',
       'You get the roster of who ran. Catch anyone who caught your eye.',
     ),
     (

@@ -1,4 +1,4 @@
-import {FormEvent, useEffect, useMemo, useState} from "react";
+import {FormEvent, MouseEvent, useEffect, useMemo, useState} from "react";
 import {
   createMarketingEventId,
   getMarketingConsent,
@@ -25,10 +25,19 @@ import hostListingsJson from "./generated/hostListings.json";
 type PageKey = "home" | "host" | "organizers" | "listing";
 type FormVariant = "member" | "host";
 type StatusTone = "" | "is-error" | "is-success";
+type StorePlatform = "ios" | "android";
 type ClaimStatus = {
   message: string;
   tone: StatusTone;
 };
+
+interface StoreCta {
+  platform: StorePlatform;
+  kicker: string;
+  label: string;
+  shortLabel: string;
+  href: string;
+}
 
 interface PageMeta {
   title: string;
@@ -374,6 +383,22 @@ const hostProofRows = [
 ];
 
 const cities = ["Mumbai", "Delhi", "Bangalore", "Pune", "Hyderabad", "Other"];
+const storeCtas: StoreCta[] = [
+  {
+    platform: "ios",
+    kicker: "Download on the",
+    label: "App Store",
+    shortLabel: "iOS",
+    href: import.meta.env.VITE_APP_STORE_URL?.trim() ?? "",
+  },
+  {
+    platform: "android",
+    kicker: "Get it on",
+    label: "Google Play",
+    shortLabel: "Play",
+    href: import.meta.env.VITE_PLAY_STORE_URL?.trim() ?? "",
+  },
+];
 
 function App() {
   const listing = getHostListingForPath(window.location.pathname);
@@ -455,6 +480,7 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
                   Apply as host
                 </a>
               </div>
+              <AppDownloadCtas placement="home_hero" />
             </div>
 
             <aside className="hero-panel" aria-label="Catch event panel" data-reveal>
@@ -540,6 +566,19 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
           </div>
         </section>
 
+        <section className="download-section" id="download-app" aria-labelledby="download-title">
+          <div className="download-section__copy" data-reveal>
+            <span className="ui-label">Member app</span>
+            <h2 id="download-title">Download Catch when your city opens.</h2>
+            <p>
+              Store listings are not public yet. The buttons are in place now
+              so launch traffic can move directly to the app once the listings
+              are approved.
+            </p>
+          </div>
+          <AppDownloadCtas placement="home_download_section" className="app-download-ctas--panel" />
+        </section>
+
         <section className="trust-section" id="trust" aria-labelledby="trust-title">
           <div className="section-heading" data-reveal>
             <h2 id="trust-title">Designed for consent, context, and host control.</h2>
@@ -573,11 +612,122 @@ function HomePage({captures}: {captures: Record<string, CaptureRecord>}) {
         links={[
           {href: "/host/", label: "For hosts"},
           {href: "#formats", label: "Formats"},
+          {href: "#download-app", label: "Download"},
           {href: "#trust", label: "Trust"},
           {href: "#waitlist", label: "Waitlist"},
         ]}
       />
     </>
+  );
+}
+
+function AppDownloadCtas({
+  placement,
+  className,
+}: {
+  placement: string;
+  className?: string;
+}) {
+  const [status, setStatus] = useState(
+    "App Store and Play Store links are coming soon."
+  );
+  const statusId = `${placement}-store-status`;
+  const rootClassName = ["app-download-ctas", className].filter(Boolean).join(" ");
+
+  function handlePendingStoreClick(store: StoreCta) {
+    setStatus(
+      `${store.label} is not live yet. Join the waitlist and we will send the link when it opens.`
+    );
+    trackMarketingEvent("store_cta_pending", {
+      platform: store.platform,
+      placement,
+      page_path: `${window.location.pathname}${window.location.search}`,
+    });
+  }
+
+  function handleStoreLinkClick(store: StoreCta) {
+    trackCtaClick(`store_${placement}_${store.platform}`, store.href);
+    trackMarketingEvent("store_cta_click", {
+      platform: store.platform,
+      placement,
+      store_href: store.href,
+      page_path: `${window.location.pathname}${window.location.search}`,
+    });
+  }
+
+  return (
+    <div className={rootClassName} data-reveal>
+      <div className="app-download-ctas__buttons">
+        {storeCtas.map((store) => (
+          <StoreButton
+            key={store.platform}
+            store={store}
+            statusId={statusId}
+            onPendingClick={handlePendingStoreClick}
+            onStoreLinkClick={handleStoreLinkClick}
+          />
+        ))}
+      </div>
+      <p className="app-download-ctas__status" id={statusId} role="status" aria-live="polite">
+        {status}
+      </p>
+    </div>
+  );
+}
+
+function StoreButton({
+  store,
+  statusId,
+  onPendingClick,
+  onStoreLinkClick,
+}: {
+  store: StoreCta;
+  statusId: string;
+  onPendingClick: (store: StoreCta) => void;
+  onStoreLinkClick: (store: StoreCta) => void;
+}) {
+  const content = (
+    <>
+      <span className="store-button__mark" aria-hidden="true">
+        {store.shortLabel}
+      </span>
+      <span>
+        <span className="store-button__kicker">{store.kicker}</span>
+        <strong>{store.label}</strong>
+      </span>
+    </>
+  );
+
+  if (!store.href) {
+    return (
+      <button
+        className="store-button is-pending"
+        type="button"
+        aria-describedby={statusId}
+        onClick={() => onPendingClick(store)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <a
+      className="store-button"
+      href={store.href}
+      target="_blank"
+      rel="noreferrer"
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        if (!store.href) {
+          event.preventDefault();
+          onPendingClick(store);
+          return;
+        }
+        onStoreLinkClick(store);
+      }}
+    >
+      {content}
+    </a>
   );
 }
 

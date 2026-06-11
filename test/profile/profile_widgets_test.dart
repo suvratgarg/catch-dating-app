@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
@@ -854,6 +855,65 @@ void main() {
       containsPair('answer', 'Updated bio'),
     ]);
     expect(find.byType(EditableText), findsNothing);
+  });
+
+  testWidgets('prompt picker excludes prompts used by other rows', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final favoriteRoute = profilePromptDefinition('favoriteRoute');
+    final usedPrompt = profilePromptDefinition('afterEvent');
+    final user = buildUser(
+      name: 'Suvrat Garg',
+      profilePrompts: [
+        profilePromptAnswerFor(
+          definition: profilePromptDefinition(profilePromptPerfectEventId),
+          answer: 'Here for the event.',
+        ),
+        profilePromptAnswerFor(
+          definition: usedPrompt,
+          answer: 'Post-run coffee.',
+        ),
+      ],
+    );
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final promptEditor = find.byKey(
+      const ValueKey('inline-profilePrompt:2-entry-editor'),
+    );
+    await tester.tap(promptEditor);
+    await _pumpProfileSheet(tester);
+
+    await tester.tap(
+      find.descendant(
+        of: promptEditor,
+        matching: find.byType(CatchSelectMenu<String>),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.widgetWithText(MenuItemButton, _perfectRunPromptTitle),
+      findsNothing,
+    );
+    expect(find.widgetWithText(MenuItemButton, usedPrompt.title), findsNothing);
+    await tester.tap(find.widgetWithText(MenuItemButton, favoriteRoute.title));
+    await tester.pump();
+
+    await tester.enterText(
+      find.descendant(of: promptEditor, matching: find.byType(EditableText)),
+      'Sunday loops with a view.',
+    );
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
+    final savedPrompts =
+        repository.updatedFields?['profilePrompts'] as List<Object?>;
+    expect(savedPrompts.map((prompt) => (prompt as Map)['promptId']), [
+      profilePromptPerfectEventId,
+      'afterEvent',
+      'favoriteRoute',
+    ]);
   });
 
   testWidgets('prompt edit keeps the row anchored with a tight underline', (
