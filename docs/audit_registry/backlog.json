@@ -990,7 +990,7 @@
         "DATA-ACCESS-BATCH-001"
       ],
       "source": "deep_semantic_audit_2026-06",
-      "summary": "public_profile_repository now parallelizes its per-doc reads (done). REMAINING: reviews_history_screen opens an N+1 live event-doc stream per review row for a static date label; event_recap_screen opens one realtime listener per attendee; safety settings blocked-list opens one snapshot stream per tile; clubNameLookupProvider is a non-autoDispose family. Replace each with a one-shot batched provider."
+      "summary": "public_profile_repository now parallelizes its per-doc reads (done). REMAINING: reviews_history_screen opens an N+1 live event-doc stream per review row for a static date label; event_recap_screen opens one realtime listener per attendee; safety settings blocked-list opens one snapshot stream per tile; clubNameLookupProvider is now autoDispose (done). Replace each with a one-shot batched provider."
     },
     {
       "id": "BACKEND-BOUNDED-QUERIES-001",

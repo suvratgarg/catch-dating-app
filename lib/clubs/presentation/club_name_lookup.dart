@@ -17,11 +17,10 @@ class ClubNameLookupQuery {
   int get hashCode => Object.hashAll(clubIds);
 }
 
-final clubNameLookupProvider =
-    FutureProvider.family<Map<String, String>, ClubNameLookupQuery>((
-      ref,
-      query,
-    ) async {
+// autoDispose so each distinct id-set query is reclaimed when no screen is
+// watching it, instead of accumulating one cached provider per query forever.
+final clubNameLookupProvider = FutureProvider.autoDispose
+    .family<Map<String, String>, ClubNameLookupQuery>((ref, query) async {
       if (query.clubIds.isEmpty) return const <String, String>{};
 
       final repository = ref.watch(clubsRepositoryProvider);
