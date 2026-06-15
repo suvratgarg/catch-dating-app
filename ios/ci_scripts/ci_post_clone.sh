@@ -44,6 +44,35 @@ ensure_cocoapods() {
   fi
 }
 
+ensure_node() {
+  if command -v node >/dev/null 2>&1; then
+    echo "Using Node $(node --version)"
+    return 0
+  fi
+
+  local node_version="${NODE_VERSION:?NODE_VERSION is missing from tool/ci/toolchain.env}"
+  local node_formula="node@$node_version"
+
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "Node is required for release config validation, but node and Homebrew are unavailable."
+    return 127
+  fi
+
+  echo "Installing Node $node_version for Xcode Cloud"
+  brew install "$node_formula"
+
+  local node_prefix
+  node_prefix="$(brew --prefix "$node_formula")"
+  export PATH="$node_prefix/bin:$PATH"
+
+  if ! command -v node >/dev/null 2>&1; then
+    echo "Installed $node_formula, but node is still not on PATH."
+    return 127
+  fi
+
+  echo "Using Node $(node --version)"
+}
+
 load_toolchain_env() {
   local toolchain_file="$1"
   local flutter_version_override="${FLUTTER_VERSION:-}"
@@ -120,6 +149,7 @@ echo "Writing prod iOS Google Maps key"
 ./tool/write_ios_maps_key_xcconfig.sh prod
 
 ensure_cocoapods
+ensure_node
 run_with_retry 3 20 flutter pub get
 run_with_retry 3 30 ./tool/flutter_with_env.sh prod --role "$app_role" build ios \
   --config-only \

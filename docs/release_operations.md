@@ -747,7 +747,7 @@ directly from App Store Connect once each app record and workflow is configured.
 Two CI scripts drive it:
 
 - `ios/ci_scripts/ci_post_clone.sh` reads the Flutter SDK version from
-  `tool/ci/toolchain.env`, installs Flutter, applies the prod Firebase
+  `tool/ci/toolchain.env`, installs Flutter and Node, applies the prod Firebase
   environment for `consumer` or `host`, writes the prod iOS Google Maps key, and
   runs `pod install`. It uses `CATCH_APP_ROLE=host` or a `host-*` Xcode scheme to
   prepare `lib/main_host.dart` with the host prod flavor.
