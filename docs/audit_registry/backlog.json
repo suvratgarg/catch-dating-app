@@ -966,6 +966,82 @@
       ],
       "summary": "DONE: activity_notification markAllRead now commits one atomic WriteBatch instead of N best-effort Future.wait updates. REMAINING: event_success plan/preference/compatibility read-modify-set -> partial update (in-dev, last-write-wins race); create_event_controller + chat sendImage orphan documents/images on failed retry; write_review_sheet has no client-side length cap (backend enforces 1000; CatchTextField lacks a maxLength param \u2014 add one). ",
       "source": "deep_semantic_audit_2026-06"
+    },
+    {
+      "id": "CATALOGUE-CONSOLIDATION-2026-06",
+      "title": "Component catalogue consolidation + Catch-prefixed semantic naming",
+      "status": "in_progress",
+      "area": "core,presentation",
+      "priority": "high",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "UI-LINT-001"
+      ],
+      "source": "goal-2026-06-16",
+      "summary": "DONE: (1) all 40 non-Catch core primitives renamed to Catch-prefixed semantic names (codegen regenerated, 839 tests green); (2) CatchNetworkImage single image seam (16 sites); (3) app-shell FCM/observability dedup; (4) shared chunkedForWhereIn helper (3 repos). Migration map at docs/audit_registry/deep_semantic_audit_2026-06/catalogue_migration_map.md (96 primitives + blast radius, 29 ad-hoc surfaces, 678 feature widgets by area). REMAINING (coordinate with the in-flight component redesign \u2014 doing these before the new components land risks rework): route the 29 ad-hoc BoxDecoration surfaces -> CatchSurface (some are legitimately bespoke gradients/scrims); rename primitive FILES to catch_*.dart for file/class consistency; add a noRawNetworkImage catch_ui_lints rule (drift ratchet); marginal dedups left intentionally un-abstracted (role->chat-route 2-site ternary, level labels, chat bubble shape) per the over-abstraction guard."
+    },
+    {
+      "id": "PERF-N-PLUS-ONE-001",
+      "title": "Replace per-tile live streams / sequential reads with batched providers",
+      "status": "queued",
+      "area": "presentation,data",
+      "priority": "medium",
+      "rules": [
+        "DATA-ACCESS-BATCH-001"
+      ],
+      "source": "deep_semantic_audit_2026-06",
+      "summary": "public_profile_repository now parallelizes its per-doc reads (done). REMAINING: reviews_history_screen opens an N+1 live event-doc stream per review row for a static date label; event_recap_screen opens one realtime listener per attendee; safety settings blocked-list opens one snapshot stream per tile; clubNameLookupProvider is a non-autoDispose family. Replace each with a one-shot batched provider."
+    },
+    {
+      "id": "BACKEND-BOUNDED-QUERIES-001",
+      "title": "Bound unbounded backend aggregation queries",
+      "status": "queued",
+      "area": "functions",
+      "priority": "medium",
+      "rules": [
+        "FN-PERF-001"
+      ],
+      "source": "deep_semantic_audit_2026-06",
+      "summary": "loadRepeatAttendeeCount scans the club's lifetime participation history per scorecard refresh; syncClubReviewStats does a full reviews read on every review write (incl ownerResponse-only edits); algoliaExploreIndex re-indexes every event on a club write; adminGetOverview paginates the whole Auth base twice. Add before/after diff guards + count() aggregations / bounded queries (may need Firestore indexes)."
+    },
+    {
+      "id": "BACKEND-INPUT-ID-VALIDATION-001",
+      "title": "Bound free-text + validate client-supplied ids/paths",
+      "status": "queued",
+      "area": "functions,contracts",
+      "priority": "medium",
+      "rules": [
+        "FN-INPUT-001",
+        "FN-AUTHZ-001"
+      ],
+      "source": "deep_semantic_audit_2026-06",
+      "summary": "occupation/company accept unbounded strings (projected to publicProfiles) \u2014 add maxLength in contracts + regen; createClub accepts an arbitrary client clubId that becomes the public slug; joinWaitlist marketingConversion doc id is the client analytics.eventId (cross-lead clobber). Validate/own these server-side."
+    },
+    {
+      "id": "LIB-ORPHAN-ON-FAILURE-001",
+      "title": "Guard create-then-upload / upload-then-write orphans",
+      "status": "queued",
+      "area": "presentation,chats,hosts",
+      "priority": "low",
+      "rules": [
+        "FLOW-MUTATION-001"
+      ],
+      "source": "deep_semantic_audit_2026-06",
+      "summary": "chat sendImage orphans the uploaded Storage image if the Firestore message write fails; create_event_controller creates the event/club doc before photo uploads so a failed retry leaves photoless or duplicate docs. Add compensation (delete-on-failure) or reorder. Needs a delete-by-path on image_upload_repository."
+    },
+    {
+      "id": "EVENT-SUCCESS-INDEV-POLISH-001",
+      "title": "In-dev event_success error-surface + read-modify-set polish",
+      "status": "queued",
+      "area": "event_success",
+      "priority": "low",
+      "rules": [
+        "ERROR-UI-002",
+        "FIRESTORE-PARTIAL-WRITE-001",
+        "EVENT-SUCCESS-INDEV-001"
+      ],
+      "source": "deep_semantic_audit_2026-06",
+      "summary": "Lower priority (in-dev feature under active product iteration). Companion mutations (feedback/wingman/live cards/reveal) swallow MutationError; host _ErrorText renders bare Text instead of CatchErrorBanner; plan/preference/compatibility use read-modify-set. Best done alongside the event_success product pass."
     }
   ],
   "next_up": [
