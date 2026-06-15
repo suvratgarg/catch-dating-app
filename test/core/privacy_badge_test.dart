@@ -1,0 +1,33 @@
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/widgets/privacy_badge.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('PrivacyBadge renders each handoff visibility mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PrivacyBadge(),
+              PrivacyBadge(kind: PrivacyBadgeKind.catchPrivate),
+              PrivacyBadge(kind: PrivacyBadgeKind.host),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('PRIVATE TO YOU'), findsOneWidget);
+    expect(find.text('CATCH PRIVATE'), findsOneWidget);
+    expect(find.text('HOST CAN SEE'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.lockOutlineRounded), findsNWidgets(2));
+    expect(find.byIcon(CatchIcons.visibilityOutlined), findsOneWidget);
+  });
+}

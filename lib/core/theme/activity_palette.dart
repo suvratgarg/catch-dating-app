@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/generated/catch_design_tokens.g.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// The expressive "activity color" layer — the *only* chroma in Catch's
 /// otherwise black-and-white system (see `docs/design_language.md` §3). One
@@ -58,11 +59,70 @@ class ActivitySwatch {
       );
 }
 
+/// Resolved activity design descriptor: the Flutter equivalent of the design
+/// pack's `getActivity(id)` result.
+@immutable
+class CatchActivity {
+  const CatchActivity({
+    required this.kind,
+    required this.label,
+    required this.glyph,
+    required this.swatch,
+  });
+
+  final ActivityKind kind;
+  final String label;
+  final IconData glyph;
+  final ActivitySwatch swatch;
+
+  Color get accent => swatch.accent;
+  Color get deep => swatch.deep;
+  Color get soft => swatch.soft;
+}
+
 @immutable
 class ActivityPalette extends ThemeExtension<ActivityPalette> {
   const ActivityPalette(this.swatches);
 
   final Map<ActivityKind, ActivitySwatch> swatches;
+
+  static const List<ActivityKind> activityOrder = <ActivityKind>[
+    ActivityKind.socialRun,
+    ActivityKind.running,
+    ActivityKind.walking,
+    ActivityKind.pickleball,
+    ActivityKind.padel,
+    ActivityKind.tennis,
+    ActivityKind.badminton,
+    ActivityKind.cycling,
+    ActivityKind.spinClass,
+    ActivityKind.yoga,
+    ActivityKind.strengthTraining,
+    ActivityKind.pubQuiz,
+    ActivityKind.barCrawl,
+    ActivityKind.dinner,
+    ActivityKind.singlesMixer,
+    ActivityKind.openActivity,
+  ];
+
+  static const Map<ActivityKind, IconData> glyphs = <ActivityKind, IconData>{
+    ActivityKind.socialRun: PhosphorIconsRegular.sneakerMove,
+    ActivityKind.running: PhosphorIconsRegular.sneakerMove,
+    ActivityKind.walking: PhosphorIconsRegular.personSimpleWalk,
+    ActivityKind.pickleball: PhosphorIconsRegular.tennisBall,
+    ActivityKind.padel: PhosphorIconsRegular.tennisBall,
+    ActivityKind.tennis: PhosphorIconsRegular.tennisBall,
+    ActivityKind.badminton: PhosphorIconsRegular.pingPong,
+    ActivityKind.cycling: PhosphorIconsRegular.bicycle,
+    ActivityKind.spinClass: PhosphorIconsRegular.bicycle,
+    ActivityKind.yoga: PhosphorIconsRegular.flowerLotus,
+    ActivityKind.strengthTraining: PhosphorIconsRegular.barbell,
+    ActivityKind.pubQuiz: PhosphorIconsRegular.brain,
+    ActivityKind.barCrawl: PhosphorIconsRegular.beerStein,
+    ActivityKind.dinner: PhosphorIconsRegular.forkKnife,
+    ActivityKind.singlesMixer: PhosphorIconsRegular.martini,
+    ActivityKind.openActivity: PhosphorIconsRegular.sparkle,
+  };
 
   /// Activity pigments generated from the canonical design-token JSON
   /// (design_language §3).
@@ -102,6 +162,16 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
 
   ActivitySwatch forKind(ActivityKind kind) =>
       swatches[kind] ?? swatches[ActivityKind.openActivity] ?? _fallback;
+
+  CatchActivity getActivity(ActivityKind kind) => CatchActivity(
+    kind: kind,
+    label: kind.label,
+    glyph: glyphs[kind] ?? glyphs[ActivityKind.openActivity]!,
+    swatch: forKind(kind),
+  );
+
+  static CatchActivity resolve(BuildContext context, ActivityKind kind) =>
+      ActivityPalette.of(context).getActivity(kind);
 
   static final _fallback = ActivitySwatch._derive(
     GeneratedCatchActivityPigmentTokens.openActivity,

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -106,52 +107,84 @@ class _ErrorIcon extends StatelessWidget {
   }
 }
 
-class _DebugDetails extends StatelessWidget {
+class _DebugDetails extends StatefulWidget {
   const _DebugDetails({required this.details});
 
   final String details;
 
   @override
+  State<_DebugDetails> createState() => _DebugDetailsState();
+}
+
+class _DebugDetailsState extends State<_DebugDetails> {
+  var _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final tokens = _tokensOf(context);
 
-    return Theme(
-      data: Theme.of(context).copyWith(
-        dividerColor: Colors.transparent,
-        expansionTileTheme: const ExpansionTileThemeData(
-          tilePadding: EdgeInsets.zero,
-          childrenPadding: EdgeInsets.zero,
-        ),
-      ),
-      child: Material(
-        type: MaterialType.transparency,
-        child: ExpansionTile(
-          title: Text(
-            'Developer details',
-            style: CatchTextStyles.labelM(context, color: tokens.danger),
-          ),
-          iconColor: tokens.danger,
-          collapsedIconColor: tokens.danger,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(CatchSpacing.s3),
-              decoration: BoxDecoration(
-                color: tokens.raised,
-                borderRadius: BorderRadius.circular(CatchRadius.md),
-                border: Border.all(color: tokens.line),
-              ),
-              child: Text(
-                details,
-                style: CatchTextStyles.debugDetails(
-                  context,
-                  color: tokens.ink2,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Semantics(
+          button: true,
+          expanded: _expanded,
+          child: CatchSurface(
+            tone: CatchSurfaceTone.transparent,
+            radius: 0,
+            borderWidth: 0,
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Developer details',
+                    style: CatchTextStyles.labelM(
+                      context,
+                      color: tokens.danger,
+                    ),
+                  ),
                 ),
-              ),
+                gapW12,
+                AnimatedRotation(
+                  turns: _expanded ? 0.25 : 0,
+                  duration: CatchMotion.fast,
+                  curve: CatchMotion.standardCurve,
+                  child: Icon(
+                    CatchIcons.chevronRightRounded,
+                    color: tokens.danger,
+                    size: CatchIcon.sm,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        AnimatedSize(
+          duration: CatchMotion.fast,
+          curve: CatchMotion.standardCurve,
+          alignment: Alignment.topCenter,
+          child: _expanded
+              ? Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(CatchSpacing.s3),
+                  decoration: BoxDecoration(
+                    color: tokens.raised,
+                    borderRadius: BorderRadius.circular(CatchRadius.md),
+                    border: Border.all(color: tokens.line),
+                  ),
+                  child: Text(
+                    widget.details,
+                    style: CatchTextStyles.debugDetails(
+                      context,
+                      color: tokens.ink2,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
     );
   }
 }

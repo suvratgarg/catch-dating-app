@@ -172,6 +172,7 @@ scan_raw_text_inputs() {
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
     lib/core lib/*/presentation \
     --glob '!lib/core/widgets/catch_text_field.dart' \
+    --glob '!lib/core/widgets/catch_search_field.dart' \
     --glob '!lib/core/widgets/catch_otp_code_field.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
@@ -498,7 +499,10 @@ scan_low_level_typography_roles() {
   output="$(rg -n \
     "${common_globs[@]}" \
     'CatchTextStyles\.(bodyS|bodyM|titleS)\(' \
-    lib/core/widgets lib/*/presentation || true)"
+    lib/core/widgets lib/*/presentation \
+    --glob '!lib/core/widgets/catch_bottom_sheet.dart' \
+    --glob '!lib/core/widgets/catch_empty_state.dart' \
+    --glob '!lib/core/widgets/catch_search_field.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then

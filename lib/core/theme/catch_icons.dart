@@ -22,6 +22,18 @@ abstract final class CatchIcons {
   static IconData get thisWeek => PhosphorIconsDuotone.calendarBlank;
   static IconData get anytime => PhosphorIconsDuotone.infinity;
 
+  // ── App tab dock ─────────────────────────────────────────────────────────
+  static IconData get tabHome => PhosphorIconsRegular.house;
+  static IconData get tabHomeFilled => PhosphorIconsFill.house;
+  static IconData get tabExplore => PhosphorIconsRegular.compass;
+  static IconData get tabExploreFilled => PhosphorIconsFill.compass;
+  static IconData get tabCatches => PhosphorIconsRegular.sparkle;
+  static IconData get tabCatchesFilled => PhosphorIconsFill.sparkle;
+  static IconData get tabChats => PhosphorIconsRegular.chatCircle;
+  static IconData get tabChatsFilled => PhosphorIconsFill.chatCircle;
+  static IconData get tabYou => PhosphorIconsRegular.user;
+  static IconData get tabYouFilled => PhosphorIconsFill.user;
+
   // ── Distance / location ──────────────────────────────────────────────────
   static IconData get nearMe => PhosphorIconsBold.navigationArrow;
   static IconData get nearMeOutlined => PhosphorIconsRegular.navigationArrow;
@@ -34,6 +46,7 @@ abstract final class CatchIcons {
   static IconData get rated => PhosphorIconsFill.star;
   static IconData get hosted => PhosphorIconsRegular.shield;
   static IconData get clear => PhosphorIconsRegular.x;
+  static IconData get clearCircle => PhosphorIconsRegular.xCircle;
 
   // ── Browse modes / navigation ────────────────────────────────────────────
   static IconData get map => PhosphorIconsBold.mapTrifold;
@@ -60,11 +73,15 @@ abstract final class CatchIcons {
   static IconData get clock => PhosphorIconsRegular.clock;
 
   // ── Status badges / sashes ───────────────────────────────────────────────
+  static IconData get check => PhosphorIconsRegular.check;
   static IconData get joinedCheck => PhosphorIconsBold.check;
   static IconData get saved => PhosphorIconsFill.bookmarkSimple;
   static IconData get savedOutlined => PhosphorIconsRegular.bookmarkSimple;
   static IconData get hostBadge => PhosphorIconsFill.shield;
   static IconData get waitlisted => PhosphorIconsRegular.clock;
+  static IconData get statusCellSignal => PhosphorIconsFill.cellSignalFull;
+  static IconData get statusWifi => PhosphorIconsFill.wifiHigh;
+  static IconData get statusBattery => PhosphorIconsFill.batteryFull;
 
   // ── Empty / error / info ─────────────────────────────────────────────────
   static IconData get eventBusy => PhosphorIconsRegular.calendarX;
@@ -364,15 +381,15 @@ abstract final class CatchIcons {
 
   // ── Activity glyphs — used by event thumbnails ───────────────────────────
   static IconData get socialRun => PhosphorIconsDuotone.personSimpleRun;
-  static IconData get running => PhosphorIconsDuotone.personSimpleRun;
-  static IconData get walking => PhosphorIconsDuotone.personSimpleWalk;
-  static IconData get cycling => PhosphorIconsDuotone.personSimpleBike;
-  static IconData get racquet => PhosphorIconsDuotone.tennisBall;
-  static IconData get yoga => PhosphorIconsDuotone.flower;
-  static IconData get strength => PhosphorIconsDuotone.barbell;
-  static IconData get pubQuiz => PhosphorIconsDuotone.question;
-  static IconData get barCrawl => PhosphorIconsDuotone.beerBottle;
-  static IconData get dinner => PhosphorIconsDuotone.forkKnife;
-  static IconData get singlesMixer => PhosphorIconsDuotone.usersThree;
-  static IconData get openActivity => PhosphorIconsDuotone.sparkle;
+  static IconData get running => PhosphorIconsRegular.sneakerMove;
+  static IconData get walking => PhosphorIconsRegular.personSimpleWalk;
+  static IconData get cycling => PhosphorIconsRegular.bicycle;
+  static IconData get racquet => PhosphorIconsRegular.tennisBall;
+  static IconData get yoga => PhosphorIconsRegular.flowerLotus;
+  static IconData get strength => PhosphorIconsRegular.barbell;
+  static IconData get pubQuiz => PhosphorIconsRegular.brain;
+  static IconData get barCrawl => PhosphorIconsRegular.beerStein;
+  static IconData get dinner => PhosphorIconsRegular.forkKnife;
+  static IconData get singlesMixer => PhosphorIconsRegular.martini;
+  static IconData get openActivity => PhosphorIconsRegular.sparkle;
 }

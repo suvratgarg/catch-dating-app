@@ -1,5 +1,9 @@
 import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,19 +51,136 @@ Future<T?> showCatchAdaptiveDialog<T>({
   return showDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        for (final action in actions)
-          CatchTextButton(
-            label: action.label,
-            tone: action.isDestructive
-                ? CatchTextButtonTone.danger
-                : CatchTextButtonTone.primary,
-            onPressed: () => Navigator.of(context).pop(action.value),
-          ),
-      ],
-    ),
+    barrierColor: CatchTokens.of(
+      context,
+    ).ink.withValues(alpha: CatchOpacity.confirmDialogScrim),
+    builder: (context) =>
+        CatchConfirmDialog<T>(title: title, message: message, actions: actions),
   );
+}
+
+Future<bool?> showCatchConfirmDialog({
+  required BuildContext context,
+  required String title,
+  String message = '',
+  String confirmLabel = 'Confirm',
+  String cancelLabel = 'Cancel',
+  bool danger = false,
+  bool barrierDismissible = true,
+}) {
+  return showCatchAdaptiveDialog<bool>(
+    context: context,
+    title: title,
+    message: message,
+    barrierDismissible: barrierDismissible,
+    actions: [
+      CatchDialogAction(label: cancelLabel, value: false),
+      CatchDialogAction(
+        label: confirmLabel,
+        value: true,
+        isDefault: !danger,
+        isDestructive: danger,
+      ),
+    ],
+  );
+}
+
+class CatchConfirmDialog<T> extends StatelessWidget {
+  const CatchConfirmDialog({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.actions,
+  });
+
+  final String title;
+  final String message;
+  final List<CatchDialogAction<T>> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Dialog(
+      elevation: 0,
+      insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
+      backgroundColor: Colors.transparent,
+      child: CatchSurface(
+        elevation: CatchSurfaceElevation.overlay,
+        borderWidth: 0,
+        padding: CatchInsets.confirmDialogCard,
+        width: CatchLayout.confirmDialogMaxWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: CatchTextStyles.titleL(context, color: t.ink),
+            ),
+            if (message.isNotEmpty) ...[
+              gapH10,
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+            gapH20,
+            _DialogActions(actions: actions),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogActions<T> extends StatelessWidget {
+  const _DialogActions({required this.actions});
+
+  final List<CatchDialogAction<T>> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    if (actions.length <= 2) {
+      return Row(
+        children: [
+          for (final indexed in actions.indexed) ...[
+            if (indexed.$1 > 0) gapW10,
+            Expanded(child: _DialogActionButton(action: indexed.$2)),
+          ],
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final indexed in actions.indexed) ...[
+          if (indexed.$1 > 0) gapH10,
+          _DialogActionButton(action: indexed.$2),
+        ],
+      ],
+    );
+  }
+}
+
+class _DialogActionButton<T> extends StatelessWidget {
+  const _DialogActionButton({required this.action});
+
+  final CatchDialogAction<T> action;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchButton(
+      label: action.label,
+      variant: action.isDestructive
+          ? CatchButtonVariant.danger
+          : action.isDefault
+          ? CatchButtonVariant.primary
+          : CatchButtonVariant.secondary,
+      fullWidth: true,
+      onPressed: () => Navigator.of(context).pop(action.value),
+    );
+  }
 }

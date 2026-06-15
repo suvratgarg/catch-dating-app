@@ -138,8 +138,8 @@ const _rawStrokeConstructors = <String>{
 const _assetPathConstructors = <String>{'AssetImage', 'ExactAssetImage'};
 
 const catchUiLintFontFamilies = <String>{
-  'Newsreader',
-  'Inter',
+  'Archivo',
+  'system-ui',
   'IBM Plex Mono',
 };
 

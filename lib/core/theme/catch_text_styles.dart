@@ -3,15 +3,15 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Catch's typographic scale — one principled hierarchy across three roles:
-/// Newsreader for *voice* (display + editorial body), Inter for *function*
-/// (UI controls), IBM Plex Mono for *data* (kickers, numerics, labels).
+/// Archivo for *voice/head* (titles, heroes, names, prose), the platform system
+/// font for *function* (body, controls, dense UI), and IBM Plex Mono for *data*
+/// (kickers, numerics, labels).
 ///
 /// **Fidelity rules** (the locked specimen, `docs/visual_references/catch_typography.html`):
-/// - Display serif is **w600 with negative tracking** — refined, not blunt. Optical
-///   sizing is automatic (driven from point size inside [CatchFonts]); large cuts read
-///   as display, small cuts as text.
-/// - Mono kickers/labels are **tracked uppercase** (0.12–0.18em). Render the text
-///   already upper-cased; the style only sets weight/size/tracking.
+/// - Display voice is **Archivo w600 with zero tracking** — bold but still
+///   restrained.
+/// - Mono kickers/labels are uppercase with zero tracking. Render the text
+///   already upper-cased; the style only sets weight/size/leading.
 /// - Body serif (`proseL`/`proseM`) uses generous leading (~1.55).
 ///
 /// **Scale discipline:** dramatic jumps in the display tier (no near-duplicate
@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 /// state (unread/disabled).
 abstract final class CatchTextStyles {
   // ===========================================================================
-  // VOICE — Newsreader serif (display, titles, editorial body)
+  // VOICE — Archivo (display, titles, names, editorial body)
   // ===========================================================================
 
   /// Biggest hero moment — onboarding/celebration impact, live countdowns.
@@ -30,7 +30,6 @@ abstract final class CatchTextStyles {
     size: 44,
     weight: FontWeight.w600,
     height: 0.98,
-    letterSpacing: -0.7,
     color: color,
   );
 
@@ -40,7 +39,6 @@ abstract final class CatchTextStyles {
     size: 32,
     weight: FontWeight.w600,
     height: 1.04,
-    letterSpacing: -0.35,
     color: color,
   );
 
@@ -50,21 +48,19 @@ abstract final class CatchTextStyles {
     size: 26,
     weight: FontWeight.w600,
     height: 1.10,
-    letterSpacing: -0.16,
     color: color,
   );
 
-  /// Serif card / section titles (club + event identity, editorial cards).
+  /// Voice card / section titles (club + event identity, editorial cards).
   static TextStyle titleL(BuildContext context, {Color? color}) => _serif(
     context,
     size: 20,
     weight: FontWeight.w600,
     height: 1.16,
-    letterSpacing: -0.1,
     color: color,
   );
 
-  /// Profile prompt answers — editorial serif, a touch tighter leading.
+  /// Profile prompt answers — editorial voice, a touch tighter leading.
   static TextStyle profileAnswer(BuildContext context, {Color? color}) =>
       _serif(
         context,
@@ -93,7 +89,7 @@ abstract final class CatchTextStyles {
   );
 
   /// Editorial club identity treatment (parametric size) shared by Explore club
-  /// cards and the club detail hero/collapsed header. Optical sizing is automatic.
+  /// cards and the club detail hero/collapsed header.
   static TextStyle clubDisplay(
     BuildContext context, {
     required double size,
@@ -111,15 +107,15 @@ abstract final class CatchTextStyles {
     );
   }
 
-  /// Ticket/event identity treatment (parametric size) — italic by default
-  /// (the ticket-metaphor look). Shared by Explore event cards + detail headers.
+  /// Ticket/event identity treatment (parametric size) shared by Explore event
+  /// cards and detail headers.
   static TextStyle eventDisplay(
     BuildContext context, {
     required double size,
     double height = 1.0,
     Color? color,
-    FontWeight weight = FontWeight.w400,
-    FontStyle fontStyle = FontStyle.italic,
+    FontWeight weight = FontWeight.w600,
+    FontStyle fontStyle = FontStyle.normal,
   }) {
     return CatchFonts.eventDisplay(
       fontSize: size,
@@ -130,8 +126,45 @@ abstract final class CatchTextStyles {
     );
   }
 
+  /// Condensed poster title (`.t-event-title`).
+  static TextStyle eventTitle(BuildContext context, {Color? color}) =>
+      CatchFonts.head(
+        fontSize: 36,
+        width: 90,
+        height: 1,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
+  /// Host live-console title (`.t-console-title`).
+  static TextStyle consoleTitle(BuildContext context, {Color? color}) =>
+      CatchFonts.head(
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+        width: 90,
+        height: 1.15,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
+  /// Condensed hint/list copy (`.t-hint`).
+  static TextStyle hint(BuildContext context, {Color? color}) =>
+      CatchFonts.head(
+        fontSize: 16.5,
+        fontWeight: FontWeight.w600,
+        width: 94,
+        height: 1.25,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
+  /// Host/person row name treatment (`.t-name`).
+  static TextStyle name(BuildContext context, {Color? color}) =>
+      CatchFonts.head(
+        fontSize: 15,
+        height: 1.2,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
   // ===========================================================================
-  // FUNCTION — Inter sans (UI titles, body, labels, controls)
+  // FUNCTION — platform system font (UI titles, body, labels, controls)
   // ===========================================================================
 
   /// Canonical sans section/card title.
@@ -148,7 +181,16 @@ abstract final class CatchTextStyles {
     context,
     size: 14,
     weight: FontWeight.w700,
-    height: 1.26,
+    height: 1.24,
+    color: color,
+  );
+
+  /// InfoRow primary text (`.t-title-s` in the design handoff).
+  static TextStyle infoRowTitle(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 14,
+    weight: FontWeight.w700,
+    height: 1.24,
     color: color,
   );
 
@@ -185,6 +227,10 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink2,
   );
 
+  /// AppBar subtitle (`.t-body-s`) under compact and large screen titles.
+  static TextStyle appBarSubtitle(BuildContext context, {Color? color}) =>
+      bodyS(context, color: color);
+
   /// The workhorse supporting label — dense meta, secondary copy.
   static TextStyle supporting(BuildContext context, {Color? color}) => _sans(
     context,
@@ -196,10 +242,18 @@ abstract final class CatchTextStyles {
 
   static TextStyle labelL(BuildContext context, {Color? color}) => _sans(
     context,
-    size: 13,
+    size: 14,
     weight: FontWeight.w700,
     height: 1.24,
     color: color,
+  );
+
+  static TextStyle fieldLabel(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 11.5,
+    weight: FontWeight.w500,
+    height: 1.2,
+    color: color ?? CatchTokens.of(context).ink3,
   );
 
   static TextStyle labelM(BuildContext context, {Color? color}) => _sans(
@@ -243,6 +297,9 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
+  static TextStyle button(BuildContext context, {Color? color}) =>
+      buttonMd(context, color: color);
+
   static TextStyle buttonLg(BuildContext context, {Color? color}) => _sans(
     context,
     size: 16,
@@ -264,23 +321,40 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).surface,
   );
 
-  /// OTP digit boxes.
-  static TextStyle otpDigit(BuildContext context, {Color? color}) => _sans(
-    context,
-    size: 24,
-    weight: FontWeight.w700,
-    height: 1.15,
-    color: color,
-  );
+  /// OTP digit boxes (`.t-code`).
+  static TextStyle otpDigit(BuildContext context, {Color? color}) =>
+      code(context, color: color);
 
   /// Chat message body (sans, comfortable leading).
   static TextStyle chatMessage(BuildContext context, {Color? color}) => _sans(
     context,
     size: 15,
     weight: FontWeight.w400,
-    height: 1.42,
+    height: 1.40,
     color: color,
   );
+
+  static TextStyle chat(BuildContext context, {Color? color}) =>
+      chatMessage(context, color: color);
+
+  /// Chat inbox preview copy (`ChatListTile` secondary line).
+  static TextStyle chatPreview(BuildContext context, {Color? color}) => _sans(
+    context,
+    size: 13,
+    weight: FontWeight.w400,
+    height: 1.45,
+    color: color ?? CatchTokens.of(context).ink2,
+  );
+
+  /// Chat thread event-context title (`ChatThreadHeader` secondary line).
+  static TextStyle chatThreadContext(BuildContext context, {Color? color}) =>
+      _sans(
+        context,
+        size: 14,
+        weight: FontWeight.w600,
+        height: 1.35,
+        color: color ?? CatchTokens.of(context).ink,
+      );
 
   /// Compact tabular stat figure (sans).
   static TextStyle statCompact(BuildContext context, {Color? color}) =>
@@ -319,44 +393,40 @@ abstract final class CatchTextStyles {
   // DATA — IBM Plex Mono (kickers, numerics, tracked labels)
   // ===========================================================================
 
-  /// Tracked-uppercase kicker — eyebrows, time-line labels (`TONIGHT · 8:50 PM`).
-  /// Render text already upper-cased; this sets weight + editorial tracking only.
+  /// Uppercase kicker — eyebrows, time-line labels (`TONIGHT · 8:50 PM`).
+  /// Render text already upper-cased; this sets weight, size, and leading.
   static TextStyle kicker(BuildContext context, {Color? color}) => _mono(
     context,
     size: 11,
-    weight: FontWeight.w800,
+    weight: FontWeight.w700,
     height: 1.15,
-    letterSpacing: 1.6,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  /// Larger tracked kicker for editorial sashes (`TONIGHT'S PICK`).
+  /// Larger uppercase kicker for editorial sashes (`TONIGHT'S PICK`).
   static TextStyle kickerLg(BuildContext context, {Color? color}) => _mono(
     context,
     size: 12,
-    weight: FontWeight.w800,
+    weight: FontWeight.w700,
     height: 1.1,
-    letterSpacing: 2.0,
-    color: color ?? CatchTokens.of(context).primary,
+    color: color ?? CatchTokens.of(context).ink,
   );
 
-  /// Tracked mono meta label — ticket meta, hero time chips, status badges.
+  /// Mono meta label — ticket meta, hero time chips, status badges.
   static TextStyle monoLabel(BuildContext context, {Color? color}) => _mono(
     context,
     size: 11,
     weight: FontWeight.w600,
     height: 1.15,
-    letterSpacing: 1.3,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
-  /// Smallest tracked mono label — date-rail weekday/month, micro meta.
+  /// Smallest mono label — date-rail weekday/month, micro meta.
   static TextStyle monoLabelS(BuildContext context, {Color? color}) => _mono(
     context,
     size: 10,
     weight: FontWeight.w700,
     height: 1.15,
-    letterSpacing: 1.2,
     color: color ?? CatchTokens.of(context).ink2,
   );
 
@@ -386,11 +456,38 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
+  /// Compact mono meta (`.t-meta`).
+  static TextStyle meta(BuildContext context, {Color? color}) =>
+      CatchFonts.mono(
+        fontSize: 10.5,
+        fontWeight: FontWeight.w600,
+        height: 1.2,
+        color: color ?? CatchTokens.of(context).ink2,
+      );
+
+  /// Tiny status badge label (`.t-badge`).
+  static TextStyle badge(BuildContext context, {Color? color}) =>
+      CatchFonts.mono(
+        fontSize: 9,
+        fontWeight: FontWeight.w700,
+        height: 1.1,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
+  /// OTP/code digit (`.t-code`).
+  static TextStyle code(BuildContext context, {Color? color}) =>
+      CatchFonts.mono(
+        fontSize: 26,
+        fontWeight: FontWeight.w600,
+        height: 1,
+        color: color ?? CatchTokens.of(context).ink,
+      );
+
   /// Oversized tabular stat number.
   static TextStyle statDisplay(BuildContext context, {Color? color}) =>
       CatchFonts.mono(
         fontSize: 36,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w700,
         height: 1,
         color: color ?? CatchTokens.of(context).ink,
       );

@@ -3,47 +3,81 @@ import 'package:flutter/material.dart';
 
 /// Central font registry — the single swap point for the three-role type system.
 ///
-/// Voice (serif):   Newsreader — display titles + long-form body
-/// Function (sans): Inter         — buttons, nav, inputs, dense UI
-/// Data (mono):     IBM Plex Mono — time, price, counts, kickers, labels
+/// Voice/head: Archivo — titles, names, heroes, event/club poster moments, and
+/// editorial reading text. Function/body: the platform system font. Data: IBM
+/// Plex Mono for kickers, labels, time, price, counts, and codes.
 ///
-/// Fonts are **bundled** (see `pubspec.yaml`) rather than fetched at runtime, so
-/// (a) the variable optical-size (`opsz`) axis is drivable — the `google_fonts`
-/// runtime can't drive variable axes — and (b) the load-bearing identity fonts
-/// ship with the app (offline / release-safe).
-///
-/// Optical sizing is applied **automatically** from the rendered point size:
-/// small text gets the sturdy low-contrast "text" cut, large display gets the
-/// fine high-contrast "display" cut. Routing every style through here means that
-/// refinement is free and consistent app-wide — the single biggest type lever.
+/// The old serif/custom-sans direction is intentionally retired. Keep
+/// production text styles routed through this file so screens inherit the
+/// current design language without restating family names.
 abstract final class CatchFonts {
   // -- Families (tunable — change here to re-skin the entire app) -------------
 
-  static const String serifFamily = GeneratedCatchFontFamilyTokens.serif;
-  static const String sansFamily = GeneratedCatchFontFamilyTokens.sans;
+  static const String voiceFamily = GeneratedCatchFontFamilyTokens.voice;
+  static const String headFamily = GeneratedCatchFontFamilyTokens.head;
+  static const String functionFamily = GeneratedCatchFontFamilyTokens.function;
+  static const String dataFamily = GeneratedCatchFontFamilyTokens.data;
   static const String monoFamily = GeneratedCatchFontFamilyTokens.mono;
 
-  // -- Variable optical-size axis ranges (per the bundled TTFs) ---------------
-  // Newsreader carries a wide opsz axis (the whole point of the choice);
-  // out-of-range values are clamped by the font engine regardless.
-  static const double _serifOpszMin = 6;
-  static const double _serifOpszMax = 72;
-  static const double _sansOpszMin = 14;
-  static const double _sansOpszMax = 32;
+  /// Backward-compatible names while feature code moves from serif/sans
+  /// language to voice/function/data language.
+  static const String serifFamily = voiceFamily;
+  static const String sansFamily = functionFamily;
 
-  /// Optical size for a rendered point size, clamped to the serif axis.
-  static double _serifOpsz(double fontSize) =>
-      fontSize.clamp(_serifOpszMin, _serifOpszMax).toDouble();
+  static const double _archivoWidthMin = 62;
+  static const double _archivoWidthMax = 125;
 
-  /// Optical size for Inter, clamped to the bundled font's tighter axis.
-  static double _sansOpsz(double fontSize) =>
-      fontSize.clamp(_sansOpszMin, _sansOpszMax).toDouble();
+  static double _archivoWidth(double width) =>
+      width.clamp(_archivoWidthMin, _archivoWidthMax).toDouble();
 
   // -- General-purpose builders -----------------------------------------------
 
-  /// Newsreader (voice). Weight + optical size are driven via [FontVariation]
-  /// against the bundled variable font; [fontWeight] is kept in sync so any
-  /// weight-aware layout logic agrees with the rendered axis value.
+  /// Archivo (voice). Weight and width are driven via [FontVariation] against
+  /// the bundled variable font. Archivo ships as roman in this pack, so italic
+  /// requests are intentionally ignored to keep the app on the locked spec.
+  static TextStyle voice({
+    required double fontSize,
+    required double height,
+    Color? color,
+    FontWeight fontWeight = FontWeight.w600,
+    double width = 100,
+    double letterSpacing = 0,
+  }) {
+    return TextStyle(
+      fontFamily: voiceFamily,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      fontStyle: FontStyle.normal,
+      height: height,
+      letterSpacing: letterSpacing,
+      decoration: TextDecoration.none,
+      color: color,
+      fontVariations: <FontVariation>[
+        FontVariation('wght', fontWeight.value.toDouble()),
+        FontVariation('wdth', _archivoWidth(width)),
+      ],
+    );
+  }
+
+  /// Archivo condensed head treatment for event titles, console titles, hints,
+  /// and person/host names.
+  static TextStyle head({
+    required double fontSize,
+    required double height,
+    Color? color,
+    FontWeight fontWeight = FontWeight.w700,
+    double width = 92,
+    double letterSpacing = 0,
+  }) => voice(
+    fontSize: fontSize,
+    height: height,
+    color: color,
+    fontWeight: fontWeight,
+    width: width,
+    letterSpacing: letterSpacing,
+  );
+
+  /// Compatibility alias for older call sites.
   static TextStyle serif({
     required double fontSize,
     required double height,
@@ -51,26 +85,16 @@ abstract final class CatchFonts {
     FontWeight fontWeight = FontWeight.w600,
     FontStyle fontStyle = FontStyle.normal,
     double letterSpacing = 0,
-  }) {
-    return TextStyle(
-      fontFamily: serifFamily,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      height: height,
-      letterSpacing: letterSpacing,
-      decoration: TextDecoration.none,
-      color: color,
-      fontVariations: <FontVariation>[
-        FontVariation('opsz', _serifOpsz(fontSize)),
-        FontVariation('wght', fontWeight.value.toDouble()),
-      ],
-    );
-  }
+  }) => voice(
+    fontSize: fontSize,
+    height: height,
+    color: color,
+    fontWeight: fontWeight,
+    letterSpacing: letterSpacing,
+  );
 
-  /// Inter (function). Weight and optical size are driven through the bundled
-  /// variable font axes so small functional labels keep the sturdy text cut
-  /// while larger UI titles can use Inter's display cut.
+  /// Platform system font (function). No [fontFamily] is set on purpose: this
+  /// lets iOS render SF and Android render Roboto with native Dynamic Type.
   static TextStyle sans({
     required double fontSize,
     required double height,
@@ -80,7 +104,6 @@ abstract final class CatchFonts {
     double letterSpacing = 0,
   }) {
     return TextStyle(
-      fontFamily: sansFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,
@@ -88,10 +111,6 @@ abstract final class CatchFonts {
       letterSpacing: letterSpacing,
       decoration: TextDecoration.none,
       color: color,
-      fontVariations: <FontVariation>[
-        FontVariation('opsz', _sansOpsz(fontSize)),
-        FontVariation('wght', fontWeight.value.toDouble()),
-      ],
     );
   }
 
@@ -119,7 +138,7 @@ abstract final class CatchFonts {
   }
 
   // -- Named role builders (backward-compatible with existing call sites) -----
-  // These use the serif family under the hood; kept as convenience wrappers
+  // These use the voice family under the hood; kept as convenience wrappers
   // for club/event identity treatments.
 
   static TextStyle clubDisplay({
@@ -129,10 +148,9 @@ abstract final class CatchFonts {
     FontWeight fontWeight = FontWeight.w600,
     FontStyle fontStyle = FontStyle.normal,
   }) {
-    return serif(
+    return voice(
       fontSize: fontSize,
       fontWeight: fontWeight,
-      fontStyle: fontStyle,
       height: height,
       color: color,
     );
@@ -142,15 +160,15 @@ abstract final class CatchFonts {
     required double fontSize,
     required double height,
     required Color color,
-    FontWeight fontWeight = FontWeight.w400,
-    FontStyle fontStyle = FontStyle.italic,
+    FontWeight fontWeight = FontWeight.w600,
+    FontStyle fontStyle = FontStyle.normal,
   }) {
-    return serif(
+    return voice(
       fontSize: fontSize,
       fontWeight: fontWeight,
-      fontStyle: fontStyle,
       height: height,
       color: color,
+      width: 92,
     );
   }
 }

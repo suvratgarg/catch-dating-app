@@ -18,7 +18,7 @@ the *how*.
 | Phase | Status |
 |---|---|
 | **Phase 0** — encode identity (tokens, fonts, B&W palette) | ✅ **DONE** |
-| **Typography fidelity** (2026-05-30) — bundled variable fonts + optical-sizing engine (`CatchFonts` drives `FontVariation('opsz'/'wght')` from point size); type scale consolidated 59→~30 to the locked specimen (w600 display, negative tracking, tracked mono); matte-duotone grade | ✅ **DONE** |
+| **Typography fidelity** (2026-05-30) — bundled variable fonts + optical-sizing engine (`CatchFonts` drives `FontVariation('opsz'/'wght')` from point size); type scale consolidated 59→~30 with w600 display, zero tracking, uppercase mono labels, and matte-duotone grade | ✅ **DONE** |
 | **Phase 1a** — `ActivityPalette` + palette-owner routing + photo grade | ✅ **DONE** — palette-owners re-derived from tokens, `context:` dark-threading complete, raw-color sweep now covered by Catch UI analyzer lints |
 | **Phase 1b** — sizing/constraint doctrine + Dynamic Type | ✅ **DONE** — scanners green; capture walk completed at text scale 1.0/1.5/2.0; ticket/notch visual spot-check passed |
 | **Phase 1c** — motion spec | ✅ **DONE** — shared CatchMotion transition/haptic helpers extracted and routed through live surfaces |

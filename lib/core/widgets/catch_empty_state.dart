@@ -11,23 +11,23 @@ enum CatchEmptyStateLayout { stacked, inline }
 class CatchEmptyState extends StatelessWidget {
   const CatchEmptyState({
     super.key,
-    required this.icon,
-    required this.title,
-    required this.message,
+    this.icon,
+    this.title,
+    this.message,
     this.action,
-    this.surface = true,
-    this.iconStyle = CatchEmptyStateIconStyle.bubble,
+    this.surface = false,
+    this.iconStyle = CatchEmptyStateIconStyle.plain,
     this.layout = CatchEmptyStateLayout.stacked,
     this.iconSize,
     this.iconContainerSize,
-    this.padding = const EdgeInsets.all(CatchSpacing.s5),
+    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
     this.titleStyle,
     this.messageStyle,
   });
 
-  final IconData icon;
-  final String title;
-  final String message;
+  final IconData? icon;
+  final String? title;
+  final String? message;
   final Widget? action;
   final bool surface;
   final CatchEmptyStateIconStyle iconStyle;
@@ -52,10 +52,9 @@ class CatchEmptyState extends StatelessWidget {
             title: title,
             message: message,
             action: action,
-            titleStyle: titleStyle ?? CatchTextStyles.titleL(context),
+            titleStyle: titleStyle ?? CatchTextStyles.sectionTitle(context),
             messageStyle:
-                messageStyle ??
-                CatchTextStyles.bodyLead(context, color: t.ink2),
+                messageStyle ?? CatchTextStyles.bodyS(context, color: t.ink2),
           ),
           CatchEmptyStateLayout.inline => _InlineEmptyStateContent(
             icon: icon,
@@ -101,12 +100,12 @@ class _StackedEmptyStateContent extends StatelessWidget {
     required this.messageStyle,
   });
 
-  final IconData icon;
+  final IconData? icon;
   final CatchEmptyStateIconStyle iconStyle;
   final double? iconSize;
   final double? iconContainerSize;
-  final String title;
-  final String message;
+  final String? title;
+  final String? message;
   final Widget? action;
   final TextStyle titleStyle;
   final TextStyle messageStyle;
@@ -116,17 +115,22 @@ class _StackedEmptyStateContent extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _EmptyStateIcon(
-          icon: icon,
-          style: iconStyle,
-          size: iconSize,
-          containerSize: iconContainerSize,
-        ),
-        gapH18,
-        Text(title, style: titleStyle, textAlign: TextAlign.center),
-        gapH8,
-        Text(message, style: messageStyle, textAlign: TextAlign.center),
-        if (action != null) ...[gapH18, action!],
+        if (icon != null)
+          _EmptyStateIcon(
+            icon: icon!,
+            style: iconStyle,
+            size: iconSize,
+            containerSize: iconContainerSize,
+          ),
+        if (_hasText(title)) ...[
+          if (icon != null) gapH12,
+          Text(title!, style: titleStyle, textAlign: TextAlign.center),
+        ],
+        if (_hasText(message)) ...[
+          if (_hasText(title)) gapH6 else if (icon != null) gapH12,
+          Text(message!, style: messageStyle, textAlign: TextAlign.center),
+        ],
+        if (action != null) ...[gapH16, action!],
       ],
     );
   }
@@ -145,12 +149,12 @@ class _InlineEmptyStateContent extends StatelessWidget {
     required this.messageStyle,
   });
 
-  final IconData icon;
+  final IconData? icon;
   final CatchEmptyStateIconStyle iconStyle;
   final double? iconSize;
   final double? iconContainerSize;
-  final String title;
-  final String message;
+  final String? title;
+  final String? message;
   final Widget? action;
   final TextStyle titleStyle;
   final TextStyle messageStyle;
@@ -159,21 +163,25 @@ class _InlineEmptyStateContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _EmptyStateIcon(
-          icon: icon,
-          style: iconStyle,
-          size: iconSize,
-          containerSize: iconContainerSize ?? 44,
-        ),
-        gapW12,
+        if (icon != null) ...[
+          _EmptyStateIcon(
+            icon: icon!,
+            style: iconStyle,
+            size: iconSize,
+            containerSize: iconContainerSize ?? 44,
+          ),
+          gapW12,
+        ],
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: titleStyle),
-              gapH4,
-              Text(message, style: messageStyle),
+              if (_hasText(title)) Text(title!, style: titleStyle),
+              if (_hasText(message)) ...[
+                if (_hasText(title)) gapH4,
+                Text(message!, style: messageStyle),
+              ],
               if (action != null) ...[gapH12, action!],
             ],
           ),
@@ -204,8 +212,8 @@ class _EmptyStateIcon extends StatelessWidget {
     return switch (style) {
       CatchEmptyStateIconStyle.plain => Icon(
         icon,
-        size: size ?? 72,
-        color: t.line2,
+        size: size ?? 34,
+        color: t.ink3,
       ),
       CatchEmptyStateIconStyle.bubble => SizedBox.square(
         dimension: bubbleSize,
@@ -220,3 +228,5 @@ class _EmptyStateIcon extends StatelessWidget {
     };
   }
 }
+
+bool _hasText(String? value) => value != null && value.isNotEmpty;

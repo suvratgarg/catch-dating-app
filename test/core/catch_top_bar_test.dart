@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +94,85 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(saved, isTrue);
+  });
+
+  testWidgets('CatchTopBar renders the large handoff AppBar header', (
+    tester,
+  ) async {
+    var closed = false;
+    var done = false;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchTopBar(
+          title: 'Discover',
+          subtitle: 'Tonight near you',
+          kicker: 'Explore',
+          leadingType: CatchTopBarLeading.close,
+          onBack: () => closed = true,
+          actionText: 'Done',
+          onAction: () => done = true,
+          surface: true,
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byType(CatchTopBar)).height, 104);
+    expect(find.text('EXPLORE'), findsOneWidget);
+    expect(find.text('Discover'), findsOneWidget);
+    expect(find.text('Tonight near you'), findsOneWidget);
+    expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.surface);
+    expect(find.byIcon(CatchIcons.close), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.close));
+    await tester.pump();
+    await tester.tap(find.text('Done'));
+    await tester.pump();
+
+    expect(closed, isTrue);
+    expect(done, isTrue);
+  });
+
+  testWidgets('CatchTopBar composes expanding search from the AppBar API', (
+    tester,
+  ) async {
+    var query = 'tempo';
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: StatefulBuilder(
+          builder: (context, setState) => Scaffold(
+            appBar: CatchTopBar(
+              title: 'Clubs',
+              searchValue: query,
+              onSearch: (value) => setState(() => query = value),
+              searchPlaceholder: 'Search clubs',
+            ),
+            body: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Clubs'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.search), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.search));
+    await tester.pump();
+
+    expect(find.text('Clubs'), findsNothing);
+    expect(find.byType(CatchSearchField), findsOneWidget);
+    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.pump();
+    expect(query, isEmpty);
+    expect(find.byIcon(CatchIcons.close), findsOneWidget);
+
+    await tester.tap(find.byIcon(CatchIcons.close));
+    await tester.pump();
+    expect(find.text('Clubs'), findsOneWidget);
   });
 
   testWidgets('CatchTopBar can render an icon-only onboarding bar', (

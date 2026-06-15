@@ -166,21 +166,13 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
 
-  # Catch's three-role type system — bundled so the optical-sizing (opsz) axis
-  # is drivable (the google_fonts runtime can't drive variable axes) and the
-  # load-bearing identity fonts ship with the app (no runtime fetch / offline).
-  # Variable families (Newsreader, Inter) are declared once; weight + opsz are
-  # set per-style via FontVariation in CatchFonts. IBM Plex Mono is static.
-  # Licenses (all OFL): assets/fonts/OFL-*.txt.
+  # Catch's three-role type system. Archivo is the voice/headline face, the
+  # platform system font is the function/body face, and IBM Plex Mono is data.
+  # Fonts are bundled for release/offline safety.
   fonts:
-    - family: Newsreader
+    - family: Archivo
       fonts:
-        - asset: assets/fonts/Newsreader-Roman-VF.ttf
-        - asset: assets/fonts/Newsreader-Italic-VF.ttf
-          style: italic
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Roman-VF.ttf
+        - asset: assets/fonts/Archivo-Roman-VF.woff2
     - family: IBM Plex Mono
       fonts:
         - asset: assets/fonts/IBMPlexMono-Regular.ttf

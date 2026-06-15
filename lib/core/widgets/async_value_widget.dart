@@ -107,7 +107,7 @@ class ErrorMessageWidget extends StatelessWidget {
     return Center(
       child: Text(
         errorMessage,
-        style: CatchTextStyles.bodyM(
+        style: CatchTextStyles.supporting(
           context,
           color: Theme.of(context).colorScheme.error,
         ),

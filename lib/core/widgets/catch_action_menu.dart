@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +9,8 @@ class CatchActionMenuItem<T> {
     required this.value,
     required this.label,
     this.icon,
+    this.sublabel,
+    this.selected = false,
     this.enabled = true,
     this.isDestructive = false,
   });
@@ -16,6 +18,8 @@ class CatchActionMenuItem<T> {
   final T value;
   final String label;
   final IconData? icon;
+  final String? sublabel;
+  final bool selected;
   final bool enabled;
   final bool isDestructive;
 }
@@ -28,6 +32,9 @@ class CatchActionMenu<T> extends StatefulWidget {
     this.onSelected,
     this.enabled = true,
     IconData? icon,
+    // Keep the public parameter name as `icon` while storing the optional
+    // override privately.
+    // ignore: prefer_initializing_formals
   }) : _icon = icon;
 
   final List<CatchActionMenuItem<T>> items;
@@ -57,63 +64,33 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         CatchLayout.actionMenuAlignmentX,
         CatchSpacing.s1,
       ),
-      style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(t.surface),
-        elevation: const WidgetStatePropertyAll(CatchElevation.menu),
-        shadowColor: WidgetStatePropertyAll(t.overlay),
-        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.sm),
-            side: BorderSide(color: t.line),
-          ),
-        ),
-        padding: const WidgetStatePropertyAll(
-          EdgeInsets.symmetric(vertical: CatchSpacing.s1),
-        ),
+      style: const MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+        elevation: WidgetStatePropertyAll(0),
+        shadowColor: WidgetStatePropertyAll(Colors.transparent),
+        surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+        padding: WidgetStatePropertyAll(EdgeInsets.zero),
       ),
       menuChildren: [
-        for (final item in widget.items)
-          SizedBox(
-            width: CatchLayout.actionMenuWidth,
-            child: MenuItemButton(
-              onPressed: item.enabled
-                  ? () {
-                      widget.onSelected?.call(item.value);
-                      _controller.close();
-                    }
-                  : null,
-              leadingIcon: item.icon == null
-                  ? null
-                  : Icon(
-                      item.icon,
-                      size: CatchIcon.sm,
-                      color: _itemColor(t, item),
-                    ),
-              style: ButtonStyle(
-                minimumSize: const WidgetStatePropertyAll(
-                  Size(CatchSpacing.s0, CatchLayout.menuItemHeightCompact),
-                ),
-                padding: const WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
-                ),
-                foregroundColor: WidgetStatePropertyAll(_itemColor(t, item)),
-                overlayColor: WidgetStatePropertyAll(t.primarySoft),
-                textStyle: WidgetStatePropertyAll(
-                  CatchTextStyles.bodyLead(context, color: _itemColor(t, item)),
-                ),
+        CatchMenu<T>(
+          width: CatchLayout.actionMenuWidth,
+          items: [
+            for (final item in widget.items)
+              CatchMenuItem<T>(
+                value: item.value,
+                label: item.label,
+                sublabel: item.sublabel,
+                icon: item.icon,
+                selected: item.selected,
+                danger: item.isDestructive,
+                enabled: item.enabled,
               ),
-              child: Text(
-                item.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: _itemColor(t, item),
-                ),
-              ),
-            ),
-          ),
+          ],
+          onSelected: (value, _) {
+            widget.onSelected?.call(value);
+            _controller.close();
+          },
+        ),
       ],
       builder: (context, controller, child) {
         return Tooltip(
@@ -132,11 +109,5 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         );
       },
     );
-  }
-
-  Color _itemColor(CatchTokens t, CatchActionMenuItem<T> item) {
-    if (!item.enabled) return t.ink3;
-    if (item.isDestructive) return t.danger;
-    return t.ink;
   }
 }

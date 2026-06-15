@@ -1,7 +1,11 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -124,6 +128,145 @@ void main() {
 
       expect(result, isTrue);
     });
+  });
+
+  testWidgets(
+    'adaptive dialog uses Catch confirm cards on Material platforms',
+    (tester) async {
+      bool? result;
+
+      await tester.pumpWidget(
+        _wrap(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                result = await showCatchAdaptiveDialog<bool>(
+                  context: context,
+                  title: 'Delete draft?',
+                  message: 'This will permanently delete the draft.',
+                  actions: const [
+                    CatchDialogAction(label: 'Cancel', value: false),
+                    CatchDialogAction(
+                      label: 'Delete',
+                      value: true,
+                      isDestructive: true,
+                    ),
+                  ],
+                );
+              },
+              child: const Text('Open dialog'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open dialog'));
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(Dialog), findsOneWidget);
+      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
+      expect(find.widgetWithText(CatchButton, 'Delete'), findsOneWidget);
+      final surface = tester.widget<CatchSurface>(
+        find.descendant(
+          of: find.byType(CatchConfirmDialog<bool>),
+          matching: find.byType(CatchSurface),
+        ),
+      );
+      expect(surface.width, CatchLayout.confirmDialogMaxWidth);
+      expect(surface.padding, CatchInsets.confirmDialogCard);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Delete'));
+      await pumpFeatureUi(tester);
+
+      expect(result, isTrue);
+    },
+  );
+
+  testWidgets(
+    'showCatchConfirmDialog applies handoff labels and danger action',
+    (tester) async {
+      bool? result;
+
+      await tester.pumpWidget(
+        _wrap(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                result = await showCatchConfirmDialog(
+                  context: context,
+                  title: 'Remove host?',
+                  message: 'This host will lose access.',
+                  confirmLabel: 'Remove',
+                  danger: true,
+                );
+              },
+              child: const Text('Open confirm dialog'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open confirm dialog'));
+      await pumpFeatureUi(tester);
+
+      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.text('Remove host?'), findsOneWidget);
+      expect(find.text('This host will lose access.'), findsOneWidget);
+      expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
+      expect(find.widgetWithText(CatchButton, 'Remove'), findsOneWidget);
+
+      final cancel = tester.widget<CatchButton>(
+        find.widgetWithText(CatchButton, 'Cancel'),
+      );
+      final confirm = tester.widget<CatchButton>(
+        find.widgetWithText(CatchButton, 'Remove'),
+      );
+      expect(cancel.variant, CatchButtonVariant.secondary);
+      expect(confirm.variant, CatchButtonVariant.danger);
+
+      await tester.tap(find.widgetWithText(CatchButton, 'Remove'));
+      await pumpFeatureUi(tester);
+
+      expect(result, isTrue);
+    },
+  );
+
+  testWidgets('block user dialog uses the shared danger confirm card', (
+    tester,
+  ) async {
+    bool? result;
+
+    await tester.pumpWidget(
+      _wrap(
+        Builder(
+          builder: (context) => TextButton(
+            onPressed: () async {
+              result = await showBlockUserDialog(
+                context: context,
+                name: 'Riya',
+              );
+            },
+            child: const Text('Open block dialog'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open block dialog'));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text('Block Riya?'), findsOneWidget);
+    expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
+    expect(find.widgetWithText(CatchButton, 'Block'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Block'));
+    await pumpFeatureUi(tester);
+
+    expect(result, isTrue);
   });
 
   testWidgets('top bar tabs use a Cupertino segmented control on iOS', (

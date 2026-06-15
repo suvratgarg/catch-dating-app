@@ -290,7 +290,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                     supportingLabel,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.bodyM(
+                    style: CatchTextStyles.supporting(
                       context,
                       color: t.primaryInk.withValues(
                         alpha: CatchOpacity.onFillMuted,
