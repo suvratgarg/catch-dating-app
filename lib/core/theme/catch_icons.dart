@@ -178,7 +178,7 @@ abstract final class CatchIcons {
   static IconData get editNoteRounded => Icons.edit_note_rounded;
   static IconData get editOutlined => Icons.edit_outlined;
   static IconData get emailOutlined => Icons.email_outlined;
-  static IconData get errorOutlineRounded => Icons.error_outline_rounded;
+  static const IconData errorOutlineRounded = Icons.error_outline_rounded;
   static IconData get eventAvailableOutlined => Icons.event_available_outlined;
   static IconData get eventAvailableRounded => Icons.event_available_rounded;
   static IconData get eventBusyOutlined => Icons.event_busy_outlined;

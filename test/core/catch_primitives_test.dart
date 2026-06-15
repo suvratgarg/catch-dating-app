@@ -22,6 +22,7 @@ import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_corner_sash.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_expanding_search.dart';
@@ -30,6 +31,7 @@ import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_meta_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_panel.dart';
@@ -1704,6 +1706,27 @@ void main() {
     );
     expect(find.text('Developer details'), findsNothing);
     expect(find.textContaining('boom'), findsNothing);
+  });
+
+  testWidgets('CatchErrorIcon renders the shared branded medallion', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_wrap(const CatchErrorIcon()));
+
+    expect(find.byType(CatchErrorIcon), findsOneWidget);
+    expect(find.byIcon(CatchIcons.errorOutlineRounded), findsOneWidget);
+  });
+
+  testWidgets('CatchMonoLabel renders compact metadata with overflow guard', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchMonoLabel('TODAY AT 7 PM', color: Colors.black)),
+    );
+
+    final text = tester.widget<Text>(find.text('TODAY AT 7 PM'));
+    expect(text.maxLines, 1);
+    expect(text.overflow, TextOverflow.ellipsis);
   });
 
   testWidgets('CatchFrameworkErrorView can expose debug details', (

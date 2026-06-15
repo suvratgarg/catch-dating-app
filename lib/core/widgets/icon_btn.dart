@@ -166,7 +166,9 @@ class _IconBtnPalette {
           background:
               background ??
               Colors.white.withValues(alpha: CatchOpacity.iconButtonFloatFill),
-          foreground: active ? activeColor : const Color(0xFF16140F),
+          foreground: active
+              ? activeColor
+              : CatchIconButtonColors.floatingForeground,
           borderColor: null,
           shadow: CatchElevation.iconButtonFloat,
         );

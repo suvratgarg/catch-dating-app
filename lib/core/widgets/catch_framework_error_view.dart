@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class CatchFrameworkErrorView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const _ErrorIcon(),
+                      const CatchErrorIcon(),
                       gapH18,
                       Text(
                         'Something went wrong',
@@ -76,31 +77,6 @@ class CatchFrameworkErrorView extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorIcon extends StatelessWidget {
-  const _ErrorIcon();
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = _tokensOf(context);
-
-    return Align(
-      child: Container(
-        width: CatchLayout.frameworkErrorIconExtent,
-        height: CatchLayout.frameworkErrorIconExtent,
-        decoration: BoxDecoration(
-          color: tokens.primarySoft,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          CatchIcons.errorOutlineRounded,
-          color: tokens.danger,
-          size: CatchLayout.frameworkErrorIconSize,
         ),
       ),
     );

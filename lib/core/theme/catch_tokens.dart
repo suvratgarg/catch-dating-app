@@ -1527,8 +1527,8 @@ abstract final class CatchLayout {
   static const double eventSuccessArrivalRingInnerPadding = CatchSpacing.micro6;
   static const double eventSuccessBouncyGlowBlur = 22.0;
   static const double frameworkErrorMaxWidth = 460.0;
-  static const double frameworkErrorIconExtent = CatchSpacing.s16;
-  static const double frameworkErrorIconSize = 30.0;
+  static const double errorIconExtent = CatchSpacing.s16;
+  static const double errorIconSize = 30.0;
   static const double iconButtonSize = CatchSpacing.s11;
   static const double iconButtonNavSize = CatchSpacing.s10;
   static const double iconButtonGlyphScale = 0.44;
@@ -1750,6 +1750,18 @@ abstract final class CatchPaceColors {
 /// Static club artwork colors.
 abstract final class CatchClubColors {
   static const Color compactMemberSealInk = Color(0xFF244646);
+}
+
+/// Static photo-grade tints for display-time UGC grading.
+abstract final class CatchPhotoGradeColors {
+  static const Color lightWarmShadow = Color(0x14C9542F);
+  static const Color lightWarmHighlight = Color(0x0FF3C778);
+  static const Color darkWarmShadow = Color(0x1FC9542F);
+  static const Color darkWarmHighlight = Color(0x14F3C778);
+}
+
+abstract final class CatchIconButtonColors {
+  static const Color floatingForeground = Color(0xFF16140F);
 }
 
 abstract final class CatchEventSuccessColors {

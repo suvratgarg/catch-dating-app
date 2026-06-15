@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_icon.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -14,12 +15,12 @@ class CatchErrorState extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    IconData? icon,
+    this.icon = CatchIcons.errorOutlineRounded,
     this.onRetry,
     this.retryLabel = 'Try again',
     this.secondaryAction,
     this.mode = CatchErrorStateMode.fullScreen,
-  }) : _icon = icon;
+  });
 
   factory CatchErrorState.fromError(
     Object error, {
@@ -46,13 +47,11 @@ class CatchErrorState extends StatelessWidget {
 
   final String title;
   final String message;
-  final IconData? _icon;
+  final IconData icon;
   final VoidCallback? onRetry;
   final String retryLabel;
   final Widget? secondaryAction;
   final CatchErrorStateMode mode;
-
-  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +61,11 @@ class CatchErrorState extends StatelessWidget {
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _ErrorIcon(icon: icon, compact: isCompact),
+        CatchErrorIcon(
+          icon: icon,
+          extent: isCompact ? 48 : 64,
+          iconSize: isCompact ? 24 : 30,
+        ),
         SizedBox(height: isCompact ? CatchSpacing.s3 : CatchSpacing.s4),
         Text(
           title,
@@ -132,9 +135,9 @@ class CatchErrorScaffold extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    IconData? icon,
+    this.icon = CatchIcons.errorOutlineRounded,
     this.backgroundColor,
-  }) : _icon = icon;
+  });
 
   factory CatchErrorScaffold.fromError(
     Object error, {
@@ -159,10 +162,8 @@ class CatchErrorScaffold extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData? _icon;
+  final IconData icon;
   final Color? backgroundColor;
-
-  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -188,9 +189,9 @@ class CatchSliverErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    IconData? icon,
+    this.icon = CatchIcons.errorOutlineRounded,
     this.fillRemaining = true,
-  }) : _icon = icon;
+  });
 
   factory CatchSliverErrorState.fromError(
     Object error, {
@@ -217,10 +218,8 @@ class CatchSliverErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData? _icon;
+  final IconData icon;
   final bool fillRemaining;
-
-  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +246,9 @@ class CatchInlineErrorState extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Try again',
-    IconData? icon,
+    this.icon = CatchIcons.errorOutlineRounded,
     this.compact = false,
-  }) : _icon = icon;
+  });
 
   factory CatchInlineErrorState.fromError(
     Object error, {
@@ -276,10 +275,8 @@ class CatchInlineErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final String retryLabel;
-  final IconData? _icon;
+  final IconData icon;
   final bool compact;
-
-  IconData get icon => _icon ?? CatchIcons.errorOutlineRounded;
 
   @override
   Widget build(BuildContext context) {
@@ -290,25 +287,6 @@ class CatchInlineErrorState extends StatelessWidget {
       onRetry: onRetry,
       retryLabel: retryLabel,
       mode: compact ? CatchErrorStateMode.compact : CatchErrorStateMode.inline,
-    );
-  }
-}
-
-class _ErrorIcon extends StatelessWidget {
-  const _ErrorIcon({required this.icon, required this.compact});
-
-  final IconData icon;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final size = compact ? 48.0 : 64.0;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
-      child: Icon(icon, color: t.danger, size: compact ? 24 : 30),
     );
   }
 }
