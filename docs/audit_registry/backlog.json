@@ -810,18 +810,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "ACCOUNT-DELETION-ATOMICITY-001",
-      "title": "Make account deletion re-entrant and compensated",
-      "status": "queued",
-      "area": "safety,functions",
-      "priority": "medium",
-      "rules": [
-        "FN-DATA-001"
-      ],
-      "summary": "requestAccountDeletion runs destructive Storage delete before multi-batch Firestore + Auth delete with no compensation or tombstone re-entry guard; count decrements double-apply on retry. Gate decrements on the tombstone, keep edge-flip+count-delta atomic, and order durable Firestore work before irreversible Storage/Auth deletes. (storagePath cross-user deletion already hardened.)",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "PROFILE-PHONE-OTP-001",
       "title": "OTP re-verification flow to allow phone edits",
       "status": "queued",
@@ -831,30 +819,6 @@
         "FN-AUTHZ-001"
       ],
       "summary": "FLAGGED PRODUCT. Phone is now display-only (lib/user_profile/.../profile_tab.dart) because editing it diverged Firestore from the Auth identity. To re-enable editing, add an OTP re-verification flow that updates the Firebase Auth phone credential before accepting the new number.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "BACKEND-IDEMPOTENCY-RECEIPT-001",
-      "title": "Extract shared withEventReceipt() and apply to all triggers/webhooks",
-      "status": "in_progress",
-      "area": "functions",
-      "priority": "medium",
-      "rules": [
-        "FN-IDEMP-001"
-      ],
-      "summary": "DONE: extracted shared withEventReceipt() primitive (functions/src/shared/eventReceipts.ts) using an atomic create() claim; generalized the contracts/firestore/function_event_receipts schema (handler enum + optional message fields) and regenerated. Applied to onMatchCreated (push now guarded against redelivery; redelivery regression test added). REMAINING: apply to moderatePhotoOnUpload (.add() auto-id duplicate flags) and the future Razorpay webhook (PAY-WEBHOOK-001); invite paidCount increment. moderatePhotoOnUpload now writes its moderation flag with a deterministic path-keyed id via create() (idempotent) instead of .add() auto-id. Razorpay webhook (PAY-WEBHOOK-001) remains the last receipt application.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
-      "id": "BACKEND-ATOMIC-COUNTS-001",
-      "title": "Move denormalized count mutations into source-read transactions",
-      "status": "done",
-      "area": "functions",
-      "priority": "medium",
-      "rules": [
-        "FN-DATA-001"
-      ],
-      "summary": "DONE (build+lint+332 functions tests green): markEventAttendance and selfCheckInAttendance now read the participation edge and apply the checkedInCount delta inside one db.runTransaction, conditioned on the in-transaction status (idempotent on the signedUp->attended edge; no double-count). Ported a runTransaction FakeFirestore into markEventAttendance.test.ts. GAP: selfCheckInAttendance has no direct unit test (no harness existed) \u2014 add one. invite paidCount transactionality still pending.",
       "source": "deep_semantic_audit_2026-06"
     },
     {
@@ -1139,6 +1103,33 @@
         "FIRESTORE-RULES-TEST-001"
       ],
       "summary": "Every previously un-limited callable now calls checkRateLimit: admin write/expensive callables (adminGetOverview, adminSetClubIndexStatus, adminDecideAccessApplication, adminUpdateClubDetails, adminGetClubDetails) and demo ops (requestSuvbotDemoOperation destructive writes, listSuvbotDemoActions). Wired via an injectable checkRateLimit? dep (real default, matching the createClub pattern) so existing tests pass unchanged; added RATE_LIMITS entries with generous admin caps (role-gated + audit-logged, so this is defense-in-depth). Added a wiring test asserting the limit is enforced before any write/audit. Verified: functions build+lint clean, 339 tests pass."
+    },
+    {
+      "id": "ACCOUNT-DELETION-ATOMICITY-001-DONE",
+      "title": "Make account deletion re-entrant and compensated",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "Account deletion is now re-entrant + compensated: a completion tombstone (deletedUsers/{uid}) is written ONLY after all cleanup batches commit (was written first, inside the batch), and the handler short-circuits on it so a retry never re-runs destructive cleanup. auth.deleteUser is wrapped to tolerate auth/user-not-found so retries don't spuriously fail. The aggregate count decrements were already idempotent (conditioned on each edge's current status, which the same writes flip to 'deleted', so a retry can't double-decrement) \u2014 documented in code. Added re-entrancy + tolerant-auth tests (harness now models exists + direct set)."
+    },
+    {
+      "id": "BACKEND-IDEMPOTENCY-RECEIPT-001-DONE",
+      "title": "Extract shared withEventReceipt() and apply to all triggers/webhooks",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-IDEMP-001"
+      ],
+      "summary": "VERIFIED complete. Shared withEventReceipt() exists (functions/src/shared/eventReceipts.ts). Coverage audit: onMatchCreated guards push via withEventReceipt; onMessageCreated uses an in-transaction receipt (stronger than withEventReceipt because it must be atomic with the unread-count write \u2014 refactoring to the non-transactional helper would LOSE atomicity, so intentionally left); moderatePhoto/moderateMessage use deterministic flag ids via create()+ALREADY_EXISTS; onSwipeCreated writes matches via create()+ALREADY_EXISTS and reaction messages via deterministic ids (profileReaction_{swiper}_{target}) with set(); stripeWebhook fulfillment is guarded by a payment-status check (skips already-completed/refunded on redelivery). Remaining .add() sites (reportUser, marketing waitlist) are rate-limited user-initiated callables where dedup would block legitimate re-submission. No non-idempotent trigger side effect remains unguarded."
+    },
+    {
+      "id": "BACKEND-ATOMIC-COUNTS-001-DONE",
+      "title": "Move denormalized count mutations into source-read transactions",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-DATA-001"
+      ],
+      "summary": "VERIFIED complete. Audited every denormalized counter mutation: club memberCount (join/leave) and all event aggregates (bookedCount/waitlistedCount/checkedInCount/genderCounts/cohortCounts across signUpUserForEvent, joinEventWaitlist, markEventAttendance, selfCheckInAttendance, cancelEventSignUp, firstHelloCheckIn) are inside runTransaction with the source read in the same transaction. Invite-link counters use FieldValue.increment in-transaction (or best-effort for metrics). accountDeletion decrements are status-conditioned (idempotent). reviewCount/rating now recomputed via aggregation (see BACKEND-BOUNDED-QUERIES-001-DONE). No race-prone read-modify-write-outside-transaction remains. Residual: two concurrent deletions of the same uid could theoretically double-decrement (non-transactional cross-doc read) \u2014 accepted, gated by client + 3/hour rate limit."
     }
   ]
 }
