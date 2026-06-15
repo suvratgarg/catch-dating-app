@@ -16,7 +16,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -76,6 +76,18 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           final t = CatchTokens.of(context);
           final event = viewModel.event;
           final attendeeIds = viewModel.attendeeIds;
+          // Resolve every roster profile in one batched fetch instead of a
+          // realtime stream per grid tile.
+          final rosterProfiles =
+              ref
+                  .watch(
+                    publicProfilesByIdsProvider(
+                      PublicProfilesQuery(attendeeIds),
+                    ),
+                  )
+                  .asData
+                  ?.value ??
+              const <String, PublicProfile>{};
 
           return ListView(
             padding: CatchInsets.pageBodyTight,
@@ -124,7 +136,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
                             final attendeeId = attendeeIds[index];
                             return _VibeTile(
                               key: SwipeKeys.vibeTile(attendeeId),
-                              uid: attendeeId,
+                              profile: rosterProfiles[attendeeId],
                               selected: _selectedVibes.contains(attendeeId),
                               onTap: () => setState(() {
                                 _selectedVibes.contains(attendeeId)
@@ -254,21 +266,20 @@ class _RecapStat extends StatelessWidget {
   }
 }
 
-class _VibeTile extends ConsumerWidget {
+class _VibeTile extends StatelessWidget {
   const _VibeTile({
     super.key,
-    required this.uid,
+    required this.profile,
     required this.selected,
     required this.onTap,
   });
 
-  final String uid;
+  final PublicProfile? profile;
   final bool selected;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(watchPublicProfileProvider(uid)).asData?.value;
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     final name = profile?.name ?? 'runner';

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
@@ -236,10 +236,9 @@ ProviderContainer _settingsContainer({
       watchBlockedUsersProvider.overrideWith(
         (ref) => Stream.value(blockedUsers),
       ),
-      for (final entry in publicProfiles.entries)
-        watchPublicProfileProvider(
-          entry.key,
-        ).overrideWith((ref) => Stream.value(entry.value)),
+      publicProfilesByIdsProvider(
+        PublicProfilesQuery(publicProfiles.keys),
+      ).overrideWith((ref) async => publicProfiles),
     ],
   );
   return container;

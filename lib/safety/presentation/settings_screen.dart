@@ -17,7 +17,7 @@ import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -619,10 +619,27 @@ class _BlockedAccountsSection extends ConsumerWidget {
               );
             }
 
+            // Resolve all blocked-account profiles in one batched fetch rather
+            // than a realtime stream per tile.
+            final profilesById =
+                ref
+                    .watch(
+                      publicProfilesByIdsProvider(
+                        PublicProfilesQuery(
+                          blockedUsers.map((blocked) => blocked.uid),
+                        ),
+                      ),
+                    )
+                    .asData
+                    ?.value ??
+                const <String, PublicProfile>{};
             return Column(
               children: [
                 for (var i = 0; i < blockedUsers.length; i++) ...[
-                  _BlockedAccountTile(blockedUser: blockedUsers[i]),
+                  _BlockedAccountTile(
+                    blockedUser: blockedUsers[i],
+                    profile: profilesById[blockedUsers[i].uid],
+                  ),
                   if (i < blockedUsers.length - 1)
                     Divider(color: t.line, height: 1),
                 ],
@@ -636,14 +653,13 @@ class _BlockedAccountsSection extends ConsumerWidget {
 }
 
 class _BlockedAccountTile extends ConsumerWidget {
-  const _BlockedAccountTile({required this.blockedUser});
+  const _BlockedAccountTile({required this.blockedUser, required this.profile});
 
   final BlockedUser blockedUser;
+  final PublicProfile? profile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(watchPublicProfileProvider(blockedUser.uid));
-    final profile = profileAsync.asData?.value;
     final unblocking = ref.watch(SettingsController.unblockUserMutation);
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
 

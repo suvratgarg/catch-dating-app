@@ -983,14 +983,14 @@
     {
       "id": "PERF-N-PLUS-ONE-001",
       "title": "Replace per-tile live streams / sequential reads with batched providers",
-      "status": "queued",
+      "status": "done",
       "area": "presentation,data",
       "priority": "medium",
       "rules": [
         "DATA-ACCESS-BATCH-001"
       ],
       "source": "deep_semantic_audit_2026-06",
-      "summary": "public_profile_repository now parallelizes its per-doc reads (done). REMAINING: reviews_history_screen opens an N+1 live event-doc stream per review row for a static date label; event_recap_screen opens one realtime listener per attendee; safety settings blocked-list opens one snapshot stream per tile; clubNameLookupProvider is now autoDispose (done). Replace each with a one-shot batched provider."
+      "summary": "DONE: added reusable publicProfilesByIdsProvider (autoDispose, batched per-doc fetch) and routed reviews_history (event lookups), event_recap roster grid, and safety blocked-list through batched providers instead of a realtime stream per row/tile; public_profile_repository parallelized; clubNameLookupProvider autoDispose. REMAINING (lower traffic): who_is_going opens a roster stream just to read a count; chat_screen whole-screen rebuild; explore countdown DateTime.now() in build."
     },
     {
       "id": "BACKEND-BOUNDED-QUERIES-001",
