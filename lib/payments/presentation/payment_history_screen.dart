@@ -304,6 +304,13 @@ class _PaymentTile extends ConsumerWidget {
           tone: CatchBadgeTone.brand,
           detail: 'Booking failed, but your payment was refunded.',
         ),
+        PaymentStatus.refundFailed => (
+          label: 'Refund pending',
+          tone: CatchBadgeTone.danger,
+          detail:
+              'No spot was reserved and the refund needs attention. '
+              'Please contact support.',
+        ),
         _ => (
           label: 'Booking failed',
           tone: CatchBadgeTone.warning,
@@ -327,6 +334,11 @@ class _PaymentTile extends ConsumerWidget {
         label: 'Failed',
         tone: CatchBadgeTone.danger,
         detail: null,
+      ),
+      PaymentStatus.refundFailed => (
+        label: 'Refund pending',
+        tone: CatchBadgeTone.danger,
+        detail: 'Your refund needs attention. Please contact support.',
       ),
       PaymentStatus.pending => (
         label: 'Pending',

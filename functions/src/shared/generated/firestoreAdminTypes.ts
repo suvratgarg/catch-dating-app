@@ -17,7 +17,15 @@
 
 export type Gender = "man" | "woman" | "nonBinary" | "other";
 
-export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+/**
+ * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+ */
+export type PaymentStatus =
+  | "pending"
+  | "completed"
+  | "failed"
+  | "refunded"
+  | "refundFailed";
 
 /**
  * One structured written profile prompt answer stored on users and publicProfiles.
@@ -1460,7 +1468,10 @@ export interface PaymentDocument {
   amountMinor?: number;
   currency: string;
   provider?: "razorpay" | "stripe";
-  status: "pending" | "completed" | "failed" | "refunded";
+  /**
+   * refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.
+   */
+  status: "pending" | "completed" | "failed" | "refunded" | "refundFailed";
   providerPaymentId?: string | null;
   checkoutSessionId?: string | null;
   hostUserId?: string;

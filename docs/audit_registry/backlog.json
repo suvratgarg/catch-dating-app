@@ -808,18 +808,6 @@
       "source": "deep_semantic_audit_2026-06"
     },
     {
-      "id": "PAY-REFUND-STATE-001",
-      "title": "Distinct non-recoverable refund state + alert (Razorpay + Stripe)",
-      "status": "queued",
-      "area": "payments,functions,contracts",
-      "priority": "high",
-      "rules": [
-        "FN-PAY-001"
-      ],
-      "summary": "FLAGGED (schema). A failed automatic refund is recorded with status 'completed' (only signUpFailed:true) with no recovery path. Add a distinct terminal status (needs_manual_refund/refund_failed) + structured alert/metric; covers verifyRazorpayPayment, stripeWebhook, cancelEventSignUp, mutateEvent refund loops.",
-      "source": "deep_semantic_audit_2026-06"
-    },
-    {
       "id": "REVIEW-TRUST-001",
       "title": "Gate public review writes + count only verified reviews in club rating",
       "status": "in_progress",
@@ -1157,6 +1145,15 @@
         "FN-PERF-001"
       ],
       "summary": "syncClubReviewStats now uses Firestore count()/average() aggregations (clubId+moderationStatus and clubId+moderationStatus+verificationStatus composite indexes added) instead of reading every review on each write. loadRepeatAttendeeCount no longer scans the club's lifetime participation history; it asks per current attendee whether they have another active participation at the club, reusing the uid+status index so cost is bounded by each user's own history. adminGetOverview's Auth scan is an unavoidable Admin SDK limitation (already paginated + reports scanned count) and the per-write algolia path does not full-rescan. Verified: build+lint+tests green."
+    },
+    {
+      "id": "PAY-REFUND-STATE-001-DONE",
+      "title": "Distinct non-recoverable refund state + alert (Razorpay + Stripe)",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-PAY-001"
+      ],
+      "summary": "Added a distinct non-recoverable 'refundFailed' payment status (charged + booking failed + refund could not be issued) to the payments contract + PaymentStatus (TS generated, Dart enum w/ unknownEnumValue fallback). verifyRazorpayPayment and stripeWebhook now write 'refundFailed' (was 'completed'+signUpFailed) when the refund call fails or there is no payment intent, and emit a structured 'ALERT manual refund required' error log for reconciliation. payment_history_screen surfaces it as a 'Refund pending \u2014 contact support' badge. Tests added for both providers' refund-failure path. NOTE: log-based paging/alert wiring (e.g. a Cloud Logging metric alert on the ALERT prefix) is an ops/infra step. Verified: functions build+lint+338 tests, Dart payment+contract tests green."
     }
   ]
 }

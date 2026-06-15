@@ -9363,8 +9363,10 @@ export const paymentDocumentSchema = {
         "pending",
         "completed",
         "failed",
-        "refunded"
+        "refunded",
+        "refundFailed"
       ],
+      "description": "refundFailed marks a booking that failed AND whose automatic refund could not be issued, so the charge is stuck and needs manual reconciliation.",
       "x-catch-ownership": "callable-owned"
     },
     "providerPaymentId": {

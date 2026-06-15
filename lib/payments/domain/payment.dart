@@ -11,7 +11,12 @@ enum PaymentStatus implements Labelled {
   pending('Pending'),
   completed('Completed'),
   failed('Failed'),
-  refunded('Refunded');
+  refunded('Refunded'),
+
+  /// The booking failed AND the automatic refund could not be issued, so the
+  /// charge is stuck and needs manual reconciliation. Distinct from [refunded]
+  /// (money returned) so support and the user can tell them apart.
+  refundFailed('Refund failed');
 
   const PaymentStatus(this.label);
   @override
@@ -28,6 +33,7 @@ abstract class Payment with _$Payment {
     required String eventId,
     required int amount,
     @Default(defaultCurrencyCode) String currency,
+    @JsonKey(unknownEnumValue: PaymentStatus.failed)
     required PaymentStatus status,
     @Default(false) bool signUpFailed,
     @TimestampConverter() required DateTime createdAt,

@@ -141,12 +141,19 @@ async function fulfillStripeCheckoutSession({
         await deps.stripe().createRefund({paymentIntentId, amountMinor});
         refundSucceeded = true;
       } catch (refundError) {
+        // Charged, booking failed, refund failed -> stuck charge. Record a
+        // distinct non-recoverable state and alert for reconciliation.
         logger.error(
-          "Stripe refund failed for payment",
-          paymentId,
+          "ALERT manual refund required: Stripe refund failed",
+          {paymentId, sessionId: session.id, userId, eventId},
           refundError
         );
       }
+    } else {
+      logger.error(
+        "ALERT manual refund required: no Stripe paymentIntent to refund",
+        {paymentId, sessionId: session.id, userId, eventId}
+      );
     }
     await paymentRef.set({
       orderId: session.id,
@@ -159,7 +166,7 @@ async function fulfillStripeCheckoutSession({
       provider: "stripe",
       providerPaymentId: paymentIntentId,
       checkoutSessionId: session.id,
-      status: refundSucceeded ? "refunded" : "completed",
+      status: refundSucceeded ? "refunded" : "refundFailed",
       signUpFailed: true,
       ...(inviteAttribution?.inviteLinkId ?
         {inviteLinkId: inviteAttribution.inviteLinkId} :

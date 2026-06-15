@@ -178,6 +178,71 @@ test(
 );
 
 test(
+  "verifyRazorpayPaymentHandler records refundFailed when refund throws",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+
+    await assert.rejects(
+      verifyRazorpayPaymentHandler(
+        buildRequest({
+          auth: {uid: "runner-1"},
+          data: {
+            paymentId: "pay_123",
+            orderId: "order_123",
+            signature: "sig_123",
+          },
+        }),
+        {
+          firestore: () => createPaymentsFirestore(paymentDoc),
+          createClient: () =>
+          ({
+            orders: {
+              fetch: async () => ({
+                id: "order_123",
+                amount: 25000,
+                currency: "INR",
+                amount_paid: 25000,
+                amount_due: 0,
+                notes: {
+                  eventId: "trusted-event",
+                  userId: "runner-1",
+                },
+              }),
+            },
+            payments: {
+              fetch: async () => ({
+                id: "pay_123",
+                order_id: "order_123",
+                amount: 25000,
+                currency: "INR",
+                status: "captured",
+                refund_status: "null",
+              }),
+              refund: async () => {
+                throw new Error("Razorpay refund API unavailable.");
+              },
+            },
+          }) as unknown as Razorpay,
+          serverTimestamp: () => "server-now",
+          signUpForEvent: async () => {
+            throw new HttpsError(
+              "failed-precondition",
+              "This event is now full."
+            );
+          },
+          verifySignature: () => true,
+        }
+      ),
+      isHttpsError("failed-precondition", "This event is now full.")
+    );
+
+    assert.equal(paymentDoc.setCalls.length, 1);
+    assert.equal(paymentDoc.setCalls[0].status, "refundFailed");
+    assert.equal(paymentDoc.setCalls[0].signUpFailed, true);
+  }
+);
+
+test(
   "verifyRazorpayPaymentHandler rejects invalid signatures before fetching",
   async () => {
     const paymentDoc = createPaymentDocRecorder();

@@ -121,7 +121,13 @@ export async function verifyRazorpayPaymentHandler(
       });
       refundSucceeded = true;
     } catch (refundError) {
-      logger.error("Refund failed for payment", paymentId, refundError);
+      // The user was charged, the booking failed, AND we could not refund.
+      // Flag a distinct non-recoverable state so reconciliation can find it.
+      logger.error(
+        "ALERT manual refund required: Razorpay refund failed",
+        {paymentId, orderId, userId, eventId: booking.eventId},
+        refundError
+      );
     }
 
     await paymentRef.set({
@@ -132,7 +138,7 @@ export async function verifyRazorpayPaymentHandler(
         eventId: booking.eventId,
         amountInPaise: booking.amountInPaise,
         currency: booking.currency,
-        status: refundSucceeded ? "refunded" : "completed",
+        status: refundSucceeded ? "refunded" : "refundFailed",
         signUpFailed: true,
         inviteLinkId: booking.inviteLinkId,
         inviteSource: booking.inviteSource,
