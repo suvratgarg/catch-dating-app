@@ -13,7 +13,7 @@
       "fixtureKey": "salesDemo.member.eventDiscovery",
       "captureId": "member_event_discovery",
       "routeIds": [
-        "clubsListScreen"
+        "exploreScreen"
       ],
       "device": {
         "id": "iphone-17-pro",

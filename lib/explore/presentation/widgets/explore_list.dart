@@ -1,7 +1,4 @@
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -11,11 +8,14 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClubsList extends ConsumerWidget {
-  const ClubsList({
+class ExploreList extends ConsumerWidget {
+  const ExploreList({
     super.key,
     this.includeJoinedClubsRail = true,
     this.includeClubDirectory = true,
@@ -32,10 +32,10 @@ class ClubsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelAsync = ref.watch(clubsListViewModelProvider);
-    final city = ref.watch(selectedClubCityProvider);
-    final query = ref.watch(clubSearchQueryProvider).trim();
-    final filters = ref.watch(clubBrowseFiltersProvider);
+    final viewModelAsync = ref.watch(exploreViewModelProvider);
+    final city = ref.watch(selectedExploreCityProvider);
+    final query = ref.watch(exploreSearchQueryProvider).trim();
+    final filters = ref.watch(exploreFiltersProvider);
     final sourceClubCount =
         ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0;
     final hasSourceClubs = sourceClubCount > 0;
@@ -51,7 +51,7 @@ class ClubsList extends ConsumerWidget {
         error,
         context: AppErrorContext.club,
         onRetry: () {
-          ref.invalidate(clubsListViewModelProvider);
+          ref.invalidate(exploreViewModelProvider);
           ref.invalidate(exploreSourceClubsProvider);
         },
       ),
@@ -68,7 +68,7 @@ class ClubsList extends ConsumerWidget {
               )
             : MutationErrorSnackbarListener(
                 mutation: ClubMembershipController.joinMutation,
-                child: ClubsListBody(
+                child: ExploreBody(
                   viewModel: value,
                   includeJoinedClubsRail: includeJoinedClubsRail,
                   includeClubDirectory: includeClubDirectory,
@@ -82,29 +82,29 @@ class ClubsList extends ConsumerWidget {
     required String cityLabel,
     required bool hasSourceClubs,
     required bool hasSearch,
-    required ClubBrowseFilterSelection filters,
+    required ExploreFilterSelection filters,
   }) {
     final hasFilters = filters.hasActiveFilters;
     if (!hasSourceClubs) {
-      return ClubsEmptyState(cityLabel: cityLabel);
+      return ExploreEmptyState(cityLabel: cityLabel);
     }
     if (hasSearch && hasFilters) {
-      return ClubsEmptyState.noFilteredSearchResults(
+      return ExploreEmptyState.noFilteredSearchResults(
         action: _clearAction(ref, clearSearch: true, clearFilters: true),
       );
     }
     if (hasSearch) {
-      return ClubsEmptyState.noSearchResults(
+      return ExploreEmptyState.noSearchResults(
         hasFilters: false,
         action: _clearAction(ref, clearSearch: true, clearFilters: false),
       );
     }
     if (hasFilters) {
-      return ClubsEmptyState.noFilterResults(
+      return ExploreEmptyState.noFilterResults(
         action: _clearAction(ref, clearSearch: false, clearFilters: true),
       );
     }
-    return ClubsEmptyState(cityLabel: cityLabel);
+    return ExploreEmptyState(cityLabel: cityLabel);
   }
 
   Widget _clearAction(
@@ -122,10 +122,10 @@ class ClubsList extends ConsumerWidget {
       label: label,
       onPressed: () {
         if (clearSearch) {
-          ref.read(clubSearchQueryProvider.notifier).clear();
+          ref.read(exploreSearchQueryProvider.notifier).clear();
         }
         if (clearFilters) {
-          ref.read(clubBrowseFiltersProvider.notifier).clear();
+          ref.read(exploreFiltersProvider.notifier).clear();
         }
       },
       variant: CatchButtonVariant.secondary,

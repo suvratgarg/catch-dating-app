@@ -329,7 +329,7 @@ class _CatchesEmptyState extends StatelessWidget {
                         'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
                     action: CatchButton(
                       label: 'Find an event',
-                      onPressed: () => context.go(Routes.clubsListScreen.path),
+                      onPressed: () => context.go(Routes.exploreScreen.path),
                       variant: CatchButtonVariant.secondary,
                     ),
                   ),

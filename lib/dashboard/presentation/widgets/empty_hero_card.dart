@@ -47,7 +47,7 @@ class EmptyHeroCard extends StatelessWidget {
           gapH16,
           CatchButton(
             label: 'Find an event near me',
-            onPressed: () => context.go(Routes.clubsListScreen.path),
+            onPressed: () => context.go(Routes.exploreScreen.path),
             variant: CatchButtonVariant.light,
             size: CatchButtonSize.lg,
             fullWidth: true,

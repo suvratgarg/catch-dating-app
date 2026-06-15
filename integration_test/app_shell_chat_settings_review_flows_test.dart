@@ -167,7 +167,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await openEventDetail(tester, club: club, event: run);

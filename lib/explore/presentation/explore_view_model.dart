@@ -10,8 +10,8 @@ import 'package:catch_dating_app/search/data/explore_search_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'clubs_list_view_model.freezed.dart';
-part 'clubs_list_view_model.g.dart';
+part 'explore_view_model.freezed.dart';
+part 'explore_view_model.g.dart';
 
 enum ExploreTimeFilter { anytime, tonight, tomorrow, weekend, thisWeek }
 
@@ -84,8 +84,8 @@ ExploreTimeWindow? exploreTimeWindowFor(
 /// still narrowing the result set so the feed doesn't sprawl.
 const ExploreTimeFilter defaultExploreTimeFilter = ExploreTimeFilter.thisWeek;
 
-class ClubBrowseFilterSelection {
-  const ClubBrowseFilterSelection({
+class ExploreFilterSelection {
+  const ExploreFilterSelection({
     ExploreTimeFilter? timeFilter,
     bool thisWeekOnly = false,
     this.distanceFilter = ExploreDistanceFilter.any,
@@ -120,7 +120,7 @@ class ClubBrowseFilterSelection {
       activityTag != null ||
       area != null;
 
-  ClubBrowseFilterSelection copyWith({
+  ExploreFilterSelection copyWith({
     Object? timeFilter = unsetSentinel,
     Object? distanceFilter = unsetSentinel,
     bool? thisWeekOnly,
@@ -133,7 +133,7 @@ class ClubBrowseFilterSelection {
         ? _copyWithTimeFilter(this.timeFilter, thisWeekOnly)
         : timeFilter as ExploreTimeFilter;
 
-    return ClubBrowseFilterSelection(
+    return ExploreFilterSelection(
       timeFilter: nextTimeFilter,
       distanceFilter: identical(distanceFilter, unsetSentinel)
           ? this.distanceFilter
@@ -150,7 +150,7 @@ class ClubBrowseFilterSelection {
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        other is ClubBrowseFilterSelection &&
+        other is ExploreFilterSelection &&
             other.timeFilter == timeFilter &&
             other.distanceFilter == distanceFilter &&
             other.highRatedOnly == highRatedOnly &&
@@ -179,18 +179,18 @@ ExploreTimeFilter _copyWithTimeFilter(
 }
 
 @freezed
-abstract class ClubsListViewModel with _$ClubsListViewModel {
-  const ClubsListViewModel._();
+abstract class ExploreViewModel with _$ExploreViewModel {
+  const ExploreViewModel._();
 
-  const factory ClubsListViewModel({
+  const factory ExploreViewModel({
     required List<Club> joinedClubs,
     required List<Club> allClubs,
     @Default({}) Set<String> joinedClubIds,
-  }) = _ClubsListViewModel;
+  }) = _ExploreViewModel;
 
   bool get isEmpty => allClubs.isEmpty;
 
-  factory ClubsListViewModel.partition({
+  factory ExploreViewModel.partition({
     required List<Club> clubs,
     required Set<String> joinedClubIds,
   }) {
@@ -204,7 +204,7 @@ abstract class ClubsListViewModel with _$ClubsListViewModel {
       }
     }
 
-    return ClubsListViewModel(
+    return ExploreViewModel(
       joinedClubs: List.unmodifiable(joinedClubs),
       allClubs: List.unmodifiable(clubs),
       joinedClubIds: activeClubIds,
@@ -218,7 +218,7 @@ abstract class ClubsListViewModel with _$ClubsListViewModel {
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
 @Riverpod(keepAlive: true)
-class SelectedClubCity extends _$SelectedClubCity {
+class SelectedExploreCity extends _$SelectedExploreCity {
   bool _userSelected = false;
 
   @override
@@ -226,11 +226,13 @@ class SelectedClubCity extends _$SelectedClubCity {
 
   void setCity(CityData city) {
     _userSelected = true;
-    ref.read(selectedClubCityWasUserSelectedProvider.notifier).markSelected();
+    ref
+        .read(selectedExploreCityWasUserSelectedProvider.notifier)
+        .markSelected();
     if (state != city) {
       state = city;
-      ref.read(clubSearchQueryProvider.notifier).clear();
-      ref.read(clubBrowseFiltersProvider.notifier).clearLocalScope();
+      ref.read(exploreSearchQueryProvider.notifier).clear();
+      ref.read(exploreFiltersProvider.notifier).clearLocalScope();
     }
   }
 
@@ -238,8 +240,8 @@ class SelectedClubCity extends _$SelectedClubCity {
     if (_userSelected) return;
     if (state != city) {
       state = city;
-      ref.read(clubSearchQueryProvider.notifier).clear();
-      ref.read(clubBrowseFiltersProvider.notifier).clearLocalScope();
+      ref.read(exploreSearchQueryProvider.notifier).clear();
+      ref.read(exploreFiltersProvider.notifier).clearLocalScope();
     }
   }
 
@@ -251,8 +253,8 @@ class SelectedClubCity extends _$SelectedClubCity {
 }
 
 @Riverpod(keepAlive: true)
-class SelectedClubCityWasUserSelected
-    extends _$SelectedClubCityWasUserSelected {
+class SelectedExploreCityWasUserSelected
+    extends _$SelectedExploreCityWasUserSelected {
   @override
   bool build() => false;
 
@@ -264,7 +266,7 @@ class SelectedClubCityWasUserSelected
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
 @Riverpod(keepAlive: true)
-class ClubSearchQuery extends _$ClubSearchQuery {
+class ExploreSearchQuery extends _$ExploreSearchQuery {
   @override
   String build() => '';
 
@@ -279,9 +281,9 @@ class ClubSearchQuery extends _$ClubSearchQuery {
 }
 
 @Riverpod(keepAlive: true)
-class ClubBrowseFilters extends _$ClubBrowseFilters {
+class ExploreFilters extends _$ExploreFilters {
   @override
-  ClubBrowseFilterSelection build() => const ClubBrowseFilterSelection();
+  ExploreFilterSelection build() => const ExploreFilterSelection();
 
   void setTimeFilter(ExploreTimeFilter filter) {
     state = state.copyWith(timeFilter: filter);
@@ -340,7 +342,7 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
   }
 
   void clear() {
-    state = const ClubBrowseFilterSelection();
+    state = const ExploreFilterSelection();
   }
 }
 
@@ -351,7 +353,7 @@ class ClubBrowseFilters extends _$ClubBrowseFilters {
 /// search to produce a filtered list for the UI.
 @riverpod
 AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
-  final city = ref.watch(selectedClubCityProvider);
+  final city = ref.watch(selectedExploreCityProvider);
   final locationClubsAsync = ref.watch(watchClubsByLocationProvider(city.name));
 
   if (locationClubsAsync.isLoading) {
@@ -368,9 +370,9 @@ AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
 }
 
 @riverpod
-AsyncValue<List<Club>> filteredClubs(Ref ref) {
-  final city = ref.watch(selectedClubCityProvider);
-  final query = ref.watch(clubSearchQueryProvider);
+AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
+  final city = ref.watch(selectedExploreCityProvider);
+  final query = ref.watch(exploreSearchQueryProvider);
   final clubsAsync = ref.watch(exploreSourceClubsProvider);
   final normalizedQuery = query.trim().toLowerCase();
 
@@ -388,7 +390,7 @@ AsyncValue<List<Club>> filteredClubs(Ref ref) {
   }
 
   final localFallback = sourceClubs
-      .where((club) => matchesClubSearchQuery(club, normalizedQuery))
+      .where((club) => matchesExploreClubSearchQuery(club, normalizedQuery))
       .toList(growable: false);
   final searchAsync = ref.watch(
     exploreServerSearchProvider(query: query, cityName: city.name),
@@ -438,12 +440,12 @@ List<Club> _rankClubsById({
 ///
 /// Combines the signed-in user, membership edges, and filtered club streams into
 /// a
-/// [ClubsListViewModel] that partitions clubs into joined and discover
+/// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 @riverpod
-AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
-  final filteredAsync = ref.watch(filteredClubsProvider);
-  final browseFilters = ref.watch(clubBrowseFiltersProvider);
+AsyncValue<ExploreViewModel> exploreViewModel(Ref ref) {
+  final filteredAsync = ref.watch(filteredExploreClubsProvider);
+  final browseFilters = ref.watch(exploreFiltersProvider);
 
   if (filteredAsync.isLoading) {
     return const AsyncLoading();
@@ -457,7 +459,7 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
 
   final sourceClubs = filteredAsync.asData?.value ?? const <Club>[];
   if (sourceClubs.isEmpty) {
-    return const AsyncData(ClubsListViewModel(joinedClubs: [], allClubs: []));
+    return const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: []));
   }
 
   final uidAsync = ref.watch(uidProvider);
@@ -492,27 +494,27 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
           .toSet() ??
       <String>{};
   final joinedClubIds = membershipClubIds;
-  final clubs = applyClubBrowseFilters(
+  final clubs = applyExploreFilters(
     clubs: sourceClubs,
     filters: browseFilters,
     joinedClubIds: joinedClubIds,
   );
 
   return AsyncData(
-    ClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
+    ExploreViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
   );
 }
 
-bool matchesClubSearchQuery(Club club, String normalizedQuery) {
+bool matchesExploreClubSearchQuery(Club club, String normalizedQuery) {
   return club.name.toLowerCase().contains(normalizedQuery) ||
       club.area.toLowerCase().contains(normalizedQuery) ||
       club.hostName.toLowerCase().contains(normalizedQuery) ||
       club.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
 }
 
-List<Club> applyClubBrowseFilters({
+List<Club> applyExploreFilters({
   required List<Club> clubs,
-  required ClubBrowseFilterSelection filters,
+  required ExploreFilterSelection filters,
   required Set<String> joinedClubIds,
   DateTime? now,
 }) {

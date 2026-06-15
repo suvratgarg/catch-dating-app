@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_avatar_rail.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';

@@ -28,7 +28,7 @@ void main() {
 
     await pumpCatchAppShell(
       tester,
-      initialRoute: Routes.clubsListScreen.path,
+      initialRoute: Routes.exploreScreen.path,
       overrides: appShellTestOverrides(
         uid: user.uid,
         user: user,

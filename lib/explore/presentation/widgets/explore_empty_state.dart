@@ -3,14 +3,14 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:flutter/material.dart';
 
-class ClubsEmptyState extends StatelessWidget {
-  const ClubsEmptyState({super.key, required String cityLabel, this.action})
+class ExploreEmptyState extends StatelessWidget {
+  const ExploreEmptyState({super.key, required String cityLabel, this.action})
     : title = 'No clubs in $cityLabel yet',
       message =
           'Try another city from the location control, or create the first '
           'club when you are ready to host.';
 
-  const ClubsEmptyState.noSearchResults({
+  const ExploreEmptyState.noSearchResults({
     super.key,
     required bool hasFilters,
     this.action,
@@ -20,17 +20,17 @@ class ClubsEmptyState extends StatelessWidget {
                  'tag.'
            : 'Try another club, neighborhood, host, or tag.';
 
-  const ClubsEmptyState.noFilterResults({super.key, this.action})
+  const ExploreEmptyState.noFilterResults({super.key, this.action})
     : title = 'No clubs match these filters',
       message =
           'Clear one or more filters to bring nearby clubs back into view.';
 
-  const ClubsEmptyState.noFilteredSearchResults({super.key, this.action})
+  const ExploreEmptyState.noFilteredSearchResults({super.key, this.action})
     : title = 'No clubs match this search',
       message =
           'Clear the search or filters to bring nearby clubs back into view.';
 
-  const ClubsEmptyState.generic({
+  const ExploreEmptyState.generic({
     super.key,
     this.title = 'No clubs in this city yet',
     this.message = 'Try another city or create the first club.',
@@ -51,7 +51,6 @@ class ClubsEmptyState extends StatelessWidget {
           title: title,
           message: message,
           action: action,
-          surface: false,
         ),
       ),
     );

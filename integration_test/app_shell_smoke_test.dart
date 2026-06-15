@@ -16,14 +16,14 @@ import 'support/app_shell_workflow_steps.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('unauthenticated launch opens public club discovery', (
+  testWidgets('unauthenticated launch opens public Explore discovery', (
     tester,
   ) async {
     final club = club_helpers.buildClub();
 
     await pumpCatchAppShell(
       tester,
-      initialRoute: Routes.clubsListScreen.path,
+      initialRoute: Routes.exploreScreen.path,
       overrides: appShellTestOverrides(uid: null, user: null, clubs: [club]),
     );
 
@@ -47,7 +47,7 @@ void main() {
 
     await pumpCatchAppShell(
       tester,
-      initialRoute: Routes.clubsListScreen.path,
+      initialRoute: Routes.exploreScreen.path,
       overrides: appShellTestOverrides(
         uid: null,
         user: null,
@@ -155,7 +155,7 @@ void main() {
 
     expect(find.text('Event Focus'), findsOneWidget);
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     expect(find.text('Explore'), findsWidgets);
 
     await openAppTab(tester, 'Catches');

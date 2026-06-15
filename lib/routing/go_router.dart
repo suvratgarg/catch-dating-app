@@ -6,7 +6,6 @@ import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -25,6 +24,7 @@ import 'package:catch_dating_app/events/presentation/event_detail_route_transiti
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
@@ -71,8 +71,9 @@ enum Routes {
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
   notificationsScreen('/notifications'),
-  // Clubs branch (index 1)
-  clubsListScreen('/clubs'),
+  // Explore branch (index 1). The root path remains `/clubs` because club
+  // detail and event detail deep links still live under that URL namespace.
+  exploreScreen('/clubs'),
   clubDetailScreen('/clubs/:clubId'),
   eventDetailScreen('/clubs/:clubId/events/:eventId'),
   eventSuccessCompanionScreen('/clubs/:clubId/events/:eventId/companion'),
@@ -237,7 +238,7 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
 // Navigator keys are file-level so they are created once for the app lifetime.
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _dashboardShellKey = GlobalKey<NavigatorState>();
-final _clubsShellKey = GlobalKey<NavigatorState>();
+final _exploreShellKey = GlobalKey<NavigatorState>();
 final _catchesShellKey = GlobalKey<NavigatorState>();
 final _chatsShellKey = GlobalKey<NavigatorState>();
 final _profileShellKey = GlobalKey<NavigatorState>();
@@ -449,15 +450,15 @@ GoRouter goRouter(Ref ref) {
               ],
             ),
 
-            // ── Branch 1: Clubs ──────────────────────────────────────────
+            // ── Branch 1: Explore ────────────────────────────────────────
             StatefulShellBranch(
-              navigatorKey: _clubsShellKey,
+              navigatorKey: _exploreShellKey,
               observers: [AnalyticsRouteObserver(analytics)],
               routes: [
                 GoRoute(
-                  path: Routes.clubsListScreen.path,
-                  name: Routes.clubsListScreen.name,
-                  builder: (context, state) => const ClubsListScreen(),
+                  path: Routes.exploreScreen.path,
+                  name: Routes.exploreScreen.name,
+                  builder: (context, state) => const ExploreScreen(),
                   routes: [
                     GoRoute(
                       path: ':clubId',
@@ -771,7 +772,7 @@ bool _isPublicRoute(String matchedLocation) {
   }
   if (matchedLocation == Routes.startScreen.path) return true;
   if (matchedLocation == Routes.authScreen.path) return true;
-  if (matchedLocation == Routes.clubsListScreen.path) return true;
+  if (matchedLocation == Routes.exploreScreen.path) return true;
 
   if (matchedLocation.startsWith('/clubs/')) {
     return true;

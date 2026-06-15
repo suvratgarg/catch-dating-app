@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_list_tile.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
 import 'package:flutter/material.dart';

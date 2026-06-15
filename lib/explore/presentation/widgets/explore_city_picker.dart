@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -7,18 +6,19 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_control_shell.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CityPicker extends ConsumerStatefulWidget {
-  const CityPicker({super.key});
+class ExploreCityPicker extends ConsumerStatefulWidget {
+  const ExploreCityPicker({super.key});
 
   @override
-  ConsumerState<CityPicker> createState() => _CityPickerState();
+  ConsumerState<ExploreCityPicker> createState() => _ExploreCityPickerState();
 }
 
-class _CityPickerState extends ConsumerState<CityPicker> {
+class _ExploreCityPickerState extends ConsumerState<ExploreCityPicker> {
   bool _isSheetOpen = false;
 
   @override
@@ -32,7 +32,7 @@ class _CityPickerState extends ConsumerState<CityPicker> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCity = ref.watch(selectedClubCityProvider);
+    final selectedCity = ref.watch(selectedExploreCityProvider);
     final citiesAsync = ref.watch(cityListProvider);
 
     ref.listen(deviceLocationProvider, (_, next) {
@@ -66,11 +66,11 @@ class _CityPickerState extends ConsumerState<CityPicker> {
       context: context,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => _CityPickerSheet(
+      builder: (sheetContext) => _ExploreCityPickerSheet(
         cities: cities,
-        selectedCity: ref.read(selectedClubCityProvider),
+        selectedCity: ref.read(selectedExploreCityProvider),
         onSelected: (city) {
-          ref.read(selectedClubCityProvider.notifier).setCity(city);
+          ref.read(selectedExploreCityProvider.notifier).setCity(city);
           Navigator.of(sheetContext).pop();
         },
       ),
@@ -81,7 +81,9 @@ class _CityPickerState extends ConsumerState<CityPicker> {
 
   void _tryAutoSelectFromProfile() {
     final cityName = ref.read(watchUserProfileProvider).asData?.value?.city;
-    ref.read(selectedClubCityProvider.notifier).autoSelectCityByName(cityName);
+    ref
+        .read(selectedExploreCityProvider.notifier)
+        .autoSelectCityByName(cityName);
   }
 
   Future<void> _tryAutoSelectFromGps() async {
@@ -91,7 +93,7 @@ class _CityPickerState extends ConsumerState<CityPicker> {
         .read(cityRepositoryProvider)
         .nearestCity(location.latitude, location.longitude);
     if (nearest != null) {
-      ref.read(selectedClubCityProvider.notifier).autoSelectCity(nearest);
+      ref.read(selectedExploreCityProvider.notifier).autoSelectCity(nearest);
     }
   }
 }
@@ -143,8 +145,8 @@ class _CityTrigger extends StatelessWidget {
   }
 }
 
-class _CityPickerSheet extends StatelessWidget {
-  const _CityPickerSheet({
+class _ExploreCityPickerSheet extends StatelessWidget {
+  const _ExploreCityPickerSheet({
     required this.cities,
     required this.selectedCity,
     required this.onSelected,

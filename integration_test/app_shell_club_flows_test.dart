@@ -14,13 +14,13 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'public club discovery opens club details through the real route',
+    'public Explore discovery opens club details through the real route',
     (tester) async {
       final club = club_helpers.buildClub();
 
       await pumpCatchAppShell(
         tester,
-        initialRoute: Routes.clubsListScreen.path,
+        initialRoute: Routes.exploreScreen.path,
         overrides: appShellTestOverrides(uid: null, user: null, clubs: [club]),
       );
 
@@ -53,7 +53,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(ClubActionKeys.joinButton));
@@ -81,7 +81,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await tester.tap(find.byKey(ClubActionKeys.leaveButton));
@@ -105,7 +105,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await tapCreateClub(tester);
 
     await enterClubText('Club name', 'Sunset Striders', tester);
@@ -149,7 +149,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await tapCreateClub(tester);
 
     await tester.tap(find.text('Add club photos'));
@@ -200,7 +200,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await tester.scrollUntilVisible(find.byKey(ClubActionKeys.editButton), 240);
@@ -249,7 +249,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await openEventDetail(tester, club: club, event: run);
@@ -278,7 +278,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpFeatureUi(tester);
     await tester.scrollUntilVisible(

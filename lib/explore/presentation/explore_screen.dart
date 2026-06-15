@@ -1,14 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_map_motion_reveal.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_empty_state.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_filter_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_list_body.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/clubs_sliver_header.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
 import 'package:catch_dating_app/core/motion/catch_transitions.dart';
@@ -24,6 +16,14 @@ import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.d
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_map_motion_reveal.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_empty_state.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -54,16 +54,16 @@ const Duration _exploreMotionRevealSettleDuration = CatchMotion.revealSettle;
 /// the closed feed reads as a normal page. MAP fades that lid away and
 /// collapses the sheet exclusion so the map becomes truly full-bleed only once
 /// it is exposed.
-class ClubsListScreen extends ConsumerStatefulWidget {
-  const ClubsListScreen({super.key, this.enableEventMapNetworkTiles = true});
+class ExploreScreen extends ConsumerStatefulWidget {
+  const ExploreScreen({super.key, this.enableEventMapNetworkTiles = true});
 
   final bool enableEventMapNetworkTiles;
 
   @override
-  ConsumerState<ClubsListScreen> createState() => _ClubsListScreenState();
+  ConsumerState<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
+class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
 
@@ -110,7 +110,7 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
     final t = CatchTokens.of(context);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
     final feedCount = feedAsync.asData?.value.count;
-    final filters = ref.watch(clubBrowseFiltersProvider);
+    final filters = ref.watch(exploreFiltersProvider);
     final distanceRingRadiusKm = exploreDistanceFilterKm(
       filters.distanceFilter,
     );
@@ -274,8 +274,8 @@ class _ClubsListScreenState extends ConsumerState<ClubsListScreen> {
 
   void _cycleDistanceFilter() {
     catchSelectionHaptic();
-    final controller = ref.read(clubBrowseFiltersProvider.notifier);
-    final current = ref.read(clubBrowseFiltersProvider).distanceFilter;
+    final controller = ref.read(exploreFiltersProvider.notifier);
+    final current = ref.read(exploreFiltersProvider).distanceFilter;
     controller.setDistanceFilter(switch (current) {
       ExploreDistanceFilter.any => ExploreDistanceFilter.oneKm,
       ExploreDistanceFilter.oneKm => ExploreDistanceFilter.threeKm,
@@ -400,8 +400,8 @@ class _ExploreFloatingChrome extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClubsBrowseHeaderContent(backgroundColor: backgroundColor),
-        ClubsFilterRail(backgroundColor: backgroundColor),
+        ExploreBrowseHeaderContent(backgroundColor: backgroundColor),
+        ExploreFilterRail(backgroundColor: backgroundColor),
       ],
     );
   }
@@ -428,10 +428,10 @@ class _ExploreSheetFeed extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final viewModelAsync = ref.watch(clubsListViewModelProvider);
-    final city = ref.watch(selectedClubCityProvider);
-    final query = ref.watch(clubSearchQueryProvider).trim();
-    final filters = ref.watch(clubBrowseFiltersProvider);
+    final viewModelAsync = ref.watch(exploreViewModelProvider);
+    final city = ref.watch(selectedExploreCityProvider);
+    final query = ref.watch(exploreSearchQueryProvider).trim();
+    final filters = ref.watch(exploreFiltersProvider);
     final sourceClubCount =
         ref.watch(exploreSourceClubsProvider).asData?.value.length ?? 0;
     final hasSourceClubs = sourceClubCount > 0;
@@ -482,7 +482,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
           error,
           context: AppErrorContext.club,
           onRetry: () {
-            ref.invalidate(clubsListViewModelProvider);
+            ref.invalidate(exploreViewModelProvider);
             ref.invalidate(exploreSourceClubsProvider);
           },
         ),
@@ -500,7 +500,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
                   ),
                 ),
               ]
-            : buildClubsListBodySlivers(
+            : buildExploreBodySlivers(
                 context: context,
                 ref: ref,
                 viewModel: value,
@@ -531,29 +531,29 @@ Widget _buildSheetEmptyState(
   required String cityLabel,
   required bool hasSourceClubs,
   required bool hasSearch,
-  required ClubBrowseFilterSelection filters,
+  required ExploreFilterSelection filters,
 }) {
   final hasFilters = filters.hasActiveFilters;
   if (!hasSourceClubs) {
-    return ClubsEmptyState(cityLabel: cityLabel);
+    return ExploreEmptyState(cityLabel: cityLabel);
   }
   if (hasSearch && hasFilters) {
-    return ClubsEmptyState.noFilteredSearchResults(
+    return ExploreEmptyState.noFilteredSearchResults(
       action: _clearAction(ref, clearSearch: true, clearFilters: true),
     );
   }
   if (hasSearch) {
-    return ClubsEmptyState.noSearchResults(
+    return ExploreEmptyState.noSearchResults(
       hasFilters: false,
       action: _clearAction(ref, clearSearch: true, clearFilters: false),
     );
   }
   if (hasFilters) {
-    return ClubsEmptyState.noFilterResults(
+    return ExploreEmptyState.noFilterResults(
       action: _clearAction(ref, clearSearch: false, clearFilters: true),
     );
   }
-  return ClubsEmptyState(cityLabel: cityLabel);
+  return ExploreEmptyState(cityLabel: cityLabel);
 }
 
 Widget _clearAction(
@@ -571,10 +571,10 @@ Widget _clearAction(
     label: label,
     onPressed: () {
       if (clearSearch) {
-        ref.read(clubSearchQueryProvider.notifier).clear();
+        ref.read(exploreSearchQueryProvider.notifier).clear();
       }
       if (clearFilters) {
-        ref.read(clubBrowseFiltersProvider.notifier).clear();
+        ref.read(exploreFiltersProvider.notifier).clear();
       }
     },
     variant: CatchButtonVariant.secondary,

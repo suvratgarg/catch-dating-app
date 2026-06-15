@@ -1,21 +1,21 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_avatar_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_discover_list.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_event_type_browse_grid.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type_browse_grid.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClubsListBody extends ConsumerWidget {
-  const ClubsListBody({
+class ExploreBody extends ConsumerWidget {
+  const ExploreBody({
     super.key,
     required this.viewModel,
     this.includeJoinedClubsRail = true,
     this.includeClubDirectory = true,
   });
 
-  final ClubsListViewModel viewModel;
+  final ExploreViewModel viewModel;
   final bool includeJoinedClubsRail;
   final bool includeClubDirectory;
 
@@ -25,7 +25,7 @@ class ClubsListBody extends ConsumerWidget {
     // Explore day headers inline here because pinned headers inside a
     // SliverMainAxisGroup can violate Flutter's sliver geometry contract.
     return SliverMainAxisGroup(
-      slivers: buildClubsListBodySlivers(
+      slivers: buildExploreBodySlivers(
         context: context,
         ref: ref,
         viewModel: viewModel,
@@ -41,10 +41,10 @@ class ClubsListBody extends ConsumerWidget {
 /// discovery feed, optional legacy club rails, and browse prompts — as a flat list so they can be
 /// spread directly into a parent `CustomScrollView.slivers` without
 /// triggering nested-group layout pathologies.
-List<Widget> buildClubsListBodySlivers({
+List<Widget> buildExploreBodySlivers({
   required BuildContext context,
   required WidgetRef ref,
-  required ClubsListViewModel viewModel,
+  required ExploreViewModel viewModel,
   bool includeJoinedClubsRail = true,
   bool includeClubDirectory = true,
   bool pinnedExploreDayHeaders = true,

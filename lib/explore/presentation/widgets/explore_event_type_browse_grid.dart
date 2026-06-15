@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -11,6 +9,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,7 +20,7 @@ class ExploreEventTypeBrowseGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
-    final filters = ref.watch(clubBrowseFiltersProvider);
+    final filters = ref.watch(exploreFiltersProvider);
     return switch (feedAsync) {
       AsyncLoading() => const _EventTypeBrowseSkeleton(),
       AsyncError() => const SizedBox.shrink(),
@@ -28,7 +28,7 @@ class ExploreEventTypeBrowseGrid extends ConsumerWidget {
         items: value.items,
         activeActivityTag: filters.activityTag,
         onCategoryTap: (activityKind) => ref
-            .read(clubBrowseFiltersProvider.notifier)
+            .read(exploreFiltersProvider.notifier)
             .toggleActivityTag(activityKind.name),
       ),
     };

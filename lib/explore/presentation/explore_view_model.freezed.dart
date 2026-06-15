@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'clubs_list_view_model.dart';
+part of 'explore_view_model.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'clubs_list_view_model.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$ClubsListViewModel {
+mixin _$ExploreViewModel {
 
  List<Club> get joinedClubs; List<Club> get allClubs; Set<String> get joinedClubIds;
-/// Create a copy of ClubsListViewModel
+/// Create a copy of ExploreViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$ClubsListViewModelCopyWith<ClubsListViewModel> get copyWith => _$ClubsListViewModelCopyWithImpl<ClubsListViewModel>(this as ClubsListViewModel, _$identity);
+$ExploreViewModelCopyWith<ExploreViewModel> get copyWith => _$ExploreViewModelCopyWithImpl<ExploreViewModel>(this as ExploreViewModel, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClubsListViewModel&&const DeepCollectionEquality().equals(other.joinedClubs, joinedClubs)&&const DeepCollectionEquality().equals(other.allClubs, allClubs)&&const DeepCollectionEquality().equals(other.joinedClubIds, joinedClubIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExploreViewModel&&const DeepCollectionEquality().equals(other.joinedClubs, joinedClubs)&&const DeepCollectionEquality().equals(other.allClubs, allClubs)&&const DeepCollectionEquality().equals(other.joinedClubIds, joinedClubIds));
 }
 
 
@@ -34,15 +34,15 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'ClubsListViewModel(joinedClubs: $joinedClubs, allClubs: $allClubs, joinedClubIds: $joinedClubIds)';
+  return 'ExploreViewModel(joinedClubs: $joinedClubs, allClubs: $allClubs, joinedClubIds: $joinedClubIds)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $ClubsListViewModelCopyWith<$Res>  {
-  factory $ClubsListViewModelCopyWith(ClubsListViewModel value, $Res Function(ClubsListViewModel) _then) = _$ClubsListViewModelCopyWithImpl;
+abstract mixin class $ExploreViewModelCopyWith<$Res>  {
+  factory $ExploreViewModelCopyWith(ExploreViewModel value, $Res Function(ExploreViewModel) _then) = _$ExploreViewModelCopyWithImpl;
 @useResult
 $Res call({
  List<Club> joinedClubs, List<Club> allClubs, Set<String> joinedClubIds
@@ -53,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$ClubsListViewModelCopyWithImpl<$Res>
-    implements $ClubsListViewModelCopyWith<$Res> {
-  _$ClubsListViewModelCopyWithImpl(this._self, this._then);
+class _$ExploreViewModelCopyWithImpl<$Res>
+    implements $ExploreViewModelCopyWith<$Res> {
+  _$ExploreViewModelCopyWithImpl(this._self, this._then);
 
-  final ClubsListViewModel _self;
-  final $Res Function(ClubsListViewModel) _then;
+  final ExploreViewModel _self;
+  final $Res Function(ExploreViewModel) _then;
 
-/// Create a copy of ClubsListViewModel
+/// Create a copy of ExploreViewModel
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? joinedClubs = null,Object? allClubs = null,Object? joinedClubIds = null,}) {
   return _then(_self.copyWith(
@@ -74,8 +74,8 @@ as Set<String>,
 }
 
 
-/// Adds pattern-matching-related methods to [ClubsListViewModel].
-extension ClubsListViewModelPatterns on ClubsListViewModel {
+/// Adds pattern-matching-related methods to [ExploreViewModel].
+extension ExploreViewModelPatterns on ExploreViewModel {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -88,10 +88,10 @@ extension ClubsListViewModelPatterns on ClubsListViewModel {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ClubsListViewModel value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ExploreViewModel value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _ClubsListViewModel() when $default != null:
+case _ExploreViewModel() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -110,10 +110,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ClubsListViewModel value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ExploreViewModel value)  $default,){
 final _that = this;
 switch (_that) {
-case _ClubsListViewModel():
+case _ExploreViewModel():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -131,10 +131,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ClubsListViewModel value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ExploreViewModel value)?  $default,){
 final _that = this;
 switch (_that) {
-case _ClubsListViewModel() when $default != null:
+case _ExploreViewModel() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -154,7 +154,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Club> joinedClubs,  List<Club> allClubs,  Set<String> joinedClubIds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _ClubsListViewModel() when $default != null:
+case _ExploreViewModel() when $default != null:
 return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
   return orElse();
 
@@ -175,7 +175,7 @@ return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Club> joinedClubs,  List<Club> allClubs,  Set<String> joinedClubIds)  $default,) {final _that = this;
 switch (_that) {
-case _ClubsListViewModel():
+case _ExploreViewModel():
 return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
   throw StateError('Unexpected subclass');
 
@@ -195,7 +195,7 @@ return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Club> joinedClubs,  List<Club> allClubs,  Set<String> joinedClubIds)?  $default,) {final _that = this;
 switch (_that) {
-case _ClubsListViewModel() when $default != null:
+case _ExploreViewModel() when $default != null:
 return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
   return null;
 
@@ -207,8 +207,8 @@ return $default(_that.joinedClubs,_that.allClubs,_that.joinedClubIds);case _:
 /// @nodoc
 
 
-class _ClubsListViewModel extends ClubsListViewModel {
-  const _ClubsListViewModel({required final  List<Club> joinedClubs, required final  List<Club> allClubs, final  Set<String> joinedClubIds = const {}}): _joinedClubs = joinedClubs,_allClubs = allClubs,_joinedClubIds = joinedClubIds,super._();
+class _ExploreViewModel extends ExploreViewModel {
+  const _ExploreViewModel({required final  List<Club> joinedClubs, required final  List<Club> allClubs, final  Set<String> joinedClubIds = const {}}): _joinedClubs = joinedClubs,_allClubs = allClubs,_joinedClubIds = joinedClubIds,super._();
   
 
  final  List<Club> _joinedClubs;
@@ -233,17 +233,17 @@ class _ClubsListViewModel extends ClubsListViewModel {
 }
 
 
-/// Create a copy of ClubsListViewModel
+/// Create a copy of ExploreViewModel
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ClubsListViewModelCopyWith<_ClubsListViewModel> get copyWith => __$ClubsListViewModelCopyWithImpl<_ClubsListViewModel>(this, _$identity);
+_$ExploreViewModelCopyWith<_ExploreViewModel> get copyWith => __$ExploreViewModelCopyWithImpl<_ExploreViewModel>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClubsListViewModel&&const DeepCollectionEquality().equals(other._joinedClubs, _joinedClubs)&&const DeepCollectionEquality().equals(other._allClubs, _allClubs)&&const DeepCollectionEquality().equals(other._joinedClubIds, _joinedClubIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExploreViewModel&&const DeepCollectionEquality().equals(other._joinedClubs, _joinedClubs)&&const DeepCollectionEquality().equals(other._allClubs, _allClubs)&&const DeepCollectionEquality().equals(other._joinedClubIds, _joinedClubIds));
 }
 
 
@@ -252,15 +252,15 @@ int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(
 
 @override
 String toString() {
-  return 'ClubsListViewModel(joinedClubs: $joinedClubs, allClubs: $allClubs, joinedClubIds: $joinedClubIds)';
+  return 'ExploreViewModel(joinedClubs: $joinedClubs, allClubs: $allClubs, joinedClubIds: $joinedClubIds)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ClubsListViewModelCopyWith<$Res> implements $ClubsListViewModelCopyWith<$Res> {
-  factory _$ClubsListViewModelCopyWith(_ClubsListViewModel value, $Res Function(_ClubsListViewModel) _then) = __$ClubsListViewModelCopyWithImpl;
+abstract mixin class _$ExploreViewModelCopyWith<$Res> implements $ExploreViewModelCopyWith<$Res> {
+  factory _$ExploreViewModelCopyWith(_ExploreViewModel value, $Res Function(_ExploreViewModel) _then) = __$ExploreViewModelCopyWithImpl;
 @override @useResult
 $Res call({
  List<Club> joinedClubs, List<Club> allClubs, Set<String> joinedClubIds
@@ -271,17 +271,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ClubsListViewModelCopyWithImpl<$Res>
-    implements _$ClubsListViewModelCopyWith<$Res> {
-  __$ClubsListViewModelCopyWithImpl(this._self, this._then);
+class __$ExploreViewModelCopyWithImpl<$Res>
+    implements _$ExploreViewModelCopyWith<$Res> {
+  __$ExploreViewModelCopyWithImpl(this._self, this._then);
 
-  final _ClubsListViewModel _self;
-  final $Res Function(_ClubsListViewModel) _then;
+  final _ExploreViewModel _self;
+  final $Res Function(_ExploreViewModel) _then;
 
-/// Create a copy of ClubsListViewModel
+/// Create a copy of ExploreViewModel
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? joinedClubs = null,Object? allClubs = null,Object? joinedClubIds = null,}) {
-  return _then(_ClubsListViewModel(
+  return _then(_ExploreViewModel(
 joinedClubs: null == joinedClubs ? _self._joinedClubs : joinedClubs // ignore: cast_nullable_to_non_nullable
 as List<Club>,allClubs: null == allClubs ? _self._allClubs : allClubs // ignore: cast_nullable_to_non_nullable
 as List<Club>,joinedClubIds: null == joinedClubIds ? _self._joinedClubIds : joinedClubIds // ignore: cast_nullable_to_non_nullable

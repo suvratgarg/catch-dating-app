@@ -11,7 +11,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_draft.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
@@ -34,6 +33,7 @@ import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -402,9 +402,9 @@ List<Object> appShellTestOverrides({
         ).overrideWithValue(AsyncData(participationsByEventId[event.id])),
       ],
     ],
-    clubsListViewModelProvider.overrideWithValue(
+    exploreViewModelProvider.overrideWithValue(
       AsyncData(
-        ClubsListViewModel(
+        ExploreViewModel(
           joinedClubs: joinedClubs,
           allClubs: clubs,
           joinedClubIds: joinedClubIds,
@@ -412,7 +412,9 @@ List<Object> appShellTestOverrides({
       ),
     ),
     exploreSourceClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
-    filteredClubsProvider.overrideWithValue(AsyncData<List<Club>>(clubs)),
+    filteredExploreClubsProvider.overrideWithValue(
+      AsyncData<List<Club>>(clubs),
+    ),
     eventRepositoryProvider.overrideWithValue(
       eventRepository ?? event_helpers.FakeEventRepository(),
     ),
