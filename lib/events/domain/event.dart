@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
@@ -12,7 +13,6 @@ import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:intl/intl.dart';
 
 // Re-export so existing `import '.../event.dart'` call sites keep working
 // without churning every import. Prefer importing the dedicated file in new
@@ -245,7 +245,7 @@ abstract class Event with _$Event {
   }
 
   String get title {
-    final weekday = DateFormat('EEEE').format(startTime);
+    final weekday = AppTimeFormatters.longWeekday(startTime);
     final hour = startTime.hour;
     final period = hour < 12
         ? 'Morning'

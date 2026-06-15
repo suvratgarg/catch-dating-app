@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,6 +13,7 @@ void main() {
       expect(EventFormatters.shortMonth(dateTime), 'Apr');
       expect(EventFormatters.shortWeekday(dateTime), 'Wed');
       expect(EventFormatters.longWeekday(dateTime), 'Wednesday');
+      expect(AppTimeFormatters.weekdayDayMonth(dateTime), 'Wed 23 Apr');
       expect(EventFormatters.shortDate(dateTime), 'Wed, 23 Apr');
       expect(EventFormatters.longDate(dateTime), 'Wednesday, 23 Apr');
     });

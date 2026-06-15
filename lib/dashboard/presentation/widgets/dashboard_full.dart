@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_section_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -18,7 +19,6 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class DashboardFull extends ConsumerWidget {
   const DashboardFull({
@@ -42,7 +42,7 @@ class DashboardFull extends ConsumerWidget {
   }
 
   static String dayCity(String? cityLabel) {
-    final day = DateFormat('EEEE').format(DateTime.now());
+    final day = AppTimeFormatters.longWeekday(DateTime.now());
     return '$day · ${cityLabel ?? defaultCityDataForMarket().label}';
   }
 

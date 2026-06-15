@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -10,7 +11,6 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class AttendedEventTile extends StatelessWidget {
   const AttendedEventTile({super.key, required this.event});
@@ -20,7 +20,7 @@ class AttendedEventTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final dateStr = DateFormat('EEE d MMM').format(event.startTime);
+    final dateStr = AppTimeFormatters.weekdayDayMonth(event.startTime);
     final remaining = swipeWindowClosesAt(event).difference(DateTime.now());
     final countdown = _formatCountdown(remaining);
 
