@@ -8,6 +8,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 import 'capture_device.dart';
 
 Future<void> _warmImage(ImageProvider<Object> provider) {
@@ -122,7 +124,7 @@ Future<List<CaptureArtifact>> captureCatchWidget(
     artifacts.add(CaptureArtifact(id: id, theme: theme, file: file));
   }
 
-  await tester.pump(const Duration(milliseconds: 50));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));
   return artifacts;
 }
 
@@ -144,8 +146,8 @@ File _captureFile({
 
 Future<void> _pumpCaptureFrame(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 100));
-  await tester.pump(const Duration(milliseconds: 250));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 100));
+  await pumpFeatureUiFor(tester, const Duration(milliseconds: 250));
 }
 
 Future<void> _writeBoundaryPng(
