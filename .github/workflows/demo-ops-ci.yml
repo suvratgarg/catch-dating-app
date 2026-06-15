@@ -7,6 +7,7 @@ on:
       - "tool/data/recompute_event_*counts*.mjs"
       - "tool/data/recompute_club_*counts*.mjs"
       - "docs/demo_data_seeding.md"
+      - ".github/actions/**"
       - ".github/workflows/demo-ops-ci.yml"
   push:
     branches:
@@ -16,6 +17,7 @@ on:
       - "tool/data/recompute_event_*counts*.mjs"
       - "tool/data/recompute_club_*counts*.mjs"
       - "docs/demo_data_seeding.md"
+      - ".github/actions/**"
       - ".github/workflows/demo-ops-ci.yml"
 
 jobs:
@@ -23,9 +25,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: "npm"
           cache-dependency-path: functions/package-lock.json
       - run: npm ci --prefix functions

@@ -746,12 +746,18 @@ directly from App Store Connect once each app record and workflow is configured.
 
 Two CI scripts drive it:
 
-- `ios/ci_scripts/ci_post_clone.sh` installs Flutter, applies the prod Firebase
+- `ios/ci_scripts/ci_post_clone.sh` reads the Flutter SDK version from
+  `tool/ci/toolchain.env`, installs Flutter, applies the prod Firebase
   environment for `consumer` or `host`, writes the prod iOS Google Maps key, and
   runs `pod install`. It uses `CATCH_APP_ROLE=host` or a `host-*` Xcode scheme to
   prepare `lib/main_host.dart` with the host prod flavor.
 - `ios/ci_scripts/ci_post_xcodebuild.sh` verifies the archived app's
   `GoogleMapsApiKey` is a real key before the build can reach TestFlight.
+
+GitHub Actions read the same `tool/ci/toolchain.env` file through local actions
+under `.github/actions`. Update that file instead of editing workflow YAML or
+Xcode Cloud scripts when changing public tool versions such as Flutter, Node,
+Java, or Firebase CLI.
 
 `ios/Flutter/GoogleMapsKeys.xcconfig` is gitignored, so it is never present in a
 fresh clone. The Xcode Cloud workflow must define `GOOGLE_MAPS_IOS_API_KEY_PROD`

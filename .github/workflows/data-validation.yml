@@ -39,9 +39,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: functions/package-lock.json
 

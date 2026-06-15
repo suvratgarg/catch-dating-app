@@ -3,6 +3,7 @@ name: Marketing Website
 on:
   pull_request:
     paths:
+      - ".github/actions/**"
       - ".github/workflows/marketing-website.yml"
       - ".firebaserc"
       - "firebase.json"
@@ -11,11 +12,13 @@ on:
       - "website/**"
       - "packages/web-config/**"
       - "design/tokens/**"
+      - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
       - "tool/marketing/**"
   push:
     branches: [main]
     paths:
+      - ".github/actions/**"
       - ".github/workflows/marketing-website.yml"
       - ".firebaserc"
       - "firebase.json"
@@ -24,6 +27,7 @@ on:
       - "website/**"
       - "packages/web-config/**"
       - "design/tokens/**"
+      - "tool/ci/toolchain.env"
       - "tool/design_tokens.dart"
       - "tool/marketing/**"
   workflow_dispatch:
@@ -35,9 +39,6 @@ concurrency:
 permissions:
   contents: read
 
-env:
-  FIREBASE_TOOLS_VERSION: 15.20.0
-
 jobs:
   validate:
     name: Validate marketing website
@@ -47,17 +48,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.44.1"
-          channel: stable
-          cache: true
+      - uses: ./.github/actions/setup-flutter
 
       - run: flutter pub get
 
@@ -89,15 +89,18 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: ${{ steps.toolchain.outputs.node-version }}
           cache: npm
           cache-dependency-path: package-lock.json
 
       - run: npm ci
 
-      - run: npm install -g firebase-tools@${{ env.FIREBASE_TOOLS_VERSION }}
+      - run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
