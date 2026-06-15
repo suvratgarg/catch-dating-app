@@ -100,8 +100,6 @@ class HostEventParticipantsPanel extends ConsumerWidget {
               icon: CatchIcons.eventBusyOutlined,
               title: 'Event not found',
               message: 'This event is no longer available.',
-              surface: false,
-              iconStyle: CatchEmptyStateIconStyle.plain,
             ),
           );
         }

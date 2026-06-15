@@ -19,12 +19,10 @@ PaymentConfirmationController paymentConfirmationController(Ref ref) {
 
 class PaymentConfirmationController {
   const PaymentConfirmationController({
-    required EventCalendarController calendar,
-    required ExternalLinkController links,
-    required ExternalShareController share,
-  }) : _calendar = calendar,
-       _links = links,
-       _share = share;
+    required this._calendar,
+    required this._links,
+    required this._share,
+  });
 
   final EventCalendarController _calendar;
   final ExternalLinkController _links;

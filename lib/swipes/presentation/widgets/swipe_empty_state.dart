@@ -17,8 +17,6 @@ class SwipeEmptyState extends StatelessWidget {
         icon: content.icon,
         title: content.title,
         message: content.message,
-        surface: false,
-        iconStyle: CatchEmptyStateIconStyle.plain,
         padding: CatchInsets.emptyStateContent,
         titleStyle: CatchTextStyles.headline(context),
       ),

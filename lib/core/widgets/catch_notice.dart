@@ -20,7 +20,7 @@ class AppNotice {
     required this.id,
     required this.title,
     this.message,
-    IconData? icon,
+    this._icon,
     this.tone = CatchNoticeTone.status,
     this.actionLabel,
     this.onAction,
@@ -28,8 +28,7 @@ class AppNotice {
     this.dedupeKey,
     this.priority = 0,
     this.dismissible = true,
-  }) : _icon = icon,
-       _fallbackIcon = _AppNoticeFallbackIcon.status;
+  }) : _fallbackIcon = _AppNoticeFallbackIcon.status;
 
   const AppNotice.offline()
     : id = 'connectivity.offline',

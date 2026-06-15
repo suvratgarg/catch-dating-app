@@ -87,7 +87,6 @@ class ClubDetailBody extends StatelessWidget {
                 StatsStrip(club: club, upcomingCount: upcoming.length),
                 CatchSectionStack(
                   padding: const EdgeInsets.only(top: CatchSpacing.screenPt),
-                  gap: 0,
                   children: [
                     CatchDesignSection(
                       kicker: 'Your hosts',

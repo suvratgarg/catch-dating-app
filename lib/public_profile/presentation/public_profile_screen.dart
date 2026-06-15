@@ -196,8 +196,6 @@ class PublicProfileScreen extends ConsumerWidget {
                     icon: CatchIcons.personOffOutlined,
                     title: 'Profile unavailable',
                     message: 'This profile is no longer available on Catch.',
-                    surface: false,
-                    iconStyle: CatchEmptyStateIconStyle.plain,
                   ),
                 );
               }

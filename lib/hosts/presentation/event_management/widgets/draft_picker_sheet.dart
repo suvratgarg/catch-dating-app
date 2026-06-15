@@ -124,7 +124,6 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
               icon: CatchIcons.editNoteRounded,
               title: 'No drafts yet',
               message: 'Saved drafts for this club will appear here.',
-              surface: false,
             )
           else
             ConstrainedBox(

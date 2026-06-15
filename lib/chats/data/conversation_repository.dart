@@ -34,10 +34,9 @@ abstract interface class ConversationRepository {
 
 class FirestoreConversationRepository implements ConversationRepository {
   const FirestoreConversationRepository({
-    required ChatRepository chatRepository,
-    required MatchRepository matchRepository,
-  }) : _chatRepository = chatRepository,
-       _matchRepository = matchRepository;
+    required this._chatRepository,
+    required this._matchRepository,
+  });
 
   final ChatRepository _chatRepository;
   final MatchRepository _matchRepository;

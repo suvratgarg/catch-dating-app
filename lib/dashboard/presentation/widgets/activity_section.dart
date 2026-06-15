@@ -24,8 +24,6 @@ class ActivitySignedOutState extends StatelessWidget {
         icon: CatchIcons.notificationsNoneRounded,
         title: 'No activity yet',
         message: 'Sign in and book an event to start seeing updates here.',
-        surface: false,
-        iconStyle: CatchEmptyStateIconStyle.plain,
       ),
     );
   }
@@ -96,7 +94,6 @@ class ActivitySection extends ConsumerWidget {
               title: 'No new activity',
               message:
                   'New catches, bookings, and event reminders will collect here.',
-              iconStyle: CatchEmptyStateIconStyle.plain,
               iconSize: CatchIcon.emptyState,
               titleStyle: CatchTextStyles.titleL(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),

@@ -598,7 +598,6 @@ class _BlockedAccountsSection extends ConsumerWidget {
               icon: CatchIcons.blockOutlined,
               title: 'Unable to load blocked accounts',
               message: 'Try again in a moment.',
-              surface: false,
               iconSize: CatchIcon.tile,
               titleStyle: CatchTextStyles.sectionTitle(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
@@ -612,7 +611,6 @@ class _BlockedAccountsSection extends ConsumerWidget {
                   icon: CatchIcons.verifiedUserOutlined,
                   title: 'No blocked accounts',
                   message: 'People you block will appear here.',
-                  surface: false,
                   iconSize: CatchIcon.tile,
                   titleStyle: CatchTextStyles.sectionTitle(context),
                   messageStyle: CatchTextStyles.supporting(
