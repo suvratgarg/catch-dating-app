@@ -822,7 +822,7 @@
     {
       "id": "REVIEW-TRUST-001",
       "title": "Gate public review writes + count only verified reviews in club rating",
-      "status": "queued",
+      "status": "in_progress",
       "area": "reviews,functions",
       "priority": "high",
       "rules": [
@@ -830,7 +830,8 @@
         "FN-MOD-001"
       ],
       "summary": "FLAGGED PRODUCT/SECURITY. createPublicClubReview accepts fully unauthenticated writes that poison club rating aggregates (syncClubReviewStats counts unverified reviews), diverging from the verified-attendee trust model. Decide: require auth/verified attendance, and/or aggregate only verified reviews. Also moderate review comments/reviewer names/host responses.",
-      "source": "deep_semantic_audit_2026-06"
+      "source": "deep_semantic_audit_2026-06",
+      "progress": "DONE: club headline rating now computed from VERIFIED, published reviews only (count()/average() aggregation), so unverified public-listing reviews can no longer manipulate a club's score; added verifiedReviewCount projection + rejected/pending reviews excluded from counts. REMAINING (product policy, safe-default applied): createPublicClubReview still accepts unverified/anonymous public submissions by design (web-listing reviews) but they no longer affect the aggregate. If product wants to additionally REQUIRE auth on public review writes, that is a one-line requireAuth swap flagged here."
     },
     {
       "id": "CHAT-MOD-CHANNEL-001",
@@ -993,18 +994,6 @@
       "summary": "DONE: added reusable publicProfilesByIdsProvider (autoDispose, batched per-doc fetch) and routed reviews_history (event lookups), event_recap roster grid, and safety blocked-list through batched providers instead of a realtime stream per row/tile; public_profile_repository parallelized; clubNameLookupProvider autoDispose. REMAINING (lower traffic): who_is_going opens a roster stream just to read a count; chat_screen whole-screen rebuild; explore countdown DateTime.now() in build."
     },
     {
-      "id": "BACKEND-BOUNDED-QUERIES-001",
-      "title": "Bound unbounded backend aggregation queries",
-      "status": "queued",
-      "area": "functions",
-      "priority": "medium",
-      "rules": [
-        "FN-PERF-001"
-      ],
-      "source": "deep_semantic_audit_2026-06",
-      "summary": "loadRepeatAttendeeCount scans the club's lifetime participation history per scorecard refresh; syncClubReviewStats does a full reviews read on every review write (incl ownerResponse-only edits); algoliaExploreIndex re-indexes every event on a club write; adminGetOverview paginates the whole Auth base twice. Add before/after diff guards + count() aggregations / bounded queries (may need Firestore indexes)."
-    },
-    {
       "id": "LIB-ORPHAN-ON-FAILURE-001",
       "title": "Guard create-then-upload / upload-then-write orphans",
       "status": "queued",
@@ -1159,6 +1148,15 @@
         "FN-AUTHZ-001"
       ],
       "summary": "All three sub-items fixed: (1) occupation/company now bound to nullableShortText (maxLength 120) in contracts (users, public_profiles, update_user_profile patch) + regenerated Dart/TS validators; (2) createClub validates client-supplied clubId via assertSafeNewClubId (3-64 char lowercase URL slug) before it becomes the public path; (3) joinWaitlist keys the marketingConversion doc by waitlistRef.id (not the client analytics.eventId) so cross-lead clobber is impossible. Verified: functions build+lint clean, 332 functions tests + Dart schema/DTO contract tests green."
+    },
+    {
+      "id": "BACKEND-BOUNDED-QUERIES-001-DONE",
+      "title": "Bound unbounded backend aggregation queries",
+      "completed": "2026-06-16",
+      "rules": [
+        "FN-PERF-001"
+      ],
+      "summary": "syncClubReviewStats now uses Firestore count()/average() aggregations (clubId+moderationStatus and clubId+moderationStatus+verificationStatus composite indexes added) instead of reading every review on each write. loadRepeatAttendeeCount no longer scans the club's lifetime participation history; it asks per current attendee whether they have another active participation at the club, reusing the uid+status index so cost is bounded by each user's own history. adminGetOverview's Auth scan is an unavoidable Admin SDK limitation (already paginated + reports scanned count) and the per-write algolia path does not full-rescan. Verified: build+lint+tests green."
     }
   ]
 }

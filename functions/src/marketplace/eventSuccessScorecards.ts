@@ -386,34 +386,39 @@ async function loadRepeatAttendeeCount(params: {
   eventId: string;
   participations: EventParticipationDocument[];
 }): Promise<number> {
-  const activeUids = new Set(
+  const activeUids = Array.from(new Set(
     params.participations
       .filter((participation) => activeParticipationStatuses.has(
         participation.status
       ))
       .map((participation) => participation.uid)
       .filter((uid) => typeof uid === "string" && uid.length > 0)
-  );
-  if (activeUids.size === 0) return 0;
+  ));
+  if (activeUids.length === 0) return 0;
 
-  const snap = await params.db
-    .collection("eventParticipations")
-    .where("clubId", "==", params.event.clubId)
-    .get();
-  const repeatUids = new Set<string>();
-  for (const doc of snap.docs) {
-    const participation = doc.data() as Partial<EventParticipationDocument>;
-    if (
-      participation.eventId === params.eventId ||
-      typeof participation.uid !== "string" ||
-      !activeUids.has(participation.uid) ||
-      !activeParticipationStatuses.has(participation.status ?? "")
-    ) {
-      continue;
-    }
-    repeatUids.add(participation.uid);
-  }
-  return repeatUids.size;
+  const {clubId} = params.event;
+  if (typeof clubId !== "string" || clubId.length === 0) return 0;
+  const statuses = Array.from(activeParticipationStatuses);
+
+  // Ask, per current attendee, whether they have any other active
+  // participation at this club. Each query is bounded by a single user's own
+  // active history (reusing the uid+status index), so the cost no longer grows
+  // with the club's lifetime participation volume the way a club-wide scan did.
+  const repeatFlags = await Promise.all(
+    activeUids.map(async (uid) => {
+      const snap = await params.db
+        .collection("eventParticipations")
+        .where("uid", "==", uid)
+        .where("status", "in", statuses)
+        .get();
+      return snap.docs.some((doc) => {
+        const participation = doc.data() as Partial<EventParticipationDocument>;
+        return participation.clubId === clubId &&
+          participation.eventId !== params.eventId;
+      });
+    })
+  );
+  return repeatFlags.filter(Boolean).length;
 }
 
 /**

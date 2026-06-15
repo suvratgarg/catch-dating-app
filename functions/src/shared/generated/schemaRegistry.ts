@@ -2767,6 +2767,12 @@ export const clubDocumentSchema: Record<string, unknown> = {
       "minimum": 0,
       "x-catch-ownership": "trigger-owned"
     },
+    "verifiedReviewCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.",
+      "x-catch-ownership": "trigger-owned"
+    },
     "nextEventAt": {
       "anyOf": [
         {

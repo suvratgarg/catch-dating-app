@@ -59,6 +59,10 @@ export interface ClubDocument {
   memberCount: number;
   rating: number;
   reviewCount: number;
+  /**
+   * Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.
+   */
+  verifiedReviewCount?: number;
   nextEventAt: {
     _seconds: number;
     _nanoseconds: number;

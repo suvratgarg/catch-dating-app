@@ -608,6 +608,12 @@ const schemaClubDocumentSchema = <String, Object?>{
       'minimum': 0,
       'x-catch-ownership': 'trigger-owned',
     },
+    'verifiedReviewCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'description': 'Published reviews that are verified (attended a Catch event). Only these back the headline rating; unverified public reviews cannot move the score.',
+      'x-catch-ownership': 'trigger-owned',
+    },
     'nextEventAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
