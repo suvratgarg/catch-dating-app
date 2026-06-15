@@ -1362,6 +1362,110 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
   ),
   ScreenCaptureEntry(
+    id: 'host_create_basics',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['salesDemo.host.createBasics'],
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    ],
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventSetupDraft,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_location',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['salesDemo.host.createLocation'],
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    ],
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventSetupDraft,
+      initialStep: 1,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_schedule',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['salesDemo.host.createSchedule'],
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    ],
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventSetupDraft,
+      initialStep: 2,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_policy',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['salesDemo.host.createPolicy'],
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    ],
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventSetupDraft,
+      initialStep: 3,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_create_guide',
+    routeIds: const <String>['hostCreateEventScreen'],
+    device: CaptureDevice.iphone17Pro,
+    marketingFixtureKeys: const <String>['salesDemo.host.createGuide'],
+    providerOverrides: [
+      uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+      watchUserProfileProvider.overrideWith(
+        (ref) => Stream.value(_captureViewer),
+      ),
+      deviceLocationProvider.overrideWith(_CaptureDeviceLocation.new),
+      eventRepositoryProvider.overrideWith((ref) => FakeEventRepository()),
+    ],
+    builder: (context) => CreateEventScreen(
+      club: _dashboardHostClub,
+      initialDraft: _hostEventSetupDraft,
+      initialStep: 4,
+      loadMapTiles: false,
+      now: () => _captureNow,
+    ),
+  ),
+  ScreenCaptureEntry(
     id: 'edit_hosted_event',
     routeIds: const <String>['hostAppEditEventScreen'],
     device: CaptureDevice.iphone17Pro,
