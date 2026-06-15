@@ -196,7 +196,7 @@ class _MetricTile extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.contentDense,
       borderColor: t.line,
-      child: StatColumn(
+      child: CatchStatColumn(
         icon: icon,
         value: value,
         label: label,

@@ -65,10 +65,10 @@ void main() {
     expect(find.text('18 – 60+'), findsOneWidget);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
     expect(find.byType(CatchRangeSlider), findsOneWidget);
-    expect(find.byType(SelectChip), findsNWidgets(Gender.values.length));
+    expect(find.byType(CatchSelectChip), findsNWidgets(Gender.values.length));
     expect(
       tester
-          .widget<SelectChip>(
+          .widget<CatchSelectChip>(
             find.byKey(SwipeKeys.genderFilterChip(Gender.woman.name)),
           )
           .active,
@@ -83,7 +83,7 @@ void main() {
     expect(find.text('20 – 60+'), findsOneWidget);
     expect(
       tester
-          .widget<SelectChip>(
+          .widget<CatchSelectChip>(
             find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)),
           )
           .active,

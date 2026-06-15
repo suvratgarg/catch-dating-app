@@ -476,7 +476,7 @@ class _CalendarStatsHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.planned'),
                     label: 'Planned',
                     value: '${summary.events.length}',
@@ -484,7 +484,7 @@ class _CalendarStatsHeader extends StatelessWidget {
                 ),
                 const _StatDivider(),
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.distance'),
                     label: 'Distance',
                     value: '${summary.totalDistance.round()} km',
@@ -492,7 +492,7 @@ class _CalendarStatsHeader extends StatelessWidget {
                 ),
                 const _StatDivider(),
                 Expanded(
-                  child: StatColumn(
+                  child: CatchStatColumn(
                     key: const ValueKey('calendar.stats.next'),
                     label: 'Next',
                     value: summary.nextEvent == null

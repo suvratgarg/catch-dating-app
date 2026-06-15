@@ -73,7 +73,7 @@ class HostAppShell extends ConsumerWidget {
 
     return Scaffold(
       body: CatchNoticeHost(
-        persistentNotices: [if (isOffline) const AppNotice.offline()],
+        persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
         child: navigationShell,
       ),
       bottomNavigationBar: isAuthenticated

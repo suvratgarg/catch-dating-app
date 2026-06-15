@@ -22,7 +22,7 @@ Future<void> showClubShareCardSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => RichShareCardSheet(
+    builder: (_) => CatchShareCardSheet(
       card: ClubShareCard(club: club),
       share: share,
       fileName: 'catch-club-card.png',

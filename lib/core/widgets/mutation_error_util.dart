@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 /// Usage:
 /// ```dart
 /// if (mutation.hasError)
-///   ErrorBanner(message: mutationErrorMessage(mutation)),
+///   CatchErrorBanner(message: mutationErrorMessage(mutation)),
 /// ```
 String mutationErrorMessage(
   MutationState mutation, {

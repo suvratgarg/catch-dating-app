@@ -77,7 +77,7 @@ class EventDetailsStep extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: ActivityKind.eventCreationDefaults
                   .map(
-                    (activityKind) => SelectChip(
+                    (activityKind) => CatchSelectChip(
                       label: activityKind.label,
                       active: selectedActivityKind == activityKind,
                       accentColor: ActivityPalette.resolve(
@@ -117,7 +117,7 @@ class EventDetailsStep extends StatelessWidget {
                 runSpacing: CatchSpacing.s2,
                 children: EventInteractionModel.values
                     .map(
-                      (model) => SelectChip(
+                      (model) => CatchSelectChip(
                         key: CreateEventFormKeys.interactionModel(model.name),
                         label: model.label,
                         active: selectedInteractionModel == model,
@@ -166,7 +166,7 @@ class EventDetailsStep extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       children: PaceLevel.values
                           .map(
-                            (p) => SelectChip(
+                            (p) => CatchSelectChip(
                               label: p.label,
                               active: selectedPace == p,
                               accentColor: activityAccent,

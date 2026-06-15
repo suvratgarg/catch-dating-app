@@ -458,7 +458,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
         : const <Widget>[];
 
     if (isPeek && selectedEventId == null) {
-      return MutationErrorSnackbarListener(
+      return CatchMutationErrorListener(
         mutation: ClubMembershipController.joinMutation,
         child: CustomScrollView(
           key: const ValueKey('explore-list-scroll-view'),
@@ -509,7 +509,7 @@ class _ExploreSheetFeed extends ConsumerWidget {
               ),
     };
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: ClubMembershipController.joinMutation,
       child: CustomScrollView(
         key: const ValueKey('explore-list-scroll-view'),

@@ -108,8 +108,8 @@ class CatchGrade {
 /// Wraps a photo [child] in the shared [CatchGrade] for the current brightness.
 /// Non-destructive: the source image is untouched. Set [enabled] `false` to
 /// show the raw photo (e.g. the user viewing their own upload).
-class GradedImage extends StatelessWidget {
-  const GradedImage({super.key, required this.child, this.enabled = true});
+class CatchGradedImage extends StatelessWidget {
+  const CatchGradedImage({super.key, required this.child, this.enabled = true});
 
   final Widget child;
   final bool enabled;

@@ -3,8 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class StatColumn extends StatelessWidget {
-  const StatColumn({
+class CatchStatColumn extends StatelessWidget {
+  const CatchStatColumn({
     super.key,
     this.icon,
     this.value,

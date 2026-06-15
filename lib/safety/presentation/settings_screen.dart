@@ -62,7 +62,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             .savePreference(preference: preference, value: value),
       );
     } catch (_) {
-      // MutationErrorSnackbarListener owns user-facing error display.
+      // CatchMutationErrorListener owns user-facing error display.
     }
 
     if (!mounted) return;
@@ -90,7 +90,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             .requestAccountDeletion(),
       );
     } catch (_) {
-      // MutationErrorSnackbarListener owns user-facing error display.
+      // CatchMutationErrorListener owns user-facing error display.
     }
   }
 
@@ -151,13 +151,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     });
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: AuthSessionController.signOutMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: SettingsController.savePreferenceMutation,
-        child: MutationErrorSnackbarListener(
+        child: CatchMutationErrorListener(
           mutation: SettingsController.requestAccountDeletionMutation,
-          child: MutationErrorSnackbarListener(
+          child: CatchMutationErrorListener(
             mutation: SettingsController.unblockUserMutation,
             child: Scaffold(
               appBar: const CatchTopBar(title: 'Settings'),
@@ -181,24 +181,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             first: true,
                             title: 'Account',
                             children: [
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Phone number',
                                 value: _formatPhoneForDisplay(phoneNumber),
                                 icon: CatchIcons.phoneOutlined,
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Email',
                                 value: email.isEmpty ? 'Not added' : email,
                                 icon: CatchIcons.emailOutlined,
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Edit profile',
                                 icon: CatchIcons.personOutlined,
                                 onTap: () => context.pushNamed(
                                   Routes.profileScreen.name,
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 key: SettingsKeys.reviewHistoryRow,
                                 label: 'Review history',
                                 value: 'Events you reviewed',
@@ -207,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   Routes.reviewsHistoryScreen.name,
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 key: SettingsKeys.paymentHistoryRow,
                                 label: 'Payment history',
                                 value: 'Bookings and receipts',
@@ -216,7 +216,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   Routes.paymentHistoryScreen.name,
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 key: SettingsKeys.hostAppRow,
                                 label: 'Catch Host',
                                 value: 'Manage events and clubs',
@@ -231,7 +231,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               title: 'Development',
                               children: [
                                 if (AppConfig.enableEventPolicyLab)
-                                  SettingsRow(
+                                  CatchSettingsRow(
                                     key: SettingsKeys.eventPolicyLabRow,
                                     label: 'Event policy lab',
                                     value: 'Static booking policy previews',
@@ -241,7 +241,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     ),
                                   ),
                                 if (AppConfig.enableEventSuccessPreview)
-                                  SettingsRow(
+                                  CatchSettingsRow(
                                     key: SettingsKeys.eventSuccessLabRow,
                                     label: 'Event success lab',
                                     value:
@@ -252,7 +252,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     ),
                                   ),
                                 if (AppConfig.enableEventSuccessPreview)
-                                  SettingsRow(
+                                  CatchSettingsRow(
                                     key: SettingsKeys.eventSuccessManualQaRow,
                                     label: 'Event success manual QA',
                                     value: 'Host and attendee side by side',
@@ -267,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _SettingsSection(
                             title: 'Notifications',
                             children: [
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Push notifications',
                                 icon: CatchIcons.favoriteOutline,
                                 trailing: CatchToggle(
@@ -285,7 +285,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Messages',
                                 icon: CatchIcons.chatBubbleOutlineRounded,
                                 trailing: CatchToggle(
@@ -303,7 +303,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Event reminders',
                                 icon: CatchIcons.directionsRunOutlined,
                                 trailing: CatchToggle(
@@ -322,7 +322,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Event changes and cancellations',
                                 icon: CatchIcons.eventRepeatOutlined,
                                 trailing: CatchToggle(
@@ -343,7 +343,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Club announcements',
                                 icon: CatchIcons.notificationsActiveOutlined,
                                 trailing: CatchToggle(
@@ -361,7 +361,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Email updates',
                                 icon: CatchIcons.markEmailReadOutlined,
                                 trailing: CatchToggle(
@@ -386,17 +386,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             title: 'Privacy & safety',
                             footer: const _BlockedAccountsSection(),
                             children: [
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Blocked users',
                                 value: blockedCount?.toString(),
                                 icon: CatchIcons.shieldOutlined,
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Who can see you',
                                 value: 'Runners on my events',
                                 icon: CatchIcons.visibilityOutlined,
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Show me on map',
                                 icon: CatchIcons.mapOutlined,
                                 trailing: CatchToggle(
@@ -414,14 +414,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         ),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Privacy policy',
                                 icon: CatchIcons.lockOutline,
                                 onTap: () => _openExternal(
                                   Uri.parse('https://catchdates.com/privacy'),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 key: SettingsKeys.deleteAccountRow,
                                 label: 'Delete account',
                                 icon: CatchIcons.deleteOutline,
@@ -441,7 +441,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _SettingsSection(
                             title: 'About',
                             children: [
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Help & support',
                                 value: 'Contact us',
                                 icon: CatchIcons.helpOutline,
@@ -449,7 +449,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   Uri.parse('https://catchdates.com/help'),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Terms',
                                 value: 'Legal',
                                 icon: CatchIcons.descriptionOutlined,
@@ -457,7 +457,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   Uri.parse('https://catchdates.com/terms'),
                                 ),
                               ),
-                              SettingsRow(
+                              CatchSettingsRow(
                                 label: 'Version',
                                 value: '1.0',
                                 icon: CatchIcons.infoOutline,
@@ -468,7 +468,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             title: '',
                             hideTitle: true,
                             children: [
-                              SettingsRow(
+                              CatchSettingsRow(
                                 key: SettingsKeys.signOutRow,
                                 label: 'Log out',
                                 icon: CatchIcons.logoutRounded,
@@ -537,7 +537,7 @@ class _SettingsSection extends StatelessWidget {
   });
 
   final String title;
-  final List<SettingsRow> children;
+  final List<CatchSettingsRow> children;
   final bool first;
   final bool hideTitle;
   final Widget? footer;
@@ -647,8 +647,8 @@ class _BlockedAccountTile extends ConsumerWidget {
     final unblocking = ref.watch(SettingsController.unblockUserMutation);
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
 
-    return PersonRow(
-      data: PersonRowData(
+    return CatchPersonRow(
+      data: CatchPersonRowData(
         name: profile?.name ?? 'Blocked account',
         imageUrl: photoUrl,
         metaLine: blockedUser.source,

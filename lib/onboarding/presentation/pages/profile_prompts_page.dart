@@ -147,7 +147,7 @@ class _ProfilePromptsPageState extends ConsumerState<ProfilePromptsPage> {
         ],
         if (mutation.hasError) ...[
           gapH16,
-          ErrorBanner(message: mutationErrorMessage(mutation)),
+          CatchErrorBanner(message: mutationErrorMessage(mutation)),
         ],
       ],
     );

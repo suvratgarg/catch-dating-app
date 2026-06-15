@@ -19,8 +19,8 @@ abstract final class RichShareCardSheetKeys {
   static const shareButton = ValueKey('rich_share_card_sheet.share_button');
 }
 
-class RichShareCardSheet extends StatefulWidget {
-  const RichShareCardSheet({
+class CatchShareCardSheet extends StatefulWidget {
+  const CatchShareCardSheet({
     super.key,
     required this.card,
     required this.share,
@@ -44,10 +44,10 @@ class RichShareCardSheet extends StatefulWidget {
   final double pixelRatio;
 
   @override
-  State<RichShareCardSheet> createState() => _RichShareCardSheetState();
+  State<CatchShareCardSheet> createState() => _RichShareCardSheetState();
 }
 
-class _RichShareCardSheetState extends State<RichShareCardSheet> {
+class _RichShareCardSheetState extends State<CatchShareCardSheet> {
   final _captureKey = GlobalKey();
   bool _sharing = false;
 
@@ -99,7 +99,7 @@ class _RichShareCardSheetState extends State<RichShareCardSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const BottomSheetGrabber(),
+            const CatchBottomSheetGrabber(),
             gapH16,
             RepaintBoundary(
               key: _captureKey,

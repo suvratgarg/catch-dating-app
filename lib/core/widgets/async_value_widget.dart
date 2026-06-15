@@ -9,13 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Usage:
 /// ```dart
-/// AsyncValueWidget<List<Club>>(
+/// CatchAsyncValueView<List<Club>>(
 ///   value: ref.watch(watchClubsProvider),
 ///   data: (clubs) => ListView(...),
 /// )
 /// ```
-class AsyncValueWidget<T> extends StatelessWidget {
-  const AsyncValueWidget({
+class CatchAsyncValueView<T> extends StatelessWidget {
+  const CatchAsyncValueView({
     super.key,
     required this.value,
     required this.data,
@@ -52,9 +52,9 @@ class AsyncValueWidget<T> extends StatelessWidget {
   }
 }
 
-/// Sliver equivalent of [AsyncValueWidget].
-class AsyncValueSliverWidget<T> extends StatelessWidget {
-  const AsyncValueSliverWidget({
+/// Sliver equivalent of [CatchAsyncValueView].
+class CatchAsyncValueSliver<T> extends StatelessWidget {
+  const CatchAsyncValueSliver({
     super.key,
     required this.value,
     required this.data,

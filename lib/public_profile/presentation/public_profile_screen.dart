@@ -137,9 +137,9 @@ class PublicProfileScreen extends ConsumerWidget {
       }
     });
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: PublicProfileController.blockUserMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: PublicProfileController.reportUserMutation,
         child: Scaffold(
           appBar: CatchTopBar(
@@ -258,7 +258,7 @@ class _ReportReasonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsRow(
+    return CatchSettingsRow(
       label: label,
       icon: CatchIcons.flagOutlined,
       onTap: () => Navigator.of(context).pop(value),

@@ -3,10 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff `SelectChip`: a tactile selectable pill for questionnaire answers,
+/// Handoff `CatchSelectChip`: a tactile selectable pill for questionnaire answers,
 /// mission choices, and choosy filters.
-class SelectChip extends StatefulWidget {
-  const SelectChip({
+class CatchSelectChip extends StatefulWidget {
+  const CatchSelectChip({
     super.key,
     required this.label,
     this.active = false,
@@ -24,10 +24,10 @@ class SelectChip extends StatefulWidget {
   final String? semanticsLabel;
 
   @override
-  State<SelectChip> createState() => _SelectChipState();
+  State<CatchSelectChip> createState() => _SelectChipState();
 }
 
-class _SelectChipState extends State<SelectChip> {
+class _SelectChipState extends State<CatchSelectChip> {
   static const double _pressedScale = 0.95;
   static const double _activeScale = 1.03;
 

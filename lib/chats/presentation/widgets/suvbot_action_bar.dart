@@ -313,7 +313,7 @@ class _CircleActionButton extends StatelessWidget {
 
     return Tooltip(
       message: label,
-      child: IconBtn(
+      child: CatchIconButton(
         size: CatchLayout.suvbotCircleActionExtent,
         background: t.surface,
         onTap: pending ? null : onPressed,

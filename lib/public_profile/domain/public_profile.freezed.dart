@@ -95,7 +95,7 @@ as ActivityPreferences,
 @override
 @pragma('vm:prefer-inline')
 $ActivityPreferencesCopyWith<$Res> get activityPreferences {
-
+  
   return $ActivityPreferencesCopyWith<$Res>(_self.activityPreferences, (value) {
     return _then(_self.copyWith(activityPreferences: value));
   });
@@ -360,7 +360,7 @@ as ActivityPreferences,
 @override
 @pragma('vm:prefer-inline')
 $ActivityPreferencesCopyWith<$Res> get activityPreferences {
-
+  
   return $ActivityPreferencesCopyWith<$Res>(_self.activityPreferences, (value) {
     return _then(_self.copyWith(activityPreferences: value));
   });

@@ -95,7 +95,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       builder: (context, controller, child) {
         return Tooltip(
           message: widget.tooltip,
-          child: IconBtn(
+          child: CatchIconButton(
             onTap: _canOpen
                 ? () =>
                       controller.isOpen ? controller.close() : controller.open()

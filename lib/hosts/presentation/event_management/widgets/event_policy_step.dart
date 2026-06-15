@@ -190,7 +190,7 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final preset in EventAdmissionPreset.values)
-                SelectChip(
+                CatchSelectChip(
                   key: CreateEventFormKeys.admissionPreset(preset.name),
                   label: preset.label,
                   active: admissionPreset == preset,
@@ -504,7 +504,7 @@ class EventPolicyStep extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                SelectChip(
+                CatchSelectChip(
                   label: _policyFor(policyId).title.toUpperCase(),
                   active: cancellationPolicyId == policyId,
                   semanticsLabel: _policyFor(policyId).title,

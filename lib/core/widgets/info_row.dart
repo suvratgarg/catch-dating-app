@@ -5,17 +5,17 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_toggle.dart';
 import 'package:flutter/material.dart';
 
-enum InfoRowTrailing { none, chevron, toggle }
+enum CatchInfoRowTrailing { none, chevron, toggle }
 
-/// Handoff `InfoRow`: on-surface inline or stacked list row.
-class InfoRow extends StatelessWidget {
-  const InfoRow({
+/// Handoff `CatchInfoRow`: on-surface inline or stacked list row.
+class CatchInfoRow extends StatelessWidget {
+  const CatchInfoRow({
     super.key,
     this.icon,
     required this.label,
     this.caption,
     this.value,
-    this.trailing = InfoRowTrailing.none,
+    this.trailing = CatchInfoRowTrailing.none,
     this.toggleValue = false,
     this.onToggleChanged,
     this.add = false,
@@ -28,7 +28,7 @@ class InfoRow extends StatelessWidget {
   final String label;
   final String? caption;
   final String? value;
-  final InfoRowTrailing trailing;
+  final CatchInfoRowTrailing trailing;
   final bool toggleValue;
   final ValueChanged<bool>? onToggleChanged;
   final bool add;
@@ -36,8 +36,8 @@ class InfoRow extends StatelessWidget {
   final bool divider;
   final VoidCallback? onTap;
 
-  InfoRow copyWith({bool? divider}) {
-    return InfoRow(
+  CatchInfoRow copyWith({bool? divider}) {
+    return CatchInfoRow(
       key: key,
       icon: icon,
       label: label,
@@ -142,14 +142,14 @@ class InfoRow extends StatelessWidget {
                   ),
                 ),
               ],
-              if (trailing == InfoRowTrailing.toggle) ...[
+              if (trailing == CatchInfoRowTrailing.toggle) ...[
                 gapW12,
                 CatchToggle(
                   value: toggleValue,
                   onChanged: onToggleChanged,
                   semanticLabel: label,
                 ),
-              ] else if (trailing == InfoRowTrailing.chevron) ...[
+              ] else if (trailing == CatchInfoRowTrailing.chevron) ...[
                 gapW6,
                 Padding(
                   padding: EdgeInsets.only(top: stacked ? CatchSpacing.s1 : 0),

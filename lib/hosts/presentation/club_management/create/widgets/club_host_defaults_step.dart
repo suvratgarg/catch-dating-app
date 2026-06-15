@@ -108,7 +108,7 @@ class _DefaultActivityCard extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final activityKind in ActivityKind.eventCreationDefaults)
-                SelectChip(
+                CatchSelectChip(
                   label: activityKind.label,
                   active: selectedActivityKind == activityKind,
                   accentColor: ActivityPalette.resolve(
@@ -264,7 +264,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             children: [
               for (final preset in EventAdmissionDefaultPreset.values)
                 if (preset != EventAdmissionDefaultPreset.fixedCohortCaps)
-                  SelectChip(
+                  CatchSelectChip(
                     label: preset.label,
                     active: selectedAdmissionPreset == preset,
                     semanticsLabel: preset.label,
@@ -474,7 +474,7 @@ class _PolicyDefaultsCardState extends State<_PolicyDefaultsCard> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final policyId in EventCancellationPolicyId.values)
-                SelectChip(
+                CatchSelectChip(
                   label: _policyFor(policyId).title.toUpperCase(),
                   active: defaults.cancellationPolicyId == policyId,
                   semanticsLabel: _policyFor(policyId).title,

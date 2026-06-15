@@ -16,7 +16,7 @@ List<Widget> buildClubDirectorySlivers({
 }) {
   return [
     SliverToBoxAdapter(
-      child: SectionHeader(
+      child: CatchSectionHeader(
         title: 'Club directory',
         titleStyle: CatchTextStyles.titleL(context),
         padding: CatchInsets.sectionHeader,

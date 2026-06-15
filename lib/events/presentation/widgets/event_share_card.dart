@@ -23,7 +23,7 @@ Future<void> showEventShareCardSheet(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => RichShareCardSheet(
+    builder: (_) => CatchShareCardSheet(
       card: EventShareCard(event: event),
       share: share,
       fileName: 'catch-event-invite.png',

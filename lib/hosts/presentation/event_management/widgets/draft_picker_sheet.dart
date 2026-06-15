@@ -208,7 +208,7 @@ class _DraftCard extends StatelessWidget {
           gapW8,
           Tooltip(
             message: 'Delete draft',
-            child: IconBtn(
+            child: CatchIconButton(
               key: CreateEventFormKeys.deleteDraft(draft.id),
               onTap: isDeleting ? null : onDelete,
               size: 36,

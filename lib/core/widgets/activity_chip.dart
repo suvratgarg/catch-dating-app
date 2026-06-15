@@ -5,9 +5,9 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff ActivityChip: registry-backed activity glyph, label, and pigment.
-class ActivityChip extends StatelessWidget {
-  const ActivityChip({
+/// Handoff CatchActivityChip: registry-backed activity glyph, label, and pigment.
+class CatchActivityChip extends StatelessWidget {
+  const CatchActivityChip({
     super.key,
     required this.activityKind,
     this.primary = false,

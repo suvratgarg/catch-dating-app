@@ -148,7 +148,7 @@ class _CatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionHeader(title: 'Catches', heavy: true),
+              const CatchSectionHeader(title: 'Catches', heavy: true),
               gapH2,
               Text('After the event', style: CatchTextStyles.headline(context)),
             ],

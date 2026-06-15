@@ -48,7 +48,7 @@ class CatchEventThumbnail extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (hasPhoto)
-          GradedImage(
+          CatchGradedImage(
             child: Image.network(
               url,
               fit: fit,

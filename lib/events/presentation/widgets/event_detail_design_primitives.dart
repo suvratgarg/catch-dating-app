@@ -202,7 +202,7 @@ class EventDetailMapCard extends StatelessWidget {
                   ),
                 ),
                 Center(
-                  child: ActivityMapPin(
+                  child: CatchActivityMapPin(
                     activityKind: event.activityKind,
                     selected: true,
                   ),

@@ -255,7 +255,7 @@ class _CheckoutSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BottomSheetGrabber(),
+            const CatchBottomSheetGrabber(),
             gapH16,
             Align(
               alignment: Alignment.centerLeft,

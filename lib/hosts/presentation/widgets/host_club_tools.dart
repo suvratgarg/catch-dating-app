@@ -178,7 +178,7 @@ class HostStatChip extends StatelessWidget {
       backgroundColor: t.surface,
       borderWidth: 0,
       radius: CatchRadius.sm,
-      child: StatColumn(icon: icon, value: value, label: label, center: true),
+      child: CatchStatColumn(icon: icon, value: value, label: label, center: true),
     );
   }
 }

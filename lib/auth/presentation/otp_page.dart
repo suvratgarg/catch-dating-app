@@ -152,7 +152,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         if (verifyMutation.hasError) ...[
           gapH16,
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (verifyMutation as MutationError).error,
               context: AppErrorContext.auth,
@@ -161,7 +161,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
         if (sendMutation.hasError) ...[
           gapH16,
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (sendMutation as MutationError).error,
               context: AppErrorContext.auth,

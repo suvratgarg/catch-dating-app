@@ -3,18 +3,18 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-class StatStripItem {
-  const StatStripItem({required this.value, required this.label});
+class CatchStatStripItem {
+  const CatchStatStripItem({required this.value, required this.label});
 
   final String value;
   final String label;
 }
 
-/// Handoff `StatStrip`: flat hairline-bordered row of labeled data pairs.
-class StatStrip extends StatelessWidget {
-  const StatStrip({super.key, required this.items});
+/// Handoff `CatchStatStrip`: flat hairline-bordered row of labeled data pairs.
+class CatchStatStrip extends StatelessWidget {
+  const CatchStatStrip({super.key, required this.items});
 
-  final List<StatStripItem> items;
+  final List<CatchStatStripItem> items;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class StatStrip extends StatelessWidget {
 class _StatStripCell extends StatelessWidget {
   const _StatStripCell({required this.item});
 
-  final StatStripItem item;
+  final CatchStatStripItem item;
 
   @override
   Widget build(BuildContext context) {

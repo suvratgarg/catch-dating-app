@@ -15,13 +15,13 @@ import 'package:flutter/material.dart';
 /// Usage:
 /// ```dart
 /// // Simple full-width button
-/// BottomCTA(
+/// CatchBottomCta(
 ///   label: 'Join event — 6 spots left',
 ///   onPressed: () {},
 /// )
 ///
 /// // With price lead-in
-/// BottomCTA(
+/// CatchBottomCta(
 ///   label: 'Join event',
 ///   onPressed: () {},
 ///   leadingContent: Column(
@@ -34,10 +34,10 @@ import 'package:flutter/material.dart';
 /// )
 ///
 /// // Disabled state
-/// BottomCTA(label: 'Continue', onPressed: null)
+/// CatchBottomCta(label: 'Continue', onPressed: null)
 /// ```
-class BottomCTA extends StatelessWidget {
-  const BottomCTA({
+class CatchBottomCta extends StatelessWidget {
+  const CatchBottomCta({
     super.key,
     required this.label,
     required this.onPressed,

@@ -468,15 +468,15 @@ class _ChatMutationListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: ChatController.sendMessageMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: ChatController.sendImageMutation,
-        child: MutationErrorSnackbarListener(
+        child: CatchMutationErrorListener(
           mutation: ChatController.reportUserMutation,
-          child: MutationErrorSnackbarListener(
+          child: CatchMutationErrorListener(
             mutation: ChatController.blockUserMutation,
-            child: MutationErrorSnackbarListener(
+            child: CatchMutationErrorListener(
               mutation: SuvbotController.requestMutation,
               child: child,
             ),

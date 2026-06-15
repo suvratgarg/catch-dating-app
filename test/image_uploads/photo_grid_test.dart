@@ -87,7 +87,7 @@ void main() {
 
     expect(deletedSlots, [1]);
     expect(find.bySemanticsLabel('Edit photo 1'), findsOneWidget);
-    expect(find.byType(GradedImage), findsNWidgets(2));
+    expect(find.byType(CatchGradedImage), findsNWidgets(2));
     expect(find.text('MAIN'), findsOneWidget);
   });
 
@@ -107,7 +107,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(GradedImage), findsOneWidget);
+    expect(find.byType(CatchGradedImage), findsOneWidget);
     expect(find.text('MAIN'), findsNothing);
   });
 }

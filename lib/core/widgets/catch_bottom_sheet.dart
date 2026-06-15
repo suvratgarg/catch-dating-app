@@ -68,7 +68,7 @@ class CatchBottomSheetScaffold extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (grabber) ...[
-              const BottomSheetGrabber(),
+              const CatchBottomSheetGrabber(),
               const SizedBox(height: CatchLayout.sheetGrabberBottomMargin),
             ],
             if (hasHeader)

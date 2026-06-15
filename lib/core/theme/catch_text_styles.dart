@@ -185,7 +185,7 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// InfoRow primary text (`.t-title-s` in the design handoff).
+  /// CatchInfoRow primary text (`.t-title-s` in the design handoff).
   static TextStyle infoRowTitle(BuildContext context, {Color? color}) => _sans(
     context,
     size: 14,

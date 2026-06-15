@@ -99,13 +99,13 @@ class _HostPaymentAccountCardState
                 ),
                 child: Column(
                   children: [
-                    SettingsRow(
+                    CatchSettingsRow(
                       label: 'Country',
                       value: _countryLabel(country),
                       icon: CatchIcons.locationOnOutlined,
                       showChevron: false,
                     ),
-                    SettingsRow(
+                    CatchSettingsRow(
                       label: 'Default currency',
                       value: currency.toUpperCase(),
                       icon: CatchIcons.paymentsOutlined,
@@ -187,7 +187,7 @@ class _HostPaymentAccountCardState
         children: [
           Row(
             children: [
-              const Expanded(child: SectionHeader(title: 'Payouts')),
+              const Expanded(child: CatchSectionHeader(title: 'Payouts')),
               CatchBadge(
                 label: presentation.badge,
                 tone: presentation.tone,
@@ -223,7 +223,7 @@ class _HostPaymentAccountCardState
           ],
           if (_error != null) ...[
             gapH12,
-            ErrorBanner(message: appErrorMessage(_error!)),
+            CatchErrorBanner(message: appErrorMessage(_error!)),
           ],
           gapH12,
           Row(

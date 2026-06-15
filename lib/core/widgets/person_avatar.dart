@@ -9,15 +9,15 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class PersonAvatarItem {
-  const PersonAvatarItem({required this.name, this.imageUrl, this.initials});
+class CatchPersonAvatarItem {
+  const CatchPersonAvatarItem({required this.name, this.imageUrl, this.initials});
 
   final String name;
   final String? imageUrl;
   final String? initials;
 }
 
-enum PersonAvatarShape { circle, square }
+enum CatchPersonAvatarShape { circle, square }
 
 /// Circular avatar used across roster lists, chat threads, swipe cards, and
 /// the match modal.
@@ -31,25 +31,25 @@ enum PersonAvatarShape { circle, square }
 /// **Status dot**: pass [showStatusDot] = true to render a 9 px green dot at
 /// the bottom-right (online indicator).
 ///
-/// **Overflow bubble**: use the named constructor [PersonAvatar.count] to show
+/// **Overflow bubble**: use the named constructor [CatchPersonAvatar.count] to show
 /// a "+N" bubble instead of a photo (end of a stacked avatar row).
 ///
 /// Usage:
 /// ```dart
 /// // Ordinary avatar
-/// PersonAvatar(size: 40, name: 'Riya', imageUrl: user.photoUrl)
+/// CatchPersonAvatar(size: 40, name: 'Riya', imageUrl: user.photoUrl)
 ///
 /// // Stacked (white border)
-/// PersonAvatar(size: 32, name: 'Riya', borderWidth: 2, borderColor: Colors.white)
+/// CatchPersonAvatar(size: 32, name: 'Riya', borderWidth: 2, borderColor: Colors.white)
 ///
 /// // Match ring
-/// PersonAvatar(size: 72, name: 'Riya', borderWidth: 3, borderColor: t.primary)
+/// CatchPersonAvatar(size: 72, name: 'Riya', borderWidth: 3, borderColor: t.primary)
 ///
 /// // Overflow
-/// PersonAvatar.count(size: 32, count: 19, borderWidth: 2, borderColor: Colors.white)
+/// CatchPersonAvatar.count(size: 32, count: 19, borderWidth: 2, borderColor: Colors.white)
 /// ```
-class PersonAvatar extends StatelessWidget {
-  const PersonAvatar({
+class CatchPersonAvatar extends StatelessWidget {
+  const CatchPersonAvatar({
     super.key,
     required this.size,
     this.name = '',
@@ -59,11 +59,11 @@ class PersonAvatar extends StatelessWidget {
     this.borderColor,
     this.showStatusDot = false,
     this.obscured = false,
-    this.shape = PersonAvatarShape.circle,
+    this.shape = CatchPersonAvatarShape.circle,
   }) : _count = null;
 
   /// Overflow avatar — shows "+[count]" instead of a photo.
-  const PersonAvatar.count({
+  const CatchPersonAvatar.count({
     super.key,
     required this.size,
     // Keep the public argument as `count`; `this._count` would expose a
@@ -77,7 +77,7 @@ class PersonAvatar extends StatelessWidget {
        initials = null,
        showStatusDot = false,
        obscured = false,
-       shape = PersonAvatarShape.circle;
+       shape = CatchPersonAvatarShape.circle;
 
   final double size;
   final String name;
@@ -89,7 +89,7 @@ class PersonAvatar extends StatelessWidget {
   final Color? borderColor;
   final bool showStatusDot;
   final bool obscured;
-  final PersonAvatarShape shape;
+  final CatchPersonAvatarShape shape;
   final int? _count;
 
   @override
@@ -148,10 +148,10 @@ class PersonAvatar extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          shape: shape == PersonAvatarShape.circle
+          shape: shape == CatchPersonAvatarShape.circle
               ? BoxShape.circle
               : BoxShape.rectangle,
-          borderRadius: shape == PersonAvatarShape.square
+          borderRadius: shape == CatchPersonAvatarShape.square
               ? BorderRadius.circular(CatchRadius.md)
               : null,
           color: borderColor ?? Colors.transparent,
@@ -195,8 +195,8 @@ class PersonAvatar extends StatelessWidget {
   Widget _shell({required double size, required Widget child}) {
     final sized = SizedBox.square(dimension: size, child: child);
     return switch (shape) {
-      PersonAvatarShape.circle => ClipOval(child: sized),
-      PersonAvatarShape.square => ClipRRect(
+      CatchPersonAvatarShape.circle => ClipOval(child: sized),
+      CatchPersonAvatarShape.square => ClipRRect(
         borderRadius: BorderRadius.circular(CatchRadius.md),
         child: sized,
       ),
@@ -224,8 +224,8 @@ class PersonAvatar extends StatelessWidget {
   }
 }
 
-class PersonAvatarStack extends StatelessWidget {
-  const PersonAvatarStack({
+class CatchPersonAvatarStack extends StatelessWidget {
+  const CatchPersonAvatarStack({
     super.key,
     required this.items,
     this.totalCount,
@@ -240,7 +240,7 @@ class PersonAvatarStack extends StatelessWidget {
     this.activityKind = ActivityKind.openActivity,
   });
 
-  final List<PersonAvatarItem> items;
+  final List<CatchPersonAvatarItem> items;
   final int? totalCount;
   final double size;
   final double overlap;
@@ -262,7 +262,7 @@ class PersonAvatarStack extends StatelessWidget {
     final overflow = count - visibleCount;
     final avatars = <Widget>[
       for (final item in shown)
-        PersonAvatar(
+        CatchPersonAvatar(
           size: size,
           name: item.name,
           imageUrl: item.imageUrl,
@@ -279,7 +279,7 @@ class PersonAvatarStack extends StatelessWidget {
           borderColor: borderColor ?? CatchTokens.of(context).surface,
         ),
       if (showOverflowCount && overflow > 0)
-        PersonAvatar.count(
+        CatchPersonAvatar.count(
           size: size,
           count: overflow,
           borderWidth: borderWidth,

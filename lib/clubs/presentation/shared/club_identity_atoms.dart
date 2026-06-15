@@ -189,7 +189,7 @@ class ClubHostAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PersonAvatar(
+    return CatchPersonAvatar(
       size: size,
       name: name,
       imageUrl: imageUrl,

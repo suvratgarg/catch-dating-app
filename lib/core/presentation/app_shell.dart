@@ -125,7 +125,7 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       body: CatchNoticeHost(
-        persistentNotices: [if (isOffline) const AppNotice.offline()],
+        persistentNotices: [if (isOffline) const CatchNoticeData.offline()],
         child: AppShellActiveTab(
           index: navigationShell.currentIndex,
           child: navigationShell,

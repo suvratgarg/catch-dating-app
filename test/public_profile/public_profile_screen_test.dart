@@ -65,7 +65,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Report Riya'), findsOneWidget);
-    expect(find.byType(SettingsRow), findsNWidgets(4));
+    expect(find.byType(CatchSettingsRow), findsNWidgets(4));
     expect(find.text('Harassment or abuse'), findsOneWidget);
   });
 }

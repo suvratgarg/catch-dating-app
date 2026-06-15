@@ -25,7 +25,7 @@ void main() {
 
     expect(find.text('Settings'), findsOneWidget);
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
-    expect(find.byType(IconBtn), findsNothing);
+    expect(find.byType(CatchIconButton), findsNothing);
     expect(
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
@@ -53,7 +53,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(IconBtn), findsNWidgets(2));
+    expect(find.byType(CatchIconButton), findsNWidgets(2));
 
     await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
     await tester.pump();
@@ -181,7 +181,7 @@ void main() {
     await tester.pumpWidget(_wrap(const CatchTopBar(showBackButton: true)));
 
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
-    expect(find.byType(IconBtn), findsOneWidget);
+    expect(find.byType(CatchIconButton), findsOneWidget);
   });
 
   testWidgets('CatchTopBar supports tab bottoms and overflow menus', (

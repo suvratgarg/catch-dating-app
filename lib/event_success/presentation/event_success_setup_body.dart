@@ -525,7 +525,7 @@ class _RotationCadenceChips extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final interval in const <int?>[null, 10, 15, 20, 30])
-                SelectChip(
+                CatchSelectChip(
                   label: interval == null
                       ? 'No timed rotation'
                       : '$interval min',
@@ -570,7 +570,7 @@ class _RevealCountdownChips extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final seconds in const [0, 5, 10, 15])
-                SelectChip(
+                CatchSelectChip(
                   label: seconds == 0 ? 'Off' : '${seconds}s',
                   active: value == seconds,
                   enabled: enabled,
@@ -783,7 +783,7 @@ class _QuestionnaireBlock extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final option in _QuestionnaireMode.values)
-              SelectChip(
+              CatchSelectChip(
                 label: _questionnaireModeLabel(option),
                 active: mode == option,
                 enabled: editable,

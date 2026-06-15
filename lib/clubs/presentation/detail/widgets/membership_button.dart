@@ -107,7 +107,7 @@ class _ClubBellButton extends StatelessWidget {
       label: enabled
           ? 'Disable club push notifications'
           : 'Enable club push notifications',
-      child: IconBtn(
+      child: CatchIconButton(
         size: 52,
         background: background,
         onTap: isLoading ? null : onPressed,

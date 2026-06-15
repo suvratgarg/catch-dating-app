@@ -53,7 +53,7 @@ void main() {
     await _enterText(tester, CreateEventFormKeys.meetingPoint, 'New gate');
     await tester.ensureVisible(find.byKey(CreateEventFormKeys.distance));
     await tester.pump();
-    expect(find.byType(SelectChip), findsWidgets);
+    expect(find.byType(CatchSelectChip), findsWidgets);
     expect(find.byType(CatchToggle), findsOneWidget);
 
     await _enterText(tester, CreateEventFormKeys.distance, '7.5');

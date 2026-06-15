@@ -3,9 +3,9 @@ import 'package:catch_dating_app/core/widgets/catch_kicker.dart';
 import 'package:catch_dating_app/core/widgets/info_row.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff `InfoGroup`: kicker plus full-strength group separator.
-class InfoGroup extends StatelessWidget {
-  const InfoGroup({
+/// Handoff `CatchInfoGroup`: kicker plus full-strength group separator.
+class CatchInfoGroup extends StatelessWidget {
+  const CatchInfoGroup({
     super.key,
     this.title,
     this.first = false,
@@ -14,7 +14,7 @@ class InfoGroup extends StatelessWidget {
 
   final String? title;
   final bool first;
-  final List<InfoRow> rows;
+  final List<CatchInfoRow> rows;
 
   @override
   Widget build(BuildContext context) {

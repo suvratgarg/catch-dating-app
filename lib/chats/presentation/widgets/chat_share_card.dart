@@ -116,7 +116,7 @@ class _ChatShareCardSheetState extends State<ChatShareCardSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const BottomSheetGrabber(),
+          const CatchBottomSheetGrabber(),
           gapH16,
           RepaintBoundary(
             key: _captureKey,

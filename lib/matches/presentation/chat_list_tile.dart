@@ -50,15 +50,15 @@ class ChatListTile extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
                 child: Row(
                   children: [
-                    PersonAvatar(
+                    CatchPersonAvatar(
                       size: 44,
                       name: preview.displayName,
                       imageUrl: preview.photoUrl,
                       borderWidth: emphasized ? CatchStroke.underline : 0,
                       borderColor: emphasized ? t.primary : null,
                       shape: preview.match.isClubHostInquiry
-                          ? PersonAvatarShape.square
-                          : PersonAvatarShape.circle,
+                          ? CatchPersonAvatarShape.square
+                          : CatchPersonAvatarShape.circle,
                     ),
                     const SizedBox(width: CatchSpacing.s3),
                     Expanded(

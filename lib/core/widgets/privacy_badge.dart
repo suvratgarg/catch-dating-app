@@ -5,12 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-enum PrivacyBadgeKind { you, catchPrivate, host }
+enum CatchPrivacyBadgeKind { you, catchPrivate, host }
 
-class PrivacyBadge extends StatelessWidget {
-  const PrivacyBadge({super.key, this.kind = PrivacyBadgeKind.you});
+class CatchPrivacyBadge extends StatelessWidget {
+  const CatchPrivacyBadge({super.key, this.kind = CatchPrivacyBadgeKind.you});
 
-  final PrivacyBadgeKind kind;
+  final CatchPrivacyBadgeKind kind;
 
   @override
   Widget build(BuildContext context) {
@@ -49,17 +49,17 @@ class _PrivacyBadgeData {
   final String label;
   final IconData icon;
 
-  static _PrivacyBadgeData from(PrivacyBadgeKind kind) {
+  static _PrivacyBadgeData from(CatchPrivacyBadgeKind kind) {
     return switch (kind) {
-      PrivacyBadgeKind.you => _PrivacyBadgeData(
+      CatchPrivacyBadgeKind.you => _PrivacyBadgeData(
         label: 'Private to you',
         icon: CatchIcons.lockOutlineRounded,
       ),
-      PrivacyBadgeKind.catchPrivate => _PrivacyBadgeData(
+      CatchPrivacyBadgeKind.catchPrivate => _PrivacyBadgeData(
         label: 'Catch private',
         icon: CatchIcons.lockOutlineRounded,
       ),
-      PrivacyBadgeKind.host => _PrivacyBadgeData(
+      CatchPrivacyBadgeKind.host => _PrivacyBadgeData(
         label: 'Host can see',
         icon: CatchIcons.visibilityOutlined,
       ),

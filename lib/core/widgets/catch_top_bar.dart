@@ -18,7 +18,7 @@ enum CatchTopBarLeading { auto, back, close, none }
 /// Canonical Catch app-bar primitive.
 ///
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
-/// standard back/close [IconBtn] composition, optional trailing action, and
+/// standard back/close [CatchIconButton] composition, optional trailing action, and
 /// declarative expanding search.
 class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   const CatchTopBar({
@@ -41,7 +41,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
     this.height = CatchLayout.topBarHeight,
     this.bottom,
     this.actionIcon,
-    this.actionVariant = IconBtnVariant.plain,
+    this.actionVariant = CatchIconButtonVariant.plain,
     this.actionLabel,
     this.actionText,
     this.onAction,
@@ -69,7 +69,7 @@ class CatchTopBar extends StatefulWidget implements PreferredSizeWidget {
   final double height;
   final PreferredSizeWidget? bottom;
   final IconData? actionIcon;
-  final IconBtnVariant actionVariant;
+  final CatchIconButtonVariant actionVariant;
   final String? actionLabel;
   final String? actionText;
   final VoidCallback? onAction;
@@ -244,7 +244,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
       placeholder: widget.searchPlaceholder,
       onOpenSearch: () => setState(() => _searchOpen = true),
       onCloseSearch: () => setState(() => _searchOpen = false),
-      collapsedExtent: IconBtn.navSize,
+      collapsedExtent: CatchIconButton.navSize,
     );
   }
 }
@@ -298,7 +298,7 @@ class _CompactTopBarFrame extends StatelessWidget {
               child: Align(alignment: Alignment.centerLeft, child: title),
             ),
             _TopBarTrailingEdge(
-              search: search(IconBtn.navSize),
+              search: search(CatchIconButton.navSize),
               trailing: trailing,
             ),
           ],
@@ -359,7 +359,7 @@ class _LargeTopBarFrame extends StatelessWidget {
           else ...[
             Expanded(child: title),
             _TopBarTrailingEdge(
-              search: search(IconBtn.navSize),
+              search: search(CatchIconButton.navSize),
               trailing: trailing,
             ),
           ],
@@ -583,7 +583,7 @@ class CatchTopBarIconAction extends StatelessWidget {
     this.background,
     this.backgroundColor,
     this.foregroundColor,
-    this.variant = IconBtnVariant.bordered,
+    this.variant = CatchIconButtonVariant.bordered,
     this.size,
   });
 
@@ -593,7 +593,7 @@ class CatchTopBarIconAction extends StatelessWidget {
   final Color? background;
   final Color? backgroundColor;
   final Color? foregroundColor;
-  final IconBtnVariant variant;
+  final CatchIconButtonVariant variant;
   final double? size;
 
   @override
@@ -602,11 +602,11 @@ class CatchTopBarIconAction extends StatelessWidget {
 
     return Tooltip(
       message: tooltip,
-      child: IconBtn(
+      child: CatchIconButton(
         onTap: onPressed,
         variant: variant,
         background: backgroundColor ?? background,
-        size: size ?? IconBtn.navSize,
+        size: size ?? CatchIconButton.navSize,
         child: Icon(icon, size: CatchIcon.md, color: foregroundColor ?? t.ink),
       ),
     );

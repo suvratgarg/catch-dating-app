@@ -86,7 +86,7 @@ class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final playbook in widget.playbooks)
-                SelectChip(
+                CatchSelectChip(
                   label: playbook.activityType.label,
                   active: playbook.id == _draft.playbook.id,
                   onTap: () {

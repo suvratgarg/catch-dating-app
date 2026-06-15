@@ -68,16 +68,16 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   bool get _isEditing => widget.initialClub != null;
 
-  List<FormStepSpec> get _activeSteps {
+  List<CatchFormStepSpec> get _activeSteps {
     final uid = ref.read(uidProvider).asData?.value;
     if (_isMediaOnlyForUid(uid)) {
-      return [FormStepSpec(title: 'Club photos', formKey: _basicsFormKey)];
+      return [CatchFormStepSpec(title: 'Club photos', formKey: _basicsFormKey)];
     }
     return [
-      FormStepSpec(title: 'Club basics', formKey: _basicsFormKey),
-      FormStepSpec(title: 'Club details', formKey: _detailsFormKey),
-      FormStepSpec(title: 'Host defaults', formKey: _defaultsFormKey),
-      FormStepSpec(
+      CatchFormStepSpec(title: 'Club basics', formKey: _basicsFormKey),
+      CatchFormStepSpec(title: 'Club details', formKey: _detailsFormKey),
+      CatchFormStepSpec(title: 'Host defaults', formKey: _defaultsFormKey),
+      CatchFormStepSpec(
         title: 'Event success defaults',
         formKey: _eventSuccessFormKey,
       ),
@@ -450,7 +450,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 ],
               ),
             ),
-            if (mutationError != null) ErrorBanner(message: mutationError),
+            if (mutationError != null) CatchErrorBanner(message: mutationError),
             StepperFooter(
               isLastStep: _currentStep == activeSteps.length - 1,
               isLoading:
@@ -618,7 +618,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
               ),
             ),
           ),
-          if (mutationError != null) ErrorBanner(message: mutationError),
+          if (mutationError != null) CatchErrorBanner(message: mutationError),
           _EditClubFooter(isLoading: isSubmitting, onSave: _submitEdit),
         ],
       ),

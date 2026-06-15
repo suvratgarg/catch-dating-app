@@ -70,12 +70,12 @@ void main() {
         );
         await _openCreateEventFlow(tester);
 
-        expect(find.byType(SelectChip), findsWidgets);
+        expect(find.byType(CatchSelectChip), findsWidgets);
         await _fillBasicsStep(tester);
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is SelectChip &&
+                widget is CatchSelectChip &&
                 widget.label == 'Moderate' &&
                 widget.active,
           ),
@@ -116,7 +116,7 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is SelectChip && widget.label == 'OPEN' && widget.active,
+                widget is CatchSelectChip && widget.label == 'OPEN' && widget.active,
           ),
           findsOneWidget,
         );
@@ -1278,7 +1278,7 @@ Future<void> _tapActivityKind(WidgetTester tester, String label) async {
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
   final finder = find.byWidgetPredicate(
     (widget) =>
-        (widget is SelectChip && widget.label == label) ||
+        (widget is CatchSelectChip && widget.label == label) ||
         (widget is CatchChip && widget.label == label),
     description: 'selectable chip labeled $label',
     skipOffstage: false,

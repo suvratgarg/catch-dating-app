@@ -1079,7 +1079,7 @@ class _HostOverrideIconAction extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Tooltip(
       message: tooltip,
-      child: IconBtn(
+      child: CatchIconButton(
         onTap: onPressed,
         child: Icon(icon, size: CatchIcon.md, color: color ?? t.ink2),
       ),

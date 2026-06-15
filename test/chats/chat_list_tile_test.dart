@@ -46,9 +46,9 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
-    expect(find.byType(PersonAvatar), findsOneWidget);
+    expect(find.byType(CatchPersonAvatar), findsOneWidget);
     expect(
-      tester.widget<PersonAvatar>(find.byType(PersonAvatar)).borderWidth,
+      tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar)).borderWidth,
       CatchStroke.underline,
     );
 
@@ -97,7 +97,7 @@ void main() {
 
     final context = tester.element(find.byType(ChatListTile));
     final tokens = CatchTokens.of(context);
-    final avatar = tester.widget<PersonAvatar>(find.byType(PersonAvatar));
+    final avatar = tester.widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar));
 
     expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);

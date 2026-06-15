@@ -63,7 +63,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             );
       });
     } catch (_) {
-      // MutationErrorSnackbarListener owns user-facing error display.
+      // CatchMutationErrorListener owns user-facing error display.
     }
   }
 
@@ -87,7 +87,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       }
     });
 
-    return MutationErrorSnackbarListener(
+    return CatchMutationErrorListener(
       mutation: FiltersController.saveFiltersMutation,
       child: Scaffold(
         backgroundColor: t.bg,
@@ -164,7 +164,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           runSpacing: CatchSpacing.s2,
                           children: [
                             for (final gender in Gender.values)
-                              SelectChip(
+                              CatchSelectChip(
                                 key: SwipeKeys.genderFilterChip(gender.name),
                                 label: gender.label,
                                 active: interestedIn.contains(gender),

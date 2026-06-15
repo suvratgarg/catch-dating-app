@@ -41,7 +41,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
               : uidAsync.when(
                   loading: () => const Center(child: CatchLoadingIndicator()),
                   error: (error, _) =>
-                      Center(child: ErrorBanner.fromError(error)),
+                      Center(child: CatchErrorBanner.fromError(error)),
                   data: (uid) {
                     if (uid == null || uid.isEmpty) {
                       return const _LaunchAccessSignedOutView();
@@ -53,7 +53,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                       loading: () =>
                           const Center(child: CatchLoadingIndicator()),
                       error: (error, _) =>
-                          Center(child: ErrorBanner.fromError(error)),
+                          Center(child: CatchErrorBanner.fromError(error)),
                       data: (application) {
                         if (application != null &&
                             !application.status.canEditApplication) {
@@ -203,7 +203,7 @@ class _LaunchAccessApplicationFormState
               ),
             ),
             gapH24,
-            ChipField<LaunchAccessRole>(
+            CatchChipField<LaunchAccessRole>(
               label: 'Joining as',
               values: LaunchAccessRole.values,
               selected: {draft.role},
@@ -216,7 +216,7 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            ChipField<LaunchAccessEventType>(
+            CatchChipField<LaunchAccessEventType>(
               label: 'Events you would show up for',
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
@@ -232,7 +232,7 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            ChipField<LaunchAccessAvailabilityWindow>(
+            CatchChipField<LaunchAccessAvailabilityWindow>(
               label: 'Best times',
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
@@ -349,7 +349,7 @@ class _LaunchAccessApplicationFormState
             ),
             if (mutation.hasError) ...[
               gapH16,
-              ErrorBanner(message: mutationErrorMessage(mutation)),
+              CatchErrorBanner(message: mutationErrorMessage(mutation)),
             ],
             gapH32,
             CatchButton(

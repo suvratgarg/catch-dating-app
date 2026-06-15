@@ -42,7 +42,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchTextField), findsOneWidget);
-      final backButtonSize = tester.getSize(find.byType(IconBtn));
+      final backButtonSize = tester.getSize(find.byType(CatchIconButton));
       final searchFieldSize = tester.getSize(find.byType(CatchTextField));
       expect(searchFieldSize.height, CatchControlMetrics.floatingMinHeight);
       expect(searchFieldSize.height, backButtonSize.height);

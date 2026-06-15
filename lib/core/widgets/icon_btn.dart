@@ -1,30 +1,30 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-enum IconBtnVariant { bordered, float, plain }
+enum CatchIconButtonVariant { bordered, float, plain }
 
 /// Handoff `IconButton`: a Phosphor glyph in a circular target.
 ///
 /// Defaults to the 44px bordered inline control. Top bars use [navSize] for the
 /// handoff's 40px back/action rule, and photo/map overlays use
-/// [IconBtnVariant.float].
+/// [CatchIconButtonVariant.float].
 ///
 /// Usage:
 /// ```dart
-/// IconBtn(onTap: () {}, child: Icon(CatchIcons.notificationsOutlined))
+/// CatchIconButton(onTap: () {}, child: Icon(CatchIcons.notificationsOutlined))
 ///
 /// // Floating photo/map chrome.
-/// IconBtn(variant: IconBtnVariant.float, child: Icon(CatchIcons.close))
+/// CatchIconButton(variant: CatchIconButtonVariant.float, child: Icon(CatchIcons.close))
 ///
 /// // Solid custom variant.
-/// IconBtn(background: t.ink, child: Icon(CatchIcons.tune, color: t.surface))
+/// CatchIconButton(background: t.ink, child: Icon(CatchIcons.tune, color: t.surface))
 /// ```
-class IconBtn extends StatelessWidget {
-  const IconBtn({
+class CatchIconButton extends StatelessWidget {
+  const CatchIconButton({
     super.key,
     required this.child,
     this.onTap,
-    this.variant = IconBtnVariant.bordered,
+    this.variant = CatchIconButtonVariant.bordered,
     this.active = false,
     this.fill,
     this.accent,
@@ -34,11 +34,11 @@ class IconBtn extends StatelessWidget {
     this.borderRadius,
   });
 
-  factory IconBtn.icon({
+  factory CatchIconButton.icon({
     Key? key,
     required IconData icon,
     VoidCallback? onTap,
-    IconBtnVariant variant = IconBtnVariant.bordered,
+    CatchIconButtonVariant variant = CatchIconButtonVariant.bordered,
     bool active = false,
     bool? fill,
     Color? accent,
@@ -47,7 +47,7 @@ class IconBtn extends StatelessWidget {
     double size = defaultSize,
     double? borderRadius,
   }) {
-    return IconBtn(
+    return CatchIconButton(
       key: key,
       onTap: onTap,
       variant: variant,
@@ -67,7 +67,7 @@ class IconBtn extends StatelessWidget {
 
   final Widget child;
   final VoidCallback? onTap;
-  final IconBtnVariant variant;
+  final CatchIconButtonVariant variant;
   final bool active;
   final bool? fill;
   final Color? accent;
@@ -146,7 +146,7 @@ class _IconBtnPalette {
 
   static _IconBtnPalette from({
     required CatchTokens tokens,
-    required IconBtnVariant variant,
+    required CatchIconButtonVariant variant,
     required bool active,
     required Color? accent,
     required Color? background,
@@ -154,14 +154,14 @@ class _IconBtnPalette {
     final activeColor = accent ?? tokens.ink;
 
     switch (variant) {
-      case IconBtnVariant.bordered:
+      case CatchIconButtonVariant.bordered:
         return _IconBtnPalette(
           background: background ?? tokens.surface,
           foreground: active ? activeColor : tokens.ink,
           borderColor: tokens.line2,
           shadow: CatchElevation.none,
         );
-      case IconBtnVariant.float:
+      case CatchIconButtonVariant.float:
         return _IconBtnPalette(
           background:
               background ??
@@ -172,7 +172,7 @@ class _IconBtnPalette {
           borderColor: null,
           shadow: CatchElevation.iconButtonFloat,
         );
-      case IconBtnVariant.plain:
+      case CatchIconButtonVariant.plain:
         return _IconBtnPalette(
           background: background ?? Colors.transparent,
           foreground: active ? activeColor : tokens.ink,

@@ -232,7 +232,7 @@ class _Photo extends StatelessWidget {
         patternOpacity: CatchOpacity.profileFallbackArtworkPattern,
       );
     }
-    return GradedImage(
+    return CatchGradedImage(
       child: Image(image: photo, fit: BoxFit.cover),
     );
   }

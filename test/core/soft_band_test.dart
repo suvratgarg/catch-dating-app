@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('SoftBand renders the handoff primary-soft inset row', (
+  testWidgets('CatchSoftBand renders the handoff primary-soft inset row', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -14,7 +14,7 @@ void main() {
         theme: AppTheme.light,
         home: const Scaffold(
           body: Center(
-            child: SoftBand(child: Text('Only you see this privacy note.')),
+            child: CatchSoftBand(child: Text('Only you see this privacy note.')),
           ),
         ),
       ),

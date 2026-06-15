@@ -575,7 +575,7 @@ class _ManualQaControls extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final value in _ManualQaScenario.values)
-                SelectChip(
+                CatchSelectChip(
                   label: value.label,
                   active: scenario == value,
                   onTap: () => onScenarioChanged(value),

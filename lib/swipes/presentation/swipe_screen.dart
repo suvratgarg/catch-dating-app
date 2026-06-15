@@ -286,7 +286,7 @@ class _OverlayIconAction extends StatelessWidget {
 
     return Tooltip(
       message: tooltip,
-      child: IconBtn(
+      child: CatchIconButton(
         size: CatchLayout.floatingControlExtent,
         background: t.surface.withValues(
           alpha: CatchOpacity.floatingControlFill,

@@ -133,7 +133,7 @@ class _ComposerIconAction extends StatelessWidget {
         opacity: enabled ? 1 : 0.4,
         child: IconTheme(
           data: IconThemeData(color: effectiveForeground, size: CatchIcon.md),
-          child: IconBtn(
+          child: CatchIconButton(
             size: 42,
             background: backgroundColor ?? Colors.transparent,
             onTap: enabled ? onPressed : null,

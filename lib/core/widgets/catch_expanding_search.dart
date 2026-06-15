@@ -75,7 +75,7 @@ class CatchExpandingSearch extends StatelessWidget {
                   child: Semantics(
                     button: true,
                     label: semanticLabel ?? tooltip,
-                    child: IconBtn(
+                    child: CatchIconButton(
                       size: collapsedExtent,
                       onTap: onOpenSearch,
                       background: t.raised,

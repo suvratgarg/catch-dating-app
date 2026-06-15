@@ -16,8 +16,8 @@ import 'package:flutter/material.dart';
 ///   message, timestamp, and optional unread badge.
 /// [isFresh] — draws an orange ring around the avatar and a [primarySoft]
 ///   row background (new match / unread catch).
-class PersonRowData {
-  const PersonRowData({
+class CatchPersonRowData {
+  const CatchPersonRowData({
     required this.name,
     this.imageUrl,
     this.seed = '',
@@ -54,7 +54,7 @@ class PersonRowData {
   final bool isFresh;
 }
 
-// ── PersonRow ─────────────────────────────────────────────────────────────────
+// ── CatchPersonRow ─────────────────────────────────────────────────────────────────
 
 /// Flexible person row used in:
 /// - **Chat inbox** — pass [data.lastMessage] to activate chat-thread layout
@@ -64,20 +64,20 @@ class PersonRowData {
 /// Usage:
 /// ```dart
 /// // Chat inbox row
-/// PersonRow(
-///   data: PersonRowData(name: 'Riya', lastMessage: 'See you Saturday!',
+/// CatchPersonRow(
+///   data: CatchPersonRowData(name: 'Riya', lastMessage: 'See you Saturday!',
 ///                       contextLine: 'Bandra Breakers 7K',
 ///                       timestamp: '2m', unreadCount: 2, isFresh: true),
 /// )
 ///
 /// // Roster row
-/// PersonRow(
-///   data: PersonRowData(name: 'Riya', metaLine: '5:30 /km · 26'),
+/// CatchPersonRow(
+///   data: CatchPersonRowData(name: 'Riya', metaLine: '5:30 /km · 26'),
 ///   trailing: CatchBadge(label: 'Joined', tone: CatchBadgeTone.brand),
 /// )
 /// ```
-class PersonRow extends StatelessWidget {
-  const PersonRow({
+class CatchPersonRow extends StatelessWidget {
+  const CatchPersonRow({
     super.key,
     required this.data,
     this.trailing,
@@ -85,7 +85,7 @@ class PersonRow extends StatelessWidget {
     this.avatarSize = 48,
   });
 
-  final PersonRowData data;
+  final CatchPersonRowData data;
 
   /// Optional widget shown at the right edge — badge, follow button, etc.
   final Widget? trailing;
@@ -109,7 +109,7 @@ class PersonRow extends StatelessWidget {
           child: Row(
             children: [
               // Avatar
-              PersonAvatar(
+              CatchPersonAvatar(
                 size: avatarSize,
                 name: data.name,
                 imageUrl: data.imageUrl,
@@ -137,7 +137,7 @@ class PersonRow extends StatelessWidget {
 
 class _ChatLayout extends StatelessWidget {
   const _ChatLayout({required this.data});
-  final PersonRowData data;
+  final CatchPersonRowData data;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +235,7 @@ class _ChatLayout extends StatelessWidget {
 
 class _RosterLayout extends StatelessWidget {
   const _RosterLayout({required this.data});
-  final PersonRowData data;
+  final CatchPersonRowData data;
 
   @override
   Widget build(BuildContext context) {

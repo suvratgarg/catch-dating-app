@@ -239,19 +239,19 @@ class _PaymentTile extends ConsumerWidget {
                   gapH20,
                   Divider(color: t.line, height: 1),
                   gapH20,
-                  DetailRow(label: 'Payment ID', value: payment.paymentId),
+                  CatchDetailRow(label: 'Payment ID', value: payment.paymentId),
                   gapH12,
-                  DetailRow(label: 'Order ID', value: payment.orderId),
+                  CatchDetailRow(label: 'Order ID', value: payment.orderId),
                   gapH12,
-                  DetailRow(label: 'Event ID', value: payment.eventId),
+                  CatchDetailRow(label: 'Event ID', value: payment.eventId),
                   gapH12,
-                  DetailRow(
+                  CatchDetailRow(
                     label: 'Date',
                     value: AppTimeFormatters.dateTime(payment.createdAt),
                   ),
                   if (statusPresentation.detail case final detail?) ...[
                     gapH12,
-                    DetailRow(label: 'Status', value: detail),
+                    CatchDetailRow(label: 'Status', value: detail),
                   ],
                   if (payment.signUpFailed) ...[
                     gapH20,

@@ -72,7 +72,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       title: "It's a Catch.",
       message: 'You and $name both liked each other.',
       icon: CatchIcons.favoriteRounded,
-      visual: PersonAvatar(
+      visual: CatchPersonAvatar(
         size: 108,
         name: name,
         imageUrl: photoUrl,

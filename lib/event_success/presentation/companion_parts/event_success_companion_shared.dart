@@ -254,7 +254,7 @@ class _StageNav extends StatelessWidget {
       children: [
         Tooltip(
           message: 'Back',
-          child: IconBtn(
+          child: CatchIconButton(
             background: foreground.withValues(alpha: CatchOpacity.subtleFill),
             onTap: canPop ? () => _popCompanion(context) : null,
             child: Icon(

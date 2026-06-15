@@ -249,7 +249,7 @@ class _ParticipantsListState extends ConsumerState<_ParticipantsList> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (errorMutation.hasError)
-          ErrorBanner(message: mutationErrorMessage(errorMutation)),
+          CatchErrorBanner(message: mutationErrorMessage(errorMutation)),
         if (widget.scrollable) Expanded(child: rows) else rows,
       ],
     );
@@ -1455,7 +1455,7 @@ class _DecisionIconAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
-      child: IconBtn(
+      child: CatchIconButton(
         onTap: onPressed,
         child: Icon(icon, size: CatchIcon.md, color: color),
       ),
@@ -1782,7 +1782,7 @@ class _CompactPersonIdentity extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        PersonAvatar(size: 34, name: name, imageUrl: photoUrl),
+        CatchPersonAvatar(size: 34, name: name, imageUrl: photoUrl),
         gapW10,
         Expanded(
           child: _NameMeta(name: name, meta: meta),

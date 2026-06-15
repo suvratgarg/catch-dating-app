@@ -606,7 +606,7 @@ class _EventCheckInQrScannerSheetState
                 ),
                 Tooltip(
                   message: 'Close',
-                  child: IconBtn(
+                  child: CatchIconButton(
                     onTap: () => Navigator.of(context).maybePop(false),
                     child: Icon(
                       CatchIcons.closeRounded,
@@ -791,7 +791,7 @@ class _StageCueLine extends StatelessWidget {
                       cue.moment == EventSuccessConversationCueMoment.postEvent
                       ? 'Copy opener'
                       : 'Copy cue',
-                  child: IconBtn(
+                  child: CatchIconButton(
                     onTap: () => _copyCue(context, cue),
                     child: Icon(
                       CatchIcons.contentCopyRounded,

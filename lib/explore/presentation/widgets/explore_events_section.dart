@@ -440,7 +440,7 @@ class _ThisWeekRecommendationsSection extends StatelessWidget {
           color: CatchTokens.of(context).ink3,
         ),
         gapH2,
-        SectionHeader(
+        CatchSectionHeader(
           title: 'This week',
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.clubDisplay(
@@ -590,7 +590,7 @@ class _ExploreClubCover extends StatelessWidget {
     if (url == null || url.isEmpty) {
       return ClubPolaroidArtwork(club: club, compact: compact);
     }
-    return GradedImage(
+    return CatchGradedImage(
       child: Image.network(
         url,
         fit: BoxFit.cover,

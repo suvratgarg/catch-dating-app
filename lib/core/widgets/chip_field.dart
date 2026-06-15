@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 /// Wraps [FormField] so it participates in [Form] validation.
 /// The [selected] set is driven by the parent — update it via [onChanged] and
 /// call [setState] to reflect changes.
-class ChipField<T extends Labelled> extends StatelessWidget {
-  const ChipField({
+class CatchChipField<T extends Labelled> extends StatelessWidget {
+  const CatchChipField({
     super.key,
     required this.label,
     required this.values,

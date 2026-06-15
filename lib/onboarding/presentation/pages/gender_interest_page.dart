@@ -63,7 +63,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
         children: [
           const OnboardingStepHeader(title: 'How do you identify?'),
           gapH28,
-          ChipField<Gender>(
+          CatchChipField<Gender>(
             label: 'I AM A',
             values: Gender.values,
             selected: _gender != null ? {_gender!} : {},
@@ -77,7 +77,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             },
           ),
           gapH28,
-          ChipField<Gender>(
+          CatchChipField<Gender>(
             label: 'SHOW ME',
             values: Gender.values,
             selected: _interestedIn,
@@ -93,7 +93,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

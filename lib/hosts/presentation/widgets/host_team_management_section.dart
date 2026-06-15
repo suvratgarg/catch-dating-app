@@ -54,10 +54,10 @@ class HostTeamManagementSection extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Expanded(child: SectionHeader(title: 'Host team')),
+              const Expanded(child: CatchSectionHeader(title: 'Host team')),
               Tooltip(
                 message: 'Add host',
-                child: IconBtn(
+                child: CatchIconButton(
                   onTap: actionPending
                       ? null
                       : () => unawaited(_showAddHostSheet(context)),
@@ -292,7 +292,7 @@ class _AddHostSheetState extends ConsumerState<_AddHostSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
         ],
       ),

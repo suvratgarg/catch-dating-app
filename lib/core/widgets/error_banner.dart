@@ -8,22 +8,22 @@ import 'package:flutter/material.dart';
 
 /// A styled inline error banner for displaying mutation or async errors.
 ///
-/// Use [ErrorBanner] for errors that appear within existing page content
+/// Use [CatchErrorBanner] for errors that appear within existing page content
 /// (below a form, above a footer). For transient errors from bottom sheets
 /// or non-blocking actions, prefer [RunMutationSnackbarListener].
 ///
 /// An optional [onRetry] callback adds a "Try again" button to the banner.
-class ErrorBanner extends StatelessWidget {
-  const ErrorBanner({super.key, required this.message, this.onRetry});
+class CatchErrorBanner extends StatelessWidget {
+  const CatchErrorBanner({super.key, required this.message, this.onRetry});
 
-  factory ErrorBanner.fromError(
+  factory CatchErrorBanner.fromError(
     Object error, {
     Key? key,
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
   }) {
     final descriptor = appErrorDescriptor(error, context: context);
-    return ErrorBanner(
+    return CatchErrorBanner(
       key: key,
       message: descriptor.message,
       onRetry: descriptor.retryable ? onRetry : null,

@@ -119,7 +119,7 @@ class _ChatTitle extends StatelessWidget {
           padding: CatchInsets.controlVerticalTight,
           child: Row(
             children: [
-              PersonAvatar(size: 36, name: name, imageUrl: photoUrl),
+              CatchPersonAvatar(size: 36, name: name, imageUrl: photoUrl),
               gapW10,
               Expanded(
                 child: Text(

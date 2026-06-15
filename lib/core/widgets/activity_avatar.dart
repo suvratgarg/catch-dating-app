@@ -7,8 +7,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Activity-register avatar: initials over the selected activity pigment.
-class ActivityAvatar extends StatelessWidget {
-  const ActivityAvatar({
+class CatchActivityAvatar extends StatelessWidget {
+  const CatchActivityAvatar({
     super.key,
     required this.activityKind,
     this.initials,

@@ -52,7 +52,7 @@ class PhotoSlot extends StatelessWidget {
 
     final Widget content;
     if (url != null) {
-      content = GradedImage(
+      content = CatchGradedImage(
         child: Image.network(
           url!,
           fit: BoxFit.cover,

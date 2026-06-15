@@ -10,21 +10,21 @@ import 'package:flutter/material.dart';
 ///
 /// Usage:
 /// ```dart
-/// SettingsRow(
+/// CatchSettingsRow(
 ///   label: 'Phone', value: '+91 9876543210',
 ///   icon: CatchIcons.phoneOutlined, onTap: () {...},
 /// )
-/// SettingsRow(
+/// CatchSettingsRow(
 ///   label: 'Delete account', icon: CatchIcons.deleteOutline,
 ///   danger: true, onTap: _confirmDelete,
 /// )
-/// SettingsRow(
+/// CatchSettingsRow(
 ///   label: 'Show me on map', icon: CatchIcons.mapOutlined,
 ///   trailing: Switch(...),
 /// )
 /// ```
-class SettingsRow extends StatelessWidget {
-  const SettingsRow({
+class CatchSettingsRow extends StatelessWidget {
+  const CatchSettingsRow({
     super.key,
     required this.label,
     required this.icon,
@@ -47,8 +47,8 @@ class SettingsRow extends StatelessWidget {
   final bool? showChevron;
   final int valueMaxLines;
 
-  SettingsRow copyWith({bool? divider}) {
-    return SettingsRow(
+  CatchSettingsRow copyWith({bool? divider}) {
+    return CatchSettingsRow(
       key: key,
       label: label,
       icon: icon,

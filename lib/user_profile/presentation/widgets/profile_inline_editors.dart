@@ -76,7 +76,7 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Widget? buildSaveError() {
     final error = _saveError;
     if (error == null) return null;
-    return ErrorBanner(
+    return CatchErrorBanner(
       message: appErrorMessage(error, context: AppErrorContext.profile),
     );
   }
@@ -599,7 +599,7 @@ class _ProfileInlineTextEntryEditorState
       ),
       saveError: _validationError == null
           ? buildSaveError()
-          : ErrorBanner(message: _validationError!),
+          : CatchErrorBanner(message: _validationError!),
       actionLeading: widget.showCounter && widget.maxLength != null
           ? AnimatedBuilder(
               animation: _controller,
@@ -791,7 +791,7 @@ class _ProfileInlinePromptEntryEditorState
       ),
       saveError: _validationError == null
           ? buildSaveError()
-          : ErrorBanner(message: _validationError!),
+          : CatchErrorBanner(message: _validationError!),
       actionLeading: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) => Text(

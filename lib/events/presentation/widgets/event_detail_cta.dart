@@ -117,14 +117,14 @@ class EventDetailCta extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (errorMutation.hasError)
-          ErrorBanner(
+          CatchErrorBanner(
             message: appErrorMessage(
               (errorMutation as MutationError).error,
               context: AppErrorContext.event,
             ),
           ),
         if (hasActiveWaitlistOffer)
-          BottomCTA(
+          CatchBottomCta(
             label: !isFreeForViewer && !supportsPaid
                 ? 'Paid booking unavailable'
                 : isFreeForViewer
@@ -203,7 +203,7 @@ class EventDetailCta extends ConsumerWidget {
             dividerColor: ctaDivider,
           )
         else if (canRequestHostApproval)
-          BottomCTA(
+          CatchBottomCta(
             buttonKey: EventActionKeys.joinWaitlistButton,
             label: needsRunPreferences
                 ? 'Set run preferences'
@@ -229,7 +229,7 @@ class EventDetailCta extends ConsumerWidget {
           )
         else
           switch (status) {
-            EventSignUpStatus.eligible => BottomCTA(
+            EventSignUpStatus.eligible => CatchBottomCta(
               buttonKey: EventActionKeys.bookButton,
               label: !isFreeForViewer && !supportsPaid
                   ? 'Paid booking unavailable'
@@ -316,7 +316,7 @@ class EventDetailCta extends ConsumerWidget {
                 return const SizedBox.shrink();
               }
 
-              return BottomCTA(
+              return CatchBottomCta(
                 buttonKey: EventActionKeys.cancelBookingButton,
                 label: 'Cancel booking',
                 onPressed: cancelMutation.isPending
@@ -333,7 +333,7 @@ class EventDetailCta extends ConsumerWidget {
                 dividerColor: ctaDivider,
               );
             })(),
-            EventSignUpStatus.full => BottomCTA(
+            EventSignUpStatus.full => CatchBottomCta(
               buttonKey: EventActionKeys.joinWaitlistButton,
               label: needsRunPreferences
                   ? 'Set run preferences'
@@ -358,7 +358,7 @@ class EventDetailCta extends ConsumerWidget {
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.waitlisted => BottomCTA(
+            EventSignUpStatus.waitlisted => CatchBottomCta(
               label: requiresHostApproval
                   ? 'Withdraw request'
                   : 'Leave waitlist',
@@ -374,20 +374,20 @@ class EventDetailCta extends ConsumerWidget {
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.attended => BottomCTA(
+            EventSignUpStatus.attended => CatchBottomCta(
               label: 'You attended this event',
               onPressed: null,
               leadingContent: const AttendedLeading(),
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.past => BottomCTA(
+            EventSignUpStatus.past => CatchBottomCta(
               label: 'This event has ended',
               onPressed: null,
               backgroundColor: ctaBackground,
               dividerColor: ctaDivider,
             ),
-            EventSignUpStatus.ineligible => BottomCTA(
+            EventSignUpStatus.ineligible => CatchBottomCta(
               label: switch (eligibility) {
                 AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
                 AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',

@@ -25,7 +25,7 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (hasImage(resolvedImageUrl))
-          GradedImage(
+          CatchGradedImage(
             child: Image.network(
               resolvedImageUrl!,
               fit: BoxFit.cover,

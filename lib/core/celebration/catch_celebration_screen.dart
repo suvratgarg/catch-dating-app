@@ -131,7 +131,7 @@ class _CatchCelebrationScreenState
                           alignment: Alignment.centerRight,
                           child: widget.onClose == null
                               ? gapH44
-                              : IconBtn(
+                              : CatchIconButton(
                                   background: _celebrationCream.withValues(
                                     alpha: 0.22,
                                   ),

@@ -101,7 +101,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             );
       });
     } catch (_) {
-      // Inline ErrorBanner owns user-facing error display.
+      // Inline CatchErrorBanner owns user-facing error display.
     }
   }
 
@@ -122,7 +122,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
         await tx.get(writeReviewControllerProvider.notifier).delete(review.id);
       });
     } catch (_) {
-      // Inline ErrorBanner owns user-facing error display.
+      // Inline CatchErrorBanner owns user-facing error display.
     }
   }
 
@@ -196,11 +196,11 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(mutation)),
+            CatchErrorBanner(message: mutationErrorMessage(mutation)),
           ],
           if (deleteMutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: mutationErrorMessage(deleteMutation)),
+            CatchErrorBanner(message: mutationErrorMessage(deleteMutation)),
           ],
         ],
       ),

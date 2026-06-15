@@ -57,7 +57,7 @@ class _NewMatchAvatar extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                PersonAvatar(
+                CatchPersonAvatar(
                   size: 64,
                   name: preview.displayName,
                   imageUrl: preview.photoUrl,

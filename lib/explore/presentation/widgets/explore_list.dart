@@ -66,7 +66,7 @@ class ExploreList extends ConsumerWidget {
                   filters: filters,
                 ),
               )
-            : MutationErrorSnackbarListener(
+            : CatchMutationErrorListener(
                 mutation: ClubMembershipController.joinMutation,
                 child: ExploreBody(
                   viewModel: value,

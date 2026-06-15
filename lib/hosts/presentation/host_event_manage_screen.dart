@@ -692,7 +692,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
             gapW8,
             Tooltip(
               message: 'Copy link',
-              child: IconBtn(
+              child: CatchIconButton(
                 onTap: () => unawaited(_copyInviteLink(context, url)),
                 child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
               ),
@@ -701,7 +701,7 @@ class _HostInviteLinkRow extends ConsumerWidget {
               gapW8,
               Tooltip(
                 message: 'Disable link',
-                child: IconBtn(
+                child: CatchIconButton(
                   onTap: () => unawaited(_disableInviteLink(context, ref)),
                   child: Icon(
                     CatchIcons.hourglassDisabledRounded,
@@ -910,7 +910,7 @@ class _HostEventActionsCard extends ConsumerWidget {
           ),
           if (errorMutation.hasError) ...[
             gapH12,
-            ErrorBanner.fromError(
+            CatchErrorBanner.fromError(
               (errorMutation as MutationError).error,
               context: AppErrorContext.event,
             ),

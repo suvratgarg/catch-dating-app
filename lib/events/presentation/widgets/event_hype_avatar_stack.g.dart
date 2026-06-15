@@ -15,13 +15,13 @@ final eventHypeAvatarsProvider = EventHypeAvatarsFamily._();
 final class EventHypeAvatarsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<PersonAvatarItem>>,
-          List<PersonAvatarItem>,
-          FutureOr<List<PersonAvatarItem>>
+          AsyncValue<List<CatchPersonAvatarItem>>,
+          List<CatchPersonAvatarItem>,
+          FutureOr<List<CatchPersonAvatarItem>>
         >
     with
-        $FutureModifier<List<PersonAvatarItem>>,
-        $FutureProvider<List<PersonAvatarItem>> {
+        $FutureModifier<List<CatchPersonAvatarItem>>,
+        $FutureProvider<List<CatchPersonAvatarItem>> {
   EventHypeAvatarsProvider._({
     required EventHypeAvatarsFamily super.from,
     required EventHypeAvatarQuery super.argument,
@@ -45,12 +45,12 @@ final class EventHypeAvatarsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<PersonAvatarItem>> $createElement(
+  $FutureProviderElement<List<CatchPersonAvatarItem>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<PersonAvatarItem>> create(Ref ref) {
+  FutureOr<List<CatchPersonAvatarItem>> create(Ref ref) {
     final argument = this.argument as EventHypeAvatarQuery;
     return eventHypeAvatars(ref, argument);
   }
@@ -66,12 +66,12 @@ final class EventHypeAvatarsProvider
   }
 }
 
-String _$eventHypeAvatarsHash() => r'b07d40bac4e39bd1bac014a0a44eabda2bb5c343';
+String _$eventHypeAvatarsHash() => r'a1c88bf9c2cd7f004be0fc93dccd649633ecd181';
 
 final class EventHypeAvatarsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<List<PersonAvatarItem>>,
+          FutureOr<List<CatchPersonAvatarItem>>,
           EventHypeAvatarQuery
         > {
   EventHypeAvatarsFamily._()

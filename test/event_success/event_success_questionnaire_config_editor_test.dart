@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('selects questionnaire template choices with SelectChip', (
+  testWidgets('selects questionnaire template choices with CatchSelectChip', (
     tester,
   ) async {
     var value = const EventSuccessQuestionnaireConfig.defaultTemplate();
@@ -52,7 +52,7 @@ void main() {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is SelectChip &&
+        widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
   );

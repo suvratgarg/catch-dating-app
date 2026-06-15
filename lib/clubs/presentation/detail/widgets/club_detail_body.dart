@@ -313,7 +313,7 @@ class _ClubHostRow extends StatelessWidget {
           gapW8,
           Tooltip(
             message: 'Message host',
-            child: IconBtn(
+            child: CatchIconButton(
               onTap: onMessage,
               child: Icon(
                 CatchIcons.chatBubbleOutlineRounded,
@@ -354,7 +354,7 @@ class _ClubContactSection extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (showTitle) ...[
-            const SectionHeader(title: 'Contact', heavy: true),
+            const CatchSectionHeader(title: 'Contact', heavy: true),
             gapH12,
           ],
           if (club.instagramHandle != null)

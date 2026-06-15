@@ -127,7 +127,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            ErrorBanner(
+            CatchErrorBanner(
               message: appErrorMessage(
                 (mutation as MutationError).error,
                 context: AppErrorContext.auth,

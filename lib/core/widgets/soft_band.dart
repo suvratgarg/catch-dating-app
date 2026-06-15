@@ -2,10 +2,10 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Handoff `SoftBand`: a quiet primary-soft inset row for privacy notes, tips,
+/// Handoff `CatchSoftBand`: a quiet primary-soft inset row for privacy notes, tips,
 /// and secondary details inside panels or sections.
-class SoftBand extends StatelessWidget {
-  const SoftBand({
+class CatchSoftBand extends StatelessWidget {
+  const CatchSoftBand({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.symmetric(

@@ -25,7 +25,7 @@ class _ClubImage extends StatelessWidget {
     }
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      return GradedImage(
+      return CatchGradedImage(
         child: Image.network(
           imageUrl,
           fit: BoxFit.cover,

@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Generated activity art: pigment gradient, motif glyph, and print texture.
-class ActivityArt extends StatelessWidget {
-  const ActivityArt({
+class CatchActivityArt extends StatelessWidget {
+  const CatchActivityArt({
     super.key,
     required this.activityKind,
     this.height = CatchLayout.activityArtDefaultHeight,

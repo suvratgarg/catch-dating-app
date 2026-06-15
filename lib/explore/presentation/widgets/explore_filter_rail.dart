@@ -116,7 +116,7 @@ class _ExploreFilterSheet extends ConsumerWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               for (final distanceFilter in _distanceFilters)
-                SelectChip(
+                CatchSelectChip(
                   label: _distanceFilterLabel(distanceFilter),
                   active: filters.distanceFilter == distanceFilter,
                   onTap: () => controller.setDistanceFilter(distanceFilter),
@@ -126,7 +126,7 @@ class _ExploreFilterSheet extends ConsumerWidget {
           gapH20,
           Text('CLUBS', style: CatchTextStyles.kicker(context, color: t.ink2)),
           gapH12,
-          SelectChip(
+          CatchSelectChip(
             label: 'Joined clubs',
             active: filters.joinedOnly,
             onTap: controller.toggleJoinedOnly,

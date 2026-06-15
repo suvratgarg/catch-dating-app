@@ -1232,7 +1232,7 @@ void main() {
       expect(find.text('3'), findsNWidgets(2));
       expect(find.text('1'), findsOneWidget);
       expect(find.text('₹30'), findsOneWidget);
-      expect(find.byType(StatStrip), findsOneWidget);
+      expect(find.byType(CatchStatStrip), findsOneWidget);
       expect(find.text('MEMBERS'), findsOneWidget);
       expect(find.text('UPCOMING'), findsOneWidget);
       expect(find.text('4.7'), findsOneWidget);
@@ -3359,7 +3359,7 @@ Finder _catchButtonWithLabel(String label) {
 Finder _selectChip(String label, {bool? active}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is SelectChip &&
+        widget is CatchSelectChip &&
         widget.label == label &&
         (active == null || widget.active == active),
   );

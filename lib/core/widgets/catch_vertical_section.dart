@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 ///
 /// ```dart
 /// List<Widget> buildSlivers(BuildContext context) => [
-///   SliverToBoxAdapter(child: SectionHeader(...)),
+///   SliverToBoxAdapter(child: CatchSectionHeader(...)),
 ///   SliverList.separated(
 ///     itemCount: itemCount,
 ///     itemBuilder: (_, i) => Padding(
@@ -49,7 +49,7 @@ class CatchVerticalSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionHeader(
+        CatchSectionHeader(
           title: title,
           titleStyle: CatchTextStyles.titleL(context),
           padding: _headerPadding,

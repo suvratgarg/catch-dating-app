@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('SelectChip renders selected accent fill and dispatches taps', (
+  testWidgets('CatchSelectChip renders selected accent fill and dispatches taps', (
     tester,
   ) async {
     const accent = Color(0xFF7A3B20);
@@ -17,7 +17,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: Center(
-            child: SelectChip(
+            child: CatchSelectChip(
               label: 'Trail run',
               active: true,
               accentColor: accent,

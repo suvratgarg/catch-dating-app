@@ -105,7 +105,7 @@ as ClubHostDefaults,
 @override
 @pragma('vm:prefer-inline')
 $ClubHostDefaultsCopyWith<$Res> get hostDefaults {
-
+  
   return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
     return _then(_self.copyWith(hostDefaults: value));
   });
@@ -396,7 +396,7 @@ as ClubHostDefaults,
 @override
 @pragma('vm:prefer-inline')
 $ClubHostDefaultsCopyWith<$Res> get hostDefaults {
-
+  
   return $ClubHostDefaultsCopyWith<$Res>(_self.hostDefaults, (value) {
     return _then(_self.copyWith(hostDefaults: value));
   });

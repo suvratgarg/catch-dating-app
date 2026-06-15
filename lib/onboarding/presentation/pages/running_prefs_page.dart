@@ -171,7 +171,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Distances ─────────────────────────────────────────────────────
-        ChipField<PreferredDistance>(
+        CatchChipField<PreferredDistance>(
           label: 'FAVOURITE DISTANCES',
           isOptional: true,
           values: PreferredDistance.values,
@@ -189,7 +189,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Event reasons ───────────────────────────────────────────────────
-        ChipField<RunReason>(
+        CatchChipField<RunReason>(
           label: widget.runPreferencesOnly
               ? 'Why do you run?'
               : 'WHY DO YOU RUN?',
@@ -209,7 +209,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
         gapH20,
 
         // ── Time of day ───────────────────────────────────────────────────
-        ChipField<PreferredRunTime>(
+        CatchChipField<PreferredRunTime>(
           label: widget.runPreferencesOnly
               ? 'FAVOURITE RUN TIMES'
               : 'FAVOURITE EVENT TIMES',
@@ -229,7 +229,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
         if (mutation.hasError) ...[
           gapH16,
-          ErrorBanner(message: mutationErrorMessage(mutation)),
+          CatchErrorBanner(message: mutationErrorMessage(mutation)),
         ],
       ],
     );

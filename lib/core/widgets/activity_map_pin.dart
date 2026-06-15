@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Activity-pigment map pin with an optional selected data flag.
-class ActivityMapPin extends StatelessWidget {
-  const ActivityMapPin({
+class CatchActivityMapPin extends StatelessWidget {
+  const CatchActivityMapPin({
     super.key,
     required this.activityKind,
     this.selected = false,

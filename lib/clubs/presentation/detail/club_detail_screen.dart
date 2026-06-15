@@ -47,13 +47,13 @@ class ClubDetailScreen extends ConsumerWidget {
     );
     final vm = vmAsync.asData?.value;
 
-    Widget wrapMutationListeners(Widget child) => MutationErrorSnackbarListener(
+    Widget wrapMutationListeners(Widget child) => CatchMutationErrorListener(
       mutation: ClubMembershipController.joinMutation,
-      child: MutationErrorSnackbarListener(
+      child: CatchMutationErrorListener(
         mutation: ClubMembershipController.leaveMutation,
-        child: MutationErrorSnackbarListener(
+        child: CatchMutationErrorListener(
           mutation: ClubMembershipController.pushNotificationsMutation,
-          child: MutationErrorSnackbarListener(
+          child: CatchMutationErrorListener(
             mutation: ClubHostContactController.startConversationMutation,
             child: child,
           ),

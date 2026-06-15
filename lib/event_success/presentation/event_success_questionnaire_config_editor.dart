@@ -51,7 +51,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
           children: [
             for (final template
                 in EventSuccessQuestionnairePackLibrary.allTemplates)
-              SelectChip(
+              CatchSelectChip(
                 label: template.title,
                 active:
                     !normalized.usesCustom &&
@@ -61,7 +61,7 @@ class EventSuccessQuestionnaireConfigEditor extends StatelessWidget {
                   EventSuccessQuestionnaireConfig(templateId: template.id),
                 ),
               ),
-            SelectChip(
+            CatchSelectChip(
               label: 'Custom',
               active: normalized.usesCustom,
               enabled: enabled,
@@ -342,7 +342,7 @@ class _CustomQuestionFields extends StatelessWidget {
             if (onRemove != null)
               Tooltip(
                 message: 'Remove question',
-                child: IconBtn(
+                child: CatchIconButton(
                   onTap: enabled ? onRemove : null,
                   child: Icon(
                     CatchIcons.deleteOutlineRounded,
