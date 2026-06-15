@@ -2,8 +2,8 @@
   "version": 1,
   "source": "lib/core/theme/catch_text_styles.dart",
   "families": {
-    "voice": "Newsreader",
-    "function": "Inter",
+    "voice": "Archivo",
+    "function": "system-ui",
     "data": "IBM Plex Mono"
   },
   "opszAxis": {
@@ -22,8 +22,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 40,
-    "covered": 39,
+    "publicStaticTextStyleMethods": 54,
+    "covered": 53,
     "excluded": 1
   },
   "excluded": {
@@ -32,11 +32,11 @@
   "styles": {
     "display": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 44.0,
       "weight": 600,
       "lineHeight": 0.98,
-      "tracking": -0.7,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -44,22 +44,22 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 44.0
-        },
-        {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "headline": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 32.0,
       "weight": 600,
       "lineHeight": 1.04,
-      "tracking": -0.35,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -67,22 +67,22 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 32.0
-        },
-        {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "headlineS": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 26.0,
       "weight": 600,
       "lineHeight": 1.1,
-      "tracking": -0.16,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -90,22 +90,22 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 26.0
-        },
-        {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "titleL": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 20.0,
       "weight": 600,
       "lineHeight": 1.16,
-      "tracking": -0.1,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -113,18 +113,18 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 20.0
-        },
-        {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "profileAnswer": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 18.0,
       "weight": 600,
       "lineHeight": 1.28,
@@ -136,18 +136,18 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 18.0
-        },
-        {
           "axis": "wght",
           "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "proseL": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 16.0,
       "weight": 400,
       "lineHeight": 1.55,
@@ -159,18 +159,18 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 16.0
-        },
-        {
           "axis": "wght",
           "value": 400.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
     "proseM": {
       "role": "voice",
-      "family": "Newsreader",
+      "family": "Archivo",
       "size": 14.0,
       "weight": 400,
       "lineHeight": 1.55,
@@ -182,12 +182,12 @@
       },
       "fontVariations": [
         {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
           "axis": "wght",
           "value": 400.0
+        },
+        {
+          "axis": "wdth",
+          "value": 100.0
         }
       ]
     },
@@ -197,7 +197,7 @@
       "samples": {
         "24": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 24.0,
           "weight": 600,
           "lineHeight": 1.0,
@@ -209,18 +209,18 @@
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 24.0
-            },
-            {
               "axis": "wght",
               "value": 600.0
+            },
+            {
+              "axis": "wdth",
+              "value": 100.0
             }
           ]
         },
         "36": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 36.0,
           "weight": 600,
           "lineHeight": 1.0,
@@ -232,18 +232,18 @@
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 36.0
-            },
-            {
               "axis": "wght",
               "value": 600.0
+            },
+            {
+              "axis": "wdth",
+              "value": 100.0
             }
           ]
         },
         "48": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 48.0,
           "weight": 600,
           "lineHeight": 1.0,
@@ -255,12 +255,12 @@
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 48.0
-            },
-            {
               "axis": "wght",
               "value": 600.0
+            },
+            {
+              "axis": "wdth",
+              "value": 100.0
             }
           ]
         }
@@ -272,78 +272,170 @@
       "samples": {
         "24": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 24.0,
-          "weight": 400,
+          "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
-          "fontStyle": "italic",
+          "fontStyle": "normal",
           "defaultColor": {
             "light": "#16140F",
             "dark": "#F4F0E8"
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 24.0
+              "axis": "wght",
+              "value": 600.0
             },
             {
-              "axis": "wght",
-              "value": 400.0
+              "axis": "wdth",
+              "value": 92.0
             }
           ]
         },
         "36": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 36.0,
-          "weight": 400,
+          "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
-          "fontStyle": "italic",
+          "fontStyle": "normal",
           "defaultColor": {
             "light": "#16140F",
             "dark": "#F4F0E8"
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 36.0
+              "axis": "wght",
+              "value": 600.0
             },
             {
-              "axis": "wght",
-              "value": 400.0
+              "axis": "wdth",
+              "value": 92.0
             }
           ]
         },
         "48": {
           "role": "voice",
-          "family": "Newsreader",
+          "family": "Archivo",
           "size": 48.0,
-          "weight": 400,
+          "weight": 600,
           "lineHeight": 1.0,
           "tracking": 0.0,
-          "fontStyle": "italic",
+          "fontStyle": "normal",
           "defaultColor": {
             "light": "#16140F",
             "dark": "#F4F0E8"
           },
           "fontVariations": [
             {
-              "axis": "opsz",
-              "value": 48.0
+              "axis": "wght",
+              "value": 600.0
             },
             {
-              "axis": "wght",
-              "value": 400.0
+              "axis": "wdth",
+              "value": 92.0
             }
           ]
         }
       }
     },
+    "eventTitle": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 36.0,
+      "weight": 700,
+      "lineHeight": 1.0,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 700.0
+        },
+        {
+          "axis": "wdth",
+          "value": 90.0
+        }
+      ]
+    },
+    "consoleTitle": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 20.0,
+      "weight": 800,
+      "lineHeight": 1.15,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 800.0
+        },
+        {
+          "axis": "wdth",
+          "value": 90.0
+        }
+      ]
+    },
+    "hint": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 16.5,
+      "weight": 600,
+      "lineHeight": 1.25,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 600.0
+        },
+        {
+          "axis": "wdth",
+          "value": 94.0
+        }
+      ]
+    },
+    "name": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 15.0,
+      "weight": 700,
+      "lineHeight": 1.2,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 700.0
+        },
+        {
+          "axis": "wdth",
+          "value": 92.0
+        }
+      ]
+    },
     "sectionTitle": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 16.0,
       "weight": 700,
       "lineHeight": 1.22,
@@ -352,44 +444,37 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 16.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
-      ]
+      }
     },
     "titleS": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 14.0,
       "weight": 700,
-      "lineHeight": 1.26,
+      "lineHeight": 1.24,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
-      ]
+      }
+    },
+    "infoRowTitle": {
+      "role": "function",
+      "family": null,
+      "size": 14.0,
+      "weight": 700,
+      "lineHeight": 1.24,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      }
     },
     "bodyLead": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 16.0,
       "weight": 500,
       "lineHeight": 1.42,
@@ -398,21 +483,11 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 16.0
-        },
-        {
-          "axis": "wght",
-          "value": 500.0
-        }
-      ]
+      }
     },
     "bodyL": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 16.0,
       "weight": 400,
       "lineHeight": 1.5,
@@ -421,21 +496,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 16.0
-        },
-        {
-          "axis": "wght",
-          "value": 400.0
-        }
-      ]
+      }
     },
     "bodyM": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 14.0,
       "weight": 400,
       "lineHeight": 1.5,
@@ -444,21 +509,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 400.0
-        }
-      ]
+      }
     },
     "bodyS": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 13.0,
       "weight": 400,
       "lineHeight": 1.45,
@@ -467,21 +522,24 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 400.0
-        }
-      ]
+      }
+    },
+    "appBarSubtitle": {
+      "role": "function",
+      "family": null,
+      "size": 13.0,
+      "weight": 400,
+      "lineHeight": 1.45,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
+      }
     },
     "supporting": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 13.0,
       "weight": 500,
       "lineHeight": 1.42,
@@ -490,22 +548,12 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 500.0
-        }
-      ]
+      }
     },
     "labelL": {
       "role": "function",
-      "family": "Inter",
-      "size": 13.0,
+      "family": null,
+      "size": 14.0,
       "weight": 700,
       "lineHeight": 1.24,
       "tracking": 0.0,
@@ -513,21 +561,24 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
-      ]
+      }
+    },
+    "fieldLabel": {
+      "role": "function",
+      "family": null,
+      "size": 11.5,
+      "weight": 500,
+      "lineHeight": 1.2,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#9C958A",
+        "dark": "#7E776D"
+      }
     },
     "labelM": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.3,
@@ -536,21 +587,11 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 600.0
-        }
-      ]
+      }
     },
     "labelS": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 10.0,
       "weight": 700,
       "lineHeight": 1.2,
@@ -559,21 +600,11 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
-      ]
+      }
     },
     "statusLabel": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 10.0,
       "weight": 800,
       "lineHeight": 1.1,
@@ -582,21 +613,11 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 800.0
-        }
-      ]
+      }
     },
     "buttonSm": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 13.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -605,21 +626,11 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 600.0
-        }
-      ]
+      }
     },
     "buttonMd": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 15.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -628,21 +639,24 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 15.0
-        },
-        {
-          "axis": "wght",
-          "value": 600.0
-        }
-      ]
+      }
+    },
+    "button": {
+      "role": "function",
+      "family": null,
+      "size": 15.0,
+      "weight": 600,
+      "lineHeight": 1.0,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      }
     },
     "buttonLg": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 16.0,
       "weight": 600,
       "lineHeight": 1.0,
@@ -651,17 +665,7 @@
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 16.0
-        },
-        {
-          "axis": "wght",
-          "value": 600.0
-        }
-      ]
+      }
     },
     "avatarCount": {
       "role": "function",
@@ -669,7 +673,7 @@
       "samples": {
         "12": {
           "role": "function",
-          "family": "Inter",
+          "family": null,
           "size": 12.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -678,21 +682,11 @@
           "defaultColor": {
             "light": "#FFFFFF",
             "dark": "#18171A"
-          },
-          "fontVariations": [
-            {
-              "axis": "opsz",
-              "value": 14.0
-            },
-            {
-              "axis": "wght",
-              "value": 800.0
-            }
-          ]
+          }
         },
         "16": {
           "role": "function",
-          "family": "Inter",
+          "family": null,
           "size": 16.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -701,21 +695,11 @@
           "defaultColor": {
             "light": "#FFFFFF",
             "dark": "#18171A"
-          },
-          "fontVariations": [
-            {
-              "axis": "opsz",
-              "value": 16.0
-            },
-            {
-              "axis": "wght",
-              "value": 800.0
-            }
-          ]
+          }
         },
         "20": {
           "role": "function",
-          "family": "Inter",
+          "family": null,
           "size": 20.0,
           "weight": 800,
           "lineHeight": 1.0,
@@ -724,69 +708,81 @@
           "defaultColor": {
             "light": "#FFFFFF",
             "dark": "#18171A"
-          },
-          "fontVariations": [
-            {
-              "axis": "opsz",
-              "value": 20.0
-            },
-            {
-              "axis": "wght",
-              "value": 800.0
-            }
-          ]
+          }
         }
       }
     },
     "otpDigit": {
       "role": "function",
-      "family": "Inter",
-      "size": 24.0,
-      "weight": 700,
-      "lineHeight": 1.15,
+      "family": "IBM Plex Mono",
+      "size": 26.0,
+      "weight": 600,
+      "lineHeight": 1.0,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
       },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 24.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
       ]
     },
     "chatMessage": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 15.0,
       "weight": 400,
-      "lineHeight": 1.42,
+      "lineHeight": 1.4,
       "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
         "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 15.0
-        },
-        {
-          "axis": "wght",
-          "value": 400.0
-        }
-      ]
+      }
+    },
+    "chat": {
+      "role": "function",
+      "family": null,
+      "size": 15.0,
+      "weight": 400,
+      "lineHeight": 1.4,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      }
+    },
+    "chatPreview": {
+      "role": "function",
+      "family": null,
+      "size": 13.0,
+      "weight": 400,
+      "lineHeight": 1.45,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
+      }
+    },
+    "chatThreadContext": {
+      "role": "function",
+      "family": null,
+      "size": 14.0,
+      "weight": 600,
+      "lineHeight": 1.35,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      }
     },
     "statCompact": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 14.0,
       "weight": 700,
       "lineHeight": 1.15,
@@ -796,16 +792,6 @@
         "light": "#16140F",
         "dark": "#F4F0E8"
       },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 700.0
-        }
-      ],
       "fontFeatures": [
         "FontFeature('tnum', 1)"
       ]
@@ -816,7 +802,7 @@
       "samples": {
         "1.0": {
           "role": "map",
-          "family": "Inter",
+          "family": null,
           "size": 13.0,
           "weight": 700,
           "lineHeight": 1.2,
@@ -825,17 +811,7 @@
           "defaultColor": {
             "light": "#16140F",
             "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "opsz",
-              "value": 14.0
-            },
-            {
-              "axis": "wght",
-              "value": 700.0
-            }
-          ]
+          }
         }
       }
     },
@@ -845,7 +821,7 @@
       "samples": {
         "1.0": {
           "role": "map",
-          "family": "Inter",
+          "family": null,
           "size": 14.0,
           "weight": 800,
           "lineHeight": 1.2,
@@ -854,17 +830,7 @@
           "defaultColor": {
             "light": "#16140F",
             "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "opsz",
-              "value": 14.0
-            },
-            {
-              "axis": "wght",
-              "value": 800.0
-            }
-          ]
+          }
         }
       }
     },
@@ -872,9 +838,9 @@
       "role": "data",
       "family": "IBM Plex Mono",
       "size": 11.0,
-      "weight": 800,
+      "weight": 700,
       "lineHeight": 1.15,
-      "tracking": 1.6,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -888,9 +854,9 @@
       "role": "data",
       "family": "IBM Plex Mono",
       "size": 12.0,
-      "weight": 800,
+      "weight": 700,
       "lineHeight": 1.1,
-      "tracking": 2.0,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -906,7 +872,7 @@
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.15,
-      "tracking": 1.3,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -922,7 +888,7 @@
       "size": 10.0,
       "weight": 700,
       "lineHeight": 1.15,
-      "tracking": 1.2,
+      "tracking": 0.0,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#544F47",
@@ -980,11 +946,59 @@
         "FontFeature('tnum', 1)"
       ]
     },
+    "meta": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 10.5,
+      "weight": 600,
+      "lineHeight": 1.2,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#544F47",
+        "dark": "#BAB2A7"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ]
+    },
+    "badge": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 9.0,
+      "weight": 700,
+      "lineHeight": 1.1,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ]
+    },
+    "code": {
+      "role": "data",
+      "family": "IBM Plex Mono",
+      "size": 26.0,
+      "weight": 600,
+      "lineHeight": 1.0,
+      "tracking": 0.0,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontFeatures": [
+        "FontFeature('tnum', 1)"
+      ]
+    },
     "statDisplay": {
       "role": "data",
       "family": "IBM Plex Mono",
       "size": 36.0,
-      "weight": 800,
+      "weight": 700,
       "lineHeight": 1.0,
       "tracking": 0.0,
       "fontStyle": "normal",
@@ -998,7 +1012,7 @@
     },
     "clubMemberSeal": {
       "role": "function",
-      "family": "Inter",
+      "family": null,
       "size": 11.0,
       "weight": 600,
       "lineHeight": 1.05,
@@ -1007,17 +1021,7 @@
       "defaultColor": {
         "light": "#544F47",
         "dark": "#BAB2A7"
-      },
-      "fontVariations": [
-        {
-          "axis": "opsz",
-          "value": 14.0
-        },
-        {
-          "axis": "wght",
-          "value": 600.0
-        }
-      ]
+      }
     },
     "debugDetails": {
       "role": "debug",

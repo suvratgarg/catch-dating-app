@@ -307,9 +307,9 @@ abstract final class CatchSpacing {
   static const double micro18 = GeneratedCatchSpacingTokens.micro18;
 
   /// App-wide page gutter and body padding from the design handoff.
-  static const double screenPx = s5;
-  static const double screenPt = s6;
-  static const double screenPb = s5;
+  static const double screenPx = CatchSpacing.s5;
+  static const double screenPt = CatchSpacing.s6;
+  static const double screenPb = CatchSpacing.s5;
 }
 
 /// Semantic vertical and horizontal gaps for common layout relationships.
