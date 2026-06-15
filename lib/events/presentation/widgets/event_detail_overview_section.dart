@@ -196,7 +196,7 @@ class _WhatToExpectSection extends StatelessWidget {
           ),
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
           for (final item in items) ...[
-            _PolicyLine(
+            _EventPolicySummaryLine(
               icon: item.icon,
               title: item.title,
               body: item.body,
@@ -239,7 +239,7 @@ class _EventPolicySummary extends StatelessWidget {
             ),
           ),
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _PolicyLine(
+          _EventPolicySummaryLine(
             icon: CatchIcons.groupOutlined,
             title: _admissionTitle(policy.admissionPolicy),
             body: _admissionSummary(policy.admissionPolicy),
@@ -247,7 +247,7 @@ class _EventPolicySummary extends StatelessWidget {
           ),
           if (policy.usesDemandPricing) ...[
             const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-            _PolicyLine(
+            _EventPolicySummaryLine(
               icon: CatchIcons.trendingUpRounded,
               title: 'Demand pricing',
               body: _dynamicPricingSummary(
@@ -258,14 +258,14 @@ class _EventPolicySummary extends StatelessWidget {
             ),
           ],
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _PolicyLine(
+          _EventPolicySummaryLine(
             icon: CatchIcons.receiptLongOutlined,
             title: '${cancellation.title} cancellation',
             body: cancellation.attendeeSummary,
             surfaceStyle: surfaceStyle,
           ),
           const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-          _PolicyLine(
+          _EventPolicySummaryLine(
             icon: CatchIcons.verifiedUserOutlined,
             title: policy.settlementPolicy.title,
             body: policy.settlementPolicy.summary,
@@ -277,8 +277,8 @@ class _EventPolicySummary extends StatelessWidget {
   }
 }
 
-class _PolicyLine extends StatelessWidget {
-  const _PolicyLine({
+class _EventPolicySummaryLine extends StatelessWidget {
+  const _EventPolicySummaryLine({
     required this.icon,
     required this.title,
     required this.body,

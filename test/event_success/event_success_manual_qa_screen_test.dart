@@ -264,7 +264,7 @@ class _ManualQaTestAssetBundle extends CachingAssetBundle {
 
 Future<void> _pumpManualQaReady(WidgetTester tester) async {
   for (var i = 0; i < 80; i += 1) {
-    await tester.pump(const Duration(milliseconds: 25));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 25));
     if (find.text('Fixture scenario').evaluate().isNotEmpty) return;
     final error = find.textContaining('Manual QA fixture failed');
     if (error.evaluate().isNotEmpty) {
@@ -277,7 +277,7 @@ Future<void> _pumpManualQaReady(WidgetTester tester) async {
 
 Future<void> _pumpManualQaFrames(WidgetTester tester, {int frames = 8}) async {
   for (var i = 0; i < frames; i += 1) {
-    await tester.pump(const Duration(milliseconds: 16));
+    await pumpFeatureUiFor(tester, const Duration(milliseconds: 16));
   }
 }
 

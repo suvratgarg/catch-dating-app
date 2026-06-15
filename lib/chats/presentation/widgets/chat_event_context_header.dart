@@ -3,12 +3,12 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_icon_tile.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 const EdgeInsets _contextHeaderOuterPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s3,
@@ -33,7 +33,7 @@ class ChatEventContextHeader extends StatelessWidget {
     final title = event?.title ?? 'the same event';
     final date = event == null
         ? null
-        : DateFormat('EEE d MMM').format(event.startTime);
+        : AppTimeFormatters.weekdayDayMonth(event.startTime);
     final stamp = chatContextStampFor(event);
 
     return Padding(

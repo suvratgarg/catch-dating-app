@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/catch_polaroid.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/presentation/shared/club_transition_tags.dart';
@@ -24,6 +22,8 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,8 +47,8 @@ List<Widget> buildExploreEventsSlivers(
   Set<String> joinedClubIds = const <String>{},
 }) {
   final feedAsync = ref.watch(exploreFeedViewModelProvider);
-  final filters = ref.watch(clubBrowseFiltersProvider);
-  final searchQuery = ref.watch(clubSearchQueryProvider).trim();
+  final filters = ref.watch(exploreFiltersProvider);
+  final searchQuery = ref.watch(exploreSearchQueryProvider).trim();
 
   return switch (feedAsync) {
     AsyncLoading() => const [_ExploreEventsLoadingSliver()],
@@ -717,7 +717,7 @@ class _ExploreEventsEmptySliver extends ConsumerWidget {
     required this.searchQuery,
   });
 
-  final ClubBrowseFilterSelection filters;
+  final ExploreFilterSelection filters;
   final String searchQuery;
 
   @override
@@ -738,9 +738,9 @@ class _ExploreEventsEmptySliver extends ConsumerWidget {
             icon: Icon(emptyState.actionIcon),
             variant: CatchButtonVariant.secondary,
             onPressed: () {
-              final controller = ref.read(clubBrowseFiltersProvider.notifier);
+              final controller = ref.read(exploreFiltersProvider.notifier);
               if (emptyState.clearSearch) {
-                ref.read(clubSearchQueryProvider.notifier).clear();
+                ref.read(exploreSearchQueryProvider.notifier).clear();
               }
               final nextFilter = emptyState.nextFilter;
               if (nextFilter == null) {
@@ -751,7 +751,6 @@ class _ExploreEventsEmptySliver extends ConsumerWidget {
             },
           ),
           layout: CatchEmptyStateLayout.inline,
-          iconStyle: CatchEmptyStateIconStyle.plain,
         ),
       ),
     );

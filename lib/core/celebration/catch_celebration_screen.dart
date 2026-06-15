@@ -50,7 +50,7 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     required this.message,
     required this.primaryAction,
     this.eyebrow,
-    IconData? icon,
+    this._icon,
     this.visual,
     this.details = const [],
     this.note,
@@ -58,7 +58,7 @@ class CatchCelebrationScreen extends ConsumerStatefulWidget {
     this.secondaryAction,
     this.onClose,
     this.playEffects = true,
-  }) : _icon = icon;
+  });
 
   final CelebrationMomentKind kind;
   final String? eyebrow;

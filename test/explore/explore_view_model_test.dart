@@ -5,8 +5,6 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -19,15 +17,17 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/saved_event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/search/data/explore_search_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../clubs/clubs_test_helpers.dart';
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
-import 'clubs_test_helpers.dart';
 
 CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
@@ -42,23 +42,26 @@ ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
     );
 
 void main() {
-  group('ClubsList state', () {
+  group('Explore state', () {
     test(
-      'selectedClubCityProvider defaults to Mumbai and clears search on change',
+      'selectedExploreCityProvider defaults to Mumbai and clears search on change',
       () {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
-        expect(container.read(selectedClubCityProvider), _city('mumbai'));
+        expect(container.read(selectedExploreCityProvider), _city('mumbai'));
 
-        container.read(clubSearchQueryProvider.notifier).setQuery('stride');
+        container.read(exploreSearchQueryProvider.notifier).setQuery('stride');
         container
-            .read(selectedClubCityProvider.notifier)
+            .read(selectedExploreCityProvider.notifier)
             .setCity(_city('delhi'));
 
-        expect(container.read(selectedClubCityProvider), _city('delhi'));
-        expect(container.read(clubSearchQueryProvider), isEmpty);
-        expect(container.read(selectedClubCityWasUserSelectedProvider), true);
+        expect(container.read(selectedExploreCityProvider), _city('delhi'));
+        expect(container.read(exploreSearchQueryProvider), isEmpty);
+        expect(
+          container.read(selectedExploreCityWasUserSelectedProvider),
+          true,
+        );
       },
     );
 
@@ -66,14 +69,14 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(container.read(selectedClubCityProvider), _city('mumbai'));
+      expect(container.read(selectedExploreCityProvider), _city('mumbai'));
 
       container
-          .read(selectedClubCityProvider.notifier)
+          .read(selectedExploreCityProvider.notifier)
           .autoSelectCity(_city('delhi'));
 
-      expect(container.read(selectedClubCityProvider), _city('delhi'));
-      expect(container.read(selectedClubCityWasUserSelectedProvider), false);
+      expect(container.read(selectedExploreCityProvider), _city('delhi'));
+      expect(container.read(selectedExploreCityWasUserSelectedProvider), false);
     });
 
     test('autoSelectCityByName uses known profile cities', () {
@@ -81,10 +84,10 @@ void main() {
       addTearDown(container.dispose);
 
       container
-          .read(selectedClubCityProvider.notifier)
+          .read(selectedExploreCityProvider.notifier)
           .autoSelectCityByName('indore');
 
-      expect(container.read(selectedClubCityProvider), _city('indore'));
+      expect(container.read(selectedExploreCityProvider), _city('indore'));
     });
 
     test('autoSelectCity does not override a manual city choice', () {
@@ -92,42 +95,44 @@ void main() {
       addTearDown(container.dispose);
 
       container
-          .read(selectedClubCityProvider.notifier)
+          .read(selectedExploreCityProvider.notifier)
           .setCity(_city('bangalore'));
-      expect(container.read(selectedClubCityProvider), _city('bangalore'));
+      expect(container.read(selectedExploreCityProvider), _city('bangalore'));
 
       container
-          .read(selectedClubCityProvider.notifier)
+          .read(selectedExploreCityProvider.notifier)
           .autoSelectCity(_city('mumbai'));
-      expect(container.read(selectedClubCityProvider), _city('bangalore'));
+      expect(container.read(selectedExploreCityProvider), _city('bangalore'));
     });
 
     test('setCity clears search query while autoSelectCity also clears it', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      container.read(clubSearchQueryProvider.notifier).setQuery('stride');
+      container.read(exploreSearchQueryProvider.notifier).setQuery('stride');
       container
-          .read(selectedClubCityProvider.notifier)
+          .read(selectedExploreCityProvider.notifier)
           .autoSelectCity(_city('delhi'));
 
-      expect(container.read(clubSearchQueryProvider), isEmpty);
+      expect(container.read(exploreSearchQueryProvider), isEmpty);
     });
 
     test('setCity clears city-local filters but keeps global filters', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final filters = container.read(clubBrowseFiltersProvider.notifier);
+      final filters = container.read(exploreFiltersProvider.notifier);
       filters.toggleThisWeekOnly();
       filters.toggleHighRatedOnly();
       filters.toggleDistanceFilter(ExploreDistanceFilter.threeKm);
       filters.toggleActivityTag('tempo');
       filters.toggleArea('Bandra');
 
-      container.read(selectedClubCityProvider.notifier).setCity(_city('delhi'));
+      container
+          .read(selectedExploreCityProvider.notifier)
+          .setCity(_city('delhi'));
 
-      final selection = container.read(clubBrowseFiltersProvider);
+      final selection = container.read(exploreFiltersProvider);
       expect(selection.timeFilter, ExploreTimeFilter.thisWeek);
       expect(selection.thisWeekOnly, isTrue);
       expect(selection.distanceFilter, ExploreDistanceFilter.threeKm);
@@ -164,26 +169,29 @@ void main() {
       expect(exploreDistanceFilterKm(ExploreDistanceFilter.tenKm), 10);
     });
 
-    test('matchesClubSearchQuery matches name, area, host, and tags', () {
-      final bandraClub = buildClub();
-      final hostClub = buildClub(
-        id: 'club-2',
-        name: 'Sunrise Crew',
-        hostName: 'Asha',
-      );
-      final taggedClub = buildClub(
-        id: 'club-3',
-        name: 'Night Pacers',
-        tags: const ['tempo', 'community'],
-      );
+    test(
+      'matchesExploreClubSearchQuery matches name, area, host, and tags',
+      () {
+        final bandraClub = buildClub();
+        final hostClub = buildClub(
+          id: 'club-2',
+          name: 'Sunrise Crew',
+          hostName: 'Asha',
+        );
+        final taggedClub = buildClub(
+          id: 'club-3',
+          name: 'Night Pacers',
+          tags: const ['tempo', 'community'],
+        );
 
-      expect(matchesClubSearchQuery(bandraClub, 'bandra'), isTrue);
-      expect(matchesClubSearchQuery(hostClub, 'asha'), isTrue);
-      expect(matchesClubSearchQuery(taggedClub, 'tempo'), isTrue);
-      expect(matchesClubSearchQuery(taggedClub, 'missing'), isFalse);
-    });
+        expect(matchesExploreClubSearchQuery(bandraClub, 'bandra'), isTrue);
+        expect(matchesExploreClubSearchQuery(hostClub, 'asha'), isTrue);
+        expect(matchesExploreClubSearchQuery(taggedClub, 'tempo'), isTrue);
+        expect(matchesExploreClubSearchQuery(taggedClub, 'missing'), isFalse);
+      },
+    );
 
-    test('applyClubBrowseFilters combines quick filters', () {
+    test('applyExploreFilters combines quick filters', () {
       final now = DateTime(2026, 1, 1, 8);
       final matchingClub = buildClub(
         id: 'matching-club',
@@ -211,9 +219,9 @@ void main() {
         nextEventAt: now.add(const Duration(days: 2)),
       );
 
-      final filtered = applyClubBrowseFilters(
+      final filtered = applyExploreFilters(
         clubs: [matchingClub, staleEventClub, lowRatedClub, wrongAreaClub],
-        filters: const ClubBrowseFilterSelection(
+        filters: const ExploreFilterSelection(
           timeFilter: ExploreTimeFilter.thisWeek,
           highRatedOnly: true,
           joinedOnly: true,
@@ -227,7 +235,7 @@ void main() {
       expect(filtered.map((club) => club.id), ['matching-club']);
     });
 
-    test('applyClubBrowseFilters uses the selected time window', () {
+    test('applyExploreFilters uses the selected time window', () {
       final now = DateTime(2026, 5, 26, 10);
       final tonightClub = buildClub(
         id: 'tonight-club',
@@ -242,9 +250,9 @@ void main() {
         nextEventAt: DateTime(2026, 5, 30, 8),
       );
 
-      final filtered = applyClubBrowseFilters(
+      final filtered = applyExploreFilters(
         clubs: [tonightClub, tomorrowClub, weekendClub],
-        filters: const ClubBrowseFilterSelection(
+        filters: const ExploreFilterSelection(
           timeFilter: ExploreTimeFilter.weekend,
         ),
         joinedClubIds: const {},
@@ -255,7 +263,7 @@ void main() {
     });
 
     test(
-      'clubsListViewModelProvider partitions joined and discover clubs',
+      'exploreViewModelProvider partitions joined and discover clubs',
       () async {
         final memberClub = buildClub(id: 'member-club');
         final followedClub = buildClub(
@@ -290,7 +298,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          clubsListViewModelProvider,
+          exploreViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -320,7 +328,7 @@ void main() {
     );
 
     test(
-      'clubsListViewModelProvider shows empty city without waiting for auth',
+      'exploreViewModelProvider shows empty city without waiting for auth',
       () async {
         final container = ProviderContainer(
           overrides: [
@@ -333,7 +341,7 @@ void main() {
         addTearDown(container.dispose);
 
         final subscription = container.listen(
-          clubsListViewModelProvider,
+          exploreViewModelProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -350,37 +358,40 @@ void main() {
       },
     );
 
-    test('filteredClubsProvider applies the normalized search query', () async {
-      final bandraClub = buildClub(id: 'bandra-club');
-      final ashaClub = buildClub(
-        id: 'asha-club',
-        hostName: 'Asha',
-        area: 'Juhu',
-      );
-      final container = ProviderContainer(
-        overrides: [
-          uidProvider.overrideWith((ref) => Stream.value(null)),
-          exploreSearchRepositoryProvider.overrideWithValue(
-            _FakeExploreSearchRepository(error: StateError('search offline')),
-          ),
-          watchClubsByLocationProvider(
-            'mumbai',
-          ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
-        ],
-      );
-      addTearDown(container.dispose);
-      container.read(clubSearchQueryProvider.notifier).setQuery('  asha');
+    test(
+      'filteredExploreClubsProvider applies the normalized search query',
+      () async {
+        final bandraClub = buildClub(id: 'bandra-club');
+        final ashaClub = buildClub(
+          id: 'asha-club',
+          hostName: 'Asha',
+          area: 'Juhu',
+        );
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            exploreSearchRepositoryProvider.overrideWithValue(
+              _FakeExploreSearchRepository(error: StateError('search offline')),
+            ),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
+          ],
+        );
+        addTearDown(container.dispose);
+        container.read(exploreSearchQueryProvider.notifier).setQuery('  asha');
 
-      final subscription = container.listen(
-        filteredClubsProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(subscription.close);
-      await container.pump();
+        final subscription = container.listen(
+          filteredExploreClubsProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await container.pump();
 
-      expect(subscription.read().value, [ashaClub]);
-    });
+        expect(subscription.read().value, [ashaClub]);
+      },
+    );
 
     test(
       'exploreFeedViewModelProvider filters events by device distance',
@@ -418,7 +429,7 @@ void main() {
         );
         addTearDown(container.dispose);
         container
-            .read(clubBrowseFiltersProvider.notifier)
+            .read(exploreFiltersProvider.notifier)
             .setDistanceFilter(ExploreDistanceFilter.threeKm);
 
         final subscription = container.listen(
@@ -620,13 +631,13 @@ void main() {
       },
     );
 
-    test('clubsListViewModelProvider surfaces auth uid errors', () async {
+    test('exploreViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith(
             (ref) => Stream.error(StateError('uid failed')),
           ),
-          filteredClubsProvider.overrideWithValue(
+          filteredExploreClubsProvider.overrideWithValue(
             AsyncData([buildClub(id: 'available-club')]),
           ),
         ],
@@ -634,7 +645,7 @@ void main() {
       addTearDown(container.dispose);
 
       final subscription = container.listen(
-        clubsListViewModelProvider,
+        exploreViewModelProvider,
         (_, _) {},
         fireImmediately: true,
       );
@@ -645,11 +656,11 @@ void main() {
       expect(subscription.read().error, isA<StateError>());
     });
 
-    test('clubsListViewModelProvider surfaces filtered list errors', () async {
+    test('exploreViewModelProvider surfaces filtered list errors', () async {
       final container = ProviderContainer(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          filteredClubsProvider.overrideWithValue(
+          filteredExploreClubsProvider.overrideWithValue(
             AsyncError(StateError('filter failed'), StackTrace.empty),
           ),
         ],
@@ -657,7 +668,7 @@ void main() {
       addTearDown(container.dispose);
 
       final subscription = container.listen(
-        clubsListViewModelProvider,
+        exploreViewModelProvider,
         (_, _) {},
         fireImmediately: true,
       );

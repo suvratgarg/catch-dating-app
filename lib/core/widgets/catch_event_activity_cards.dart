@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_ticket_surface.dart';
@@ -128,7 +129,7 @@ class CatchEventTicketCard extends StatelessWidget {
                             ),
                             gapW10,
                             Expanded(
-                              child: _MonoLabel(
+                              child: CatchMonoLabel(
                                 '$timeLabel / $countdownLabel',
                                 color: t.primary,
                               ),
@@ -165,7 +166,7 @@ class CatchEventTicketCard extends StatelessWidget {
                           ),
                         ),
                         gapH12,
-                        _MonoLabel(capacityLabel, color: t.ink2),
+                        CatchMonoLabel(capacityLabel, color: t.ink2),
                       ],
                     ),
                   ),
@@ -268,7 +269,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _MonoLabel(
+                  CatchMonoLabel(
                     kicker.toUpperCase(),
                     color: t.primarySoft.withValues(
                       alpha: CatchOpacity.scrimFill,
@@ -307,7 +308,7 @@ class CatchEventSpotlightCard extends StatelessWidget {
                       ),
                       gapW8,
                       Expanded(
-                        child: _MonoLabel(
+                        child: CatchMonoLabel(
                           capacityLabel,
                           color: t.primaryInk.withValues(
                             alpha: CatchOpacity.primaryInkProminent,
@@ -356,7 +357,7 @@ class _OutlineStamp extends StatelessWidget {
             horizontal: CatchSpacing.s2,
             vertical: CatchSpacing.s1,
           ),
-          child: _MonoLabel(label.toUpperCase(), color: t.accent),
+          child: CatchMonoLabel(label.toUpperCase(), color: t.accent),
         ),
       ),
     );
@@ -385,7 +386,7 @@ class _DarkTimeChip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _MonoLabel(sublabel.toUpperCase(), color: t.darkMutedInk),
+            CatchMonoLabel(sublabel.toUpperCase(), color: t.darkMutedInk),
             gapH2,
             Text(
               label,
@@ -423,23 +424,6 @@ class _RoundGlyph extends StatelessWidget {
         color: CatchTokens.editorialLight,
         size: CatchLayout.eventActivityGlyphIconSize,
       ),
-    );
-  }
-}
-
-class _MonoLabel extends StatelessWidget {
-  const _MonoLabel(this.label, {required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.monoLabel(context, color: color),
     );
   }
 }

@@ -42,7 +42,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpRoute(tester);
     await openEventDetail(tester, club: club, event: run);
@@ -98,7 +98,7 @@ void main() {
         ),
       );
 
-      await openAppTab(tester, 'Clubs');
+      await openAppTab(tester, 'Explore');
       await openClubDetail(tester, club);
       await pumpRoute(tester);
       await openEventDetail(tester, club: club, event: run);
@@ -182,7 +182,7 @@ void main() {
       ),
     );
 
-    await openAppTab(tester, 'Clubs');
+    await openAppTab(tester, 'Explore');
     await openClubDetail(tester, club);
     await pumpRoute(tester);
     await openEventDetail(tester, club: club, event: run);

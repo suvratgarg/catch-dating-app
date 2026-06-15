@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -6,6 +5,7 @@ import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +27,7 @@ void main() {
               const AsyncData(EventMapViewModel(events: [], pinnedEvents: [])),
         ),
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
-        selectedClubCityProvider.overrideWithValue(_mumbai),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
     );
 
@@ -54,7 +54,7 @@ void main() {
           ),
         ),
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
-        selectedClubCityProvider.overrideWithValue(_mumbai),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
     );
 
@@ -93,7 +93,7 @@ void main() {
           ),
         ),
         deviceLocationProvider.overrideWith(() => _FakeDeviceLocation(null)),
-        selectedClubCityProvider.overrideWithValue(_mumbai),
+        selectedExploreCityProvider.overrideWithValue(_mumbai),
       ],
     );
 

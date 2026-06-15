@@ -396,6 +396,10 @@ class Scanner:
             # Filter: if the return type is just "return" it's control flow
             if ret == "return":
                 return
+            # A bare `foo(` line without a return type/body is usually a call
+            # inside a top-level list/map literal, not a function declaration.
+            if not ret and "{" not in stripped and "=>" not in stripped:
+                return
             self._record(name, "function", line, ln, return_type=ret)
             return
 
@@ -505,24 +509,92 @@ def compute_body_hashes(definitions):
         except Exception:
             continue
 
-        # For simplicity, we compute a content-range hash for each def.
-        # A more sophisticated approach would extract the actual body.
         lines = content.split("\n")
         for d in defs:
             ln = d["line"] - 1  # 0‑based
-            # Grab a window: 5 lines before + 40 lines after
-            start = max(0, ln - 2)
-            end = min(len(lines), ln + 50)
-            window = "\n".join(lines[start:end])
+            body = _extract_definition_text(lines, ln)
 
-            # Normalize: collapse whitespace, strip comments
-            normalized = re.sub(r'\s+', ' ', window)
+            # Normalize: collapse whitespace and strip line comments.
+            normalized = re.sub(r'//[^\n]*', '', body)
+            normalized = re.sub(r'\s+', ' ', normalized)
             normalized = re.sub(r'//[^\n]*', '', normalized)
             normalized = normalized.strip()
 
             d["body_hash"] = hashlib.sha256(
                 normalized.encode("utf-8")
             ).hexdigest()[:16]
+
+
+def _extract_definition_text(lines, start_line):
+    """Extract a single definition body starting at `start_line`.
+
+    This stays intentionally lightweight, but avoids the previous
+    surrounding-window hash that made identical private widgets look different
+    whenever their neighboring code differed.
+    """
+    collected = []
+    depth = 0
+    seen_body = False
+
+    for line in lines[start_line:]:
+        collected.append(line)
+        stripped = _strip_strings_and_line_comments(line)
+
+        if not seen_body and "=>" in stripped and ";" in stripped:
+            break
+
+        if "{" in stripped:
+            seen_body = True
+
+        depth += stripped.count("{") - stripped.count("}")
+
+        if seen_body and depth <= 0:
+            break
+
+        if not seen_body and ";" in stripped:
+            break
+
+    return "\n".join(collected)
+
+
+def _strip_strings_and_line_comments(line):
+    result = []
+    i = 0
+    in_single = False
+    in_double = False
+
+    while i < len(line):
+        ch = line[i]
+        if in_single:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == "'":
+                in_single = False
+            i += 1
+            continue
+        if in_double:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == '"':
+                in_double = False
+            i += 1
+            continue
+        if line[i:i + 2] == "//":
+            break
+        if ch == "'":
+            in_single = True
+            i += 1
+            continue
+        if ch == '"':
+            in_double = True
+            i += 1
+            continue
+        result.append(ch)
+        i += 1
+
+    return "".join(result)
 
 
 # ---------------------------------------------------------------------------
@@ -537,6 +609,11 @@ _BUILTIN_NAMES = frozenset({
     "StatefulWidget", "State", "Key",
 })
 
+_IGNORED_COLLISION_NAMES = frozenset({
+    # Multiple entrypoints are intentional in this app split.
+    "main",
+})
+
 
 def _site_key(site):
     return (site["file"], site["line"])
@@ -545,6 +622,16 @@ def _site_key(site):
 def _site_files(candidate):
     """Return a frozenset of (file, line) tuples for dedup."""
     return frozenset(_site_key(s) for s in candidate["sites"])
+
+
+def _is_conditional_platform_factory_collision(sites):
+    """Recognize factory/stub/mobile split functions used by conditional imports."""
+    basenames = {os.path.basename(s["file"]) for s in sites}
+    return (
+        any(name.endswith("_factory.dart") for name in basenames)
+        and any(name.endswith("_stub.dart") for name in basenames)
+        and any(name.endswith("_mobile.dart") for name in basenames)
+    )
 
 
 def cross_reference(definitions, file_manifest):
@@ -556,6 +643,8 @@ def cross_reference(definitions, file_manifest):
     for d in definitions:
         if d["name"] in _BUILTIN_NAMES:
             continue
+        if d["name"] in _IGNORED_COLLISION_NAMES:
+            continue
         # Private non-class names (_foo) are file-scoped by convention; skip
         if d["name"].startswith("_") and d["kind"] != "class":
             continue
@@ -565,25 +654,49 @@ def cross_reference(definitions, file_manifest):
         files = sorted(set(s["file"] for s in sites))
         if len(files) < 2:
             continue
+        if kind == "function" and _is_conditional_platform_factory_collision(sites):
+            continue
+        body_hashes = sorted(set(s.get("body_hash") for s in sites))
+        has_identical_body = len(body_hashes) == 1 and body_hashes[0]
         # Classes that are widgets get a stronger severity + tailored message
         is_widget = all(s.get("is_widget") for s in sites if s.get("is_widget")
                         is not None) and any(s.get("is_widget") for s in sites)
-        severity = "high" if is_widget or name.startswith("_") else "medium"
-        suggestion = (
-            f"Class '{name}' is defined in {len(files)} files. "
-            f"Extract a single shared implementation and import it."
-            if is_widget else
-            f"Same {kind} '{name}' defined in {len(files)} places. "
-            f"Consolidate into one location and import it."
+        match_type = (
+            "duplicate_implementation"
+            if has_identical_body else
+            "name_collision_needs_triage"
         )
+        if has_identical_body:
+            severity = "high" if is_widget or name.startswith("_") else "medium"
+            suggestion = (
+                f"Class '{name}' has the same implementation in "
+                f"{len(files)} files. Extract a single shared implementation "
+                "and import it."
+                if is_widget else
+                f"Same {kind} '{name}' has the same implementation in "
+                f"{len(files)} places. Consolidate into one location and "
+                "import it."
+            )
+        else:
+            severity = "low" if name.startswith("_") else "medium"
+            suggestion = (
+                f"Private class '{name}' appears in {len(files)} files but "
+                "the implementations differ. Treat as a naming collision: "
+                "rename for local clarity or extract only after confirming a "
+                "shared concept."
+                if name.startswith("_") else
+                f"Same {kind} '{name}' appears in {len(files)} files with "
+                "different implementations. Triage before consolidation."
+            )
         raw_candidates.append({
-            "match_type": "exact_name_collision",
+            "match_type": match_type,
             "severity": severity,
             "name": name,
             "kind": kind,
             "is_widget": is_widget,
             "sites": [{"file": s["file"], "line": s["line"],
-                       "signature": s["signature"]} for s in sites],
+                       "signature": s["signature"],
+                       "body_hash": s.get("body_hash")} for s in sites],
             "suggestion": suggestion,
         })
 
@@ -622,7 +735,8 @@ def cross_reference(definitions, file_manifest):
         by_sites[_site_files(c)].append(c)
 
     type_priority = {
-        "exact_name_collision": 0,
+        "duplicate_implementation": 0,
+        "name_collision_needs_triage": 1,
         "duplicate_constant_name": 5,
         "duplicate_date_format": 10,
         "inline_color_literals": 10,

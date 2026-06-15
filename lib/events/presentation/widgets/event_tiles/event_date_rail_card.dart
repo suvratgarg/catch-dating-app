@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_mono_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_activity_visuals.dart';
@@ -102,7 +103,7 @@ class EventDateRailCard extends StatelessWidget {
                               ),
                               gapW8,
                               Expanded(
-                                child: _MonoLabel(
+                                child: CatchMonoLabel(
                                   kicker.toUpperCase(),
                                   color: t.ink3,
                                 ),
@@ -163,7 +164,7 @@ class EventDateRailCard extends StatelessWidget {
                             ],
                           ),
                           gapH8,
-                          _MonoLabel(
+                          CatchMonoLabel(
                             capacityLabel ?? capacity.goingAvailabilityLabel(),
                             color: t.ink2,
                           ),
@@ -442,23 +443,6 @@ class _DateRail extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _MonoLabel extends StatelessWidget {
-  const _MonoLabel(this.label, {required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.monoLabel(context, color: color),
     );
   }
 }

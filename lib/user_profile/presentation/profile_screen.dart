@@ -201,8 +201,6 @@ class _ProfileUnavailableBody extends StatelessWidget {
         icon: CatchIcons.personOffOutlined,
         title: 'Profile not available',
         message: 'Finish onboarding or sign in again to load your profile.',
-        surface: false,
-        iconStyle: CatchEmptyStateIconStyle.plain,
       ),
     );
   }

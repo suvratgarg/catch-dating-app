@@ -1,0 +1,19 @@
+name: Set Up Flutter
+description: Install the repo-pinned Flutter SDK.
+
+outputs:
+  flutter-version:
+    description: Flutter SDK version.
+    value: ${{ steps.toolchain.outputs.flutter-version }}
+
+runs:
+  using: composite
+  steps:
+    - id: toolchain
+      uses: ./.github/actions/load-toolchain
+
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ steps.toolchain.outputs.flutter-version }}
+        channel: stable
+        cache: true

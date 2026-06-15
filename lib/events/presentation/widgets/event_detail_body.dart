@@ -178,7 +178,6 @@ class EventDetailBody extends ConsumerWidget {
             ),
           ),
           CatchDetailSliverSectionList(
-            gap: 0,
             topPadding: CatchSpacing.screenPt,
             bottomPadding: CatchSpacing.screenPb,
             sections: [

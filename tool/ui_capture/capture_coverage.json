@@ -95,7 +95,7 @@
       "reason": "Activity notifications fixture with upcoming event context."
     },
     {
-      "routeId": "clubsListScreen",
+      "routeId": "exploreScreen",
       "status": "captured",
       "priority": "P1",
       "captureIds": ["member_event_discovery"],

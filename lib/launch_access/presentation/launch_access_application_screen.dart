@@ -385,7 +385,6 @@ class _LaunchAccessStatusView extends StatelessWidget {
         message: application.status.unlocksProfileCreation
             ? 'Access is approved. Profile creation can be unlocked once the router uses this gate.'
             : 'Your application is saved for the next launch cohort.',
-        surface: false,
       ),
     );
   }
@@ -401,7 +400,6 @@ class _LaunchAccessDisabledView extends StatelessWidget {
         icon: CatchIcons.lockOpenRounded,
         title: 'Access gate is off',
         message: 'Remote Config has not enabled launch access for this build.',
-        surface: false,
       ),
     );
   }
@@ -417,7 +415,6 @@ class _LaunchAccessSignedOutView extends StatelessWidget {
         icon: CatchIcons.phoneAndroidRounded,
         title: 'Verify your phone',
         message: 'Phone verification is required before applying for access.',
-        surface: false,
       ),
     );
   }

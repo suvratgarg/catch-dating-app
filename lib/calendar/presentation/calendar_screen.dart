@@ -644,8 +644,6 @@ class _CalendarMessage extends StatelessWidget {
         icon: CatchIcons.calendarMonthOutlined,
         title: title,
         message: body,
-        surface: false,
-        iconStyle: CatchEmptyStateIconStyle.plain,
         iconSize: CatchLayout.calendarEmptyIconSize,
         padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),

@@ -4,13 +4,13 @@ import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart'
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class ChatMessageList extends StatelessWidget {
   const ChatMessageList({
@@ -50,7 +50,6 @@ class ChatMessageList extends StatelessWidget {
                 event: event,
                 otherName: otherName,
               ),
-              surface: false,
             ),
           );
         }
@@ -125,8 +124,6 @@ class _ChatListEntry {
 class _ChatDateSeparator extends StatelessWidget {
   const _ChatDateSeparator({required this.date});
 
-  static final DateFormat _formatter = DateFormat('EEE d MMM');
-
   final DateTime date;
 
   @override
@@ -140,7 +137,7 @@ class _ChatDateSeparator extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          _formatter.format(date),
+          AppTimeFormatters.weekdayDayMonth(date),
           style: CatchTextStyles.badge(context, color: t.ink3),
         ),
       ),

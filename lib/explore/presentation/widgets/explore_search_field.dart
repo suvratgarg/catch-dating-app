@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/widgets/catch_search_field.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClubsSearchField extends ConsumerWidget {
-  const ClubsSearchField({
+class ExploreSearchField extends ConsumerWidget {
+  const ExploreSearchField({
     super.key,
     this.autofocus = false,
     this.onSubmitted,
@@ -17,11 +17,12 @@ class ClubsSearchField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final query = ref.watch(clubSearchQueryProvider);
+    final query = ref.watch(exploreSearchQueryProvider);
 
     return CatchSearchField(
       value: query,
-      onChanged: (q) => ref.read(clubSearchQueryProvider.notifier).setQuery(q),
+      onChanged: (q) =>
+          ref.read(exploreSearchQueryProvider.notifier).setQuery(q),
       placeholder: 'Search events or clubs',
       autofocus: autofocus,
       onSubmitted: onSubmitted,

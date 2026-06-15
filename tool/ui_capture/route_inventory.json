@@ -3,8 +3,8 @@
   "generatedBy": "tool/ui_capture/check_route_inventory.mjs",
   "source": {
     "path": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "a542812bacd5400296b75a8465c77ba1f914d4699f9f0385443df6a058054b4d",
-    "routeContractSha256": "509abd376602f3b5bd6c9bd5f257a566b1c8a072635ea675f9b327efb29a1910",
+    "normalizedFileSha256": "379ffb297c682e7a9373da3244aac0e4c87fba13d988c52defd8219bdc435a31",
+    "routeContractSha256": "2e64f8cfac7ea03ba3405fc5787f9a954a0a96834052b37c5d99e2efcb968018",
     "goRouteCount": 32,
     "shellBranchCount": 5,
     "enumRouteCount": 47,
@@ -127,7 +127,7 @@
       "referencedByGoRouter": true
     },
     {
-      "id": "clubsListScreen",
+      "id": "exploreScreen",
       "path": "/clubs",
       "pathParameters": [],
       "requiresFixture": false,
@@ -447,7 +447,6 @@
     "calendarScreen",
     "chatScreen",
     "clubDetailScreen",
-    "clubsListScreen",
     "dashboardEventDetailScreen",
     "dashboardScreen",
     "eventDetailScreen",
@@ -458,6 +457,7 @@
     "eventSuccessLabScreen",
     "eventSuccessManualQaScreen",
     "eventSuccessPreviewScreen",
+    "exploreScreen",
     "filtersScreen",
     "hostHomeScreen",
     "loadingScreen",

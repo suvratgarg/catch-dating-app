@@ -221,7 +221,7 @@ class _ScenarioPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _PolicyLabSectionTitle(
           icon: CatchIcons.tuneRounded,
           title: 'Host configuration',
           trailing: Text(
@@ -324,27 +324,30 @@ class _PolicySummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(icon: CatchIcons.ruleRounded, title: 'Policy shape'),
+        _PolicyLabSectionTitle(
+          icon: CatchIcons.ruleRounded,
+          title: 'Policy shape',
+        ),
         gapH10,
         CatchSurface(
           padding: CatchInsets.content,
           borderColor: t.line,
           child: Column(
             children: [
-              _PolicyLine(
+              _PolicySummaryLine(
                 icon: CatchIcons.eventAvailableOutlined,
                 label: 'Admission',
                 value: _formatAdmissionFormat(admission.format),
               ),
               _DividerLine(color: t.line),
-              _PolicyLine(
+              _PolicySummaryLine(
                 icon: CatchIcons.queueOutlined,
                 label: 'Waitlist',
                 value: _formatWaitlist(admission.waitlistPolicy.mode),
               ),
               if (admission.inviteRequired) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.keyOutlined,
                   label: 'Invite',
                   value: 'Required',
@@ -352,7 +355,7 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (admission.membershipRequired) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.cardMembershipOutlined,
                   label: 'Membership',
                   value: 'Required',
@@ -360,7 +363,7 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (admission.manualApprovalRequired) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.factCheckOutlined,
                   label: 'Host review',
                   value: 'Required',
@@ -368,7 +371,7 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (admission.cohortCapacityLimits.isNotEmpty) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.groups2Outlined,
                   label: 'Cohort caps',
                   value: _formatCohortCaps(admission.cohortCapacityLimits),
@@ -376,14 +379,14 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (ratio != null) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.balanceOutlined,
                   label: 'Ratio',
                   value:
                       '${_formatCohortId(ratio.leftCohortId)} / ${_formatCohortId(ratio.rightCohortId)} · ±${ratio.maxSkew}',
                 ),
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.diversity3Outlined,
                   label: 'Out-of-ratio',
                   value: _formatOutOfRatio(ratio.outOfRatioCohortPolicy),
@@ -391,7 +394,7 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (pricing.cohortAdjustments.isNotEmpty) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.discountOutlined,
                   label: 'Cohort pricing',
                   value: pricing.cohortAdjustments.entries
@@ -404,7 +407,7 @@ class _PolicySummary extends StatelessWidget {
               ],
               if (pricing.demandPricingRules.isNotEmpty) ...[
                 _DividerLine(color: t.line),
-                _PolicyLine(
+                _PolicySummaryLine(
                   icon: CatchIcons.trendingUpRounded,
                   label: 'Demand pricing',
                   value: pricing.demandPricingRules
@@ -416,19 +419,19 @@ class _PolicySummary extends StatelessWidget {
                 ),
               ],
               _DividerLine(color: t.line),
-              _PolicyLine(
+              _PolicySummaryLine(
                 icon: CatchIcons.eventBusyOutlined,
                 label: 'Cancellation',
                 value: cancellation.title,
               ),
               _DividerLine(color: t.line),
-              _PolicyLine(
+              _PolicySummaryLine(
                 icon: CatchIcons.assignmentReturnOutlined,
                 label: 'Attendee terms',
                 value: cancellation.attendeeSummary,
               ),
               _DividerLine(color: t.line),
-              _PolicyLine(
+              _PolicySummaryLine(
                 icon: CatchIcons.paymentsOutlined,
                 label: 'Host payout',
                 value: settlement.title,
@@ -452,7 +455,7 @@ class _ResultRows extends StatelessWidget {
       key: EventPolicyLabKeys.resultList,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _PolicyLabSectionTitle(
           icon: CatchIcons.tableRowsOutlined,
           title: 'Preview outcomes',
           trailing: Text(
@@ -561,7 +564,7 @@ class _CancellationRows extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(
+        _PolicyLabSectionTitle(
           icon: CatchIcons.assignmentReturnOutlined,
           title: 'Cancellation outcomes',
           trailing: Text(
@@ -676,7 +679,10 @@ class _DebugOutput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionTitle(icon: CatchIcons.dataObjectRounded, title: 'Debug map'),
+        _PolicyLabSectionTitle(
+          icon: CatchIcons.dataObjectRounded,
+          title: 'Debug map',
+        ),
         gapH10,
         CatchSurface(
           padding: CatchInsets.content,
@@ -696,8 +702,12 @@ class _DebugOutput extends StatelessWidget {
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.icon, required this.title, this.trailing});
+class _PolicyLabSectionTitle extends StatelessWidget {
+  const _PolicyLabSectionTitle({
+    required this.icon,
+    required this.title,
+    this.trailing,
+  });
 
   final IconData icon;
   final String title;
@@ -723,8 +733,8 @@ class _SectionTitle extends StatelessWidget {
   }
 }
 
-class _PolicyLine extends StatelessWidget {
-  const _PolicyLine({
+class _PolicySummaryLine extends StatelessWidget {
+  const _PolicySummaryLine({
     required this.icon,
     required this.label,
     required this.value,

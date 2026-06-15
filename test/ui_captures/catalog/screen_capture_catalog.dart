@@ -13,9 +13,6 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
@@ -43,6 +40,9 @@ import 'package:catch_dating_app/events/presentation/event_detail_view_model.dar
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -1287,7 +1287,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
   ),
   ScreenCaptureEntry(
     id: 'member_event_discovery',
-    routeIds: const <String>['clubsListScreen'],
+    routeIds: const <String>['exploreScreen'],
     device: CaptureDevice.reviewTall,
     marketingFixtureKeys: const <String>['salesDemo.member.eventDiscovery'],
     providerOverrides: [
@@ -1301,9 +1301,9 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       exploreSourceClubsProvider.overrideWithValue(
         AsyncData(_memberDiscoveryClubs),
       ),
-      clubsListViewModelProvider.overrideWithValue(
+      exploreViewModelProvider.overrideWithValue(
         AsyncData(
-          ClubsListViewModel.partition(
+          ExploreViewModel.partition(
             clubs: _memberDiscoveryClubs,
             joinedClubIds: const <String>{},
           ),
@@ -1314,7 +1314,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       ),
     ],
     builder: (context) =>
-        const ClubsListScreen(enableEventMapNetworkTiles: false),
+        const ExploreScreen(enableEventMapNetworkTiles: false),
   ),
   ScreenCaptureEntry(
     id: 'create_club_basics',

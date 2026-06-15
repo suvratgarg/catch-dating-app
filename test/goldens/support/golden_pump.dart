@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 /// google_fonts cannot fetch in `flutter test` and throws "Failed to load font";
 /// our FontLoader-registered files already render, so that throw is pure noise.
 bool _isGoogleFontsFetchNoise(Object error) {
@@ -70,7 +72,7 @@ Future<void> matchCatchGolden(
     () async {
       for (final brightness in Brightness.values) {
         await tester.pumpWidget(_frame(brightness, textScale, builder));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         final mode = brightness == Brightness.light ? 'light' : 'dark';
         await expectLater(
           find.byType(MaterialApp),
@@ -78,7 +80,7 @@ Future<void> matchCatchGolden(
         );
       }
       // Flush late google_fonts load-failure microtasks into this guarded zone.
-      await tester.pump(const Duration(milliseconds: 50));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 50));
     },
     (error, stack) {
       if (_isGoogleFontsFetchNoise(error)) return;

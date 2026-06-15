@@ -1,25 +1,22 @@
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:intl/intl.dart';
 
 class EventFormatters {
-  static final _month = DateFormat('MMM');
-  static final _weekdayShort = DateFormat('E');
-  static final _weekdayLong = DateFormat('EEEE');
-  static final _shortDateFmt = DateFormat('E, d MMM');
-  static final _longDateFmt = DateFormat('EEEE, d MMM');
-
-  static String shortMonth(DateTime dateTime) => _month.format(dateTime);
+  static String shortMonth(DateTime dateTime) =>
+      AppTimeFormatters.shortMonth(dateTime);
 
   static String shortWeekday(DateTime dateTime) =>
-      _weekdayShort.format(dateTime);
+      AppTimeFormatters.shortWeekday(dateTime);
 
-  static String longWeekday(DateTime dateTime) => _weekdayLong.format(dateTime);
+  static String longWeekday(DateTime dateTime) =>
+      AppTimeFormatters.longWeekday(dateTime);
 
-  static String shortDate(DateTime dateTime) => _shortDateFmt.format(dateTime);
+  static String shortDate(DateTime dateTime) =>
+      AppTimeFormatters.shortDate(dateTime);
 
-  static String longDate(DateTime dateTime) => _longDateFmt.format(dateTime);
+  static String longDate(DateTime dateTime) =>
+      AppTimeFormatters.longDate(dateTime);
 
   static String time(DateTime dateTime) => AppTimeFormatters.time(dateTime);
 

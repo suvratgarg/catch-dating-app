@@ -108,13 +108,13 @@ void main() {
       );
     });
 
-    test('unauthenticated users can browse the clubs list', () {
+    test('unauthenticated users can browse Explore', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/clubs',
-          matchedLocation: Routes.clubsListScreen.path,
+          matchedLocation: Routes.exploreScreen.path,
         ),
         null,
       );
@@ -167,7 +167,7 @@ void main() {
             uidAsync: const AsyncData(_testUid),
             userProfileAsync: const AsyncData(null),
             location: '/clubs',
-            matchedLocation: Routes.clubsListScreen.path,
+            matchedLocation: Routes.exploreScreen.path,
           ),
           '/onboarding?from=%2Fclubs',
         );

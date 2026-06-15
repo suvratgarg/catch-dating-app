@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/analytics/app_analytics.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -16,6 +14,8 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_route_transition.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_capacity_presenter.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ List<Widget> buildExploreMapSheetLeadSlivers({
   required WidgetRef ref,
   required String? selectedEventId,
   required LocationCoordinate? cameraCenter,
-  required ClubBrowseFilterSelection filters,
+  required ExploreFilterSelection filters,
   required String scopeLabel,
   required ExploreMapSheetLeadMode leadMode,
   required ValueChanged<Event> onEventTapped,
@@ -144,7 +144,7 @@ class _ExploreMapSheetLead extends StatelessWidget {
   final String? spotlightEventId;
   final String? selectedEventId;
   final String scopeLabel;
-  final ClubBrowseFilterSelection filters;
+  final ExploreFilterSelection filters;
   final ExploreMapSheetLeadMode leadMode;
   final ValueChanged<Event> onEventTapped;
   final VoidCallback onSeeAll;
@@ -198,7 +198,7 @@ class _CollapsedMapSummary extends StatelessWidget {
 
   final int? count;
   final String scopeLabel;
-  final ClubBrowseFilterSelection filters;
+  final ExploreFilterSelection filters;
 
   @override
   Widget build(BuildContext context) {
@@ -565,7 +565,7 @@ String _collapsedTitle(int? count) {
 
 String _collapsedScopeLabel({
   required String scopeLabel,
-  required ClubBrowseFilterSelection filters,
+  required ExploreFilterSelection filters,
 }) {
   final parts = <String>[
     scopeLabel,

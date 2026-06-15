@@ -149,8 +149,6 @@ class _ReviewsHistoryEmpty extends StatelessWidget {
           icon: CatchIcons.rateReviewOutlined,
           title: title,
           message: message,
-          surface: false,
-          iconStyle: CatchEmptyStateIconStyle.plain,
         ),
       ),
     );

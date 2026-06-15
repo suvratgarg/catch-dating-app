@@ -25,10 +25,9 @@ final watchHostPaymentAccountProvider = StreamProvider.autoDispose
 
 class HostPaymentAccountRepository {
   const HostPaymentAccountRepository({
-    required FirebaseFirestore db,
-    required FirebaseFunctions functions,
-  }) : _db = db,
-       _functions = functions;
+    required this._db,
+    required this._functions,
+  });
 
   static const _collectionPath = 'hostPaymentAccounts';
 

@@ -115,8 +115,6 @@ class _SavedEventsMessage extends StatelessWidget {
         icon: CatchIcons.bookmarkBorderRounded,
         title: title,
         message: message,
-        surface: false,
-        iconStyle: CatchEmptyStateIconStyle.plain,
         iconSize: CatchLayout.eventInfoTileExtent,
         padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),

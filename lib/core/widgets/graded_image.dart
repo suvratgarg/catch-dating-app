@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Display-time, non-destructive photo grade (design_language §4).
@@ -53,10 +54,8 @@ class CatchGrade {
     saturation: 0.84,
     contrast: 0.94,
     blackLift: 0.03,
-    // token:allow: fixed photo-grade warm shadow tint (theme-independent art)
-    warmShadow: Color(0x14C9542F),
-    // token:allow: fixed photo-grade warm highlight tint (theme-independent art)
-    warmHighlight: Color(0x0FF3C778),
+    warmShadow: CatchPhotoGradeColors.lightWarmShadow,
+    warmHighlight: CatchPhotoGradeColors.lightWarmHighlight,
   );
 
   /// Dark "wow" surfaces (event spotlight, profile hero) — deeper, moodier.
@@ -64,10 +63,8 @@ class CatchGrade {
     saturation: 0.80,
     contrast: 0.90,
     blackLift: 0.05,
-    // token:allow: fixed photo-grade dark warm shadow tint (theme-independent art)
-    warmShadow: Color(0x1FC9542F),
-    // token:allow: fixed photo-grade dark warm highlight tint (theme-independent art)
-    warmHighlight: Color(0x14F3C778),
+    warmShadow: CatchPhotoGradeColors.darkWarmShadow,
+    warmHighlight: CatchPhotoGradeColors.darkWarmHighlight,
   );
 
   /// The grade for the current brightness. Dark surfaces run [dark].

@@ -44,8 +44,6 @@ class PaymentHistoryScreen extends ConsumerWidget {
                 icon: CatchIcons.lockOutlineRounded,
                 title: 'Sign in required',
                 message: 'Sign in again to view payment history.',
-                surface: false,
-                iconStyle: CatchEmptyStateIconStyle.plain,
               ),
             );
           }
@@ -79,8 +77,6 @@ class _PaymentList extends ConsumerWidget {
               icon: CatchIcons.receiptLongOutlined,
               title: 'No payments yet',
               message: 'Event bookings and refunds will appear here.',
-              surface: false,
-              iconStyle: CatchEmptyStateIconStyle.plain,
             ),
           );
         }

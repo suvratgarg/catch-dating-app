@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/clubs/presentation/list/explore_map_motion_reveal.dart';
 import 'package:catch_dating_app/core/device_motion.dart';
+import 'package:catch_dating_app/explore/presentation/explore_map_motion_reveal.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

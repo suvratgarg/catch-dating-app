@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class ChatListTile extends StatelessWidget {
   const ChatListTile({
@@ -18,14 +17,6 @@ class ChatListTile extends StatelessWidget {
   final ChatThreadPreview preview;
   final VoidCallback onTap;
   final bool divider;
-
-  String _formatTime(DateTime? dt) {
-    if (dt == null) return '';
-    final now = DateTime.now();
-    if (now.difference(dt).inDays == 0) return AppTimeFormatters.time(dt);
-    if (now.difference(dt).inDays < 7) return DateFormat.E().format(dt);
-    return DateFormat.MMMd().format(dt);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +94,7 @@ class ChatListTile extends StatelessWidget {
                     ),
                     const SizedBox(width: CatchSpacing.s3),
                     _ChatListTrailing(
-                      time: _formatTime(preview.timestamp),
+                      time: AppTimeFormatters.chatTimestamp(preview.timestamp),
                       unreadCount: unreadCount,
                       isNew: isNew,
                       emphasized: emphasized,

@@ -244,7 +244,7 @@
     {
       "id": "member_event_discovery",
       "routes": [
-        "clubsListScreen"
+        "exploreScreen"
       ],
       "device": "review-tall",
       "themes": [

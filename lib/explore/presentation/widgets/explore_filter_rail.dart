@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_count_pill.dart';
 import 'package:catch_dating_app/core/widgets/catch_option_group.dart';
 import 'package:catch_dating_app/core/widgets/select_chip.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,8 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Mirrors the handoff `OptionGroup`: the primary time scope stays visible as
 /// underline tabs while secondary filters move behind the trailing CountPill.
-class ClubsFilterRail extends ConsumerWidget {
-  const ClubsFilterRail({super.key, this.backgroundColor});
+class ExploreFilterRail extends ConsumerWidget {
+  const ExploreFilterRail({super.key, this.backgroundColor});
 
   final Color? backgroundColor;
 
@@ -30,8 +30,8 @@ class ClubsFilterRail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final filters = ref.watch(clubBrowseFiltersProvider);
-    final filterController = ref.read(clubBrowseFiltersProvider.notifier);
+    final filters = ref.watch(exploreFiltersProvider);
+    final filterController = ref.read(exploreFiltersProvider.notifier);
     final activeCount = _activeFilterCount(filters);
 
     return ColoredBox(
@@ -76,8 +76,8 @@ class _ExploreFilterSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final filters = ref.watch(clubBrowseFiltersProvider);
-    final controller = ref.read(clubBrowseFiltersProvider.notifier);
+    final filters = ref.watch(exploreFiltersProvider);
+    final controller = ref.read(exploreFiltersProvider.notifier);
     final activeCount = _activeFilterCount(filters);
 
     return CatchBottomSheetScaffold(
@@ -147,7 +147,7 @@ Future<void> _showExploreFilterSheet(BuildContext context) {
   );
 }
 
-int _activeFilterCount(ClubBrowseFilterSelection filters) {
+int _activeFilterCount(ExploreFilterSelection filters) {
   var count = 0;
   if (filters.timeFilter != defaultExploreTimeFilter) count += 1;
   if (filters.distanceFilter != ExploreDistanceFilter.any) count += 1;

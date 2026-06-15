@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'clubs_list_view_model.dart';
+part of 'explore_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -14,38 +14,38 @@ part of 'clubs_list_view_model.dart';
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
 
-@ProviderFor(SelectedClubCity)
-final selectedClubCityProvider = SelectedClubCityProvider._();
+@ProviderFor(SelectedExploreCity)
+final selectedExploreCityProvider = SelectedExploreCityProvider._();
 
 /// **KeepAlive notifier with internal flag**
 ///
 /// Holds the currently selected city for club browsing. Uses an
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
-final class SelectedClubCityProvider
-    extends $NotifierProvider<SelectedClubCity, CityData> {
+final class SelectedExploreCityProvider
+    extends $NotifierProvider<SelectedExploreCity, CityData> {
   /// **KeepAlive notifier with internal flag**
   ///
   /// Holds the currently selected city for club browsing. Uses an
   /// internal `_userSelected` flag so GPS auto-detection never overrides a
   /// manual user pick. [keepAlive] is true so the city survives tab switches.
-  SelectedClubCityProvider._()
+  SelectedExploreCityProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'selectedClubCityProvider',
+        name: r'selectedExploreCityProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$selectedClubCityHash();
+  String debugGetCreateSourceHash() => _$selectedExploreCityHash();
 
   @$internal
   @override
-  SelectedClubCity create() => SelectedClubCity();
+  SelectedExploreCity create() => SelectedExploreCity();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(CityData value) {
@@ -56,7 +56,8 @@ final class SelectedClubCityProvider
   }
 }
 
-String _$selectedClubCityHash() => r'b07d8dddb07727c5dc0d23addc444111275dfa52';
+String _$selectedExploreCityHash() =>
+    r'e9296874c56fdcb595f08354e139a15081e1e4db';
 
 /// **KeepAlive notifier with internal flag**
 ///
@@ -64,7 +65,7 @@ String _$selectedClubCityHash() => r'b07d8dddb07727c5dc0d23addc444111275dfa52';
 /// internal `_userSelected` flag so GPS auto-detection never overrides a
 /// manual user pick. [keepAlive] is true so the city survives tab switches.
 
-abstract class _$SelectedClubCity extends $Notifier<CityData> {
+abstract class _$SelectedExploreCity extends $Notifier<CityData> {
   CityData build();
   @$mustCallSuper
   @override
@@ -82,29 +83,31 @@ abstract class _$SelectedClubCity extends $Notifier<CityData> {
   }
 }
 
-@ProviderFor(SelectedClubCityWasUserSelected)
-final selectedClubCityWasUserSelectedProvider =
-    SelectedClubCityWasUserSelectedProvider._();
+@ProviderFor(SelectedExploreCityWasUserSelected)
+final selectedExploreCityWasUserSelectedProvider =
+    SelectedExploreCityWasUserSelectedProvider._();
 
-final class SelectedClubCityWasUserSelectedProvider
-    extends $NotifierProvider<SelectedClubCityWasUserSelected, bool> {
-  SelectedClubCityWasUserSelectedProvider._()
+final class SelectedExploreCityWasUserSelectedProvider
+    extends $NotifierProvider<SelectedExploreCityWasUserSelected, bool> {
+  SelectedExploreCityWasUserSelectedProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'selectedClubCityWasUserSelectedProvider',
+        name: r'selectedExploreCityWasUserSelectedProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$selectedClubCityWasUserSelectedHash();
+  String debugGetCreateSourceHash() =>
+      _$selectedExploreCityWasUserSelectedHash();
 
   @$internal
   @override
-  SelectedClubCityWasUserSelected create() => SelectedClubCityWasUserSelected();
+  SelectedExploreCityWasUserSelected create() =>
+      SelectedExploreCityWasUserSelected();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
@@ -115,10 +118,10 @@ final class SelectedClubCityWasUserSelectedProvider
   }
 }
 
-String _$selectedClubCityWasUserSelectedHash() =>
-    r'56d712603b6be38f3f6285edc66e4b72225d9455';
+String _$selectedExploreCityWasUserSelectedHash() =>
+    r'40ae2f1de86c574c928e12765109bf863a1c83cc';
 
-abstract class _$SelectedClubCityWasUserSelected extends $Notifier<bool> {
+abstract class _$SelectedExploreCityWasUserSelected extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override
@@ -141,36 +144,36 @@ abstract class _$SelectedClubCityWasUserSelected extends $Notifier<bool> {
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
 
-@ProviderFor(ClubSearchQuery)
-final clubSearchQueryProvider = ClubSearchQueryProvider._();
+@ProviderFor(ExploreSearchQuery)
+final exploreSearchQueryProvider = ExploreSearchQueryProvider._();
 
 /// **KeepAlive notifier — simple string state**
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
-final class ClubSearchQueryProvider
-    extends $NotifierProvider<ClubSearchQuery, String> {
+final class ExploreSearchQueryProvider
+    extends $NotifierProvider<ExploreSearchQuery, String> {
   /// **KeepAlive notifier — simple string state**
   ///
   /// Holds the current search query text. [keepAlive] ensures the query
   /// survives tab switches so the user's search isn't lost while browsing.
-  ClubSearchQueryProvider._()
+  ExploreSearchQueryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'clubSearchQueryProvider',
+        name: r'exploreSearchQueryProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$clubSearchQueryHash();
+  String debugGetCreateSourceHash() => _$exploreSearchQueryHash();
 
   @$internal
   @override
-  ClubSearchQuery create() => ClubSearchQuery();
+  ExploreSearchQuery create() => ExploreSearchQuery();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
@@ -181,14 +184,15 @@ final class ClubSearchQueryProvider
   }
 }
 
-String _$clubSearchQueryHash() => r'a5dcc73e1c7abde5097b7ee2869d57537ee026ab';
+String _$exploreSearchQueryHash() =>
+    r'c0e1950d6fde1fcdaccda0e59bb4388fd3563519';
 
 /// **KeepAlive notifier — simple string state**
 ///
 /// Holds the current search query text. [keepAlive] ensures the query
 /// survives tab switches so the user's search isn't lost while browsing.
 
-abstract class _$ClubSearchQuery extends $Notifier<String> {
+abstract class _$ExploreSearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
   @override
@@ -206,53 +210,52 @@ abstract class _$ClubSearchQuery extends $Notifier<String> {
   }
 }
 
-@ProviderFor(ClubBrowseFilters)
-final clubBrowseFiltersProvider = ClubBrowseFiltersProvider._();
+@ProviderFor(ExploreFilters)
+final exploreFiltersProvider = ExploreFiltersProvider._();
 
-final class ClubBrowseFiltersProvider
-    extends $NotifierProvider<ClubBrowseFilters, ClubBrowseFilterSelection> {
-  ClubBrowseFiltersProvider._()
+final class ExploreFiltersProvider
+    extends $NotifierProvider<ExploreFilters, ExploreFilterSelection> {
+  ExploreFiltersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'clubBrowseFiltersProvider',
+        name: r'exploreFiltersProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$clubBrowseFiltersHash();
+  String debugGetCreateSourceHash() => _$exploreFiltersHash();
 
   @$internal
   @override
-  ClubBrowseFilters create() => ClubBrowseFilters();
+  ExploreFilters create() => ExploreFilters();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ClubBrowseFilterSelection value) {
+  Override overrideWithValue(ExploreFilterSelection value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ClubBrowseFilterSelection>(value),
+      providerOverride: $SyncValueProvider<ExploreFilterSelection>(value),
     );
   }
 }
 
-String _$clubBrowseFiltersHash() => r'77b8922f9c63bf304813bb044aca241981124131';
+String _$exploreFiltersHash() => r'eecbc04f0291a16be14582f554d3bc3fcef46544';
 
-abstract class _$ClubBrowseFilters
-    extends $Notifier<ClubBrowseFilterSelection> {
-  ClubBrowseFilterSelection build();
+abstract class _$ExploreFilters extends $Notifier<ExploreFilterSelection> {
+  ExploreFilterSelection build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
     final ref =
-        this.ref as $Ref<ClubBrowseFilterSelection, ClubBrowseFilterSelection>;
+        this.ref as $Ref<ExploreFilterSelection, ExploreFilterSelection>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ClubBrowseFilterSelection, ClubBrowseFilterSelection>,
-              ClubBrowseFilterSelection,
+              AnyNotifier<ExploreFilterSelection, ExploreFilterSelection>,
+              ExploreFilterSelection,
               Object?,
               Object?
             >;
@@ -323,12 +326,12 @@ final class ExploreSourceClubsProvider
 }
 
 String _$exploreSourceClubsHash() =>
-    r'c17b186f62eafa9990297476f92912f761b5a578';
+    r'7c5ebe089f29b4b957ffa669b2d6b67e4564687a';
 
-@ProviderFor(filteredClubs)
-final filteredClubsProvider = FilteredClubsProvider._();
+@ProviderFor(filteredExploreClubs)
+final filteredExploreClubsProvider = FilteredExploreClubsProvider._();
 
-final class FilteredClubsProvider
+final class FilteredExploreClubsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Club>>,
@@ -336,19 +339,19 @@ final class FilteredClubsProvider
           AsyncValue<List<Club>>
         >
     with $Provider<AsyncValue<List<Club>>> {
-  FilteredClubsProvider._()
+  FilteredExploreClubsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'filteredClubsProvider',
+        name: r'filteredExploreClubsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$filteredClubsHash();
+  String debugGetCreateSourceHash() => _$filteredExploreClubsHash();
 
   @$internal
   @override
@@ -358,7 +361,7 @@ final class FilteredClubsProvider
 
   @override
   AsyncValue<List<Club>> create(Ref ref) {
-    return filteredClubs(ref);
+    return filteredExploreClubs(ref);
   }
 
   /// {@macro riverpod.override_with_value}
@@ -370,74 +373,72 @@ final class FilteredClubsProvider
   }
 }
 
-String _$filteredClubsHash() => r'fb0c62506b110570bafd3a64d65dc5c18e546e2a';
+String _$filteredExploreClubsHash() =>
+    r'80b04ddd99bfd7ed6c475d18bd431ed6889ca26f';
 
 /// **Pattern D: View-model provider**
 ///
 /// Combines the signed-in user, membership edges, and filtered club streams into
 /// a
-/// [ClubsListViewModel] that partitions clubs into joined and discover
+/// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-@ProviderFor(clubsListViewModel)
-final clubsListViewModelProvider = ClubsListViewModelProvider._();
+@ProviderFor(exploreViewModel)
+final exploreViewModelProvider = ExploreViewModelProvider._();
 
 /// **Pattern D: View-model provider**
 ///
 /// Combines the signed-in user, membership edges, and filtered club streams into
 /// a
-/// [ClubsListViewModel] that partitions clubs into joined and discover
+/// [ExploreViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
-final class ClubsListViewModelProvider
+final class ExploreViewModelProvider
     extends
         $FunctionalProvider<
-          AsyncValue<ClubsListViewModel>,
-          AsyncValue<ClubsListViewModel>,
-          AsyncValue<ClubsListViewModel>
+          AsyncValue<ExploreViewModel>,
+          AsyncValue<ExploreViewModel>,
+          AsyncValue<ExploreViewModel>
         >
-    with $Provider<AsyncValue<ClubsListViewModel>> {
+    with $Provider<AsyncValue<ExploreViewModel>> {
   /// **Pattern D: View-model provider**
   ///
   /// Combines the signed-in user, membership edges, and filtered club streams into
   /// a
-  /// [ClubsListViewModel] that partitions clubs into joined and discover
+  /// [ExploreViewModel] that partitions clubs into joined and discover
   /// lists for the UI.
-  ClubsListViewModelProvider._()
+  ExploreViewModelProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'clubsListViewModelProvider',
+        name: r'exploreViewModelProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$clubsListViewModelHash();
+  String debugGetCreateSourceHash() => _$exploreViewModelHash();
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<ClubsListViewModel>> $createElement(
+  $ProviderElement<AsyncValue<ExploreViewModel>> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  AsyncValue<ClubsListViewModel> create(Ref ref) {
-    return clubsListViewModel(ref);
+  AsyncValue<ExploreViewModel> create(Ref ref) {
+    return exploreViewModel(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(AsyncValue<ClubsListViewModel> value) {
+  Override overrideWithValue(AsyncValue<ExploreViewModel> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<AsyncValue<ClubsListViewModel>>(
-        value,
-      ),
+      providerOverride: $SyncValueProvider<AsyncValue<ExploreViewModel>>(value),
     );
   }
 }
 
-String _$clubsListViewModelHash() =>
-    r'aeca704da5575ade89546abb98a68f1cd3d9e7fa';
+String _$exploreViewModelHash() => r'9980a2e3114dfeeffaca1b5b2c9ca2e16ce4aa10';

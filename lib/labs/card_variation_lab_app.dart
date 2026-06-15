@@ -2,12 +2,8 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_avatar_rail.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_list_tile.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_events_section.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/explore_peek_rail.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_avatar_rail.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_list_tile.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -37,6 +33,10 @@ import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_t
 import 'package:catch_dating_app/events/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/events/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/events/presentation/widgets/when_where_card.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_peek_rail.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
@@ -783,7 +783,7 @@ class _ExploreMapLeadFixture extends StatelessWidget {
                   ? selectedEventId ?? fixtures.dinner.id
                   : null,
               cameraCenter: fixtures.mapCenter,
-              filters: const ClubBrowseFilterSelection(),
+              filters: const ExploreFilterSelection(),
               scopeLabel: 'Mumbai',
               leadMode: mode,
               onEventTapped: (_) {},
@@ -1005,14 +1005,12 @@ class _LabFixtures {
 
   late final exploreOverrides = [
     exploreFeedViewModelProvider.overrideWithValue(
-      AsyncData<EventDiscoveryViewModel>(
-        EventDiscoveryViewModel(items: exploreItems),
+      AsyncData<ExploreFeedViewModel>(
+        ExploreFeedViewModel(items: exploreItems),
       ),
     ),
-    clubBrowseFiltersProvider.overrideWithValue(
-      const ClubBrowseFilterSelection(),
-    ),
-    clubSearchQueryProvider.overrideWithValue(''),
+    exploreFiltersProvider.overrideWithValue(const ExploreFilterSelection()),
+    exploreSearchQueryProvider.overrideWithValue(''),
   ];
 
   List<Override> activityOverrides(String uid) => [

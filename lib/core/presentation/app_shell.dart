@@ -29,7 +29,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
-//   1  Explore   (ClubsListScreen)
+//   1  Explore   (ExploreScreen)
 //   2  Catches   (SwipeHubScreen)
 //   3  Chats     (MatchesListScreen)
 //   4  Profile   (ProfileScreen)
@@ -177,7 +177,7 @@ class _GuestAuthCtaBar extends StatelessWidget {
     return Uri(
       path: Routes.authScreen.path,
       queryParameters: {
-        'from': from.isEmpty ? Routes.clubsListScreen.path : from,
+        'from': from.isEmpty ? Routes.exploreScreen.path : from,
       },
     ).toString();
   }

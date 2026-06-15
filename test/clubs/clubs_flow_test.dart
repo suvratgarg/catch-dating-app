@@ -6,12 +6,12 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_screen.dart';
-import 'package:catch_dating_app/clubs/presentation/list/explore_feed_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/list/widgets/club_discover_list.dart';
+import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -34,10 +34,10 @@ void main() {
       final club = _buildClub();
       final user = _buildUser(uid: 'runner-1');
       final router = GoRouter(
-        initialLocation: Routes.clubsListScreen.path,
+        initialLocation: Routes.exploreScreen.path,
         routes: [
           GoRoute(
-            path: Routes.clubsListScreen.path,
+            path: Routes.exploreScreen.path,
             builder: (_, _) => Scaffold(
               body: CustomScrollView(
                 slivers: [
@@ -95,7 +95,7 @@ void main() {
     ) async {
       final club = _buildClub();
       final router = GoRouter(
-        initialLocation: Routes.clubsListScreen.path,
+        initialLocation: Routes.exploreScreen.path,
         routes: [
           GoRoute(
             path: Routes.authScreen.path,
@@ -105,8 +105,8 @@ void main() {
             ),
           ),
           GoRoute(
-            path: Routes.clubsListScreen.path,
-            builder: (_, _) => const ClubsListScreen(),
+            path: Routes.exploreScreen.path,
+            builder: (_, _) => const ExploreScreen(),
             routes: [
               GoRoute(
                 path: ':clubId',

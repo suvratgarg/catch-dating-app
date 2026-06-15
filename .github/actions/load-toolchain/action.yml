@@ -1,0 +1,45 @@
+name: Load Toolchain Versions
+description: Load checked-in public toolchain version pins.
+
+outputs:
+  flutter-version:
+    description: Flutter SDK version.
+    value: ${{ steps.load.outputs.flutter-version }}
+  node-version:
+    description: Node.js major version.
+    value: ${{ steps.load.outputs.node-version }}
+  java-version:
+    description: Java major version.
+    value: ${{ steps.load.outputs.java-version }}
+  firebase-tools-version:
+    description: Firebase CLI version.
+    value: ${{ steps.load.outputs.firebase-tools-version }}
+
+runs:
+  using: composite
+  steps:
+    - id: load
+      shell: bash
+      run: |
+        set -euo pipefail
+        toolchain_file="${GITHUB_WORKSPACE:-$PWD}/tool/ci/toolchain.env"
+        if [[ ! -f "$toolchain_file" ]]; then
+          echo "Missing toolchain file: $toolchain_file"
+          exit 1
+        fi
+
+        # shellcheck source=/dev/null
+        source "$toolchain_file"
+        for name in FLUTTER_VERSION NODE_VERSION JAVA_VERSION FIREBASE_TOOLS_VERSION; do
+          if [[ -z "${!name:-}" ]]; then
+            echo "Missing $name in $toolchain_file"
+            exit 1
+          fi
+        done
+
+        {
+          echo "flutter-version=$FLUTTER_VERSION"
+          echo "node-version=$NODE_VERSION"
+          echo "java-version=$JAVA_VERSION"
+          echo "firebase-tools-version=$FIREBASE_TOOLS_VERSION"
+        } >> "$GITHUB_OUTPUT"

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_icons.dart';
@@ -9,6 +8,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_map_center.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
+import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,9 +47,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
     final AsyncValue<EventMapViewModel> viewModelAsync =
         widget.viewModel ?? ref.watch(eventMapViewModelProvider);
     final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
-    final selectedCity = ref.watch(selectedClubCityProvider);
+    final selectedCity = ref.watch(selectedExploreCityProvider);
     final selectedCityWasUserSelected = ref.watch(
-      selectedClubCityWasUserSelectedProvider,
+      selectedExploreCityWasUserSelectedProvider,
     );
 
     return Stack(
@@ -128,7 +128,6 @@ class _NoPinnedEventsState extends StatelessWidget {
         title: 'No exact pins yet',
         message:
             'These events are visible, but none have pinned starting points.',
-        surface: false,
       ),
     );
   }
@@ -145,7 +144,6 @@ class _MapEmptyState extends StatelessWidget {
         title: 'No mapped events yet',
         message:
             'Join clubs, book events, or save future events to see starting points here.',
-        surface: false,
       ),
     );
   }

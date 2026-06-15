@@ -44,6 +44,25 @@ ensure_cocoapods() {
   fi
 }
 
+load_toolchain_env() {
+  local toolchain_file="$1"
+  local flutter_version_override="${FLUTTER_VERSION:-}"
+
+  if [[ ! -f "$toolchain_file" ]]; then
+    echo "Missing toolchain file: $toolchain_file"
+    return 1
+  fi
+
+  set -a
+  # shellcheck source=/dev/null
+  source "$toolchain_file"
+  set +a
+
+  if [[ -n "$flutter_version_override" ]]; then
+    FLUTTER_VERSION="$flutter_version_override"
+  fi
+}
+
 if [[ -n "${CI_PRIMARY_REPOSITORY_PATH:-}" ]]; then
   repo_root="$CI_PRIMARY_REPOSITORY_PATH"
 elif [[ -f "$script_dir/../pubspec.yaml" ]]; then
@@ -53,7 +72,8 @@ else
 fi
 cd "$repo_root"
 
-flutter_version="${FLUTTER_VERSION:-3.41.9}"
+load_toolchain_env "$repo_root/tool/ci/toolchain.env"
+flutter_version="${FLUTTER_VERSION:?FLUTTER_VERSION is missing from tool/ci/toolchain.env}"
 flutter_home="${CI_WORKSPACE_PATH:-$HOME}/flutter"
 
 if [[ ! -x "$flutter_home/bin/flutter" ]]; then
